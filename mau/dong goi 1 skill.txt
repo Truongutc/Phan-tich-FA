@@ -1,0 +1,1263 @@
+# INSTRUCTIONS: HỆ THỐNG PHÂN TÍCH CỔ PHIẾU VIỆT NAM
+
+> Phiên bản: 2.0 | Cập nhật: 2026-06
+
+---
+
+## ĐỌC TRƯỚC: TRIẾT LÝ CỐT LÕI
+
+**Tài liệu này là bộ QUY TẮC VÀ QUY TRÌNH BẮT BUỘC TUÂN THỦ 100% — KHÔNG phải hướng dẫn tham khảo, tuyệt đối KHÔNG được tự ý bỏ qua, bỏ bước hay thay đổi.**
+
+Các cổ phiếu mẫu đã phân tích (HPG, MWG, KSV, TCB, SSI, NLG, MSN...) là **ví dụ minh họa và tiêu chuẩn kỹ thuật** bắt buộc phải đạt được. Khi nhận một cổ phiếu mới, AI phải:
+
+1. **Tuân thủ đúng và đủ toàn bộ các bước trong tài liệu này** — không được bỏ sót bất kỳ bước nào trong quy trình phân tích.
+2. **Gọi API Vietcap lấy đầy đủ dữ liệu tài chính** — bắt buộc lấy toàn bộ dữ liệu lịch sử theo cả Năm (tối thiểu 5 năm gần nhất) và Quý (tối thiểu 20 quý gần nhất) để thực hiện tính toán.
+3. **Thu thập dữ liệu mới nhất** — luôn dùng ngày hiện tại, không dùng số liệu cũ từ training.
+
+> **Quy tắc vàng**: "Hiểu cách công ty kiếm tiền, tại sao họ kiếm được nhiều hơn đối thủ, và điều gì có thể phá vỡ điều đó" — tuân thủ nghiêm ngặt các bước phân tích để làm rõ điều này.
+
+---
+
+## MỤC LỤC
+
+1. [Quy trình tổng thể](#1-quy-trình-tổng-thể)
+2. [Bước 1: Thu thập dữ liệu real-time](#2-bước-1-thu-thập-dữ-liệu-real-time)
+3. [Bước 2: Phân tích framework 6 tầng](#3-bước-2-phân-tích-framework-6-tầng)
+4. [Phân tích PESTLE — Môi trường vĩ mô](#4-phân-tích-pestle--môi-trường-vĩ-mô)
+5. [Bước 3: Build Excel model](#5-bước-3-build-excel-model)
+6. [Bước 4: Viết PDF research report](#6-bước-4-viết-pdf-research-report)
+7. [Phương pháp dự báo doanh thu theo ngành](#7-phương-pháp-dự-báo-doanh-thu-theo-ngành)
+8. [Phương pháp định giá theo ngành](#8-phương-pháp-định-giá-theo-ngành)
+9. [Quy chuẩn Excel model](#9-quy-chuẩn-excel-model)
+10. [Quy chuẩn PDF report](#10-quy-chuẩn-pdf-report)
+11. [Danh sách cổ phiếu đã phân tích](#11-danh-sách-cổ-phiếu-đã-phân-tích)
+12. [Checklist kiểm tra trước khi giao](#12-checklist-kiểm-tra-trước-khi-giao)
+9. [Quy chuẩn PDF report](#9-quy-chuẩn-pdf-report)
+10. [Danh sách cổ phiếu đã phân tích](#10-danh-sách-cổ-phiếu-đã-phân-tích)
+11. [Checklist kiểm tra trước khi giao](#11-checklist-kiểm-tra-trước-khi-giao)
+
+---
+
+## 1. QUY TRÌNH TỔNG THỂ
+
+Mỗi lần nhận yêu cầu phân tích một cổ phiếu, AI thực hiện đúng thứ tự sau:
+
+```
+NHẬN TICKER
+    │
+    ▼
+BƯỚC 1: THU THẬP DỮ LIỆU REAL-TIME
+│  ├─ Agent A: Dữ liệu thị trường (giá, vốn hóa, số CP, thanh khoản)
+│  ├─ Agent B: KQKD lịch sử (4-5 năm: DT, LN, biên, B/S, CF)
+│  ├─ Agent C: Tin tức, chiến lược, kế hoạch, rủi ro gần nhất
+│  └─ Agent D: Peer comparison và ngành
+│
+▼
+XÁC ĐỊNH BẢN CHẤT KINH DOANH
+│  ├─ Ngành → chọn phương pháp dự báo doanh thu
+│  └─ Chu kỳ → chọn phương pháp định giá
+│
+▼
+BƯỚC 2: PHÂN TÍCH 6 TẦNG
+│  Tầng 1 → 6 (xem chi tiết Mục 3)
+│
+▼
+BƯỚC 3: BUILD EXCEL MODEL
+│  ├─ Quyết định: template có sẵn hay build mới?
+│  ├─ Điền dữ liệu lịch sử đã thu thập
+│  ├─ Build revenue model từ drivers
+│  ├─ Chạy recalc → 0 errors
+│  └─ Sensitivity analysis
+│
+▼
+BƯỚC 4: VIẾT PDF REPORT (~15-20 trang)
+│  Theo cấu trúc chuẩn (Mục 9)
+│
+▼
+GIAO 2 FILE:
+├─ [TICKER]_Phan_Tich_[YYYY-MM].pdf
+└─ [TICKER]_Model_[YYYY-MM].xlsx
+```
+
+**Output bắt buộc**: Mỗi phân tích PHẢI cho ra **đúng 2 file**:
+1. **PDF** — research report 15-20 trang, tiếng Việt, chuyên nghiệp
+2. **Excel** — financial model đầy đủ sheets, 0 formula errors
+
+---
+
+## 2. BƯỚC 1: THU THẬP DỮ LIỆU REAL-TIME
+
+### 2.1 Nguyên tắc bắt buộc
+
+- **Bắt buộc gọi API Vietcap để lấy đầy đủ dữ liệu**: Khi phân tích bất kỳ cổ phiếu nào, bước đầu tiên bắt buộc phải sử dụng các API/hàm Vietcap có sẵn để tải toàn bộ dữ liệu tài chính lịch sử. Không được phép tự ước lượng hoặc bỏ qua.
+- **Tải đủ dữ liệu theo năm và quý**: Dữ liệu tài chính tải về phải đầy đủ theo cả Năm (tối thiểu 5 năm gần nhất) và Quý (tối thiểu 20 quý gần nhất).
+- **Bắt buộc lấy Thị giá, Số lượng CP lưu hành và Vốn hóa động từ API Vietcap**: Khi phân tích, bắt buộc phải gọi API chi tiết của Vietcap (`https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}`) để lấy chính xác thị giá hiện tại (`currentPrice`), số lượng cổ phiếu đang lưu hành (`numberOfSharesMktCap`), và vốn hóa thị trường (`marketCap`). Tuyệt đối KHÔNG được hardcode các thông số này trong mã nguồn phân tích vì số lượng cổ phiếu lưu hành và giá có thể thay đổi liên tục (chia tách, phát hành thêm, biến động thị trường). Nếu hardcode sẽ dẫn đến tính toán P/E và P/B hiện tại bị sai lệch nghiêm trọng.
+- **Luôn dùng ngày hiện tại** — không dùng số liệu training của AI
+- **Thu thập song song** bằng nhiều agent (hoặc nhiều search queries đồng thời) để tiết kiệm thời gian
+- **Kết hợp 3 nguồn** theo thứ tự ưu tiên: API Vietcap / BCTC gốc > Cafef/Vietstock > Tin tức/báo cáo
+
+### 2.2 Danh sách dữ liệu cần thu thập
+
+#### Nhóm A — Dữ liệu thị trường (real-time)
+```
+□ Giá cổ phiếu hiện tại (ngày phân tích)
+□ Giá 52 tuần cao / thấp
+□ Số lượng cổ phiếu đang lưu hành (Outstanding shares)
+□ Vốn hóa thị trường = Giá × Số CP
+□ KLGD bình quân 30 ngày (thanh khoản)
+□ Tỷ lệ sở hữu nước ngoài (foreign ownership)
+□ Cơ cấu cổ đông lớn (>5%)
+□ Room ngoại còn lại
+```
+
+#### Nhóm B — Dữ liệu tài chính lịch sử (4-5 năm)
+```
+Kết quả kinh doanh:
+□ Doanh thu thuần
+□ Lợi nhuận gộp + biên GP
+□ Chi phí bán hàng, QLDN
+□ EBIT + biên EBIT
+□ EBITDA (EBIT + D&A)
+□ Lợi nhuận trước thuế
+□ Lợi nhuận sau thuế (LNST)
+□ LNST thuộc về cổ đông công ty mẹ
+□ EPS (pha loãng)
+□ DPS (cổ tức đã trả)
+
+Cân đối kế toán:
+□ Tổng tài sản
+□ Tiền và tương đương tiền
+□ Hàng tồn kho
+□ Khoản phải thu
+□ Tài sản cố định (TSCĐ)
+□ Tổng nợ vay (ngắn hạn + dài hạn)
+□ Nợ ròng (Net Debt = Nợ vay - Tiền)
+□ Vốn chủ sở hữu (VCSH)
+□ Book value per share
+
+Dòng tiền:
+□ Dòng tiền hoạt động (Operating CF)
+□ Capex
+□ FCFF / FCFE
+□ Dòng tiền tài chính
+
+Các chỉ số:
+□ ROE, ROA, ROIC
+□ D/E ratio, Net Debt/EBITDA
+□ DSO (Days Sales Outstanding)
+□ Inventory Turnover
+```
+
+#### Nhóm C — Dữ liệu định tính
+```
+□ Mô hình kinh doanh, sản phẩm/dịch vụ chính
+□ Kế hoạch năm hiện tại (từ ĐHĐCĐ gần nhất)
+□ Chiến lược trung hạn (3-5 năm)
+□ Rủi ro đặc thù được CEO/CFO đề cập
+□ Tin tức 6 tháng gần nhất có tác động đến thesis
+□ Analyst reports từ CTCK VN nếu có
+```
+
+#### Nhóm D — Dữ liệu ngành và peer
+```
+□ Danh sách 3-5 công ty cùng ngành (peers)
+□ Multiples của peers (P/E, EV/EBITDA, P/B)
+□ Tăng trưởng ngành (TAM growth)
+□ Giá hàng hóa liên quan (nếu là ngành commodity)
+□ Dữ liệu macro liên quan (lãi suất, tỷ giá, GDP ngành)
+```
+
+### 2.3 Nguồn dữ liệu và cách truy cập
+
+| Nguồn | Dữ liệu | Cách truy cập |
+|---|---|---|
+| **Cafef.vn** | KQKD, BCTC tóm tắt, tin tức | Web fetch / Search |
+| **Vietstock Finance** | BCTC chi tiết, chỉ số tài chính | Web fetch: `finance.vietstock.vn/[ticker]` |
+| **HOSE/HNX** | BCTC PDF gốc đã kiểm toán | Fetch từ ir website hoặc sở |
+| **Cafef / DNSE / Vietstock** | Tin tức, kế hoạch ĐHĐCĐ | Search với `[ticker] kế hoạch [năm]` |
+| **Simpize / Fili** | Giá cổ phiếu, chỉ số | Web fetch |
+| **Bloomberg / Reuters** | Giá hàng hóa quốc tế | Search |
+| **CTCK reports** | SSI Research, VCSC, MBS, VPS | Search `[ticker] báo cáo phân tích [năm]` |
+
+### 2.4 Xử lý sau khi thu thập
+
+1. AI tổng hợp dữ liệu → báo cáo những con số đã tìm được
+2. **AI ghi chú rõ các ô chưa tìm được** hoặc không chắc chắn
+3. Huy xem qua và xác nhận hoặc cung cấp bổ sung
+4. Sau khi verify → chạy model
+
+> **Lưu ý**: Nếu không tìm được số liệu chính xác, AI phải ghi rõ "Chưa có dữ liệu — cần xác nhận" thay vì tự ước tính và không nói.
+
+---
+
+## 3. BƯỚC 2: PHÂN TÍCH FRAMEWORK 6 TẦNG
+
+### Tầng 1: Chuỗi giá trị ngành
+
+**Mục tiêu**: Vẽ được sơ đồ từ nguyên liệu đầu vào đến khách hàng cuối, xác định công ty đang capture giá trị ở đâu trong chuỗi.
+
+Câu hỏi:
+- Ai kiểm soát đầu vào? Chi phí chuyển đổi nhà cung cấp?
+- Quy trình tạo ra sự khác biệt ở bước nào?
+- Kênh phân phối: trực tiếp hay gián tiếp? Margin từng kênh?
+- Khách hàng cuối: cá nhân hay doanh nghiệp? Độ nhạy giá?
+
+### Tầng 2: Phân tích thị trường
+
+**Công cụ**: Porter 5 Forces + TAM/SAM/SOM + Vị trí chu kỳ ngành
+
+| Lực | Đánh giá | Ý nghĩa với lợi nhuận |
+|---|---|---|
+| Đối thủ hiện tại | HHI, số lượng player, tăng trưởng ngành | Ngành tập trung = lợi nhuận cao hơn |
+| Đối thủ tiềm năng | Rào cản vốn, giấy phép, quy mô | Barriers cao = bảo vệ biên |
+| Sản phẩm thay thế | Công nghệ mới, hành vi người dùng | Disruption risk |
+| NCC | Số lượng, chi phí chuyển đổi | Ảnh hưởng COGS |
+| Khách hàng | Fragmented vs. concentrated | Ảnh hưởng pricing power |
+
+**Chu kỳ ngành**: Emerging / Growth / Maturity / Decline — xác định để chọn valuation method.
+
+### Tầng 3: Lợi thế cạnh tranh (Moat)
+
+| Loại Moat | Dấu hiệu | Test thực tế |
+|---|---|---|
+| Network Effect | Giá trị tăng theo người dùng | Churn rate thấp, CAC giảm dần |
+| Cost Advantage | Chi phí/đơn vị thấp hơn đối thủ | Gross margin cao hơn peer dù giá tương đương |
+| Switching Cost | Khách hàng không thể dời dễ dàng | Revenue retention >90%, hợp đồng dài hạn |
+| Intangible Assets | Thương hiệu, giấy phép, bằng sáng chế | Premium pricing được chấp nhận |
+| Efficient Scale | Thị trường đủ nhỏ cho 1-2 player | ROIC > WACC liên tục >5 năm |
+
+**Nguyên tắc kiểm tra moat**: Nếu đối thủ mới có vốn lớn vào thị trường, moat có giúp công ty này giữ được thị phần và biên lợi nhuận không?
+
+### Tầng 4: Dự báo doanh thu và lợi nhuận
+
+*(Chi tiết tại Mục 6)*
+
+Nguyên tắc bất biến:
+- **KHÔNG dùng % tăng trưởng cố định** — phân tích driver cụ thể
+- **KHÔNG extrapolate đỉnh/đáy chu kỳ** — dùng mid-cycle assumptions
+- Mỗi driver phải có logic kinh doanh giải thích được
+
+### Tầng 5: Phân tích rủi ro
+
+**5 nhóm rủi ro cần cover**:
+1. **Vĩ mô**: Lãi suất, tỷ giá, GDP, chính sách
+2. **Ngành**: Chu kỳ, quy định, disruption
+3. **Doanh nghiệp**: Quản trị, đòn bẩy, thực thi
+4. **Cạnh tranh**: Đối thủ mới, pricing war, thay thế
+5. **Sự kiện**: M&A, pháp lý, nhân sự lãnh đạo
+
+**Mỗi rủi ro cần**: Mô tả + Xác suất (%) + Tác động (tỷ đồng hoặc % LNST) + Chỉ báo leading indicator
+
+### Tầng 6: Định giá
+
+*(Chi tiết tại Mục 8)*
+
+Nguyên tắc:
+- Dùng **≥ 2 phương pháp** và so sánh chéo
+- Luôn làm **sensitivity analysis** với 2 biến quan trọng nhất
+- **Bear / Base / Bull** với xác suất rõ ràng
+- Kết luận: **BUY / HOLD / SELL** với margin of safety
+
+---
+
+## 4. PHÂN TÍCH PESTLE — MÔI TRƯỜNG VĨ MÔ
+
+### Vị trí trong framework
+
+PESTLE là **tầng phân tích ngoài cùng** — môi trường vĩ mô mà công ty không kiểm soát được nhưng bị ảnh hưởng trực tiếp. Nó thực hiện song song với Tầng 2 (Thị trường) và kết quả đưa vào Tầng 5 (Rủi ro) và Tầng 6 (Định giá — điều chỉnh discount rate).
+
+```
+PESTLE (vĩ mô) ─────────────────────────────────┐
+                                                  ▼
+Tầng 1 → Tầng 2 (Porter) → Tầng 3 → Tầng 4 → Tầng 5 (Risk) → Tầng 6 (Valuation)
+```
+
+**Quy tắc sử dụng**:
+- Mỗi PESTLE factor phải trả lời được: *"Điều này ảnh hưởng đến EPS / dòng tiền / multiple của công ty này bao nhiêu và theo hướng nào?"*
+- Nếu một factor không ảnh hưởng đến công ty đang phân tích → bỏ qua, không liệt kê cho có
+- Nếu ảnh hưởng lớn → đưa vào Risk Matrix (Tầng 5) với xác suất và tác động cụ thể
+
+---
+
+### P — POLITICAL (Chính trị)
+
+#### Bối cảnh Việt Nam
+
+| Yếu tố | Nội dung cần phân tích | Tác động |
+|---|---|---|
+| **Nghị quyết / QĐ Chính phủ** | Quy hoạch ngành (điện, khoáng sản, đất đai, logistics) | Tạo hoặc đóng cửa cơ hội tăng trưởng |
+| **Thay đổi lãnh đạo** | Thay Thủ tướng, Bộ trưởng ngành → thay đổi ưu tiên chính sách | Short-term uncertainty, thường không ảnh hưởng dài hạn |
+| **Quan hệ VN–Mỹ** | Thuế quan, FTA, chip export controls | Ảnh hưởng FDI, xuất khẩu điện tử, logistics |
+| **Quan hệ VN–Trung** | Chuỗi cung ứng, nguyên liệu đầu vào, thương mại biên giới | Thép, khoáng sản, FMCG bị ảnh hưởng mạnh |
+| **Cổ phần hóa / Thoái vốn Nhà nước** | SCIC bán bớt, room ngoại mở | Catalyst giá cổ phiếu với cổ phiếu SOE |
+| **FDI Policy** | Ưu đãi thuế KCN, ngành ưu tiên | KCN, logistics, EPC hưởng lợi |
+
+#### Tác động theo ngành
+
+| Ngành | Mức độ nhạy cảm chính trị | Lý do |
+|---|---|---|
+| KCN / Hạ tầng | ⭐⭐⭐⭐⭐ | Phụ thuộc hoàn toàn vào quy hoạch và FDI policy |
+| Khoáng sản | ⭐⭐⭐⭐⭐ | Giấy phép khai thác do Nhà nước cấp, xuất khẩu controlled |
+| BĐS | ⭐⭐⭐⭐⭐ | Luật Đất đai, cấp phép dự án, tín dụng bất động sản |
+| Ngân hàng | ⭐⭐⭐⭐ | Hạn mức tín dụng NHNN, lãi suất điều hành |
+| EPC / Điện | ⭐⭐⭐⭐ | Quy hoạch điện VIII, đầu tư công |
+| Thép | ⭐⭐⭐ | Thuế CBPG, quota nhập khẩu, quy hoạch xây dựng |
+| Bán lẻ / FMCG | ⭐⭐ | Quy định an toàn thực phẩm, thuế tiêu thụ đặc biệt |
+| Dược phẩm | ⭐⭐⭐ | Thông tư đấu thầu thuốc (15, 08...), phê duyệt sản phẩm |
+| Công nghệ | ⭐⭐ | Quy định dữ liệu, cyber security |
+
+#### Cách đưa vào investment thesis
+
+```
+Câu hỏi cần trả lời:
+1. Công ty này có phụ thuộc vào giấy phép/quyết định chính phủ để tạo ra doanh thu không?
+   → CÓ: Đây là moat (nếu đã có) hoặc rủi ro (nếu chưa có/sắp hết hạn)
+
+2. Chính sách hiện tại đang hỗ trợ hay cản trở ngành này?
+   → Đang hỗ trợ (quy hoạch điện, FDI...) = tailwind → nâng multiple
+   → Đang siết (tín dụng BĐS, room khoáng sản...) = headwind → giảm multiple
+
+3. Có event chính trị nào trong 12 tháng tới có thể là catalyst?
+   → ĐHĐCĐ, Nghị quyết mới, thay đổi quy định → đưa vào Catalyst section
+```
+
+---
+
+### E — ECONOMIC (Kinh tế)
+
+#### Bối cảnh Việt Nam
+
+| Chỉ số | Dữ liệu cần thu thập | Tác động đến cổ phiếu |
+|---|---|---|
+| **GDP Growth** | GDP VN YoY %, breakdown theo khu vực | Nền kinh tế tăng trưởng mạnh → tiêu dùng, đầu tư tốt |
+| **Lãi suất** | SBV policy rate, lãi suất huy động/cho vay bình quân | ↑ lãi suất → tăng discount rate → giảm P/E chấp nhận được; ↑ chi phí nợ |
+| **Tỷ giá USD/VND** | Spot rate, NHNN band | Ảnh hưởng công ty xuất khẩu, nhập khẩu nguyên liệu, nợ ngoại tệ |
+| **Lạm phát (CPI)** | CPI headline và core | Ảnh hưởng sức mua, chi phí đầu vào FMCG/bán lẻ |
+| **Tín dụng** | Tăng trưởng tín dụng toàn hệ thống, room ngân hàng | Ngân hàng, BĐS, bán lẻ (consumer credit) |
+| **FDI** | Vốn đăng ký và giải ngân FDI | KCN, logistics, thép, vật liệu xây dựng |
+| **Xuất nhập khẩu** | Kim ngạch XNK, cán cân thương mại | Logistics, thép, điện tử (DGW) |
+| **Giá hàng hóa** | LME (Cu, Zn, Al, Ni), giá HRC, giá dầu | Thép, khoáng sản, hóa chất, vận tải |
+
+#### Ma trận tác động kinh tế lên từng ngành
+
+| | ↑ Lãi suất | ↓ Lãi suất | ↑ Tỷ giá (VND yếu) | ↓ Tỷ giá | ↑ GDP | ↑ Giá HH |
+|---|---|---|---|---|---|---|
+| **Ngân hàng** | NIM co lại ban đầu, NIM tăng dài hạn | NIM tăng ngay | Trung tính | Trung tính | Tín dụng ↑ | — |
+| **BĐS** | ❌ Nhu cầu giảm | ✅ Nhu cầu tăng | Trung tính | Trung tính | ✅ | — |
+| **Thép** | ❌ Chi phí vốn | ✅ | ✅ Lợi cho xuất khẩu | ❌ | ✅ Xây dựng | ✅ Giá thép |
+| **KCN** | Trung tính | ✅ FDI ↑ | ✅ Giá thuê USD ↑ giá VND | ❌ | ✅ FDI | — |
+| **Bán lẻ** | ❌ Sức mua, chi phí | ✅ | ❌ Nhập khẩu đắt | ✅ | ✅ | — |
+| **Khoáng sản** | Trung tính | Trung tính | ✅ Revenue USD → VND nhiều hơn | ❌ | Trung tính | ✅ Giá kim loại |
+| **Logistics** | Trung tính | ✅ | ✅ Cước thu USD | ❌ | ✅ XNK ↑ | ❌ Giá dầu ↑ |
+| **IT/Tech** | Trung tính | ✅ | ✅ Revenue USD | ❌ | ✅ | — |
+| **FMCG** | ❌ Nhẹ | ✅ | ❌ Nguyên liệu nhập đắt | ✅ | ✅ | ❌ Raw mat |
+| **Dược phẩm** | Trung tính | ✅ | ❌ API nhập đắt | ✅ | ✅ | — |
+
+> **Đọc bảng**: ✅ = hưởng lợi | ❌ = bất lợi | Trung tính = ảnh hưởng không đáng kể
+
+#### Cách đưa vào model
+
+```
+Tỷ giá: Với công ty có doanh thu USD và chi phí VND (KCN, Khoáng sản, IT offshore):
+→ Sensitivity: thay đổi tỷ giá ±5% → tác động doanh thu bao nhiêu %?
+
+Lãi suất: Với công ty có nợ vay lớn:
+→ Net debt × ΔLãi suất = thay đổi chi phí lãi hàng năm → ảnh hưởng EPS
+
+GDP: Với bán lẻ/FMCG:
+→ GDP elasticity: GDP tăng 1% → doanh thu tăng bao nhiêu %? (thường 1.5-2.5x)
+```
+
+---
+
+### S — SOCIAL (Xã hội)
+
+#### Các xu hướng xã hội tác động đến cổ phiếu VN
+
+| Xu hướng | Nội dung | Ngành hưởng lợi | Ngành bị ảnh hưởng |
+|---|---|---|---|
+| **Dân số trẻ & đô thị hóa** | 70% dân số <40 tuổi, đô thị hóa 40%→60% | Bán lẻ, FMCG, BĐS đô thị, giáo dục, logistics | — |
+| **Tầng lớp trung lưu tăng** | 30M người trung lưu 2025 → 50M 2030 | Premium retail (PNJ, MWG), thực phẩm chế biến, du lịch, bảo hiểm | Hàng giá rẻ/bình dân |
+| **Già hóa dân số** | Tỷ lệ người >60 tuổi tăng dần | Dược phẩm, bảo hiểm nhân thọ, y tế | FMCG trẻ em |
+| **E-commerce & Digital** | Penetration rate e-commerce tăng 25%/năm | Logistics, payment, digital retail | Bán lẻ offline thuần túy |
+| **Health consciousness** | Hậu COVID, quan tâm sức khỏe tăng | Thực phẩm sạch, dược phẩm OTC, thể thao | Rượu bia (nhẹ) |
+| **Migration lao động** | Lao động từ nông thôn → KCN phía Nam/Bắc | KCN, logistics khu công nghiệp, nhà ở công nhân | Nông nghiệp truyền thống |
+| **Tiêu dùng trải nghiệm** | Ưu tiên du lịch, ăn ngoài, giải trí | F&B, du lịch, AVA Sport | Tiêu dùng hàng hóa cứng |
+
+#### Cách ứng dụng
+
+```
+Không phải mọi xu hướng xã hội đều liên quan đến mọi công ty.
+Chỉ chọn 1-2 xu hướng CÓ TÁC ĐỘNG RÕ RÀNG đến công ty đang phân tích.
+
+Ví dụ MWG (BHX):
+→ Đô thị hóa + tầng lớp trung lưu → nhu cầu siêu thị tiện lợi tăng
+→ Quantify: Dân số đô thị tăng X% → tệp khách hàng tiềm năng BHX tăng Y triệu người
+→ So sánh với mật độ cửa hàng hiện tại → room tăng trưởng Z CH
+
+Ví dụ Dược phẩm (DHG):
+→ Già hóa dân số → nhu cầu thuốc mãn tính tăng
+→ Quantify: Số người >60 tăng X triệu trong 10 năm → market size tăng Y%
+```
+
+---
+
+### T — TECHNOLOGICAL (Công nghệ)
+
+#### Phân tích 2 chiều: Disruption Risk vs. Enabler
+
+```
+Công nghệ với doanh nghiệp = ĐỒNG TIỀN 2 MẶT
+
+Mặt 1 — ENABLER: Công nghệ giúp công ty làm gì tốt hơn?
+→ Tự động hóa → giảm COGS/đơn vị
+→ Digital marketing → giảm CAC
+→ Data analytics → tăng SSS, giảm hàng tồn kho
+
+Mặt 2 — DISRUPTOR: Công nghệ có đang phá vỡ mô hình của họ không?
+→ E-commerce → threat với bán lẻ offline
+→ Fintech → threat với ngân hàng truyền thống
+→ Tự động hóa → threat với EPC/lao động thủ công
+→ AI → threat với IT outsourcing đơn giản
+```
+
+| Ngành | Disruption Risk | Công nghệ Enabler |
+|---|---|---|
+| **Bán lẻ truyền thống** | ⭐⭐⭐⭐ E-commerce cannibalization | Omnichannel, inventory AI, loyalty app |
+| **Ngân hàng** | ⭐⭐⭐ Fintech, neo-bank, BNPL | Mobile banking, AI credit scoring, CASA app |
+| **Dược phẩm** | ⭐⭐ Telemedicine thay kê đơn | E-pharmacy, biotech pipeline |
+| **Logistics** | ⭐⭐ Drone delivery (dài hạn) | Route optimization AI, tracking, WMS |
+| **Thép/Khoáng sản** | ⭐ Vật liệu thay thế (dài hạn) | Smart factory, IoT mining, automation |
+| **KCN** | ⭐ Không gian ảo thay thế (rất dài hạn) | Smart industrial zones, energy management |
+| **IT/FPT** | ⭐⭐⭐ AI thay thế junior developers | AI augmentation, nâng cấp lên AI consulting |
+| **FMCG** | ⭐⭐ D2C bypass distribution | Precision marketing, supply chain AI |
+
+#### Checklist công nghệ khi phân tích
+
+```
+□ Công ty đang ứng dụng công nghệ gì để cải thiện biên lợi nhuận?
+  → Nếu có: quantify được không? (COGS giảm X%, headcount giảm Y%)
+
+□ Đối thủ công nghệ (tech natives) có đang tấn công thị phần không?
+  → Ai? Market share trend? Tốc độ mất thị phần?
+
+□ Capex công nghệ/IT chiếm bao nhiêu % tổng Capex?
+  → Thấp (<5%) trong ngành công nghệ = risk
+  → Cao trong ngành truyền thống = đang chuyển đổi tốt
+
+□ AI ảnh hưởng như thế nào? (Tích cực: giảm chi phí vận hành; Tiêu cực: disrupt sản phẩm)
+```
+
+---
+
+### L — LEGAL (Pháp lý)
+
+#### Hệ thống pháp lý ảnh hưởng trực tiếp đến cổ phiếu VN
+
+| Luật / Quy định | Năm hiệu lực | Ngành ảnh hưởng | Tác động |
+|---|---|---|---|
+| **Luật Đất đai 2024** | 01/2025 | BĐS, KCN | Cởi mở hơn, tháo gỡ pháp lý dự án |
+| **Luật Chứng khoán sửa đổi** | 2024 | Tất cả | Room ngoại, công ty đại chúng, chào bán thêm |
+| **Quy định NHNN về room tín dụng** | Hàng năm | Ngân hàng | Cap tăng trưởng tín dụng |
+| **Thông tư 08, 15 đấu thầu thuốc** | Ongoing | Dược phẩm | Áp lực giảm giá ETC |
+| **Thuế tối thiểu toàn cầu (BEPS)** | 2024 | KCN, FDI | Giảm ưu đãi thuế → FDI có thể re-direct |
+| **Luật Khoáng sản** | Đang sửa | Khoáng sản | Điều kiện cấp phép, thuế tài nguyên |
+| **Quy định Basel II/III** | Ongoing | Ngân hàng | CAR requirements, provisioning |
+| **Thuế CBPG thép nhập khẩu** | Theo vụ việc | Thép | Bảo hộ nội địa HPG |
+| **Net Zero 2050 (COP26 commitments)** | 2050 | Điện, than, khoáng sản | Chuyển dịch năng lượng dài hạn |
+
+#### Checklist pháp lý khi phân tích
+
+```
+□ Luật nào đang thay đổi trong 12-24 tháng tới có ảnh hưởng trực tiếp?
+  → Xác định: favorable hay unfavorable
+
+□ Công ty có đang vi phạm hoặc cận ngưỡng vi phạm quy định nào không?
+  → KSV: cơ cấu cổ đông vs. Luật Chứng khoán
+  → BĐS: pháp lý dự án chưa hoàn chỉnh
+
+□ Giấy phép / license quan trọng sắp hết hạn?
+  → Gia hạn được không? Chi phí bao nhiêu? Rủi ro không gia hạn được?
+
+□ Thuế quan / CBPG (chống bán phá giá) tác động thế nào?
+  → Thép: Mỹ, EU áp thuế CBPG với thép VN?
+  → Giày dép, điện tử: trade war impact?
+```
+
+---
+
+### E — ENVIRONMENTAL (Môi trường)
+
+#### Tại sao môi trường quan trọng với cổ phiếu VN hiện nay
+
+VN cam kết Net Zero 2050 (COP26) + xu hướng ESG investing từ nước ngoài đang tạo ra **2 lực song song**:
+- **Regulatory push**: Quy định môi trường ngày càng khắt khe hơn → tăng chi phí compliance
+- **ESG premium**: Công ty ESG tốt được định giá cao hơn từ nhà đầu tư nước ngoài
+
+| Yếu tố Môi trường | Ngành bị tác động | Chiều tác động |
+|---|---|---|
+| **Chuyển dịch năng lượng (RE)** | EPC điện gió/mặt trời (PC1, TV2) | ✅ Cơ hội lớn backlog mới |
+| | Than (Vinacomin, nhiệt điện) | ❌ Stranded asset dài hạn |
+| **Quy định khí thải sản xuất** | Thép (HPG lò cao) | ❌ Capex xanh bắt buộc tăng |
+| | Xi măng, hóa chất | ❌ |
+| **Tiêu chuẩn môi trường mỏ** | Khoáng sản (KSV, Đông Pao) | ❌ Chi phí compliance, delay khai thác |
+| **Nước và chất thải công nghiệp** | KCN, sản xuất | ❌ Yêu cầu xử lý nước thải tăng |
+| **ESG scoring** | Tất cả (đặc biệt với room ngoại) | Foreign investor ưu tiên ESG → tác động valuation |
+| **Tín chỉ carbon** | Năng lượng tái tạo, trồng rừng | ✅ Doanh thu mới tiềm năng |
+| **Biến đổi khí hậu** | Bảo hiểm, nông nghiệp, logistics | ❌ Rủi ro thời tiết cực đoan |
+
+#### Cách đưa vào phân tích
+
+```
+Cấp độ 1 — Compliance cost:
+→ Capex môi trường hiện tại chiếm bao nhiêu % tổng Capex?
+→ Quy định mới sẽ tăng thêm bao nhiêu? (ảnh hưởng EBITDA bao nhiêu %)
+
+Cấp độ 2 — Stranded asset risk:
+→ Tài sản của công ty có nguy cơ mất giá vì chuyển dịch năng lượng không?
+→ Ví dụ: nhà máy nhiệt điện than vs. timeline RE
+
+Cấp độ 3 — ESG premium/discount:
+→ Foreign ownership thấp vì ESG score kém? → Room ngoại, trading discount
+→ Ngược lại: ESG tốt → attract sustainable funds → multiple premium
+
+Cấp độ 4 — New opportunity:
+→ Tín chỉ carbon, RE certification → doanh thu mới?
+→ ESG-linked financing → lãi suất vay thấp hơn?
+```
+
+---
+
+### TỔNG HỢP PESTLE — ĐÁNH GIÁ NET IMPACT
+
+Sau khi phân tích 6 yếu tố, tổng hợp lại thành:
+
+**Bảng PESTLE Impact Summary**
+
+| Yếu tố | Tác động với [TICKER] | Chiều | Mức độ | Thời hạn |
+|---|---|---|---|---|
+| Political | [Mô tả cụ thể] | ✅/❌/➡️ | Cao/TB/Thấp | Ngắn/Trung/Dài |
+| Economic | | | | |
+| Social | | | | |
+| Technological | | | | |
+| Legal | | | | |
+| Environmental | | | | |
+| **Net PESTLE** | | **Tích cực / Trung tính / Tiêu cực** | | |
+
+**Net PESTLE → Điều chỉnh định giá**:
+- Net tích cực rõ ràng → có thể nâng multiple lên 5-10% so với peer median
+- Net tiêu cực → áp dụng discount 5-15% vào target price
+- Neutral → dùng peer median làm anchor
+
+---
+
+### VÍ DỤ THỰC TẾ: PESTLE của KSV (Vimico)
+
+| Yếu tố | Nội dung cụ thể | Chiều | Mức độ |
+|---|---|---|---|
+| **Political** | Giấy phép khai thác do Nhà nước cấp → barrier to entry; TKV >98% → nguy cơ hủy niêm yết | ✅❌ | Cao |
+| **Economic** | Giá đồng LME $9,500-12,000 (2025-2026); Tỷ giá USD/VND ~25,500 → doanh thu VND cao | ✅ | Rất cao |
+| **Social** | Đô thị hóa → nhu cầu dây điện, ống đồng; Đất hiếm cho EV, điện tử | ✅ | Trung bình |
+| **Technological** | Mining automation giảm chi phí khai thác; Đất hiếm critical cho AI/chip supply chain | ✅ | Trung bình |
+| **Legal** | Luật Khoáng sản đang sửa đổi; KSV cận ngưỡng vi phạm Luật Chứng khoán (cơ cấu CP) | ❌ | Cao |
+| **Environmental** | Đông Pao: phê duyệt môi trường phức tạp, delay tiến độ; Chi phí xử lý chất thải mỏ tăng | ❌ | Trung bình |
+| **Net PESTLE** | Kinh tế rất tích cực (giá hàng hóa); Pháp lý tiêu cực (niêm yết + khoáng sản) | Trung tính | — |
+
+---
+
+## 5. BƯỚC 3: BUILD EXCEL MODEL
+
+### 5.1 Quyết định template hay build mới
+
+```
+Nhận ticker mới
+    │
+    ├─ Ngành đã có template phù hợp?
+    │   ├─ CÓ → Mở template, review structure, điền data mới
+    │   │        (Không sửa format nếu không cần thiết)
+    │   └─ KHÔNG → Build file mới theo cấu trúc chuẩn 10-12 sheets
+    │
+    └─ Công ty có cấu trúc đặc biệt (SOTP, đa ngành, pre-profit)?
+        ├─ CÓ → Build custom model (ví dụ: MWG SOTP)
+        └─ KHÔNG → Model single-entity chuẩn
+```
+
+**Danh sách templates hiện có**:
+
+| Template | Phù hợp ngành | Không phù hợp |
+|---|---|---|
+| `01_HPG_Thep_Model.xlsx` | Sản xuất commodity (thép, hóa chất, vật liệu) | |
+| `02_BanLe_MWG_PNJ_Model.xlsx` | Chuỗi bán lẻ | Đa chuỗi nhiều chu kỳ |
+| `03_NganHang_TCB_ACB_Model.xlsx` | Ngân hàng thương mại | Fintech, bảo hiểm |
+| `04_ChungKhoan_SSI_Model.xlsx` | CTCK | |
+| `05_KhuCongNghiep_NTC_SZC_Model.xlsx` | KCN, hạ tầng cho thuê | |
+| `06_BDS_NLG_Model.xlsx` | BĐS nhà ở, dự án | BĐS thương mại (khác) |
+| `07_MSN_Conglomerate_Model.xlsx` | Tập đoàn đa ngành | |
+| `08_SanXuat_BMP_TLG_TV2_PC1_Model.xlsx` | Sản xuất công nghiệp, EPC | |
+| `09_MWG_SOTP_Model.xlsx` | Đa chuỗi bán lẻ | |
+
+### 5.2 Cấu trúc sheet chuẩn (Bắt buộc)
+
+```
+Sheet 1:  Cover                  — Thông tin, thesis 1 trang, snapshot tài chính
+Sheet 2:  Value Chain            — Sơ đồ chuỗi giá trị ngành
+Sheet 3:  Market                 — Porter 5F, TAM, chu kỳ ngành
+Sheet 4:  Moat                   — Đánh giá lợi thế, peer ROIC comparison
+Sheet 5:  Assumptions            — TẤT CẢ giả định trung tâm
+Sheet 6:  Revenue Model          — Driver-based revenue forecast
+Sheet 7:  P&L (Yearly)           — Báo cáo kết quả kinh doanh theo Năm (5 năm lịch sử + 3 năm dự báo)
+Sheet 8:  P&L (Quarterly)        — Báo cáo kết quả kinh doanh theo Quý (tối thiểu 20 quý gần nhất)
+Sheet 9:  Balance Sheet (Yearly)  — Bảng cân đối kế toán theo Năm (5 năm lịch sử + 3 năm dự báo)
+Sheet 10: Balance Sheet (Quarterly)— Bảng cân đối kế toán theo Quý (tối thiểu 20 quý gần nhất)
+Sheet 11: Ratios                 — Các chỉ số tài chính (NIM, ROE, LDR, CASA, CIR, NPL...) tính bằng công thức từ dữ liệu Quý và Năm
+Sheet 12: Valuation              — Phương pháp định giá chính
+Sheet 13: Sensitivity            — Bảng nhạy cảm 2 biến × 3 kịch bản
+Sheet 14: Risk Matrix            — Ma trận rủi ro
+```
+
+> **YÊU CẦU BẮT BUỘC VỀ DỮ LIỆU NĂM VÀ QUÝ:**
+> 1. **Tải dữ liệu đầy đủ**: Khi load dữ liệu từ API Vietcap, bắt buộc phải tải toàn bộ dữ liệu Cân đối kế toán, Kết quả kinh doanh, Lưu chuyển tiền tệ, và Thuyết minh cho cả Năm (tối thiểu 5 năm gần nhất) và Quý (tối thiểu 20 quý gần nhất).
+> 2. **Phân tách các sheet dữ liệu**: Dữ liệu Quý và Năm phải được import đầy đủ và có hệ thống vào các sheet tương ứng (`P&L (Yearly)`, `P&L (Quarterly)`, `Balance Sheet (Yearly)`, `Balance Sheet (Quarterly)`).
+> 3. **Tính toán bằng công thức Excel**: Các chỉ số tài chính ở sheet `Ratios` (như NIM, ROE, LDR, CASA, CIR, NPL, tăng trưởng tín dụng, tăng trưởng huy động...) bắt buộc phải được tính toán bằng **công thức Excel liên kết trực tiếp** đến các ô dữ liệu trong sheet Quý và Năm. Tuyệt đối không được tính toán trước ở Python rồi điền số cứng (hardcode) vào Excel.
+
+> **Nếu ngành đặc thù** (ngân hàng, BĐS, SOTP): có thể thêm/bớt sheet nhưng phải giữ cover + assumptions + valuation + sensitivity + risk.
+
+### 5.3 Quy trình sau khi hoàn thành Excel
+
+```bash
+# Bắt buộc: chạy recalc và kiểm tra 0 lỗi
+cd /sessions/.../mnt/.claude/skills/xlsx
+python3 scripts/recalc.py "<path_to_xlsx>"
+
+# Kết quả phải đạt:
+{"status": "success", "total_errors": 0}
+```
+
+---
+
+## 6. BƯỚC 4: VIẾT PDF RESEARCH REPORT
+
+### 6.1 Cấu trúc PDF (~15-20 trang)
+
+```
+Trang 1:   Cover page
+Trang 2:   Investment Summary (1 trang — đọc là xong)
+Trang 3-4: Chuỗi giá trị & Mô hình kinh doanh
+Trang 5-6: Phân tích thị trường & Vị trí cạnh tranh
+Trang 7-8: Lợi thế cạnh tranh (Moat) & Chất lượng quản lý
+Trang 9-11: Phân tích tài chính (lịch sử + dự báo)
+Trang 12-13: Định giá (Bear/Base/Bull + sensitivity chart)
+Trang 14-15: Rủi ro & Catalysts
+Trang 16:  Kết luận & Leading indicators
+Trang 17+: Phụ lục (BCTC tóm tắt, peer table, nguồn)
+```
+
+### 6.2 Trang Investment Summary (quan trọng nhất)
+
+Trang này phải đứng độc lập — ai đọc chỉ trang này cũng hiểu toàn bộ:
+
+```
+[TICKER] — [TÊN CÔNG TY]
+Rating: BUY / HOLD / SELL  |  Target Price: XXX VNĐ  |  Upside: XX%
+Giá hiện tại: XXX VNĐ  |  Ngày: DD/MM/YYYY  |  Vốn hóa: XX tỷ
+
+═══════════════════════════════════════════════════════════════════
+LUẬN ĐIỂM ĐẦU TƯ (2-3 câu, súc tích):
+[Tại sao mua hoặc không mua — lý do cốt lõi]
+
+═══════════════════════════════════════════════════════════════════
+KỊCH BẢN ĐỊNH GIÁ:
+                    Bear (XX%)    Base (XX%)    Bull (XX%)
+Target Price:       XXX VNĐ      XXX VNĐ       XXX VNĐ
+EV/EBITDA:          X.Xx          X.Xx          X.Xx
+P/E:                X.Xx          X.Xx          X.Xx
+
+═══════════════════════════════════════════════════════════════════
+3 LÝ DO CHÍNH ĐỂ MUA:        3 RỦI RO CHÍNH:
+1. ...                         1. ...
+2. ...                         2. ...
+3. ...                         3. ...
+
+═══════════════════════════════════════════════════════════════════
+SNAPSHOT TÀI CHÍNH:
+           2023A    2024A    2025A    2026E    2027E
+DT (tỷ):   ...      ...      ...      ...      ...
+LNST (tỷ): ...      ...      ...      ...      ...
+EPS (VND): ...      ...      ...      ...      ...
+P/E:       ...      ...      ...      ...      ...
+```
+
+### 6.3 Yêu cầu chất lượng PDF
+
+- **Ngôn ngữ**: Tiếng Việt hoàn toàn (thuật ngữ tài chính giữ tiếng Anh: EV, EBITDA, NIM...)
+- **Số liệu**: Luôn ghi nguồn và ngày lấy dữ liệu
+- **Biểu đồ**: Tối thiểu 3 biểu đồ (revenue trend, margin trend, valuation sensitivity)
+- **Không dài dòng**: Mỗi mục viết ngắn, dùng bảng thay vì đoạn văn khi có thể
+- **Kết luận rõ ràng**: BUY / HOLD / SELL — không trả lời kiểu "tùy nhà đầu tư"
+
+---
+
+## 7. PHƯƠNG PHÁP DỰ BÁO DOANH THU THEO NGÀNH
+
+> Đây là menu — chọn phương pháp phù hợp với bản chất kinh doanh, không phải với tên ngành. Một công ty có thể kết hợp nhiều phương pháp cho các mảng khác nhau.
+
+---
+
+### 6.1 Sản xuất Commodity (Thép, Kim loại, Hóa chất, Vật liệu xây dựng)
+**Ví dụ mẫu**: HPG, BMP, TLG, KSV
+
+```
+Doanh thu = Sản lượng × Giá bán bình quân
+Biên lợi nhuận = Giá bán - Chi phí nguyên liệu - Chi phí chuyển đổi
+
+Drivers cần dự báo riêng:
+- Sản lượng: Công suất × Utilization rate
+- Giá bán: Follow giá hàng hóa thế giới (LME, HRC index...)
+- Chi phí nguyên liệu: Giá quặng, than, năng lượng
+- Spread/EBITDA per tấn: Metric quan trọng nhất
+```
+
+**Leading indicators**: Giá LME, giá HRC Trung Quốc, tồn kho ngành, KLGD thị trường.
+
+---
+
+### 6.2 Bán lẻ Chuỗi (Multi-store Retail)
+**Ví dụ mẫu**: MWG, PNJ, FRT
+
+```
+Doanh thu = Số cửa hàng × Doanh thu/CH bình quân
+Doanh thu/CH = Lưu lượng khách × Tỷ lệ chuyển đổi × Giá trị giỏ hàng
+
+SSS Growth = Thay đổi DT của CH đã mở >12 tháng
+
+Cần tách riêng:
+- New store contribution (mở thêm)
+- SSS của existing stores (cải thiện hiệu quả)
+- Mix effect (đóng cửa hàng yếu, mở lại CH mới)
+```
+
+**Trường hợp đặc biệt**: Nếu công ty có nhiều chuỗi ở các chu kỳ khác nhau (như MWG: TGDĐ vs BHX vs AVA) → tách riêng từng chuỗi, dùng SOTP.
+
+---
+
+### 6.3 Phân phối (Distribution)
+**Ví dụ mẫu**: DGW, PET, PHR
+
+```
+Doanh thu = Thị trường tổng × Thị phần DGW
+Biên = Gross margin phân phối (thường 5-8%, mỏng)
+
+Drivers:
+- Doanh số thị trường của hãng principal (Apple, Xiaomi, HP...)
+- Số lượng hãng/brand được phân phối
+- Mix hãng cao cấp vs. phổ thông (ASP)
+- Thị phần tại channel phân phối
+```
+
+---
+
+### 6.4 Ngân hàng Thương mại
+**Ví dụ mẫu**: TCB, ACB, MBB, VCB
+
+```
+Thu nhập lãi thuần (NII) = Tổng TSS lãi × NIM
+Total Income = NII + Non-interest income (phí, ngoại hối, bảo hiểm bancas)
+Chi phí tín dụng = Dư nợ × Credit cost
+LNTT = Total Income × (1 - CIR%) - Chi phí tín dụng
+
+KPIs theo dõi:
+- NIM (Net Interest Margin): trend tăng/giảm
+- CIR (Cost-to-Income): hiệu quả vận hành
+- NPL ratio: chất lượng tài sản
+- LLR/NPL: mức độ phòng thủ
+- Tăng trưởng tín dụng vs. room NHNN
+- CASA ratio: chi phí huy động vốn
+```
+
+**Định giá**: Residual Income model + P/B — không dùng EV (ngân hàng không có EV theo nghĩa thông thường).
+
+---
+
+### 6.5 Chứng khoán
+**Ví dụ mẫu**: SSI, VND, HCM, MBS
+
+```
+Doanh thu = Phí môi giới + Lãi cho vay margin + Lãi tự doanh + Phí IB
+
+Môi giới = KLGD thị trường × Thị phần KSV × Phí bình quân
+Margin = Dư nợ margin × Lãi suất bình quân
+
+Drivers theo VN-Index:
+- VN-Index tăng → KLGD tăng → phí môi giới tăng
+- VN-Index giảm → tự doanh lỗ → LNST volatile
+```
+
+**Định giá**: Cần scenario analysis (thị trường bullish/neutral/bearish).
+
+---
+
+### 6.6 Khu công nghiệp
+**Ví dụ mẫu**: NTC, SZC, BCM, IDC
+
+```
+Doanh thu = Diện tích cho thuê mới × Giá thuê (USD/m²) × Tỷ giá
+          + Phí dịch vụ từ diện tích đã cho thuê
+          + Doanh thu điện, nước, hạ tầng
+
+Drivers:
+- Quỹ đất sạch còn lại (ha) và tiến độ giải phóng mặt bằng
+- Tốc độ hấp thụ hàng năm (ha signed)
+- Giá thuê USD/m²/kỳ thuê (50 năm)
+- FDI inflow vào VN và vùng địa lý của KCN
+```
+
+**Định giá chính**: RNAV — Quy đổi toàn bộ quỹ đất về NAV hiện tại.
+
+---
+
+### 6.7 Bất động sản Nhà ở
+**Ví dụ mẫu**: NLG, KDH, DXG, Nam Long
+
+```
+Doanh thu = Σ (Số căn bàn giao × Giá bán bình quân) theo từng dự án
+
+Đặc điểm: Doanh thu rất lumpy — phụ thuộc lịch bàn giao
+Không thể extrapolate — phải model từng dự án riêng
+
+Pipeline phân tích:
+- Dự án đang bán/bàn giao: số căn × giá × tỷ lệ sell-through
+- Dự án sắp mở bán: tiến độ pháp lý, giá dự kiến
+- Quỹ đất dự phòng: giá đất, tiềm năng phát triển
+```
+
+---
+
+### 6.8 EPC / Xây lắp
+**Ví dụ mẫu**: TV2, PC1, HHV, VCG
+
+```
+Doanh thu = Backlog đầu kỳ × % ghi nhận + Hợp đồng mới ký × % ghi nhận
+Backlog cuối kỳ = Backlog đầu + Hợp đồng mới ký - Doanh thu đã ghi nhận
+
+Drivers:
+- Backlog hiện tại (tổng giá trị chưa ghi nhận)
+- Win rate đấu thầu + pipeline dự án mới
+- Tỷ lệ ghi nhận (%) theo tiến độ thi công
+- Biên gộp theo loại công trình (điện, giao thông, dân dụng)
+```
+
+---
+
+### 6.9 Tập đoàn Đa ngành
+**Ví dụ mẫu**: MSN, VIC, REE, HAX
+
+```
+Không có công thức chung — phân tách từng mảng:
+- Mảng A: Revenue method phù hợp với ngành A
+- Mảng B: Revenue method phù hợp với ngành B
+- Phần holding/corporate: quản lý danh mục
+
+Sau đó SOTP để tổng hợp.
+Conglomerate discount: 15-25% vào NAV tổng (phản ánh complexity).
+```
+
+---
+
+### 6.10 Logistics / Cảng biển
+**Ví dụ mẫu**: GMD, HAH, VSC, PHP
+
+```
+Cảng biển:
+Doanh thu = Sản lượng container (TEU) × Giá xếp dỡ (USD/TEU) × Tỷ giá
+          + Doanh thu lưu bãi + Dịch vụ kho, logistics
+
+Drivers:
+- Tăng trưởng xuất nhập khẩu VN (XNK GDP)
+- Market share tại cảng/khu vực
+- Cước phí container quốc tế (SCFI index)
+- Công suất kho, diện tích bãi
+
+Vận tải biển (HAH):
+Doanh thu = Số tàu × Capacity (TEU/tàu) × Utilization × Cước phí/TEU
+```
+
+**Leading indicators**: SCFI (Shanghai Containerized Freight Index), XNK VN hàng tháng.
+
+---
+
+### 6.11 Dược phẩm / Y tế
+**Ví dụ mẫu**: DHG, IMP, VMD, DBD
+
+```
+Doanh thu = Kênh ETC (đấu thầu BV) + Kênh OTC (nhà thuốc) + Xuất khẩu
+
+Kênh ETC:
+- Dự báo theo ngân sách mua thuốc Nhà nước
+- Tỷ lệ win thầu, số gói thầu
+- Giá đấu thầu (thường áp lực giảm giá)
+
+Kênh OTC:
+- Số điểm bán × Doanh thu/điểm
+- Nhận diện thương hiệu, marketing spend
+- Xu hướng tự mua thuốc
+
+Drivers:
+- Tỷ lệ tăng dân số + già hóa dân số
+- Số bệnh viện, giường bệnh mới
+- Quy định đấu thầu thuốc (Thông tư 15, 08...)
+- Pipeline sản phẩm mới (Generic vs. Branded)
+```
+
+---
+
+### 6.12 Công nghệ / Phần mềm / IT Services
+**Ví dụ mẫu**: FPT, CMG, ELC
+
+```
+FPT (đa ngành tech):
+SOTP: IT Services (offshore) + FPT Telecom + FPT Education + FPT Retail
+
+IT Services / Offshore:
+Doanh thu = Số nhân sự billable × Utilization × Rate/người/tháng × Tỷ giá
+Hoặc: Revenue per headcount × Headcount growth
+
+Telecom:
+Doanh thu = Số thuê bao × ARPU (Average Revenue Per User) × 12
+           + Doanh thu B2B (bandwidth, data center)
+
+Education:
+Doanh thu = Số học viên/sinh viên × Học phí bình quân
+
+Drivers:
+- Tỷ giá USD/VND (IT Services thu USD)
+- Headcount tăng trưởng và attrition rate
+- Thị trường offshore IT (Nhật, Mỹ, EU)
+- ARPU telecom và penetration rate
+```
+
+---
+
+### 6.13 Tiêu dùng / FMCG
+**Ví dụ mẫu**: VNM, SAB, MCH, MSN Consumer
+
+```
+Doanh thu = Volume × Giá bán bình quân (ASP)
+Volume = Thị trường tổng × Thị phần
+
+Hoặc: Distribution-based model
+Doanh thu = Số điểm phân phối × Doanh thu/điểm bán
+
+Drivers:
+- GDP per capita → sức tiêu dùng
+- Thị phần trong danh mục
+- ASP: pricing power, mix shift sang premium
+- Điểm phân phối: MT (Modern Trade) vs. GT (General Trade)
+- Marketing spend / A&P
+
+Leading indicators:
+- Nielsen retail sales data (nếu có)
+- PMI sản xuất hàng tiêu dùng
+- Tỷ lệ lạm phát (ảnh hưởng đến ASP và demand)
+```
+
+---
+
+### 6.14 Khoáng sản / Mining
+**Ví dụ mẫu**: KSV (Vimico), MSR (Masan HTM)
+
+```
+Doanh thu = Sản lượng × Giá hàng hóa quốc tế × Tỷ giá
+
+Sản lượng: Công suất mỏ × Utilization rate
+Giá: Follow LME / giá spot quốc tế — công ty là price taker
+
+Option Value assets: Nếu có mỏ chưa khai thác (đất hiếm, vàng...)
+→ Định giá riêng bằng NAV/option value method
+
+Leading indicators:
+- LME prices (Cu, Zn, Au, Ag...)
+- Inventory tại sàn LME
+- Trung Quốc demand signals (PMI, construction activity)
+- USD index (nghịch chiều với commodity giá)
+```
+
+---
+
+## 8. PHƯƠNG PHÁP ĐỊNH GIÁ THEO NGÀNH
+
+### Bảng tổng hợp phương pháp
+
+| Ngành | Method chính | Method phụ | Multiple reference |
+|---|---|---|---|
+| Sản xuất commodity | EV/EBITDA | DCF (mid-cycle) | 5-10x |
+| Bán lẻ ổn định | DCF / FCFF | EV/EBIT | P/E 12-20x |
+| Bán lẻ đa chuỗi | SOTP | — | Theo từng chuỗi |
+| Ngân hàng | P/B (Residual Income) | Gordon Growth | P/B 1.0-3.0x |
+| Chứng khoán | P/B + ROE | P/E scenario | P/B 1.0-2.5x |
+| KCN | RNAV | EV/EBITDA | P/RNAV 0.7-1.2x |
+| BĐS nhà ở | RNAV / P/NAV | — | Discount 20-40% |
+| EPC | EV/EBIT | P/E | P/E 8-14x |
+| Đa ngành | SOTP | NAV | Conglomerate disc. 15-25% |
+| Logistics/Cảng | EV/EBITDA | DCF | EV/EBITDA 8-14x |
+| Dược phẩm | P/E | EV/EBITDA | P/E 14-25x |
+| Công nghệ/IT | EV/Revenue hoặc P/E | DCF | P/E 15-30x |
+| FMCG | EV/EBITDA | DCF | P/E 15-25x |
+| Khoáng sản | EV/EBITDA + NAV | — | EV/EBITDA 6-12x |
+| Pre-profit | EV/Revenue hoặc GMV | — | Context-driven |
+
+### Quy trình định giá
+
+```
+1. Xác định giai đoạn chu kỳ → chọn method phù hợp
+
+2. Tính EV / Equity Value:
+   EV = Vốn hóa + Nợ ròng + Minority interest
+   Equity Value = EV - Nợ ròng
+
+3. Tính Target Price:
+   Target Price = Equity Value / Số CP lưu hành
+
+4. So sánh với peer multiples:
+   - Nếu target price từ DCF cho multiple cao hơn peer → đắt
+   - Nếu lower → rẻ
+
+5. Sensitivity 2 biến (table 5×5):
+   - Biến 1: Giả định quan trọng nhất (WACC, growth, margin)
+   - Biến 2: Giả định quan trọng thứ 2
+
+6. Kịch bản Bear/Base/Bull:
+   Bear: worst case assumptions (giá hàng hóa thấp, biên thu hẹp)
+   Base: consensus/mid-cycle assumptions
+   Bull: best case (giá cao, biên mở rộng, catalyst xảy ra)
+
+7. Weighted average target price = Bear×P + Base×P + Bull×P
+```
+
+---
+
+## 9. QUY CHUẨN EXCEL MODEL
+
+### Màu sắc bắt buộc
+
+| Màu | Ý nghĩa | RGB |
+|---|---|---|
+| **Xanh dương** | Input cứng (user nhập, số thực tế) | 0, 0, 255 |
+| **Đen** | Formula tính toán | 0, 0, 0 |
+| **Xanh lá** | Link từ sheet khác trong workbook | 0, 128, 0 |
+| **Đỏ** | Link từ file ngoài | 255, 0, 0 |
+| **Nền vàng** | Giả định quan trọng cần theo dõi | 255, 255, 0 |
+
+### Quy tắc formula và logic tính toán bắt buộc
+
+#### 1. Định dạng công thức Excel (Tránh lỗi `#REF!`)
+- **Nghiêm cấm** hardcode tên sheet không có số thứ tự hoặc thiếu dấu nháy đơn (ví dụ: `Assumptions!E12` hoặc `02_Assumptions!E12` là SAI và sẽ gây lỗi `#REF!`).
+- **Bắt buộc** sử dụng đúng tên sheet có số thứ tự dạng `'02_Assumptions'!` hoặc `'05_Assumptions'!`, và **bắt buộc bọc trong nháy đơn** để công thức Excel không bị lỗi tham chiếu.
+
+```python
+# ❌ SAI — hardcode số vào formula hoặc thiếu nháy đơn/số thứ tự sheet
+=B7*1.15
+=B7*(1+Assumptions!B12)
+=B7*(1+02_Assumptions!B12)
+
+# ✅ ĐÚNG — tham chiếu có số thứ tự sheet và bọc trong nháy đơn
+=B7*(1+'02_Assumptions'!$B$12)
+=B7*(1+'05_Assumptions'!$B$12)
+
+# ❌ SAI — số âm dùng dấu trừ
+-1,234
+
+# ✅ ĐÚNG — số âm dùng ngoặc đơn
+(1,234)
+
+# ❌ SAI — zero hiển thị 0
+0
+
+# ✅ ĐÚNG — zero hiển thị dấu gạch
+- (dùng format #,##0;(#,##0);-)
+```
+
+#### 2. Logic tính toán P/E và P/B
+- **Lấy dữ liệu quý**: Lấy P/E, P/B hàng quý của từng năm.
+- **Xử lý LNST âm (PE Carry Forward)**: Đối với quý nào có Lợi nhuận sau thuế (LNST) bị âm (lỗ), P/E của quý đó bắt buộc phải lấy bằng P/E của quý trước liền kề có LNST dương (PE carry forward). Không được chia cho số âm hoặc bằng 0, không được bỏ trống.
+- **Màu sắc trên biểu đồ lịch sử PE/PB**: Trên biểu đồ, các điểm dữ liệu PE bị carry forward này bắt buộc phải được vẽ bằng màu sắc khác biệt rõ rệt (ví dụ màu đỏ hoặc cam) để người dùng dễ nhận biết.
+- **Median năm**: P/E và P/B của mỗi năm phải là trung vị (median) của 4 quý thuộc năm đó.
+- **Đầy đủ dữ liệu median lịch sử**: Bắt buộc phải điền đầy đủ chuỗi P/E và P/B median lịch sử cho toàn bộ các năm (tối thiểu 5 năm gần nhất) vào cả sheet `02_Assumptions` (dòng P/B mục tiêu và P/E median) và sheet `06_Ratios` để người dùng theo dõi tổng quan. Không được bỏ trống bất kỳ năm nào trong quá khứ.
+- **Median dùng cho định giá (all-time median)**: P/E, P/B và EV/EBITDA dùng cho định giá chung phải là trung vị (median) của toàn bộ chuỗi thời gian lịch sử được thống kê.
+- **Xuất biểu đồ PE PB**: Bắt buộc phải xuất biểu đồ line chart lịch sử P/E & P/B trực tiếp vào sheet `Charts` trong Excel và chèn hình ảnh biểu đồ vào PDF báo cáo.
+
+### CÁC QUY TẮC CỐT LÕI BẮT BUỘC KHÁC
+- **Bắt buộc dùng công thức Excel liên kết động**: Không được hardcode bất kỳ ô tính toán tỷ số tài chính (NIM, ROE, LDR, CASA, CIR...) hay kết quả định giá, bảng độ nhạy (COE x g) nào trong file Excel.
+- **Bắt buộc dùng công thức Excel liên kết động cho toàn bộ các năm dự báo (forecast)**: Tại các sheet báo cáo tài chính dự báo như P&L (ví dụ: `04_PnL`), Balance Sheet (ví dụ: `05_Balance_Sheet`), và Income Model (ví dụ: `03_Income_Model`), tuyệt đối KHÔNG được phép sử dụng các con số ước tính cứng (hardcoded values) cho các năm tương lai (ví dụ: 2026F, 2027F, 2028F). Toàn bộ các ô này phải được viết bằng công thức Excel để liên kết chặt chẽ với sheet Assumptions (`'02_Assumptions'`) và liên kết giữa các chỉ tiêu với nhau. Người dùng phải có thể kích vào từng ô để kiểm chứng logic tính toán (ví dụ: công thức tính chi phí dự phòng = dư nợ bình quân x Credit Cost, công thức tính thuế TNDN = MAX(LNTT x Thuế suất, 0), công thức tính Vốn chủ sở hữu = Vốn chủ sở hữu năm trước + LNST năm nay, và công thức tính Nợ khác làm số dư để tự cân đối Bảng cân đối kế toán...). Toàn bộ các ô này phải sử dụng công thức Excel liên kết động (ví dụ: công thức tính P/B hiện tại, PV của RI, Continuing Value và bảng độ nhạy phải tự động tính toán dựa trên các ô tham chiếu).
+- **Dùng biểu đồ miền chồng cho Cơ cấu tài sản**: Đối với việc thể hiện cơ cấu tài sản sinh lời qua các năm (Earning Assets Structure), bắt buộc phải dùng **Biểu đồ miền chồng 100% (100% Stacked Area Chart)** thay vì vẽ nhiều hình tròn (pie charts) riêng biệt để tiết kiệm không gian và tránh bị méo mó hình ảnh khi hiển thị. Biểu đồ phải có chú giải (legend) đầy đủ và hiển thị nhãn % tại các mốc năm.
+- **Định dạng Font chữ tiếng Việt trong bảng ReportLab**: Khi tạo các bảng biểu (Table) bằng thư viện ReportLab, bắt buộc phải thiết lập style `('FONTNAME', (0,0), (-1,-1), FONT_REG)` ở đầu danh sách kiểu dáng của bảng để áp dụng font hỗ trợ tiếng Việt (Arial, Calibri...) cho toàn bộ các ô. Nếu không thiết lập, ReportLab sẽ dùng font mặc định Helvetica không hỗ trợ tiếng Việt, dẫn đến các ký tự có dấu bị lỗi hiển thị thành ô vuông đen `■`.
+
+### QUY CHUẨN XỬ LÝ FONT TIẾNG VIỆT (TRÁNH LỖI FONT PDF VÀ BIỂU ĐỒ)
+Khi tạo báo cáo PDF hoặc vẽ biểu đồ, **bắt buộc** phải tuân thủ việc xử lý font chữ tiếng Việt như sau để tránh lỗi hiển thị ô vuông hoặc mất chữ có dấu:
+
+1. **Đối với biểu đồ Matplotlib**:
+   - Trước khi vẽ biểu đồ, bắt buộc phải cài đặt cấu hình font hỗ trợ tiếng Việt:
+     ```python
+     import matplotlib.pyplot as plt
+     import matplotlib.font_manager as fm
+     
+     # Đặt font hệ thống hỗ trợ tiếng Việt
+     plt.rcParams['font.family'] = 'sans-serif'
+     plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI', 'Tahoma', 'DejaVu Sans', 'sans-serif']
+     ```
+   - Tuyệt đối không để mặc định của matplotlib vì matplotlib không hỗ trợ font tiếng Việt mặc định.
+
+2. **Đối với ReportLab (Xuất PDF)**:
+   - Nghiêm cấm sử dụng các font mặc định của ReportLab như `Helvetica`, `Times-Roman`, `Courier` vì chúng không hỗ trợ ký tự Unicode tiếng Việt.
+   - Bắt buộc phải đăng ký font chữ TrueType (.ttf) hỗ trợ tiếng Việt từ thư mục font hệ thống (ví dụ: `C:/Windows/Fonts/arial.ttf` trên Windows hoặc `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` trên Linux):
+     ```python
+     from reportlab.pdfbase import pdfmetrics
+     from reportlab.pdfbase.ttfonts import TTFont
+     
+     # Đăng ký font
+     font_path = "C:/Windows/Fonts/arial.ttf" # Hoặc đường dẫn font tương ứng trên hệ điều hành
+     pdfmetrics.registerFont(TTFont('Arial', font_path))
+     pdfmetrics.registerFont(TTFont('Arial-Bold', "C:/Windows/Fonts/arialbd.ttf"))
+     ```
+   - Sử dụng font đã đăng ký này (`Arial`, `Arial-Bold`) trong toàn bộ các định nghĩa Style, Paragraph và Table trong ReportLab.
+
+### Kiểm tra sau khi build
+
+```bash
+cd /sessions/.../mnt/.claude/skills/xlsx
+python3 scripts/recalc.py "<path>"
+# Target: {"status": "success", "total_errors": 0}
+```
+
+**Lỗi thường gặp**:
+- `#REF!` → range bị vỡ khi copy formula
+- `#DIV/0!` → mẫu số = 0, dùng `IFERROR` hoặc `IF(denom=0,0,...)`
+- `#VALUE!` → ô chứa text nhưng formula dùng như số
+- `#NAME?` → ô text bắt đầu bằng `=` (bỏ dấu `=`)
+
+---
+
+## 10. QUY CHUẨN PDF REPORT
+
+### Tên file
+```
+[TICKER]_Phan_Tich_[YYYY-MM].pdf
+Ví dụ: KSV_Phan_Tich_2026-06.pdf
+```
+
+### Cấu trúc bắt buộc (15-20 trang)
+
+| Trang | Nội dung | Yêu cầu |
+|---|---|---|
+| 1 | Cover | Logo, ticker, tên, ngày, analyst |
+| 2 | Investment Summary | Standalone — đọc 1 trang đủ hiểu thesis |
+| 3-4 | Chuỗi giá trị & Mô hình KD | Sơ đồ + text giải thích |
+| 5-6 | Thị trường & Vị trí cạnh tranh | Porter 5F bảng, chu kỳ ngành |
+| 7-8 | Moat & Quản trị | Rating moat, ROIC vs peer |
+| 9-11 | Phân tích tài chính | Bảng lịch sử 5 năm, biểu đồ trend |
+| 12-14 | Định giá | Method, kịch bản, sensitivity chart |
+| 15-16 | Rủi ro & Catalysts | Bảng risk matrix, timeline catalyst |
+| 17 | Kết luận & Leading indicators | BUY/HOLD/SELL + checklist theo dõi |
+| 18+ | Phụ lục | BCTC tóm tắt, nguồn dữ liệu |
+
+### Nguyên tắc viết
+
+- **Tiếng Việt hoàn toàn** (giữ tiếng Anh cho thuật ngữ chuyên môn không có từ VN tương đương)
+- **Mỗi section = 1 kết luận rõ ràng** — không viết "điều này có thể ảnh hưởng tích cực hoặc tiêu cực"
+- **Số liệu phải có nguồn và ngày** — ghi cuối trang hoặc phụ lục
+- **Tối thiểu 3 biểu đồ**: Revenue/LNST trend, Margin trend, Sensitivity heatmap
+- **Kết luận phải có rating**: BUY / HOLD / SELL — không được mơ hồ
+
+---
+
+## 11. DANH SÁCH CỔ PHIẾU ĐÃ PHÂN TÍCH
+
+| Ticker | Tên | Ngành | File Excel | File PDF | Ngày phân tích |
+|---|---|---|---|---|---|
+| HPG | Hòa Phát Group | Thép | `01_HPG_Thep_Model.xlsx` | — | Template |
+| MWG | Thế Giới Di Động | Bán lẻ | `02_BanLe_MWG_PNJ_Model.xlsx` | — | Template |
+| MWG | Thế Giới Di Động | SOTP 3 chuỗi | `09_MWG_SOTP_Model.xlsx` | — | Template |
+| TCB | Techcombank | Ngân hàng | `03_NganHang_TCB_ACB_Model.xlsx` | — | Template |
+| ACB | ACB | Ngân hàng | `03_NganHang_TCB_ACB_Model.xlsx` | — | Template |
+| SSI | SSI Securities | Chứng khoán | `04_ChungKhoan_SSI_Model.xlsx` | — | Template |
+| NTC | Nam Tân Uyên | KCN | `05_KhuCongNghiep_NTC_SZC_Model.xlsx` | — | Template |
+| SZC | Sonadezi Châu Đức | KCN | `05_KhuCongNghiep_NTC_SZC_Model.xlsx` | — | Template |
+| NLG | Nam Long | BĐS | `06_BDS_NLG_Model.xlsx` | — | Template |
+| MSN | Masan Group | Đa ngành | `07_MSN_Conglomerate_Model.xlsx` | — | Template |
+| BMP | Bình Minh Plastic | Sản xuất | `08_SanXuat_BMP_TLG_TV2_PC1_Model.xlsx` | — | Template |
+| KSV | Vimico | Khoáng sản | — | `KSV_Phan_Tich_2026-06.md` | 2026-06 |
+
+> **Note**: Các file Template chưa có dữ liệu thực — cần điền BCTC thực tế khi phân tích sâu từng cổ phiếu.
+
+---
+
+## 12. CHECKLIST KIỂM TRA TRƯỚC KHI GIAO
+
+### Dữ liệu
+```
+□ Giá cổ phiếu là ngày phân tích (không phải training data cũ)
+□ Số CP lưu hành chính xác (không phải vốn điều lệ / 10,000)
+□ Vốn hóa = Giá × Số CP lưu hành (tính lại, không copy)
+□ BCTC là năm tài chính gần nhất đã kiểm toán
+□ Kế hoạch công ty lấy từ ĐHĐCĐ năm hiện tại (không phải năm trước)
+□ Giá hàng hóa / chỉ số ngành là hiện tại (nếu relevant)
+```
+
+### Excel model
+```
+□ Recalc = 0 errors
+□ Tất cả giả định nằm trong Assumptions sheet
+□ Balance sheet cân (Tổng TS = Tổng NV)
+□ FCFF > 0 ở base case (hoặc có giải thích nếu âm)
+□ Sensitivity table chạy đúng chiều
+□ Peer comparison có ít nhất 3-5 công ty
+```
+
+### PDF report
+```
+□ Investment Summary đứng độc lập được (đọc 1 trang hiểu thesis)
+□ Có BUY / HOLD / SELL rõ ràng với target price
+□ Bear/Base/Bull có xác suất cộng lại = 100%
+□ Có leading indicators cụ thể (không chung chung)
+□ Nguồn dữ liệu được ghi
+□ Ngày phân tích ở cover page
+```
+
+### Tên file
+```
+Excel: [TICKER]_Model_[YYYY-MM].xlsx
+PDF:   [TICKER]_Phan_Tich_[YYYY-MM].pdf
+```
+
+---
+
+## PHỤ LỤC: GHI CHÚ KỸ THUẬT
+
+### Môi trường
+```bash
+# Python packages
+pip install openpyxl reportlab matplotlib pandas --break-system-packages
+
+# Recalc formula
+cd /sessions/stoic-intelligent-ramanujan/mnt/.claude/skills/xlsx
+python3 scripts/recalc.py "/path/to/file.xlsx"
+
+# Skills path
+/sessions/stoic-intelligent-ramanujan/mnt/.claude/skills/
+├── xlsx/   — Excel skill + recalc script
+├── pdf/    — PDF skill
+└── docx/   — Word skill
+```
+
+### Nguồn dữ liệu VN
+```
+Giá CP + KLGD:    simplize.vn/co-phieu/[TICKER]
+BCTC chi tiết:    finance.vietstock.vn/[TICKER]
+Tin tức:          cafef.vn, dnse.com.vn, tinnhanhchungkhoan.vn
+Kế hoạch ĐHĐCĐ:  Search "[TICKER] ĐHĐCĐ [năm] kế hoạch"
+Báo cáo CTCK:     Search "[TICKER] báo cáo phân tích [CTCK] [năm]"
+Giá hàng hóa:     LME, tradingeconomics.com, metal.com
+```
+
+---
+
+*Tài liệu này được cập nhật liên tục theo kinh nghiệm phân tích thực tế. Version 2.0 — 06/2026.*
