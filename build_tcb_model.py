@@ -28,7 +28,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 import requests
 import statistics as stats
 
-OUT_DIR = r"E:\1. Projects\4. AIC - FA\Bao cao\TCB"
+OUT_DIR = r"Bao cao\TCB"
 MONTH = "2026-06"
 EXCEL_FILE = os.path.join(OUT_DIR, f"TCB_Model_{MONTH}.xlsx")
 PDF_FILE   = os.path.join(OUT_DIR, f"TCB_Phan_Tich_{MONTH}.pdf")
@@ -168,6 +168,214 @@ def fetch_vietcap_ratios(ticker, timeout=15):
         return []
 
 VAB_RATIOS = fetch_vietcap_ratios(TICKER)
+
+# ══════════════════════════════════════════════════════════════
+# CAPM INPUTS: AUTO-FETCH Rf và BETA
+# ══════════════════════════════════════════════════════════════
+
+# ── 1. Tự động lấy Rf (Lãi suất phi rủi ro) ──
+# Rf = Lãi suất TP Chính phủ VN kỳ hạn 10 năm
+# Nguồn theo thứ tự ưu tiên:
+#   (1) World Government Bonds API (worldgovernmentbonds.com)
+#   (2) Investing.com (yêu cầu session)
+#   (3) Fallback cứng: cập nhật thủ công
+
+def fetch_rf_vietnam(timeout=15):
+    """
+    Thử fetch lãi suất TP CP VN 10 năm từ các nguồn công khai.
+    Trả về float (tỷ lệ thập phân, vd: 0.045 = 4.5%) hoặc fallback.
+    """
+    FALLBACK_RF = 0.045  # Cập nhật thủ công nếu API thất bại
+
+    # Thử worldgovernmentbonds.com
+    try:
+        r = requests.get(
+            "https://www.worldgovernmentbonds.com/bond-yield/vietnam/10-years/",
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "text/html,application/xhtml+xml",
+            },
+            timeout=timeout,
+        )
+        if r.status_code == 200:
+            import re
+            # Tìm pattern "X.XX%" trong nội dung
+            matches = re.findall(r'(\d+\.\d+)%', r.text[:5000])
+            if matches:
+                rf = float(matches[0]) / 100
+                if 0.01 <= rf <= 0.15:  # Sanity check: 1% - 15%
+                    print(f"  [OK] Rf Vietnam 10Y từ WorldGovernmentBonds: {rf:.2%}")
+                    return rf, "worldgovernmentbonds.com"
+    except Exception as e:
+        print(f"  [WARN] WorldGovernmentBonds: {e}")
+
+    # Thử Vietcap bond data (nếu có)
+    try:
+        r = requests.get(
+            "https://trading.vietcap.com.vn/api/iq-insight-service/v1/bond/government-bond-yield",
+            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"},
+            timeout=timeout,
+        )
+        if r.status_code == 200:
+            d = r.json().get("data", {})
+            y10 = d.get("10Y") or d.get("y10") or d.get("tenor10")
+            if y10:
+                rf = float(y10) / 100 if float(y10) > 1 else float(y10)
+                if 0.01 <= rf <= 0.15:
+                    print(f"  [OK] Rf Vietnam 10Y từ Vietcap: {rf:.2%}")
+                    return rf, "Vietcap API"
+    except Exception as e:
+        print(f"  [WARN] Vietcap bond API: {e}")
+
+    print(f"  [FALLBACK] Rf Vietnam 10Y = {FALLBACK_RF:.2%} (manual fallback - update from hnx.vn)")
+    return FALLBACK_RF, "Fallback (manual)"
+
+RF_RATE, RF_SOURCE = fetch_rf_vietnam()
+
+# ── 2. Tự động tính Beta từ hồi quy giá lịch sử ──
+# Beta = Cov(Returns_Stock, Returns_Market) / Var(Returns_Market)
+# Dùng 252 phiên giao dịch gần nhất (1 năm) so với VN-Index
+
+def fetch_price_history(ticker, days=300, timeout=20):
+    """Lấy lịch sử giá đóng cửa từ Vietcap chart API."""
+    endpoints = [
+        f"https://trading.vietcap.com.vn/api/price-service/v1/chart/history?ticker={ticker}&resolution=D&limit={days}",
+        f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/price-history?limit={days}",
+        f"https://mt.vietcap.com.vn/api/price-service/v1/chart/history?symbols={ticker}&resolution=D&limit={days}",
+    ]
+    for url in endpoints:
+        try:
+            r = requests.get(
+                url,
+                headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"},
+                timeout=timeout,
+            )
+            if r.status_code == 200:
+                data = r.json()
+                # Thử các key phổ biến
+                closes = (data.get("data", {}).get("c") or
+                          data.get("c") or
+                          [d.get("close") or d.get("c") for d in data.get("data", []) if isinstance(d, dict)])
+                closes = [x for x in closes if x is not None and x > 0]
+                if len(closes) > 50:
+                    print(f"  [OK] Giá {ticker}: {len(closes)} phiên từ Vietcap")
+                    return closes
+        except Exception as e:
+            pass
+    return []
+
+def calc_beta(stock_closes, market_closes, min_days=100):
+    """
+    Tính Beta = Cov(Rs, Rm) / Var(Rm) từ chuỗi giá đóng cửa.
+    """
+    if len(stock_closes) < min_days or len(market_closes) < min_days:
+        return None, 0
+
+    # Căn chỉnh độ dài
+    n = min(len(stock_closes), len(market_closes))
+    s = stock_closes[-n:]
+    m = market_closes[-n:]
+
+    # Tính daily returns
+    rs = [(s[i] - s[i-1]) / s[i-1] for i in range(1, len(s))]
+    rm = [(m[i] - m[i-1]) / m[i-1] for i in range(1, len(m))]
+
+    n_ret = len(rs)
+    mean_rs = sum(rs) / n_ret
+    mean_rm = sum(rm) / n_ret
+
+    cov_sm = sum((rs[i] - mean_rs) * (rm[i] - mean_rm) for i in range(n_ret)) / (n_ret - 1)
+    var_m  = sum((rm[i] - mean_rm) ** 2 for i in range(n_ret)) / (n_ret - 1)
+
+    beta = cov_sm / var_m if var_m > 0 else 1.0
+    beta = max(0.3, min(2.5, beta))
+    return round(beta, 4), n_ret
+
+def fetch_beta_vietstock(ticker, timeout=15):
+    """Scrape Beta from Vietstock HTML embedded data, finding the URL dynamically."""
+    try:
+        # 1. Tìm đúng URL của cổ phiếu
+        search_url = f"https://finance.vietstock.vn/search?query={ticker}"
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        r1 = requests.get(search_url, headers=headers, timeout=timeout)
+        if r1.status_code == 200:
+            import json
+            data = json.loads(r1.text).get("data", "")
+            lines = data.split('\r\n')
+            target_url = ""
+            for line in lines:
+                parts = line.split('|')
+                # Tìm đúng dòng có Ticker trùng khớp (tránh bond/phái sinh)
+                if len(parts) >= 3 and parts[0].strip().upper() == ticker.upper():
+                    target_url = parts[2]
+                    break
+            
+            if target_url:
+                # 2. Fetch HTML và trích xuất Beta
+                r2 = requests.get(target_url, headers=headers, timeout=timeout)
+                if r2.status_code == 200:
+                    import re
+                    m = re.search(r'\"Beta\":\"([\d\.]+)\"', r2.text)
+                    if m:
+                        beta = float(m.group(1))
+                        if 0.3 <= beta <= 2.5:
+                            print(f"  [OK] Beta {ticker} từ Vietstock: {beta:.2f}")
+                            return beta, f"Vietstock ({beta:.2f})"
+    except Exception as e:
+        print(f"  [WARN] Vietstock scrape failed: {e}")
+    return None, ""
+
+def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=300, timeout=20, fallback=1.0):
+    """
+    Ưu tiên (1): lấy Beta từ Vietstock.
+    Ưu tiên (2): lấy Beta từ Vietcap company details API.
+    Ưu tiên (3): tính từ hồi quy 252 phiên giá đóng cửa.
+    Fallback: 1.0 (beta trung bình thị trường).
+    """
+    # 1. Thử Vietstock HTML
+    b_vs, src_vs = fetch_beta_vietstock(ticker, timeout)
+    if b_vs is not None:
+        return b_vs, src_vs
+
+    # 2. Thử Vietcap company details
+    try:
+        r = requests.get(
+            f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}",
+            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"},
+            timeout=timeout,
+        )
+        d = r.json().get("data", {})
+        beta = d.get("beta")
+        if beta is not None and 0.3 <= float(beta) <= 2.5:
+            print(f"  [OK] Beta {ticker} từ Vietcap API: {float(beta):.2f}")
+            return float(beta), f"Vietcap API (beta={float(beta):.2f})"
+    except Exception:
+        pass
+
+    # Tính beta từ hồi quy giá
+    print(f"  [INFO] Tính Beta {ticker} từ hồi quy giá lịch sử...")
+    stock_closes  = fetch_price_history(ticker, days=days, timeout=timeout)
+    market_closes = fetch_price_history(market_ticker, days=days, timeout=timeout)
+
+    if stock_closes and market_closes:
+        beta, n_obs = calc_beta(stock_closes, market_closes)
+        if beta is not None:
+            print(f"  [OK] Beta {ticker} (hồi quy {n_obs} phiên): {beta:.2f}")
+            return beta, f"Hồi quy giá {n_obs} phiên vs {market_ticker}"
+
+    print(f"  [FALLBACK] Beta {ticker} = {fallback} (không fetch được giá)")
+    return fallback, "Fallback (1.0 = trung bình thị trường)"
+
+BETA_TCB, BETA_SOURCE = fetch_and_calc_beta(TICKER)
+print(f"  Beta ({TICKER}): {BETA_TCB:.2f} | Nguồn: {BETA_SOURCE}")
+
+# ── CAPM-based COE ──
+ERP      = 0.070   # Equity Risk Premium VN (Damodaran 2025: ~7.0%)
+COE_CAPM = RF_RATE + BETA_TCB * ERP
+COE      = round(COE_CAPM, 4)
+print(f"  COE = {RF_RATE:.2%} + {BETA_TCB:.2f} × {ERP:.0%} = {COE:.2%}")
+
+
 ttms = sorted([r for r in VAB_RATIOS if r.get("year") and r.get("quarter") in (1,2,3,4)],
               key=lambda x: (x["year"], x["quarter"]), reverse=True)
 
@@ -296,7 +504,7 @@ eps_fc_calc = [np_fc[i] * 1e9 / SHARES for i in range(3)]
 bvps_hist = [equity_hist[i] * 1e9 / SHARES for i in range(len(years_hist))]
 
 # ── VALUATION: Residual Income + P/B ──
-COE = 0.13
+# COE is now computed from CAPM (RF_RATE + BETA * ERP) above
 terminal_growth = 0.03
 bvps_base = bvps_hist[-1]
 
@@ -465,6 +673,19 @@ def create_excel():
     ws.cell(row=4, column=1, value=f"Giá hiện tại: {PRICE:,} VND | P/B: {pb_current:.2f}x | P/E: {MARKET_CAP/(np_hist[-1]*1e9):.2f}x").font = Font(size=12, color="C00000", name="Calibri")
     ws.merge_cells('A5:I5')
     ws.cell(row=5, column=1, value=f"Target Price: {weighted_target:,.0f} VND | Upside: {upside:.1f}% | Khuyến nghị: {'MUA' if upside > 15 else 'THEO DÕI' if upside > 5 else 'NẮM GIỮ' if upside > -5 else 'BÁN'}").font = Font(bold=True, size=12, color="006400" if upside > 5 else "FF8C00", name="Calibri")
+    
+    # 3 mức giá P/B
+    pb_att_val = pb_attractive * bvps_forward
+    pb_med_val = pb_all_median * bvps_forward
+    pb_tgt_val = pb_target * bvps_forward
+    
+    ws.merge_cells('A6:I6')
+    ws.cell(row=6, column=1, value=f"Vùng P/B Hấp Dẫn (MUA): {pb_attractive:.2f}x → {pb_att_val:,.0f} VND").font = Font(size=11, color="006400", name="Calibri", italic=True)
+    ws.merge_cells('A7:I7')
+    ws.cell(row=7, column=1, value=f"Vùng P/B Cân Bằng (FAIR): {pb_all_median:.2f}x → {pb_med_val:,.0f} VND").font = Font(size=11, color="808080", name="Calibri", italic=True)
+    ws.merge_cells('A8:I8')
+    ws.cell(row=8, column=1, value=f"Vùng P/B Chốt Lời (BÁN): {pb_target:.2f}x → {pb_tgt_val:,.0f} VND").font = Font(size=11, color="C00000", name="Calibri", italic=True)
+
     ws.column_dimensions['A'].width = 20
     for col_letter in ['B','C','D','E','F','G','H','I']:
         ws.column_dimensions[col_letter].width = 20
@@ -486,7 +707,7 @@ def create_excel():
         ("NPL ratio (%)", [n/100 for n in npl_ratio_hist] + npl_fc),
         ("CASA ratio (%)", [c/100 for c in casa_ratio_hist] + casa_target_fc),
         ("Tăng trưởng non-TOI (%)", [None]*5 + non_int_growth_fc),
-        ("Chi phí vốn CSH (COE)", [None]*5 + [COE, COE, COE]),
+        ("Chi phí vốn CSH (COE)", [None]*5 + ["='00_COE'!$B$8", "'00_COE'!$B$8", "'00_COE'!$B$8"]),
         ("Tăng trưởng dài hạn (g)", [None]*7 + [terminal_growth]),
         ("Thuế suất (%)", [None]*5 + [tax_rate, tax_rate, tax_rate]),
         ("P/B mục tiêu (x)", [None]*5 + [round(pb_target,2), round(pb_target,2), round(pb_target,2)]),
@@ -496,40 +717,180 @@ def create_excel():
         # Explicitly format rows 4 to 14 (which are percentage rows) as FMT_PCT
         fmt_to_use = FMT_PCT if r in [4,5,6,7,8,9,10,11,12,13,14] else (FMT_NUM1 if r == 15 else FMT_NUM)
         write_data_row(ws, r, 1, [label] + vals, fmt_to_use, is_blue=False)
-    
+
+    # ── Sheet 00_COE: Chi phí vốn CSH (CAPM) ──
+    # Inserted at position 0 so it appears first
+    ws_coe = wb.create_sheet("00_COE", 0)
+    ws_coe.column_dimensions['A'].width = 42
+    ws_coe.column_dimensions['B'].width = 18
+    ws_coe.column_dimensions['C'].width = 30
+    ws_coe.column_dimensions['D'].width = 18
+    ws_coe.column_dimensions['E'].width = 16
+
+    def _coe_hdr(row, col, val, bold=True, size=12, color="FFFFFF", bg="2E75B6"):
+        c = ws_coe.cell(row=row, column=col, value=val)
+        c.font = Font(bold=bold, size=size, name="Calibri", color=color)
+        c.fill = PatternFill(start_color=bg, end_color=bg, fill_type="solid")
+        c.border = thin_border
+        c.alignment = Alignment(horizontal='center', wrap_text=True)
+
+    def _coe_lbl(row, col, val, bold=False, color="000000", italic=False):
+        c = ws_coe.cell(row=row, column=col, value=val)
+        c.font = Font(bold=bold, size=11, name="Calibri", color=color, italic=italic)
+        c.border = thin_border
+
+    def _coe_val(row, col, val, fmt='0.00%', bold=False, color="000000", editable=False):
+        c = ws_coe.cell(row=row, column=col, value=val)
+        c.font = Font(bold=bold, size=11, name="Calibri", color=color)
+        c.number_format = fmt
+        c.border = thin_border
+        c.alignment = Alignment(horizontal='center')
+        if editable:
+            c.fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+
+    # Title
+    ws_coe.merge_cells('A1:E1')
+    t = ws_coe.cell(row=1, column=1, value=f"CHI PHÍ VỐN CSH (COE) — MÔ HÌNH CAPM | {TICKER}")
+    t.font = Font(bold=True, size=14, name="Calibri", color="FFFFFF")
+    t.fill = PatternFill(start_color="1F3864", end_color="1F3864", fill_type="solid")
+    t.alignment = Alignment(horizontal='center')
+
+    # Section 1: CAPM Inputs
+    ws_coe.merge_cells('A3:E3')
+    ws_coe.cell(row=3, column=1, value="1. CÔNG THỨC CAPM: COE = Rf + β × ERP").font = Font(bold=True, size=12, name="Calibri", color="2E75B6")
+
+    _coe_hdr(4, 1, "Tham số", bg="4472C4")
+    _coe_hdr(4, 2, "Giá trị", bg="4472C4")
+    _coe_hdr(4, 3, "Diễn giải", bg="4472C4")
+    _coe_hdr(4, 4, "Nguồn / Ghi chú", bg="4472C4")
+    _coe_hdr(4, 5, "Có thể chỉnh?", bg="4472C4")
+
+    rows_capm = [
+        ("Rf — Lãi suất phi rủi ro", RF_RATE,  "Lãi suất TP Chính phủ VN kỳ hạn 10 năm",        f"Nguồn: {RF_SOURCE}",   True),
+        ("β  — Hệ số Beta",         BETA_TCB,  "Độ nhạy giá TCB so với VN-Index (252 phiên)",    f"Nguồn: {BETA_SOURCE}", True),
+        ("ERP — Phần bù rủi ro vốn", ERP,      "Equity Risk Premium cho thị trường Việt Nam",    "Damodaran 2025: ~7.0%", True),
+    ]
+    for i, (lbl, val, diengiai, nguon, edit) in enumerate(rows_capm):
+        r = 5 + i
+        _coe_lbl(r, 1, lbl, bold=True)
+        _coe_val(r, 2, val, fmt='0.00%', bold=True, editable=edit)
+        _coe_lbl(r, 3, diengiai, italic=True)
+        _coe_lbl(r, 4, nguon, color="595959")
+        c = ws_coe.cell(row=r, column=5, value="✔ Có thể điều chỉnh" if edit else "Tự động")
+        c.font = Font(size=10, name="Calibri", color="006400" if edit else "595959")
+        c.border = thin_border; c.alignment = Alignment(horizontal='center')
+    # Fix ERP as numeric
+    ws_coe.cell(row=7, column=2).value = ERP
+
+    # COE result
+    ws_coe.merge_cells('A8:A8')
+    _coe_lbl(8, 1, "COE = Rf + β × ERP", bold=True)
+    c_coe = ws_coe.cell(row=8, column=2, value=f"=B5+B6*B7")
+    c_coe.font = Font(bold=True, size=13, name="Calibri", color="C00000")
+    c_coe.number_format = '0.00%'
+    c_coe.border = thin_border; c_coe.alignment = Alignment(horizontal='center')
+    c_coe.fill = PatternFill(start_color="FFE0E0", end_color="FFE0E0", fill_type="solid")
+    _coe_lbl(8, 3, "← Đây là COE được dùng trong định giá RI", bold=True, color="C00000")
+
+    # Section 2: Interpretation
+    ws_coe.merge_cells('A10:E10')
+    ws_coe.cell(row=10, column=1, value="2. Ý NGHĨA COE VÀ TÁC ĐỘNG LÊN ĐỊNH GIÁ RI").font = Font(bold=True, size=12, name="Calibri", color="2E75B6")
+
+    interpret = [
+        ("Nếu ROE > COE", "→ Residual Income (RI) dương → cổ phiếu tạo ra giá trị thặng dư → Giá trị RI cao hơn BVPS"),
+        ("Nếu ROE = COE", "→ RI = 0 → Giá trị cổ phiếu đúng bằng BVPS (giá trị sổ sách)"),
+        ("Nếu ROE < COE", "→ RI âm → Cổ phiếu đang hủy giá trị → Giá trị RI thấp hơn BVPS"),
+        ("TCB ROE 2026F",  f"→ Khoảng {np_fc[0]/((equity_hist[-1]+equity_hist[-1]+np_fc[0])/2)*100:.1f}% vs COE {COE*100:.2f}% → xem kết quả RI tại 07_Valuation"),
+    ]
+    for i, (lbl, val) in enumerate(interpret):
+        r = 11 + i
+        _coe_lbl(r, 1, lbl, bold=True)
+        ws_coe.merge_cells(f'B{r}:E{r}')
+        c = ws_coe.cell(row=r, column=2, value=val)
+        c.font = Font(size=11, name="Calibri", italic=True)
+        c.border = thin_border
+
+    # Section 3: Sensitivity table COE vs Beta
+    ws_coe.merge_cells('A16:E16')
+    ws_coe.cell(row=16, column=1, value="3. BẢNG ĐỘ NHẠY: COE theo Beta và Rf").font = Font(bold=True, size=12, name="Calibri", color="2E75B6")
+    ws_coe.cell(row=17, column=1, value="Beta \\ Rf →").font = Font(bold=True, size=10, name="Calibri")
+    rf_range   = [0.035, 0.040, 0.045, 0.050, 0.055]
+    beta_range = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]
+    for j, rf in enumerate(rf_range):
+        c = ws_coe.cell(row=17, column=2+j, value=rf)
+        c.number_format = '0.0%'; c.font = Font(bold=True, size=10, name="Calibri")
+        c.fill = FMT_BLUE; c.border = thin_border; c.alignment = Alignment(horizontal='center')
+    for i, b in enumerate(beta_range):
+        r = 18 + i
+        c = ws_coe.cell(row=r, column=1, value=b)
+        c.number_format = '0.0'; c.font = Font(bold=True, size=10, name="Calibri")
+        c.fill = FMT_BLUE; c.border = thin_border; c.alignment = Alignment(horizontal='center')
+        for j, rf in enumerate(rf_range):
+            coe_sens = rf + b * ERP
+            cell = ws_coe.cell(row=r, column=2+j, value=coe_sens)
+            cell.number_format = '0.0%'; cell.border = thin_border
+            cell.alignment = Alignment(horizontal='center')
+            # Highlight current COE
+            if abs(b - BETA_TCB) < 0.05 and abs(rf - RF_RATE) < 0.003:
+                cell.fill = PatternFill(start_color="FFE0E0", end_color="FFE0E0", fill_type="solid")
+                cell.font = Font(bold=True, color="C00000", name="Calibri")
+
+    # Section 4: Guidance notes
+    ws_coe.merge_cells('A26:E26')
+    ws_coe.cell(row=26, column=1, value="4. HƯỚNG DẪN CHỈNH SỬA CÁC THAM SỐ").font = Font(bold=True, size=12, name="Calibri", color="2E75B6")
+    notes = [
+        ("Rf", "Tra lãi suất TP CP VN 10 năm tại: hnx.vn hoặc vbma.org.vn. Thường dao động 3.5%-6%. Cập nhật khi có thay đổi lãi suất điều hành SBV."),
+        ("β",  "Nếu Vietcap API không trả về Beta, có thể ước tính = Std(TCB) / Std(VNIndex) × Corr(TCB, VNIndex) trên 252 phiên. Ngân hàng lớn VN thường β ≈ 0.9-1.2."),
+        ("ERP","Damodaran cập nhật hàng tháng tại: pages.stern.nyu.edu/~adamodar/. Với VN đang phát triển, ERP = 6-8%. ERP cao → định giá thận trọng hơn."),
+        ("COE","Kết quả ô B8 được link tự động sang '02_Assumptions'!G12. Khi COE thay đổi, toàn bộ RI và Target Price sẽ tự cập nhật."),
+    ]
+    for i, (param, note) in enumerate(notes):
+        r = 27 + i
+        _coe_lbl(r, 1, param, bold=True, color="2E75B6")
+        ws_coe.merge_cells(f'B{r}:E{r}')
+        c = ws_coe.cell(row=r, column=2, value=note)
+        c.font = Font(size=10, name="Calibri", italic=True, color="404040")
+        c.border = thin_border; c.alignment = Alignment(wrap_text=True)
+        ws_coe.row_dimensions[r].height = 30
+
+
     # ── Sheet 3: Income Model (NII + Fee breakdown) ──
     ws = wb.create_sheet("03_Income_Model")
     ws.column_dimensions['A'].width = 40; [ws.column_dimensions[get_column_letter(j)].__setattr__('width', 15) for j in range(2,9)]
     write_header_row(ws, 1, 1, headers)
     
     inc_model = [
-        ("IEA bình quân (tỷ)", iea_fc),
-        ("IEA tăng trưởng (%)", iea_growth_fc),
+        ("IEA bình quân (tỷ)", [((iea_end_hist[i-1] + iea_end_hist[i])/2 if i > 0 else iea_end_hist[i]) for i in range(5)] + iea_avg_fc),
+        ("IEA tăng trưởng (%)", [None] + [round((iea_end_hist[i]/iea_end_hist[i-1] - 1)*100,2) if iea_end_hist[i-1] else 0 for i in range(1,5)] + [g*100 for g in iea_growth_fc]),
         ("NIM (%)", [n/100 for n in nim_hist] + [n/100 for n in nim_fc]),
-        ("NII (tỷ)", nii_fc),
-        ("Thu nhập dịch vụ (tỷ)", [None]*8),
-        ("Thu nhập ngoại hối (tỷ)", [None]*8),
-        ("Thu nhập CK đầu tư (tỷ)", [None]*8),
-        ("Thu nhập khác (tỷ)", [None]*8),
+        ("NII (tỷ)", nii_hist + nii_fc),
+        ("Thu nhập dịch vụ (tỷ)", fee_inc_hist + [None]*3),
+        ("Thu nhập ngoại hối (tỷ)", fx_hist + [None]*3),
+        ("Thu nhập CK đầu tư (tỷ)", [trade_sec_hist[i] + inv_sec_hist[i] for i in range(5)] + [None]*3),
+        ("Thu nhập khác (tỷ)", other_inc_hist + [None]*3),
         ("Tổng thu nhập ngoài lãi (tỷ)", [toi_hist[i] - nii_hist[i] for i in range(5)] + non_int_fc),
-        ("Tổng thu nhập HĐ - TOI (tỷ)", toi_fc),
+        ("Tổng thu nhập HĐ - TOI (tỷ)", toi_hist + toi_fc),
         ("NII/TOI - Gross Margin (%)", [round(nii_hist[i]/toi_hist[i]*100,2) if toi_hist[i] else 0 for i in range(5)] 
          + [round(nii_fc[i]/toi_fc[i]*100,2) if toi_fc[i] else 0 for i in range(3)]),
-        ("Chi phí HĐ - OPEX (tỷ)", opex_fc),
-        ("PPOP - LN trước dự phòng (tỷ)", ppop_fc),
+        ("Chi phí HĐ - OPEX (tỷ)", opex_hist + opex_fc),
+        ("PPOP - LN trước dự phòng (tỷ)", ppop_hist + ppop_fc),
         ("PPOP/TOI - PPOP Margin (%)", [round(ppop_hist[i]/toi_hist[i]*100,2) if toi_hist[i] else 0 for i in range(5)]
          + [round(ppop_fc[i]/toi_fc[i]*100,2) if toi_fc[i] else 0 for i in range(3)]),
-        ("Dự phòng tín dụng (tỷ)", prov_fc),
-        ("LN trước thuế - PBT (tỷ)", pbt_fc),
+        ("Dự phòng tín dụng (tỷ)", prov_hist + prov_fc),
+        ("LN trước thuế - PBT (tỷ)", pbt_hist + pbt_fc),
     ]
     for i, (label, vals) in enumerate(inc_model):
         r = i + 2; is_hist = label in ["IEA bình quân (tỷ)", "NIM (%)"]; write_data_row(ws, r, 1, [label] + vals, FMT_NUM1, is_blue=is_hist)
     
     # Overwrite forecast columns G, H, I with formulas in 03_Income_Model
+    # BS row layout (after adding SBV row): 3=Cash, 4=SBV Dep, 5=InterBank, 6=Loans, 7=Inv Sec
+    # IEA = Cash(3) + SBV(4) + InterBank(5) + Loans(6) + InvSec(7)
     for idx, col in enumerate(['G', 'H', 'I']):
         prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
-        ws.cell(row=2, column=7+idx, value=f"=(('05_Balance_Sheet'!{prev_col}5+'05_Balance_Sheet'!{prev_col}4+'05_Balance_Sheet'!{prev_col}6+'05_Balance_Sheet'!{prev_col}3)+('05_Balance_Sheet'!{col}5+'05_Balance_Sheet'!{col}4+'05_Balance_Sheet'!{col}6+'05_Balance_Sheet'!{col}3))/2")
-        ws.cell(row=3, column=7+idx, value=f"=((('05_Balance_Sheet'!{col}5+'05_Balance_Sheet'!{col}4+'05_Balance_Sheet'!{col}6+'05_Balance_Sheet'!{col}3)/('05_Balance_Sheet'!{prev_col}5+'05_Balance_Sheet'!{prev_col}4+'05_Balance_Sheet'!{prev_col}6+'05_Balance_Sheet'!{prev_col}3))-1)*100")
+        iea_sum_prev = f"('05_Balance_Sheet'!{prev_col}3+'05_Balance_Sheet'!{prev_col}4+'05_Balance_Sheet'!{prev_col}5+'05_Balance_Sheet'!{prev_col}6+'05_Balance_Sheet'!{prev_col}7)"
+        iea_sum_cur  = f"('05_Balance_Sheet'!{col}3+'05_Balance_Sheet'!{col}4+'05_Balance_Sheet'!{col}5+'05_Balance_Sheet'!{col}6+'05_Balance_Sheet'!{col}7)"
+        ws.cell(row=2, column=7+idx, value=f"=({iea_sum_prev}+{iea_sum_cur})/2")
+        ws.cell(row=3, column=7+idx, value=f"=({iea_sum_cur}/{iea_sum_prev}-1)*100")
         ws.cell(row=4, column=7+idx, value=f"='02_Assumptions'!{col}6")
         ws.cell(row=5, column=7+idx, value=f"={col}2*{col}4")
         for r_idx in [6, 7, 8, 9]:
@@ -635,6 +996,7 @@ def create_excel():
     bs_data = [
         ("Tổng tài sản", total_assets_hist + [total_assets_hist[-1] * (1.12)**(i+1) for i in range(3)]),
         ("Tiền mặt & NHNN", cash_hist + [cash_hist[-1] * (1.05)**(i+1) for i in range(3)]),
+        ("TG tại NHNN", sbv_dep_hist + [sbv_dep_hist[-1] * (1.05)**(i+1) for i in range(3)]),
         ("TG các TCTD khác", bank_dep_hist + [bank_dep_hist[-1] * (1.10)**(i+1) for i in range(3)]),
         ("Cho vay khách hàng", loans_hist + loans_fc),
         ("CK đầu tư", inv_sec_bs_hist + [inv_sec_bs_hist[-1] * (1.15)**(i+1) for i in range(3)]),
@@ -658,16 +1020,11 @@ def create_excel():
         write_data_row(ws, r, 1, [label] + vals, FMT_NUM1, is_blue=is_blue)
         
     # Overwrite forecast columns G, H, I with formulas in 05_Balance_Sheet
+    # Row layout: 2=Total Assets, 3=Cash&NHNN, 4=SBV Dep, 5=InterBank Dep, 6=Loans, 7=Inv Sec, 8=Other Assets
     for idx, col in enumerate(['G', 'H', 'I']):
         prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
         ws.cell(row=2, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}2*1.12")
         ws.cell(row=3, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}3*1.05")
-        ws.cell(row=4, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}4*1.10")
-        ws.cell(row=5, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}5*(1+'02_Assumptions'!{col}4)")
-        ws.cell(row=6, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}6*1.15")
-        ws.cell(row=7, column=7+idx, value=f"={col}2-SUM({col}3:{col}6)")
-        ws.cell(row=8, column=7+idx, value=None)
-        ws.cell(row=9, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}9*(1+'02_Assumptions'!{col}5)")
         ws.cell(row=10, column=7+idx, value=f"={col}9*'02_Assumptions'!{col}10")
         ws.cell(row=11, column=7+idx, value=f"={col}9-{col}10")
         ws.cell(row=12, column=7+idx, value=f"='05_Balance_Sheet'!{prev_col}12*1.08")
@@ -769,7 +1126,7 @@ def create_excel():
     ws.cell(row=3, column=2, value=f"={terminal_growth}").number_format = FMT_PCT
     ws.cell(row=5, column=1, value="RESIDUAL INCOME MODEL").font = FMT_BOLD
     ws.cell(row=6, column=1, value="BV/share hien tai (VND)")
-    ws.cell(row=6, column=2, value=f"='05_Balance_Sheet'!F15*1e9/'02_Assumptions'!B3").number_format = FMT_NUM
+    ws.cell(row=6, column=2, value=f"='05_Balance_Sheet'!F16*1e9/'02_Assumptions'!B3").number_format = FMT_NUM
     ws.cell(row=7, column=1, value="PV cua RI 3 nam (VND)")
     ws.cell(row=7, column=2, value="=SUM(B31:D31)").number_format = FMT_NUM
     ws.cell(row=8, column=1, value="PV cua Continuing Value (VND)")
@@ -821,7 +1178,7 @@ def create_excel():
         ws.cell(row=25, column=2+idx, value=f"{yr}F").font = FMT_BOLD
         ws.cell(row=26, column=2+idx, value=f"='04_PnL'!{col}10*1e9/'02_Assumptions'!$B$3").number_format = FMT_NUM
         prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
-        ws.cell(row=27, column=2+idx, value=f"='05_Balance_Sheet'!{prev_col}15*1e9/'02_Assumptions'!$B$3").number_format = FMT_NUM
+        ws.cell(row=27, column=2+idx, value=f"='05_Balance_Sheet'!{prev_col}16*1e9/'02_Assumptions'!$B$3").number_format = FMT_NUM
         ws.cell(row=28, column=2+idx, value=f"={col_letter}27*'07_Valuation'!$B$2").number_format = FMT_NUM
         ws.cell(row=29, column=2+idx, value=f"={col_letter}26-{col_letter}28").number_format = FMT_NUM
         ws.cell(row=30, column=2+idx, value=f"=1/(1+'07_Valuation'!$B$2)^{idx+1}").number_format = '0.0000'
@@ -1593,6 +1950,16 @@ def create_pdf():
     story.append(Spacer(1, 5*mm))
     target_style = ParagraphStyle('Target', parent=title_style, fontSize=14, alignment=TA_CENTER, textColor=HexColor('#006400') if upside > 0 else HexColor('#C00000'))
     story.append(Paragraph(f"Giá hiện tại: {PRICE:,} VND | Target: {weighted_target:,.0f} VND | Upside: {upside:+.1f}%", target_style))
+    story.append(Spacer(1, 3*mm))
+    
+    pb_att_val = pb_attractive * bvps_forward
+    pb_med_val = pb_all_median * bvps_forward
+    pb_tgt_val = pb_target * bvps_forward
+    pb_style = ParagraphStyle('PB', parent=body_style, alignment=TA_CENTER, fontSize=11)
+    story.append(Paragraph(f"<font color='green'>Vùng MUA (P/B {pb_attractive:.2f}x): {pb_att_val:,.0f} VND</font> | "
+                           f"<font color='gray'>CÂN BẰNG ({pb_all_median:.2f}x): {pb_med_val:,.0f} VND</font> | "
+                           f"<font color='red'>CHỐT LỜI ({pb_target:.2f}x): {pb_tgt_val:,.0f} VND</font>", pb_style))
+    story.append(Spacer(1, 10*mm))
     story.append(Spacer(1, 20*mm))
     story.append(Paragraph(f"Ngày: {MONTH} | Phân tích bởi AI Framework FA", ParagraphStyle('Date', parent=body_style, fontSize=9, alignment=TA_CENTER, textColor=grey)))
     story.append(PageBreak())

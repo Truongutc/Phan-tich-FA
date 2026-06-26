@@ -484,24 +484,24 @@ def create_excel():
     write_header_row(ws, 1, 1, headers)
     
     inc_model = [
-        ("IEA bình quân (tỷ)", iea_fc),
-        ("IEA tăng trưởng (%)", iea_growth_fc),
+        ("IEA bình quân (tỷ)", [((iea_end_hist[i-1] + iea_end_hist[i])/2 if i > 0 else iea_end_hist[i]) for i in range(5)] + iea_avg_fc),
+        ("IEA tăng trưởng (%)", [None] + [round((iea_end_hist[i]/iea_end_hist[i-1] - 1)*100,2) if iea_end_hist[i-1] else 0 for i in range(1,5)] + [g*100 for g in iea_growth_fc]),
         ("NIM (%)", [n/100 for n in nim_hist] + [n/100 for n in nim_fc]),
-        ("NII (tỷ)", nii_fc),
-        ("Thu nhập dịch vụ (tỷ)", [None]*8),
-        ("Thu nhập ngoại hối (tỷ)", [None]*8),
-        ("Thu nhập CK đầu tư (tỷ)", [None]*8),
-        ("Thu nhập khác (tỷ)", [None]*8),
+        ("NII (tỷ)", nii_hist + nii_fc),
+        ("Thu nhập dịch vụ (tỷ)", fee_inc_hist + [None]*3),
+        ("Thu nhập ngoại hối (tỷ)", fx_hist + [None]*3),
+        ("Thu nhập CK đầu tư (tỷ)", [trade_sec_hist[i] + inv_sec_hist[i] for i in range(5)] + [None]*3),
+        ("Thu nhập khác (tỷ)", other_inc_hist + [None]*3),
         ("Tổng thu nhập ngoài lãi (tỷ)", [toi_hist[i] - nii_hist[i] for i in range(5)] + non_int_fc),
-        ("Tổng thu nhập HĐ - TOI (tỷ)", toi_fc),
+        ("Tổng thu nhập HĐ - TOI (tỷ)", toi_hist + toi_fc),
         ("NII/TOI - Gross Margin (%)", [round(nii_hist[i]/toi_hist[i]*100,2) if toi_hist[i] else 0 for i in range(5)] 
          + [round(nii_fc[i]/toi_fc[i]*100,2) if toi_fc[i] else 0 for i in range(3)]),
-        ("Chi phí HĐ - OPEX (tỷ)", opex_fc),
-        ("PPOP - LN trước dự phòng (tỷ)", ppop_fc),
+        ("Chi phí HĐ - OPEX (tỷ)", opex_hist + opex_fc),
+        ("PPOP - LN trước dự phòng (tỷ)", ppop_hist + ppop_fc),
         ("PPOP/TOI - PPOP Margin (%)", [round(ppop_hist[i]/toi_hist[i]*100,2) if toi_hist[i] else 0 for i in range(5)]
          + [round(ppop_fc[i]/toi_fc[i]*100,2) if toi_fc[i] else 0 for i in range(3)]),
-        ("Dự phòng tín dụng (tỷ)", prov_fc),
-        ("LN trước thuế - PBT (tỷ)", pbt_fc),
+        ("Dự phòng tín dụng (tỷ)", prov_hist + prov_fc),
+        ("LN trước thuế - PBT (tỷ)", pbt_hist + pbt_fc),
     ]
     for i, (label, vals) in enumerate(inc_model):
         r = i + 2; is_hist = label in ["IEA bình quân (tỷ)", "NIM (%)"]; write_data_row(ws, r, 1, [label] + vals, FMT_NUM1, is_blue=is_hist)
