@@ -2173,3 +2173,178 @@ THC/Hàng hải:    vinamarine.gov.vn
 *Thay đổi v2.1: (1) Chuyển output báo cáo từ PDF → DOCX; (2) Thêm quy chuẩn bảng biểu (căn lề, độ rộng cột, wrap text); (3) Thêm Sheet 13 — Các yếu tố cần theo dõi vào cấu trúc Excel.*
 *Thay đổi v2.3: (7) Thêm OUTPUT BẮT BUỘC box sau mỗi trong 6 tầng phân tích — gắn kết tầng với section DOCX cụ thể, có ví dụ GMD điền đầy đủ; (8) Thay thế Mục 6 bằng kiến trúc Assembly Guide — Pre-flight checklist, Build Order bắt buộc, Assembly guide từng trang với source/must-have/forbidden, Investment Summary template có ví dụ GMD, Phụ lục bắt buộc.
 *Thay đổi v2.2: (4) Thêm Mục 2.5 — Quy tắc bắt buộc phân kỳ Actual (A) vs Estimated (E) với bảng ví dụ và checklist; (5) Mở rộng Mục 2.3 nguồn dữ liệu: thêm IR website doanh nghiệp, 10 CTCK với URL cụ thể (SSI, VCSC, VCBS, HSC, MBS, VDSC, KIS, Mirae, Yuanta, BSC), nguồn hàng hóa quốc tế và dữ liệu vĩ mô VN; (6) Cập nhật checklist Section 12 — bổ sung kiểm tra A/E và yêu cầu ≥ 2 CTCK.*
+
+---
+
+## 13. CẬP NHẬT KỸ THUẬT HỆ THỐNG — PHIÊN BẢN 2.4 (06/2026)
+
+### 13.1 Phân loại ngành (Sector Classification) — BẮT BUỘC
+
+**Quy tắc**: Hệ thống phân loại ngành phải nhận diện được TÊN NGÀNH CẢ TIẾNG VIỆT LẪN TIẾNG ANH.
+
+Hàm `getSectorKey(sectorStr)` trong `app.js` **bắt buộc** bao gồm các từ khoá tiếng Việt:
+
+```js
+function getSectorKey(sectorStr) {
+    const s = (sectorStr || '').toLowerCase();
+    // Ngân hàng — tiếng Anh + tiếng Việt
+    if (s.includes('bank') || s.includes('financial service') ||
+        s.includes('ngân hàng') || s.includes('ngan hang')) return 'banks';
+    // Thép & Vật liệu
+    if (s.includes('basic resource') || s.includes('material') || s.includes('steel') ||
+        s.includes('metal') || s.includes('mining') || s.includes('thép') ||
+        s.includes('vật liệu') || s.includes('khai khoáng')) return 'materials';
+    // Bất động sản
+    if (s.includes('real estate') || s.includes('property') ||
+        s.includes('bất động sản')) return 'realestate';
+    // Công nghệ
+    if (s.includes('tech') || s.includes('software') || s.includes('it ') ||
+        s.includes('công nghệ')) return 'technology';
+    // Tiêu dùng / Bán lẻ
+    if (s.includes('consumer') || s.includes('retail') || s.includes('food') ||
+        s.includes('beverage') || s.includes('tiêu dùng') ||
+        s.includes('bán lẻ')) return 'consumer';
+    return 'generic';
+}
+```
+
+**Lý do**: Field `sector` trong `data/index.json` lưu tên tiếng Việt (ví dụ: `"Ngân hàng"`, `"Bất động sản"`). Nếu hàm chỉ check tiếng Anh → ngân hàng bị xếp nhầm vào nhóm "Công Nghiệp" (generic).
+
+---
+
+### 13.2 Pipeline dữ liệu Quý — BCTC Theo Quý & Dashboard
+
+**Vấn đề**: Vietcap API endpoint `/financial-statement?section=INCOME_STATEMENT` **không trả về `.quarters`** trong response — chỉ trả `{years: [...]}`. Không thể lấy BCTC quý bằng endpoint này.
+
+**Giải pháp 2 lớp**:
+
+#### Lớp 1 — `template_banking.py`: Lưu `income_quarterly` vào JSON
+Sau khi fetch `raw_data` từ Vietcap (có `.quarters`), phải trích xuất và lưu:
+
+```python
+# Build income_quarterly for dashboard fallback
+income_quarterly_records = []
+for r in is_q_recs:  # is_q_recs = raw_data["sections"]["INCOME_STATEMENT"].get("quarters", [])
+    yr = r.get("yearReport")
+    qt = r.get("quarter")
+    if yr and qt in (1, 2, 3, 4):
+        nii_q = r.get("isb27") or r.get("isb22") or 0
+        npat_q = r.get("isa22") or r.get("isa20") or 0
+        income_quarterly_records.append({
+            "yearReport": yr,
+            "quarter": qt,
+            "nii": round(nii_q / 1e9, 2),   # tỷ VND
+            "npat": round(npat_q / 1e9, 2),  # tỷ VND
+        })
+income_quarterly_records.sort(key=lambda x: (x["yearReport"], x["quarter"]))
+
+# Thêm vào summary_json:
+summary_json["income_quarterly"] = income_quarterly_records
+```
+
+#### Lớp 2 — `app.js`: Fallback đọc `income_quarterly` khi API không có quý
+Trong `renderQuarterlyAndYTDEvaluation()`:
+
+```js
+let isrecs = liveData.incomeYears?.quarters || [];
+
+// Fallback: dùng income_quarterly từ JSON local nếu live API trả rỗng
+if (isrecs.length < 5 && localJson?.income_quarterly?.length >= 5) {
+    isrecs = localJson.income_quarterly.map(r => ({
+        yearReport: r.yearReport,
+        quarter: r.quarter,
+        [cfg.incomeField]: (r.nii || 0) * 1e9,
+        [cfg.npat]: (r.npat || 0) * 1e9,
+    }));
+}
+```
+
+**Quy tắc**: Template builder (banking, generic...) **luôn phải** lưu `income_quarterly` vào JSON. Dashboard sẽ tự động dùng khi API live không trả quý.
+
+---
+
+### 13.3 Google Drive Upload — Cấu hình bắt buộc
+
+**Cơ chế**: File Excel và PDF được upload tự động lên Google Drive sau mỗi lần chạy phân tích qua GitHub Actions.
+
+**Cấu hình bắt buộc** (phải đặt 1 lần, dùng mãi):
+
+| Bước | Hành động |
+|------|-----------|
+| 1 | Tạo Google Cloud Project → Bật **Google Drive API** (bắt buộc bật, không có API sẽ báo lỗi 403) |
+| 2 | Tạo **Service Account** → tải file JSON credentials |
+| 3 | Chia sẻ **folder Google Drive** với email service account (quyền Editor) |
+| 4 | Copy nội dung JSON credentials → Nạp vào GitHub Secret: `GDRIVE_SERVICE_ACCOUNT_JSON` |
+
+**Folder mặc định**: `1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk`
+
+**Workflow** (`analyze_stock.yml`) đọc secret:
+```yaml
+- name: Run Financial Analysis
+  env:
+    GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+  run: |
+    python run_analysis.py "${{ github.event.inputs.ticker }}"
+```
+
+**Lưu ý quan trọng**: Google Drive API phải được **Enable** trong Google Cloud Console Project. Dù đã có Service Account hợp lệ, nếu API chưa bật vẫn báo lỗi `403: Google Drive API has not been used in project`.
+
+---
+
+### 13.4 Fetch Data — Retry Logic & Parallel Fetching
+
+**Vấn đề**: GitHub Actions IP thường bị timeout hoặc chậm khi gọi Vietcap API. Script cũ dùng timeout 15s, không có retry → fail ngay.
+
+**`fetch_data.py` v2** — Bắt buộc dùng cấu hình sau:
+
+```python
+TIMEOUT = 30          # tăng từ 15 lên 30 giây
+MAX_RETRIES = 3       # thử lại tối đa 3 lần
+RETRY_DELAY = 5       # chờ 5s giữa các lần retry (tăng dần)
+
+def _get_with_retry(url, retries=MAX_RETRIES):
+    """GET với retry và exponential backoff."""
+    for attempt in range(retries):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+            r.raise_for_status()
+            return r.json()
+        except requests.exceptions.Timeout:
+            time.sleep(RETRY_DELAY * (attempt + 1))
+        except requests.exceptions.ConnectionError:
+            time.sleep(RETRY_DELAY * (attempt + 1))
+    raise Exception(f"Failed after {retries} retries")
+```
+
+**Fetch song song** — Tất cả sections (BALANCE_SHEET, INCOME_STATEMENT, CASH_FLOW, NOTE) phải fetch song song bằng `ThreadPoolExecutor`:
+```python
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = {executor.submit(fetch_one, sec): sec for sec in SECTIONS}
+    for future in as_completed(futures):
+        section, result = future.result()
+        data["sections"][section] = result
+```
+
+**Không được** dùng warm-up request (session pre-fetch) — gây timeout không cần thiết trên GitHub Actions.
+
+**Timeout GitHub Actions job**: Đặt `timeout-minutes: 45` (không phải 30) để đủ thời gian cho retry.
+
+---
+
+### 13.5 Checklist kỹ thuật bổ sung — Trước khi đẩy mã mới lên Dashboard
+
+```
+□ Hàm getSectorKey() có đủ từ khoá tiếng Việt cho tất cả ngành
+□ Template builder (banking/generic) lưu income_quarterly vào JSON
+□ renderQuarterlyAndYTDEvaluation() có fallback từ localJson.income_quarterly
+□ fetch_data.py dùng timeout 30s + retry 3 lần + parallel fetch
+□ GDRIVE_SERVICE_ACCOUNT_JSON đã được nạp vào GitHub Secrets
+□ Google Drive API đã được Enable trong Google Cloud Console
+□ GitHub Actions timeout-minutes >= 45
+□ Không có warm-up request trong _session()
+```
+
+---
+
+*Thay đổi v2.4 (06/2026): (9) Fix phân loại ngành tiếng Việt trong getSectorKey(); (10) Thêm income_quarterly vào JSON output của template_banking.py; (11) Thêm fallback income_quarterly trong renderQuarterlyAndYTDEvaluation(); (12) Nâng cấp fetch_data.py với retry 3 lần + parallel fetch + timeout 30s; (13) Hướng dẫn cấu hình Google Drive API + Service Account + GitHub Secret.*
