@@ -221,11 +221,23 @@ const SECTOR_CONFIG = {
 // ── Map sector string → config key ────────────────────────
 function getSectorKey(sectorStr) {
     const s = (sectorStr || '').toLowerCase();
-    if (s.includes('bank') || s.includes('financial service')) return 'banks';
-    if (s.includes('basic resource') || s.includes('material') || s.includes('steel') || s.includes('metal') || s.includes('mining')) return 'materials';
-    if (s.includes('real estate') || s.includes('property')) return 'realestate';
-    if (s.includes('tech') || s.includes('software') || s.includes('it ')) return 'technology';
-    if (s.includes('consumer') || s.includes('retail') || s.includes('food') || s.includes('beverage')) return 'consumer';
+    // Ngân hàng — tiếng Anh + tiếng Việt
+    if (s.includes('bank') || s.includes('financial service') ||
+        s.includes('ng\u00e2n h\u00e0ng') || s.includes('ngan hang')) return 'banks';
+    // Thép & Vật liệu
+    if (s.includes('basic resource') || s.includes('material') || s.includes('steel') ||
+        s.includes('metal') || s.includes('mining') || s.includes('th\u00e9p') ||
+        s.includes('v\u1eadt li\u1ec7u') || s.includes('khai kho\u00e1ng')) return 'materials';
+    // Bất động sản
+    if (s.includes('real estate') || s.includes('property') ||
+        s.includes('b\u1ea5t \u0111\u1ed9ng s\u1ea3n')) return 'realestate';
+    // Công nghệ
+    if (s.includes('tech') || s.includes('software') || s.includes('it ') ||
+        s.includes('c\u00f4ng ngh\u1ec7')) return 'technology';
+    // Tiêu dùng / Bán lẻ
+    if (s.includes('consumer') || s.includes('retail') || s.includes('food') ||
+        s.includes('beverage') || s.includes('ti\u00eau d\u00f9ng') ||
+        s.includes('b\u00e1n l\u1ebb')) return 'consumer';
     return 'generic';
 }
 
@@ -296,11 +308,17 @@ async function fetchVietcap(path) {
 }
 
 async function fetchStockLive(ticker) {
-    const [details, ratios, incomeYears] = await Promise.all([
+    const [details, ratios, incomeYears, incomeQuarters] = await Promise.all([
         fetchVietcap(`/company/details?ticker=${ticker}`),
         fetchVietcap(`/company/${ticker}/statistics-financial`),
         fetchVietcap(`/company/${ticker}/financial-statement?section=INCOME_STATEMENT`),
+        fetchVietcap(`/company/${ticker}/financial-statement?section=INCOME_STATEMENT&quarterly=true`),
     ]);
+    // Ghép dữ liệu quý vào incomeYears để renderQuarterlyAndYTDEvaluation đọc được
+    if (incomeYears && incomeQuarters) {
+        const rawQ = incomeQuarters.quarters || incomeQuarters.years || [];
+        incomeYears.quarters = rawQ;
+    }
     return { details, ratios, incomeYears };
 }
 
