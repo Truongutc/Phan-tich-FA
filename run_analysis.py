@@ -98,32 +98,48 @@ def run_analysis(ticker: str):
     print(f"  STOCK ANALYSIS PIPELINE — {ticker}")
     print(f"{'='*60}\n")
 
-    # ── STEP 1: Check for or generate a specialized builder ───────────────────
-    builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
+    # Danh sách mã ngân hàng
+    BANKING_TICKERS = {"VCB", "BID", "TCB", "MBB", "VPB", "ACB", "HDB", "TPB", "STB",
+                       "LPB", "ABB", "SHB", "VAB", "VIB", "BAB", "KLB", "NAB", "NVB",
+                       "SGB", "OCB", "EIB", "MSB"}
 
-    if not os.path.exists(builder_path):
-        print(f"[Step 1] No specialized builder found for {ticker}.")
-        print(f"         Generating build_{ticker.lower()}_model.py via Gemini AI...")
-        generated = generate_model_builder(ticker)
-
-        if not generated or not os.path.exists(builder_path):
-            print(f"[ERROR] Could not generate builder for {ticker}. Aborting.")
-            print("  Possible causes:")
-            print("  - GEMINI_API_KEY is not set")
-            print("  - Network connectivity issue")
-            sys.exit(1)
-
-        print(f"[Step 1] Builder generated successfully: {os.path.basename(builder_path)}")
-    else:
-        print(f"[Step 1] Found existing builder: {os.path.basename(builder_path)}")
-
-    # ── STEP 2: Run the builder ────────────────────────────────────────────────
-    print(f"\n[Step 2] Running {os.path.basename(builder_path)}...")
-    success = run_builder_script(builder_path)
-
-    if not success:
-        print(f"[ERROR] Builder failed for {ticker}. Check the script for errors.")
+    # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
+    import fetch_data
+    print(f"[Step 1] Fetching raw financial data for {ticker}...")
+    try:
+        raw_data = fetch_data.fetch_all(ticker, use_cache=True)
+    except Exception as e:
+        print(f"[ERROR] Could not fetch data for {ticker}: {e}")
         sys.exit(1)
+
+    # ── STEP 2: Run sector-specific template (or AI builder fallback) ─────────
+    if ticker in BANKING_TICKERS:
+        print(f"\n[Step 2] {ticker} is a Bank. Running template_banking.py...")
+        import template_banking
+        success = template_banking.run_banking_analysis(ticker, raw_data)
+        if not success:
+            print(f"[ERROR] Template banking analysis failed for {ticker}.")
+            sys.exit(1)
+    else:
+        print(f"\n[Step 2] Non-bank stock. Checking for specialized builder...")
+        builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
+        
+        # Nếu có API key và chưa có builder -> generate builder
+        if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):
+            print(f"         Generating build_{ticker.lower()}_model.py via Gemini AI...")
+            generate_model_builder(ticker)
+            
+        if os.path.exists(builder_path):
+            print(f"         Running existing specialized builder: {os.path.basename(builder_path)}...")
+            success = run_builder_script(builder_path)
+        else:
+            print(f"         No builder and no API key. Running build_generic_model.py fallback...")
+            import build_generic_model
+            success = build_generic_model.build_generic(ticker)
+
+        if not success:
+            print(f"[ERROR] Non-bank builder failed for {ticker}.")
+            sys.exit(1)
 
     # ── STEP 3: Find generated output files ───────────────────────────────────
     excel_path, pdf_path = find_latest_output_files(ticker)
@@ -135,6 +151,7 @@ def run_analysis(ticker: str):
     print(f"\n[Step 3] Output files:")
     print(f"  Excel: {excel_path or 'NOT FOUND'}")
     print(f"  PDF:   {pdf_path or 'NOT FOUND'}")
+
 
     # ── STEP 4: Upload to Google Drive ────────────────────────────────────────
     excel_url = None

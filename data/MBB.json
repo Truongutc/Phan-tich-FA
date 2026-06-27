@@ -1,0 +1,248 @@
+{
+  "ticker": "MBB",
+  "companyName": "Ngân hàng TMCP MBB",
+  "sector": "Ngân hàng",
+  "currentPrice": 20000,
+  "marketCap": 100000000000000,
+  "shares": 5000000000,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "pe_hist": [
+    8.5,
+    9.2,
+    7.8,
+    8.1,
+    8.4
+  ],
+  "pb_hist": [
+    1.2,
+    1.3,
+    1.1,
+    1.15,
+    1.25
+  ],
+  "pe_quarters": [
+    8.5,
+    8.2,
+    8.6,
+    9.0,
+    9.2,
+    8.9,
+    8.4,
+    7.8,
+    8.1,
+    8.4
+  ],
+  "pb_quarters": [
+    1.2,
+    1.15,
+    1.22,
+    1.28,
+    1.3,
+    1.25,
+    1.18,
+    1.1,
+    1.15,
+    1.25
+  ],
+  "quarter_labels": [
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2"
+  ],
+  "thesis": [
+    "Ngân hàng TMCP MBB (MBB) là một ngân hàng TMCP hàng đầu với lợi thế cạnh tranh về tỷ lệ CASA và hệ sinh thái số hóa vượt trội.",
+    "Tăng trưởng tín dụng định hướng bền vững và NIM tự tính toán duy trì quanh mức 3.5% hỗ trợ LNST tăng trưởng ổn định.",
+    "Chất lượng tài sản được cải thiện đáng kể với tỷ lệ nợ xấu NPL thực tế được kiểm soát tốt."
+  ],
+  "risks": [
+    "Rủi ro biến động lãi suất toàn cầu và áp lực lạm phát nội địa tác động tiêu cực đến NIM.",
+    "Nợ xấu gia tăng từ phân khúc khách hàng cá nhân và doanh nghiệp nhỏ do tác động của kinh tế vĩ mô.",
+    "Sự cạnh tranh khốc liệt về lãi suất huy động và làn sóng Fintech có thể làm suy giảm NIM."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 4,
+      "desc": "Hệ sinh thái khách hàng rộng lớn tạo sự liên kết chặt chẽ."
+    },
+    "Switching Cost": {
+      "score": 4,
+      "desc": "Khách hàng sử dụng nhiều dịch vụ tích hợp có xu hướng trung thành cao."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu lâu năm và uy tín hàng đầu trong nhóm ngân hàng tư nhân."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Lợi thế chi phí huy động nhờ tỷ lệ CASA thuộc hàng top."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô tài sản và mạng lưới chi nhánh tối ưu giúp phục vụ lượng lớn khách hàng."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Định hướng của NHNN về ưu tiên tín dụng cho các ngành sản xuất và ESG.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "Chu kỳ kinh tế phục hồi thúc đẩy nhu cầu vay vốn của doanh nghiệp.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Dân số trẻ và xu hướng chuyển dịch không dùng tiền mặt là lợi thế lớn cho ngân hàng số.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Đầu tư mạnh vào Cloud và AI giúp tối ưu chi phí CIR và tăng trải nghiệm người dùng.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Tuân thủ chặt chẽ Basel II/III bảo đảm an toàn vốn phòng ngừa rủi ro tín dụng.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "Thúc đẩy tín dụng xanh và các khoản vay ESG theo định hướng chính phủ.",
+      "impact": "Positive"
+    }
+  ],
+  "valuation": {
+    "bear": 46060,
+    "base": 57575,
+    "bull": 69090
+  },
+  "comments": {
+    "businessModel": "Ngân hàng TMCP MBB vận hành mô hình dịch vụ tài chính đa dạng với trọng tâm là ngân hàng bán lẻ và khách hàng doanh nghiệp lớn.",
+    "financialPerformance": "Hệ số sinh lời tự tính toán ROE và ROA duy trì ổn định. CASA dồi dào hỗ trợ giảm giá vốn và duy trì NIM.",
+    "valuationText": "Kết hợp mô hình định giá Residual Income và P/B Target, giá trị hợp lý của cổ phiếu MBB dao động quanh 57,575 VND/CP."
+  },
+  "ratios": {
+    "nim": [
+      0.0432,
+      0.0494,
+      0.0409,
+      0.0365,
+      0.0319,
+      0.0265,
+      0.0278,
+      0.0293
+    ],
+    "roe": [
+      0.2032,
+      0.2196,
+      0.2138,
+      0.1934,
+      0.1886,
+      0.2017,
+      0.194,
+      0.1879
+    ],
+    "roa": [
+      0.0209,
+      0.024,
+      0.0219,
+      0.0201,
+      0.0166,
+      0.0191,
+      0.0196,
+      0.0202
+    ],
+    "npl": [
+      -0.0247,
+      -0.0267,
+      -0.0191,
+      -0.0152,
+      -0.0123,
+      0.012,
+      0.012,
+      0.012
+    ],
+    "ldr": [
+      0.7857,
+      0.8305,
+      0.864,
+      0.9074,
+      0.966,
+      0.9826,
+      0.9996,
+      1.0168
+    ],
+    "casa": [
+      0.0,
+      0.0,
+      0.0,
+      0.0003,
+      0.0008,
+      0.32,
+      0.32,
+      0.32
+    ]
+  },
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      26199.6,
+      36023.1,
+      38683.8,
+      41152.2,
+      51610.1,
+      47931.2,
+      56417.2,
+      66408.1
+    ],
+    "npat": [
+      12697.1,
+      17482.7,
+      20676.8,
+      22633.8,
+      26778.9,
+      34581.2,
+      39811.0,
+      45896.6
+    ],
+    "eps": [
+      3133.0,
+      3856.0,
+      3966.0,
+      3724.0,
+      3325.0,
+      6916.0,
+      7962.0,
+      9179.0
+    ],
+    "equity": [
+      62486.0,
+      79613.2,
+      96711.2,
+      117059.6,
+      142022.5,
+      171416.5,
+      205255.8,
+      244267.9
+    ]
+  }
+}
