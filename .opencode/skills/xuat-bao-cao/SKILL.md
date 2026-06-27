@@ -205,6 +205,27 @@ Tối thiểu **3 biểu đồ**:
 
 ---
 
+## Yêu cầu Web Dashboard (Diễn họa & Phân tích nâng cao)
+
+Để Dashboard trực quan và hỗ trợ phân tích định lượng chuyên sâu, giao diện Web cần tuân thủ cấu trúc sau:
+
+### 1. Khối Earning Release (Quý gần nhất & Lũy kế YTD)
+- Phải hiển thị ngay dưới thông tin doanh nghiệp.
+- **Dữ liệu so sánh**: Quý gần nhất so với quý trước (QoQ) và cùng kỳ năm trước (YoY), đồng thời tính lũy kế năm hiện tại so với cùng kỳ năm trước (YTD YoY).
+- **Hệ số tính toán**: Doanh thu thuần/NII, Lợi nhuận sau thuế, Biên lợi nhuận, LDR, CASA (đối với ngân hàng).
+- **Nhận định nhanh**: Hiển thị hộp văn bản đánh giá tổng quan diễn biến (Ví dụ: tăng trưởng mạnh mẽ, chững lại hoặc chịu áp lực NIM/biên lợi nhuận).
+
+### 2. Layout chia đôi cột cho Biểu đồ (Split Chart Layout)
+Mỗi card chứa biểu đồ trong Dashboard không được để tràn viền mà phải chia làm **2 cột**:
+- **Cột trái (65%)**: Biểu đồ Canvas (Chart.js) hiển thị xu hướng chuỗi dữ liệu (Doanh thu & LNST, EPS & VCSH, P/E trailing, P/B trailing).
+- **Cột phải (35%)**: Khung nhận định phân tích tự động dựa trên số liệu thực:
+  - *Doanh thu & LNST*: Phân tích tốc độ tăng trưởng năm gần nhất.
+  - *EPS & VCSH / ROE*: Đánh giá mức độ hiệu quả sử dụng vốn chủ sở hữu (ROE > 15% là xuất sắc) và xu hướng gia tăng giá trị cho cổ đông qua EPS.
+  - *P/E & P/B*: So sánh định giá hiện tại với Median lịch sử để chỉ ra mức chênh lệch % Đắt/Rẻ định lượng.
+
+---
+
+
 ## Yêu cầu PDF Report
 
 ### Cấu trúc (15-20 trang)

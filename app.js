@@ -583,6 +583,12 @@ async function loadStockDashboard(ticker) {
     renderPEChart(quarterLabels, peData.map(p => p.y), cfg.color);
     renderPBChart(quarterLabels, pbData.map(p => p.y), cfg.color);
 
+    // ── Earning Release & YTD Evaluation (New Component) ──
+    renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg);
+
+    // ── Generate side-by-side chart commentaries ─────────
+    generateChartCommentaries(ticker, annualYears, ttmQuarters, cfg, localJson);
+
     // ── Valuation scenarios ──────────────────────────────
     renderValuationScenarios(localJson?.valuation, currentPrice, details, latestRatio, cfg);
 
@@ -912,7 +918,237 @@ function renderFinancialTable(annualYears, cfg, labels) {
 // ═══════════════════════════════════════════════════════════
 // UTILITIES
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════
 function formatNumber(num, decimals = 0) {
     if (num === null || num === undefined || isNaN(num)) return '-';
     return Number(num).toLocaleString('vi-VN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
+
+// ═══════════════════════════════════════════════════════════
+// NEW COMPONENTS FOR DETAILED EVALUATION
+// ═══════════════════════════════════════════════════════════
+
+function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
+    const container = document.getElementById('quarterly-ytd-evaluation-container');
+    const ratios = liveData.ratios || [];
+    const isrecs = liveData.incomeYears?.quarters || [];
+    
+    // Sort quarters chronologically
+    const quarters = isrecs
+        .filter(q => q.quarter >= 1 && q.quarter <= 4)
+        .sort((a, b) => a.yearReport !== b.yearReport ? a.yearReport - b.yearReport : a.quarter - b.quarter);
+    
+    if (quarters.length < 5) {
+        container.innerHTML = `<div class="loading-state">Không đủ dữ liệu quý để tính toán tăng trưởng.</div>`;
+        return;
+    }
+
+    const latestQ = quarters[quarters.length - 1];
+    const prevQ = quarters[quarters.length - 2];
+    
+    // Find same quarter last year
+    const sameQLastYear = quarters.find(q => q.yearReport === latestQ.yearReport - 1 && q.quarter === latestQ.quarter);
+    
+    // 1. Calculate growth metrics
+    const revFieldName = cfg.incomeField; // Net interest income for banks or net revenue for others
+    const npatFieldName = cfg.npat;
+
+    const latestRev = latestQ[revFieldName] || 0;
+    const prevRev = prevQ[revFieldName] || 0;
+    const sameLastYearRev = sameQLastYear ? sameQLastYear[revFieldName] : 0;
+
+    const latestNpat = latestQ[npatFieldName] || 0;
+    const prevNpat = prevQ[npatFieldName] || 0;
+    const sameLastYearNpat = sameQLastYear ? sameQLastYear[npatFieldName] : 0;
+
+    const qoqRev = prevRev > 0 ? ((latestRev - prevRev) / prevRev * 100) : null;
+    const yoyRev = sameLastYearRev > 0 ? ((latestRev - sameLastYearRev) / sameLastYearRev * 100) : null;
+    
+    const qoqNpat = prevNpat > 0 ? ((latestNpat - prevNpat) / prevNpat * 100) : null;
+    const yoyNpat = sameLastYearNpat > 0 ? ((latestNpat - sameLastYearNpat) / sameLastYearNpat * 100) : null;
+
+    // 2. YTD Calculation
+    const currentYear = latestQ.yearReport;
+    const currentYearQuarters = quarters.filter(q => q.yearReport === currentYear);
+    const lastYearQuarters = quarters.filter(q => q.yearReport === currentYear - 1 && q.quarter <= latestQ.quarter);
+
+    const ytdRev = currentYearQuarters.reduce((sum, q) => sum + (q[revFieldName] || 0), 0);
+    const lastYtdRev = lastYearQuarters.reduce((sum, q) => sum + (q[revFieldName] || 0), 0);
+
+    const ytdNpat = currentYearQuarters.reduce((sum, q) => sum + (q[npatFieldName] || 0), 0);
+    const lastYtdNpat = lastYearQuarters.reduce((sum, q) => sum + (q[npatFieldName] || 0), 0);
+
+    const yoyYtdRev = lastYtdRev > 0 ? ((ytdRev - lastYtdRev) / lastYtdRev * 100) : null;
+    const yoyYtdNpat = lastYtdNpat > 0 ? ((ytdNpat - lastYtdNpat) / lastYtdNpat * 100) : null;
+
+    const formatGrowth = (val) => {
+        if (val === null || val === undefined) return '<span class="badge-growth flat">0.0%</span>';
+        if (val > 0) return `<span class="badge-growth up">▲ +${val.toFixed(1)}%</span>`;
+        if (val < 0) return `<span class="badge-growth down">▼ ${val.toFixed(1)}%</span>`;
+        return '<span class="badge-growth flat">0.0%</span>';
+    };
+
+    // 3. Generate summary texts
+    let commentary = '';
+    const nameRev = cfg.incomeLabel;
+    
+    if (yoyNpat && yoyNpat > 5) {
+        commentary = `KQKD quý ${latestQ.quarter}/${latestQ.yearReport} của ${ticker} ghi nhận sự tăng trưởng tích cực, với lợi nhuận sau thuế đạt ${formatNumber(latestNpat/1e9, 1)} tỷ đồng (${formatGrowth(yoyNpat)} so với cùng kỳ). `;
+    } else if (yoyNpat && yoyNpat < -5) {
+        commentary = `Kết quả kinh doanh quý gần nhất cho thấy tín hiệu chậm lại, LNST giảm ${formatGrowth(yoyNpat)} so với cùng kỳ do áp lực thu hẹp NIM/biên lợi nhuận hoặc chi phí tăng cao. `;
+    } else {
+        commentary = `Kết quả kinh doanh quý gần nhất của ${ticker} duy trì ở mức ổn định. `;
+    }
+
+    if (yoyYtdNpat) {
+        commentary += `Lũy kế từ đầu năm (YTD), LNST đạt ${formatNumber(ytdNpat/1e9, 1)} tỷ đồng, thay đổi ${yoyYtdNpat.toFixed(1)}% so với cùng kỳ năm trước.`;
+    }
+
+    container.innerHTML = `
+        <div class="quarterly-ytd-grid">
+            <div class="q-ytd-item">
+                <div class="q-ytd-header">
+                    <span class="q-ytd-title">Quý gần nhất (${latestQ.quarter}Q/${latestQ.yearReport})</span>
+                    <span style="font-size:0.75rem;color:var(--text-dim)">Đơn vị: Tỷ VND</span>
+                </div>
+                <div class="q-ytd-metrics">
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">${nameRev}</span>
+                        <span class="q-metric-value">${formatNumber(latestRev/1e9, 1)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Tăng trưởng QoQ (so quý trước)</span>
+                        <span>${formatGrowth(qoqRev)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Tăng trưởng YoY (cùng kỳ)</span>
+                        <span>${formatGrowth(yoyRev)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-ytd-item">
+                <div class="q-ytd-header">
+                    <span class="q-ytd-title">Lợi nhuận quý gần nhất</span>
+                    <span style="font-size:0.75rem;color:var(--text-dim)">Đơn vị: Tỷ VND</span>
+                </div>
+                <div class="q-ytd-metrics">
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Lợi nhuận sau thuế</span>
+                        <span class="q-metric-value">${formatNumber(latestNpat/1e9, 1)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Tăng trưởng QoQ (so quý trước)</span>
+                        <span>${formatGrowth(qoqNpat)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Tăng trưởng YoY (cùng kỳ)</span>
+                        <span>${formatGrowth(yoyNpat)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-ytd-item">
+                <div class="q-ytd-header">
+                    <span class="q-ytd-title">Lũy kế từ đầu năm (YTD)</span>
+                    <span style="font-size:0.75rem;color:var(--text-dim)">So với cùng kỳ</span>
+                </div>
+                <div class="q-ytd-metrics">
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Lũy kế Doanh thu/NII YTD</span>
+                        <span class="q-metric-value">${formatNumber(ytdRev/1e9, 1)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Tăng trưởng YTD Doanh thu/NII</span>
+                        <span>${formatGrowth(yoyYtdRev)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Lũy kế LNST YTD</span>
+                        <span class="q-metric-value">${formatNumber(ytdNpat/1e9, 1)}</span>
+                    </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Tăng trưởng YTD LNST</span>
+                        <span>${formatGrowth(yoyYtdNpat)}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="q-commentary-box">
+            <strong>📋 Nhận định nhanh Earning Release:</strong> ${commentary}
+        </div>
+    `;
+}
+
+function generateChartCommentaries(ticker, annualYears, ttmQuarters, cfg, localJson) {
+    // 1. Commentary for Revenue & NPAT chart
+    const revEl = document.getElementById('analysis-text-rev-npat');
+    if (revEl && annualYears.length >= 2) {
+        const last = annualYears[annualYears.length - 1];
+        const prev = annualYears[annualYears.length - 2];
+        const revField = cfg.incomeField;
+        const npatField = cfg.npat;
+        
+        const growthRev = prev[revField] > 0 ? ((last[revField] - prev[revField]) / prev[revField] * 100) : 0;
+        const growthNpat = prev[npatField] > 0 ? ((last[npatField] - prev[npatField]) / prev[npatField] * 100) : 0;
+        
+        revEl.innerHTML = `
+            Doanh thu/NII năm gần nhất đạt <strong>${formatNumber(last[revField]/1e12, 1)} nghìn tỷ</strong>, tăng trưởng <strong>${growthRev.toFixed(1)}% YoY</strong>. <br>
+            LNST tương ứng đạt <strong>${formatNumber(last[npatField]/1e12, 1)} nghìn tỷ</strong> (${growthNpat >= 0 ? '+' : ''}${growthNpat.toFixed(1)}% YoY). <br>
+            Nhìn chung, doanh nghiệp đang duy trì xu hướng ${growthNpat > 0 ? 'tăng trưởng tích cực' : 'đi ngang/sụt giảm'} về mặt hiệu quả kinh doanh cốt lõi.
+        `;
+    }
+
+    // 2. Commentary for ROE & EPS
+    const epsEl = document.getElementById('analysis-text-eps-equity');
+    if (epsEl && localJson?.ratios) {
+        const roeArr = localJson.ratios.roe || [];
+        const epsArr = localJson.data?.eps || [];
+        
+        if (roeArr.length > 0) {
+            const lastRoe = (roeArr[roeArr.length - 1] * 100).toFixed(1);
+            const lastEps = epsArr[epsArr.length - 1] ? formatNumber(epsArr[epsArr.length - 1]) : '-';
+            
+            epsEl.innerHTML = `
+                Tỷ suất sinh lợi trên vốn chủ sở hữu (ROE) đạt <strong>${lastRoe}%</strong> ở năm gần nhất. <br>
+                Thu nhập trên mỗi cổ phần (EPS) tương ứng là <strong>${lastEps} VND/CP</strong>. <br>
+                Mức hiệu quả ROE ${parseFloat(lastRoe) > 15 ? 'ở mức cao (>15%), chứng tỏ khả năng sinh lời hiệu quả của nguồn vốn.' : 'ở mức trung bình thấp, cần theo dõi xu hướng tái cơ cấu tài sản.'}
+            `;
+        }
+    } else {
+        epsEl.innerHTML = `Hiệu quả sử dụng vốn chủ sở hữu (ROE) và EPS được tối ưu hóa dựa trên cơ cấu nợ và hiệu năng phân bổ vốn tài sản của doanh nghiệp.`;
+    }
+
+    // 3. Commentary for P/E & P/B valuation
+    const peEl = document.getElementById('analysis-text-pe');
+    const pbEl = document.getElementById('analysis-text-pb');
+    
+    if (ttmQuarters.length > 0) {
+        const lastRatio = ttmQuarters[ttmQuarters.length - 1];
+        const peVals = ttmQuarters.map(q => q.pe).filter(v => v > 0);
+        const pbVals = ttmQuarters.map(q => q.pb).filter(v => v > 0);
+        
+        const peMedian = calcMedian(peVals);
+        const pbMedian = calcMedian(pbVals);
+
+        if (peEl && lastRatio.pe) {
+            const diffPe = ((lastRatio.pe - peMedian) / peMedian * 100).toFixed(1);
+            peEl.innerHTML = `
+                Hệ số P/E trailing hiện tại là <strong>${lastRatio.pe.toFixed(1)}x</strong>. <br>
+                Trung vị lịch sử của doanh nghiệp là <strong>${peMedian ? peMedian.toFixed(1) + 'x' : '-'}</strong>. <br>
+                Định giá P/E đang ${lastRatio.pe > peMedian ? `cao hơn trung vị (${diffPe}%), phản ánh kỳ vọng tăng trưởng lớn hoặc giá đang ở vùng đắt.` : `thấp hơn trung vị (${Math.abs(diffPe)}%), cho thấy biên an toàn định giá tương đối rẻ.`}
+            `;
+        }
+
+        if (pbEl && lastRatio.pb) {
+            const diffPb = ((lastRatio.pb - pbMedian) / pbMedian * 100).toFixed(1);
+            pbEl.innerHTML = `
+                Hệ số P/B trailing hiện tại là <strong>${lastRatio.pb.toFixed(2)}x</strong>. <br>
+                Trung vị lịch sử của doanh nghiệp là <strong>${pbMedian ? pbMedian.toFixed(2) + 'x' : '-'}</strong>. <br>
+                Vùng định giá P/B hiện tại ${lastRatio.pb > pbMedian ? `nằm trên trung vị lịch sử (${diffPb}%)` : `nằm dưới trung vị lịch sử (${Math.abs(diffPb)}%)`} là cơ sở để cân nhắc tích lũy.
+            `;
+        }
+    }
+}
+

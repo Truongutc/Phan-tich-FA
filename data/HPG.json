@@ -123,6 +123,97 @@
     "2025-Q4",
     "2026-Q1"
   ],
+  "thesis": [
+    "Hoa Phat Group Joint Stock Company có vị thế cạnh tranh tốt trong ngành và tiềm năng tăng trưởng dài hạn.",
+    "Dòng tiền hoạt động ổn định và cơ cấu tài chính lành mạnh hỗ trợ chiến lược mở rộng.",
+    "Đội ngũ quản lý có kinh nghiệm với track record thực thi tốt kế hoạch kinh doanh."
+  ],
+  "risks": [
+    "Rủi ro kinh tế vĩ mô và biến động lãi suất có thể ảnh hưởng đến chi phí vốn.",
+    "Cạnh tranh trong ngành ngày càng gay gắt đòi hỏi đầu tư liên tục vào năng lực cạnh tranh.",
+    "Rủi ro thực thi chiến lược và phụ thuộc vào một số khách hàng/sản phẩm chủ lực."
+  ],
+  "moats": {
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thương hiệu và uy tín trong ngành được xây dựng qua nhiều năm hoạt động."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Tối ưu hóa quy trình vận hành giúp duy trì biên lợi nhuận cạnh tranh."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Mức độ gắn kết với khách hàng ở mức trung bình."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô phù hợp để vận hành hiệu quả trong thị trường nội địa."
+    },
+    "Network Effect": {
+      "score": 2,
+      "desc": "Hiệu ứng mạng lưới còn hạn chế trong mô hình kinh doanh hiện tại."
+    }
+  },
+  "pestle": {
+    "Political": "Chính sách vĩ mô và định hướng phát triển ngành của Chính phủ tác động đến môi trường kinh doanh.",
+    "Economic": "Tăng trưởng GDP, lãi suất và lạm phát ảnh hưởng đến nhu cầu và chi phí hoạt động.",
+    "Social": "Thay đổi xu hướng tiêu dùng và nhân khẩu học tạo cả cơ hội và thách thức.",
+    "Technological": "Chuyển đổi số và tự động hóa là xu hướng quan trọng cần đầu tư bắt kịp.",
+    "Legal": "Tuân thủ các quy định pháp luật và tiêu chuẩn ngành là yêu cầu cơ bản.",
+    "Environmental": "Áp lực ESG và báo cáo phát triển bền vững ngày càng trở thành yêu cầu của nhà đầu tư."
+  },
+  "comments": {
+    "overall": "Hoa Phat Group Joint Stock Company (HPG) có nền tảng kinh doanh ổn định với tiềm năng tăng trưởng trong trung dài hạn.",
+    "financial": "Tỷ suất sinh lợi (ROE, ROA) và tốc độ tăng trưởng lợi nhuận là chỉ số then chốt cần theo dõi.",
+    "valuation": "P/E và P/B là phương pháp định giá phổ biến, cần so sánh với mức bình quân ngành."
+  },
+  "ratios": {
+    "nim": [],
+    "roe": [
+      0.3798,
+      0.0883,
+      0.0665,
+      0.1049,
+      0.1178,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "roa": [
+      0.1934,
+      0.0498,
+      0.0364,
+      0.0536,
+      0.0599,
+      0.02,
+      0.02,
+      0.02
+    ],
+    "npl": [],
+    "ldr": [],
+    "casa": [],
+    "gross_margin": [
+      0.2746,
+      0.1185,
+      0.1088,
+      0.1332,
+      0.1569,
+      0.15841743198664976,
+      0.15841743198664976,
+      0.15841743198664976
+    ],
+    "debt_to_equity": [
+      0.63,
+      0.6,
+      0.64,
+      0.72,
+      0.7,
+      0.5,
+      0.5,
+      0.5
+    ]
+  },
   "data": {
     "years": [
       2021,
@@ -174,50 +265,5 @@
       156312.21633802183,
       169806.9268361902
     ]
-  },
-  "thesis": [
-    "Hoa Phat Group Joint Stock Company la doanh nghiep thep hang dau Viet Nam voi loi the quy mo va kha nang chi phoi chuoi gia tri tu quang sat den san pham cuoi.",
-    "Chuoi Dung Quat 2 se dua cong suat len 8.6 trieu tan/nam, tang cuong vi the so 1 Dong Nam A trong dai han.",
-    "Co cau tai chinh an toan, ty le don bay duoc kiem soat va dong tien tu kinh doanh on dinh qua chu ky."
-  ],
-  "risks": [
-    "Bien dong gia quang sat va than coke nhap khau lam co hep bien loi nhuan gop trong ngan han.",
-    "Nhu cau thep trong nuoc phu thuoc vao chu ky bat dong san va dau tu cong - can theo doi sat.",
-    "Canh tranh tu thep nhap khau gia re tu Trung Quoc va ap luc tu cac bien phap phong ve thuong mai."
-  ],
-  "moats": {
-    "Cost Advantage": {
-      "score": 5,
-      "desc": "Quy mo san xuat khong lo tao loi the chi phi tren moi tan san pham vuot troi so voi doi thu."
-    },
-    "Efficient Scale": {
-      "score": 5,
-      "desc": "He thong lo cao tich hop vertical giup kiem soat toan bo chuoi san xuat tu quang den thep."
-    },
-    "Intangible Assets": {
-      "score": 3,
-      "desc": "Thuong hieu HPG va mang luoi phan phoi rong khap toan quoc."
-    },
-    "Switching Cost": {
-      "score": 2,
-      "desc": "Khach hang B2B co the chuyen nha cung cap tuong doi de dang."
-    },
-    "Network Effect": {
-      "score": 1,
-      "desc": "Hieu ung mang luoi han che trong nganh san xuat."
-    }
-  },
-  "pestle": {
-    "Political": "Chinh sach thue chong pha gia va bao ho thep noi dia anh huong lon den canh tranh nhap khau.",
-    "Economic": "Chu ky dau tu ha tang, BDS va gia thep toan cau la bien so quan trong nhat.",
-    "Social": "Nhu cau xay dung nha o va co so ha tang do thi hoa tao thi truong noi dia lon.",
-    "Technological": "Cong nghe EAF (lo dien) than thien moi truong la xu huong chuyen dich cua nganh thep.",
-    "Legal": "Quy dinh phat thai CO2 va tieu chuan moi truong ngay cang chat che voi nganh thep.",
-    "Environmental": "Nganh thep la nguon phat thai CO2 lon - chuyen doi sang thep xanh la ap luc ESG dai han."
-  },
-  "comments": {
-    "overall": "Hoa Phat Group Joint Stock Company (HPG) la co phieu chu ky nganh thep - gia co phieu phu thuoc nhieu vao gia thep the gioi va chu ky dau tu.",
-    "financial": "Bien gop va EBITDA la chi tieu theo doi quan trong. Chi phi nguyen lieu/gia thep la bien so then chot.",
-    "valuation": "EV/EBITDA va P/Book la phuong phap pho bien cho nganh vat lieu co ban."
   }
 }

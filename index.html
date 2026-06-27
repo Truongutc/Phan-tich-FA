@@ -114,41 +114,82 @@
             <!-- Injected by JS -->
         </div>
 
+        <!-- NEW: Earning Release & YTD Evaluation Card -->
+        <div class="card quarterly-ytd-card margin-top-20">
+            <h3 class="border-blue">🚀 Đánh giá Quý gần nhất &amp; Lũy kế YTD</h3>
+            <div id="quarterly-ytd-evaluation-container">
+                <!-- Injected dynamically by JS -->
+                <div class="loading-state">Đang tính toán số liệu tăng trưởng quý...</div>
+            </div>
+        </div>
+
         <!-- Two-column: Charts Left | Moat+Valuation Right -->
-        <div class="dashboard-grid-two">
+        <div class="dashboard-grid-two margin-top-20">
 
             <!-- LEFT: Charts -->
             <div class="col-left">
 
-                <!-- Chart 1: Primary Income Chart (label changes per sector) -->
-                <div class="card chart-card">
-                    <h3 id="chart1-title">Doanh thu &amp; Lợi nhuận sau thuế</h3>
-                    <div class="chart-container">
-                        <canvas id="revNpatChart"></canvas>
+                <!-- Chart 1: Primary Income Chart (Split Layout) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3 id="chart1-title">Doanh thu &amp; Lợi nhuận sau thuế</h3>
+                        <div class="chart-container">
+                            <canvas id="revNpatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💡 Phân tích Xu hướng KQKD</h4>
+                        <div id="analysis-text-rev-npat" class="chart-analysis-text">
+                            Đang phân tích xu hướng tăng trưởng...
+                        </div>
                     </div>
                 </div>
 
-                <!-- Chart 2: Secondary Chart (EPS / Equity for non-banks; hidden for banks) -->
-                <div class="card chart-card margin-top-20" id="chart2-card">
-                    <h3 id="chart2-title">EPS &amp; Vốn chủ sở hữu</h3>
-                    <div class="chart-container">
-                        <canvas id="epsEquityChart"></canvas>
+                <!-- Chart 2: Secondary Chart (Split Layout) -->
+                <div class="chart-card-split margin-top-20" id="chart2-card">
+                    <div class="chart-split-left">
+                        <h3 id="chart2-title">EPS &amp; Vốn chủ sở hữu</h3>
+                        <div class="chart-container">
+                            <canvas id="epsEquityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📈 Đánh giá Hiệu quả Vốn (ROE) &amp; EPS</h4>
+                        <div id="analysis-text-eps-equity" class="chart-analysis-text">
+                            Đang phân tích hiệu suất sử dụng vốn...
+                        </div>
                     </div>
                 </div>
 
-                <!-- Chart 3: P/E TTM -->
-                <div class="card chart-card margin-top-20" id="chart-pe-card">
-                    <h3 id="chart-pe-title">Định giá Lịch sử P/E - TTM</h3>
-                    <div class="chart-container">
-                        <canvas id="peChart"></canvas>
+                <!-- Chart 3: P/E TTM (Split Layout) -->
+                <div class="chart-card-split margin-top-20" id="chart-pe-card">
+                    <div class="chart-split-left">
+                        <h3 id="chart-pe-title">Định giá Lịch sử P/E - TTM</h3>
+                        <div class="chart-container">
+                            <canvas id="peChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🔍 Nhận định Hệ số P/E</h4>
+                        <div id="analysis-text-pe" class="chart-analysis-text">
+                            Đang so sánh P/E với trung vị lịch sử...
+                        </div>
                     </div>
                 </div>
 
-                <!-- Chart 4: P/B TTM -->
-                <div class="card chart-card margin-top-20">
-                    <h3>Định giá Lịch sử P/B - TTM</h3>
-                    <div class="chart-container">
-                        <canvas id="pbChart"></canvas>
+                <!-- Chart 4: P/B TTM (Split Layout) -->
+                <div class="chart-card-split margin-top-20">
+                    <div class="chart-split-left">
+                        <h3>Định giá Lịch sử P/B - TTM</h3>
+                        <div class="chart-container">
+                            <canvas id="pbChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📊 Nhận định Hệ số P/B</h4>
+                        <div id="analysis-text-pb" class="chart-analysis-text">
+                            Đang so sánh P/B với trung vị lịch sử...
+                        </div>
                     </div>
                 </div>
             </div>

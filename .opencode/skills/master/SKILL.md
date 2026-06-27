@@ -140,6 +140,8 @@ HOÀN THÀNH: Báo user đường dẫn file + khuyến nghị đầu tư.
 ☐ JSON: data.years cùng độ dài với revenue/npat/eps/equity?
 ☐ JSON: moats đủ 5 keys? pestle đủ 6 items?
 ☐ JSON: pe_quarters và quarter_labels cùng độ dài?
+☐ Web Dashboard: Đã kiểm tra giao diện biểu đồ dạng Split Layout (Biểu đồ bên trái, văn bản nhận xét phân tích bên phải)?
+☐ Web Dashboard: Đã hiển thị cụm "Đánh giá Quý gần nhất & Lũy kế YTD" với các số liệu so sánh QoQ, YoY và YTD cùng kỳ?
 ```
 
 ### SAU PHASE 4 (PIPELINE):
