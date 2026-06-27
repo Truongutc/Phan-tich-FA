@@ -962,8 +962,25 @@ function formatNumber(num, decimals = 0) {
 
 function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
     const container = document.getElementById('quarterly-ytd-evaluation-container');
-    const isrecs = liveData.incomeYears?.quarters || [];
+    let isrecs = liveData.incomeYears?.quarters || [];
     
+    // ── Fallback: read from localJson.income_quarterly if live API has no quarters ──
+    if (isrecs.length < 5 && localJson?.income_quarterly?.length >= 5) {
+        // income_quarterly records have {yearReport, quarter, nii, npat} in billion VND
+        // We map them to a format compatible with the existing logic below
+        // but using the local fields directly (nii → cfg.incomeField, npat → cfg.npat)
+        isrecs = localJson.income_quarterly.map(r => ({
+            yearReport: r.yearReport,
+            quarter: r.quarter,
+            // Store raw values in billion VND — we'll use _local_ flag below
+            _nii_ty: r.nii,
+            _npat_ty: r.npat,
+            // Fake the field names so generic code below still works (values × 1e9)
+            [cfg.incomeField]: (r.nii || 0) * 1e9,
+            [cfg.npat]: (r.npat || 0) * 1e9,
+        }));
+    }
+
     // Sort quarters chronologically
     const quarters = isrecs
         .filter(q => q.quarter >= 1 && q.quarter <= 4)

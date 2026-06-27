@@ -414,6 +414,22 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     except Exception as e:
         print(f"[WARN] Failed to fetch live ratios: {e}")
 
+    # Build income_quarterly for dashboard fallback
+    income_quarterly_records = []
+    for r in is_q_recs:
+        yr = r.get("yearReport")
+        qt = r.get("quarter")
+        if yr and qt in (1, 2, 3, 4):
+            nii_q = r.get("isb27") or r.get("isb22") or 0
+            npat_q = r.get("isa22") or r.get("isa20") or 0
+            income_quarterly_records.append({
+                "yearReport": yr,
+                "quarter": qt,
+                "nii": round(nii_q / 1e9, 2),   # ty VND
+                "npat": round(npat_q / 1e9, 2),  # ty VND
+            })
+    income_quarterly_records.sort(key=lambda x: (x["yearReport"], x["quarter"]))
+
     summary_json = {
         "ticker": ticker,
         "companyName": company_name,
@@ -428,6 +444,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         "pe_quarters": pe_quarters,
         "pb_quarters": pb_quarters,
         "quarter_labels": quarter_labels,
+        "income_quarterly": income_quarterly_records,
         "ratios_quarterly": {
             "quarters": q_labels,
             "nim": [round(x, 4) for x in q_nims],
