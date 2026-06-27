@@ -160,11 +160,15 @@ def fetch_vietcap_metadata(ticker: str) -> dict:
     except Exception as e:
         print(f"[WARN] Could not fetch BS data: {e}")
 
-    # 4. Historical P/E, P/B
-    try:
         r = s.get(f"{VIETCAP_BASE}/company/{ticker}/statistics-financial", timeout=10)
         r.raise_for_status()
         ratios = r.json().get("data", [])
+        # All quarters sorted chronologically
+        all_quarters = sorted([x for x in ratios if x.get("quarter") in (1,2,3,4)], key=lambda x: (x.get("year", 0), x.get("quarter", 0)))
+        result["financial_summary"]["pe_quarters"] = [round(x.get("pe", 0) or 0, 2) for x in all_quarters]
+        result["financial_summary"]["pb_quarters"] = [round(x.get("pb", 0) or 0, 2) for x in all_quarters]
+        result["financial_summary"]["quarter_labels"] = [f"{x.get('year')}-Q{x.get('quarter')}" for x in all_quarters]
+        
         # Keep last 5 annual entries
         annual_ratios = sorted([x for x in ratios if x.get("quarter") == 4], key=lambda x: x.get("year", 0))[-5:]
         result["financial_summary"]["pe_hist"] = [round(x.get("pe", 0) or 0, 1) for x in annual_ratios]
@@ -174,6 +178,7 @@ def fetch_vietcap_metadata(ticker: str) -> dict:
         print(f"[WARN] Could not fetch ratios data: {e}")
 
     return result
+
 
 
 def load_instructions_excerpt() -> str:
@@ -345,6 +350,19 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
 6. **JSON Summary Export**:
    - Save `data/{ticker}.json` with: ticker, companyName, sector, currentPrice, marketCap, shares, gdrivePdfUrl=None, gdriveExcelUrl=None
    - data dict: years (hist+fc), revenue (hist+fc), npat (hist+fc), eps (hist+fc), equity (hist+fc)
+   - Add rich evaluation data for dashboard:
+     - `thesis`: list of 3 detailed investment thesis paragraphs (Vietnamese).
+     - `risks`: list of 3 detailed investment risk points (Vietnamese).
+     - `moats`: dict with competitive advantage scorecards (Network Effect, Cost Advantage, Switching Cost, Intangible Assets, Efficient Scale) from 1 to 5, and a brief description for each.
+     - `pestle`: list of 6 dicts, each with keys: `factor` (Political, Economic, etc.), `content` (description), `impact` (Positive, Neutral, Negative).
+     - `valuation`: dict with scenario target prices: `bear`, `base`, `bull`, plus corresponding target multiples.
+     - `comments`: dict containing longer written text for: `businessModel` (Vietnamese, ~100 words), `financialPerformance` (~100 words), `valuationText` (~100 words).
+     - `pe_hist`: list of historical P/E multiples (for the historical years).
+     - `pb_hist`: list of historical P/B multiples (for the historical years).
+     - `pe_quarters`: list of all quarterly P/E values from statistics-financial.
+     - `pb_quarters`: list of all quarterly P/B values from statistics-financial.
+     - `quarter_labels`: list of strings for quarter names corresponding to pe_quarters/pb_quarters (e.g. ["2021-Q1", "2021-Q2", ...]).
+
 
 7. **Main execution**:
    - Create output directories

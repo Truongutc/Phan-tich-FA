@@ -1,12 +1,128 @@
 {
   "ticker": "HPG",
-  "companyName": "CTCP Tập đoàn Hòa Phát",
-  "sector": "Thép (Sản xuất Commodity)",
-  "currentPrice": 23600,
-  "marketCap": 199295884201600,
-  "shares": 8444740856,
+  "companyName": "Hoa Phat Group Joint Stock Company",
+  "sector": "Basic Resources",
+  "currentPrice": 23500.0,
+  "marketCap": 198409666220000.0,
+  "shares": 8442964520.0,
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
+  "pe_hist": [
+    5.6,
+    14.2,
+    25.5,
+    13.8,
+    13.9
+  ],
+  "pb_hist": [
+    2.14,
+    1.25,
+    1.69,
+    1.45,
+    1.67
+  ],
+  "pe_quarters": [
+    9.14,
+    9.12,
+    6.69,
+    8.2,
+    7.48,
+    7.52,
+    9.5,
+    8.11,
+    9.74,
+    11.77,
+    12.1,
+    13.57,
+    11.09,
+    6.21,
+    5.62,
+    3.63,
+    3.78,
+    6.48,
+    14.15,
+    236.43,
+    -78.62,
+    84.39,
+    25.48,
+    19.58,
+    15.49,
+    13.57,
+    13.75,
+    15.82,
+    16.2,
+    14.53,
+    13.93,
+    9.4
+  ],
+  "pb_quarters": [
+    1.64,
+    2.25,
+    1.58,
+    1.74,
+    1.45,
+    1.36,
+    1.52,
+    1.28,
+    1.56,
+    1.95,
+    2.37,
+    3.09,
+    3.04,
+    2.34,
+    2.14,
+    1.31,
+    1.14,
+    1.18,
+    1.25,
+    1.63,
+    1.53,
+    1.58,
+    1.69,
+    1.73,
+    1.59,
+    1.48,
+    1.45,
+    1.68,
+    1.79,
+    1.67,
+    1.67,
+    1.43
+  ],
+  "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
+  ],
   "data": {
     "years": [
       2021,
@@ -15,43 +131,93 @@
       2024,
       2025,
       2026,
-      2027
+      2027,
+      2028
     ],
     "revenue": [
-      22356,
-      142800,
-      120355,
-      142700,
-      154000,
-      168000,
-      185000
+      149679.789979345,
+      141409.274460632,
+      118953.027893654,
+      138855.112131387,
+      156116.094618482,
+      163921.8993494061,
+      172117.9943168764,
+      180723.8940327202
     ],
     "npat": [
-      34575,
-      8444,
-      6800,
-      13500,
-      15800,
-      17200,
-      19500
+      34478.14319746,
+      8483.510554031,
+      6835.064334356,
+      12021.443836074,
+      15453.174006223,
+      17485.857464422887,
+      18360.15033764403,
+      19278.15785452623
     ],
     "eps": [
-      4094,
-      1000,
-      805,
-      1598,
-      1870,
-      2036,
-      2309
+      7166.0,
+      1452.0,
+      1117.0,
+      1751.0,
+      1973.0,
+      2071.056608493587,
+      2174.6094389182663,
+      2283.3399108641797
     ],
     "equity": [
-      98000,
-      102000,
-      105000,
-      115000,
-      125000,
-      138000,
-      152000
+      90780.625511439,
+      96112.939615783,
+      102836.419239379,
+      114647.457983699,
+      131220.010876575,
+      143460.111101671,
+      156312.21633802183,
+      169806.9268361902
     ]
+  },
+  "thesis": [
+    "Hoa Phat Group Joint Stock Company la doanh nghiep thep hang dau Viet Nam voi loi the quy mo va kha nang chi phoi chuoi gia tri tu quang sat den san pham cuoi.",
+    "Chuoi Dung Quat 2 se dua cong suat len 8.6 trieu tan/nam, tang cuong vi the so 1 Dong Nam A trong dai han.",
+    "Co cau tai chinh an toan, ty le don bay duoc kiem soat va dong tien tu kinh doanh on dinh qua chu ky."
+  ],
+  "risks": [
+    "Bien dong gia quang sat va than coke nhap khau lam co hep bien loi nhuan gop trong ngan han.",
+    "Nhu cau thep trong nuoc phu thuoc vao chu ky bat dong san va dau tu cong - can theo doi sat.",
+    "Canh tranh tu thep nhap khau gia re tu Trung Quoc va ap luc tu cac bien phap phong ve thuong mai."
+  ],
+  "moats": {
+    "Cost Advantage": {
+      "score": 5,
+      "desc": "Quy mo san xuat khong lo tao loi the chi phi tren moi tan san pham vuot troi so voi doi thu."
+    },
+    "Efficient Scale": {
+      "score": 5,
+      "desc": "He thong lo cao tich hop vertical giup kiem soat toan bo chuoi san xuat tu quang den thep."
+    },
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thuong hieu HPG va mang luoi phan phoi rong khap toan quoc."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Khach hang B2B co the chuyen nha cung cap tuong doi de dang."
+    },
+    "Network Effect": {
+      "score": 1,
+      "desc": "Hieu ung mang luoi han che trong nganh san xuat."
+    }
+  },
+  "pestle": {
+    "Political": "Chinh sach thue chong pha gia va bao ho thep noi dia anh huong lon den canh tranh nhap khau.",
+    "Economic": "Chu ky dau tu ha tang, BDS va gia thep toan cau la bien so quan trong nhat.",
+    "Social": "Nhu cau xay dung nha o va co so ha tang do thi hoa tao thi truong noi dia lon.",
+    "Technological": "Cong nghe EAF (lo dien) than thien moi truong la xu huong chuyen dich cua nganh thep.",
+    "Legal": "Quy dinh phat thai CO2 va tieu chuan moi truong ngay cang chat che voi nganh thep.",
+    "Environmental": "Nganh thep la nguon phat thai CO2 lon - chuyen doi sang thep xanh la ap luc ESG dai han."
+  },
+  "comments": {
+    "overall": "Hoa Phat Group Joint Stock Company (HPG) la co phieu chu ky nganh thep - gia co phieu phu thuoc nhieu vao gia thep the gioi va chu ky dau tu.",
+    "financial": "Bien gop va EBITDA la chi tieu theo doi quan trong. Chi phi nguyen lieu/gia thep la bien so then chot.",
+    "valuation": "EV/EBITDA va P/Book la phuong phap pho bien cho nganh vat lieu co ban."
   }
 }

@@ -3,126 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phân Tích Cổ Phiếu Việt Nam — ITE Group</title>
-    <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa">
+    <title>AIC FA System — Hệ thống Phân Tích Cơ Bản Chuyên Sâu</title>
+    <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa theo nhóm ngành">
+
+    <!-- Favicon & Mobile Icons -->
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="shortcut icon" type="image/png" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar/Navbar -->
-        <header class="navbar">
-            <div class="logo">
-                <span class="logo-icon">📊</span>
-                <div class="logo-text">
-                    <h1>ITE FA SYSTEM</h1>
-                    <small>Hệ thống Phân Tích Cơ Bản</small>
+<div class="app-shell">
+
+    <!-- ══════════════════════════════════════════
+         TOP NAVBAR — persistent across all views
+    ══════════════════════════════════════════ -->
+    <header class="top-navbar">
+        <button class="logo-btn" id="home-btn" onclick="goHome()" title="Quay lại Tổng quan">
+            <img src="logoaic.png" alt="AIC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">AIC FA SYSTEM</span>
+                <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
+            </div>
+        </button>
+
+        <!-- Breadcrumb: shows current sector > ticker when in analysis view -->
+        <div class="nav-breadcrumb" id="nav-breadcrumb">
+            <span class="breadcrumb-home">Tổng quan</span>
+        </div>
+
+        <!-- Sector badge (hidden on overview) -->
+        <div class="sector-badge-nav" id="sector-badge-nav" style="display:none">
+            <span class="sector-icon-nav" id="sector-icon-nav">🏦</span>
+            <span class="sector-label-nav" id="sector-label-nav">Ngân Hàng</span>
+        </div>
+
+        <button class="home-text-btn" id="back-btn" onclick="goHome()" style="display:none">
+            ← Chọn cổ phiếu khác
+        </button>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 1: OVERVIEW (default)
+    ══════════════════════════════════════════ -->
+    <main id="view-overview" class="view view-overview" style="display:flex">
+
+        <!-- Hero intro (compact) -->
+        <div class="overview-hero card">
+            <div class="hero-content">
+                <div class="hero-icon">📊</div>
+                <h2>AIC FA System — Phân Tích Cơ Bản Chuyên Sâu</h2>
+                <p>Chọn mã cổ phiếu để xem dashboard theo đúng nhóm ngành. Hệ thống tự nhận diện ngành và hiển thị các chỉ số, biểu đồ phù hợp.</p>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+                    <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing"
+                       target="_blank" class="btn btn-secondary">📁 Google Drive ↗</a>
                 </div>
             </div>
-            <div class="stock-selector-container">
-                <label for="stock-select">Chọn mã phân tích:</label>
-                <select id="stock-select">
-                    <option value="" disabled selected>Đang tải danh sách...</option>
-                </select>
-            </div>
-        </header>
+        </div>
 
-        <!-- Main Dashboard -->
-        <main class="dashboard-content">
-            <!-- Welcome View (Shown when no stock selected or loading) -->
-            <div id="welcome-view" class="card welcome-card">
-                <h2>Chào mừng đến với Dashboard Phân Tích Cổ Phiếu</h2>
-                <p>Vui lòng chọn một mã cổ phiếu ở góc phải để xem phân tích tài chính chi tiết, biểu đồ trực quan và tải về các file báo cáo PDF, Excel tương ứng.</p>
-                <div class="drive-link-box">
-                    <span>Thư mục tổng hợp báo cáo:</span>
-                    <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing" target="_blank" class="btn btn-secondary">
-                        Tru cập Google Drive ↗
+        <!-- Search Bar -->
+        <div class="search-bar-wrap">
+            <div class="search-bar card">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="stock-search-input" placeholder="Tìm kiếm mã cổ phiếu hoặc tên công ty..." autocomplete="off">
+                <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
+            </div>
+        </div>
+
+        <!-- Sector groups: populated by JS -->
+        <div id="sector-groups-container">
+            <div class="loading-state card">
+                <span>Đang tải danh sách cổ phiếu...</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 2: ANALYSIS (sector-adaptive)
+    ══════════════════════════════════════════ -->
+    <main id="view-analysis" class="view view-analysis" style="display:none">
+
+        <!-- Header Info Card -->
+        <div class="card header-card">
+            <div class="sector-ribbon" id="sector-ribbon">NGÂN HÀNG</div>
+            <div class="header-main">
+                <div class="header-info">
+                    <span id="ticker-badge" class="badge">TCB</span>
+                    <h2 id="company-name">Ngân hàng TMCP Kỹ thương Việt Nam</h2>
+                    <p id="company-sector" class="subtitle">Banks</p>
+                </div>
+                <div class="actions">
+                    <a id="download-pdf" href="#" target="_blank" class="btn btn-primary hidden">
+                        📥 Báo Cáo PDF
+                    </a>
+                    <a id="download-excel" href="#" target="_blank" class="btn btn-excel hidden">
+                        🟢 Excel Model
                     </a>
                 </div>
             </div>
+        </div>
 
-            <!-- Active Analysis View (Hidden by default) -->
-            <div id="analysis-view" class="analysis-view hidden">
-                <!-- Header Info Card -->
-                <div class="card header-card">
-                    <div class="header-main">
-                        <div>
-                            <span id="ticker-badge" class="badge">HPG</span>
-                            <h2 id="company-name">CTCP Tập đoàn Hòa Phát</h2>
-                            <p id="company-sector" class="subtitle">Thép (Sản xuất Commodity)</p>
-                        </div>
-                        <div class="actions">
-                            <a id="download-pdf" href="#" target="_blank" class="btn btn-primary">
-                                📥 Tải Báo Cáo PDF
-                            </a>
-                            <a id="download-excel" href="#" target="_blank" class="btn btn-excel">
-                                🟢 Tải Excel Model
-                            </a>
-                        </div>
+        <!-- Dynamic Metrics Grid (populated by JS per sector) -->
+        <div class="metrics-grid" id="dynamic-metrics-grid">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- Two-column: Charts Left | Moat+Valuation Right -->
+        <div class="dashboard-grid-two">
+
+            <!-- LEFT: Charts -->
+            <div class="col-left">
+
+                <!-- Chart 1: Primary Income Chart (label changes per sector) -->
+                <div class="card chart-card">
+                    <h3 id="chart1-title">Doanh thu &amp; Lợi nhuận sau thuế</h3>
+                    <div class="chart-container">
+                        <canvas id="revNpatChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Metrics Grid -->
-                <div class="metrics-grid">
-                    <div class="card metric-card">
-                        <span class="metric-label">Giá hiện tại</span>
-                        <span id="metric-price" class="metric-value">- VND</span>
-                    </div>
-                    <div class="card metric-card">
-                        <span class="metric-label">Vốn hóa</span>
-                        <span id="metric-mcap" class="metric-value">- tỷ VND</span>
-                    </div>
-                    <div class="card metric-card">
-                        <span class="metric-label">Số lượng CP lưu hành</span>
-                        <span id="metric-shares" class="metric-value">- CP</span>
+                <!-- Chart 2: Secondary Chart (EPS / Equity for non-banks; hidden for banks) -->
+                <div class="card chart-card margin-top-20" id="chart2-card">
+                    <h3 id="chart2-title">EPS &amp; Vốn chủ sở hữu</h3>
+                    <div class="chart-container">
+                        <canvas id="epsEquityChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Charts Section -->
-                <div class="charts-grid">
-                    <div class="card chart-card">
-                        <h3>Doanh thu & Lợi nhuận sau thuế</h3>
-                        <div class="chart-container">
-                            <canvas id="revNpatChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card chart-card">
-                        <h3>EPS & Vốn chủ sở hữu</h3>
-                        <div class="chart-container">
-                            <canvas id="epsEquityChart"></canvas>
-                        </div>
+                <!-- Chart 3: P/E TTM -->
+                <div class="card chart-card margin-top-20" id="chart-pe-card">
+                    <h3 id="chart-pe-title">Định giá Lịch sử P/E - TTM</h3>
+                    <div class="chart-container">
+                        <canvas id="peChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Data Table Section -->
-                <div class="card table-card">
-                    <h3>Bảng dữ liệu tài chính chi tiết</h3>
-                    <div class="table-wrapper">
-                        <table id="financial-table">
-                            <thead>
-                                <tr>
-                                    <th>Chỉ tiêu</th>
-                                    <!-- Dynamic years headers -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic rows -->
-                            </tbody>
-                        </table>
+                <!-- Chart 4: P/B TTM -->
+                <div class="card chart-card margin-top-20">
+                    <h3>Định giá Lịch sử P/B - TTM</h3>
+                    <div class="chart-container">
+                        <canvas id="pbChart"></canvas>
                     </div>
                 </div>
             </div>
-        </main>
 
-        <footer class="footer">
-            <p>© 2026 ITE Group. Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
-        </footer>
-    </div>
+            <!-- RIGHT: Moat + Valuation -->
+            <div class="col-right">
+                <div class="card moat-card">
+                    <h3>Lợi thế cạnh tranh (Moat Scorecard)</h3>
+                    <div class="moat-list" id="moat-scorecard-list"></div>
+                </div>
 
-    <script src="app.js"></script>
+                <div class="card valuation-card margin-top-20">
+                    <h3>Định giá &amp; Kịch bản đầu tư</h3>
+                    <div class="scenarios-grid">
+                        <div class="scenario-box bear">
+                            <div class="scenario-title">Bear Case</div>
+                            <div class="scenario-price" id="val-bear">- VND</div>
+                        </div>
+                        <div class="scenario-box base">
+                            <div class="scenario-title">Base Case</div>
+                            <div class="scenario-price" id="val-base">- VND</div>
+                        </div>
+                        <div class="scenario-box bull">
+                            <div class="scenario-title">Bull Case</div>
+                            <div class="scenario-price" id="val-bull">- VND</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank-specific extra metrics card (shown for banks only) -->
+                <div class="card bank-kpi-card margin-top-20 hidden" id="bank-kpi-card">
+                    <h3>Chỉ số Ngân hàng then chốt</h3>
+                    <div class="bank-kpi-grid" id="bank-kpi-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Thesis + Risks -->
+        <div class="dashboard-grid-two margin-top-20">
+            <div class="card thesis-card">
+                <h3 class="border-blue">Luận điểm đầu tư (Thesis)</h3>
+                <ul id="thesis-list" class="thesis-ul"></ul>
+            </div>
+            <div class="card risks-card">
+                <h3 class="border-red">Rủi ro chính (Investment Risks)</h3>
+                <ul id="risks-list" class="risks-ul"></ul>
+            </div>
+        </div>
+
+        <!-- PESTLE -->
+        <div class="card pestle-card margin-top-20">
+            <h3>Bối cảnh vĩ mô (PESTLE Matrix)</h3>
+            <div class="pestle-grid" id="pestle-grid-container"></div>
+        </div>
+
+        <!-- Commentary -->
+        <div class="card commentary-card margin-top-20">
+            <h3>Đánh giá chi tiết của Chuyên gia</h3>
+            <div class="commentary-sections">
+                <div class="commentary-box">
+                    <h4>Mô hình Kinh doanh</h4>
+                    <p id="comment-business">-</p>
+                </div>
+                <div class="commentary-box">
+                    <h4>Sức khỏe Tài chính</h4>
+                    <p id="comment-financial">-</p>
+                </div>
+                <div class="commentary-box">
+                    <h4>Triển vọng Định giá</h4>
+                    <p id="comment-valuation">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Data Table -->
+        <div class="card table-card margin-top-20">
+            <h3 id="table-title">Bảng dữ liệu tài chính chi tiết</h3>
+            <div class="table-wrapper">
+                <table id="financial-table">
+                    <thead><tr><th>Chỉ tiêu</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+    </footer>
+
+</div>
+<script src="app.js"></script>
 </body>
 </html>

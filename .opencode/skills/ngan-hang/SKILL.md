@@ -69,7 +69,9 @@ Phân biệt 2 khái niệm:
 | **CASA** | TG không kỳ hạn VNĐ / Tổng TG KH | Chi phí vốn thấp, NIM cao |
 | **CASA2** | (TG không kỳ hạn VNĐ + TG không kỳ hạn USD + TG có kỳ hạn USD) / Tổng TG KH | Phản ánh sâu hơn chất lượng vốn giá rẻ (VD: VCB có USD lớn) |
 | **Market 1 Funding** | Tiền gửi KH + Giấy tờ có giá (CD, trái phiếu, kỳ phiếu) | Đầy đủ nhất |
-| **LDR điều chỉnh** | Loại TG KBNN không kỳ hạn; TG KBNN có kỳ hạn tính một phần theo lộ trình | Theo quy định NHNN |
+| **LDR Thuần túy (Simple LDR)** | Cho vay khách hàng / Tiền gửi khách hàng | LDR đơn giản từ API (thường bị vọt lên >100% như TCB ~130% do chưa tính Giấy tờ có giá CD/Trái phiếu ở mẫu số) |
+| **LDR điều chỉnh (NHNN)** | Cho vay khách hàng / (Tiền gửi KH + Giấy tờ có giá CD + Tiền gửi KBNN theo lộ trình) | LDR pháp lý theo Thông tư 26, NHNN quy định trần <85% |
+
 
 ### Earning Assets Structure (Tài sản sinh lãi)
 - Cho vay KH (chiếm tỷ trọng lớn nhất)

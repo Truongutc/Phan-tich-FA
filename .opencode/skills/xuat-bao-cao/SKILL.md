@@ -404,6 +404,155 @@ Nếu Q1/2026 NIM annualized = 3.44% → nim_fc[0] không được thấp hơn 3
   ```
 - **SAI:** `bv = bv_start + ri` trong vòng lặp RI → BVPS tăng sai
 - **ĐÚNG:** `bv = bv_start + eps_fc_calc[i]` → BVPS tăng bằng EPS
-- **SAI:** Che giấu RI âm hoặc điều chỉnh để RI dương
 - **ĐÚNG:** Để RI âm hiển thị, giải thích trong báo cáo (ROE < COE = overvalued)
+
+---
+
+## JSON Dashboard Export — BẮT BUỘC (Gọi tại Phase 3 của Master Skill)
+
+> **Mục đích**: File `data/<TICKER>.json` là nguồn dữ liệu duy nhất cho dashboard web (index.html + app.js). Mọi builder script PHẢI tạo file này với đầy đủ fields. File này được `run_analysis.py` patch thêm `gdriveExcelUrl`/`gdrivePdfUrl` sau khi upload.
+
+### Schema đầy đủ
+
+```json
+{
+  "ticker": "TCB",
+  "companyName": "Ngân hàng TMCP Kỹ thương Việt Nam",
+  "sector": "Ngân hàng",
+  "currentPrice": 25000,
+  "marketCap": 89000000000000,
+  "shares": 3560000000,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+
+  "data": {
+    "years":   [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027],
+    "revenue": [tỷ VND theo thứ tự năm — hist+forecast],
+    "npat":    [tỷ VND — hist+forecast],
+    "eps":     [VND/cổ phiếu — hist+forecast],
+    "equity":  [tỷ VND VCSH — hist+forecast]
+  },
+
+  "thesis": [
+    "Luận điểm đầu tư 1 (~50 từ, định lượng, tiếng Việt)",
+    "Luận điểm đầu tư 2 (~50 từ)",
+    "Luận điểm đầu tư 3 (~50 từ)"
+  ],
+
+  "risks": [
+    "Rủi ro 1 (~50 từ, nêu tác động định lượng, tiếng Việt)",
+    "Rủi ro 2 (~50 từ)",
+    "Rủi ro 3 (~50 từ)"
+  ],
+
+  "moats": {
+    "Network Effect":    {"score": 4, "desc": "Giải thích ngắn gọn tại sao score là X/5"},
+    "Cost Advantage":    {"score": 3, "desc": "..."},
+    "Switching Cost":    {"score": 4, "desc": "..."},
+    "Intangible Assets": {"score": 4, "desc": "..."},
+    "Efficient Scale":   {"score": 3, "desc": "..."}
+  },
+
+  "pestle": [
+    {"factor": "Political",    "content": "Mô tả tác động chính sách...", "impact": "Positive"},
+    {"factor": "Economic",     "content": "Mô tả tác động kinh tế...",    "impact": "Neutral"},
+    {"factor": "Social",       "content": "Mô tả tác động xã hội...",     "impact": "Positive"},
+    {"factor": "Technological","content": "Mô tả tác động công nghệ...", "impact": "Positive"},
+    {"factor": "Legal",        "content": "Mô tả tác động pháp lý...",    "impact": "Neutral"},
+    {"factor": "Environmental","content": "Mô tả tác động môi trường...", "impact": "Negative"}
+  ],
+
+  "valuation": {
+    "bear": 18000,
+    "base": 25000,
+    "bull": 32000
+  },
+
+  "comments": {
+    "businessModel":        "~100 từ tiếng Việt mô tả mô hình kinh doanh cốt lõi",
+    "financialPerformance": "~100 từ tiếng Việt đánh giá sức khỏe tài chính",
+    "valuationText":        "~100 từ tiếng Việt giải thích định giá và khuyến nghị"
+  },
+
+  "pe_hist":        [8.2, 7.1, 6.3, 5.8, 6.5],
+  "pb_hist":        [1.2, 1.1, 0.95, 0.84, 1.0],
+  "pe_quarters":    [8.2, 7.9, 7.5, 7.1, 6.8, 6.3, 6.0, 5.8, 6.1, 6.3, 6.5, 6.8],
+  "pb_quarters":    [1.2, 1.18, 1.15, 1.1, 1.05, 0.95, 0.90, 0.84, 0.88, 0.92, 0.96, 1.0],
+  "quarter_labels": ["2021-Q1","2021-Q2","2021-Q3","2021-Q4",
+                     "2022-Q1","2022-Q2","2022-Q3","2022-Q4",
+                     "2023-Q1","2023-Q2","2023-Q3","2023-Q4"]
+}
+```
+
+### Quy tắc bắt buộc
+
+| Field | Quy tắc |
+|-------|---------|
+| `data.years` | Phải bao gồm CẢ lịch sử lẫn forecast (hist + 2-3 năm E) |
+| `data.revenue/npat/eps/equity` | Cùng độ dài với `data.years` |
+| `moats` | Đúng 5 keys, score từ 1-5 |
+| `pestle` | Đúng 6 items, `impact` ∈ `["Positive", "Neutral", "Negative"]` |
+| `valuation` | Phải có `bear`, `base`, `bull` |
+| `comments` | 3 keys: `businessModel`, `financialPerformance`, `valuationText` |
+| `pe_quarters` / `pb_quarters` | Lấy từ Vietcap `statistics-financial` API, TOÀN BỘ quý có sẵn |
+| `quarter_labels` | Cùng độ dài với `pe_quarters`, format `"YYYY-QN"` |
+| `gdriveExcelUrl` / `gdrivePdfUrl` | Khởi tạo là `null` — `run_analysis.py` patch sau upload |
+
+### Code mẫu Python builder
+
+```python
+def save_json_summary(ticker, company_name, sector, current_price, market_cap, shares,
+                      hist_years, fc_years,
+                      rev_hist, rev_fc, npat_hist, npat_fc,
+                      eps_hist, eps_fc, equity_hist, equity_fc,
+                      pe_hist, pb_hist, pe_quarters, pb_quarters, quarter_labels,
+                      thesis, risks, moats, pestle, valuation, comments):
+    out_dir = os.path.join(os.path.dirname(__file__), "data")
+    os.makedirs(out_dir, exist_ok=True)
+
+    payload = {
+        "ticker": ticker,
+        "companyName": company_name,
+        "sector": sector,
+        "currentPrice": current_price,
+        "marketCap": market_cap,
+        "shares": shares,
+        "gdriveExcelUrl": None,
+        "gdrivePdfUrl": None,
+        "data": {
+            "years":   hist_years + fc_years,
+            "revenue": [round(v, 1) for v in rev_hist + rev_fc],
+            "npat":    [round(v, 1) for v in npat_hist + npat_fc],
+            "eps":     [round(v, 0) for v in eps_hist + eps_fc],
+            "equity":  [round(v, 1) for v in equity_hist + equity_fc],
+        },
+        "thesis":         thesis,     # list[str] x3
+        "risks":          risks,      # list[str] x3
+        "moats":          moats,      # dict{name: {score, desc}} x5
+        "pestle":         pestle,     # list[{factor, content, impact}] x6
+        "valuation":      valuation,  # {bear, base, bull}
+        "comments":       comments,   # {businessModel, financialPerformance, valuationText}
+        "pe_hist":        pe_hist,
+        "pb_hist":        pb_hist,
+        "pe_quarters":    pe_quarters,
+        "pb_quarters":    pb_quarters,
+        "quarter_labels": quarter_labels,
+    }
+
+    out_path = os.path.join(out_dir, f"{ticker}.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    print(f"[OK] JSON saved: {out_path}")
+```
+
+### Checklist JSON Export
+
+- [ ] `data.years` = hist + forecast (ví dụ `[2020..2027]`)
+- [ ] Tất cả arrays trong `data` có cùng độ dài với `data.years`
+- [ ] `moats` đủ 5 keys
+- [ ] `pestle` đủ 6 items, `impact` đúng giá trị
+- [ ] `pe_quarters` / `pb_quarters` / `quarter_labels` cùng độ dài
+- [ ] `gdriveExcelUrl` = `null` (không tự upload, để orchestrator xử lý)
+- [ ] File lưu tại `data/<TICKER>.json` (KHÔNG phải `Bao cao/`)
+- [ ] JSON hợp lệ (không trailing comma, không comment `//`)
 

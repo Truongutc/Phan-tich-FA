@@ -22,6 +22,221 @@ sys.path.append(os.path.dirname(__file__))
 from fetch_data import fetch_all, section_to_years, get_field_map
 import google_drive_uploader
 
+def get_sector_content(sector, ticker, company_name):
+    """Generate sector-specific investment content for thesis, risks, moats, pestle, comments."""
+    sector_lower = (sector or "").lower()
+    
+    # --- BANKING ---
+    if any(k in sector_lower for k in ["bank", "financial service", "tài chính", "ngân hàng"]):
+        return {
+            "thesis": [
+                f"{company_name} là một trong những ngân hàng tư nhân hàng đầu, với hệ sinh thái tài chính toàn diện và lợi thế về nền tảng công nghệ số.",
+                "Tăng trưởng tín dụng vượt ngành kết hợp với NIM cải thiện giúp LNST duy trì đà tăng trưởng ổn định.",
+                "Chất lượng tài sản được kiểm soát tốt, tỷ lệ nợ xấu (NPL) ở mức thấp so với bình quân ngành.",
+            ],
+            "risks": [
+                "Rủi ro nợ xấu tăng nếu kinh tế vĩ mô suy yếu và khả năng trả nợ của doanh nghiệp sụt giảm.",
+                "Áp lực tăng vốn (CAR) có thể pha loãng EPS nếu ngân hàng phải phát hành cổ phiếu mới.",
+                "Cạnh tranh gay gắt từ các ngân hàng quốc doanh và làn sóng fintech đang thu hẹp biên lãi suất.",
+            ],
+            "moats": {
+                "Network Effect": {"score": 4, "desc": "Mạng lưới khách hàng rộng tạo hiệu ứng cộng hưởng giữa các sản phẩm tài chính."},
+                "Switching Cost": {"score": 4, "desc": "Chi phí chuyển đổi cao do tích hợp sâu dịch vụ tiền gửi, vay và thanh toán."},
+                "Intangible Assets": {"score": 4, "desc": "Thương hiệu ngân hàng uy tín và giấy phép hoạt động là rào cản gia nhập lớn."},
+                "Cost Advantage": {"score": 3, "desc": "CASA cao giúp giảm chi phí vốn so với đối thủ."},
+                "Efficient Scale": {"score": 3, "desc": "Quy mô tài sản lớn cho phép đầu tư mạnh vào hạ tầng số."},
+            },
+            "pestle": {
+                "Political": "Chính sách tiền tệ của NHNN và định hướng ưu tiên tín dụng xanh tác động trực tiếp đến hoạt động ngân hàng.",
+                "Economic": "Tăng trưởng GDP bền vững thúc đẩy nhu cầu tín dụng; lãi suất điều hành là biến số chính.",
+                "Social": "Dân số trẻ và tỷ lệ người dùng ngân hàng số tăng nhanh mở ra thị trường bán lẻ tiềm năng.",
+                "Technological": "Chuyển đổi số và open banking là xu hướng bắt buộc để duy trì cạnh tranh.",
+                "Legal": "Thông tư 06, 16 và các quy định về an toàn vốn Basel II/III tác động đến khẩu vị rủi ro.",
+                "Environmental": "Áp lực từ ESG và tín dụng xanh ngày càng ảnh hưởng đến cơ cấu danh mục cho vay.",
+            },
+            "comments": {
+                "overall": f"{company_name} ({ticker}) duy trì vị thế cạnh tranh mạnh trong phân khúc ngân hàng tư nhân với hệ sinh thái dịch vụ tài chính đa dạng.",
+                "financial": "Biên lãi ròng (NIM) và tỷ suất sinh lợi vốn chủ (ROE) là 2 chỉ số then chốt cần theo dõi. Tăng trưởng tín dụng và CASA là động lực tăng trưởng chính.",
+                "valuation": "Định giá theo P/B là phương pháp phù hợp nhất cho ngân hàng. P/B dưới 1.5x là vùng hấp dẫn tích lũy dài hạn.",
+            }
+        }
+
+    # --- REAL ESTATE ---
+    elif any(k in sector_lower for k in ["real estate", "bất động sản", "property"]):
+        return {
+            "thesis": [
+                f"{company_name} nắm giữ quỹ đất chiến lược tại các vùng kinh tế trọng điểm với tiềm năng tăng giá dài hạn.",
+                "Danh mục dự án đa dạng từ nhà ở đến thương mại giúp giảm thiểu rủi ro tập trung.",
+                "Chu kỳ phục hồi bất động sản sau giai đoạn thanh lọc tạo cơ hội tăng trưởng doanh thu bàn giao.",
+            ],
+            "risks": [
+                "Rủi ro pháp lý và tiến độ cấp phép dự án là yếu tố gây trì hoãn doanh thu và lợi nhuận.",
+                "Lãi suất cao kéo dài làm tăng chi phí tài chính và giảm sức mua của người mua nhà.",
+                "Áp lực dòng tiền từ đòn bẩy tài chính cao và trái phiếu đến hạn cần tái cơ cấu.",
+            ],
+            "moats": {
+                "Intangible Assets": {"score": 4, "desc": "Thương hiệu chủ đầu tư uy tín và quỹ đất pháp lý sạch là lợi thế khó sao chép."},
+                "Efficient Scale": {"score": 3, "desc": "Quy mô lớn giúp đàm phán tốt hơn với nhà thầu và tiếp cận vốn dễ dàng hơn."},
+                "Cost Advantage": {"score": 3, "desc": "Chi phí đất thấp từ giai đoạn tích lũy sớm tạo biên lợi nhuận cao hơn thị trường."},
+                "Switching Cost": {"score": 2, "desc": "Người mua nhà có xu hướng trung thành với thương hiệu đã tin dùng."},
+                "Network Effect": {"score": 1, "desc": "Hiệu ứng mạng lưới hạn chế trong lĩnh vực bất động sản truyền thống."},
+            },
+            "pestle": {
+                "Political": "Luật Đất đai sửa đổi và chính sách nhà ở xã hội ảnh hưởng trực tiếp đến hoạt động kinh doanh.",
+                "Economic": "Lãi suất, tỷ giá và tăng trưởng thu nhập cá nhân là các yếu tố vĩ mô then chốt.",
+                "Social": "Nhu cầu nhà ở đô thị hóa tăng cao, đặc biệt phân khúc trung cấp và bình dân.",
+                "Technological": "Proptech và số hóa quy trình bán hàng đang thay đổi trải nghiệm khách hàng.",
+                "Legal": "Tiến độ cấp phép và thủ tục pháp lý dự án là rào cản lớn nhất của ngành.",
+                "Environmental": "Tiêu chuẩn xây dựng xanh (LEED, EDGE) và quy định môi trường ngày càng chặt chẽ.",
+            },
+            "comments": {
+                "overall": f"{company_name} ({ticker}) là chủ đầu tư bất động sản với quỹ đất đáng kể và thương hiệu đã được khẳng định.",
+                "financial": "Doanh thu ghi nhận theo tiến độ bàn giao nên cần theo dõi backlog và tỷ lệ hấp thụ thực tế.",
+                "valuation": "P/B và NAV là phương pháp định giá phổ biến. Discount to NAV cho thấy mức độ an toàn biên.",
+            }
+        }
+
+    # --- TECHNOLOGY ---
+    elif any(k in sector_lower for k in ["technology", "software", "it ", "công nghệ", "tech"]):
+        return {
+            "thesis": [
+                f"{company_name} hưởng lợi từ làn sóng chuyển đổi số của doanh nghiệp và cơ quan nhà nước tại Việt Nam.",
+                "Mô hình doanh thu lặp lại (SaaS/subscription) tạo dòng tiền ổn định và khả năng dự báo cao.",
+                "Đội ngũ kỹ sư chất lượng cao với chi phí cạnh tranh so với khu vực là lợi thế xuất khẩu phần mềm.",
+            ],
+            "risks": [
+                "Cạnh tranh từ các nền tảng công nghệ toàn cầu (AWS, Microsoft, Google) thu hẹp không gian thị trường.",
+                "Rủi ro giữ chân nhân tài trong bối cảnh cạnh tranh nhân lực công nghệ toàn cầu ngày càng gay gắt.",
+                "Chu kỳ đầu tư công nghệ dài, khách hàng có thể trì hoãn quyết định mua trong giai đoạn khó khăn.",
+            ],
+            "moats": {
+                "Switching Cost": {"score": 5, "desc": "Chi phí chuyển đổi hệ thống ERP/core banking rất cao, tạo thế gắn kết lâu dài với khách hàng."},
+                "Intangible Assets": {"score": 4, "desc": "Bản quyền phần mềm, IP và chứng chỉ quốc tế là rào cản gia nhập."},
+                "Network Effect": {"score": 3, "desc": "Nền tảng số càng nhiều người dùng càng có giá trị và khó thay thế."},
+                "Cost Advantage": {"score": 3, "desc": "Chi phí lao động IT cạnh tranh so với khu vực tạo lợi thế xuất khẩu dịch vụ."},
+                "Efficient Scale": {"score": 2, "desc": "Quy mô vừa đủ để phục vụ thị trường nội địa nhưng còn hạn chế ở thị trường quốc tế."},
+            },
+            "pestle": {
+                "Political": "Chiến lược chuyển đổi số quốc gia và chính phủ điện tử tạo nhu cầu lớn từ khu vực công.",
+                "Economic": "Tăng trưởng kinh tế số và FDI vào lĩnh vực công nghệ thúc đẩy nhu cầu dịch vụ IT.",
+                "Social": "Thế hệ trẻ am hiểu công nghệ thúc đẩy nhu cầu fintech, edtech và healthtech.",
+                "Technological": "AI, Cloud và Big Data đang tái định nghĩa mô hình kinh doanh và tạo cơ hội mới.",
+                "Legal": "Luật An ninh mạng và bảo vệ dữ liệu cá nhân ảnh hưởng đến quy trình phát triển sản phẩm.",
+                "Environmental": "Năng lượng tiêu thụ của trung tâm dữ liệu và điện toán đám mây là vấn đề ESG quan trọng.",
+            },
+            "comments": {
+                "overall": f"{company_name} ({ticker}) định vị trong phân khúc công nghệ với tiềm năng tăng trưởng từ chuyển đổi số.",
+                "financial": "Biên lợi nhuận gộp (gross margin) cao và tốc độ tăng trưởng ARR là chỉ số quan trọng nhất.",
+                "valuation": "P/E forward và EV/EBITDA phù hợp với doanh nghiệp công nghệ. Mức định giá phụ thuộc vào tốc độ tăng trưởng.",
+            }
+        }
+
+    # --- STEEL / MATERIALS ---
+    elif any(k in sector_lower for k in ["steel", "material", "mining", "metal", "thép", "khoáng sản", "nguyên vật liệu", "basic material"]):
+        return {
+            "thesis": [
+                f"{company_name} là doanh nghiệp thép hàng đầu với lợi thế quy mô và khả năng chi phối chuỗi giá trị.",
+                "Tiềm năng mở rộng công suất vượt trội giúp đón đầu nhu cầu tiêu dùng và đầu tư hạ tầng phục hồi.",
+                "Cơ cấu tài chính an toàn, tỷ lệ đòn bẩy được kiểm soát và dòng tiền hoạt động ổn định.",
+            ],
+            "risks": [
+                "Biến động giá nguyên vật liệu đầu vào (quặng sắt, than coke) làm co hẹp biên lợi nhuận gộp.",
+                "Rủi ro tỷ giá và lãi suất có xu hướng tăng trong ngắn hạn ảnh hưởng đến chi phí nhập khẩu.",
+                "Cạnh tranh gay gắt từ thép nhập khẩu giá rẻ (Trung Quốc) và doanh nghiệp nội địa.",
+            ],
+            "moats": {
+                "Cost Advantage": {"score": 5, "desc": "Quy mô sản xuất khổng lồ tạo lợi thế chi phí trên mỗi tấn sản phẩm."},
+                "Efficient Scale": {"score": 4, "desc": "Hệ thống lò cao tích hợp vertical giúp kiểm soát toàn bộ chuỗi sản xuất."},
+                "Intangible Assets": {"score": 3, "desc": "Thương hiệu và mạng lưới phân phối rộng khắp toàn quốc."},
+                "Switching Cost": {"score": 2, "desc": "Khách hàng B2B có thể chuyển nhà cung cấp tương đối dễ dàng."},
+                "Network Effect": {"score": 1, "desc": "Hiệu ứng mạng lưới hạn chế trong ngành sản xuất."},
+            },
+            "pestle": {
+                "Political": "Chính sách thuế chống phá giá và bảo hộ thép nội địa ảnh hưởng lớn đến cạnh tranh nhập khẩu.",
+                "Economic": "Chu kỳ đầu tư hạ tầng, BĐS và giá thép toàn cầu là biến số quan trọng nhất.",
+                "Social": "Nhu cầu xây dựng nhà ở và cơ sở hạ tầng đô thị hóa tạo thị trường nội địa lớn.",
+                "Technological": "Công nghệ EAF (lò điện) thân thiện môi trường là xu hướng chuyển dịch của ngành.",
+                "Legal": "Quy định phát thải CO2 và tiêu chuẩn môi trường ngày càng chặt chẽ với ngành thép.",
+                "Environmental": "Ngành thép là nguồn phát thải CO2 lớn — chuyển đổi sang thép xanh là áp lực ESG dài hạn.",
+            },
+            "comments": {
+                "overall": f"{company_name} ({ticker}) là cổ phiếu chu kỳ ngành thép — giá cổ phiếu phụ thuộc nhiều vào giá thép thế giới và chu kỳ đầu tư.",
+                "financial": "Biên gộp và EBITDA là chỉ tiêu theo dõi quan trọng. Chi phí nguyên liệu/giá thép là biến số then chốt.",
+                "valuation": "EV/EBITDA và P/Book là phương pháp phổ biến cho ngành vật liệu cơ bản.",
+            }
+        }
+
+    # --- CONSUMER / RETAIL ---
+    elif any(k in sector_lower for k in ["consumer", "retail", "food", "beverage", "bán lẻ", "tiêu dùng", "thực phẩm"]):
+        return {
+            "thesis": [
+                f"{company_name} hưởng lợi từ xu hướng tăng tiêu dùng nội địa và mở rộng tầng lớp trung lưu tại Việt Nam.",
+                "Mạng lưới phân phối rộng và thương hiệu được nhận diện cao tạo rào cản gia nhập cho đối thủ mới.",
+                "Chiến lược đa dạng hóa danh mục sản phẩm và mở rộng kênh bán online giúp tăng trưởng bền vững.",
+            ],
+            "risks": [
+                "Áp lực lạm phát làm tăng chi phí nguyên liệu và co hẹp biên lợi nhuận nếu không thể tăng giá.",
+                "Cạnh tranh từ hàng ngoại nhập và thương hiệu quốc tế đang thâm nhập thị trường Việt Nam.",
+                "Thay đổi thói quen tiêu dùng và xu hướng healthy làm giảm nhu cầu một số sản phẩm truyền thống.",
+            ],
+            "moats": {
+                "Intangible Assets": {"score": 5, "desc": "Thương hiệu mạnh, được tin dùng nhiều thế hệ là lợi thế cạnh tranh bền vững."},
+                "Cost Advantage": {"score": 4, "desc": "Quy mô sản xuất lớn cho phép tối ưu chi phí so với các đối thủ nhỏ hơn."},
+                "Network Effect": {"score": 3, "desc": "Mạng lưới phân phối bán lẻ trải rộng tạo hàng rào cho đối thủ mới."},
+                "Switching Cost": {"score": 3, "desc": "Thói quen tiêu dùng và lòng trung thành thương hiệu tạo chi phí chuyển đổi tâm lý."},
+                "Efficient Scale": {"score": 3, "desc": "Hệ thống sản xuất và logistics được tối ưu hóa ở quy mô lớn."},
+            },
+            "pestle": {
+                "Political": "Chính sách xuất khẩu nông sản và quy định an toàn thực phẩm tác động đến hoạt động.",
+                "Economic": "Thu nhập khả dụng và sức mua người tiêu dùng là yếu tố vĩ mô then chốt.",
+                "Social": "Xu hướng sức khỏe, organic và bền vững định hình lại nhu cầu tiêu dùng.",
+                "Technological": "Thương mại điện tử và omnichannel đang thay đổi kênh phân phối truyền thống.",
+                "Legal": "Quy định nhãn mác, thành phần và quảng cáo thực phẩm ngày càng chặt chẽ.",
+                "Environmental": "Áp lực giảm bao bì nhựa và hướng tới chuỗi cung ứng bền vững từ nhà bán lẻ lớn.",
+            },
+            "comments": {
+                "overall": f"{company_name} ({ticker}) là doanh nghiệp tiêu dùng nội địa với nền tảng thương hiệu vững chắc.",
+                "financial": "Biên gộp, chi phí bán hàng/doanh thu (SG&A ratio) và tăng trưởng SSSG là chỉ tiêu quan trọng.",
+                "valuation": "P/E và EV/EBITDA là phương pháp phổ biến. So sánh với P/E ngành tiêu dùng khu vực.",
+            }
+        }
+
+    # --- DEFAULT / OTHER ---
+    else:
+        return {
+            "thesis": [
+                f"{company_name} có vị thế cạnh tranh tốt trong ngành và tiềm năng tăng trưởng dài hạn.",
+                "Dòng tiền hoạt động ổn định và cơ cấu tài chính lành mạnh hỗ trợ chiến lược mở rộng.",
+                "Đội ngũ quản lý có kinh nghiệm với track record thực thi tốt kế hoạch kinh doanh.",
+            ],
+            "risks": [
+                "Rủi ro kinh tế vĩ mô và biến động lãi suất có thể ảnh hưởng đến chi phí vốn.",
+                "Cạnh tranh trong ngành ngày càng gay gắt đòi hỏi đầu tư liên tục vào năng lực cạnh tranh.",
+                "Rủi ro thực thi chiến lược và phụ thuộc vào một số khách hàng/sản phẩm chủ lực.",
+            ],
+            "moats": {
+                "Intangible Assets": {"score": 3, "desc": "Thương hiệu và uy tín trong ngành được xây dựng qua nhiều năm hoạt động."},
+                "Cost Advantage": {"score": 3, "desc": "Tối ưu hóa quy trình vận hành giúp duy trì biên lợi nhuận cạnh tranh."},
+                "Switching Cost": {"score": 2, "desc": "Mức độ gắn kết với khách hàng ở mức trung bình."},
+                "Efficient Scale": {"score": 3, "desc": "Quy mô phù hợp để vận hành hiệu quả trong thị trường nội địa."},
+                "Network Effect": {"score": 2, "desc": "Hiệu ứng mạng lưới còn hạn chế trong mô hình kinh doanh hiện tại."},
+            },
+            "pestle": {
+                "Political": "Chính sách vĩ mô và định hướng phát triển ngành của Chính phủ tác động đến môi trường kinh doanh.",
+                "Economic": "Tăng trưởng GDP, lãi suất và lạm phát ảnh hưởng đến nhu cầu và chi phí hoạt động.",
+                "Social": "Thay đổi xu hướng tiêu dùng và nhân khẩu học tạo cả cơ hội và thách thức.",
+                "Technological": "Chuyển đổi số và tự động hóa là xu hướng quan trọng cần đầu tư bắt kịp.",
+                "Legal": "Tuân thủ các quy định pháp luật và tiêu chuẩn ngành là yêu cầu cơ bản.",
+                "Environmental": "Áp lực ESG và báo cáo phát triển bền vững ngày càng trở thành yêu cầu của nhà đầu tư.",
+            },
+            "comments": {
+                "overall": f"{company_name} ({ticker}) có nền tảng kinh doanh ổn định với tiềm năng tăng trưởng trong trung dài hạn.",
+                "financial": "Tỷ suất sinh lợi (ROE, ROA) và tốc độ tăng trưởng lợi nhuận là chỉ số then chốt cần theo dõi.",
+                "valuation": "P/E và P/B là phương pháp định giá phổ biến, cần so sánh với mức bình quân ngành.",
+            }
+        }
+
+
 def build_generic(ticker):
     print(f"\n=== Running Automated Generic Analysis for {ticker} ===")
     
@@ -347,7 +562,31 @@ def build_generic(ticker):
     except Exception as e:
         print(f"[GDrive] Upload failed: {e}")
         
+    # Fetch historical ratios for the years
+    pe_hist_vals = []
+    pb_hist_vals = []
+    pe_quarters = []
+    pb_quarters = []
+    quarter_labels = []
+    try:
+        r_ratios = session.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial", timeout=10)
+        ratios_data = r_ratios.json().get("data", [])
+        
+        # All quarters sorted
+        all_quarters = sorted([x for x in ratios_data if x.get("quarter") in (1,2,3,4)], key=lambda x: (x.get("year", 0), x.get("quarter", 0)))
+        pe_quarters = [round(x.get("pe", 0) or 0, 2) for x in all_quarters]
+        pb_quarters = [round(x.get("pb", 0) or 0, 2) for x in all_quarters]
+        quarter_labels = [f"{x.get('year')}-Q{x.get('quarter')}" for x in all_quarters]
+
+        annual_ratios = sorted([x for x in ratios_data if x.get("quarter") == 4], key=lambda x: x.get("year", 0))[-5:]
+        pe_hist_vals = [round(x.get("pe", 0) or 0, 1) for x in annual_ratios]
+        pb_hist_vals = [round(x.get("pb", 0) or 0, 2) for x in annual_ratios]
+    except Exception as e:
+        print(f"[WARN] Could not fetch ratio history: {e}")
+
     # 6. Save JSON Summary data
+    sector_content = get_sector_content(sector, ticker, company_name)
+    
     summary_json = {
         "ticker": ticker,
         "companyName": company_name,
@@ -357,6 +596,19 @@ def build_generic(ticker):
         "shares": shares,
         "gdriveExcelUrl": gdrive_excel_url,
         "gdrivePdfUrl": gdrive_pdf_url,
+        "pe_hist": pe_hist_vals,
+        "pb_hist": pb_hist_vals,
+        "pe_quarters": pe_quarters,
+        "pb_quarters": pb_quarters,
+        "quarter_labels": quarter_labels,
+
+        # Sector-aware qualitative content
+        "thesis": sector_content.get("thesis", []),
+        "risks": sector_content.get("risks", []),
+        "moats": sector_content.get("moats", {}),
+        "pestle": sector_content.get("pestle", {}),
+        "comments": sector_content.get("comments", {}),
+
         "data": {
             "years": all_years,
             "revenue": all_rev,
@@ -365,6 +617,7 @@ def build_generic(ticker):
             "equity": equity_hist + equity_fc
         }
     }
+
     
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     os.makedirs(data_dir, exist_ok=True)
@@ -375,6 +628,7 @@ def build_generic(ticker):
     print(f"[OK] JSON Summary saved at: {json_path}")
     
     return True
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
