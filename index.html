@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Cổ Phiếu Việt Nam — ITE Group</title>
+    <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar/Navbar -->
+        <header class="navbar">
+            <div class="logo">
+                <span class="logo-icon">📊</span>
+                <div class="logo-text">
+                    <h1>ITE FA SYSTEM</h1>
+                    <small>Hệ thống Phân Tích Cơ Bản</small>
+                </div>
+            </div>
+            <div class="stock-selector-container">
+                <label for="stock-select">Chọn mã phân tích:</label>
+                <select id="stock-select">
+                    <option value="" disabled selected>Đang tải danh sách...</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-content">
+            <!-- Welcome View (Shown when no stock selected or loading) -->
+            <div id="welcome-view" class="card welcome-card">
+                <h2>Chào mừng đến với Dashboard Phân Tích Cổ Phiếu</h2>
+                <p>Vui lòng chọn một mã cổ phiếu ở góc phải để xem phân tích tài chính chi tiết, biểu đồ trực quan và tải về các file báo cáo PDF, Excel tương ứng.</p>
+                <div class="drive-link-box">
+                    <span>Thư mục tổng hợp báo cáo:</span>
+                    <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing" target="_blank" class="btn btn-secondary">
+                        Tru cập Google Drive ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- Active Analysis View (Hidden by default) -->
+            <div id="analysis-view" class="analysis-view hidden">
+                <!-- Header Info Card -->
+                <div class="card header-card">
+                    <div class="header-main">
+                        <div>
+                            <span id="ticker-badge" class="badge">HPG</span>
+                            <h2 id="company-name">CTCP Tập đoàn Hòa Phát</h2>
+                            <p id="company-sector" class="subtitle">Thép (Sản xuất Commodity)</p>
+                        </div>
+                        <div class="actions">
+                            <a id="download-pdf" href="#" target="_blank" class="btn btn-primary">
+                                📥 Tải Báo Cáo PDF
+                            </a>
+                            <a id="download-excel" href="#" target="_blank" class="btn btn-excel">
+                                🟢 Tải Excel Model
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="card metric-card">
+                        <span class="metric-label">Giá hiện tại</span>
+                        <span id="metric-price" class="metric-value">- VND</span>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="metric-label">Vốn hóa</span>
+                        <span id="metric-mcap" class="metric-value">- tỷ VND</span>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="metric-label">Số lượng CP lưu hành</span>
+                        <span id="metric-shares" class="metric-value">- CP</span>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="card chart-card">
+                        <h3>Doanh thu & Lợi nhuận sau thuế</h3>
+                        <div class="chart-container">
+                            <canvas id="revNpatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <h3>EPS & Vốn chủ sở hữu</h3>
+                        <div class="chart-container">
+                            <canvas id="epsEquityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table Section -->
+                <div class="card table-card">
+                    <h3>Bảng dữ liệu tài chính chi tiết</h3>
+                    <div class="table-wrapper">
+                        <table id="financial-table">
+                            <thead>
+                                <tr>
+                                    <th>Chỉ tiêu</th>
+                                    <!-- Dynamic years headers -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 ITE Group. Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

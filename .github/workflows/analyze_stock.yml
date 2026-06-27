@@ -1,0 +1,76 @@
+name: Stock Analysis and Report Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: 'Nhập mã cổ phiếu cần phân tích (ví dụ: HPG, TCB, SSI, VAB, GMD...)'
+        required: true
+        default: 'TCB'
+      force_regenerate:
+        description: 'Tạo lại script phân tích dù đã có sẵn? (true/false)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Force Regenerate Builder (if requested)
+        if: ${{ github.event.inputs.force_regenerate == 'true' }}
+        run: |
+          TICKER="${{ github.event.inputs.ticker }}"
+          BUILDER="build_${TICKER,,}_model.py"
+          if [ -f "$BUILDER" ]; then
+            echo "Deleting existing $BUILDER for regeneration..."
+            rm "$BUILDER"
+          fi
+
+      - name: Run Financial Analysis
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python run_analysis.py "${{ github.event.inputs.ticker }}"
+
+      - name: Commit Generated Files Back to Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage: auto-generated builder script + data JSON
+          TICKER="${{ github.event.inputs.ticker }}"
+          BUILDER="build_${TICKER,,}_model.py"
+          
+          git add data/ || true
+          git add "$BUILDER" 2>/dev/null || true
+          
+          # Commit only if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-analysis: ${{ github.event.inputs.ticker }} — $(date +'%Y-%m-%d')"
+            git push
+            echo "Changes committed and pushed."
+          fi
