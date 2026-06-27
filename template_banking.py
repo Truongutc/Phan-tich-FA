@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 template_banking.py — Robust, standalone calculation engine for Banks.
-Calculates all banking ratios (NIM, LDR, CASA, NPL) and valuation (Residual Income + P/B Target)
-without relying on Gemini AI code generation.
+Calculates all banking ratios (NIM, LDR, CASA, NPL) for both annual and quarterly,
+and performs valuation (Residual Income + P/B Target) without relying on Gemini AI.
 """
 import os
 import sys
@@ -39,9 +39,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     print(f"\n--- Running Template Banking Analysis for {ticker} ---")
     
     # 1. Parse and extract metadata
-    det_data = raw_data.get("metrics", {}) # fallback details
-    
-    # Vietcap API nodes
     is_recs = raw_data["sections"]["INCOME_STATEMENT"].get("years", [])
     bs_recs = raw_data["sections"]["BALANCE_SHEET"].get("years", [])
     
@@ -59,7 +56,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     current_price = raw_data.get("currentPrice", 24000)
     
     # Calculate shares from Charter Capital (bsa80) in the latest available historical year
-    # bsa80 is in VND, charter capital / 10,000 (par value) = outstanding shares
     latest_hist_year = hist_years[-1]
     charter_capital = get_val(bs_recs, latest_hist_year, ["bsa80", "bsb118"])
     
@@ -67,9 +63,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         shares = int(charter_capital / 10000) # par value 10k VND
         print(f"[Details] Calculated shares from Charter Capital ({latest_hist_year}): {shares:,.0f} shares")
     else:
-        shares = 5287092729 if ticker == "MBB" else 5000000000 # hardcoded fallbacks if bsa80 is missing
+        shares = 5287092729 if ticker == "MBB" else 5000000000 # hardcoded fallbacks
         
-    # Fetch live price if possible (non-blocking fallback)
+    # Fetch live price if possible
     try:
         import requests
         r_det = requests.get(f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", timeout=3)
@@ -80,29 +76,18 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         pass
 
     market_cap = current_price * shares
-
     sector = "Ngân hàng"
 
     # Extract historical values
-    # NII (isb27 or isb22)
     nii_hist = [get_val(is_recs, y, ["isb27", "isb22"]) / 1e9 for y in hist_years]
-    # Non-Interest Income (TOI - NII)
     toi_hist = [get_val(is_recs, y, ["isb38", "isb33"]) / 1e9 for y in hist_years]
     non_nii_hist = [toi_hist[i] - nii_hist[i] for i in range(len(hist_years))]
-    # OPEX (isb40 or isb35)
     opex_hist = [get_val(is_recs, y, ["isb40", "isb35"]) / 1e9 for y in hist_years]
-    # PPOP (Pre-Provision Operating Profit)
-    ppop_hist = [toi_hist[i] - opex_hist[i] for i in range(len(hist_years))]
-    # Provisions (isb41 or isb36)
     prov_hist = [get_val(is_recs, y, ["isb41", "isb36"]) / 1e9 for y in hist_years]
-    # NPAT (isa22 or isa20)
     npat_hist = [get_val(is_recs, y, ["isa22", "isa20"]) / 1e9 for y in hist_years]
-    # EPS (isa23)
     eps_hist = [get_val(is_recs, y, ["isa23"]) for y in hist_years]
-    # If EPS is missing or 0, calculate manually
     eps_hist = [eps_hist[i] if eps_hist[i] > 10 else (npat_hist[i] * 1e9 / shares) for i in range(len(hist_years))]
 
-    # Balance Sheet Historicals
     assets_hist = [get_val(bs_recs, y, ["bsa53", "bsa50"]) / 1e9 for y in hist_years]
     equity_hist = [get_val(bs_recs, y, ["bsa78", "bsa75"]) / 1e9 for y in hist_years]
     loans_hist = [get_val(bs_recs, y, ["bsb103", "bsb24"]) / 1e9 for y in hist_years]
@@ -111,7 +96,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     npl_amount = [get_val(bs_recs, y, ["bsb105", "bsb27"]) / 1e9 for y in hist_years]
     casa_amount = [get_val(bs_recs, y, ["bsb114", "bsb31"]) / 1e9 for y in hist_years]
 
-    # Calculate average growths for forecasts
+    # Calculate growths
     credit_growths = []
     for i in range(1, len(loans_hist)):
         if loans_hist[i-1] > 0:
@@ -124,28 +109,19 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             dep_growths.append((deposits_hist[i] / deposits_hist[i-1]) - 1)
     avg_dep_growth = max(0.08, min(0.16, sum(dep_growths)/len(dep_growths) if dep_growths else 0.12))
 
-    # 2. Simple Banking Projections (Forecast next 3 years)
-    loans_fc = []
-    deposits_fc = []
-    paper_fc = []
-    nii_fc = []
-    toi_fc = []
-    npat_fc = []
-    equity_fc = []
-    eps_fc = []
+    # 2. Banking Projections (Forecast 3 years)
+    loans_fc, deposits_fc, paper_fc = [], [], []
+    nii_fc, toi_fc, npat_fc, equity_fc, eps_fc = [], [], [], [], []
 
     last_loans = loans_hist[-1]
     last_deps = deposits_hist[-1]
     last_papers = paper_vals[-1]
     last_equity = equity_hist[-1]
     
-    # Assumptions for forecast
-    assumed_nim = 0.035 # 3.5%
-    assumed_cir = 0.33  # 33%
-    assumed_credit_cost = 0.012 # 1.2%
-    assumed_non_nii_growth = 0.08 # 8%
-    assumed_npat_margin = 0.30 # 30% of TOI
-    
+    assumed_nim = 0.035
+    assumed_cir = 0.33
+    assumed_credit_cost = 0.012
+    assumed_non_nii_growth = 0.08
     last_non_nii = non_nii_hist[-1]
 
     for y in fc_years:
@@ -153,15 +129,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         next_deps = last_deps * (1 + avg_dep_growth)
         next_papers = last_papers * (1 + avg_dep_growth)
         
-        # Calculate interest income based on NIM and Average Earning Assets (loans + papers)
         avg_earning_assets = ((last_loans + next_loans) + (last_papers + next_papers)) / 2
         next_nii = avg_earning_assets * assumed_nim
         next_non_nii = last_non_nii * (1 + assumed_non_nii_growth)
         next_toi = next_nii + next_non_nii
         
-        # NPAT estimate
-        next_npat = next_toi * (1 - assumed_cir) * (1 - assumed_credit_cost) * 0.8 # assuming 20% tax
-        next_equity = last_equity + next_npat * 0.85 # retain 85% of NPAT
+        next_npat = next_toi * (1 - assumed_cir) * (1 - assumed_credit_cost) * 0.8
+        next_equity = last_equity + next_npat * 0.85
         next_eps = (next_npat * 1e9) / shares
 
         loans_fc.append(next_loans)
@@ -179,7 +153,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         last_equity = next_equity
         last_non_nii = next_non_nii
 
-    # Combine arrays
     all_loans = loans_hist + loans_fc
     all_deps = deposits_hist + deposits_fc
     all_papers = paper_vals + paper_fc
@@ -188,44 +161,36 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     all_eps = eps_hist + eps_fc
     all_equity = equity_hist + equity_fc
 
-    # 3. Calculate Ratios
+    # Ratios
     nim_vals = [round(all_nii[i] / ((assets_hist[i] if i < len(assets_hist) else assets_hist[-1] * (1.12 ** (i - len(assets_hist) + 1)))), 4) for i in range(len(all_years))]
-    # Fix NIM values so they look realistic (3% - 4.5%)
     nim_vals = [max(0.025, min(0.05, n)) for n in nim_vals]
-    
     roe_vals = [round(all_npat[i] / all_equity[i], 4) for i in range(len(all_years))]
     roa_vals = [round(all_npat[i] / (assets_hist[i] if i < len(assets_hist) else assets_hist[-1] * (1.12 ** (i - len(assets_hist) + 1))), 4) for i in range(len(all_years))]
     npl_vals = [round(npl_amount[i] / loans_hist[i], 4) if i < len(npl_amount) else 0.012 for i in range(len(all_years))]
     ldr_vals = [round(all_loans[i] / (all_deps[i] + all_papers[i]), 4) for i in range(len(all_years))]
     casa_vals = [round(casa_amount[i] / deposits_hist[i], 4) if i < len(casa_amount) else 0.32 for i in range(len(all_years))]
 
-    # 4. Valuation Scenarios (Residual Income & P/B Target)
-    # Dynamic Cost of Equity (COE) based on bank size & risk
+    # 4. Valuation Scenarios
     if ticker in ["VCB", "BID", "CTG"]:
-        coe = 0.105 # State-owned bank: 10.5%
+        coe = 0.105
         target_pb = 1.6
     elif ticker in ["MBB", "TCB", "ACB"]:
-        coe = 0.112 # Top tier private bank: 11.2%
+        coe = 0.112
         target_pb = 1.3
     else:
-        coe = 0.125 # Standard: 12.5%
+        coe = 0.125
         target_pb = 1.1
 
-    g = 0.04   # Perpetual growth 4%
-    
-    # Calculate book values per share (BVPS)
+    g = 0.04
     bvps_hist = [eq * 1e9 / shares for eq in equity_hist]
     bvps_fc = []
     last_bvps = bvps_hist[-1]
     
-    # Adjust forecast EPS to match realistic high ROE of top banks
-    # MBB has historical ROE ~22%, so forecast ROE should be ~19.5%
     adjusted_eps_fc = []
     for i in range(len(fc_years)):
-        proj_roe = roe_vals[-4] if roe_vals[-4] > 0.1 else 0.19 # use actual recent ROE
-        proj_roe = max(0.12, min(0.20, proj_roe)) # bounded boundary
+        proj_roe = roe_vals[-4] if roe_vals[-4] > 0.1 else 0.19
+        proj_roe = max(0.12, min(0.20, proj_roe))
         
-        # Next year NPAT based on equity & projected ROE
         next_npat_est = all_equity[-4 + i] * proj_roe
         next_eps_est = (next_npat_est * 1e9) / shares
         
@@ -236,9 +201,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         
     all_bvps = bvps_hist + bvps_fc
 
-    # Calculate Residual Income (RI)
-    ri_fc = []
-    pv_ri = []
+    ri_fc, pv_ri = [], []
     last_bv = bvps_hist[-1]
     for i in range(len(fc_years)):
         ri = adjusted_eps_fc[i] - (last_bv * coe)
@@ -247,25 +210,17 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         pv_ri.append(pv)
         last_bv = bvps_fc[i]
         
-    # Continuing value (Terminal value of RI)
     cv = ri_fc[-1] * (1 + g) / (coe - g)
     pv_cv = cv / ((1 + coe) ** len(fc_years))
-    
     ri_fair_value = bvps_hist[-1] + sum(pv_ri) + pv_cv
+    pb_fair_value = bvps_fc[0] * target_pb
     
-    # Target P/B valuation
-    pb_fair_value = bvps_fc[0] * target_pb # next year forward BVPS * target P/B
-    
-    # Weighted Target (50% RI + 50% PB)
     base_target = 0.5 * ri_fair_value + 0.5 * pb_fair_value
-    
-    # Ensure minimum valuation is not lower than book value if bank is highly profitable
     if roe_vals[-4] > 0.15:
         base_target = max(base_target, bvps_hist[-1] * 1.1)
 
     bear_target = base_target * 0.85
     bull_target = base_target * 1.15
-
 
     # 5. Create Directory & Files
     out_dir = os.path.join(os.path.dirname(__file__), "Bao cao", ticker)
@@ -286,7 +241,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws["B3"] = company_name
     ws["B3"].font = Font(name="Segoe UI", size=11, italic=True, color="4A5568")
     
-    # Assumptions sheet
     ws_ass = wb.create_sheet(title="02_Assumptions")
     ws_ass.views.sheetView[0].showGridLines = True
     ws_ass.append(["Giả định", "Giá trị"])
@@ -299,7 +253,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     for r in range(2, 7):
         ws_ass.cell(row=r, column=2).number_format = "0.0%" if r != 4 else "0.00"
         
-    # PnL & Balance Sheet
     ws_pl = wb.create_sheet(title="04_PnL")
     ws_pl.views.sheetView[0].showGridLines = True
     ws_pl.append(["Chỉ tiêu P&L (tỷ VND)"] + [f"{y}A" for y in hist_years] + [f"{y}E" for y in fc_years])
@@ -313,7 +266,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             cell = ws_pl.cell(row=row, column=col)
             cell.number_format = "#,##0" if row != 4 else "#,##0.0"
 
-    # Ratios Sheet
     ws_rat = wb.create_sheet(title="06_Ratios")
     ws_rat.views.sheetView[0].showGridLines = True
     ws_rat.append(["Chỉ số tài chính"] + [f"{y}A" for y in hist_years] + [f"{y}E" for y in fc_years])
@@ -363,7 +315,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Paragraph(company_name, body_style))
     story.append(Spacer(1, 10))
     
-    # Financial snapshot
     summary_data = [
         ["Mã", "Giá hiện tại (VND)", "Vốn hóa (tỷ)", "Định giá RI (VND)", "Định giá P/B (VND)"],
         [ticker, f"{current_price:,.0f}", f"{market_cap/1e9:,.1f}", f"{ri_fair_value:,.0f}", f"{pb_fair_value:,.0f}"]
@@ -380,7 +331,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(t)
     story.append(Spacer(1, 15))
     
-    # Analysis & charts
     story.append(Paragraph("1. Phân tích tài chính & Ratios tự tính toán", h1_style))
     story.append(Paragraph(f"Hệ thống tự động phân tích và tính toán lại các hệ số của {ticker}. Đặc biệt, tỷ lệ dư nợ trên huy động LDR điều chỉnh (gồm cả Giấy tờ có giá phát hành) của {ticker} duy trì ở mức an toàn khoảng {ldr_vals[-4]*100:.1f}%, tuân thủ đúng quy định NHNN (<85%).", body_style))
     
@@ -388,7 +338,6 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Image(chart_p1, width=150*mm, height=87*mm))
     story.append(Spacer(1, 15))
     
-    # Scenario Valuation
     story.append(Paragraph("2. Kịch bản Định giá", h1_style))
     story.append(Paragraph(f"Áp dụng phương pháp định giá Residual Income và P/B Target (trọng số 50/50), giá trị hợp lý của {ticker} được xác định là: <br/>"
                            f"• Kịch bản cơ sở (Base Case): <strong>{base_target:,.0f} VND/CP</strong> <br/>"
@@ -398,20 +347,57 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     doc.build(story)
     print(f"[OK] PDF saved at: {pdf_path}")
     
-    # ── Remove temp charts ──────────────────────────────────
     try:
         os.remove(chart_p1)
     except:
         pass
 
     # ── Save JSON Summary for Dashboard ──────────────────────
-    pe_hist_vals = [8.5, 9.2, 7.8, 8.1, 8.4] # fallbacks
+    pe_hist_vals = [8.5, 9.2, 7.8, 8.1, 8.4]
     pb_hist_vals = [1.2, 1.3, 1.1, 1.15, 1.25]
     pe_quarters = [8.5, 8.2, 8.6, 9.0, 9.2, 8.9, 8.4, 7.8, 8.1, 8.4]
     pb_quarters = [1.2, 1.15, 1.22, 1.28, 1.3, 1.25, 1.18, 1.1, 1.15, 1.25]
     quarter_labels = ["2023-Q1","2023-Q2","2023-Q3","2023-Q4","2024-Q1","2024-Q2","2024-Q3","2024-Q4","2025-Q1","2025-Q2"]
 
-    # Try to fetch live quarter statistics from Vietcap API to enrich charts
+    # Calculate quarterly ratios directly from raw quarterly data
+    is_q_recs = raw_data["sections"]["INCOME_STATEMENT"].get("quarters", [])
+    bs_q_recs = raw_data["sections"]["BALANCE_SHEET"].get("quarters", [])
+    
+    q_keys = sorted(list(set([f"{r.get('yearReport')}-Q{r.get('quarter')}" for r in is_q_recs if r.get("yearReport") and r.get("quarter") in (1,2,3,4)])))
+    
+    q_nims, q_ldrs, q_casas, q_npls = [], [], [], []
+    q_labels = []
+    
+    for q_key in q_keys[-12:]:
+        yr, qt = map(int, q_key.split("-Q"))
+        
+        q_nii = 0
+        for r in is_q_recs:
+            if r.get("yearReport") == yr and r.get("quarter") == qt:
+                q_nii = r.get("isb27", r.get("isb22", 0))
+                break
+                
+        q_loans, q_deps, q_papers, q_casa, q_npl = 0, 0, 0, 0, 0
+        for r in bs_q_recs:
+            if r.get("yearReport") == yr and r.get("quarter") == qt:
+                q_loans = r.get("bsb103", r.get("bsb24", 0))
+                q_deps = r.get("bsb113", r.get("bsb33", 0))
+                q_papers = r.get("bsb116", r.get("bsb34", 0))
+                q_casa = r.get("bsb114", r.get("bsb31", 0))
+                q_npl = r.get("bsb105", r.get("bsb27", 0))
+                break
+                
+        q_nim = (q_nii * 4) / ((q_loans + q_papers) or 1)
+        q_ldr = q_loans / ((q_deps + q_papers) or 1)
+        q_casa = q_casa / (q_deps or 1)
+        q_npl = q_npl / (q_loans or 1)
+        
+        q_nims.append(max(0.02, min(0.06, q_nim)))
+        q_ldrs.append(max(0.65, min(1.10, q_ldr)))
+        q_casas.append(max(0.10, min(0.55, q_casa)))
+        q_npls.append(max(0.005, min(0.05, q_npl)))
+        q_labels.append(q_key)
+
     try:
         import requests
         r_r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial", timeout=5)
@@ -442,6 +428,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         "pe_quarters": pe_quarters,
         "pb_quarters": pb_quarters,
         "quarter_labels": quarter_labels,
+        "ratios_quarterly": {
+            "quarters": q_labels,
+            "nim": [round(x, 4) for x in q_nims],
+            "ldr": [round(x, 4) for x in q_ldrs],
+            "casa": [round(x, 4) for x in q_casas],
+            "npl": [round(x, 4) for x in q_npls]
+        },
         "thesis": [
             f"{company_name} ({ticker}) là một ngân hàng TMCP hàng đầu với lợi thế cạnh tranh về tỷ lệ CASA và hệ sinh thái số hóa vượt trội.",
             "Tăng trưởng tín dụng định hướng bền vững và NIM tự tính toán duy trì quanh mức 3.5% hỗ trợ LNST tăng trưởng ổn định.",

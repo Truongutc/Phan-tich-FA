@@ -16,18 +16,18 @@
     "pdfUrl": null
   },
   {
-    "ticker": "MBB",
-    "companyName": "Ngân hàng TMCP MBB",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-27 12:46",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "ACB",
     "companyName": "Ngân hàng TMCP ACB",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-06-27 05:32",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "MBB",
+    "companyName": "Ngân hàng TMCP MBB",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-27 12:49",
     "excelUrl": null,
     "pdfUrl": null
   }

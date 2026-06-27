@@ -944,7 +944,6 @@ function formatNumber(num, decimals = 0) {
 
 function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
     const container = document.getElementById('quarterly-ytd-evaluation-container');
-    const ratios = liveData.ratios || [];
     const isrecs = liveData.incomeYears?.quarters || [];
     
     // Sort quarters chronologically
@@ -959,12 +958,10 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
 
     const latestQ = quarters[quarters.length - 1];
     const prevQ = quarters[quarters.length - 2];
-    
-    // Find same quarter last year
     const sameQLastYear = quarters.find(q => q.yearReport === latestQ.yearReport - 1 && q.quarter === latestQ.quarter);
     
     // 1. Calculate growth metrics
-    const revFieldName = cfg.incomeField; // Net interest income for banks or net revenue for others
+    const revFieldName = cfg.incomeField; 
     const npatFieldName = cfg.npat;
 
     const latestRev = latestQ[revFieldName] || 0;
@@ -1002,7 +999,47 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
         return '<span class="badge-growth flat">0.0%</span>';
     };
 
-    // 3. Generate summary texts
+    // 3. Extract quarterly ratios if available
+    let ratioTextHTML = '';
+    if (localJson?.ratios_quarterly) {
+        const rq = localJson.ratios_quarterly;
+        const idx = rq.quarters.indexOf(`${latestQ.yearReport}-Q${latestQ.quarter}`);
+        if (idx !== -1) {
+            const nimVal = rq.nim[idx] ? (rq.nim[idx] * 100).toFixed(2) + '%' : '-';
+            const ldrVal = rq.ldr[idx] ? (rq.ldr[idx] * 100).toFixed(1) + '%' : '-';
+            const casaVal = rq.casa[idx] ? (rq.casa[idx] * 100).toFixed(1) + '%' : '-';
+            const nplVal = rq.npl[idx] ? (rq.npl[idx] * 100).toFixed(2) + '%' : '-';
+            
+            ratioTextHTML = `
+                <div class="q-ytd-item">
+                    <div class="q-ytd-header">
+                        <span class="q-ytd-title">Chỉ số Sức khỏe Quý gần nhất</span>
+                        <span style="font-size:0.75rem;color:var(--text-dim)">Hệ số Quý tự tính toán</span>
+                    </div>
+                    <div class="q-ytd-metrics">
+                        <div class="q-metric-row">
+                            <span class="q-metric-label">${ticker === 'TCB' || ticker === 'MBB' || ticker === 'VPB' ? 'Tỷ lệ NIM Quý (năm hóa)' : 'Biên lợi nhuận gộp'}</span>
+                            <span class="q-metric-value" style="color:var(--sector-color)">${nimVal}</span>
+                        </div>
+                        <div class="q-metric-row">
+                            <span class="q-metric-label">${ticker === 'TCB' || ticker === 'MBB' || ticker === 'VPB' ? 'Tỷ lệ LDR Quý' : 'Nợ/Vốn chủ sở hữu'}</span>
+                            <span class="q-metric-value">${ldrVal}</span>
+                        </div>
+                        <div class="q-metric-row">
+                            <span class="q-metric-label">${ticker === 'TCB' || ticker === 'MBB' || ticker === 'VPB' ? 'Tỷ lệ CASA Quý' : 'Tỷ suất ROA Quý'}</span>
+                            <span class="q-metric-value">${casaVal}</span>
+                        </div>
+                        <div class="q-metric-row">
+                            <span class="q-metric-label">${ticker === 'TCB' || ticker === 'MBB' || ticker === 'VPB' ? 'Tỷ lệ Nợ xấu NPL Quý' : 'Vòng quay tổng tài sản'}</span>
+                            <span class="q-metric-value" style="color:#ef4444">${nplVal}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // 4. Generate summary texts
     let commentary = '';
     const nameRev = cfg.incomeLabel;
     
@@ -1019,10 +1056,10 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
     }
 
     container.innerHTML = `
-        <div class="quarterly-ytd-grid">
+        <div class="quarterly-ytd-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">
             <div class="q-ytd-item">
                 <div class="q-ytd-header">
-                    <span class="q-ytd-title">Quý gần nhất (${latestQ.quarter}Q/${latestQ.yearReport})</span>
+                    <span class="q-ytd-title">Doanh thu Quý gần nhất (${latestQ.quarter}Q/${latestQ.yearReport})</span>
                     <span style="font-size:0.75rem;color:var(--text-dim)">Đơn vị: Tỷ VND</span>
                 </div>
                 <div class="q-ytd-metrics">
@@ -1038,12 +1075,16 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
                         <span class="q-metric-label">Tăng trưởng YoY (cùng kỳ)</span>
                         <span>${formatGrowth(yoyRev)}</span>
                     </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Lũy kế YTD cả năm</span>
+                        <span class="q-metric-value">${formatNumber(ytdRev/1e9, 1)}</span>
+                    </div>
                 </div>
             </div>
 
             <div class="q-ytd-item">
                 <div class="q-ytd-header">
-                    <span class="q-ytd-title">Lợi nhuận quý gần nhất</span>
+                    <span class="q-ytd-title">Lợi nhuận Quý gần nhất</span>
                     <span style="font-size:0.75rem;color:var(--text-dim)">Đơn vị: Tỷ VND</span>
                 </div>
                 <div class="q-ytd-metrics">
@@ -1059,33 +1100,14 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
                         <span class="q-metric-label">Tăng trưởng YoY (cùng kỳ)</span>
                         <span>${formatGrowth(yoyNpat)}</span>
                     </div>
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">Lũy kế LNST YTD cả năm</span>
+                        <span class="q-metric-value">${formatNumber(ytdNpat/1e9, 1)} (${formatGrowth(yoyYtdNpat)})</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="q-ytd-item">
-                <div class="q-ytd-header">
-                    <span class="q-ytd-title">Lũy kế từ đầu năm (YTD)</span>
-                    <span style="font-size:0.75rem;color:var(--text-dim)">So với cùng kỳ</span>
-                </div>
-                <div class="q-ytd-metrics">
-                    <div class="q-metric-row">
-                        <span class="q-metric-label">Lũy kế Doanh thu/NII YTD</span>
-                        <span class="q-metric-value">${formatNumber(ytdRev/1e9, 1)}</span>
-                    </div>
-                    <div class="q-metric-row">
-                        <span class="q-metric-label">Tăng trưởng YTD Doanh thu/NII</span>
-                        <span>${formatGrowth(yoyYtdRev)}</span>
-                    </div>
-                    <div class="q-metric-row">
-                        <span class="q-metric-label">Lũy kế LNST YTD</span>
-                        <span class="q-metric-value">${formatNumber(ytdNpat/1e9, 1)}</span>
-                    </div>
-                    <div class="q-metric-row">
-                        <span class="q-metric-label">Tăng trưởng YTD LNST</span>
-                        <span>${formatGrowth(yoyYtdNpat)}</span>
-                    </div>
-                </div>
-            </div>
+            ${ratioTextHTML}
         </div>
         <div class="q-commentary-box">
             <strong>📋 Nhận định nhanh Earning Release:</strong> ${commentary}

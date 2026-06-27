@@ -57,6 +57,13 @@
     "2025-Q1",
     "2025-Q2"
   ],
+  "ratios_quarterly": {
+    "quarters": [],
+    "nim": [],
+    "ldr": [],
+    "casa": [],
+    "npl": []
+  },
   "thesis": [
     "Ngân hàng TMCP MBB (MBB) là một ngân hàng TMCP hàng đầu với lợi thế cạnh tranh về tỷ lệ CASA và hệ sinh thái số hóa vượt trội.",
     "Tăng trưởng tín dụng định hướng bền vững và NIM tự tính toán duy trì quanh mức 3.5% hỗ trợ LNST tăng trưởng ổn định.",

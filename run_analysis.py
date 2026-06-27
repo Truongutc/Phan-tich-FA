@@ -112,9 +112,18 @@ def run_analysis(ticker: str):
         print(f"[ERROR] Could not fetch data for {ticker}: {e}")
         sys.exit(1)
 
+    # Tự động nhận diện Ngân hàng dựa trên cấu trúc tài khoản BCTC thực tế
+    bs_recs = raw_data["sections"]["BALANCE_SHEET"].get("years", [])
+    has_bank_accounts = False
+    if bs_recs:
+        # Kiểm tra xem có tài khoản Cho vay khách hàng (bsb103) hoặc Tiền gửi (bsb113) không
+        latest_bs = bs_recs[-1]
+        if "bsb103" in latest_bs or "bsb113" in latest_bs or "bsb116" in latest_bs:
+            has_bank_accounts = True
+
     # ── STEP 2: Run sector-specific template (or AI builder fallback) ─────────
-    if ticker in BANKING_TICKERS:
-        print(f"\n[Step 2] {ticker} is a Bank. Running template_banking.py...")
+    if ticker in BANKING_TICKERS or has_bank_accounts:
+        print(f"\n[Step 2] {ticker} is classified as a Bank. Running template_banking.py...")
         import template_banking
         success = template_banking.run_banking_analysis(ticker, raw_data)
         if not success:
