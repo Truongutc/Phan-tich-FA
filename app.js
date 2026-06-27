@@ -864,7 +864,19 @@ function renderPESTLE(pestleData) {
         Legal:         'Tuân thủ các quy định pháp luật và tiêu chuẩn ngành là yêu cầu cơ bản.',
         Environmental: 'Áp lực ESG và báo cáo phát triển bền vững ngày càng trở thành yêu cầu của nhà đầu tư.',
     };
-    const data = pestleData || defaultPestle;
+    
+    let data = defaultPestle;
+    if (pestleData) {
+        if (Array.isArray(pestleData)) {
+            data = {};
+            pestleData.forEach(item => {
+                if (item.factor) data[item.factor] = item.content;
+            });
+        } else {
+            data = pestleData;
+        }
+    }
+
     const pestleColors = { Political: '#3b82f6', Economic: '#10b981', Social: '#f59e0b', Technological: '#a855f7', Legal: '#ef4444', Environmental: '#22c55e' };
     const pestleSentiment = { Political: 'neutral', Economic: 'neutral', Social: 'positive', Technological: 'positive', Legal: 'neutral', Environmental: 'neutral' };
 

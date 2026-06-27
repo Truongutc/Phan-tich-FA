@@ -56,9 +56,31 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     # Details info
     company_name = raw_data.get("companyName", f"Ngân hàng TMCP {ticker}")
-    current_price = raw_data.get("currentPrice", 20000)
-    shares = raw_data.get("shares", 5000000000)
+    current_price = raw_data.get("currentPrice", 24000)
+    
+    # Calculate shares from Charter Capital (bsa80) in the latest available historical year
+    # bsa80 is in VND, charter capital / 10,000 (par value) = outstanding shares
+    latest_hist_year = hist_years[-1]
+    charter_capital = get_val(bs_recs, latest_hist_year, ["bsa80", "bsb118"])
+    
+    if charter_capital > 0:
+        shares = int(charter_capital / 10000) # par value 10k VND
+        print(f"[Details] Calculated shares from Charter Capital ({latest_hist_year}): {shares:,.0f} shares")
+    else:
+        shares = 5287092729 if ticker == "MBB" else 5000000000 # hardcoded fallbacks if bsa80 is missing
+        
+    # Fetch live price if possible (non-blocking fallback)
+    try:
+        import requests
+        r_det = requests.get(f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", timeout=3)
+        det_json = r_det.json().get("data", {})
+        if det_json:
+            current_price = det_json.get("currentPrice") or current_price
+    except Exception as e:
+        pass
+
     market_cap = current_price * shares
+
     sector = "Ngân hàng"
 
     # Extract historical values
@@ -178,17 +200,40 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     casa_vals = [round(casa_amount[i] / deposits_hist[i], 4) if i < len(casa_amount) else 0.32 for i in range(len(all_years))]
 
     # 4. Valuation Scenarios (Residual Income & P/B Target)
-    coe = 0.125 # Cost of equity 12.5%
+    # Dynamic Cost of Equity (COE) based on bank size & risk
+    if ticker in ["VCB", "BID", "CTG"]:
+        coe = 0.105 # State-owned bank: 10.5%
+        target_pb = 1.6
+    elif ticker in ["MBB", "TCB", "ACB"]:
+        coe = 0.112 # Top tier private bank: 11.2%
+        target_pb = 1.3
+    else:
+        coe = 0.125 # Standard: 12.5%
+        target_pb = 1.1
+
     g = 0.04   # Perpetual growth 4%
     
-    # Calculate book values per share
+    # Calculate book values per share (BVPS)
     bvps_hist = [eq * 1e9 / shares for eq in equity_hist]
     bvps_fc = []
     last_bvps = bvps_hist[-1]
+    
+    # Adjust forecast EPS to match realistic high ROE of top banks
+    # MBB has historical ROE ~22%, so forecast ROE should be ~19.5%
+    adjusted_eps_fc = []
     for i in range(len(fc_years)):
-        next_bvps = last_bvps + eps_fc[i]
+        proj_roe = roe_vals[-4] if roe_vals[-4] > 0.1 else 0.19 # use actual recent ROE
+        proj_roe = max(0.12, min(0.20, proj_roe)) # bounded boundary
+        
+        # Next year NPAT based on equity & projected ROE
+        next_npat_est = all_equity[-4 + i] * proj_roe
+        next_eps_est = (next_npat_est * 1e9) / shares
+        
+        adjusted_eps_fc.append(next_eps_est)
+        next_bvps = last_bvps + next_eps_est
         bvps_fc.append(next_bvps)
         last_bvps = next_bvps
+        
     all_bvps = bvps_hist + bvps_fc
 
     # Calculate Residual Income (RI)
@@ -196,7 +241,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     pv_ri = []
     last_bv = bvps_hist[-1]
     for i in range(len(fc_years)):
-        ri = eps_fc[i] - (last_bv * coe)
+        ri = adjusted_eps_fc[i] - (last_bv * coe)
         ri_fc.append(ri)
         pv = ri / ((1 + coe) ** (i + 1))
         pv_ri.append(pv)
@@ -209,13 +254,18 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ri_fair_value = bvps_hist[-1] + sum(pv_ri) + pv_cv
     
     # Target P/B valuation
-    target_pb = 1.3
     pb_fair_value = bvps_fc[0] * target_pb # next year forward BVPS * target P/B
     
-    # Weighted Target
+    # Weighted Target (50% RI + 50% PB)
     base_target = 0.5 * ri_fair_value + 0.5 * pb_fair_value
-    bear_target = base_target * 0.8
-    bull_target = base_target * 1.2
+    
+    # Ensure minimum valuation is not lower than book value if bank is highly profitable
+    if roe_vals[-4] > 0.15:
+        base_target = max(base_target, bvps_hist[-1] * 1.1)
+
+    bear_target = base_target * 0.85
+    bull_target = base_target * 1.15
+
 
     # 5. Create Directory & Files
     out_dir = os.path.join(os.path.dirname(__file__), "Bao cao", ticker)
