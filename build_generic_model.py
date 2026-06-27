@@ -609,6 +609,17 @@ def build_generic(ticker):
         "pestle": sector_content.get("pestle", {}),
         "comments": sector_content.get("comments", {}),
 
+        # Self-calculated ratios (avoiding Vietcap ratio errors where possible)
+        "ratios": {
+            "nim": [round(((get_val(is_recs, y, ["isb27", "isb22"]) / 1e9) / (get_val(bs_recs, y, assets_fields) / 1e9 or 1)), 4) if y in hist_years else 0.035 for y in all_years] if (ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in sector.lower()) else [],
+            "roe": [round(npat_hist[i]/equity_hist[i], 4) if i < len(npat_hist) else 0.15 for i in range(len(all_years))],
+            "roa": [round(npat_hist[i]/assets_hist[i], 4) if i < len(npat_hist) else 0.02 for i in range(len(all_years))],
+            "npl": [round((get_val(bs_recs, y, ["bsb105", "bsb27"]) or 0) / (get_val(bs_recs, y, ["bsb103", "bsb24"]) or 1), 4) if y in hist_years else 0.012 for y in all_years] if (ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in sector.lower()) else [],
+            "ldr": [round((get_val(bs_recs, y, ["bsb103", "bsb24"]) / 1e9) / (((get_val(bs_recs, y, ["bsb113", "bsb33"]) or 0) + (get_val(bs_recs, y, ["bsb116", "bsb34", "bsb36"]) or 0)) / 1e9 or 1), 3) if y in hist_years else 0.83 for y in all_years] if (ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in sector.lower()) else [],
+            "casa": [round((get_val(bs_recs, y, ["bsb114", "bsb31"]) or 0) / (get_val(bs_recs, y, ["bsb113", "bsb33"]) or 1), 3) if y in hist_years else 0.325 for y in all_years] if (ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in sector.lower()) else [],
+            "gross_margin": [round(gp_hist[i]/rev_hist[i], 4) if i < len(gp_hist) else avg_gp_margin for i in range(len(all_years))] if not (ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in sector.lower()) else [],
+            "debt_to_equity": [round(debt_hist[i]/equity_hist[i], 2) if i < len(debt_hist) else 0.5 for i in range(len(all_years))] if not (ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in sector.lower()) else [],
+        },
         "data": {
             "years": all_years,
             "revenue": all_rev,

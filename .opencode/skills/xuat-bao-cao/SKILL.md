@@ -480,7 +480,15 @@ Nếu Q1/2026 NIM annualized = 3.44% → nim_fc[0] không được thấp hơn 3
   "pb_quarters":    [1.2, 1.18, 1.15, 1.1, 1.05, 0.95, 0.90, 0.84, 0.88, 0.92, 0.96, 1.0],
   "quarter_labels": ["2021-Q1","2021-Q2","2021-Q3","2021-Q4",
                      "2022-Q1","2022-Q2","2022-Q3","2022-Q4",
-                     "2023-Q1","2023-Q2","2023-Q3","2023-Q4"]
+                     "2023-Q1","2023-Q2","2023-Q3","2023-Q4"],
+  "ratios": {
+    "nim": [0.034, 0.035, 0.036, 0.037, 0.035, 0.035, 0.036, 0.037],
+    "roe": [0.18, 0.19, 0.17, 0.16, 0.15, 0.14, 0.15, 0.16],
+    "roa": [0.021, 0.022, 0.020, 0.019, 0.018, 0.018, 0.019, 0.020],
+    "npl": [0.009, 0.010, 0.011, 0.012, 0.011, 0.012, 0.013, 0.012],
+    "ldr": [0.81, 0.82, 0.83, 0.82, 0.83, 0.84, 0.85, 0.84],
+    "casa": [0.35, 0.36, 0.34, 0.33, 0.32, 0.33, 0.34, 0.35]
+  }
 }
 ```
 
@@ -497,6 +505,8 @@ Nếu Q1/2026 NIM annualized = 3.44% → nim_fc[0] không được thấp hơn 3
 | `pe_quarters` / `pb_quarters` | Lấy từ Vietcap `statistics-financial` API, TOÀN BỘ quý có sẵn |
 | `quarter_labels` | Cùng độ dài với `pe_quarters`, format `"YYYY-QN"` |
 | `gdriveExcelUrl` / `gdrivePdfUrl` | Khởi tạo là `null` — `run_analysis.py` patch sau upload |
+| **`ratios`** | **BẮT BUỘC TỰ TÍNH TOÁN từ dữ liệu gốc BCTC thay vì lấy số có sẵn từ Vietcap. Phải tính toán cho đầy đủ các năm trong quá khứ và cả dự báo. Đối với ngân hàng: LDR = Cho vay / (Tiền gửi + Giấy tờ có giá) * 100. Đảm bảo LDR của TCB dao động quanh 80-87%, không được là 132.9% do thiếu Giấy tờ có giá ở mẫu số.** |
+
 
 ### Code mẫu Python builder
 

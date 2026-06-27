@@ -961,3 +961,37 @@ Target = 50% × RI Value + 50% × P/B Value
 - [ ] Sensitivity table: COE × g (5×5) để hiển thị range hợp lý
 - [ ] RI Value và P/B Value phải hiển thị trong Excel dưới dạng công thức liên kết động
 
+---
+
+## 18. QUY TẮC BẮT BUỘC: TỰ TÍNH TOÁN CHỈ SỐ (RATIOS) — CẤM LẤY SỐ CÓ SẴN TỪ VIETCAP
+
+> **Lý do**: Vietcap API cung cấp một số tỷ lệ tính toán sẵn (như LDR, NIM, CASA) bị sai lệch lớn do công thức tính toán đơn giản (ví dụ LDR TCB bị vọt lên 132.9% do Vietcap không tính Giấy tờ có giá vào mẫu số).
+
+### Quy định tự tính toán cho mọi năm (Lịch sử + Dự báo)
+
+Bắt buộc tự tính các chỉ số ngân hàng theo công thức chuẩn từ dữ liệu gốc BCTC:
+
+1. **LDR (Tỷ lệ Dư nợ / Huy động)**:
+   - **Mã tài khoản sử dụng**: Cho vay khách hàng (`bsb103`), Tiền gửi khách hàng (`bsb113`), Giấy tờ có giá phát hành (`bsb116`).
+   - **Công thức**: `LDR = bsb103 / (bsb113 + bsb116) * 100` (được bảo vệ mẫu số khác 0).
+   - *Kết quả thực tế*: LDR của TCB phải nằm trong khoảng hợp lý **80-87%**, không được phép là 132.9%.
+
+2. **NIM (Biên lãi ròng)**:
+   - **Công thức**: `NIM = Thu nhập lãi thuần (isb27 hoặc isb22) / Tổng tài sản sinh lãi bình quân (Average Earning Assets)`.
+   - Cấm lấy giá trị `netInterestMargin` tính sẵn.
+
+3. **CASA Ratio**:
+   - **Công thức**: `CASA = Tiền gửi không kỳ hạn của khách hàng (bsb114) / Tổng tiền gửi khách hàng (bsb113) * 100`.
+
+4. **NPL Ratio (Tỷ lệ nợ xấu)**:
+   - **Công thức**: `NPL = Tổng nợ xấu bsb105 (nhóm 3+4+5) / Tổng dư nợ bsb103 (Gross Loans) * 100`.
+
+5. **ROE & ROA**:
+   - **Công thức**: `ROE = LNST / Average Equity`, `ROA = LNST / Average Assets`.
+
+### Checklist Ratios
+- [ ] Cấm đọc trực tiếp trường ratios có sẵn của Vietcap để nạp vào Dashboard.
+- [ ] Mọi chỉ số của ngân hàng ở Dashboard (app.js) và file xuất JSON (data/<ticker>.json) phải khớp hoàn toàn với số liệu tự tính toán chuẩn xác từ BCTC.
+- [ ] Logic tự tính toán phải bao phủ đầy đủ tất cả các năm lịch sử trong quá khứ lẫn các năm dự báo.
+
+

@@ -362,6 +362,20 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
      - `pe_quarters`: list of all quarterly P/E values from statistics-financial.
      - `pb_quarters`: list of all quarterly P/B values from statistics-financial.
      - `quarter_labels`: list of strings for quarter names corresponding to pe_quarters/pb_quarters (e.g. ["2021-Q1", "2021-Q2", ...]).
+     - **`ratios`**: A dictionary containing calculated historical and forecast ratio arrays. **FOR EVERY RATIO, YOU MUST CALCULATE IT YOURSELF FROM RAW BCTC DATA FOR ALL YEARS (both historical and forecast) INSTEAD OF TRUSTING VIETCAP PRE-CALCULATED RATIOS**.
+       - For Banks:
+         - `nim`: Net Interest Income / Average Earning Assets
+         - `roe`: NPAT / Average Equity
+         - `roa`: NPAT / Average Assets
+         - `npl`: NPL / Gross Loans
+         - `ldr`: Gross Loans / (Deposits + PaperValuable/Giấy tờ có giá). **Formula: LDR = Loans / (Deposits + Giấy tờ có giá) * 100**. For TCB, Deposits (~470k tỷ) + Giấy tờ có giá (~80k tỷ CD/Trái phiếu) = ~550k tỷ. Loans = ~480k tỷ. LDR must calculate to a realistic ~80-87%, NOT 132.9%.
+         - `casa`: CASA / Deposits
+       - For Non-Banks:
+         - `gross_margin`: Gross Profit / Revenue
+         - `roe`: NPAT / Average Equity
+         - `roa`: NPAT / Average Assets
+         - `debt_to_equity`: Net Debt / Equity
+
 
 
 7. **Main execution**:

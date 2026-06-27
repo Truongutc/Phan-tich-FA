@@ -120,6 +120,115 @@
     "2025-Q4",
     "2026-Q1"
   ],
+  "thesis": [
+    "Vietnam Technological And Commercial Joint Stock Bank là một trong những ngân hàng tư nhân hàng đầu, với hệ sinh thái tài chính toàn diện và lợi thế về nền tảng công nghệ số.",
+    "Tăng trưởng tín dụng vượt ngành kết hợp với NIM cải thiện giúp LNST duy trì đà tăng trưởng ổn định.",
+    "Chất lượng tài sản được kiểm soát tốt, tỷ lệ nợ xấu (NPL) ở mức thấp so với bình quân ngành."
+  ],
+  "risks": [
+    "Rủi ro nợ xấu tăng nếu kinh tế vĩ mô suy yếu và khả năng trả nợ của doanh nghiệp sụt giảm.",
+    "Áp lực tăng vốn (CAR) có thể pha loãng EPS nếu ngân hàng phải phát hành cổ phiếu mới.",
+    "Cạnh tranh gay gắt từ các ngân hàng quốc doanh và làn sóng fintech đang thu hẹp biên lãi suất."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 4,
+      "desc": "Mạng lưới khách hàng rộng tạo hiệu ứng cộng hưởng giữa các sản phẩm tài chính."
+    },
+    "Switching Cost": {
+      "score": 4,
+      "desc": "Chi phí chuyển đổi cao do tích hợp sâu dịch vụ tiền gửi, vay và thanh toán."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu ngân hàng uy tín và giấy phép hoạt động là rào cản gia nhập lớn."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "CASA cao giúp giảm chi phí vốn so với đối thủ."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô tài sản lớn cho phép đầu tư mạnh vào hạ tầng số."
+    }
+  },
+  "pestle": {
+    "Political": "Chính sách tiền tệ của NHNN và định hướng ưu tiên tín dụng xanh tác động trực tiếp đến hoạt động ngân hàng.",
+    "Economic": "Tăng trưởng GDP bền vững thúc đẩy nhu cầu tín dụng; lãi suất điều hành là biến số chính.",
+    "Social": "Dân số trẻ và tỷ lệ người dùng ngân hàng số tăng nhanh mở ra thị trường bán lẻ tiềm năng.",
+    "Technological": "Chuyển đổi số và open banking là xu hướng bắt buộc để duy trì cạnh tranh.",
+    "Legal": "Thông tư 06, 16 và các quy định về an toàn vốn Basel II/III tác động đến khẩu vị rủi ro.",
+    "Environmental": "Áp lực từ ESG và tín dụng xanh ngày càng ảnh hưởng đến cơ cấu danh mục cho vay."
+  },
+  "comments": {
+    "overall": "Vietnam Technological And Commercial Joint Stock Bank (TCB) duy trì vị thế cạnh tranh mạnh trong phân khúc ngân hàng tư nhân với hệ sinh thái dịch vụ tài chính đa dạng.",
+    "financial": "Biên lãi ròng (NIM) và tỷ suất sinh lợi vốn chủ (ROE) là 2 chỉ số then chốt cần theo dõi. Tăng trưởng tín dụng và CASA là động lực tăng trưởng chính.",
+    "valuation": "Định giá theo P/B là phương pháp phù hợp nhất cho ngân hàng. P/B dưới 1.5x là vùng hấp dẫn tích lũy dài hạn."
+  },
+  "ratios": {
+    "nim": [
+      0.0469,
+      0.0433,
+      0.0326,
+      0.0363,
+      0.032,
+      0.035,
+      0.035,
+      0.035
+    ],
+    "roe": [
+      0.194,
+      0.1777,
+      0.1368,
+      0.1455,
+      0.1409,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "roa": [
+      0.0317,
+      0.0288,
+      0.0212,
+      0.022,
+      0.0212,
+      0.02,
+      0.02,
+      0.02
+    ],
+    "npl": [
+      -0.0109,
+      -0.0115,
+      -0.012,
+      -0.013,
+      -0.0139,
+      0.012,
+      0.012,
+      0.012
+    ],
+    "ldr": [
+      0.986,
+      1.059,
+      0.95,
+      0.926,
+      0.908,
+      0.83,
+      0.83,
+      0.83
+    ],
+    "casa": [
+      0.0,
+      0.005,
+      0.0,
+      0.002,
+      0.004,
+      0.325,
+      0.325,
+      0.325
+    ],
+    "gross_margin": [],
+    "debt_to_equity": []
+  },
   "data": {
     "years": [
       2021,
@@ -171,50 +280,5 @@
       179501.442,
       179501.442
     ]
-  },
-  "thesis": [
-    "Vietnam Technological And Commercial Joint Stock Bank là một trong những ngân hang tu nhan hang dau, voi he sinh thai tai chinh toan dien va loi the ve nen tang cong nghe so.",
-    "Tang truong tin dung vuot nganh ket hop voi NIM cai thien giup LNST duy tri da tang truong on dinh.",
-    "Chat luong tai san duoc kiem soat tot, ty le no xau (NPL) o muc thap so voi binh quan nganh."
-  ],
-  "risks": [
-    "Rui ro no xau tang neu kinh te vi mo suy yeu va kha nang tra no cua doanh nghiep sut giam.",
-    "Ap luc tang von (CAR) co the pha loang EPS neu ngan hang phai phat hanh co phieu moi.",
-    "Canh tranh gay gat tu cac ngan hang quoc doanh va lan song fintech dang thu hep bien lai suat."
-  ],
-  "moats": {
-    "Network Effect": {
-      "score": 4,
-      "desc": "Mang luoi khach hang rong tao hieu ung cong huong giua cac san pham tai chinh."
-    },
-    "Switching Cost": {
-      "score": 4,
-      "desc": "Chi phi chuyen doi cao do tich hop sau dich vu tien gui, vay va thanh toan."
-    },
-    "Intangible Assets": {
-      "score": 4,
-      "desc": "Thuong hieu ngan hang uy tin va giay phep hoat dong la rao can gia nhap lon."
-    },
-    "Cost Advantage": {
-      "score": 3,
-      "desc": "CASA cao giup giam chi phi von so voi doi thu."
-    },
-    "Efficient Scale": {
-      "score": 3,
-      "desc": "Quy mo tai san lon cho phep dau tu manh vao ha tang so."
-    }
-  },
-  "pestle": {
-    "Political": "Chinh sach tien te cua NHNN va dinh huong uu tien tin dung xanh tac dong truc tiep den hoat dong ngan hang.",
-    "Economic": "Tang truong GDP ben vung thuc day nhu cau tin dung; lai suat dieu hanh la bien so chinh.",
-    "Social": "Dan so tre va ty le nguoi dung ngan hang so tang nhanh mo ra thi truong ban le tiem nang.",
-    "Technological": "Chuyen doi so va open banking la xu huong bat buoc de duy tri canh tranh.",
-    "Legal": "Thong tu 06, 16 va cac quy dinh ve an toan von Basel II/III tac dong den khau vi rui ro.",
-    "Environmental": "Ap luc tu ESG va tin dung xanh ngay cang anh huong den co cau danh muc cho vay."
-  },
-  "comments": {
-    "overall": "Vietnam Technological And Commercial Joint Stock Bank (TCB) duy tri vi the canh tranh manh trong phan khuc ngan hang tu nhan voi he sinh thai dich vu tai chinh da dang.",
-    "financial": "Bien lai rong (NIM) va ty suat sinh loi von chu (ROE) la 2 chi so then chot can theo doi. Tang truong tin dung va CASA la dong luc tang truong chinh.",
-    "valuation": "Dinh gia theo P/B la phuong phap phu hop nhat cho ngan hang. P/B duoi 1.5x la vung hap dan tich luy dai han."
   }
 }

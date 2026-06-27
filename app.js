@@ -32,15 +32,27 @@ const SECTOR_CONFIG = {
         npatLabel: 'Lợi nhuận sau thuế',
         showPE: false,               // P/E less relevant for banks
         primaryValuation: 'P/B',
-        extraMetrics: (ratios) => {
+        extraMetrics: (ratios, localJson) => {
             const latest = ratios?.[ratios.length - 1] || {};
+            // Ưu tiên đọc từ ratios tự tính toán trong localJson
+            const localRatios = localJson?.ratios || {};
+            
+            const getVal = (key, rawLive, factor = 100, decimals = 2) => {
+                if (localRatios[key] !== undefined && localRatios[key] !== null) {
+                    const arr = localRatios[key];
+                    const lastVal = arr[arr.length - 1];
+                    return lastVal !== null && lastVal !== undefined ? (lastVal * (factor === 1 ? 1 : 100)).toFixed(decimals) + '%' : '-';
+                }
+                return rawLive ? (rawLive * factor).toFixed(decimals) + '%' : '-';
+            };
+
             return [
-                { label: 'NIM (Net Interest Margin)', value: latest.netInterestMargin ? (latest.netInterestMargin * 100).toFixed(2) + '%' : '-', desc: 'Biên lãi ròng' },
-                { label: 'ROE', value: latest.roe ? (latest.roe * 100).toFixed(1) + '%' : '-', desc: 'Tỷ suất vốn chủ' },
-                { label: 'ROA', value: latest.roa ? (latest.roa * 100).toFixed(2) + '%' : '-', desc: 'Tỷ suất tổng tài sản' },
-                { label: 'NPL Ratio', value: latest.npl ? (latest.npl * 100).toFixed(2) + '%' : '-', desc: 'Tỷ lệ nợ xấu' },
-                { label: 'LDR', value: latest.ldrLoanDepositRatio ? (latest.ldrLoanDepositRatio * 100).toFixed(1) + '%' : '-', desc: 'Tỷ lệ tín dụng/tiền gửi' },
-                { label: 'CASA Ratio', value: latest.casaRatio ? (latest.casaRatio * 100).toFixed(1) + '%' : '-', desc: 'Tiền gửi không kỳ hạn' },
+                { label: 'NIM (Net Interest Margin)', value: getVal('nim', latest.netInterestMargin, 100, 2), desc: 'Biên lãi ròng' },
+                { label: 'ROE', value: getVal('roe', latest.roe, 100, 1), desc: 'Tỷ suất vốn chủ' },
+                { label: 'ROA', value: getVal('roa', latest.roa, 100, 2), desc: 'Tỷ suất tổng tài sản' },
+                { label: 'NPL Ratio', value: getVal('npl', latest.npl, 100, 2), desc: 'Tỷ lệ nợ xấu' },
+                { label: 'LDR', value: getVal('ldr', latest.ldrLoanDepositRatio, 100, 1), desc: 'Tỷ lệ tín dụng/tiền gửi' },
+                { label: 'CASA Ratio', value: getVal('casa', latest.casaRatio, 100, 1), desc: 'Tiền gửi không kỳ hạn' },
             ];
         }
     },
@@ -57,13 +69,24 @@ const SECTOR_CONFIG = {
         npatLabel: 'Lợi nhuận sau thuế',
         showPE: true,
         primaryValuation: 'P/E',
-        extraMetrics: (ratios) => {
+        extraMetrics: (ratios, localJson) => {
             const latest = ratios?.[ratios.length - 1] || {};
+            const localRatios = localJson?.ratios || {};
+            
+            const getVal = (key, rawLive, factor = 100, decimals = 1, suffix = '%') => {
+                if (localRatios[key] !== undefined && localRatios[key] !== null) {
+                    const arr = localRatios[key];
+                    const lastVal = arr[arr.length - 1];
+                    return lastVal !== null && lastVal !== undefined ? (lastVal * (factor === 1 ? 1 : 100)).toFixed(decimals) + suffix : '-';
+                }
+                return rawLive ? (rawLive * factor).toFixed(decimals) + suffix : '-';
+            };
+
             return [
-                { label: 'Biên gộp (Gross Margin)', value: latest.grossMargin ? (latest.grossMargin * 100).toFixed(1) + '%' : '-', desc: 'Lợi nhuận gộp / Doanh thu' },
-                { label: 'ROE', value: latest.roe ? (latest.roe * 100).toFixed(1) + '%' : '-', desc: 'Tỷ suất vốn chủ sở hữu' },
-                { label: 'Nợ/Vốn chủ', value: latest.debtToEquity ? latest.debtToEquity.toFixed(2) + 'x' : '-', desc: 'Đòn bẩy tài chính' },
-                { label: 'EBITDA Margin', value: latest.ebitMargin ? (latest.ebitMargin * 100).toFixed(1) + '%' : '-', desc: 'Biên EBITDA' },
+                { label: 'Biên gộp (Gross Margin)', value: getVal('gross_margin', latest.grossMargin, 100, 1), desc: 'Lợi nhuận gộp / Doanh thu' },
+                { label: 'ROE', value: getVal('roe', latest.roe, 100, 1), desc: 'Tỷ suất vốn chủ sở hữu' },
+                { label: 'Nợ/Vốn chủ', value: getVal('debt_to_equity', latest.debtToEquity, 1, 2, 'x'), desc: 'Đòn bẩy tài chính' },
+                { label: 'EBITDA Margin', value: getVal('ebitMargin', latest.ebitMargin, 100, 1), desc: 'Biên EBITDA' },
             ];
         }
     },
@@ -80,13 +103,24 @@ const SECTOR_CONFIG = {
         npatLabel: 'Lợi nhuận sau thuế',
         showPE: true,
         primaryValuation: 'P/B',
-        extraMetrics: (ratios) => {
+        extraMetrics: (ratios, localJson) => {
             const latest = ratios?.[ratios.length - 1] || {};
+            const localRatios = localJson?.ratios || {};
+            
+            const getVal = (key, rawLive, factor = 100, decimals = 1, suffix = '%') => {
+                if (localRatios[key] !== undefined && localRatios[key] !== null) {
+                    const arr = localRatios[key];
+                    const lastVal = arr[arr.length - 1];
+                    return lastVal !== null && lastVal !== undefined ? (lastVal * (factor === 1 ? 1 : 100)).toFixed(decimals) + suffix : '-';
+                }
+                return rawLive ? (rawLive * factor).toFixed(decimals) + suffix : '-';
+            };
+
             return [
-                { label: 'ROE', value: latest.roe ? (latest.roe * 100).toFixed(1) + '%' : '-', desc: 'Tỷ suất vốn chủ sở hữu' },
-                { label: 'Biên gộp', value: latest.grossMargin ? (latest.grossMargin * 100).toFixed(1) + '%' : '-', desc: 'Gross Margin' },
-                { label: 'Nợ/Vốn chủ', value: latest.debtToEquity ? latest.debtToEquity.toFixed(2) + 'x' : '-', desc: 'Đòn bẩy tài chính' },
-                { label: 'ROA', value: latest.roa ? (latest.roa * 100).toFixed(2) + '%' : '-', desc: 'Tỷ suất tổng tài sản' },
+                { label: 'ROE', value: getVal('roe', latest.roe, 100, 1), desc: 'Tỷ suất vốn chủ sở hữu' },
+                { label: 'Biên gộp', value: getVal('gross_margin', latest.grossMargin, 100, 1), desc: 'Gross Margin' },
+                { label: 'Nợ/Vốn chủ', value: getVal('debt_to_equity', latest.debtToEquity, 1, 2, 'x'), desc: 'Đòn bẩy tài chính' },
+                { label: 'ROA', value: getVal('roa', latest.roa, 100, 2), desc: 'Tỷ suất tổng tài sản' },
             ];
         }
     },
@@ -103,13 +137,24 @@ const SECTOR_CONFIG = {
         npatLabel: 'Lợi nhuận sau thuế',
         showPE: true,
         primaryValuation: 'P/E',
-        extraMetrics: (ratios) => {
+        extraMetrics: (ratios, localJson) => {
             const latest = ratios?.[ratios.length - 1] || {};
+            const localRatios = localJson?.ratios || {};
+            
+            const getVal = (key, rawLive, factor = 100, decimals = 1, suffix = '%') => {
+                if (localRatios[key] !== undefined && localRatios[key] !== null) {
+                    const arr = localRatios[key];
+                    const lastVal = arr[arr.length - 1];
+                    return lastVal !== null && lastVal !== undefined ? (lastVal * (factor === 1 ? 1 : 100)).toFixed(decimals) + suffix : '-';
+                }
+                return rawLive ? (rawLive * factor).toFixed(decimals) + suffix : '-';
+            };
+
             return [
-                { label: 'Biên gộp', value: latest.grossMargin ? (latest.grossMargin * 100).toFixed(1) + '%' : '-', desc: 'Gross Margin' },
-                { label: 'ROE', value: latest.roe ? (latest.roe * 100).toFixed(1) + '%' : '-', desc: 'Tỷ suất vốn chủ sở hữu' },
-                { label: 'ROA', value: latest.roa ? (latest.roa * 100).toFixed(2) + '%' : '-', desc: 'Tỷ suất tổng tài sản' },
-                { label: 'Nợ/Vốn chủ', value: latest.debtToEquity ? latest.debtToEquity.toFixed(2) + 'x' : '-', desc: 'Đòn bẩy tài chính' },
+                { label: 'Biên gộp', value: getVal('gross_margin', latest.grossMargin, 100, 1), desc: 'Gross Margin' },
+                { label: 'ROE', value: getVal('roe', latest.roe, 100, 1), desc: 'Tỷ suất vốn chủ sở hữu' },
+                { label: 'ROA', value: getVal('roa', latest.roa, 100, 2), desc: 'Tỷ suất tổng tài sản' },
+                { label: 'Nợ/Vốn chủ', value: getVal('debt_to_equity', latest.debtToEquity, 1, 2, 'x'), desc: 'Đòn bẩy tài chính' },
             ];
         }
     },
@@ -126,13 +171,24 @@ const SECTOR_CONFIG = {
         npatLabel: 'Lợi nhuận sau thuế',
         showPE: true,
         primaryValuation: 'P/E',
-        extraMetrics: (ratios) => {
+        extraMetrics: (ratios, localJson) => {
             const latest = ratios?.[ratios.length - 1] || {};
+            const localRatios = localJson?.ratios || {};
+            
+            const getVal = (key, rawLive, factor = 100, decimals = 1, suffix = '%') => {
+                if (localRatios[key] !== undefined && localRatios[key] !== null) {
+                    const arr = localRatios[key];
+                    const lastVal = arr[arr.length - 1];
+                    return lastVal !== null && lastVal !== undefined ? (lastVal * (factor === 1 ? 1 : 100)).toFixed(decimals) + suffix : '-';
+                }
+                return rawLive ? (rawLive * factor).toFixed(decimals) + suffix : '-';
+            };
+
             return [
-                { label: 'Biên gộp', value: latest.grossMargin ? (latest.grossMargin * 100).toFixed(1) + '%' : '-', desc: 'Gross Margin' },
-                { label: 'ROE', value: latest.roe ? (latest.roe * 100).toFixed(1) + '%' : '-', desc: 'Tỷ suất vốn chủ sở hữu' },
-                { label: 'Biên EBIT', value: latest.ebitMargin ? (latest.ebitMargin * 100).toFixed(1) + '%' : '-', desc: 'EBIT Margin' },
-                { label: 'Nợ/Vốn chủ', value: latest.debtToEquity ? latest.debtToEquity.toFixed(2) + 'x' : '-', desc: 'Đòn bẩy' },
+                { label: 'Biên gộp', value: getVal('gross_margin', latest.grossMargin, 100, 1), desc: 'Gross Margin' },
+                { label: 'ROE', value: getVal('roe', latest.roe, 100, 1), desc: 'Tỷ suất vốn chủ sở hữu' },
+                { label: 'Biên EBIT', value: getVal('ebitMargin', latest.ebitMargin, 100, 1), desc: 'EBIT Margin' },
+                { label: 'Nợ/Vốn chủ', value: getVal('debt_to_equity', latest.debtToEquity, 1, 2, 'x'), desc: 'Đòn bẩy' },
             ];
         }
     },
@@ -143,6 +199,7 @@ const SECTOR_CONFIG = {
         color: '#38bdf8',
         incomeField: 'isa3',
         incomeField2: 'isa5',
+
         npat: 'isa20',
         incomeLabel: 'Doanh thu thuần',
         income2Label: 'Lợi nhuận gộp',
@@ -473,7 +530,7 @@ async function loadStockDashboard(ticker) {
     // ── Bank KPI extra card (or sector metrics) ──────────
     const bankKpiCard = document.getElementById('bank-kpi-card');
     if (ratiosAll.length > 0) {
-        const extraMetrics = cfg.extraMetrics(ratiosAll.filter(r => r.quarter <= 4));
+        const extraMetrics = cfg.extraMetrics(ratiosAll.filter(r => r.quarter <= 4), localJson);
         if (extraMetrics.some(m => m.value !== '-')) {
             bankKpiCard.classList.remove('hidden');
             const grid = document.getElementById('bank-kpi-grid');
