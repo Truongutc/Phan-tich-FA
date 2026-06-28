@@ -540,11 +540,46 @@ def build_generic(ticker):
     story.append(t_fin)
     story.append(Spacer(1, 20))
     
-    # 3. Định giá & Rủi ro
-    story.append(Paragraph("3. Định giá & Khuyến nghị", h1_style))
+    # 3. Phân tích kết quả kinh doanh các Quý
+    story.append(Paragraph("3. Phân tích kết quả kinh doanh các Quý", h1_style))
+    if income_quarterly_records:
+        latest_4_qs = income_quarterly_records[-4:]
+        table_header_style = ParagraphStyle('TH_Gen', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=10, textColor=white, alignment=1)
+        table_cell_style = ParagraphStyle('TC_Gen', parent=styles['Normal'], fontName='Helvetica', fontSize=10, alignment=1)
+        
+        q_headers = [Paragraph("Quý", table_header_style)] + [Paragraph(f"Q{r['quarter']}/{r['yearReport']}", table_header_style) for r in latest_4_qs]
+        q_rev_row = [Paragraph("Doanh thu (tỷ VND)", table_cell_style)] + [Paragraph(f"{r['nii']:,.1f}", table_cell_style) for r in latest_4_qs]
+        q_npat_row = [Paragraph("LNST (tỷ VND)", table_cell_style)] + [Paragraph(f"{r['npat']:,.1f}", table_cell_style) for r in latest_4_qs]
+        
+        q_table_data = [q_headers, q_rev_row, q_npat_row]
+        t_q = Table(q_table_data, colWidths=[50*mm] + [30*mm]*len(latest_4_qs))
+        t_q.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), HexColor("#2B6CB0")),
+            ('TEXTCOLOR', (0,0), (-1,0), white),
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+            ('GRID', (0,0), (-1,-1), 0.5, HexColor("#E2E8F0")),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+            ('TOPPADDING', (0,0), (-1,-1), 6),
+        ]))
+        story.append(t_q)
+        story.append(Spacer(1, 10))
+        
+        last_q = latest_4_qs[-1]
+        prev_q = latest_4_qs[-2]
+        chg_pct = (last_q['npat'] - prev_q['npat']) / (abs(prev_q['npat']) or 1) * 100
+        story.append(Paragraph(
+            f"Đánh giá nhanh: Quý gần nhất {last_q['quarter']}/{last_q['yearReport']} ghi nhận doanh thu đạt {last_q['nii']:,.1f} tỷ VND và lợi nhuận sau thuế đạt {last_q['npat']:,.1f} tỷ VND (biến động {chg_pct:+.1f}% so với quý liền trước).", body_style
+        ))
+    else:
+        story.append(Paragraph("Chưa có đủ số liệu quý lịch sử.", body_style))
+        
+    story.append(Spacer(1, 15))
+    
+    # 4. Định giá & Rủi ro
+    story.append(Paragraph("4. Định giá & Khuyến nghị", h1_style))
     story.append(Paragraph(f"Áp dụng phương pháp định giá P/E mục tiêu ở mức {target_pe}x đối với EPS dự phóng năm {fc_years[0]}, giá trị hợp lý của cổ phiếu {ticker} ước tính đạt khoảng {est_fair_pe:,.0f} VND/CP.", body_style))
     
-    story.append(Paragraph("4. Rủi ro đầu tư", h1_style))
+    story.append(Paragraph("5. Rủi ro đầu tư", h1_style))
     story.append(Paragraph("- Rủi ro biến động tỷ giá và lãi suất tăng ảnh hưởng chi phí vốn.", body_style))
     story.append(Paragraph("- Rủi ro cạnh tranh gia tăng trong phân khúc thị trường nội địa.", body_style))
     

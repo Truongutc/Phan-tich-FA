@@ -317,6 +317,11 @@ async function fetchStockLive(ticker) {
     // Ghép dữ liệu quý vào incomeYears để renderQuarterlyAndYTDEvaluation đọc được
     if (incomeYears && incomeQuarters) {
         const rawQ = incomeQuarters.quarters || incomeQuarters.years || [];
+        rawQ.forEach(q => {
+            if (q.quarter === null || q.quarter === undefined) {
+                q.quarter = q.lengthReport;
+            }
+        });
         incomeYears.quarters = rawQ;
     }
     return { details, ratios, incomeYears };
@@ -547,6 +552,11 @@ async function loadStockDashboard(ticker) {
 
     // ── Bank KPI extra card (or sector metrics) ──────────
     const bankKpiCard = document.getElementById('bank-kpi-card');
+    const bankKpiTitle = bankKpiCard.querySelector('h3');
+    if (bankKpiTitle) {
+        bankKpiTitle.textContent = cfg.label === 'Ngân Hàng' ? 'Chỉ số Ngân hàng then chốt' : 'Chỉ số Tài chính then chốt';
+    }
+    
     if (ratiosAll.length > 0) {
         const extraMetrics = cfg.extraMetrics(ratiosAll.filter(r => r.quarter <= 4), localJson);
         if (extraMetrics.some(m => m.value !== '-')) {

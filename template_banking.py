@@ -338,7 +338,41 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Image(chart_p1, width=150*mm, height=87*mm))
     story.append(Spacer(1, 15))
     
-    story.append(Paragraph("2. Kịch bản Định giá", h1_style))
+    story.append(Paragraph("2. Phân tích kết quả kinh doanh các Quý", h1_style))
+    if income_quarterly_records:
+        latest_4_qs = income_quarterly_records[-4:]
+        table_header_style = ParagraphStyle('TH_Bank', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=10, textColor=white, alignment=1)
+        table_cell_style = ParagraphStyle('TC_Bank', parent=styles['Normal'], fontName='Helvetica', fontSize=10, alignment=1)
+        
+        q_headers = [Paragraph("Quý", table_header_style)] + [Paragraph(f"Q{r['quarter']}/{r['yearReport']}", table_header_style) for r in latest_4_qs]
+        q_nii_row = [Paragraph("NII (tỷ VND)", table_cell_style)] + [Paragraph(f"{r['nii']:,.1f}", table_cell_style) for r in latest_4_qs]
+        q_npat_row = [Paragraph("LNST (tỷ VND)", table_cell_style)] + [Paragraph(f"{r['npat']:,.1f}", table_cell_style) for r in latest_4_qs]
+        
+        q_table_data = [q_headers, q_nii_row, q_npat_row]
+        t_q = Table(q_table_data, colWidths=[50*mm] + [30*mm]*len(latest_4_qs))
+        t_q.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), HexColor("#1e3a8a")),
+            ('TEXTCOLOR', (0,0), (-1,0), white),
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+            ('GRID', (0,0), (-1,-1), 0.5, HexColor("#cbd5e1")),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+            ('TOPPADDING', (0,0), (-1,-1), 6),
+        ]))
+        story.append(t_q)
+        story.append(Spacer(1, 10))
+        
+        last_q = latest_4_qs[-1]
+        prev_q = latest_4_qs[-2]
+        chg_pct = (last_q['npat'] - prev_q['npat']) / (abs(prev_q['npat']) or 1) * 100
+        story.append(Paragraph(
+            f"Đánh giá nhanh: Quý gần nhất {last_q['quarter']}/{last_q['yearReport']} đạt {last_q['npat']:,.1f} tỷ VND LNST (biến động {chg_pct:+.1f}% so với quý liền kề). "
+            f"Thu nhập lãi thuần đạt {last_q['nii']:,.1f} tỷ VND. Xu hướng hoạt động cho thấy khả năng duy trì NIM ổn định.", body_style
+        ))
+    else:
+        story.append(Paragraph("Chưa có đủ số liệu quý lịch sử.", body_style))
+        
+    story.append(Spacer(1, 15))
+    story.append(Paragraph("3. Kịch bản Định giá", h1_style))
     story.append(Paragraph(f"Áp dụng phương pháp định giá Residual Income và P/B Target (trọng số 50/50), giá trị hợp lý của {ticker} được xác định là: <br/>"
                            f"• Kịch bản cơ sở (Base Case): <strong>{base_target:,.0f} VND/CP</strong> <br/>"
                            f"• Kịch bản thận trọng (Bear Case): <strong>{bear_target:,.0f} VND/CP</strong> <br/>"
