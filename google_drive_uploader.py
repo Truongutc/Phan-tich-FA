@@ -54,6 +54,49 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
         print(f"[GDrive] File not found: {file_path}")
         return None, None
         
+    # ── Try Web App Upload if URL is configured ──
+    webapp_url = os.environ.get("GDRIVE_WEBAPP_URL")
+    if webapp_url:
+        import base64
+        import requests
+        
+        file_name = os.path.basename(file_path)
+        print(f"[GDrive] Uploading via Google Apps Script Web App: {file_name}...")
+        
+        mime_type = "application/octet-stream"
+        if file_name.endswith(".pdf"):
+            mime_type = "application/pdf"
+        elif file_name.endswith(".xlsx"):
+            mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        elif file_name.endswith(".json"):
+            mime_type = "application/json"
+            
+        try:
+            with open(file_path, "rb") as f:
+                content = f.read()
+            encoded_content = base64.b64encode(content).decode("utf-8")
+            
+            payload = {
+                "token": "FA_PIPELINE_SECRET_2026",
+                "folderId": folder_id,
+                "fileName": file_name,
+                "fileContent": encoded_content,
+                "mimeType": mime_type
+            }
+            
+            # Send POST request to Google Apps Script Web App
+            resp = requests.post(webapp_url, json=payload, timeout=90)
+            resp.raise_for_status()
+            result = resp.json()
+            
+            if result.get("status") == "success":
+                print(f"[GDrive] Uploaded successfully via Web App: {file_name} -> {result.get('webViewLink')}")
+                return result.get("fileId"), result.get("webViewLink")
+            else:
+                print(f"[GDrive] Web App upload failed: {result.get('message')}. Trying Service Account fallback...")
+        except Exception as err:
+            print(f"[GDrive] Error during Web App upload: {err}. Trying Service Account fallback...")
+            
     service = get_drive_service()
     if not service:
         return None, None
