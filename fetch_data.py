@@ -101,10 +101,9 @@ def fetch_all(ticker, use_cache=True):
             annual = fetch_section(ticker, section, quarterly=False)
             
             quarters = []
-            if section != "NOTE":
-                print(f"  -> {section} (Quarterly)...")
-                q_data = fetch_section(ticker, section, quarterly=True)
-                quarters = q_data.get("quarters") or q_data.get("years") or []
+            print(f"  -> {section} (Quarterly)...")
+            q_data = fetch_section(ticker, section, quarterly=True)
+            quarters = q_data.get("quarters") or q_data.get("years") or []
                 
             return section, {
                 "years": annual.get("years") or [],
