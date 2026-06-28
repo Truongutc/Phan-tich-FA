@@ -121,22 +121,27 @@ def run_analysis(ticker: str):
         if latest_bs.get("bsb103") or latest_bs.get("bsb113") or latest_bs.get("bsb116"):
             has_bank_accounts = True
 
-    # ── STEP 2: Run templates (or existing specialized builder) ─────────
+    # ── STEP 2: Run specialized builder (AI-generated) or template engines ─────────
     builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
     is_bank = ticker in BANKING_TICKERS or has_bank_accounts
     
-    # 1. Run existing specialized builder if it exists (e.g. build_hpg_model.py)
+    # 1. Try to generate specialized builder via Gemini if key is present and builder doesn't exist yet
+    if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):
+        print(f"\n[Step 2] Generating build_{ticker.lower()}_model.py via Gemini AI...")
+        generate_model_builder(ticker)
+        
+    # 2. Run specialized builder if it exists (either pre-existing or just generated)
     if os.path.exists(builder_path):
-        print(f"\n[Step 2] Running existing specialized builder: {os.path.basename(builder_path)}...")
+        print(f"\n[Step 2] Running specialized builder: {os.path.basename(builder_path)}...")
         success = run_builder_script(builder_path)
     else:
-        # 2. Otherwise run the standard template engines
+        # 3. Otherwise fall back to static template engines
         if is_bank:
-            print(f"\n[Step 2] {ticker} classified as Bank. Running template_banking.py...")
+            print(f"\n[Step 2] No specialized builder. {ticker} classified as Bank. Running template_banking.py...")
             import template_banking
             success = template_banking.run_banking_analysis(ticker, raw_data)
         else:
-            print(f"\n[Step 2] Non-bank stock. Running template_generic.py...")
+            print(f"\n[Step 2] No specialized builder. Non-bank stock. Running template_generic.py...")
             import template_generic
             success = template_generic.run_generic_analysis(ticker, raw_data)
 
