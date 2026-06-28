@@ -31,7 +31,7 @@ import requests
 import statistics as stats
 
 # ── OUTPUT ──────────────────────────────────────────────────────────────────
-OUT_DIR = r"E:\1. Projects\4. AIC - FA\Bao cao\HPG"
+OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Bao cao", "HPG")
 MONTH = "2026-06"
 EXCEL_FILE = os.path.join(OUT_DIR, f"HPG_Model_{MONTH}.xlsx")
 PDF_FILE   = os.path.join(OUT_DIR, f"HPG_Phan_Tich_{MONTH}.pdf")

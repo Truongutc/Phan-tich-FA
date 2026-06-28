@@ -121,34 +121,33 @@ def run_analysis(ticker: str):
         if latest_bs.get("bsb103") or latest_bs.get("bsb113") or latest_bs.get("bsb116"):
             has_bank_accounts = True
 
-    # ── STEP 2: Run sector-specific template (or AI builder fallback) ─────────
-    if ticker in BANKING_TICKERS or has_bank_accounts:
-        print(f"\n[Step 2] {ticker} is classified as a Bank. Running template_banking.py...")
-        import template_banking
-        success = template_banking.run_banking_analysis(ticker, raw_data)
-        if not success:
-            print(f"[ERROR] Template banking analysis failed for {ticker}.")
-            sys.exit(1)
-    else:
-        print(f"\n[Step 2] Non-bank stock. Checking for specialized builder...")
-        builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
+    # ── STEP 2: Run specialized builder (AI-generated) or fallback templates ─────────
+    builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
+    is_bank = ticker in BANKING_TICKERS or has_bank_accounts
+    
+    # 1. Try to generate builder via Gemini if key is present and builder doesn't exist yet
+    if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):
+        print(f"\n[Step 2] Generating build_{ticker.lower()}_model.py via Gemini AI...")
+        generate_model_builder(ticker)
         
-        # Nếu có API key và chưa có builder -> generate builder
-        if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):
-            print(f"         Generating build_{ticker.lower()}_model.py via Gemini AI...")
-            generate_model_builder(ticker)
-            
-        if os.path.exists(builder_path):
-            print(f"         Running existing specialized builder: {os.path.basename(builder_path)}...")
-            success = run_builder_script(builder_path)
+    # 2. Run existing builder if it exists
+    if os.path.exists(builder_path):
+        print(f"\n[Step 2] Running existing specialized builder: {os.path.basename(builder_path)}...")
+        success = run_builder_script(builder_path)
+    else:
+        # 3. Fallback templates if builder doesn't exist (e.g. no Gemini key or generation failed)
+        if is_bank:
+            print(f"\n[Step 2] No specialized builder. {ticker} classified as Bank. Running template_banking.py...")
+            import template_banking
+            success = template_banking.run_banking_analysis(ticker, raw_data)
         else:
-            print(f"         No builder and no API key. Running build_generic_model.py fallback...")
+            print(f"\n[Step 2] No specialized builder. Non-bank stock. Running build_generic_model.py fallback...")
             import build_generic_model
             success = build_generic_model.build_generic(ticker)
 
-        if not success:
-            print(f"[ERROR] Non-bank builder failed for {ticker}.")
-            sys.exit(1)
+    if not success:
+        print(f"[ERROR] Analysis step failed for {ticker}.")
+        sys.exit(1)
 
     # ── STEP 3: Find generated output files ───────────────────────────────────
     excel_path, pdf_path = find_latest_output_files(ticker)
