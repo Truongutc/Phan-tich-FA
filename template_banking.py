@@ -363,7 +363,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     is_q_recs = raw_data["sections"]["INCOME_STATEMENT"].get("quarters", [])
     bs_q_recs = raw_data["sections"]["BALANCE_SHEET"].get("quarters", [])
     
-    q_keys = sorted(list(set([f"{r.get('yearReport')}-Q{r.get('quarter')}" for r in is_q_recs if r.get("yearReport") and r.get("quarter") in (1,2,3,4)])))
+    q_keys = []
+    for r in is_q_recs:
+        yr = r.get("yearReport")
+        qt = r.get("quarter") or r.get("lengthReport")
+        if yr and qt in (1, 2, 3, 4):
+            q_keys.append(f"{yr}-Q{qt}")
+    q_keys = sorted(list(set(q_keys)))
     
     q_nims, q_ldrs, q_casas, q_npls = [], [], [], []
     q_labels = []
@@ -373,13 +379,15 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         
         q_nii = 0
         for r in is_q_recs:
-            if r.get("yearReport") == yr and r.get("quarter") == qt:
+            r_qt = r.get("quarter") or r.get("lengthReport")
+            if r.get("yearReport") == yr and r_qt == qt:
                 q_nii = r.get("isb27", r.get("isb22", 0))
                 break
                 
         q_loans, q_deps, q_papers, q_casa, q_npl = 0, 0, 0, 0, 0
         for r in bs_q_recs:
-            if r.get("yearReport") == yr and r.get("quarter") == qt:
+            r_qt = r.get("quarter") or r.get("lengthReport")
+            if r.get("yearReport") == yr and r_qt == qt:
                 q_loans = r.get("bsb103", r.get("bsb24", 0))
                 q_deps = r.get("bsb113", r.get("bsb33", 0))
                 q_papers = r.get("bsb116", r.get("bsb34", 0))
@@ -418,7 +426,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     income_quarterly_records = []
     for r in is_q_recs:
         yr = r.get("yearReport")
-        qt = r.get("quarter")
+        qt = r.get("quarter") or r.get("lengthReport")
         if yr and qt in (1, 2, 3, 4):
             nii_q = r.get("isb27") or r.get("isb22") or 0
             npat_q = r.get("isa22") or r.get("isa20") or 0

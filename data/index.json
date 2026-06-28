@@ -8,14 +8,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "TCB",
-    "companyName": "Vietnam Technological And Commercial Joint Stock Bank",
-    "sector": "Banks",
-    "lastUpdated": "2026-06-27 10:35",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "ACB",
     "companyName": "Ngân hàng TMCP ACB",
     "sector": "Ngân hàng",
@@ -28,6 +20,22 @@
     "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-06-28 16:16",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "GMD",
+    "companyName": "Công ty Cổ phần GMD",
+    "sector": "General",
+    "lastUpdated": "2026-06-28 23:10",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "TCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-28 23:10",
     "excelUrl": null,
     "pdfUrl": null
   }

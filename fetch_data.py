@@ -68,8 +68,10 @@ def fetch_metrics(ticker):
     return result.get("data", {})
 
 
-def fetch_section(ticker, section):
+def fetch_section(ticker, section, quarterly=False):
     url = f"{VIETCAP_BASE}/company/{ticker}/financial-statement?section={section}"
+    if quarterly:
+        url += "&quarterly=true"
     result = _get_with_retry(url)
     return result.get("data", {})
 
@@ -92,11 +94,22 @@ def fetch_all(ticker, use_cache=True):
     except Exception as e:
         print(f"  [WARN] Could not fetch metrics: {e}")
 
-    # Fetch all sections in parallel for speed
+    # Fetch all sections in parallel for speed (both annual and quarterly)
     def fetch_one(section):
         try:
-            print(f"  -> {section}...")
-            return section, fetch_section(ticker, section)
+            print(f"  -> {section} (Annual)...")
+            annual = fetch_section(ticker, section, quarterly=False)
+            
+            quarters = []
+            if section != "NOTE":
+                print(f"  -> {section} (Quarterly)...")
+                q_data = fetch_section(ticker, section, quarterly=True)
+                quarters = q_data.get("quarters") or q_data.get("years") or []
+                
+            return section, {
+                "years": annual.get("years") or [],
+                "quarters": quarters
+            }
         except Exception as e:
             print(f"  [WARN] Could not fetch {section}: {e}")
             return section, {"years": [], "quarters": []}

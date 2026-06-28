@@ -15,6 +15,9 @@ def get_drive_service():
         # Load from GitHub Secrets environment variable
         try:
             info = json.loads(creds_json)
+            if isinstance(info, dict) and "client_email" in info:
+                print(f"[GDrive] Authenticating using Service Account: {info['client_email']}")
+                print(f"[GDrive] IMPORTANT: Please make sure this email is added as an 'Editor' to the Google Drive Folder (ID: {DEFAULT_FOLDER_ID})")
             creds = service_account.Credentials.from_service_account_info(
                 info, scopes=["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
             )
@@ -26,6 +29,11 @@ def get_drive_service():
     local_creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
     if os.path.exists(local_creds_path):
         try:
+            with open(local_creds_path, "r", encoding="utf-8") as f:
+                info = json.load(f)
+            if isinstance(info, dict) and "client_email" in info:
+                print(f"[GDrive] Authenticating using local credentials: {info['client_email']}")
+                print(f"[GDrive] IMPORTANT: Please make sure this email is added as an 'Editor' to the Google Drive Folder (ID: {DEFAULT_FOLDER_ID})")
             creds = service_account.Credentials.from_service_account_file(
                 local_creds_path, scopes=["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
             )
@@ -35,6 +43,7 @@ def get_drive_service():
             
     print("[GDrive] Warning: No valid Google Drive credentials found. Skipping upload.")
     return None
+
 
 def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
     """

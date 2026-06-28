@@ -362,6 +362,13 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
      - `pe_quarters`: list of all quarterly P/E values from statistics-financial.
      - `pb_quarters`: list of all quarterly P/B values from statistics-financial.
      - `quarter_labels`: list of strings for quarter names corresponding to pe_quarters/pb_quarters (e.g. ["2021-Q1", "2021-Q2", ...]).
+     - `income_quarterly`: list of quarterly records containing {yearReport, quarter, nii, npat} (nii represents Net Interest Income for banks, or net revenue for non-banks, both in billion VND). Use section_to_quarters.
+     - `ratios_quarterly`: dict containing:
+        - `quarters`: list of quarter labels (e.g., ["2024-Q1", ...])
+        - `nim`: quarterly NIM for banks or Gross Margin for non-banks
+        - `ldr`: quarterly LDR for banks or Debt/Equity for non-banks
+        - `casa`: quarterly CASA for banks or ROA for non-banks
+        - `npl`: quarterly NPL for banks or Asset Turnover for non-banks
      - **`ratios`**: A dictionary containing calculated historical and forecast ratio arrays. **FOR EVERY RATIO, YOU MUST CALCULATE IT YOURSELF FROM RAW BCTC DATA FOR ALL YEARS (both historical and forecast) INSTEAD OF TRUSTING VIETCAP PRE-CALCULATED RATIOS**.
        - For Banks:
          - `nim`: Net Interest Income / Average Earning Assets

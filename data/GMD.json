@@ -1,0 +1,304 @@
+{
+  "ticker": "GMD",
+  "companyName": "Công ty Cổ phần GMD",
+  "sector": "General",
+  "currentPrice": 10000,
+  "marketCap": 10000000000,
+  "shares": 1000000,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "pe_hist": [],
+  "pb_hist": [],
+  "pe_quarters": [],
+  "pb_quarters": [],
+  "quarter_labels": [],
+  "income_quarterly": [
+    {
+      "yearReport": 2023,
+      "quarter": 2,
+      "nii": 912.17,
+      "npat": 1650.4
+    },
+    {
+      "yearReport": 2023,
+      "quarter": 3,
+      "nii": 997.92,
+      "npat": 254.14
+    },
+    {
+      "yearReport": 2023,
+      "quarter": 4,
+      "nii": 1033.81,
+      "npat": 114.84
+    },
+    {
+      "yearReport": 2024,
+      "quarter": 1,
+      "nii": 1005.54,
+      "npat": 559.42
+    },
+    {
+      "yearReport": 2024,
+      "quarter": 2,
+      "nii": 1150.9,
+      "npat": 330.36
+    },
+    {
+      "yearReport": 2024,
+      "quarter": 3,
+      "nii": 1264.11,
+      "npat": 335.05
+    },
+    {
+      "yearReport": 2024,
+      "quarter": 4,
+      "nii": 1411.47,
+      "npat": 230.66
+    },
+    {
+      "yearReport": 2025,
+      "quarter": 1,
+      "nii": 1276.95,
+      "npat": 402.98
+    },
+    {
+      "yearReport": 2025,
+      "quarter": 2,
+      "nii": 1493.73,
+      "npat": 445.26
+    },
+    {
+      "yearReport": 2025,
+      "quarter": 3,
+      "nii": 1560.5,
+      "npat": 315.21
+    },
+    {
+      "yearReport": 2025,
+      "quarter": 4,
+      "nii": 1624.85,
+      "npat": 592.18
+    },
+    {
+      "yearReport": 2026,
+      "quarter": 1,
+      "nii": 1452.41,
+      "npat": 534.24
+    }
+  ],
+  "ratios_quarterly": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "nim": [
+      0.5036,
+      0.4657,
+      0.4117,
+      0.4385,
+      0.4436,
+      0.4599,
+      0.427,
+      0.4398,
+      0.4833,
+      0.4269,
+      0.486,
+      0.4382
+    ],
+    "ldr": [
+      0.2044,
+      0.1971,
+      0.2023,
+      0.2004,
+      0.1862,
+      0.1832,
+      0.1574,
+      0.1361,
+      0.1583,
+      0.1683,
+      0.1602,
+      0.1543
+    ],
+    "casa": [
+      0.4712,
+      0.0768,
+      0.0339,
+      0.1561,
+      0.0896,
+      0.0933,
+      0.0513,
+      0.0891,
+      0.0933,
+      0.0653,
+      0.1195,
+      0.1059
+    ],
+    "npl": [
+      0.2604,
+      0.3014,
+      0.3054,
+      0.2805,
+      0.3122,
+      0.352,
+      0.3137,
+      0.2824,
+      0.3131,
+      0.323,
+      0.3278,
+      0.2879
+    ]
+  },
+  "thesis": [
+    "Công ty Cổ phần GMD có vị thế cạnh tranh tốt trong ngành và tiềm năng tăng trưởng dài hạn.",
+    "Dòng tiền hoạt động ổn định và cơ cấu tài chính lành mạnh hỗ trợ chiến lược mở rộng.",
+    "Đội ngũ quản lý có kinh nghiệm với track record thực thi tốt kế hoạch kinh doanh."
+  ],
+  "risks": [
+    "Rủi ro kinh tế vĩ mô và biến động lãi suất có thể ảnh hưởng đến chi phí vốn.",
+    "Cạnh tranh trong ngành ngày càng gay gắt đòi hỏi đầu tư liên tục vào năng lực cạnh tranh.",
+    "Rủi ro thực thi chiến lược và phụ thuộc vào một số khách hàng/sản phẩm chủ lực."
+  ],
+  "moats": {
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thương hiệu và uy tín trong ngành được xây dựng qua nhiều năm hoạt động."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Tối ưu hóa quy trình vận hành giúp duy trì biên lợi nhuận cạnh tranh."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Mức độ gắn kết với khách hàng ở mức trung bình."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô phù hợp để vận hành hiệu quả trong thị trường nội địa."
+    },
+    "Network Effect": {
+      "score": 2,
+      "desc": "Hiệu ứng mạng lưới còn hạn chế trong mô hình kinh doanh hiện tại."
+    }
+  },
+  "pestle": {
+    "Political": "Chính sách vĩ mô và định hướng phát triển ngành của Chính phủ tác động đến môi trường kinh doanh.",
+    "Economic": "Tăng trưởng GDP, lãi suất và lạm phát ảnh hưởng đến nhu cầu và chi phí hoạt động.",
+    "Social": "Thay đổi xu hướng tiêu dùng và nhân khẩu học tạo cả cơ hội và thách thức.",
+    "Technological": "Chuyển đổi số và tự động hóa là xu hướng quan trọng cần đầu tư bắt kịp.",
+    "Legal": "Tuân thủ các quy định pháp luật và tiêu chuẩn ngành là yêu cầu cơ bản.",
+    "Environmental": "Áp lực ESG và báo cáo phát triển bền vững ngày càng trở thành yêu cầu của nhà đầu tư."
+  },
+  "comments": {
+    "overall": "Công ty Cổ phần GMD (GMD) có nền tảng kinh doanh ổn định với tiềm năng tăng trưởng trong trung dài hạn.",
+    "financial": "Tỷ suất sinh lợi (ROE, ROA) và tốc độ tăng trưởng lợi nhuận là chỉ số then chốt cần theo dõi.",
+    "valuation": "P/E và P/B là phương pháp định giá phổ biến, cần so sánh với mức bình quân ngành."
+  },
+  "ratios": {
+    "nim": [],
+    "roe": [
+      0.0869,
+      0.1251,
+      0.2312,
+      0.1057,
+      0.1177,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "roa": [
+      0.057,
+      0.0763,
+      0.1661,
+      0.0809,
+      0.0886,
+      0.02,
+      0.02,
+      0.02
+    ],
+    "npl": [],
+    "ldr": [],
+    "casa": [],
+    "gross_margin": [
+      0.3561,
+      0.4407,
+      0.4623,
+      0.4419,
+      0.4599,
+      0.4322111817955224,
+      0.4322111817955224,
+      0.4322111817955224
+    ],
+    "debt_to_equity": [
+      0.27,
+      0.26,
+      0.2,
+      0.16,
+      0.16,
+      0.5,
+      0.5,
+      0.5
+    ]
+  },
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      3206.290165333,
+      3898.24360857,
+      3845.826296568,
+      4832.024798961,
+      5956.025297015,
+      6849.42909156725,
+      7876.843455302337,
+      9058.369973597686
+    ],
+    "npat": [
+      612.182073397,
+      993.915564733,
+      2250.57733992,
+      1455.479595602,
+      1755.629825296,
+      2228.909847731341,
+      2563.2463248910417,
+      2947.7332736246976
+    ],
+    "eps": [
+      1869.0,
+      3034.0,
+      7207.0,
+      4276.0,
+      3839.0,
+      2228909.8477313407,
+      2563246.3248910415,
+      2947733.2736246977
+    ],
+    "equity": [
+      7044.618371909,
+      7947.756019956,
+      9732.374052019,
+      13771.926002556,
+      14918.254153163,
+      16478.491046574938,
+      18272.763473998668,
+      20336.176765535958
+    ]
+  }
+}

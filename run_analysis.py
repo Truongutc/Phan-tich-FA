@@ -118,7 +118,7 @@ def run_analysis(ticker: str):
     if bs_recs:
         # Kiểm tra xem có tài khoản Cho vay khách hàng (bsb103) hoặc Tiền gửi (bsb113) không
         latest_bs = bs_recs[-1]
-        if "bsb103" in latest_bs or "bsb113" in latest_bs or "bsb116" in latest_bs:
+        if latest_bs.get("bsb103") or latest_bs.get("bsb113") or latest_bs.get("bsb116"):
             has_bank_accounts = True
 
     # ── STEP 2: Run sector-specific template (or AI builder fallback) ─────────

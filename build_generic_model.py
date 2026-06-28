@@ -19,7 +19,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 
 # Adjust import path
 sys.path.append(os.path.dirname(__file__))
-from fetch_data import fetch_all, section_to_years, get_field_map
+from fetch_data import fetch_all, section_to_years, section_to_quarters, get_field_map
 import google_drive_uploader
 
 def get_sector_content(sector, ticker, company_name):
@@ -587,6 +587,97 @@ def build_generic(ticker):
     # 6. Save JSON Summary data
     sector_content = get_sector_content(sector, ticker, company_name)
     
+    # ── Quarterly Data Processing ──
+    is_q_recs = section_to_quarters(data, "INCOME_STATEMENT")
+    bs_q_recs = section_to_quarters(data, "BALANCE_SHEET")
+    
+    q_keys = []
+    for r in is_q_recs:
+        yr = r.get("yearReport")
+        qt = r.get("quarter") or r.get("lengthReport")
+        if yr and qt in (1, 2, 3, 4):
+            q_keys.append(f"{yr}-Q{qt}")
+    q_keys = sorted(list(set(q_keys)))
+    
+    income_quarterly_records = []
+    q_labels = []
+    q_nims, q_ldrs, q_casas, q_npls = [], [], [], [] # nim, ldr, casa, npl maps to GP margin, Debt/Equity, ROA, Asset Turnover for non-banks
+    
+    is_bank = ticker in ["TCB", "VCB", "MBB", "BID", "CTG", "ACB", "VPB"] or "bank" in (sector or "").lower()
+    
+    for q_key in q_keys[-12:]:
+        yr, qt = map(int, q_key.split("-Q"))
+        
+        q_is = {}
+        for r in is_q_recs:
+            r_qt = r.get("quarter") or r.get("lengthReport")
+            if r.get("yearReport") == yr and r_qt == qt:
+                q_is = r
+                break
+                
+        q_bs = {}
+        for r in bs_q_recs:
+            r_qt = r.get("quarter") or r.get("lengthReport")
+            if r.get("yearReport") == yr and r_qt == qt:
+                q_bs = r
+                break
+        
+        if is_bank:
+            nii_q = q_is.get("isb27", q_is.get("isb22", 0)) or 0
+            npat_q = q_is.get("isa22", q_is.get("isa20", 0)) or 0
+            income_quarterly_records.append({
+                "yearReport": yr,
+                "quarter": qt,
+                "nii": round(nii_q / 1e9, 2),
+                "npat": round(npat_q / 1e9, 2),
+            })
+            
+            q_loans = q_bs.get("bsb103", q_bs.get("bsb24", 0)) or 0
+            q_deps = q_bs.get("bsb113", q_bs.get("bsb33", 0)) or 0
+            q_papers = q_bs.get("bsb116", q_bs.get("bsb34", 0)) or 0
+            q_casa = q_bs.get("bsb114", q_bs.get("bsb31", 0)) or 0
+            q_npl = q_bs.get("bsb105", q_bs.get("bsb27", 0)) or 0
+            
+            q_nim = (nii_q * 4) / ((q_loans + q_papers) or 1)
+            q_ldr = q_loans / ((q_deps + q_papers) or 1)
+            q_casa = q_casa / (q_deps or 1)
+            q_npl = q_npl / (q_loans or 1)
+            
+            q_nims.append(max(0.01, min(0.10, q_nim)))
+            q_ldrs.append(max(0.40, min(1.30, q_ldr)))
+            q_casas.append(max(0.05, min(0.60, q_casa)))
+            q_npls.append(max(0.001, min(0.10, q_npl)))
+        else:
+            rev_q = q_is.get("isa3", q_is.get("isa1", 0)) or 0
+            npat_q = q_is.get("isa22", q_is.get("isa20", 0)) or 0
+            gp_q = q_is.get("isa5", 0) or 0
+            if not gp_q:
+                cogs_q = abs(q_is.get("isa4", 0) or 0)
+                gp_q = rev_q - cogs_q if rev_q > cogs_q else rev_q * 0.25
+                
+            income_quarterly_records.append({
+                "yearReport": yr,
+                "quarter": qt,
+                "nii": round(rev_q / 1e9, 2),
+                "npat": round(npat_q / 1e9, 2),
+            })
+            
+            q_debt = (q_bs.get("bsa56", 0) or 0) + (q_bs.get("bsa71", 0) or 0)
+            q_equity = q_bs.get("bsa78", q_bs.get("bsa75", 1e9)) or 1e9
+            q_assets = q_bs.get("bsa53", q_bs.get("bsa50", 1e9)) or 1e9
+            
+            q_gp_margin = gp_q / (rev_q or 1)
+            q_debt_equity = q_debt / (q_equity or 1)
+            q_roa = (npat_q * 4) / q_assets
+            q_asset_turnover = (rev_q * 4) / q_assets
+            
+            q_nims.append(max(0.0, min(1.0, q_gp_margin)))
+            q_ldrs.append(max(0.0, min(5.0, q_debt_equity)))
+            q_casas.append(max(-0.5, min(1.0, q_roa)))
+            q_npls.append(max(0.0, min(10.0, q_asset_turnover)))
+            
+        q_labels.append(q_key)
+        
     summary_json = {
         "ticker": ticker,
         "companyName": company_name,
@@ -601,6 +692,14 @@ def build_generic(ticker):
         "pe_quarters": pe_quarters,
         "pb_quarters": pb_quarters,
         "quarter_labels": quarter_labels,
+        "income_quarterly": income_quarterly_records,
+        "ratios_quarterly": {
+            "quarters": q_labels,
+            "nim": [round(x, 4) for x in q_nims],
+            "ldr": [round(x, 4) for x in q_ldrs],
+            "casa": [round(x, 4) for x in q_casas],
+            "npl": [round(x, 4) for x in q_npls]
+        },
 
         # Sector-aware qualitative content
         "thesis": sector_content.get("thesis", []),
@@ -629,7 +728,6 @@ def build_generic(ticker):
         }
     }
 
-    
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     os.makedirs(data_dir, exist_ok=True)
     json_path = os.path.join(data_dir, f"{ticker}.json")
