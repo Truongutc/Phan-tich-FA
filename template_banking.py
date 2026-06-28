@@ -22,6 +22,66 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+# ── AI COMMENTARY EXTRACTOR ──────────────────────────────────────────────────
+def get_ai_commentary(ticker, company_name, sector, financial_summary, api_key):
+    """
+    Call Gemini to generate professional analysis paragraphs for banking.
+    Only requests text comments, using minimal tokens.
+    """
+    default_comments = {
+        "business": f"{company_name} ({ticker}) duy trì vị thế cạnh tranh mạnh trong phân khúc ngân hàng tư nhân với hệ sinh thái dịch vụ tài chính đa dạng.",
+        "financial": f"Biên lãi ròng (NIM) và tỷ suất sinh lợi vốn chủ (ROE) của {ticker} là những chỉ số then chốt thể hiện hiệu quả hoạt động ổn định và chất lượng tài sản tốt.",
+        "valuation": f"Định giá theo phương pháp Residual Income và P/B mục tiêu phản ánh kỳ vọng hoạt động tín dụng tăng trưởng bền vững và nợ xấu được kiểm soát tốt."
+    }
+    
+    if not api_key:
+        return default_comments
+        
+    try:
+        from google import genai
+        from google.genai import types as genai_types
+        
+        client = genai.Client(api_key=api_key)
+        prompt = f"""
+        Bạn là chuyên gia phân tích tài chính ngân hàng cao cấp. Hãy viết nhận định chuyên sâu bằng tiếng Việt cho cổ phiếu ngân hàng {ticker} ({company_name}).
+        Số liệu tài chính tóm tắt: {financial_summary}
+        
+        Hãy viết 3 đoạn văn ngắn gọn, sắc sảo (mỗi đoạn khoảng 3-4 câu):
+        1. Nhận xét Vị thế kinh doanh & Lợi thế cạnh tranh (CASA, chuyển đổi số).
+        2. Nhận xét Chất lượng tài sản (NPL, LDR) & Biên sinh lời (NIM, ROE).
+        3. Nhận xét Triển vọng Định giá & Rủi ro tín dụng.
+        
+        Yêu cầu trả về định dạng JSON thuần túy (không markdown, không ```json) với cấu trúc:
+        {{
+            "business": "nội dung đoạn 1...",
+            "financial": "nội dung đoạn 2...",
+            "valuation": "nội dung đoạn 3..."
+        }}
+        """
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=genai_types.GenerateContentConfig(
+                temperature=0.2,
+                max_output_tokens=1000,
+            ),
+        )
+        text = response.text.strip()
+        if text.startswith("```json"):
+            text = text[7:].strip()
+        if text.endswith("```"):
+            text = text[:-3].strip()
+            
+        comments = json.loads(text)
+        return {
+            "business": comments.get("business", default_comments["business"]),
+            "financial": comments.get("financial", default_comments["financial"]),
+            "valuation": comments.get("valuation", default_comments["valuation"])
+        }
+    except Exception as e:
+        print(f"[WARN] Failed to fetch AI commentary: {e}. Using defaults.")
+        return default_comments
+
 # Helper to retrieve data safely
 def get_val(recs, year, fields):
     if not isinstance(fields, list):
@@ -77,6 +137,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
 
     market_cap = current_price * shares
     sector = "Ngân hàng"
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    fin_summary = f"Gia hien tai: {current_price:,} VND, Von hoa: {market_cap/1e9:,.0f} ty VND."
+    ai_comments = get_ai_commentary(ticker, company_name, sector, fin_summary, api_key)
 
     # Extract historical values
     nii_hist = [get_val(is_recs, y, ["isb27", "isb22"]) / 1e9 for y in hist_years]
@@ -417,8 +481,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(t)
     story.append(Spacer(1, 15))
     
-    story.append(Paragraph("1. Phân tích tài chính & Ratios tự tính toán", h1_style))
-    story.append(Paragraph(f"Hệ thống tự động phân tích và tính toán lại các hệ số của {ticker}. Đặc biệt, tỷ lệ dư nợ trên huy động LDR điều chỉnh (gồm cả Giấy tờ có giá phát hành) của {ticker} duy trì ở mức an toàn khoảng {ldr_vals[-4]*100:.1f}%, tuân thủ đúng quy định NHNN (<85%).", body_style))
+    story.append(Paragraph("1. Luận điểm đầu tư & Vị thế kinh doanh", h1_style))
+    story.append(Paragraph(ai_comments["business"], body_style))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph(f"Hệ thống tự động phân tích và tính toán lại các hệ số của {ticker}. Đặc biệt, tỷ lệ dư nợ trên huy động LDR điều chỉnh (gồm cả Giấy tờ có giá phát hành) của {ticker} duy trì ở mức an toàn khoảng {ldr_vals[-4]*100:.1f}%, tuân thủ đúng quy định NHNN (<85%). {ai_comments['financial']}", body_style))
     
     story.append(Spacer(1, 10))
     story.append(Image(chart_p1, width=150*mm, height=87*mm))
@@ -458,11 +524,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         story.append(Paragraph("Chưa có đủ số liệu quý lịch sử.", body_style))
         
     story.append(Spacer(1, 15))
-    story.append(Paragraph("3. Kịch bản Định giá", h1_style))
+    story.append(Paragraph("3. Kịch bản Định giá & Triển vọng", h1_style))
     story.append(Paragraph(f"Áp dụng phương pháp định giá Residual Income và P/B Target (trọng số 50/50), giá trị hợp lý của {ticker} được xác định là: <br/>"
                            f"• Kịch bản cơ sở (Base Case): <strong>{base_target:,.0f} VND/CP</strong> <br/>"
                            f"• Kịch bản thận trọng (Bear Case): <strong>{bear_target:,.0f} VND/CP</strong> <br/>"
                            f"• Kịch bản lạc quan (Bull Case): <strong>{bull_target:,.0f} VND/CP</strong>", body_style))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph(ai_comments["valuation"], body_style))
     
     doc.build(story)
     print(f"[OK] PDF saved at: {pdf_path}")
@@ -527,9 +595,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "bull": int(bull_target)
         },
         "comments": {
-            "businessModel": f"{company_name} vận hành mô hình dịch vụ tài chính đa dạng với trọng tâm là ngân hàng bán lẻ và khách hàng doanh nghiệp lớn.",
-            "financialPerformance": "Hệ số sinh lời tự tính toán ROE và ROA duy trì ổn định. CASA dồi dào hỗ trợ giảm giá vốn và duy trì NIM.",
-            "valuationText": f"Kết hợp mô hình định giá Residual Income và P/B Target, giá trị hợp lý của cổ phiếu {ticker} dao động quanh {base_target:,.0f} VND/CP."
+            "businessModel": ai_comments["business"],
+            "financialPerformance": ai_comments["financial"],
+            "valuationText": ai_comments["valuation"]
         },
         "ratios": {
             "nim": nim_vals,

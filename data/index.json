@@ -16,14 +16,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "GMD",
-    "companyName": "Công ty Cổ phần GMD",
-    "sector": "General",
-    "lastUpdated": "2026-06-28 23:10",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "ACB",
     "companyName": "Ngân hàng Thương mại Cổ phần Á Châu",
     "sector": "Ngân hàng",
@@ -32,18 +24,26 @@
     "pdfUrl": "https://drive.google.com/file/d/1PW3acRREoFBLYAWk6TK4NJtDfZIJMHYl/view?usp=drivesdk"
   },
   {
-    "ticker": "TCB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-28 17:21",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1pfGDtiHuNHQAbx2tmhLVSWn2k8iv6mGw/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1Zmd-9_tvHDqS2ALRGwmmetCnrxN04rYr/view?usp=drivesdk"
-  },
-  {
     "ticker": "VIB",
     "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-06-29 00:30",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "GMD",
+    "companyName": "Công ty Cổ phần Tập đoàn Gemadept",
+    "sector": "General",
+    "lastUpdated": "2026-06-29 00:42",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "TCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-29 00:42",
     "excelUrl": null,
     "pdfUrl": null
   }

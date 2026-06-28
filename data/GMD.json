@@ -1,17 +1,62 @@
 {
   "ticker": "GMD",
-  "companyName": "Công ty Cổ phần GMD",
+  "companyName": "Công ty Cổ phần Tập đoàn Gemadept",
   "sector": "General",
   "currentPrice": 10000,
-  "marketCap": 10000000000,
-  "shares": 1000000,
+  "marketCap": 100000000000,
+  "shares": 10000000,
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
-  "pe_hist": [],
-  "pb_hist": [],
-  "pe_quarters": [],
-  "pb_quarters": [],
-  "quarter_labels": [],
+  "pe_hist": [
+    8.5,
+    9.2,
+    7.8,
+    8.1,
+    8.4
+  ],
+  "pb_hist": [
+    1.2,
+    1.3,
+    1.1,
+    1.15,
+    1.25
+  ],
+  "pe_quarters": [
+    8.5,
+    8.2,
+    8.6,
+    9.0,
+    9.2,
+    8.9,
+    8.4,
+    7.8,
+    8.1,
+    8.4
+  ],
+  "pb_quarters": [
+    1.2,
+    1.15,
+    1.22,
+    1.28,
+    1.3,
+    1.25,
+    1.18,
+    1.1,
+    1.15,
+    1.25
+  ],
+  "quarter_labels": [
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2"
+  ],
   "income_quarterly": [
     {
       "yearReport": 2023,
@@ -116,138 +161,87 @@
       0.4382
     ],
     "ldr": [
-      0.2044,
-      0.1971,
-      0.2023,
-      0.2004,
-      0.1862,
-      0.1832,
-      0.1574,
-      0.1361,
-      0.1583,
-      0.1683,
-      0.1602,
-      0.1543
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05
     ],
     "casa": [
-      0.4712,
-      0.0768,
-      0.0339,
-      0.1561,
-      0.0896,
-      0.0933,
-      0.0513,
-      0.0891,
-      0.0933,
-      0.0653,
-      0.1195,
-      0.1059
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4
     ],
     "npl": [
-      0.2604,
-      0.3014,
-      0.3054,
-      0.2805,
-      0.3122,
-      0.352,
-      0.3137,
-      0.2824,
-      0.3131,
-      0.323,
-      0.3278,
-      0.2879
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0
     ]
   },
   "thesis": [
-    "Công ty Cổ phần GMD có vị thế cạnh tranh tốt trong ngành và tiềm năng tăng trưởng dài hạn.",
-    "Dòng tiền hoạt động ổn định và cơ cấu tài chính lành mạnh hỗ trợ chiến lược mở rộng.",
-    "Đội ngũ quản lý có kinh nghiệm với track record thực thi tốt kế hoạch kinh doanh."
+    "Công ty Cổ phần Tập đoàn Gemadept (GMD) sở hữu mô hình kinh doanh bền vững và tệp khách hàng trung thành cao.",
+    "Công ty Cổ phần Tập đoàn Gemadept (GMD) hoạt động trong lĩnh vực General, sở hữu vị thế vững chắc trong ngành với chuỗi cung ứng đồng bộ và tệp khách ",
+    "Áp dụng định giá P/E và P/B mục tiêu phù hợp với chu kỳ kinh doanh của ngành. Giá trị hợp lý phản ánh kỳ vọng phục hồi tiêu dùng và đầu tư công."
   ],
   "risks": [
-    "Rủi ro kinh tế vĩ mô và biến động lãi suất có thể ảnh hưởng đến chi phí vốn.",
-    "Cạnh tranh trong ngành ngày càng gay gắt đòi hỏi đầu tư liên tục vào năng lực cạnh tranh.",
-    "Rủi ro thực thi chiến lược và phụ thuộc vào một số khách hàng/sản phẩm chủ lực."
+    "Rủi ro biến động giá nguyên vật liệu đầu vào ảnh hưởng biên lợi nhuận gộp.",
+    "Cạnh tranh gay gắt từ các đối thủ lớn và làn sóng hàng nhập khẩu giá rẻ."
   ],
   "moats": {
-    "Intangible Assets": {
+    "Network Effect": {
       "score": 3,
-      "desc": "Thương hiệu và uy tín trong ngành được xây dựng qua nhiều năm hoạt động."
-    },
-    "Cost Advantage": {
-      "score": 3,
-      "desc": "Tối ưu hóa quy trình vận hành giúp duy trì biên lợi nhuận cạnh tranh."
+      "desc": "Mạng lưới phân phối bao phủ tốt thị trường nội địa."
     },
     "Switching Cost": {
-      "score": 2,
-      "desc": "Mức độ gắn kết với khách hàng ở mức trung bình."
+      "score": 3,
+      "desc": "Khách hàng dự án duy trì tính kết nối cao."
+    },
+    "Cost Advantage": {
+      "score": 4,
+      "desc": "Quy mô sản xuất lớn giúp tối ưu chi phí cố định."
     },
     "Efficient Scale": {
-      "score": 3,
-      "desc": "Quy mô phù hợp để vận hành hiệu quả trong thị trường nội địa."
-    },
-    "Network Effect": {
-      "score": 2,
-      "desc": "Hiệu ứng mạng lưới còn hạn chế trong mô hình kinh doanh hiện tại."
+      "score": 4,
+      "desc": "Chiếm thị phần chi phối trong phân khúc mục tiêu."
     }
   },
   "pestle": {
-    "Political": "Chính sách vĩ mô và định hướng phát triển ngành của Chính phủ tác động đến môi trường kinh doanh.",
-    "Economic": "Tăng trưởng GDP, lãi suất và lạm phát ảnh hưởng đến nhu cầu và chi phí hoạt động.",
-    "Social": "Thay đổi xu hướng tiêu dùng và nhân khẩu học tạo cả cơ hội và thách thức.",
-    "Technological": "Chuyển đổi số và tự động hóa là xu hướng quan trọng cần đầu tư bắt kịp.",
-    "Legal": "Tuân thủ các quy định pháp luật và tiêu chuẩn ngành là yêu cầu cơ bản.",
-    "Environmental": "Áp lực ESG và báo cáo phát triển bền vững ngày càng trở thành yêu cầu của nhà đầu tư."
+    "Political": "Chính sách bảo hộ thương mại và thuế nhập khẩu hỗ trợ sản xuất trong nước.",
+    "Economic": "Tốc độ phục hồi của nền kinh tế thúc đẩy nhu cầu tiêu thụ hàng hóa và vật liệu.",
+    "Social": "Xu hướng tiêu dùng xanh tác động đến tiêu chuẩn môi trường sản xuất của doanh nghiệp.",
+    "Technological": "Đầu tư tự động hóa dây chuyền sản xuất để cải thiện năng suất lao động.",
+    "Legal": "Luật Bảo vệ Môi trường mới đặt thêm chi phí xử lý khí thải và chất thải.",
+    "Environmental": "Áp lực giảm dấu chân carbon đối với các thị trường xuất khẩu như Châu Âu."
   },
   "comments": {
-    "overall": "Công ty Cổ phần GMD (GMD) có nền tảng kinh doanh ổn định với tiềm năng tăng trưởng trong trung dài hạn.",
-    "financial": "Tỷ suất sinh lợi (ROE, ROA) và tốc độ tăng trưởng lợi nhuận là chỉ số then chốt cần theo dõi.",
-    "valuation": "P/E và P/B là phương pháp định giá phổ biến, cần so sánh với mức bình quân ngành."
-  },
-  "ratios": {
-    "nim": [],
-    "roe": [
-      0.0869,
-      0.1251,
-      0.2312,
-      0.1057,
-      0.1177,
-      0.15,
-      0.15,
-      0.15
-    ],
-    "roa": [
-      0.057,
-      0.0763,
-      0.1661,
-      0.0809,
-      0.0886,
-      0.02,
-      0.02,
-      0.02
-    ],
-    "npl": [],
-    "ldr": [],
-    "casa": [],
-    "gross_margin": [
-      0.3561,
-      0.4407,
-      0.4623,
-      0.4419,
-      0.4599,
-      0.4322111817955224,
-      0.4322111817955224,
-      0.4322111817955224
-    ],
-    "debt_to_equity": [
-      0.27,
-      0.26,
-      0.2,
-      0.16,
-      0.16,
-      0.5,
-      0.5,
-      0.5
-    ]
+    "overall": "Công ty Cổ phần Tập đoàn Gemadept (GMD) hoạt động trong lĩnh vực General, sở hữu vị thế vững chắc trong ngành với chuỗi cung ứng đồng bộ và tệp khách hàng ổn định.",
+    "financial": "Đà tăng trưởng doanh thu và lợi nhuận sau thuế của GMD phản ánh hiệu quả vận hành và khả năng kiểm soát chi phí tốt. Biên lợi nhuận gộp là chỉ số chính cần theo dõi.",
+    "valuation": "Áp dụng định giá P/E và P/B mục tiêu phù hợp với chu kỳ kinh doanh của ngành. Giá trị hợp lý phản ánh kỳ vọng phục hồi tiêu dùng và đầu tư công."
   },
   "data": {
     "years": [
@@ -257,28 +251,25 @@
       2024,
       2025,
       2026,
-      2027,
-      2028
+      2027
     ],
     "revenue": [
-      3206.290165333,
-      3898.24360857,
-      3845.826296568,
-      4832.024798961,
-      5956.025297015,
-      6849.42909156725,
-      7876.843455302337,
-      9058.369973597686
+      3206.29,
+      3898.24,
+      3845.83,
+      4832.02,
+      5956.03,
+      6985.54,
+      8193.02
     ],
     "npat": [
-      612.182073397,
-      993.915564733,
-      2250.57733992,
-      1455.479595602,
-      1755.629825296,
-      2228.909847731341,
-      2563.2463248910417,
-      2947.7332736246976
+      612.18,
+      993.92,
+      2250.58,
+      1455.48,
+      1755.63,
+      2095.66,
+      2457.91
     ],
     "eps": [
       1869.0,
@@ -286,19 +277,17 @@
       7207.0,
       4276.0,
       3839.0,
-      2228909.8477313407,
-      2563246.3248910415,
-      2947733.2736246977
+      209566.3,
+      245790.5
     ],
     "equity": [
-      7044.618371909,
-      7947.756019956,
-      9732.374052019,
-      13771.926002556,
-      14918.254153163,
-      16478.491046574938,
-      18272.763473998668,
-      20336.176765535958
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1466.96,
+      3187.5
     ]
   }
 }
