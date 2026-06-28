@@ -5,8 +5,8 @@
   "currentPrice": 33400.0,
   "marketCap": 236680429360000.0,
   "shares": 7086240400,
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1OUTF_J4ilZHioyTW-BOfDqSs6j6NI3l6/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1yPcTl39VmeGpug-EOKq6osVld-PQuGuD/view?usp=drivesdk",
   "pe_hist": [
     8.5,
     9.2,
