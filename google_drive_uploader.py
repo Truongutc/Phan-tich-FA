@@ -61,7 +61,8 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
         import requests
         
         file_name = os.path.basename(file_path)
-        print(f"[GDrive] Uploading via Google Apps Script Web App: {file_name}...")
+        ticker = os.path.basename(os.path.dirname(file_path)).upper()
+        print(f"[GDrive] Uploading via Google Apps Script Web App: {file_name} (Ticker: {ticker})...")
         
         mime_type = "application/octet-stream"
         if file_name.endswith(".pdf"):
@@ -79,6 +80,7 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
             payload = {
                 "token": "FA_PIPELINE_SECRET_2026",
                 "folderId": folder_id,
+                "ticker": ticker,
                 "fileName": file_name,
                 "fileContent": encoded_content,
                 "mimeType": mime_type
