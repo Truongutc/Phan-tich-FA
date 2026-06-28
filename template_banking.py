@@ -283,6 +283,92 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     wb.save(excel_path)
     print(f"[OK] Excel saved at: {excel_path}")
 
+    # ── Save JSON Summary for Dashboard (Calculations moved here) ──────────────────────
+    pe_hist_vals = [8.5, 9.2, 7.8, 8.1, 8.4]
+    pb_hist_vals = [1.2, 1.3, 1.1, 1.15, 1.25]
+    pe_quarters = [8.5, 8.2, 8.6, 9.0, 9.2, 8.9, 8.4, 7.8, 8.1, 8.4]
+    pb_quarters = [1.2, 1.15, 1.22, 1.28, 1.3, 1.25, 1.18, 1.1, 1.15, 1.25]
+    quarter_labels = ["2023-Q1","2023-Q2","2023-Q3","2023-Q4","2024-Q1","2024-Q2","2024-Q3","2024-Q4","2025-Q1","2025-Q2"]
+
+    # Calculate quarterly ratios directly from raw quarterly data
+    is_q_recs = raw_data["sections"]["INCOME_STATEMENT"].get("quarters", [])
+    bs_q_recs = raw_data["sections"]["BALANCE_SHEET"].get("quarters", [])
+    
+    q_keys = []
+    for r in is_q_recs:
+        yr = r.get("yearReport")
+        qt = r.get("quarter") or r.get("lengthReport")
+        if yr and qt in (1, 2, 3, 4):
+            q_keys.append(f"{yr}-Q{qt}")
+    q_keys = sorted(list(set(q_keys)))
+    
+    q_nims, q_ldrs, q_casas, q_npls = [], [], [], []
+    q_labels = []
+    
+    for q_key in q_keys[-12:]:
+        yr, qt = map(int, q_key.split("-Q"))
+        
+        q_nii = 0
+        for r in is_q_recs:
+            r_qt = r.get("quarter") or r.get("lengthReport")
+            if r.get("yearReport") == yr and r_qt == qt:
+                q_nii = r.get("isb27", r.get("isb22", 0))
+                break
+                
+        q_loans, q_deps, q_papers, q_casa, q_npl = 0, 0, 0, 0, 0
+        for r in bs_q_recs:
+            r_qt = r.get("quarter") or r.get("lengthReport")
+            if r.get("yearReport") == yr and r_qt == qt:
+                q_loans = r.get("bsb103", r.get("bsb24", 0))
+                q_deps = r.get("bsb113", r.get("bsb33", 0))
+                q_papers = r.get("bsb116", r.get("bsb34", 0))
+                q_casa = r.get("bsb114", r.get("bsb31", 0))
+                q_npl = r.get("bsb105", r.get("bsb27", 0))
+                break
+                
+        q_nim = (q_nii * 4) / ((q_loans + q_papers) or 1)
+        q_ldr = q_loans / ((q_deps + q_papers) or 1)
+        q_casa = q_casa / (q_deps or 1)
+        q_npl = q_npl / (q_loans or 1)
+        
+        q_nims.append(max(0.02, min(0.06, q_nim)))
+        q_ldrs.append(max(0.65, min(1.10, q_ldr)))
+        q_casas.append(max(0.10, min(0.55, q_casa)))
+        q_npls.append(max(0.005, min(0.05, q_npl)))
+        q_labels.append(q_key)
+
+    try:
+        import requests
+        r_r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial", timeout=5)
+        ratios_data = r_r.json().get("data", [])
+        all_q = sorted([x for x in ratios_data if x.get("quarter") in (1,2,3,4)], key=lambda x: (x.get("year", 0), x.get("quarter", 0)))
+        if all_q:
+            pe_quarters = [round(x.get("pe", 0) or 0, 2) for x in all_q]
+            pb_quarters = [round(x.get("pb", 0) or 0, 2) for x in all_q]
+            quarter_labels = [f"{x.get('year')}-Q{x.get('quarter')}" for x in all_q]
+            
+            annual_r = sorted([x for x in ratios_data if x.get("quarter") == 4], key=lambda x: x.get("year", 0))[-5:]
+            pe_hist_vals = [round(x.get("pe", 0) or 0, 1) for x in annual_r]
+            pb_hist_vals = [round(x.get("pb", 0) or 0, 2) for x in annual_r]
+    except Exception as e:
+        print(f"[WARN] Failed to fetch live ratios: {e}")
+
+    # Build income_quarterly for dashboard fallback
+    income_quarterly_records = []
+    for r in is_q_recs:
+        yr = r.get("yearReport")
+        qt = r.get("quarter") or r.get("lengthReport")
+        if yr and qt in (1, 2, 3, 4):
+            nii_q = r.get("isb27") or r.get("isb22") or 0
+            npat_q = r.get("isa22") or r.get("isa20") or 0
+            income_quarterly_records.append({
+                "yearReport": yr,
+                "quarter": qt,
+                "nii": round(nii_q / 1e9, 2),   # ty VND
+                "npat": round(npat_q / 1e9, 2),  # ty VND
+            })
+    income_quarterly_records.sort(key=lambda x: (x["yearReport"], x["quarter"]))
+
     # ── Charts ──────────────────────────────────────────────
     chart_p1 = os.path.join(out_dir, "chart1.png")
     plt.figure(figsize=(6, 3.5))
@@ -386,91 +472,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     except:
         pass
 
-    # ── Save JSON Summary for Dashboard ──────────────────────
-    pe_hist_vals = [8.5, 9.2, 7.8, 8.1, 8.4]
-    pb_hist_vals = [1.2, 1.3, 1.1, 1.15, 1.25]
-    pe_quarters = [8.5, 8.2, 8.6, 9.0, 9.2, 8.9, 8.4, 7.8, 8.1, 8.4]
-    pb_quarters = [1.2, 1.15, 1.22, 1.28, 1.3, 1.25, 1.18, 1.1, 1.15, 1.25]
-    quarter_labels = ["2023-Q1","2023-Q2","2023-Q3","2023-Q4","2024-Q1","2024-Q2","2024-Q3","2024-Q4","2025-Q1","2025-Q2"]
 
-    # Calculate quarterly ratios directly from raw quarterly data
-    is_q_recs = raw_data["sections"]["INCOME_STATEMENT"].get("quarters", [])
-    bs_q_recs = raw_data["sections"]["BALANCE_SHEET"].get("quarters", [])
-    
-    q_keys = []
-    for r in is_q_recs:
-        yr = r.get("yearReport")
-        qt = r.get("quarter") or r.get("lengthReport")
-        if yr and qt in (1, 2, 3, 4):
-            q_keys.append(f"{yr}-Q{qt}")
-    q_keys = sorted(list(set(q_keys)))
-    
-    q_nims, q_ldrs, q_casas, q_npls = [], [], [], []
-    q_labels = []
-    
-    for q_key in q_keys[-12:]:
-        yr, qt = map(int, q_key.split("-Q"))
-        
-        q_nii = 0
-        for r in is_q_recs:
-            r_qt = r.get("quarter") or r.get("lengthReport")
-            if r.get("yearReport") == yr and r_qt == qt:
-                q_nii = r.get("isb27", r.get("isb22", 0))
-                break
-                
-        q_loans, q_deps, q_papers, q_casa, q_npl = 0, 0, 0, 0, 0
-        for r in bs_q_recs:
-            r_qt = r.get("quarter") or r.get("lengthReport")
-            if r.get("yearReport") == yr and r_qt == qt:
-                q_loans = r.get("bsb103", r.get("bsb24", 0))
-                q_deps = r.get("bsb113", r.get("bsb33", 0))
-                q_papers = r.get("bsb116", r.get("bsb34", 0))
-                q_casa = r.get("bsb114", r.get("bsb31", 0))
-                q_npl = r.get("bsb105", r.get("bsb27", 0))
-                break
-                
-        q_nim = (q_nii * 4) / ((q_loans + q_papers) or 1)
-        q_ldr = q_loans / ((q_deps + q_papers) or 1)
-        q_casa = q_casa / (q_deps or 1)
-        q_npl = q_npl / (q_loans or 1)
-        
-        q_nims.append(max(0.02, min(0.06, q_nim)))
-        q_ldrs.append(max(0.65, min(1.10, q_ldr)))
-        q_casas.append(max(0.10, min(0.55, q_casa)))
-        q_npls.append(max(0.005, min(0.05, q_npl)))
-        q_labels.append(q_key)
-
-    try:
-        import requests
-        r_r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial", timeout=5)
-        ratios_data = r_r.json().get("data", [])
-        all_q = sorted([x for x in ratios_data if x.get("quarter") in (1,2,3,4)], key=lambda x: (x.get("year", 0), x.get("quarter", 0)))
-        if all_q:
-            pe_quarters = [round(x.get("pe", 0) or 0, 2) for x in all_q]
-            pb_quarters = [round(x.get("pb", 0) or 0, 2) for x in all_q]
-            quarter_labels = [f"{x.get('year')}-Q{x.get('quarter')}" for x in all_q]
-            
-            annual_r = sorted([x for x in ratios_data if x.get("quarter") == 4], key=lambda x: x.get("year", 0))[-5:]
-            pe_hist_vals = [round(x.get("pe", 0) or 0, 1) for x in annual_r]
-            pb_hist_vals = [round(x.get("pb", 0) or 0, 2) for x in annual_r]
-    except Exception as e:
-        print(f"[WARN] Failed to fetch live ratios: {e}")
-
-    # Build income_quarterly for dashboard fallback
-    income_quarterly_records = []
-    for r in is_q_recs:
-        yr = r.get("yearReport")
-        qt = r.get("quarter") or r.get("lengthReport")
-        if yr and qt in (1, 2, 3, 4):
-            nii_q = r.get("isb27") or r.get("isb22") or 0
-            npat_q = r.get("isa22") or r.get("isa20") or 0
-            income_quarterly_records.append({
-                "yearReport": yr,
-                "quarter": qt,
-                "nii": round(nii_q / 1e9, 2),   # ty VND
-                "npat": round(npat_q / 1e9, 2),  # ty VND
-            })
-    income_quarterly_records.sort(key=lambda x: (x["yearReport"], x["quarter"]))
 
     summary_json = {
         "ticker": ticker,
