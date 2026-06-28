@@ -69,6 +69,94 @@ _VN_FONTS = register_vn_fonts()
 FONT_REG = 'Arial' if 'Arial' in _VN_FONTS else 'Helvetica'
 FONT_BOLD = 'Arial-Bold' if 'Arial-Bold' in _VN_FONTS else 'Helvetica-Bold'
 
+def fetch_price_history(ticker, days=300, timeout=15):
+    import time
+    endpoints = [
+        f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/chart/history?symbol={ticker}&resolution=D&from={int(time.time() - days*86400)}&to={int(time.time())}",
+        f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/chart/history?symbol={ticker}&resolution=D&from={int(time.time() - days*86400)}&to={int(time.time())}"
+    ]
+    for url in endpoints:
+        try:
+            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
+            if r.status_code == 200:
+                data = r.json()
+                closes = (data.get("data", {}).get("c") or data.get("c") or
+                          [d.get("close") or d.get("c") for d in data.get("data", []) if isinstance(d, dict)])
+                closes = [x for x in closes if x is not None and x > 0]
+                if len(closes) > 50:
+                    return closes
+        except:
+            pass
+    return []
+
+def calc_beta(stock_closes, market_closes, min_days=100):
+    if len(stock_closes) < min_days or len(market_closes) < min_days:
+        return None, 0
+    n = min(len(stock_closes), len(market_closes))
+    s = stock_closes[-n:]
+    m = market_closes[-n:]
+    rs = [(s[i] - s[i-1]) / s[i-1] for i in range(1, len(s))]
+    rm = [(m[i] - m[i-1]) / m[i-1] for i in range(1, len(m))]
+    n_ret = len(rs)
+    mean_rs = sum(rs) / n_ret
+    mean_rm = sum(rm) / n_ret
+    cov_sm = sum((rs[i] - mean_rs) * (rm[i] - mean_rm) for i in range(n_ret)) / (n_ret - 1)
+    var_m  = sum((rm[i] - mean_rm) ** 2 for i in range(n_ret)) / (n_ret - 1)
+    beta = cov_sm / var_m if var_m > 0 else 1.0
+    beta = max(0.3, min(2.5, beta))
+    return round(beta, 4), n_ret
+
+def fetch_beta_vietstock(ticker, timeout=15):
+    try:
+        search_url = f"https://finance.vietstock.vn/search?query={ticker}"
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        r1 = requests.get(search_url, headers=headers, timeout=timeout)
+        if r1.status_code == 200:
+            data = json.loads(r1.text).get("data", "")
+            lines = data.split('\r\n')
+            target_url = ""
+            for line in lines:
+                parts = line.split('|')
+                if len(parts) >= 3 and parts[0].strip().upper() == ticker.upper():
+                    target_url = parts[2]
+                    break
+            if target_url:
+                r2 = requests.get(target_url, headers=headers, timeout=timeout)
+                if r2.status_code == 200:
+                    import re
+                    m = re.search(r'\"Beta\":\"([\d\.]+)\"', r2.text)
+                    if m:
+                        beta = float(m.group(1))
+                        if 0.3 <= beta <= 2.5:
+                            print(f"  [OK] Beta {ticker} từ Vietstock: {beta:.2f}")
+                            return beta, f"Vietstock ({beta:.2f})"
+    except Exception as e:
+        print(f"  [WARN] Vietstock scrape failed: {e}")
+    return None, ""
+
+def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=300, timeout=20, fallback=1.0):
+    b_vs, src_vs = fetch_beta_vietstock(ticker, timeout)
+    if b_vs is not None:
+        return b_vs, src_vs
+    try:
+        r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
+        beta = r.json().get("data", {}).get("beta")
+        if beta is not None and 0.3 <= float(beta) <= 2.5:
+            print(f"  [OK] Beta {ticker} từ Vietcap API: {float(beta):.2f}")
+            return float(beta), f"Vietcap API (beta={float(beta):.2f})"
+    except:
+        pass
+    print(f"  [INFO] Tính Beta {ticker} từ hồi quy giá lịch sử...")
+    stock_closes  = fetch_price_history(ticker, days=days, timeout=timeout)
+    market_closes = fetch_price_history(market_ticker, days=days, timeout=timeout)
+    if stock_closes and market_closes:
+        beta, n_obs = calc_beta(stock_closes, market_closes)
+        if beta is not None:
+            print(f"  [OK] Beta {ticker} (hồi quy {n_obs} phiên): {beta:.2f}")
+            return beta, f"Hồi quy giá {n_obs} phiên vs {market_ticker}"
+    print(f"  [FALLBACK] Beta {ticker} = {fallback}")
+    return fallback, "fallback"
+
 
 # ── AI COMMENTARY EXTRACTOR ──────────────────────────────────────────────────
 def get_ai_commentary(ticker, company_name, sector, financial_summary, api_key):
@@ -323,7 +411,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     bvps_hist = [equity_hist[i] * 1e9 / shares for i in range(len(years_hist))]
     
     # ── Valuation ──
-    COE = 0.13
+    print(f"[Assumptions] Fetching/calculating Beta and COE for {ticker}...")
+    beta_val, beta_src = fetch_and_calc_beta(ticker)
+    rf_val = 0.045 # Standard 4.5% Rf Vietnam
+    erp_val = 0.07 # Standard 7.0% ERP
+    COE = rf_val + beta_val * erp_val
+    print(f"  -> Beta ({ticker}): {beta_val} ({beta_src})")
+    print(f"  -> COE ({ticker}): {COE*100:.2f}% (calculated via CAPM)")
+    
     terminal_growth = 0.03
     bvps_base = bvps_hist[-1]
     

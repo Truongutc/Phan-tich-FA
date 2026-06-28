@@ -8,14 +8,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "MBB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-28 16:16",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "VIB",
     "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
     "sector": "Ngân hàng",
@@ -44,6 +36,14 @@
     "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-06-29 00:57",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "MBB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-29 00:59",
     "excelUrl": null,
     "pdfUrl": null
   }
