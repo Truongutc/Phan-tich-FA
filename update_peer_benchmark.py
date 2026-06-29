@@ -8,28 +8,33 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BANK_TICKERS = ['VCB', 'BID', 'CTG', 'TCB', 'MBB', 'ACB', 'VIB', 'HDB', 'STB', 'VPB', 'TPB', 'MSB', 'EIB', 'LPB', 'SHB', 'OCB', 'BAB', 'NAB']
 
-def get_headers():
-    return {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/plain, */*",
-        "Content-Type": "application/json"
-    }
+VIETCAP_BASE = "https://iq.vietcap.com.vn/api/iq-insight-service/v1"
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Origin": "https://trading.vietcap.com.vn",
+    "Referer": "https://trading.vietcap.com.vn/",
+}
 
 def fetch_financial_data(ticker):
-    print(f"Fetching Vietcap data for peer bank: {ticker}...")
-    headers = get_headers()
+    print(f"Fetching Vietcap IQ data for peer bank: {ticker}...")
+    
+    # 1. Fetch current price and market cap via stock details
     price = 20000
     mcap = 50000
     try:
-        url_det = f"https://api.vietcap.vn/api/stock-details/detail?symbol={ticker}"
-        r = requests.get(url_det, headers=headers, verify=False, timeout=10)
+        url_det = f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}"
+        r = requests.get(url_det, headers=HEADERS, verify=False, timeout=10)
         if r.status_code == 200:
-            det = r.json()
-            price = det.get("closePrice", price)
-            mcap = det.get("marketCap", mcap) / 1e9
+            det = r.json().get("data", {})
+            price = det.get("currentPrice") or price
+            shares = det.get("numberOfSharesMktCap") or 1
+            mcap = (price * shares) / 1e9
     except Exception as e:
         print(f"Error price/mcap for {ticker}: {e}")
 
+    # Fallbacks
     npl = 2.0
     nim = 3.5
     casa = 20.0
@@ -39,20 +44,30 @@ def fetch_financial_data(ticker):
     cg = 12.0
     
     try:
-        url_hist = f"https://api.vietcap.vn/api/stock-details/valuation-history?symbol={ticker}"
-        r = requests.get(url_hist, headers=headers, verify=False, timeout=10)
+        # Fetch valuation history to get latest PB
+        url_hist = f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/valuation/history"
+        r = requests.get(url_hist, headers=HEADERS, verify=False, timeout=10)
         if r.status_code == 200:
-            vals = r.json()
+            vals = r.json().get("data", [])
             if vals:
-                pb = vals[-1].get("pb", pb)
+                pb = vals[-1].get("pb") or pb
 
-        url_fs = f"https://api.vietcap.vn/api/financial-statement/quarterly?symbol={ticker}"
-        r = requests.get(url_fs, headers=headers, verify=False, timeout=10)
-        if r.status_code == 200:
-            fs = r.json()
-            bs = fs.get("balanceSheet", [])
-            is_st = fs.get("incomeStatement", [])
-            notes = fs.get("notes", [])
+        # Fetch Balance Sheet (Quarterly)
+        url_bs = f"{VIETCAP_BASE}/company/{ticker}/financial-statement?section=BALANCE_SHEET&quarterly=true"
+        r_bs = requests.get(url_bs, headers=HEADERS, verify=False, timeout=10)
+        
+        # Fetch Income Statement (Quarterly)
+        url_is = f"{VIETCAP_BASE}/company/{ticker}/financial-statement?section=INCOME_STATEMENT&quarterly=true"
+        r_is = requests.get(url_is, headers=HEADERS, verify=False, timeout=10)
+        
+        # Fetch Notes (Quarterly)
+        url_nt = f"{VIETCAP_BASE}/company/{ticker}/financial-statement?section=NOTE&quarterly=true"
+        r_nt = requests.get(url_nt, headers=HEADERS, verify=False, timeout=10)
+
+        if r_bs.status_code == 200 and r_is.status_code == 200:
+            bs = r_bs.json().get("data", {}).get("quarters", [])
+            is_st = r_is.json().get("data", {}).get("quarters", [])
+            notes = r_nt.json().get("data", {}).get("quarters", []) if r_nt.status_code == 200 else []
             
             if bs and is_st:
                 bs_sorted = sorted(bs, key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))
@@ -68,23 +83,28 @@ def fetch_financial_data(ticker):
                 loans_prev = q_bs_prev.get("bsb103", 1)
                 cg = round(((loans - loans_prev)/max(loans_prev, 1)) * 100, 2)
                 
+                # NPL
                 gr3 = q_nt.get("nob42", 0)
                 gr4 = q_nt.get("nob43", 0)
                 gr5 = q_nt.get("nob44", 0)
                 npl_abs = gr3 + gr4 + gr5
                 npl = round((npl_abs / max(loans, 1)) * 100, 2) if npl_abs > 0 else 2.0
                 
+                # CASA
                 casa_val = q_nt.get("nob66", 0)
                 dep_val = q_nt.get("nob65", 1)
                 casa = round((casa_val / max(dep_val, 1)) * 100, 2)
                 
+                # CIR
                 opex = abs(q_is.get("isb39", 0))
                 toi = q_is.get("isb38", 1)
                 cir = round((opex / max(toi, 1)) * 100, 2)
                 
+                # NIM
                 nii = q_is.get("isb27", 0)
                 nim = round((nii * 4 / max(loans, 1)) * 100, 2)
                 
+                # ROE
                 npat = q_is.get("isa20", 0)
                 equity = q_bs.get("bsa78", 1)
                 roe = round((npat * 4 / max(equity, 1)) * 100, 2)
