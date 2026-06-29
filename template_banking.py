@@ -1170,6 +1170,83 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         for c in range(1, 6):
             ws_g_hist.cell(row=r, column=c).border = thin_border
 
+    # ── Sheet 15: Peer Benchmark ─────────────────────────────
+    try:
+        with open("data/peer_benchmark.json", "r", encoding="utf-8") as f:
+            peer_json = json.load(f)
+        
+        ws_peer = wb.create_sheet("15_Peer_Benchmark")
+        ws_peer.column_dimensions['A'].width = 25
+        ws_peer.column_dimensions['B'].width = 15
+        ws_peer.column_dimensions['C'].width = 15
+        ws_peer.column_dimensions['D'].width = 15
+        ws_peer.column_dimensions['E'].width = 15
+        ws_peer.column_dimensions['F'].width = 15
+        ws_peer.column_dimensions['G'].width = 15
+        ws_peer.column_dimensions['H'].width = 20
+        ws_peer.column_dimensions['I'].width = 20
+        
+        write_header_row(ws_peer, 1, 1, [
+            "Ngân hàng", "NPL (%)", "NIM (%)", "CASA (%)", 
+            "ROE (%)", "CIR (%)", "P/B (x)", "Tăng trưởng tín dụng (%)", "Vốn hóa (tỷ VND)"
+        ])
+        
+        # Calculate averages first
+        peers_list = peer_json.get("peers", [])
+        avg_npl = sum(p.get("npl", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        avg_nim = sum(p.get("nim", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        avg_casa = sum(p.get("casa", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        avg_roe = sum(p.get("roe", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        avg_cir = sum(p.get("cir", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        avg_pb = sum(p.get("pb", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        avg_cg = sum(p.get("cg", 0) for p in peers_list) / len(peers_list) if peers_list else 0
+        
+        # Write Industry average row
+        ws_peer.cell(row=2, column=1, value="Trung bình ngành")
+        ws_peer.cell(row=2, column=2, value=avg_npl).number_format = "0.00%"
+        ws_peer.cell(row=2, column=3, value=avg_nim).number_format = "0.00%"
+        ws_peer.cell(row=2, column=4, value=avg_casa).number_format = "0.00%"
+        ws_peer.cell(row=2, column=5, value=avg_roe).number_format = "0.00%"
+        ws_peer.cell(row=2, column=6, value=avg_cir).number_format = "0.00%"
+        ws_peer.cell(row=2, column=7, value=avg_pb).number_format = "0.00"
+        ws_peer.cell(row=2, column=8, value=avg_cg).number_format = "0.00%"
+        ws_peer.cell(row=2, column=9, value="-")
+        
+        # Set average style (italic gold-like look or light gray highlight)
+        avg_fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+        for col in range(1, 10):
+            cell = ws_peer.cell(row=2, column=col)
+            cell.font = Font(name="Calibri", size=11, bold=True, italic=True)
+            cell.fill = avg_fill
+            cell.border = thin_border
+            
+        r_offset = 3
+        for p in peers_list:
+            p_ticker = p.get("ticker", "")
+            is_cur = (p_ticker == ticker)
+            
+            ws_peer.cell(row=r_offset, column=1, value=f"{p_ticker} — {p.get('name', '')}")
+            ws_peer.cell(row=r_offset, column=2, value=p.get("npl", 0) / 100).number_format = "0.00%"
+            ws_peer.cell(row=r_offset, column=3, value=p.get("nim", 0) / 100).number_format = "0.00%"
+            ws_peer.cell(row=r_offset, column=4, value=p.get("casa", 0) / 100).number_format = "0.00%"
+            ws_peer.cell(row=r_offset, column=5, value=p.get("roe", 0) / 100).number_format = "0.00%"
+            ws_peer.cell(row=r_offset, column=6, value=p.get("cir", 0) / 100).number_format = "0.00%"
+            ws_peer.cell(row=r_offset, column=7, value=p.get("pb", 0)).number_format = "0.00"
+            ws_peer.cell(row=r_offset, column=8, value=p.get("cg", 0) / 100).number_format = "0.00%"
+            ws_peer.cell(row=r_offset, column=9, value=p.get("mcap", 0)).number_format = FMT_NUM
+            
+            # Formatting
+            for col in range(1, 10):
+                cell = ws_peer.cell(row=r_offset, column=col)
+                cell.border = thin_border
+                if is_cur:
+                    cell.font = Font(name="Calibri", size=11, bold=True)
+                    cell.fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+            r_offset += 1
+            
+    except Exception as e:
+        print(f"[Excel Warning] Failed to generate Sheet 15: {e}")
+
     wb.save(excel_path)
     print(f"[Excel] Dynamic workbook successfully saved to {excel_path}")
 
@@ -1740,19 +1817,91 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Paragraph("Diễn biến quy mô Nợ xấu tuyệt đối và tỷ lệ NPL theo quý:", h2_style))
     story.append(Image(chart_p7, width=150*mm, height=65*mm))
     
-    # ------------------ PAGE 4: VALUATION & DETAILED RI MODEL ------------------
-    # ------------------ PAGE 4: ASSET QUALITY & PE/PB HISTORY ------------------
+    
+    # ------------------ PAGE 4: PEER COMPARISON TABLE (NEW) ------------------
     story.append(PageBreak())
-    story.append(Paragraph("4. Lịch sử biến động định giá & Tóm tắt kết quả", h1_style))
+    story.append(Paragraph("4. Bảng so sánh chỉ số tài chính các ngân hàng (Peer Benchmark)", h1_style))
+    story.append(Paragraph("Bảng so sánh dưới đây cung cấp góc nhìn toàn cảnh về hiệu quả sinh lời, chất lượng tài sản và định giá của 18 ngân hàng thương mại niêm yết hàng đầu Việt Nam tại thời điểm hiện tại:", body_style))
+    story.append(Spacer(1, 4))
+    
+    # Read peer data from JSON for PDF table rendering
+    try:
+        with open("data/peer_benchmark.json", "r", encoding="utf-8") as f:
+            peer_data_pdf = json.load(f)
+        peers_pdf_list = peer_data_pdf.get("peers", [])
+    except:
+        peers_pdf_list = []
+        
+    pdf_peer_rows = [
+        ["Mã", "NPL (%)", "NIM (%)", "CASA (%)", "ROE (%)", "CIR (%)", "P/B (x)", "TTTD (%)", "Vốn hóa (Tỷ)"]
+    ]
+    
+    # Add Industry Average row
+    if peers_pdf_list:
+        p_npl_a = sum(p.get("npl", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        p_nim_a = sum(p.get("nim", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        p_casa_a = sum(p.get("casa", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        p_roe_a = sum(p.get("roe", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        p_cir_a = sum(p.get("cir", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        p_pb_a = sum(p.get("pb", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        p_cg_a = sum(p.get("cg", 0) for p in peers_pdf_list) / len(peers_pdf_list)
+        pdf_peer_rows.append([
+            "TB Ngành", f"{p_npl_a:.2f}%", f"{p_nim_a:.2f}%", f"{p_casa_a:.1f}%",
+            f"{p_roe_a:.1f}%", f"{p_cir_a:.1f}%", f"{p_pb_a:.2f}x", f"{p_cg_a:.1f}%", "—"
+        ])
+        
+    for p in peers_pdf_list:
+        # Highlight target stock
+        t_id = p.get("ticker", "")
+        pdf_peer_rows.append([
+            f"*{t_id}*" if t_id == ticker else t_id,
+            f"{p.get('npl'):.2f}%", f"{p.get('nim'):.2f}%", f"{p.get('casa'):.1f}%",
+            f"{p.get('roe'):.1f}%", f"{p.get('cir'):.1f}%", f"{p.get('pb'):.2f}x",
+            f"{p.get('cg'):.1f}%", f"{p.get('mcap'):,.0f}"
+        ])
+        
+    t_pdf_peer = Table(pdf_peer_rows, colWidths=[20*mm, 18*mm, 18*mm, 18*mm, 18*mm, 18*mm, 16*mm, 18*mm, 26*mm])
+    
+    # Styling rules
+    t_pdf_peer_styles = [
+        ('BACKGROUND', (0,0), (-1,0), HexColor("#1A365D")),
+        ('TEXTCOLOR', (0,0), (-1,0), white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        ('GRID', (0,0), (-1,-1), 0.5, HexColor("#cbd5e1")),
+        ('FONTNAME', (0,0), (-1,-1), FONT_REG),
+        ('FONTNAME', (0,0), (-1,0), FONT_BOLD),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('FONTSIZE', (0,0), (-1,-1), 8),
+        ('BACKGROUND', (0,1), (-1,1), HexColor("#FFF2CC")),  # Highlight average
+        ('FONTNAME', (0,1), (-1,1), FONT_BOLD),
+    ]
+    
+    # Highlight current stock rows
+    for r_idx in range(len(pdf_peer_rows)):
+        if pdf_peer_rows[r_idx][0].startswith("*"):
+            t_pdf_peer_styles.append(('BACKGROUND', (0, r_idx), (-1, r_idx), HexColor("#E2E8F0")))
+            t_pdf_peer_styles.append(('FONTNAME', (0, r_idx), (-1, r_idx), FONT_BOLD))
+            pdf_peer_rows[r_idx][0] = pdf_peer_rows[r_idx][0].replace("*", "")  # Clean label
+            
+    t_pdf_peer.setStyle(TableStyle(t_pdf_peer_styles))
+    story.append(t_pdf_peer)
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("<i>Nguồn: Báo cáo tài chính các ngân hàng Q1/2026 và dữ liệu thống kê từ Vietcap.</i>", body_style))
+    
+    # ------------------ PAGE 5: VALUATION & PE/PB HISTORY ------------------
+    story.append(PageBreak())
+    story.append(Paragraph("5. Lịch sử biến động định giá & Tóm tắt kết quả", h1_style))
     story.append(Paragraph("Biểu đồ dưới đây cung cấp góc nhìn toàn cảnh về định giá PE/PB của cổ phiếu trong vòng 8 năm qua, làm cơ sở so sánh với giá trị hợp lý hiện tại:", body_style))
     
-    # PE/PB history chart in Page 4
+    # PE/PB history chart in Page 5
     story.append(Image(chart_p13, width=175*mm, height=73*mm))
     story.append(Spacer(1, 5))
     
-    # ------------------ PAGE 5: FORECAST ASSUMPTIONS & DETAILED RI MODEL ------------------
+    # ------------------ PAGE 6: FORECAST ASSUMPTIONS & DETAILED RI MODEL ------------------
     story.append(PageBreak())
-    story.append(Paragraph("5. Giả định dự báo & Mô hình định giá Residual Income", h1_style))
+    story.append(Paragraph("6. Giả định dự báo & Mô hình định giá Residual Income", h1_style))
     story.append(Paragraph(f"Kết hợp phương pháp định giá Residual Income (trọng số 50%) và P/B median all-time lịch sử (trọng số 50%), giá trị hợp lý của cổ phiếu {ticker} được xác định là <b>{weighted_target:,.0f} VND/CP</b>.", body_style))
     
     # Inject dynamic forecast assumptions explanation
@@ -1830,9 +1979,30 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # CASA quý: Non-term Dep / Total Dep — Skill §19.3  (bsb114=CASA)
     casa_q_json = [safe_div((rq_sorted[i].get("bsb114") or 0)/1e9,
                             (rq_sorted[i].get("bsb113") or 1)/1e9) for i in range(n_q)]
-    # NPL quý: NPL / Loans — Skill §19.4 (bsb105=NPL gross)
-    npl_q_json = [safe_div((rq_sorted[i].get("bsb105") or 0)/1e9,
-                           (rq_sorted[i].get("bsb103") or 1)/1e9) for i in range(n_q)]
+    # NPL quý: (Group3+4+5) / Loans — lấy từ Notes quarterly
+    # Notes quarterly: dựng n_tập theo quý (nob41=gr2, nob42=gr3, nob43=gr4, nob44=gr5 trong Note thường)
+    nt_q_sorted = sorted(section_to_quarters(raw_data, "NOTE"),
+                         key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-n_q:]
+    # Đảm bảo align
+    min_q2 = min(len(rq_sorted), len(nt_q_sorted))
+    npl_q_json = []
+    llr_q_json = []
+    for i in range(min_q2):
+        loans_q = (rq_sorted[i].get("bsb103") or 1) / 1e9
+        # NPL = group 3+4+5 từ Notes
+        nob_gr3 = (nt_q_sorted[i].get("nob42") or 0) / 1e9
+        nob_gr4 = (nt_q_sorted[i].get("nob43") or 0) / 1e9
+        nob_gr5 = (nt_q_sorted[i].get("nob44") or 0) / 1e9
+        npl_abs = nob_gr3 + nob_gr4 + nob_gr5
+        npl_ratio = round(npl_abs / loans_q * 100, 2) if loans_q > 0 else 0
+        # Dự phòng (bsb105 là provision balance, âm trong BS)
+        prov_abs = abs((rq_sorted[i].get("bsb105") or 0)) / 1e9
+        llr = round(prov_abs / max(npl_abs, 0.001) * 100, 1) if npl_abs > 0 else 0
+        npl_q_json.append(npl_ratio)
+        llr_q_json.append(llr)
+    # Pad if needed
+    while len(npl_q_json) < n_q: npl_q_json.append(None)
+    while len(llr_q_json)  < n_q: llr_q_json.append(None)
 
     # FIX Lỗi 13: pe_quarters/pb_quarters lấy toàn bộ lịch sử, không chỉ 12 quý
     q_labels_pe = []
@@ -1910,7 +2080,15 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "nim":  nim_q_json,
             "ldr":  ldr_q_json,
             "casa": casa_q_json,
-            "npl":  npl_q_json
+            "npl":  npl_q_json,
+            "llr":  llr_q_json
+        },
+        "earning_assets": {
+            "years": [str(y) for y in years_hist],
+            "cash_sbv": [round((cash_hist[i]+sbv_dep_hist[i])/1e9, 1) for i in range(len(years_hist))],
+            "bank_dep": [round(bank_dep_hist[i]/1e9, 1) for i in range(len(years_hist))],
+            "loans":    [round(loans_hist[i]/1e9, 1) for i in range(len(years_hist))],
+            "inv_sec":  [round(inv_sec_bs_hist[i]/1e9, 1) for i in range(len(years_hist))]
         },
         "thesis": [
             ai_comments["business"][:200],

@@ -626,6 +626,9 @@ async function loadStockDashboard(ticker) {
     renderAssumptionsTable(localJson, sectorKey);
     renderResidualIncomeTable(localJson, sectorKey);
     renderPeerBenchmarkTable(localJson, sectorKey);
+    renderNiiBreakdownChart(localJson, sectorKey);
+    renderNplLlrChart(localJson, sectorKey);
+    renderEarningAssetsChart(localJson, sectorKey);
 
     // ── Qualitative sections ─────────────────────────────
     const q = localJson || {};
@@ -1454,58 +1457,201 @@ function renderResidualIncomeTable(localJson, sectorKey) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// PEER BENCHMARK TABLE
+// PEER BENCHMARK TABLE (Duy trì dữ liệu động từ API)
 // ═══════════════════════════════════════════════════════════
-const BANK_PEER_DATA = [
-    { ticker:'VCB', name:'Vietcombank',      npl:1.19, nim:3.17, casa:37.2, roe:22.5, cir:30.2, pb:2.85, cg:16.2, mcap:545000 },
-    { ticker:'BID', name:'BIDV',             npl:1.34, nim:2.68, casa:20.8, roe:21.0, cir:31.8, pb:1.82, cg:18.5, mcap:332000 },
-    { ticker:'CTG', name:'VietinBank',       npl:1.26, nim:3.02, casa:19.3, roe:18.8, cir:32.0, pb:1.55, cg:14.2, mcap:287000 },
-    { ticker:'TCB', name:'Techcombank',      npl:1.35, nim:4.28, casa:40.5, roe:18.2, cir:28.5, pb:1.75, cg:15.5, mcap:310000 },
-    { ticker:'MBB', name:'MBBank',           npl:2.58, nim:4.65, casa:39.8, roe:19.5, cir:35.2, pb:1.42, cg:19.8, mcap:185000 },
-    { ticker:'ACB', name:'ACB',              npl:1.48, nim:3.85, casa:22.4, roe:24.3, cir:36.8, pb:1.68, cg:17.2, mcap:142000 },
-    { ticker:'VIB', name:'VIB',              npl:3.57, nim:3.28, casa:16.1, roe:16.4, cir:36.5, pb:1.12, cg: 4.7, mcap: 55000 },
-    { ticker:'HDB', name:'HDBank',           npl:2.35, nim:4.95, casa:15.6, roe:21.5, cir:42.5, pb:1.52, cg:23.5, mcap: 78000 },
-    { ticker:'STB', name:'Sacombank',        npl:1.89, nim:3.15, casa:18.7, roe:16.5, cir:45.2, pb:1.15, cg:15.8, mcap: 82000 },
-    { ticker:'VPB', name:'VPBank',           npl:4.87, nim:6.42, casa:16.2, roe:11.2, cir:38.5, pb:1.28, cg:12.3, mcap:135000 },
-    { ticker:'TPB', name:'TPBank',           npl:2.35, nim:3.95, casa:18.5, roe:16.8, cir:40.2, pb:1.05, cg:11.5, mcap: 52000 },
-    { ticker:'MSB', name:'MSB',              npl:3.12, nim:3.68, casa:24.5, roe:14.5, cir:39.8, pb:0.95, cg: 9.8, mcap: 35000 },
-    { ticker:'EIB', name:'Eximbank',         npl:1.75, nim:2.85, casa:14.2, roe: 9.5, cir:55.5, pb:0.92, cg: 8.5, mcap: 22000 },
-    { ticker:'LPB', name:'LienVietPostBank', npl:2.95, nim:3.45, casa:13.8, roe:16.2, cir:42.0, pb:0.98, cg:18.5, mcap: 38000 },
-    { ticker:'SHB', name:'SHB',              npl:3.45, nim:2.95, casa:16.5, roe:14.8, cir:40.5, pb:0.85, cg:15.2, mcap: 52000 },
-    { ticker:'OCB', name:'OCB',              npl:2.85, nim:3.58, casa:17.2, roe:12.5, cir:44.5, pb:0.82, cg: 7.5, mcap: 22000 },
-    { ticker:'BAB', name:'BacABank',         npl:1.25, nim:2.58, casa:11.5, roe:12.5, cir:48.5, pb:0.75, cg:10.2, mcap: 11000 },
-    { ticker:'NAB', name:'NamABank',         npl:2.50, nim:3.12, casa:12.2, roe:13.8, cir:46.0, pb:0.72, cg:12.5, mcap:  8000 },
-];
-function renderPeerBenchmarkTable(localJson, sectorKey) {
+async function renderPeerBenchmarkTable(localJson, sectorKey) {
     const card  = document.getElementById('web-peer-card');
     const tbody = document.getElementById('web-peer-tbody');
     if (!card || !tbody) return;
+
     if (sectorKey !== 'banks') { card.style.display = 'none'; return; }
     card.style.display = '';
-    const cur = localJson?.ticker ?? '';
+
+    const currentTicker = localJson?.ticker ?? '';
     const fmtN = (v, d=2) => v != null ? v.toFixed(d) : '-';
     const fmtM = (v) => v != null ? Math.round(v).toLocaleString('vi-VN') : '-';
-    const avg = (key) => {
-        const vals = BANK_PEER_DATA.map(p => p[key]).filter(v => v != null);
-        return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
-    };
-    const avgNPL = avg('npl'), avgROE = avg('roe'), avgCG = avg('cg');
-    const avgRow = `<tr style="border-top:1.5px solid rgba(255,255,255,0.12);color:#f59e0b;font-weight:600">
-        <td>Trung binh nganh</td><td>${fmtN(avgNPL)}</td><td>${fmtN(avg('nim'))}</td><td>${fmtN(avg('casa'),1)}</td>
-        <td>${fmtN(avgROE,1)}</td><td>${fmtN(avg('cir'),1)}</td><td>${fmtN(avg('pb'))}</td><td>${fmtN(avgCG,1)}</td><td>-</td>
-    </tr>`;
-    const rows = BANK_PEER_DATA.map(p => {
-        const isCur = p.ticker === cur;
-        const rs = isCur ? 'background:rgba(59,130,246,0.10);font-weight:700;' : '';
-        const nc = p.npl > 3 ? '#ef4444' : p.npl > 2 ? '#f59e0b' : '#10b981';
-        const pc = p.pb  > 2 ? '#10b981' : p.pb  > 1 ? '' : '#ef4444';
-        const gc = p.cg >= avgCG ? '#10b981' : '#f59e0b';
-        const rc = p.roe >= avgROE ? '#10b981' : '';
-        return `<tr style="${rs}"><td>${isCur ? '>> ' : ''}${p.ticker} — ${p.name}</td>
-            <td style="color:${nc}">${fmtN(p.npl)}</td><td>${fmtN(p.nim)}</td><td>${fmtN(p.casa,1)}</td>
-            <td style="color:${rc}">${fmtN(p.roe,1)}</td><td>${fmtN(p.cir,1)}</td>
-            <td style="color:${pc}">${fmtN(p.pb)}</td><td style="color:${gc}">${fmtN(p.cg,1)}</td><td>${fmtM(p.mcap)}</td>
+
+    try {
+        // Fetch dynamically from our backend updated JSON file
+        const resp = await fetch('data/peer_benchmark.json');
+        if (!resp.ok) throw new Error("Failed to load peer_benchmark.json");
+        const data = await resp.json();
+        const peerList = data.peers || [];
+
+        const avg = (key) => {
+            const vals = peerList.map(p => p[key]).filter(v => v != null);
+            return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+        };
+
+        const avgNPL = avg('npl'), avgROE = avg('roe'), avgCG = avg('cg');
+
+        const avgRow = `<tr style="border-top:1.5px solid rgba(255,255,255,0.12);color:#f59e0b;font-weight:600">
+            <td>⚡ Trung bình ngành</td>
+            <td>${fmtN(avgNPL)}</td>
+            <td>${fmtN(avg('nim'))}</td>
+            <td>${fmtN(avg('casa'), 1)}</td>
+            <td>${fmtN(avgROE, 1)}</td>
+            <td>${fmtN(avg('cir'), 1)}</td>
+            <td>${fmtN(avg('pb'))}</td>
+            <td>${fmtN(avgCG, 1)}</td>
+            <td>—</td>
         </tr>`;
-    }).join('');
-    tbody.innerHTML = avgRow + rows;
+
+        const rows = peerList.map(p => {
+            const isCurrent = p.ticker === currentTicker;
+            const rowStyle  = isCurrent ? 'background:rgba(59,130,246,0.10);font-weight:700;' : '';
+            const nplColor  = p.npl > 3 ? '#ef4444' : p.npl > 2 ? '#f59e0b' : '#10b981';
+            const pbColor   = p.pb  > 2 ? '#10b981' : p.pb  > 1 ? '' : '#ef4444';
+            const cgColor   = p.cg >= avgCG ? '#10b981' : '#f59e0b';
+            const roeColor  = p.roe >= avgROE ? '#10b981' : '';
+            return `<tr style="${rowStyle}">
+                <td>${isCurrent ? '👉 ' : ''}${p.ticker} — ${p.name}</td>
+                <td style="color:${nplColor}">${fmtN(p.npl)}</td>
+                <td>${fmtN(p.nim)}</td>
+                <td>${fmtN(p.casa, 1)}</td>
+                <td style="color:${roeColor}">${fmtN(p.roe, 1)}</td>
+                <td>${fmtN(p.cir, 1)}</td>
+                <td style="color:${pbColor}">${fmtN(p.pb)}</td>
+                <td style="color:${cgColor}">${fmtN(p.cg, 1)}</td>
+                <td>${fmtM(p.mcap)}</td>
+            </tr>`;
+        }).join('');
+
+        tbody.innerHTML = avgRow + rows;
+    } catch (e) {
+        console.warn("Peer Benchmark data loading error, falling back to static presentation:", e);
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#ef4444">Không thể tải dữ liệu So sánh Ngành động.</td></tr>`;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// NII & NON-II BREAKDOWN CHART (QUARTERLY STACKED BAR)
+// ═══════════════════════════════════════════════════════════
+let chartNiiBreakdown = null;
+function renderNiiBreakdownChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-nii-card');
+    const analysisEl = document.getElementById('analysis-text-nii');
+    if (!card || !analysisEl) return;
+    const data = localJson?.income_quarterly;
+    if (!data || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+    const ctx = document.getElementById('niiBreakdownChart').getContext('2d');
+    if (chartNiiBreakdown) chartNiiBreakdown.destroy();
+    const quarters = data.map(d => d.quarter);
+    const nii = data.map(d => d.nii);
+    const nonii = data.map(d => d.nonii);
+    chartNiiBreakdown = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: quarters,
+            datasets: [
+                {
+                    label: 'NII',
+                    data: nii,
+                    backgroundColor: '#3b82f6'
+                },
+                {
+                    label: 'NonII',
+                    data: nonii,
+                    backgroundColor: '#10b981'
+                }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true }
+            }
+        }
+    });
+    const lastNii = nii[nii.length - 1] || 0;
+    const lastNonii = nonii[nonii.length - 1] || 0;
+    const noniiPct = (lastNonii / (lastNii + lastNonii) * 100).toFixed(1);
+    analysisEl.innerHTML = `NII: <strong>${lastNii.toLocaleString('vi-VN')} ty</strong> | NonII: <strong>${lastNonii.toLocaleString('vi-VN')} ty</strong> (chiem ${noniiPct}%).`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// NPL % & LLR % CHART
+// ═══════════════════════════════════════════════════════════
+let chartNplLlr = null;
+function renderNplLlrChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-npl-card');
+    const analysisEl = document.getElementById('analysis-text-npl');
+    if (!card || !analysisEl) return;
+    const rq = localJson?.ratios_quarterly;
+    if (!rq || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+    const ctx = document.getElementById('nplLlrChart').getContext('2d');
+    if (chartNplLlr) chartNplLlr.destroy();
+    const quarters = rq.quarters;
+    const npl = rq.npl || [];
+    const llr = rq.llr || [];
+    chartNplLlr = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: quarters,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'NPL (%)',
+                    data: npl,
+                    backgroundColor: '#ef4444',
+                    yAxisID: 'y'
+                },
+                {
+                    type: 'line',
+                    label: 'LLR (%)',
+                    data: llr,
+                    borderColor: '#f59e0b',
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                y: { title: { display: true, text: 'NPL (%)' } },
+                y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'LLR (%)' } }
+            }
+        }
+    });
+    const lastNpl = npl[npl.length - 1] || 0;
+    const lastLlr = llr[llr.length - 1] || 0;
+    analysisEl.innerHTML = `NPL: <strong>${lastNpl.toFixed(2)}%</strong> | LLR: <strong>${lastLlr.toFixed(1)}%</strong>.`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// EARNING ASSETS STRUCTURE AREA CHART
+// ═══════════════════════════════════════════════════════════
+let chartEarningAssets = null;
+function renderEarningAssetsChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-iea-card');
+    const analysisEl = document.getElementById('analysis-text-iea');
+    if (!card || !analysisEl) return;
+    const ea = localJson?.earning_assets;
+    if (!ea || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+    const ctx = document.getElementById('earningAssetsChart').getContext('2d');
+    if (chartEarningAssets) chartEarningAssets.destroy();
+    chartEarningAssets = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ea.years,
+            datasets: [
+                { label: 'Inv Sec', data: ea.inv_sec, fill: true, backgroundColor: 'rgba(112,173,71,0.5)' },
+                { label: 'Loans', data: ea.loans, fill: true, backgroundColor: 'rgba(68,114,196,0.5)' },
+                { label: 'Bank Dep', data: ea.bank_dep, fill: true, backgroundColor: 'rgba(165,165,165,0.5)' },
+                { label: 'Cash & SBV', data: ea.cash_sbv, fill: true, backgroundColor: 'rgba(255,192,0,0.5)' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                y: { stacked: true }
+            }
+        }
+    });
+    const lastLoans = ea.loans[ea.loans.length - 1] || 0;
+    analysisEl.innerHTML = `Cho vay khach hang quy gan nhat dat <strong>${lastLoans.toLocaleString('vi-VN')} ty</strong>, la dong luc phat trien cot loi.`;
 }
