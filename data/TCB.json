@@ -1,6 +1,6 @@
 {
   "ticker": "TCB",
-  "companyName": "Ngân hàng TCB",
+  "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
   "analysis_comments": {
     "ytd_loans_growth": 3.76,
     "ytd_dep_growth": -1.16,
@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1-PneazDH7mI8T9_p0A4u2uOU8vLHvLbh/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1Y0nWtO90cmsCJg5ohd6Trqw9_uj3Li65/view?usp=drivesdk",
   "pe_hist": [
     11.6477870099,
     13.5226658764,
@@ -629,7 +629,7 @@
     ]
   },
   "thesis": [
-    "Ngân hàng TCB (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
     "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
     "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu TCB."
   ],
@@ -723,7 +723,7 @@
     "recommend": "BÁN"
   },
   "comments": {
-    "businessModel": "Ngân hàng TCB (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "businessModel": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
     "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
     "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu TCB."
   },
