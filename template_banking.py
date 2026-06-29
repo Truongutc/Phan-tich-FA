@@ -373,7 +373,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     nim_hist = [round(nii_hist[i] / ((iea_end_hist[i-1] + iea_end_hist[i]) / 2 if i > 0 else iea_end_hist[i]) * 100, 2) for i in range(len(years_hist))]
     
     # LDR detailed components according to SBV Circular 22 & Circular 26 (Treasury deposits roadmap)
-    tpdn_hist = [get_yr(nt_recs, y, "nob47") or get_yr(nt_recs, y, "nob48") or 0 for y in years_hist]
+    tpdn_hist = [get_yr(bs_recs, y, "bsb108") for y in years_hist]
     kbnn_hist = [get_yr(bs_recs, y, "bsb110") + get_yr(bs_recs, y, "bsb111") for y in years_hist]
     ky_quy_hist = [get_yr(nt_recs, y, "nob73") or get_yr(nt_recs, y, "nob75") or 0 for y in years_hist]
     voncg_hist = [get_yr(bs_recs, y, "bsb115") for y in years_hist]
@@ -568,7 +568,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             labels_g.append(f"Q{q_num}/{str(yr)[-2:]}")
             
             l_val = q_rec.get("bsb103", 0) / 1e9
-            tb_val = (q_rec.get("nob47", 0) or q_rec.get("nob48", 0) or 0) / 1e9
+            tb_val = (q_rec.get("bsb108", 0) or 0) / 1e9
             credit_absolute.append(l_val + tb_val)
             
             d_val = q_rec.get("bsb113", 0) / 1e9
@@ -580,7 +580,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             yr = q_rec.get("yearReport", 2026)
             q4_prev = next((x for x in reversed(q_bs_sorted_all) if x.get("yearReport") == yr - 1 and x.get("lengthReport") == 4), None)
             if q4_prev:
-                c_prev = (q4_prev.get("bsb103", 0) + (q4_prev.get("nob47", 0) or q4_prev.get("nob48", 0) or 0)) / 1e9
+                c_prev = (q4_prev.get("bsb103", 0) + (q4_prev.get("bsb108", 0) or 0)) / 1e9
                 f_prev = (q4_prev.get("bsb113", 0) + q4_prev.get("bsb116", 0) + (q4_prev.get("bsb110", 0) or q4_prev.get("bsb111", 0) or 0) * get_kbnn_rate(yr-1)) / 1e9
             else:
                 c_prev = credit_absolute[max(0, idx - q_rec.get("lengthReport", 1))]
@@ -1475,11 +1475,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         
         # 1. Total Credit (Loans + Corporate Bonds) - historical is in billion, quarterly in VND
         loans_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb103") or 1.0
-        tpdn_prev_yr_end = get_yr(nt_recs, latest_y - 1, "nob47") or get_yr(nt_recs, latest_y - 1, "nob48") or 0.0
+        tpdn_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb108") or 0.0
         credit_prev_yr_end = (loans_prev_yr_end + tpdn_prev_yr_end) * 1e9
         
         loans_curr = q_bs_sorted[-1].get("bsb103", 0)
-        tpdn_curr = q_bs_sorted[-1].get("nob47", 0) or q_bs_sorted[-1].get("nob48", 0) or 0
+        tpdn_curr = q_bs_sorted[-1].get("bsb108", 0) or 0
         credit_curr = loans_curr + tpdn_curr
         
         # 2. Total Funding (Deposits + Bonds + KBNN * rate)
