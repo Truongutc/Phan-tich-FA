@@ -3,6 +3,7 @@ import json
 import requests
 import urllib3
 import datetime
+from concurrent.futures import ThreadPoolExecutor
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -44,14 +45,6 @@ def fetch_financial_data(ticker):
     cg = 12.0
     
     try:
-        # Fetch valuation history to get latest PB
-        url_hist = f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/valuation/history"
-        r = requests.get(url_hist, headers=HEADERS, verify=False, timeout=10)
-        if r.status_code == 200:
-            vals = r.json().get("data", [])
-            if vals:
-                pb = vals[-1].get("pb") or pb
-
         # Fetch Balance Sheet (Quarterly)
         url_bs = f"{VIETCAP_BASE}/company/{ticker}/financial-statement?section=BALANCE_SHEET&quarterly=true"
         r_bs = requests.get(url_bs, headers=HEADERS, verify=False, timeout=10)
@@ -109,6 +102,10 @@ def fetch_financial_data(ticker):
                 equity = q_bs.get("bsa78", 1)
                 roe = round((npat * 4 / max(equity, 1)) * 100, 2)
                 
+                # Tính P/B động = Vốn hóa / VCSH
+                equity_billion = equity / 1e9
+                pb = round(mcap / max(equity_billion, 0.001), 2)
+                
     except Exception as e:
         print(f"Error fetching statements for {ticker}: {e}")
         
@@ -124,11 +121,52 @@ def fetch_financial_data(ticker):
         "mcap": mcap
     }
 
-from concurrent.futures import ThreadPoolExecutor
+def update_single_ticker(ticker):
+    ticker = ticker.upper()
+    data = fetch_financial_data(ticker)
+    
+    names = {
+        'VCB': 'Vietcombank', 'BID': 'BIDV', 'CTG': 'VietinBank', 'TCB': 'Techcombank',
+        'MBB': 'MBBank', 'ACB': 'ACB', 'VIB': 'VIB', 'HDB': 'HDBank', 'STB': 'Sacombank',
+        'VPB': 'VPBank', 'TPB': 'TPBank', 'MSB': 'MSB', 'EIB': 'Eximbank', 'LPB': 'LienVietPostBank',
+        'SHB': 'SHB', 'OCB': 'OCB', 'BAB': 'BacABank', 'NAB': 'NamABank'
+    }
+    data["name"] = names.get(ticker, ticker)
+    data["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d")
+    
+    # Read existing database
+    db_path = "data/peer_benchmark.json"
+    db = {"_meta": {}, "peers": []}
+    if os.path.exists(db_path):
+        try:
+            with open(db_path, "r", encoding="utf-8") as f:
+                db = json.load(f)
+        except:
+            pass
+            
+    # Update or insert
+    peers = db.get("peers", [])
+    updated = False
+    for i, p in enumerate(peers):
+        if p.get("ticker") == ticker:
+            peers[i] = data
+            updated = True
+            break
+    if not updated:
+        peers.append(data)
+        
+    db["peers"] = peers
+    db["_meta"]["last_updated_ticker"] = ticker
+    db["_meta"]["date"] = datetime.datetime.now().strftime("%Y-%m-%d")
+    
+    with open(db_path, "w", encoding="utf-8") as f:
+        json.dump(db, f, indent=2, ensure_ascii=False)
+        
+    print(f"[OK] Updated single peer benchmark for {ticker} as of {data['date_updated']}")
 
 def main():
+    # If run directly, update all concurrently as fallback
     peers = []
-    # Fetch peers concurrently in parallel threads (5s max)
     with ThreadPoolExecutor(max_workers=18) as executor:
         results = executor.map(fetch_financial_data, BANK_TICKERS)
         
@@ -139,14 +177,16 @@ def main():
         'SHB': 'SHB', 'OCB': 'OCB', 'BAB': 'BacABank', 'NAB': 'NamABank'
     }
     
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
     for data in results:
         ticker = data["ticker"]
         data["name"] = names.get(ticker, ticker)
+        data["date_updated"] = today
         peers.append(data)
         
     output = {
         "_meta": {
-            "updated": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "updated": today,
             "source": "Vietcap Live API Engine"
         },
         "peers": peers

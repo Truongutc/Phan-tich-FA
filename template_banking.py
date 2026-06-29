@@ -1888,7 +1888,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     t_pdf_peer.setStyle(TableStyle(t_pdf_peer_styles))
     story.append(t_pdf_peer)
     story.append(Spacer(1, 5))
-    story.append(Paragraph("<i>Nguồn: Báo cáo tài chính các ngân hàng Q1/2026 và dữ liệu thống kê từ Vietcap.</i>", body_style))
+    today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+    story.append(Paragraph(f"<i>Nguồn: Báo cáo tài chính các ngân hàng Q1/2026 và dữ liệu thống kê từ Vietcap. P/B được cập nhật theo thị giá đóng cửa ngày: {today_str}.</i>", body_style))
     
     # ------------------ PAGE 5: VALUATION & PE/PB HISTORY ------------------
     story.append(PageBreak())

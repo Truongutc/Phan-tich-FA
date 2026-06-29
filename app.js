@@ -1485,6 +1485,14 @@ async function renderPeerBenchmarkTable(localJson, sectorKey) {
 
         const avgNPL = avg('npl'), avgROE = avg('roe'), avgCG = avg('cg');
 
+        // Update overall date label based on current ticker or database updated date
+        const dateEl = document.getElementById('peer-update-date');
+        const currentPeer = peerList.find(p => p.ticker === currentTicker);
+        const updateDate = currentPeer?.date_updated || data._meta?.date || new Date().toISOString().split('T')[0];
+        if (dateEl) {
+            dateEl.innerHTML = `Số liệu tính toán tự động dựa trên thị giá đóng cửa ngày cập nhật mới nhất của <strong>${currentTicker || 'ngân hàng'}</strong>: <span style="color:#f59e0b; font-weight:bold">${updateDate}</span>`;
+        }
+
         const avgRow = `<tr style="border-top:1.5px solid rgba(255,255,255,0.12);color:#f59e0b;font-weight:600">
             <td>⚡ Trung bình ngành</td>
             <td>${fmtN(avgNPL)}</td>
@@ -1504,8 +1512,9 @@ async function renderPeerBenchmarkTable(localJson, sectorKey) {
             const pbColor   = p.pb  > 2 ? '#10b981' : p.pb  > 1 ? '' : '#ef4444';
             const cgColor   = p.cg >= avgCG ? '#10b981' : '#f59e0b';
             const roeColor  = p.roe >= avgROE ? '#10b981' : '';
+            const dateStr   = p.date_updated ? `<br><span style="font-size:0.75em;color:#718096;font-weight:normal">Cập nhật: ${p.date_updated}</span>` : '';
             return `<tr style="${rowStyle}">
-                <td>${isCurrent ? '👉 ' : ''}${p.ticker} — ${p.name}</td>
+                <td>${isCurrent ? '👉 ' : ''}${p.ticker} — ${p.name}${dateStr}</td>
                 <td style="color:${nplColor}">${fmtN(p.npl)}</td>
                 <td>${fmtN(p.nim)}</td>
                 <td>${fmtN(p.casa, 1)}</td>

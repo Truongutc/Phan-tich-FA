@@ -128,7 +128,7 @@ def run_analysis(ticker: str):
     if is_bank:
         print(f"\n[Step 2] Ticker {ticker} classified as Bank. Directly running upgraded template_banking.py...")
         try:
-            print("[Runner] Updating peer benchmark data from Live API...")
+            print("[Runner] Updating all peer benchmark data from Live API...")
             import update_peer_benchmark
             update_peer_benchmark.main()
         except Exception as e:
