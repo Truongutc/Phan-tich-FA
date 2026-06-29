@@ -621,6 +621,11 @@ async function loadStockDashboard(ticker) {
 
     // ── Valuation scenarios ──────────────────────────────
     renderValuationScenarios(localJson?.valuation, currentPrice, details, latestRatio, cfg);
+    renderValuationSnapshot(localJson);
+    renderFinancialSnapshotTable(localJson, sectorKey);
+    renderAssumptionsTable(localJson, sectorKey);
+    renderResidualIncomeTable(localJson, sectorKey);
+    renderPeerBenchmarkTable(localJson, sectorKey);
 
     // ── Qualitative sections ─────────────────────────────
     const q = localJson || {};
@@ -1310,3 +1315,197 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
     `;
 }
 
+// ═══════════════════════════════════════════════════════════
+// FINANCIAL SNAPSHOT TABLE — mirrors PDF Page 1 summary table
+// ═══════════════════════════════════════════════════════════
+function renderFinancialSnapshotTable(localJson, sectorKey) {
+    const card  = document.getElementById('web-financial-snapshot-card');
+    const tbody = document.getElementById('web-financial-snapshot-tbody');
+    if (!card || !tbody) return;
+    const fs = localJson?.financial_snapshot;
+    if (!fs || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const fcStyle = 'color:#60a5fa';
+    const fmtN = (v, d=1) => v != null ? Number(v).toFixed(d) : '-';
+    const rows = [
+        { lbl: 'NII — Thu nhap lai thuan (ty VND)', arr: fs.nii,  fmt: (v)=>fmtN(v,0) },
+        { lbl: 'TOI — Tong thu nhap HD (ty VND)',   arr: fs.toi,  fmt: (v)=>fmtN(v,0) },
+        { lbl: 'NPAT — LN sau thue (ty VND)',        arr: fs.npat, fmt: (v)=>fmtN(v,0) },
+        { lbl: 'NIM — Bien lai rong (%)',            arr: fs.nim,  fmt: (v)=>fmtN(v,2)+'%' },
+        { lbl: 'ROE — Ty suat LN (%)',               arr: fs.roe,  fmt: (v)=>fmtN(v,1)+'%' },
+        { lbl: 'LDR — Ty le tin dung/huy dong (%)', arr: fs.ldr,  fmt: (v)=>fmtN(v,1)+'%' },
+        { lbl: 'NPL — Ty le no xau (%)',             arr: fs.npl,  fmt: (v)=>fmtN(v,2)+'%' },
+    ];
+    tbody.innerHTML = rows.map(r => {
+        const cells = (r.arr || []).map((v, i) =>
+            `<td ${i >= 3 ? `style="${fcStyle}"` : ''}>${r.fmt(v)}</td>`
+        ).join('');
+        return `<tr><td>${r.lbl}</td>${cells}</tr>`;
+    }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// VALUATION SNAPSHOT — fills the summary card at top
+// ═══════════════════════════════════════════════════════════
+function renderValuationSnapshot(localJson) {
+    const val = localJson?.valuation;
+    const currPrice = localJson?.currentPrice;
+    if (!val || !currPrice) return;
+    const fmt = (n) => n ? Math.round(n).toLocaleString('vi-VN') + ' d' : '-';
+    const upside = val.upside ?? 0;
+    const recText  = val.recommend ?? (upside >= 15 ? 'MUA' : upside < -5 ? 'BAN' : 'THEO DOI');
+    const recColor = recText === 'MUA' ? '#10b981' : recText === 'BAN' ? '#ef4444' : '#f59e0b';
+    const el = (id) => document.getElementById(id);
+    if (el('snap-curr-price'))   el('snap-curr-price').textContent   = fmt(currPrice);
+    if (el('snap-target-price')) el('snap-target-price').textContent = fmt(val.weightedTarget);
+    if (el('snap-upside')) {
+        el('snap-upside').textContent = (upside >= 0 ? '+' : '') + upside.toFixed(1) + '%';
+        el('snap-upside').style.color = upside >= 10 ? '#10b981' : upside >= 0 ? '#f59e0b' : '#ef4444';
+    }
+    if (el('snap-recommend')) {
+        el('snap-recommend').textContent = recText;
+        el('snap-recommend').style.background = recColor;
+    }
+    if (el('snap-coe')) el('snap-coe').textContent = (val.COE != null ? val.COE.toFixed(2) : '-') + '%';
+}
+
+// ═══════════════════════════════════════════════════════════
+// ASSUMPTIONS TABLE
+// ═══════════════════════════════════════════════════════════
+function renderAssumptionsTable(localJson, sectorKey) {
+    const card  = document.getElementById('web-assumptions-card');
+    const tbody = document.getElementById('web-assumptions-tbody');
+    if (!card || !tbody) return;
+    const a = localJson?.assumptions;
+    const ft = localJson?.forecast_text;
+    if (!a || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const fmtPct = (v) => v != null ? Number(v).toFixed(1) + '%' : '-';
+    const fmtPct2 = (v) => v != null ? Number(v).toFixed(2) + '%' : '-';
+    const rows = [
+        { label: 'Tang truong Tin dung', key: 'loans_growth', fmt: fmtPct },
+        { label: 'Tang truong Huy dong', key: 'dep_growth',   fmt: fmtPct },
+        { label: 'NIM — Bien lai rong',  key: 'nim',          fmt: fmtPct2 },
+        { label: 'CIR — Ty le chi phi',  key: 'cir',          fmt: fmtPct },
+        { label: 'CoC — Chi phi tin dung',key: 'coc',         fmt: fmtPct2 },
+        { label: 'NPL — No xau muc tieu',key: 'npl',          fmt: fmtPct2 },
+    ];
+    tbody.innerHTML = rows.map(r => {
+        const arr = a[r.key] || [];
+        const cells = [0,1,2].map(i => `<td>${r.fmt(arr[i])}</td>`).join('');
+        return `<tr><td>${r.label}</td>${cells}</tr>`;
+    }).join('');
+    if (ft) {
+        const existingNote = card.querySelector('.forecast-note');
+        if (existingNote) existingNote.remove();
+        const note = document.createElement('div');
+        note.className = 'forecast-note q-commentary-box';
+        note.innerHTML = `<strong>Co so gia dinh:</strong> Tin dung 2026F +${ft.loans_g_26}%, Huy dong +${ft.dep_g_26}%, NIM ${ft.nim_26}% (${ft.nim_trend}), CoC ${ft.coc_26}% (${ft.coc_trend}), CIR ${ft.cir_26}%.`;
+        card.appendChild(note);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RESIDUAL INCOME TABLE — full RI model like PDF Page 5
+// ═══════════════════════════════════════════════════════════
+function renderResidualIncomeTable(localJson, sectorKey) {
+    const card    = document.getElementById('web-detailed-ri-card');
+    const tbody   = document.getElementById('web-ri-tbody');
+    const summBox = document.getElementById('web-ri-summary-box');
+    if (!card || !tbody) return;
+    const val = localJson?.valuation;
+    if (!val || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const fmt  = (v) => v != null ? Math.round(v).toLocaleString('vi-VN') : '-';
+    const fmtD = (v, d=4) => v != null ? Number(v).toFixed(d) : '-';
+    const bvps = val.bvpsBase || 0;
+    const coe  = (val.COE || 0) / 100;
+    const eps  = val.epsFc  || [];
+    const ri   = val.riResults || [];
+    const bvps1 = bvps;
+    const bvps2 = bvps + (eps[0] || 0);
+    const bvps3 = bvps + (eps[0] || 0) + (eps[1] || 0);
+    const riRows = [
+        ['EPS du phong (VND/CP)',        fmt(eps[0]),  fmt(eps[1]),  fmt(eps[2])],
+        ['BVPS dau ky (VND/CP)',         fmt(bvps1),   fmt(bvps2),   fmt(bvps3)],
+        ['Capital Charge = COE x BVPS',  fmt(bvps1*coe), fmt(bvps2*coe), fmt(bvps3*coe)],
+        ['Loi nhuan thang du (RI)',       fmt(ri[0]),   fmt(ri[1]),   fmt(ri[2])],
+        ['He so chiet khau',             fmtD(1/(1+coe)), fmtD(1/(1+coe)**2), fmtD(1/(1+coe)**3)],
+        ['PV cua RI tung nam',           fmt((ri[0]||0)/(1+coe)), fmt((ri[1]||0)/(1+coe)**2), fmt((ri[2]||0)/(1+coe)**3)],
+    ];
+    tbody.innerHTML = riRows.map(([lbl, ...vals]) =>
+        `<tr><td>${lbl}</td>${vals.map(v => `<td>${v}</td>`).join('')}</tr>`
+    ).join('');
+    if (summBox) {
+        const up = val.upside ?? 0;
+        summBox.innerHTML = `
+            <strong>BVPS hien tai:</strong> ${fmt(bvps)} VND &nbsp;|&nbsp;
+            <strong>Tong PV(RI) 3 nam:</strong> ${fmt(val.pvRi)} VND<br>
+            <strong>PV Continuing Value (-50% bao thu):</strong> ${fmt(val.pvCv)} VND<br>
+            <strong>Gia tri hop ly theo RI:</strong> <b>${fmt(val.riValue)} VND</b> &nbsp;|&nbsp;
+            <strong>Theo P/B:</strong> <b>${fmt(val.pbValue)} VND</b><br>
+            <strong>Gia muc tieu Weighted (50% RI + 50% P/B):</strong>
+            <span style="color:#3b82f6;font-weight:800;font-size:1.05em"> ${fmt(val.weightedTarget)} VND/CP</span>
+            <span style="color:${up >= 0 ? '#10b981' : '#ef4444'};font-weight:700">(${up >= 0 ? '+' : ''}${up.toFixed(1)}% upside)</span><br>
+            <strong>Gia Bull (P/B target ${(val.pbTarget||0).toFixed(2)}x):</strong> ${fmt(val.pbTargetPrice)} VND &nbsp;|&nbsp;
+            <strong>Gia Bear (P/B attractive ${(val.pbAttractive||0).toFixed(2)}x):</strong> ${fmt(val.pbAttractivePrice)} VND
+        `;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PEER BENCHMARK TABLE
+// ═══════════════════════════════════════════════════════════
+const BANK_PEER_DATA = [
+    { ticker:'VCB', name:'Vietcombank',      npl:1.19, nim:3.17, casa:37.2, roe:22.5, cir:30.2, pb:2.85, cg:16.2, mcap:545000 },
+    { ticker:'BID', name:'BIDV',             npl:1.34, nim:2.68, casa:20.8, roe:21.0, cir:31.8, pb:1.82, cg:18.5, mcap:332000 },
+    { ticker:'CTG', name:'VietinBank',       npl:1.26, nim:3.02, casa:19.3, roe:18.8, cir:32.0, pb:1.55, cg:14.2, mcap:287000 },
+    { ticker:'TCB', name:'Techcombank',      npl:1.35, nim:4.28, casa:40.5, roe:18.2, cir:28.5, pb:1.75, cg:15.5, mcap:310000 },
+    { ticker:'MBB', name:'MBBank',           npl:2.58, nim:4.65, casa:39.8, roe:19.5, cir:35.2, pb:1.42, cg:19.8, mcap:185000 },
+    { ticker:'ACB', name:'ACB',              npl:1.48, nim:3.85, casa:22.4, roe:24.3, cir:36.8, pb:1.68, cg:17.2, mcap:142000 },
+    { ticker:'VIB', name:'VIB',              npl:3.57, nim:3.28, casa:16.1, roe:16.4, cir:36.5, pb:1.12, cg: 4.7, mcap: 55000 },
+    { ticker:'HDB', name:'HDBank',           npl:2.35, nim:4.95, casa:15.6, roe:21.5, cir:42.5, pb:1.52, cg:23.5, mcap: 78000 },
+    { ticker:'STB', name:'Sacombank',        npl:1.89, nim:3.15, casa:18.7, roe:16.5, cir:45.2, pb:1.15, cg:15.8, mcap: 82000 },
+    { ticker:'VPB', name:'VPBank',           npl:4.87, nim:6.42, casa:16.2, roe:11.2, cir:38.5, pb:1.28, cg:12.3, mcap:135000 },
+    { ticker:'TPB', name:'TPBank',           npl:2.35, nim:3.95, casa:18.5, roe:16.8, cir:40.2, pb:1.05, cg:11.5, mcap: 52000 },
+    { ticker:'MSB', name:'MSB',              npl:3.12, nim:3.68, casa:24.5, roe:14.5, cir:39.8, pb:0.95, cg: 9.8, mcap: 35000 },
+    { ticker:'EIB', name:'Eximbank',         npl:1.75, nim:2.85, casa:14.2, roe: 9.5, cir:55.5, pb:0.92, cg: 8.5, mcap: 22000 },
+    { ticker:'LPB', name:'LienVietPostBank', npl:2.95, nim:3.45, casa:13.8, roe:16.2, cir:42.0, pb:0.98, cg:18.5, mcap: 38000 },
+    { ticker:'SHB', name:'SHB',              npl:3.45, nim:2.95, casa:16.5, roe:14.8, cir:40.5, pb:0.85, cg:15.2, mcap: 52000 },
+    { ticker:'OCB', name:'OCB',              npl:2.85, nim:3.58, casa:17.2, roe:12.5, cir:44.5, pb:0.82, cg: 7.5, mcap: 22000 },
+    { ticker:'BAB', name:'BacABank',         npl:1.25, nim:2.58, casa:11.5, roe:12.5, cir:48.5, pb:0.75, cg:10.2, mcap: 11000 },
+    { ticker:'NAB', name:'NamABank',         npl:2.50, nim:3.12, casa:12.2, roe:13.8, cir:46.0, pb:0.72, cg:12.5, mcap:  8000 },
+];
+function renderPeerBenchmarkTable(localJson, sectorKey) {
+    const card  = document.getElementById('web-peer-card');
+    const tbody = document.getElementById('web-peer-tbody');
+    if (!card || !tbody) return;
+    if (sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const cur = localJson?.ticker ?? '';
+    const fmtN = (v, d=2) => v != null ? v.toFixed(d) : '-';
+    const fmtM = (v) => v != null ? Math.round(v).toLocaleString('vi-VN') : '-';
+    const avg = (key) => {
+        const vals = BANK_PEER_DATA.map(p => p[key]).filter(v => v != null);
+        return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+    };
+    const avgNPL = avg('npl'), avgROE = avg('roe'), avgCG = avg('cg');
+    const avgRow = `<tr style="border-top:1.5px solid rgba(255,255,255,0.12);color:#f59e0b;font-weight:600">
+        <td>Trung binh nganh</td><td>${fmtN(avgNPL)}</td><td>${fmtN(avg('nim'))}</td><td>${fmtN(avg('casa'),1)}</td>
+        <td>${fmtN(avgROE,1)}</td><td>${fmtN(avg('cir'),1)}</td><td>${fmtN(avg('pb'))}</td><td>${fmtN(avgCG,1)}</td><td>-</td>
+    </tr>`;
+    const rows = BANK_PEER_DATA.map(p => {
+        const isCur = p.ticker === cur;
+        const rs = isCur ? 'background:rgba(59,130,246,0.10);font-weight:700;' : '';
+        const nc = p.npl > 3 ? '#ef4444' : p.npl > 2 ? '#f59e0b' : '#10b981';
+        const pc = p.pb  > 2 ? '#10b981' : p.pb  > 1 ? '' : '#ef4444';
+        const gc = p.cg >= avgCG ? '#10b981' : '#f59e0b';
+        const rc = p.roe >= avgROE ? '#10b981' : '';
+        return `<tr style="${rs}"><td>${isCur ? '>> ' : ''}${p.ticker} — ${p.name}</td>
+            <td style="color:${nc}">${fmtN(p.npl)}</td><td>${fmtN(p.nim)}</td><td>${fmtN(p.casa,1)}</td>
+            <td style="color:${rc}">${fmtN(p.roe,1)}</td><td>${fmtN(p.cir,1)}</td>
+            <td style="color:${pc}">${fmtN(p.pb)}</td><td style="color:${gc}">${fmtN(p.cg,1)}</td><td>${fmtM(p.mcap)}</td>
+        </tr>`;
+    }).join('');
+    tbody.innerHTML = avgRow + rows;
+}

@@ -185,6 +185,113 @@
   "currentPrice": 33400.0,
   "marketCap": 262612062440000.0,
   "shares": 7862636600,
+  "assumptions": {
+    "loans_growth": [
+      14.0,
+      13.0,
+      12.0
+    ],
+    "dep_growth": [
+      12.0,
+      11.0,
+      10.0
+    ],
+    "nim": [
+      3.97,
+      4.08,
+      4.16
+    ],
+    "cir": [
+      33.0,
+      32.0,
+      32.0
+    ],
+    "coc": [
+      0.61,
+      0.58,
+      0.54
+    ],
+    "npl": [
+      1.03,
+      0.97,
+      0.92
+    ]
+  },
+  "financial_snapshot": {
+    "years": [
+      "2023",
+      "2024",
+      "2025",
+      "2026F",
+      "2027F",
+      "2028F"
+    ],
+    "nii": [
+      27691.1,
+      35508.0,
+      38155.1,
+      46683.0,
+      53959.0,
+      61328.4
+    ],
+    "toi": [
+      40061.1,
+      46990.4,
+      53391.1,
+      64204.5,
+      74108.6,
+      84299.0
+    ],
+    "npat": [
+      18190.9,
+      21760.1,
+      25954.5,
+      30460.2,
+      36049.9,
+      41392.4
+    ],
+    "nim": [
+      4.04,
+      4.26,
+      3.78,
+      3.97,
+      4.08,
+      4.16
+    ],
+    "roe": [
+      14.8,
+      15.6,
+      15.8,
+      16.02,
+      16.89,
+      17.21
+    ],
+    "ldr": [
+      92.6,
+      93.6,
+      88.6,
+      90.69,
+      94.08,
+      97.32
+    ],
+    "npl": [
+      1.17,
+      1.14,
+      1.08,
+      1.03,
+      0.97,
+      0.92
+    ]
+  },
+  "forecast_text": {
+    "loans_g_26": 14.0,
+    "dep_g_26": 12.0,
+    "nim_26": 3.97,
+    "coc_26": 0.61,
+    "cir_26": 33.0,
+    "nim_trend": "tăng nhẹ",
+    "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
+  },
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
   "pe_hist": [
@@ -535,9 +642,34 @@
     }
   ],
   "valuation": {
+    "weightedTarget": 31384,
+    "upside": -6.04,
     "bear": 26676,
     "base": 31383,
-    "bull": 36091
+    "bull": 36091,
+    "pbAttractive": 1.17,
+    "pbAttractivePrice": 31265,
+    "pbTarget": 1.46,
+    "pbTargetPrice": 38890,
+    "COE": 13.36,
+    "peMedian": 8.71,
+    "pbMedian": 1.27,
+    "bvpsBase": 22830,
+    "riValue": 28793,
+    "pbValue": 33975,
+    "pvRi": 2263,
+    "pvCv": 3700,
+    "epsFc": [
+      3874,
+      4585,
+      5264
+    ],
+    "riResults": [
+      824,
+      1017,
+      1084
+    ],
+    "recommend": "BÁN"
   },
   "comments": {
     "businessModel": "Ngân hàng TCB (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",

@@ -1861,6 +1861,33 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         "currentPrice": current_price,
         "marketCap": market_cap,
         "shares": shares,
+        "assumptions": {
+            "loans_growth": [round(x * 100, 1) for x in loans_growth_fc],
+            "dep_growth": [round(x * 100, 1) for x in dep_growth_fc],
+            "nim": [round(x * 100, 2) for x in nim_fc],
+            "cir": [round(x * 100, 1) for x in cir_fc],
+            "coc": [round(x * 100, 2) for x in coc_fc],
+            "npl": [round(x * 100, 2) for x in npl_fc]
+        },
+        "financial_snapshot": {
+            "years": ["2023", "2024", "2025", "2026F", "2027F", "2028F"],
+            "nii":  [round(x, 1) for x in nii_hist[-3:]] + [round(x, 1) for x in nii_fc],
+            "toi":  [round(x, 1) for x in toi_hist[-3:]] + [round(x, 1) for x in toi_fc],
+            "npat": [round(x, 1) for x in np_hist[-3:]]  + [round(x, 1) for x in np_fc],
+            "nim":  [round(x, 2) for x in nim_hist[-3:]]  + [round(x*100, 2) for x in nim_fc],
+            "roe":  [round(x, 1) for x in roe_hist[-3:]]  + [round(x, 2) for x in roe_fc_calc],
+            "ldr":  [round(x, 1) for x in ldr_hist[-3:]]  + [round(x, 2) for x in ldr_fc_calc],
+            "npl":  [round(x, 2) for x in npl_ratio_hist[-3:]] + [round(x*100, 2) for x in npl_fc]
+        },
+        "forecast_text": {
+            "loans_g_26": round(loans_growth_fc[0] * 100, 1),
+            "dep_g_26": round(dep_growth_fc[0] * 100, 1),
+            "nim_26": round(nim_fc[0] * 100, 2),
+            "coc_26": round(coc_fc[0] * 100, 2),
+            "cir_26": round(cir_fc[0] * 100, 1),
+            "nim_trend": "tăng nhẹ" if nim_fc[0] > nim_hist[-1]/100 else "điều chỉnh giảm nhẹ",
+            "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện" if coc_fc[0] < coc_hist[-1]/100 else "duy trì trích lập cao phòng ngừa rủi ro"
+        },
         "gdriveExcelUrl": None,
         "gdrivePdfUrl": None,
         "pe_hist": pe_all_vals[-5:] if len(pe_all_vals) >= 5 else pe_all_vals,
@@ -1912,9 +1939,26 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             {"factor": "Environmental", "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",    "impact": "Negative"}
         ],
         "valuation": {
+            "weightedTarget": round(weighted_target),
+            "upside": round(upside, 2),
             "bear": int(bear_target),
             "base": int(weighted_target),
-            "bull": int(bull_target)
+            "bull": int(bull_target),
+            "pbAttractive": round(pb_attractive, 2),
+            "pbAttractivePrice": round(pb_attractive * (bvps_base + eps_fc_calc[0])),
+            "pbTarget": round(pb_target, 2),
+            "pbTargetPrice": round(pb_target * (bvps_base + eps_fc_calc[0])),
+            "COE": round(COE * 100, 2),
+            "peMedian": round(pe_all_median, 2),
+            "pbMedian": round(pb_all_median, 2),
+            "bvpsBase": round(bvps_base),
+            "riValue": round(ri_value),
+            "pbValue": round(pb_value),
+            "pvRi": round(pv_ri),
+            "pvCv": round(pv_cv),
+            "epsFc": [round(x) for x in eps_fc_calc],
+            "riResults": [round(x) for x in ri_results],
+            "recommend": 'MUA' if upside > 15 else ('BÁN' if upside < -5 else 'THEO DÕI')
         },
         "comments": {
             "businessModel":        ai_comments["business"],

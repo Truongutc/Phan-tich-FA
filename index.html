@@ -109,6 +109,33 @@
             </div>
         </div>
 
+        <!-- NEW: Valuation & recommendation snapshot (populates for all stocks dynamically) -->
+        <div class="card val-snapshot-card margin-top-20">
+            <h3 class="border-blue">💎 Tóm tắt Khuyến nghị &amp; Snapshot Định giá</h3>
+            <div class="val-snapshot-grid">
+                <div class="val-snap-box">
+                    <span class="lbl">Giá hiện tại</span>
+                    <span class="val" id="snap-curr-price">- VND</span>
+                </div>
+                <div class="val-snap-box highlight">
+                    <span class="lbl">Giá mục tiêu cơ bản (Weighted)</span>
+                    <span class="val text-blue" id="snap-target-price">- VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Tiềm năng tăng giá</span>
+                    <span class="val text-green" id="snap-upside">- %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Khuyến nghị đầu tư</span>
+                    <span class="val badge-rec" id="snap-recommend">-</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Chi phí vốn CSH (COE)</span>
+                    <span class="val" id="snap-coe">- %</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Dynamic Metrics Grid (populated by JS per sector) -->
         <div class="metrics-grid" id="dynamic-metrics-grid">
             <!-- Injected by JS -->
@@ -120,6 +147,29 @@
             <div id="quarterly-ytd-evaluation-container">
                 <!-- Injected dynamically by JS -->
                 <div class="loading-state">Đang tính toán số liệu tăng trưởng quý...</div>
+            </div>
+        </div>
+
+        <!-- NEW: Financial Snapshot Table (Hist + Forecast, mirrors PDF Page 1) -->
+        <div class="card margin-top-20" id="web-financial-snapshot-card" style="display:none">
+            <h3 class="border-blue">📋 Bảng tài chính tóm tắt (Lịch sử &amp; Dự báo)</h3>
+            <div class="table-container">
+                <table class="web-table" id="web-financial-snapshot-table">
+                    <thead>
+                        <tr>
+                            <th>Chỉ tiêu (tỷ VND)</th>
+                            <th>2023</th>
+                            <th>2024</th>
+                            <th>2025</th>
+                            <th style="color:#60a5fa">2026F</th>
+                            <th style="color:#60a5fa">2027F</th>
+                            <th style="color:#60a5fa">2028F</th>
+                        </tr>
+                    </thead>
+                    <tbody id="web-financial-snapshot-tbody">
+                        <!-- Injected by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -235,6 +285,45 @@
                     </div>
                 </div>
 
+                <!-- NEW: Forecast Assumptions Table (2026F - 2028F) -->
+                <div class="card assumptions-card margin-top-20" id="web-assumptions-card" style="display:none">
+                    <h3>🔮 Giả định dự báo (Forecast Assumptions)</h3>
+                    <table class="web-table">
+                        <thead>
+                            <tr>
+                                <th>Chỉ số dự báo</th>
+                                <th>2026F</th>
+                                <th>2027F</th>
+                                <th>2028F</th>
+                            </tr>
+                        </thead>
+                        <tbody id="web-assumptions-tbody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- NEW: Detailed Residual Income Model Table -->
+                <div class="card detailed-ri-card margin-top-20" id="web-detailed-ri-card" style="display:none">
+                    <h3>💎 Chi tiết mô hình định giá Residual Income (RI)</h3>
+                    <table class="web-table">
+                        <thead>
+                            <tr>
+                                <th>Tham số định giá RI (VND/CP)</th>
+                                <th>2026F</th>
+                                <th>2027F</th>
+                                <th>2028F</th>
+                            </tr>
+                        </thead>
+                        <tbody id="web-ri-tbody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                    <div class="ri-summary-box margin-top-10" id="web-ri-summary-box">
+                        <!-- Summary metrics like Continuing Value, Fair value -->
+                    </div>
+                </div>
+
                 <!-- Bank-specific extra metrics card (shown for banks only) -->
                 <div class="card bank-kpi-card margin-top-20 hidden" id="bank-kpi-card">
                     <h3>Chỉ số Ngân hàng then chốt</h3>
@@ -252,6 +341,31 @@
             <div class="card risks-card">
                 <h3 class="border-red">Rủi ro chính (Investment Risks)</h3>
                 <ul id="risks-list" class="risks-ul"></ul>
+            </div>
+        </div>
+
+        <!-- NEW: Industry Peer Table (Banks) -->
+        <div class="card peer-bench-card margin-top-20" id="web-peer-card" style="display:none">
+            <h3 class="border-blue">📊 So sánh các chỉ số tài chính so với ngành (Peer Benchmark)</h3>
+            <div class="table-container">
+                <table class="web-table">
+                    <thead>
+                        <tr>
+                            <th>Ngân hàng</th>
+                            <th>NPL (Nợ xấu %)</th>
+                            <th>NIM (Biên lãi ròng %)</th>
+                            <th>CASA (%)</th>
+                            <th>ROE (%)</th>
+                            <th>CIR (%)</th>
+                            <th>P/B (x)</th>
+                            <th>Tăng trưởng Tín dụng (%)</th>
+                            <th>Vốn hóa (tỷ VND)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="web-peer-tbody">
+                        <!-- Injected by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
 

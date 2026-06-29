@@ -185,6 +185,113 @@
   "currentPrice": 16150.0,
   "marketCap": 54977834845000.0,
   "shares": 3404200300,
+  "assumptions": {
+    "loans_growth": [
+      14.0,
+      13.0,
+      12.0
+    ],
+    "dep_growth": [
+      12.0,
+      11.0,
+      10.0
+    ],
+    "nim": [
+      3.28,
+      3.37,
+      3.43
+    ],
+    "cir": [
+      33.0,
+      32.0,
+      32.0
+    ],
+    "coc": [
+      0.95,
+      0.9,
+      0.85
+    ],
+    "npl": [
+      2.86,
+      2.71,
+      2.56
+    ]
+  },
+  "financial_snapshot": {
+    "years": [
+      "2023",
+      "2024",
+      "2025",
+      "2026F",
+      "2027F",
+      "2028F"
+    ],
+    "nii": [
+      18484.1,
+      16750.4,
+      16092.2,
+      19045.8,
+      22008.5,
+      24970.0
+    ],
+    "toi": [
+      22160.5,
+      20569.1,
+      20006.6,
+      23547.4,
+      27185.4,
+      30871.7
+    ],
+    "npat": [
+      8563.1,
+      7204.5,
+      7285.4,
+      9554.7,
+      11492.3,
+      13292.6
+    ],
+    "nim": [
+      5.04,
+      3.78,
+      3.12,
+      3.28,
+      3.37,
+      3.43
+    ],
+    "roe": [
+      24.3,
+      18.1,
+      16.4,
+      19.01,
+      19.95,
+      20.05
+    ],
+    "ldr": [
+      103.5,
+      108.3,
+      117.8,
+      119.54,
+      122.68,
+      125.76
+    ],
+    "npl": [
+      3.2,
+      3.57,
+      3.01,
+      2.86,
+      2.71,
+      2.56
+    ]
+  },
+  "forecast_text": {
+    "loans_g_26": 14.0,
+    "dep_g_26": 12.0,
+    "nim_26": 3.28,
+    "coc_26": 0.95,
+    "cir_26": 33.0,
+    "nim_trend": "tăng nhẹ",
+    "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
+  },
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
   "pe_hist": [
@@ -538,9 +645,34 @@
     }
   ],
   "valuation": {
+    "weightedTarget": 23294,
+    "upside": 44.24,
     "bear": 19800,
     "base": 23294,
-    "bull": 26788
+    "bull": 26788,
+    "pbAttractive": 1.32,
+    "pbAttractivePrice": 21870,
+    "pbTarget": 1.48,
+    "pbTargetPrice": 24559,
+    "COE": 12.1,
+    "peMedian": 7.47,
+    "pbMedian": 1.43,
+    "bvpsBase": 13778,
+    "riValue": 22926,
+    "pbValue": 23663,
+    "pvRi": 3163,
+    "pvCv": 5984,
+    "epsFc": [
+      2807,
+      3376,
+      3905
+    ],
+    "riResults": [
+      1140,
+      1369,
+      1489
+    ],
+    "recommend": "MUA"
   },
   "comments": {
     "businessModel": "Ngân hàng VIB (VIB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
