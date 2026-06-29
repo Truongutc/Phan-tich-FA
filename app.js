@@ -10,6 +10,7 @@ let chartRevNpat = null;
 let chartEpsEquity = null;
 let chartPE = null;
 let chartPB = null;
+let chartCreditFundingGrowth = null;
 
 // ── Vietcap API base ──────────────────────────────────────
 const VC_BASE = 'https://trading.vietcap.com.vn/api/iq-insight-service/v1';
@@ -610,6 +611,7 @@ async function loadStockDashboard(ticker) {
     renderChart2(incomeLabels, income2Data, npatData, cfg.income2Label, cfg.npatLabel, cfg.color);
     renderPEChart(quarterLabels, peData.map(p => p.y), cfg.color);
     renderPBChart(quarterLabels, pbData.map(p => p.y), cfg.color);
+    renderCreditFundingGrowthChart(localJson, cfg);
 
     // ── Earning Release & YTD Evaluation (New Component) ──
     renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg);
@@ -646,8 +648,8 @@ const CHART_DEFAULTS = {
 };
 
 function destroyCharts() {
-    [chartRevNpat, chartEpsEquity, chartPE, chartPB].forEach(c => { if (c) c.destroy(); });
-    chartRevNpat = chartEpsEquity = chartPE = chartPB = null;
+    [chartRevNpat, chartEpsEquity, chartPE, chartPB, chartCreditFundingGrowth].forEach(c => { if (c) c.destroy(); });
+    chartRevNpat = chartEpsEquity = chartPE = chartPB = chartCreditFundingGrowth = null;
 }
 
 function calcMedian(arr) {
@@ -1238,5 +1240,73 @@ function generateChartCommentaries(ticker, annualYears, ttmQuarters, cfg, localJ
             `;
         }
     }
+}
+
+function renderCreditFundingGrowthChart(localJson, cfg) {
+    const card = document.getElementById('chart-growth-card');
+    const analysisEl = document.getElementById('analysis-text-growth');
+    if (!card) return;
+
+    if (cfg.label !== 'Ngân Hàng' || !localJson || !localJson.credit_funding_growth) {
+        card.style.display = 'none';
+        return;
+    }
+
+    card.style.display = 'flex';
+    const cg = localJson.credit_funding_growth;
+    const ctx = document.getElementById('creditFundingGrowthChart').getContext('2d');
+    
+    if (chartCreditFundingGrowth) chartCreditFundingGrowth.destroy();
+    
+    chartCreditFundingGrowth = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: cg.quarters,
+            datasets: [
+                {
+                    label: 'Tăng trưởng Tín dụng YTD (%)',
+                    data: cg.credit_ytd,
+                    borderColor: '#4472C4',
+                    backgroundColor: 'rgba(68,114,196,0.1)',
+                    borderWidth: 2.5,
+                    pointRadius: 4,
+                    tension: 0.2
+                },
+                {
+                    label: 'Tăng trưởng Huy động YTD (%)',
+                    data: cg.funding_ytd,
+                    borderColor: '#ED7D31',
+                    backgroundColor: 'rgba(237,125,49,0.1)',
+                    borderWidth: 2.5,
+                    pointRadius: 4,
+                    tension: 0.2
+                }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: {
+                    ...CHART_DEFAULTS.scales.x,
+                    ticks: {
+                        ...CHART_DEFAULTS.scales.x.ticks,
+                        callback: function(val, index) {
+                            return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                        }
+                    }
+                },
+                y: { ...CHART_DEFAULTS.scales.y }
+            }
+        }
+    });
+
+    const lastCreditYtd = cg.credit_ytd[cg.credit_ytd.length - 1];
+    const lastFundingYtd = cg.funding_ytd[cg.funding_ytd.length - 1];
+    
+    analysisEl.innerHTML = `
+        Tăng trưởng tín dụng lũy kế YTD quý gần nhất đạt <strong>${lastCreditYtd >= 0 ? '+' : ''}${lastCreditYtd.toFixed(2)}%</strong>. <br>
+        Tăng trưởng huy động lũy kế YTD tương ứng đạt <strong>${lastFundingYtd >= 0 ? '+' : ''}${lastFundingYtd.toFixed(2)}%</strong>. <br>
+        Mức độ tương đồng tăng trưởng phản ánh sự kiểm soát nhịp nhàng thanh khoản và tỷ lệ LDR pháp lý.
+    `;
 }
 

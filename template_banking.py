@@ -544,6 +544,53 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         for i in range(3)
     ]
     
+    # ── Calculate Credit & Funding Growth history (32 quarters) early for Excel and JSON ──
+    credit_absolute = []
+    funding_absolute = []
+    credit_ytd_pct = []
+    funding_ytd_pct = []
+    labels_g = []
+    try:
+        q_bs_sorted_all = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"), key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))
+        n_pts_g = min(32, len(q_bs_sorted_all))
+        q_bs_slice = q_bs_sorted_all[-n_pts_g:]
+        
+        def get_kbnn_rate(yr):
+            if yr <= 2022: return 0.0
+            if yr == 2023: return 0.35
+            if yr == 2024: return 0.50
+            if yr == 2025: return 0.60
+            return 0.80
+            
+        for q_rec in q_bs_slice:
+            yr = q_rec.get("yearReport", 2026)
+            q_num = q_rec.get("lengthReport", 1)
+            labels_g.append(f"Q{q_num}/{str(yr)[-2:]}")
+            
+            l_val = q_rec.get("bsb103", 0) / 1e9
+            tb_val = (q_rec.get("nob47", 0) or q_rec.get("nob48", 0) or 0) / 1e9
+            credit_absolute.append(l_val + tb_val)
+            
+            d_val = q_rec.get("bsb113", 0) / 1e9
+            b_val = q_rec.get("bsb116", 0) / 1e9
+            k_val = (q_rec.get("bsb110", 0) or q_rec.get("bsb111", 0) or 0) / 1e9
+            funding_absolute.append(d_val + b_val + k_val * get_kbnn_rate(yr))
+            
+        for idx, q_rec in enumerate(q_bs_slice):
+            yr = q_rec.get("yearReport", 2026)
+            q4_prev = next((x for x in reversed(q_bs_sorted_all) if x.get("yearReport") == yr - 1 and x.get("lengthReport") == 4), None)
+            if q4_prev:
+                c_prev = (q4_prev.get("bsb103", 0) + (q4_prev.get("nob47", 0) or q4_prev.get("nob48", 0) or 0)) / 1e9
+                f_prev = (q4_prev.get("bsb113", 0) + q4_prev.get("bsb116", 0) + (q4_prev.get("bsb110", 0) or q4_prev.get("bsb111", 0) or 0) * get_kbnn_rate(yr-1)) / 1e9
+            else:
+                c_prev = credit_absolute[max(0, idx - q_rec.get("lengthReport", 1))]
+                f_prev = funding_absolute[max(0, idx - q_rec.get("lengthReport", 1))]
+                
+            credit_ytd_pct.append(round(((credit_absolute[idx] / max(c_prev, 0.001)) - 1) * 100, 2))
+            funding_ytd_pct.append(round(((funding_absolute[idx] / max(f_prev, 0.001)) - 1) * 100, 2))
+    except Exception as e:
+        print(f"[WARN] Failed to pre-calculate Credit & Funding growth: {e}")
+    
     # ── COE calculation via CAPM (with 2% Specific Frontier Risk Premium) ──
     rf_val, rf_src = fetch_rf_vietnam()
     beta_val, beta_src, _ = fetch_and_calc_beta(ticker)
@@ -1093,6 +1140,31 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     for c in range(1, 6):
         ws_pe_pb.cell(row=median_row, column=c).border = thin_border
 
+    # 18. 14_Credit_Funding_Growth
+    ws_g_hist = wb.create_sheet("14_Credit_Funding_Growth")
+    ws_g_hist.column_dimensions['A'].width = 20
+    ws_g_hist.column_dimensions['B'].width = 25
+    ws_g_hist.column_dimensions['C'].width = 25
+    ws_g_hist.column_dimensions['D'].width = 20
+    ws_g_hist.column_dimensions['E'].width = 20
+    write_header_row(ws_g_hist, 1, 1, ["Quý", "Tổng Tín dụng (tỷ VND)", "Tổng Huy động (tỷ VND)", "Tăng trưởng Tín dụng YTD (%)", "Tăng trưởng Huy động YTD (%)"])
+    
+    for idx in range(len(labels_g)):
+        r = idx + 2
+        lbl = labels_g[idx]
+        c_abs = credit_absolute[idx]
+        f_abs = funding_absolute[idx]
+        c_pct = credit_ytd_pct[idx] / 100
+        f_pct = funding_ytd_pct[idx] / 100
+        
+        ws_g_hist.cell(row=r, column=1, value=lbl)
+        ws_g_hist.cell(row=r, column=2, value=c_abs).number_format = FMT_NUM
+        ws_g_hist.cell(row=r, column=3, value=f_abs).number_format = FMT_NUM
+        ws_g_hist.cell(row=r, column=4, value=c_pct).number_format = FMT_PCT
+        ws_g_hist.cell(row=r, column=5, value=f_pct).number_format = FMT_PCT
+        for c in range(1, 6):
+            ws_g_hist.cell(row=r, column=c).border = thin_border
+
     wb.save(excel_path)
     print(f"[Excel] Dynamic workbook successfully saved to {excel_path}")
 
@@ -1260,6 +1332,26 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     plt.savefig(chart_p8, dpi=120)
     plt.close()
 
+    # ── Chart 14: Credit & Deposit Growth history (32 quarters) ──
+    try:
+        if labels_g:
+            n_pts_g = len(labels_g)
+            # Draw Chart 14: Credit & Funding YTD Growth Trend (Quarterly)
+            fig, ax = plt.subplots(figsize=(12, 5))
+            ax.plot(credit_ytd_pct, 'o-', color='#4472C4', linewidth=2.5, label='TT Tín dụng YTD (%)')
+            ax.plot(funding_ytd_pct, 's-', color='#ED7D31', linewidth=2.5, label='TT Huy động YTD (%)')
+            ax.set_xticks(range(n_pts_g))
+            visible_labels_g = [labels_g[i] if i % 2 == 0 else "" for i in range(n_pts_g)]
+            ax.set_xticklabels(visible_labels_g, rotation=30, fontsize=8)
+            ax.legend()
+            plt.title('Tăng trưởng Tín dụng & Huy động lũy kế YTD theo Quý')
+            plt.tight_layout()
+            chart_p14 = os.path.join(chart_dir, 'chartO_credit_funding_growth.png')
+            plt.savefig(chart_p14, dpi=120)
+            plt.close()
+    except Exception as e:
+        print(f"[WARN] Failed to draw Credit & Funding growth chart: {e}")
+
     # Chart 9: NIM Delta vs Peer
     fig, ax = plt.subplots(figsize=(8, 4.5))
     nim_peers = peer_val("NIM")
@@ -1379,16 +1471,34 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
 
     # Calculate YTD credit & deposit growth (YTD) compared to previous year end
     try:
-        latest_y = q_bs_recs[-1].get("yearReport", 2025)
-        loans_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb103") * 1e9
-        dep_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb113") * 1e9
+        latest_y = q_bs_sorted[-1].get("yearReport", 2025)
         
-        loans_curr = q_bs_recs[-1].get("bsb103", 0)
-        dep_curr = q_bs_recs[-1].get("bsb113", 0)
+        # 1. Total Credit (Loans + Corporate Bonds) - historical is in billion, quarterly in VND
+        loans_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb103") or 1.0
+        tpdn_prev_yr_end = get_yr(nt_recs, latest_y - 1, "nob47") or get_yr(nt_recs, latest_y - 1, "nob48") or 0.0
+        credit_prev_yr_end = (loans_prev_yr_end + tpdn_prev_yr_end) * 1e9
         
-        ytd_loans_growth = ((loans_curr / loans_prev_yr_end) - 1) * 100 if loans_prev_yr_end > 0 else 0.0
-        ytd_dep_growth = ((dep_curr / dep_prev_yr_end) - 1) * 100 if dep_prev_yr_end > 0 else 0.0
+        loans_curr = q_bs_sorted[-1].get("bsb103", 0)
+        tpdn_curr = q_bs_sorted[-1].get("nob47", 0) or q_bs_sorted[-1].get("nob48", 0) or 0
+        credit_curr = loans_curr + tpdn_curr
+        
+        # 2. Total Funding (Deposits + Bonds + KBNN * rate)
+        dep_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb113") or 1.0
+        bonds_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb116") or 0.0
+        kbnn_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb110") + get_yr(bs_recs, latest_y - 1, "bsb111")
+        # Previous year-end (2025) KBNN rate is 60%
+        funding_prev_yr_end = (dep_prev_yr_end + bonds_prev_yr_end + kbnn_prev_yr_end * 0.6) * 1e9
+        
+        dep_curr = q_bs_sorted[-1].get("bsb113", 0)
+        bonds_curr = q_bs_sorted[-1].get("bsb116", 0)
+        kbnn_curr = q_bs_sorted[-1].get("bsb110", 0) or q_bs_sorted[-1].get("bsb111", 0) or 0
+        # Current year (2026+) KBNN rate is 80%
+        funding_curr = dep_curr + bonds_curr + kbnn_curr * 0.8
+        
+        ytd_loans_growth = ((credit_curr / credit_prev_yr_end) - 1) * 100 if credit_prev_yr_end > 0 else 0.0
+        ytd_dep_growth = ((funding_curr / funding_prev_yr_end) - 1) * 100 if funding_prev_yr_end > 0 else 0.0
     except Exception as e:
+        print(f"[WARN] Error calculating dynamic YTD growth: {e}")
         ytd_loans_growth, ytd_dep_growth = 0.0, 0.0
         
     # Analyze income structure for the latest quarter
@@ -1587,15 +1697,20 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Paragraph(f"• <b>Diễn biến NIM:</b> {ai_comments['financial'][:300]}...", bullet_style))
     story.append(Paragraph(f"• <b>YOEA & COF:</b> Tỷ suất sinh lời của tài sản sinh lãi (YOEA) được hỗ trợ tốt nhờ cơ cấu cho vay bán lẻ có biên lợi nhuận cao. Ngược lại, chi phí vốn (COF) đang dần hạ nhiệt nhờ sự gia tăng tỷ lệ CASA giúp ngân hàng huy động được nguồn tiền gửi giá rẻ vượt trội.", bullet_style))
     story.append(Paragraph(f"• <b>Cơ cấu tài sản sinh lãi:</b> Cho vay khách hàng vẫn chiếm tỷ trọng chủ đạo (>70%), theo sau là danh mục chứng khoán đầu tư an toàn và thanh khoản cao.", bullet_style))
-    
-    # Add Chart 4
+    # Add Chart 14: Quarterly Credit & Funding YTD Growth Trend
     story.append(Spacer(1, 5))
-    story.append(Paragraph("So sánh NIM, ROE, CIR, CASA, NPL của ngân hàng với trung bình ngành:", h2_style))
-    story.append(Image(chart_p4, width=150*mm, height=65*mm))
+    story.append(Paragraph("Diễn biến Tăng trưởng Tín dụng & Huy động lũy kế YTD qua các Quý:", h2_style))
+    story.append(Image(chart_p14, width=175*mm, height=73*mm))
     
     # ------------------ PAGE 3: ASSET QUALITY & PROVISION ------------------
     story.append(PageBreak())
     story.append(Paragraph("3. Chất lượng tài sản & Bộ đệm dự phòng rủi ro", h1_style))
+    
+    # Relocated Chart 4 to top of Page 3 to keep layout tidy
+    story.append(Paragraph("So sánh hiệu quả vận hành và chất lượng tài sản với trung bình ngành:", h2_style))
+    story.append(Image(chart_p4, width=150*mm, height=62*mm))
+    story.append(Spacer(1, 4))
+    
     story.append(Paragraph("Trong bối cảnh nền kinh tế đối mặt với nhiều biến động, chất lượng tài sản của ngân hàng vẫn duy trì được sự lành mạnh nhờ khẩu vị rủi ro thận trọng và danh mục cho vay tập trung khách hàng cá nhân có tài sản đảm bảo tốt.", body_style))
     
     # Peer NPL and LLR/CoC charts side by side
@@ -1729,6 +1844,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "provision_comment": provision_comment,
             "nii_latest_val": round(nii_latest_val, 2),
             "npat_latest_val": round(npat_latest_val, 2)
+        },
+        "credit_funding_growth": {
+            "quarters": labels_g,
+            "credit_absolute": [round(c, 1) for c in credit_absolute],
+            "funding_absolute": [round(f, 1) for f in funding_absolute],
+            "credit_ytd": credit_ytd_pct,
+            "funding_ytd": funding_ytd_pct
         },
         "sector": sector,
         "currentPrice": current_price,
