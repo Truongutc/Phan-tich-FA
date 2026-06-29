@@ -298,3 +298,181 @@ File: `.github/workflows/analyze_stock.yml`
 6. **JSON phải có đủ fields**: Xem schema tại skill `xuat-bao-cao` phần "JSON Dashboard Export"
 7. **Banking special**: Nếu `is_bank=True` → dùng banking P&L model (NII→TOI→PPOP→LNTT→LNST)
 8. **Libraries**: Chỉ dùng thư viện có trong `requirements.txt`
+
+---
+
+## Pipeline Ngân Hàng — template_banking.py (QUAN TRỌNG)
+
+Đây là luồng RIÊNG BIỆT dành cho cổ phiếu ngân hàng. Khi `run_analysis.py` nhận ra ticker là ngân hàng (kiểm tra `is_bank`), nó **KHÔNG** gọi `build_{ticker}_model.py` hay `build_generic_model.py`, mà gọi thẳng `template_banking.py`.
+
+### Luồng Banking Pipeline
+
+```
+python run_analysis.py VIB
+         │
+         ├─ Bước 1: fetch_data.fetch_all("VIB") → .cache/VIB_bctc.json
+         │
+         ├─ Bước 2: is_bank = True (VIB ∈ BANKING_TICKERS)
+         │     ├─ update_peer_benchmark.main()     ← CẬP NHẬT 18 NH SONG SONG
+         │     └─ template_banking.run_banking_analysis("VIB", raw_data)
+         │           ├─ Tính chỉ số (NIM, NPL, CASA, ROE, LLR, CIR...)
+         │           ├─ Dự phóng 3 năm (NII, PPOP, LNST)
+         │           ├─ build_excel_banking()       → VIB_Model_2026-06.xlsx
+         │           │     └─ Sheet 15_Peer_Benchmark (18 NH từ peer_benchmark.json)
+         │           ├─ generate_charts_banking()  → 13 chart PNG
+         │           ├─ build_pdf_banking()         → VIB_Phan_Tich_2026-06.pdf
+         │           │     ├─ Trang 4: Peer Benchmark Table
+         │           │     └─ Footnote: "P/B cập nhật ngày: YYYY-MM-DD"
+         │           └─ save_json_summary()         → data/VIB.json
+         │
+         ├─ Bước 3-5: Upload GDrive + Update registry (giống non-bank)
+```
+
+### Sections Vietcap API dùng trong Banking
+
+| Section key | Nội dung | API endpoint |
+|---|---|---|
+| `BALANCE_SHEET` | Bảng cân đối kế toán | `financial-statement?section=BALANCE_SHEET` |
+| `INCOME_STATEMENT` | Kết quả kinh doanh | `financial-statement?section=INCOME_STATEMENT` |
+| `CASH_FLOW` | Lưu chuyển tiền tệ | `financial-statement?section=CASH_FLOW` |
+| `NOTE` | Thuyết minh BCTC | `financial-statement?section=NOTE` |
+
+> ⚠️ **BẮT BUỘC dùng key `"NOTE"`** (không phải `"NOTES"`). Đây là key chuẩn trong `SECTIONS` của `fetch_data.py`.
+
+### Bộ 13 Chart Banking
+
+| Chart | Nội dung |
+|---|---|
+| A | NIM Decomposition (YOEA / COF / NIM trend) |
+| B | PE/PB/EVEBITDA lịch sử theo quý |
+| C | Tăng trưởng tín dụng vs huy động theo quý |
+| D | CASA ratio xu hướng |
+| E | NPL xu hướng (annual) |
+| F | PPOP / LNST / Dự phòng so sánh |
+| G | Residual Income Sensitivity (COE × g 5×5) |
+| H | Cơ cấu tài sản sinh lãi theo năm (Stacked Area) |
+| I | NII vs NonII theo quý (Stacked Bar) |
+| J | NPL / LLR theo quý (Dual Axis) |
+| K | Tăng trưởng tín dụng QoQ |
+| L | PE/PB lịch sử rộng (12×5) |
+| M | SWOT radar |
+
+---
+
+## update_peer_benchmark.py — Chi tiết triển khai
+
+### Mục đích
+Cào dữ liệu 18 ngân hàng niêm yết đồng thời, tính toán các chỉ số tài chính và lưu vào `data/peer_benchmark.json`. **Bắt buộc chạy mỗi lần phân tích mã ngân hàng** để đảm bảo P/B và các chỉ số phản ánh đúng ngày phân tích.
+
+### Danh sách 18 NH
+```python
+BANK_TICKERS = ['VCB', 'BID', 'CTG', 'TCB', 'MBB', 'ACB', 'VIB', 'HDB',
+                'STB', 'VPB', 'TPB', 'MSB', 'EIB', 'LPB', 'SHB', 'OCB', 'BAB', 'NAB']
+```
+
+### API Endpoints chuẩn (KHÔNG dùng api.vietcap.vn — bị block)
+
+```python
+BASE_IQ = "https://iq.vietcap.com.vn/api/iq-insight-service/v1"
+
+# Giá + Số CP lưu hành
+url_det = f"{BASE_IQ}/company/details?ticker={ticker}"
+# → det.get("currentPrice")            # VND thực tế, vd: 61400.0
+# → det.get("numberOfSharesMktCap")    # Số CP lưu hành
+
+# Balance Sheet quý
+url_bs = f"{BASE_IQ}/company/{ticker}/financial-statement?section=BALANCE_SHEET&quarterly=true"
+# → data["quarters"][-1].get("bsa78")  # VCSH quý gần nhất
+# → data["quarters"][-1].get("bsb103") # Cho vay KH
+
+# Income Statement quý
+url_is = f"{BASE_IQ}/company/{ticker}/financial-statement?section=INCOME_STATEMENT&quarterly=true"
+# → data["quarters"][-1].get("isa20")  # LNST
+# → data["quarters"][-1].get("isb27")  # NII
+# → data["quarters"][-1].get("isb38")  # TOI
+# → data["quarters"][-1].get("isb39")  # OPEX (âm)
+
+# Note (thuyết minh) quý
+url_nt = f"{BASE_IQ}/company/{ticker}/financial-statement?section=NOTE&quarterly=true"
+# → data["quarters"][-1].get("nob42")  # Nợ nhóm 3
+# → data["quarters"][-1].get("nob43")  # Nợ nhóm 4
+# → data["quarters"][-1].get("nob44")  # Nợ nhóm 5
+# → data["quarters"][-1].get("nob65")  # Tổng tiền gửi KH
+# → data["quarters"][-1].get("nob66")  # Tiền gửi không kỳ hạn (CASA)
+```
+
+### Tính P/B (CẤM dùng API định giá — hay bị 403)
+
+```python
+# Vốn hóa (tỷ VND)
+price = det.get("currentPrice")           # VND (61400.0 là đúng, không phải 61.4)
+shares = det.get("numberOfSharesMktCap")  # Số CP
+mcap = (price * shares) / 1e9            # Tỷ VND
+
+# VCSH quý gần nhất
+equity = q_bs.get("bsa78", 1)            # VND
+equity_billion = equity / 1e9            # Tỷ VND
+
+# P/B = Vốn hóa / VCSH
+pb = round(mcap / max(equity_billion, 0.001), 2)
+```
+
+### Cấu trúc `data/peer_benchmark.json`
+
+```json
+{
+  "_meta": {
+    "updated": "2026-06-29",
+    "source": "Vietcap Live API Engine"
+  },
+  "peers": [
+    {
+      "ticker": "VCB",
+      "name": "Vietcombank",
+      "npl": 0.63,
+      "nim": 4.09,
+      "casa": 32.55,
+      "roe": 16.17,
+      "cir": 32.5,
+      "pb": 2.19,
+      "cg": 4.78,
+      "mcap": 513038,
+      "date_updated": "2026-06-29"
+    }
+  ]
+}
+```
+
+### Tích hợp trong run_analysis.py
+
+```python
+if is_bank:
+    try:
+        import update_peer_benchmark
+        update_peer_benchmark.main()  # Cào 18 NH song song — ~5-8s
+    except Exception as e:
+        print(f"[WARN] Peer benchmark update failed: {e}")
+        # Tiếp tục phân tích với dữ liệu peer_benchmark.json cũ
+```
+
+### Ngày phân tích trong PDF
+
+```python
+# Trong template_banking.py — cuối bảng Peer Benchmark trang 4 PDF
+today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+story.append(Paragraph(
+    f"<i>Nguồn: BCTC Q1/2026 và Vietcap. "
+    f"P/B được cập nhật theo thị giá đóng cửa ngày: {today_str}.</i>",
+    body_style
+))
+```
+
+### Lỗi phổ biến
+
+| Lỗi | Nguyên nhân | Giải pháp |
+|---|---|---|
+| `KeyError: 'NOTES'` | Dùng key sai trong template_banking.py | Đổi thành `"NOTE"` (xem SECTIONS trong fetch_data.py) |
+| `mcap: 6.14e-05` | Dùng key `outstandingShares` không tồn tại | Dùng `numberOfSharesMktCap` |
+| P/B = 1.00x (tất cả NH) | API valuation-history bị 403 | Tự tính P/B = mcap / (bsa78/1e9) |
+| `ThreadPoolExecutor not defined` | Import ở giữa file | Chuyển `from concurrent.futures import ThreadPoolExecutor` lên đầu file |
+| `AttributeError: module datetime has no attribute 'now'` | Import `import datetime` nhưng dùng `datetime.now()` | Sửa thành `datetime.datetime.now()` |

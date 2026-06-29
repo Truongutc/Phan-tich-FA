@@ -607,3 +607,116 @@ def save_json_summary(ticker, company_name, sector, current_price, market_cap, s
 - [ ] **Bắt buộc** xuất thêm khóa `analysis_comments` chứa `ytd_loans_growth`, `ytd_dep_growth`, `profit_source_comment`, và `provision_comment` để đồng bộ hóa nhận định chất lượng tài sản lên Web Dashboard.
 - [ ] **Bắt buộc** biểu đồ PE/PB lịch sử có chiều ngang rộng `12x5` và giãn cách nhãn x-axis cách quãng, hiển thị trong PDF tối thiểu kích thước `175mm x 73mm` để đảm bảo độ trực quan cao nhất.
 
+---
+
+## Báo cáo Ngân hàng — Cấu trúc Excel & PDF đặc biệt
+
+Báo cáo ngân hàng (`template_banking.py`) có cấu trúc **KHÁC** với các ngành khác. Bắt buộc tuân theo.
+
+### Excel — 15 Sheets (thêm 3 sheet so với chuẩn)
+
+| Sheet | Nội dung |
+|---|---|
+| `01_Cover` | Thông tin CP, snapshot, khuyến nghị |
+| `02_Assumptions` | Giả định: credit growth, NIM, CASA, NPL, CoC, CIR |
+| `03_Revenue_Model` | NII + Non-II dự phóng theo driver |
+| `04_PnL` | NII → TOI → PPOP → LNTT → LNST (5 năm lịch sử + 3 năm dự báo) |
+| `05_Balance_Sheet` | CĐKT ngân hàng: Cho vay, Huy động, VCSH |
+| `06_Cash_Flow` | LCTT (ít dùng hơn, thường để trống sơ lược) |
+| `07_Valuation` | RI Model + P/B kết hợp, sensitivity 5×5 |
+| `08_Sensitivity` | COE × g matrix |
+| `09_PESTLE` | 6 yếu tố vĩ mô |
+| `10_Leading_Indicators` | KPIs theo dõi: NPL, CASA, NIM, credit growth |
+| `11_Investment_Thesis` | Luận điểm đầu tư |
+| `12_Summary_Snapshot` | Bảng tóm tắt tài chính 5 năm |
+| `13_PE_PB_History` | Lịch sử PE/PB/EVEBITDA theo quý (≥32 quý) |
+| `14_Ratios_Quarterly` | NIM, NPL, LLR, CASA, CIR, ROE theo từng quý |
+| **`15_Peer_Benchmark`** | **18 NH so sánh ngành — TỰ ĐỘNG từ peer_benchmark.json** |
+
+#### Sheet `15_Peer_Benchmark` — Bắt buộc
+
+```python
+# Đọc từ data/peer_benchmark.json
+with open("data/peer_benchmark.json", encoding="utf-8") as f:
+    pb_data = json.load(f)
+
+peers = pb_data.get("peers", [])
+cols = ["Mã", "NPL (%)", "NIM (%)", "CASA (%)", "ROE (%)", "CIR (%)", "P/B (x)", "TTTD (%)", "Vốn hóa (Tỷ)"]
+# Highlight hàng của mã đang phân tích — màu xanh nhạt, bold
+# Dòng "TB Ngành" — màu vàng, bold
+# Ghi chú ngày cập nhật P/B ở ô A1 hoặc footer
+```
+
+### PDF — Cấu trúc 5 trang chuẩn ngân hàng
+
+| Trang | Nội dung |
+|---|---|
+| **Trang 1** | Cover + Snapshot + Investment Thesis + Risks |
+| **Trang 2** | KQKD chi tiết (NII, NonII, PPOP, LNST theo quý/năm) + Chỉ số chính |
+| **Trang 3** | Biểu đồ phân tích: NIM, NPL/LLR, NII Breakdown, Earning Assets Structure |
+| **Trang 4** | **Bảng Peer Benchmark 18 ngân hàng** + Ghi chú ngày phân tích |
+| **Trang 5** | Định giá: RI Model + P/B History Chart + Giả định dự phóng |
+
+#### Trang 4 — Peer Benchmark Table (bắt buộc)
+
+```python
+# Cuối bảng peer benchmark, thêm footnote ngày:
+today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+story.append(Paragraph(
+    f"<i>Nguồn: BCTC Q1/2026 và Vietcap. "
+    f"P/B được cập nhật theo thị giá đóng cửa ngày: {today_str}.</i>",
+    body_style
+))
+```
+
+> ⚠️ `datetime.datetime.now()` — KHÔNG dùng `datetime.now()` (gây `AttributeError` khi import dạng `import datetime`)
+
+### 13 Chart Banking — Danh sách đầy đủ
+
+| # | Tên biến | Nội dung | Format |
+|---|---|---|---|
+| 1 | `chart_nim` | NIM Decomposition (YOEA/COF/NIM) | 3 Lines |
+| 2 | `chart_pepb` | PE/PB/EVEBITDA lịch sử | Dual axis |
+| 3 | `chart_credit` | Tín dụng vs Huy động QoQ | Grouped bars |
+| 4 | `chart_casa` | CASA ratio trend | Line |
+| 5 | `chart_npl_annual` | NPL xu hướng năm | Line + bar |
+| 6 | `chart_ppop` | PPOP/LNST/Provision | Stacked |
+| 7 | `chart_sensitivity` | RI Sensitivity 5×5 | Heatmap |
+| 8 | `chart_earning_assets` | Cơ cấu tài sản sinh lãi (IEA) | Stacked Area |
+| 9 | `chart_nii_breakdown` | NII vs NonII theo quý | Stacked Bar |
+| 10 | `chart_npl_llr_quarterly` | NPL/LLR theo quý | Dual Axis |
+| 11 | `chart_credit_growth_q` | Tăng trưởng tín dụng QoQ % | Bar |
+| 12 | `chart_pepb_wide` | PE/PB lịch sử rộng 12×5 | Dual Lines |
+| 13 | `chart_swot` | SWOT Radar | Radar |
+
+### Earning Assets Structure — Tài khoản BS dùng
+
+```python
+# Cơ cấu tài sản sinh lãi (chart_earning_assets) theo năm
+cash_hist     = [bsa2 + bsb97]   # Tiền mặt + TG tại NHNN
+sbv_dep_hist  = [bsb97]          # Tiền gửi tại NHNN
+bank_dep_hist = [bsb98]          # Tiền gửi tại TCTD khác
+loans_hist    = [bsb103]         # Cho vay khách hàng
+inv_sec_hist  = [bsb106]         # Chứng khoán đầu tư
+```
+
+### Web Dashboard — 3 Chart mới cho Banking
+
+Ngoài chart PE/PB và QoQ Growth đã có, web dashboard ngân hàng cần thêm **3 canvas** trong `index.html`:
+
+```html
+<!-- Chart 6: NII Breakdown (banks only) -->
+<canvas id="chart-nii"></canvas>
+
+<!-- Chart 7: NPL + LLR theo quý -->
+<canvas id="chart-npl-llr"></canvas>
+
+<!-- Chart 8: Earning Assets Structure (stacked area) -->
+<canvas id="chart-earning-assets"></canvas>
+```
+
+Dữ liệu cho 3 chart này được đọc từ `data/{TICKER}.json`, các trường:
+- `income_quarterly.quarters` → NII, NonII theo quý
+- `ratios_quarterly.quarters` → NPL, LLR theo quý
+- `earning_assets.years` → IEA components theo năm
+
