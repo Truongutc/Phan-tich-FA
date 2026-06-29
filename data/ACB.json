@@ -183,8 +183,8 @@
   },
   "sector": "Ngân hàng",
   "currentPrice": 22600.0,
-  "marketCap": 116702659700000.0,
-  "shares": 5163834500,
+  "marketCap": 116088439160000.0,
+  "shares": 5136656600,
   "assumptions": {
     "loans_growth": [
       14.0,
@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1ZXWs0-kzQhbowYCe20cSRM5LNVHuODyH/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1n7sY0NuHQ1F_Kp33YDlebKklFbtMB-aV/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1-TRBhNvDTw8PduKkaDHSGSAJ-Ga34tUU/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1TbwH-HRW41LQRtyaimAD7M_5UO0sIKL_/view?usp=drivesdk",
   "pe_hist": [
     7.0400782576,
     7.9583271815,
@@ -552,18 +552,18 @@
       0.9671
     ],
     "casa": [
-      0.0,
-      0.0,
-      0.0002,
-      0.0011,
-      0.0001,
-      0.0,
-      0.0,
-      0.0003,
-      0.0006,
-      0.0002,
-      0.0,
-      0.0
+      0.2035,
+      0.2018,
+      0.2154,
+      0.2165,
+      0.2111,
+      0.2098,
+      0.22,
+      0.2079,
+      0.213,
+      0.2149,
+      0.2128,
+      0.2123
     ],
     "npl": [
       1.08,
@@ -592,6 +592,380 @@
       84.0,
       114.3,
       114.0
+    ],
+    "roe": [
+      0.246,
+      0.2417,
+      0.2258,
+      0.2089,
+      0.239,
+      0.1963,
+      0.2178,
+      0.169,
+      0.2239,
+      0.1873,
+      0.1178,
+      0.175
+    ],
+    "credit_growth": [
+      4.94,
+      8.75,
+      17.95,
+      3.75,
+      12.78,
+      13.69,
+      19.02,
+      3.22,
+      9.36,
+      15.52,
+      18.33,
+      3.25
+    ]
+  },
+  "earning_assets_quarterly": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "cash_sbv": [
+      17497.6,
+      18957.8,
+      25414.1,
+      14322.3,
+      22319.1,
+      14262.9,
+      30916.2,
+      19315.2,
+      12106.0,
+      21983.0,
+      25199.5,
+      25235.1
+    ],
+    "bank_dep": [
+      89763.3,
+      98170.3,
+      114873.9,
+      121950.9,
+      105419.1,
+      92090.4,
+      117882.3,
+      129347.5,
+      125447.3,
+      104925.9,
+      149990.7,
+      131619.5
+    ],
+    "loans": [
+      429058.3,
+      444641.5,
+      482234.9,
+      500339.7,
+      543853.0,
+      548247.4,
+      573946.7,
+      592430.8,
+      627669.4,
+      663032.4,
+      679152.6,
+      701211.8
+    ],
+    "inv_sec": [
+      79112.8,
+      70233.2,
+      73463.3,
+      67999.6,
+      77089.5,
+      100862.4,
+      121090.2,
+      129978.3,
+      145778.7,
+      133759.6,
+      144164.1,
+      147029.4
+    ]
+  },
+  "loan_industry": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "real_estate": [
+      149336.3,
+      153761.1,
+      166761.2,
+      173022.0,
+      181571.8,
+      182529.0,
+      194991.9,
+      201271.6,
+      213184.1,
+      225194.9,
+      238758.1,
+      246513.1
+    ],
+    "individuals": [
+      282044.3,
+      290401.1,
+      314953.9,
+      326778.4,
+      363281.0,
+      365196.1,
+      372315.0,
+      384305.5,
+      402571.9,
+      425252.8,
+      425070.5,
+      438877.0
+    ],
+    "wholesale_retail": [
+      465.5,
+      479.3,
+      519.8,
+      539.3,
+      519.6,
+      522.3,
+      531.0,
+      548.1,
+      399.2,
+      421.7,
+      350.6,
+      362.0
+    ],
+    "others": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      6108.8,
+      6305.6,
+      11514.2,
+      12162.9,
+      14973.3,
+      15459.7
+    ]
+  },
+  "npl_groups": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "group1": [
+      425630.1,
+      440687.5,
+      478539.4,
+      494818.6,
+      539113.2,
+      543156.9,
+      569257.2,
+      585731.6,
+      622781.3,
+      658714.1,
+      677612.7,
+      697170.3
+    ],
+    "group2": [
+      3780.1,
+      3663.4,
+      3175.3,
+      3945.2,
+      2936.3,
+      3476.1,
+      2779.4,
+      4229.9,
+      3002.9,
+      3147.7,
+      2493.2,
+      4999.2
+    ],
+    "group3": [
+      841.4,
+      1044.9,
+      940.4,
+      1182.1,
+      1287.7,
+      960.2,
+      923.3,
+      1134.4,
+      1033.6,
+      766.5,
+      764.8,
+      1119.3
+    ],
+    "group4": [
+      950.8,
+      1014.4,
+      1048.8,
+      1433.2,
+      1309.5,
+      1250.8,
+      978.2,
+      1115.1,
+      1036.3,
+      1071.5,
+      770.2,
+      750.8
+    ],
+    "group5": [
+      2829.5,
+      3341.4,
+      3898.0,
+      4733.2,
+      5525.6,
+      6064.4,
+      6748.1,
+      6594.9,
+      5894.5,
+      5488.3,
+      5136.4,
+      4986.5
+    ]
+  },
+  "loan_terms": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "short_term": [
+      281787.3,
+      294156.2,
+      327904.7,
+      342450.7,
+      373352.9,
+      372014.1,
+      391723.4,
+      405978.9,
+      425704.7,
+      442717.5,
+      444710.0,
+      449346.9
+    ],
+    "medium_term": [
+      15374.8,
+      15539.7,
+      15386.4,
+      15657.9,
+      16952.4,
+      16484.8,
+      17286.3,
+      16917.4,
+      18289.6,
+      20139.8,
+      21569.8,
+      22897.5
+    ],
+    "long_term": [
+      136869.9,
+      140055.7,
+      144310.7,
+      148003.6,
+      159867.1,
+      166409.6,
+      171676.6,
+      175909.6,
+      189754.3,
+      206330.9,
+      220497.6,
+      236781.7
+    ]
+  },
+  "deposit_types": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "casa": [
+      87977.1,
+      89919.1,
+      103970.5,
+      106702.7,
+      108023.7,
+      107460.4,
+      118184.3,
+      114401.3,
+      120886.0,
+      122700.0,
+      124539.0,
+      120841.0
+    ],
+    "term": [
+      79234.8,
+      87694.7,
+      102388.6,
+      106262.2,
+      111205.7,
+      110378.3,
+      125231.2,
+      139857.3,
+      151022.9,
+      154331.7,
+      160348.9,
+      148374.0
+    ],
+    "others": [
+      265198.5,
+      267886.0,
+      276343.6,
+      279839.4,
+      292466.3,
+      294285.0,
+      293889.1,
+      296116.3,
+      295498.0,
+      293997.2,
+      300292.3,
+      299894.6
     ]
   },
   "earning_assets": {
@@ -603,38 +977,38 @@
       "2025"
     ],
     "cash_sbv": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      39859.5,
+      22118.4,
+      25414.1,
+      30916.2,
+      25199.5
     ],
     "bank_dep": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      49818.8,
+      85971.3,
+      114873.9,
+      117882.3,
+      149990.7
     ],
     "loans": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      356051.0,
+      408856.5,
+      482234.9,
+      573946.7,
+      679152.6
     ],
     "inv_sec": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      59474.6,
+      75534.8,
+      73463.3,
+      121090.2,
+      144164.1
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu ACB."
+    "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến l",
+    "Sức khỏe tài chính của ACB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và h",
+    "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu ACB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị th"
   ],
   "risks": [
     "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.29% so kế hoạch.",
@@ -696,39 +1070,39 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 30296,
-    "upside": 34.05,
-    "bear": 25751,
-    "base": 30296,
-    "bull": 34840,
-    "pbAttractive": 1.33,
-    "pbAttractivePrice": 29279,
-    "pbTarget": 1.52,
-    "pbTargetPrice": 33283,
+    "weightedTarget": 35829,
+    "upside": 58.54,
+    "bear": 30454,
+    "base": 35828,
+    "bull": 41203,
+    "pbAttractive": 1.38,
+    "pbAttractivePrice": 30473,
+    "pbTarget": 1.83,
+    "pbTargetPrice": 40442,
     "COE": 11.89,
-    "peMedian": 6.91,
-    "pbMedian": 1.4,
-    "bvpsBase": 18304,
-    "riValue": 29873,
-    "pbValue": 30720,
-    "pvRi": 3987,
-    "pvCv": 7582,
+    "peMedian": 7.12,
+    "pbMedian": 1.54,
+    "bvpsBase": 18401,
+    "riValue": 37653,
+    "pbValue": 34005,
+    "pvRi": 4008,
+    "pvCv": 15244,
     "epsFc": [
-      3648,
-      4316,
-      4957
+      3668,
+      4339,
+      4983
     ],
     "riResults": [
-      1472,
-      1706,
-      1833
+      1480,
+      1715,
+      1843
     ],
     "recommend": "MUA"
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu ACB."
+    "businessModel": "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
+    "financialPerformance": "Sức khỏe tài chính của ACB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và hiệu quả sinh lời (ROE, NIM) tiếp tục duy trì vị thế nhóm đầu thị trường.",
+    "valuationText": "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu ACB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị thế đầu ngành vững chắc."
   },
   "data": {
     "years": [
@@ -762,14 +1136,14 @@
       25595.27
     ],
     "eps": [
-      1859.6,
-      2650.8,
-      3107.1,
-      3251.4,
-      3025.8,
-      3648.5,
-      4316.0,
-      4956.6
+      3554.0,
+      4052.8,
+      4130.9,
+      3758.9,
+      3041.8,
+      3667.8,
+      4338.8,
+      4982.9
     ],
     "equity": [
       44900.91,
