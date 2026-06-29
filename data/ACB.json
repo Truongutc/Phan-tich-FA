@@ -1,51 +1,122 @@
 {
   "ticker": "ACB",
   "companyName": "Ngân hàng Thương mại Cổ phần Á Châu",
+  "analysis_comments": {
+    "ytd_loans_growth": 0.0,
+    "ytd_dep_growth": 0.0,
+    "profit_source_comment": "Lợi nhuận cốt lõi từ Thu nhập lãi thuần (NII) chiếm ưu thế tuyệt đối đóng góp 78.5% tổng thu nhập HĐ, khẳng định chất lượng nguồn thu cực kỳ bền vững và đi liền với quy mô tín dụng.",
+    "provision_comment": "Bộ đệm hoàn nhập dự phòng hoặc cắt giảm chi phí trích lập dự phòng (chỉ chiếm 12.8% LNTT) là bệ phóng thúc đẩy lợi nhuận quý này thay vì do tăng trưởng quy mô kinh doanh cốt lõi.",
+    "nii_latest_val": 6989.16,
+    "npat_latest_val": 4320.39
+  },
   "sector": "Ngân hàng",
   "currentPrice": 22600.0,
-  "marketCap": 116088439160000.0,
-  "shares": 5136656600,
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "marketCap": 116702659700000.0,
+  "shares": 5163834500,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1jT1CYUzLkgdxpGrwokqLPVcn-nwB1YhJ/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1PXijxZCuOGDPn3MuM5b1B7xhppvyDlpt/view?usp=drivesdk",
   "pe_hist": [
-    8.5,
-    9.2,
-    7.8,
-    8.1,
-    8.4
+    7.0400782576,
+    7.9583271815,
+    7.2830504387,
+    7.8243060407,
+    8.0642638139
   ],
   "pb_hist": [
-    1.2,
-    1.3,
-    1.1,
-    1.15,
-    1.25
+    1.3391061871,
+    1.5490550877,
+    1.3850887997,
+    1.2934065859,
+    1.3283902659
   ],
   "pe_quarters": [
-    8.5,
-    8.2,
-    8.6,
-    9.0,
-    9.2,
-    8.9,
-    8.4,
-    7.8,
-    8.1,
-    8.4
+    13.2423620721,
+    10.2532840556,
+    8.346752165,
+    7.525255925,
+    7.1709397112,
+    6.8363441191,
+    6.8674571244,
+    5.4779606741,
+    6.4726808696,
+    8.9207525599,
+    9.0666215318,
+    9.1438591322,
+    10.2546119679,
+    9.1141274869,
+    8.694408532,
+    7.7889284027,
+    5.728704027,
+    6.1576333479,
+    6.1561819167,
+    5.838492592,
+    5.0375189458,
+    6.7213553953,
+    6.7781377348,
+    6.7783089662,
+    7.0599776394,
+    6.7752917564,
+    6.4114320514,
+    7.0400782576,
+    7.9583271815,
+    7.2830504387,
+    7.8243060407,
+    8.0642638139
   ],
   "pb_quarters": [
-    1.2,
-    1.15,
-    1.22,
-    1.28,
-    1.3,
-    1.25,
-    1.18,
-    1.1,
-    1.15,
-    1.25
+    2.0334449499,
+    2.0151965772,
+    1.8657522074,
+    1.7801471926,
+    1.7166775559,
+    1.5986140099,
+    1.6000682016,
+    1.1857292421,
+    1.3793786919,
+    1.7947294344,
+    1.8451305255,
+    1.9817853453,
+    2.3329910597,
+    2.0860811932,
+    1.8594321892,
+    1.6815941391,
+    1.2941226522,
+    1.4634511741,
+    1.4419735372,
+    1.3572089618,
+    1.4024478547,
+    1.4995595341,
+    1.5326888466,
+    1.4333298662,
+    1.5497475945,
+    1.3962862138,
+    1.2897710453,
+    1.3391061871,
+    1.5490550877,
+    1.3850887997,
+    1.2934065859,
+    1.3283902659
   ],
   "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
     "2023-Q1",
     "2023-Q2",
     "2023-Q3",
@@ -55,205 +126,106 @@
     "2024-Q3",
     "2024-Q4",
     "2025-Q1",
-    "2025-Q2"
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
   ],
   "income_quarterly": [
     {
-      "yearReport": 2018,
-      "quarter": 1,
-      "nii": 2372.81,
-      "npat": 1144.49
-    },
-    {
-      "yearReport": 2018,
-      "quarter": 2,
-      "nii": 2488.26,
-      "npat": 1317.91
-    },
-    {
-      "yearReport": 2018,
-      "quarter": 3,
-      "nii": 2563.24,
-      "npat": 1309.42
-    },
-    {
-      "yearReport": 2018,
-      "quarter": 4,
-      "nii": 2938.6,
-      "npat": 1365.23
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 1,
-      "nii": 2856.54,
-      "npat": 1365.89
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 2,
-      "nii": 2903.0,
-      "npat": 1532.74
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 3,
-      "nii": 3023.03,
-      "npat": 1549.21
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 4,
-      "nii": 3329.59,
-      "npat": 1549.24
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 1,
-      "nii": 3419.44,
-      "npat": 1537.05
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 2,
-      "nii": 3111.95,
-      "npat": 1521.65
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 3,
-      "nii": 3635.0,
-      "npat": 2074.57
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 4,
-      "nii": 4415.73,
-      "npat": 2549.54
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 1,
-      "nii": 4639.57,
-      "npat": 2483.4
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 2,
-      "nii": 4990.39,
-      "npat": 2588.24
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 3,
-      "nii": 4520.51,
-      "npat": 2102.61
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 4,
-      "nii": 4794.32,
-      "npat": 2428.49
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 1,
-      "nii": 5440.67,
-      "npat": 3287.53
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 2,
-      "nii": 5606.39,
-      "npat": 3943.15
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 3,
-      "nii": 6032.25,
-      "npat": 3586.99
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 4,
-      "nii": 6454.22,
-      "npat": 2870.52
-    },
-    {
-      "yearReport": 2023,
-      "quarter": 1,
-      "nii": 6215.15,
-      "npat": 4135.03
-    },
-    {
-      "yearReport": 2023,
-      "quarter": 2,
+      "quarter": "2023-Q2",
       "nii": 6245.67,
+      "nonii": 1777.85,
+      "toi": 8023.52,
+      "ppop": 5538.34,
       "npat": 3865.85
     },
     {
-      "yearReport": 2023,
-      "quarter": 3,
+      "quarter": "2023-Q3",
       "nii": 6209.13,
+      "nonii": 2215.25,
+      "toi": 8424.38,
+      "ppop": 5556.16,
       "npat": 4037.58
     },
     {
-      "yearReport": 2023,
-      "quarter": 4,
+      "quarter": "2023-Q4",
       "nii": 6289.62,
+      "nonii": 2088.85,
+      "toi": 8378.46,
+      "ppop": 5365.22,
       "npat": 4006.28
     },
     {
-      "yearReport": 2024,
-      "quarter": 1,
+      "quarter": "2024-Q1",
       "nii": 6721.52,
+      "nonii": 1446.93,
+      "toi": 8168.45,
+      "ppop": 5404.53,
       "npat": 3905.42
     },
     {
-      "yearReport": 2024,
-      "quarter": 2,
+      "quarter": "2024-Q2",
       "nii": 7111.51,
+      "nonii": 1540.51,
+      "toi": 8652.01,
+      "ppop": 6186.39,
       "npat": 4468.59
     },
     {
-      "yearReport": 2024,
-      "quarter": 3,
+      "quarter": "2024-Q3",
       "nii": 6881.39,
+      "nonii": 1254.61,
+      "toi": 8136.0,
+      "ppop": 5202.29,
       "npat": 3870.39
     },
     {
-      "yearReport": 2024,
-      "quarter": 4,
+      "quarter": "2024-Q4",
       "nii": 7080.29,
+      "nonii": 1478.01,
+      "toi": 8558.3,
+      "ppop": 5818.95,
       "npat": 4545.36
     },
     {
-      "yearReport": 2025,
-      "quarter": 1,
+      "quarter": "2025-Q1",
       "nii": 6358.86,
+      "nonii": 1555.76,
+      "toi": 7914.63,
+      "ppop": 5222.74,
       "npat": 3678.27
     },
     {
-      "yearReport": 2025,
-      "quarter": 2,
+      "quarter": "2025-Q2",
       "nii": 6683.85,
+      "nonii": 2608.7,
+      "toi": 9292.54,
+      "ppop": 6556.38,
       "npat": 4881.16
     },
     {
-      "yearReport": 2025,
-      "quarter": 3,
+      "quarter": "2025-Q3",
       "nii": 6769.71,
+      "nonii": 1614.95,
+      "toi": 8384.67,
+      "ppop": 5670.73,
       "npat": 4280.59
     },
     {
-      "yearReport": 2025,
-      "quarter": 4,
+      "quarter": "2025-Q4",
       "nii": 7093.27,
+      "nonii": 1112.77,
+      "toi": 8206.05,
+      "ppop": 5423.67,
       "npat": 2784.68
     },
     {
-      "yearReport": 2026,
-      "quarter": 1,
+      "quarter": "2026-Q1",
       "nii": 6989.16,
+      "nonii": 1915.5,
+      "toi": 8904.67,
+      "ppop": 6054.16,
       "npat": 4320.39
     }
   ],
@@ -273,18 +245,18 @@
       "2026-Q1"
     ],
     "nim": [
-      0.0527,
-      0.0503,
-      0.0471,
-      0.0489,
-      0.0466,
-      0.0431,
-      0.0419,
-      0.036,
-      0.0348,
-      0.0349,
-      0.0349,
-      0.0326
+      0.0582,
+      0.0559,
+      0.0522,
+      0.0537,
+      0.0523,
+      0.0502,
+      0.0493,
+      0.0429,
+      0.0426,
+      0.0408,
+      0.0418,
+      0.0399
     ],
     "ldr": [
       0.8994,
@@ -301,169 +273,107 @@
       0.9671
     ],
     "casa": [
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1
+      0.0,
+      0.0,
+      0.0002,
+      0.0011,
+      0.0001,
+      0.0,
+      0.0,
+      0.0003,
+      0.0006,
+      0.0002,
+      0.0,
+      0.0
     ],
     "npl": [
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005
+      -0.0116,
+      -0.0115,
+      -0.0111,
+      -0.0115,
+      -0.0116,
+      -0.0121,
+      -0.0117,
+      -0.0108,
+      -0.0097,
+      -0.0093,
+      -0.0112,
+      -0.0111
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Á Châu (ACB) là một ngân hàng TMCP hàng đầu với lợi thế cạnh tranh về tỷ lệ CASA và hệ sinh thái số hóa vượt trội.",
-    "Tăng trưởng tín dụng định hướng bền vững và NIM tự tính toán duy trì quanh mức 3.5% hỗ trợ LNST tăng trưởng ổn định.",
-    "Chất lượng tài sản được cải thiện đáng kể với tỷ lệ nợ xấu NPL thực tế được kiểm soát tốt."
+    "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu ACB."
   ],
   "risks": [
-    "Rủi ro biến động lãi suất toàn cầu và áp lực lạm phát nội địa tác động tiêu cực đến NIM.",
-    "Nợ xấu gia tăng từ phân khúc khách hàng cá nhân và doanh nghiệp nhỏ do tác động của kinh tế vĩ mô.",
-    "Sự cạnh tranh khốc liệt về lãi suất huy động và làn sóng Fintech có thể làm suy giảm NIM."
+    "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.29% so kế hoạch.",
+    "Rủi ro nợ xấu: thị trường bất động sản hồi phục chậm, nợ nhóm 2 tăng có thể chuyển thành NPL trong 6–12 tháng.",
+    "Rủi ro pháp lý: Thông tư siết TPDN và nâng chuẩn CAR có thể hạn chế room tín dụng của ACB."
   ],
   "moats": {
     "Network Effect": {
       "score": 4,
-      "desc": "Hệ sinh thái khách hàng rộng lớn tạo sự liên kết chặt chẽ."
-    },
-    "Switching Cost": {
-      "score": 4,
-      "desc": "Khách hàng sử dụng nhiều dịch vụ tích hợp có xu hướng trung thành cao."
-    },
-    "Intangible Assets": {
-      "score": 4,
-      "desc": "Thương hiệu lâu năm và uy tín hàng đầu trong nhóm ngân hàng tư nhân."
+      "desc": "Mạng lưới khách hàng ACB rộng — hiệu ứng mạng lưới tạo CASA ổn định."
     },
     "Cost Advantage": {
       "score": 3,
-      "desc": "Lợi thế chi phí huy động nhờ tỷ lệ CASA thuộc hàng top."
+      "desc": "CASA cao giúp COF thấp hơn ngành, tạo lợi thế chi phí vốn bền vững."
+    },
+    "Switching Cost": {
+      "score": 3,
+      "desc": "Hệ sinh thái ứng dụng số tích hợp tạo rào cản chuyển đổi khách hàng."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu ngân hàng uy tín và quan hệ doanh nghiệp/cá nhân lâu năm."
     },
     "Efficient Scale": {
       "score": 3,
-      "desc": "Quy mô tài sản và mạng lưới chi nhánh tối ưu giúp phục vụ lượng lớn khách hàng."
+      "desc": "Quy mô tài sản tạo hiệu quả vận hành trên chi phí cố định hạ tầng CNTT."
     }
   },
   "pestle": [
     {
       "factor": "Political",
-      "content": "Định hướng của NHNN về ưu tiên tín dụng cho các ngành sản xuất và ESG.",
+      "content": "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",
       "impact": "Positive"
     },
     {
       "factor": "Economic",
-      "content": "Chu kỳ kinh tế phục hồi thúc đẩy nhu cầu vay vốn của doanh nghiệp.",
+      "content": "GDP 6–7%, nhu cầu tín dụng sản xuất–tiêu dùng cao, lãi suất huy động dần giảm.",
       "impact": "Positive"
     },
     {
       "factor": "Social",
-      "content": "Dân số trẻ và xu hướng chuyển dịch không dùng tiền mặt là lợi thế lớn cho ngân hàng số.",
+      "content": "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt thúc đẩy CASA và dịch vụ phí.",
       "impact": "Positive"
     },
     {
       "factor": "Technological",
-      "content": "Đầu tư mạnh vào Cloud và AI giúp tối ưu chi phí CIR và tăng trải nghiệm người dùng.",
+      "content": "Chuyển đổi số banking giảm CIR, tăng CASA và cross-sell — đây là lợi thế cạnh tranh dài hạn.",
       "impact": "Positive"
     },
     {
       "factor": "Legal",
-      "content": "Tuân thủ chặt chẽ Basel II/III bảo đảm an toàn vốn phòng ngừa rủi ro tín dụng.",
+      "content": "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — tạo áp lực pháp lý ngắn hạn.",
       "impact": "Neutral"
     },
     {
       "factor": "Environmental",
-      "content": "Thúc đẩy tín dụng xanh và các khoản vay ESG theo định hướng chính phủ.",
-      "impact": "Positive"
+      "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",
+      "impact": "Negative"
     }
   ],
   "valuation": {
-    "bear": 27266,
-    "base": 32078,
-    "bull": 36890
+    "bear": 25751,
+    "base": 30296,
+    "bull": 34840
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì vị thế cạnh tranh mạnh trong phân khúc ngân hàng tư nhân với hệ sinh thái dịch vụ tài chính đa dạng.",
-    "financialPerformance": "Biên lãi ròng (NIM) và tỷ suất sinh lợi vốn chủ (ROE) của ACB là những chỉ số then chốt thể hiện hiệu quả hoạt động ổn định và chất lượng tài sản tốt.",
-    "valuationText": "Định giá theo phương pháp Residual Income và P/B mục tiêu phản ánh kỳ vọng hoạt động tín dụng tăng trưởng bền vững và nợ xấu được kiểm soát tốt."
-  },
-  "ratios": {
-    "nim": [
-      0.0359,
-      0.0387,
-      0.0347,
-      0.0322,
-      0.0262,
-      0.0268,
-      0.0279,
-      0.029
-    ],
-    "roe": [
-      0.2139,
-      0.2342,
-      0.2261,
-      0.2012,
-      0.1653,
-      0.1812,
-      0.1769,
-      0.1735
-    ],
-    "roa": [
-      0.0182,
-      0.0225,
-      0.0223,
-      0.0194,
-      0.0152,
-      0.0176,
-      0.0181,
-      0.0186
-    ],
-    "npl": [
-      -0.0165,
-      -0.0119,
-      -0.0111,
-      -0.0117,
-      -0.0112,
-      0.012,
-      0.012,
-      0.012
-    ],
-    "ldr": [
-      0.8674,
-      0.8922,
-      0.9012,
-      0.8983,
-      0.9453,
-      0.9969,
-      1.0513,
-      1.1087
-    ],
-    "casa": [
-      0.0,
-      0.0,
-      0.0002,
-      0.0,
-      0.0,
-      0.32,
-      0.32,
-      0.32
-    ]
+    "businessModel": "Ngân hàng Thương mại Cổ phần Á Châu (ACB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu ACB."
   },
   "data": {
     "years": [
@@ -477,44 +387,106 @@
       2028
     ],
     "revenue": [
-      18944.8,
-      23533.5,
-      24959.6,
+      18944.79,
+      23533.53,
+      24959.57,
       27794.7,
-      26905.7,
-      30786.3,
-      35883.6,
-      41840.1
+      26905.69,
+      32646.68,
+      37674.37,
+      42796.18
     ],
     "npat": [
-      9602.7,
-      13688.2,
-      16044.7,
-      16789.8,
+      9602.75,
+      13688.19,
+      16044.73,
+      16789.77,
       15624.7,
-      20245.3,
-      23260.0,
-      26755.0
+      18840.19,
+      22287.06,
+      25595.27
     ],
     "eps": [
-      2799.0,
-      3486.0,
-      3559.0,
-      3669.0,
-      3022.0,
-      3941.0,
-      4528.0,
-      5209.0
+      1859.6,
+      2650.8,
+      3107.1,
+      3251.4,
+      3025.8,
+      3648.5,
+      4316.0,
+      4956.6
     ],
     "equity": [
-      44900.9,
-      58438.7,
-      70956.0,
-      83461.7,
-      94519.7,
-      111728.2,
-      131499.2,
-      154241.0
+      44900.91,
+      58438.66,
+      70955.96,
+      83461.68,
+      94519.72,
+      107707.85,
+      123308.8,
+      141225.49
+    ]
+  },
+  "ratios": {
+    "nim": [
+      0.0375,
+      0.0429,
+      0.0387,
+      0.0361,
+      0.0292,
+      0.0307,
+      0.0315,
+      0.0321
+    ],
+    "roe": [
+      0.2139,
+      0.2649,
+      0.248,
+      0.2175,
+      0.1756,
+      null,
+      null,
+      null
+    ],
+    "roa": [
+      0.0182,
+      0.0225,
+      0.0223,
+      0.0194,
+      0.0152,
+      null,
+      null,
+      null
+    ],
+    "npl": [
+      0.0079,
+      0.0074,
+      0.0122,
+      0.0151,
+      0.0098,
+      0.0093,
+      0.0088,
+      0.0083
+    ],
+    "ldr": [
+      0.9028,
+      0.9307,
+      0.9257,
+      0.9139,
+      0.94,
+      null,
+      null,
+      null
+    ],
+    "casa": [
+      0.2483,
+      0.2178,
+      0.2154,
+      0.22,
+      0.2128,
+      0.2228,
+      0.2328,
+      0.2428
     ]
   }
 }
