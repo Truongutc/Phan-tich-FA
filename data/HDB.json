@@ -1,0 +1,484 @@
+{
+  "ticker": "HDB",
+  "companyName": "Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh",
+  "sector": "Ngân hàng",
+  "currentPrice": 25400.0,
+  "marketCap": 130372424040000.0,
+  "shares": 5132772600,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "pe_hist": [
+    6.1230727704,
+    7.977782242,
+    9.0218325072,
+    7.526968614,
+    7.1649854057
+  ],
+  "pb_hist": [
+    1.451727229,
+    1.9053619507,
+    1.9911801653,
+    1.7452534634,
+    1.582545987
+  ],
+  "pe_quarters": [
+    13.6324591833,
+    12.297556935,
+    11.9787965992,
+    9.6992524854,
+    8.8450628032,
+    9.6700004055,
+    8.2446558396,
+    5.5924696381,
+    6.3721764106,
+    7.2356119216,
+    8.0379721779,
+    9.9583975802,
+    10.9413140247,
+    10.5077005486,
+    8.3194369045,
+    7.3850422794,
+    6.0677622347,
+    5.55719648,
+    6.3288903526,
+    5.8447689373,
+    6.3283783107,
+    7.1431238089,
+    6.9824984116,
+    6.3097531791,
+    6.4929769161,
+    5.6734083702,
+    5.6034359017,
+    6.1230727704,
+    7.977782242,
+    9.0218325072,
+    7.526968614,
+    7.1649854057
+  ],
+  "pb_quarters": [
+    2.2035968125,
+    2.3584431383,
+    1.9786207477,
+    1.7630831097,
+    1.5514331628,
+    1.6463271849,
+    1.4848074336,
+    1.0407449258,
+    1.1836675446,
+    1.4204438151,
+    1.5744158389,
+    1.8226477811,
+    2.1908743488,
+    2.1392509444,
+    1.746526353,
+    1.5407135297,
+    1.2730776406,
+    1.1902718235,
+    1.3272774396,
+    1.1946540757,
+    1.3085512911,
+    1.4674145704,
+    1.5844367062,
+    1.4694981414,
+    1.5524745025,
+    1.4412160454,
+    1.3180775225,
+    1.451727229,
+    1.9053619507,
+    1.9911801653,
+    1.7452534634,
+    1.582545987
+  ],
+  "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
+  ],
+  "income_quarterly": [
+    {
+      "quarter": "2023-Q2",
+      "nii": 4954.52,
+      "nonii": 1458.88,
+      "toi": 6413.39,
+      "ppop": 4174.8,
+      "npat": 2179.53
+    },
+    {
+      "quarter": "2023-Q3",
+      "nii": 4916.15,
+      "nonii": 1169.08,
+      "toi": 6085.23,
+      "ppop": 3783.36,
+      "npat": 2515.16
+    },
+    {
+      "quarter": "2023-Q4",
+      "nii": 7472.5,
+      "nonii": 785.16,
+      "toi": 8257.66,
+      "ppop": 5627.53,
+      "npat": 3447.61
+    },
+    {
+      "quarter": "2024-Q1",
+      "nii": 7160.35,
+      "nonii": 591.72,
+      "toi": 7752.06,
+      "ppop": 5297.43,
+      "npat": 3213.17
+    },
+    {
+      "quarter": "2024-Q2",
+      "nii": 7719.88,
+      "nonii": 573.14,
+      "toi": 8293.02,
+      "ppop": 5263.24,
+      "npat": 3251.85
+    },
+    {
+      "quarter": "2024-Q3",
+      "nii": 7773.44,
+      "nonii": 761.53,
+      "toi": 8534.97,
+      "ppop": 5583.9,
+      "npat": 3545.64
+    },
+    {
+      "quarter": "2024-Q4",
+      "nii": 8203.4,
+      "nonii": 1248.73,
+      "toi": 9452.13,
+      "ppop": 5906.87,
+      "npat": 3236.99
+    },
+    {
+      "quarter": "2025-Q1",
+      "nii": 7408.1,
+      "nonii": 1796.45,
+      "toi": 9204.55,
+      "ppop": 6680.03,
+      "npat": 4357.67
+    },
+    {
+      "quarter": "2025-Q2",
+      "nii": 9819.16,
+      "nonii": 1816.73,
+      "toi": 11635.89,
+      "ppop": 8853.86,
+      "npat": 3676.06
+    },
+    {
+      "quarter": "2025-Q3",
+      "nii": 7763.32,
+      "nonii": 1753.16,
+      "toi": 9516.48,
+      "ppop": 7028.5,
+      "npat": 3798.82
+    },
+    {
+      "quarter": "2025-Q4",
+      "nii": 9755.61,
+      "nonii": 2583.34,
+      "toi": 12338.95,
+      "ppop": 8532.5,
+      "npat": 5241.07
+    },
+    {
+      "quarter": "2026-Q1",
+      "nii": 8483.02,
+      "nonii": 1469.82,
+      "toi": 9952.84,
+      "ppop": 7365.83,
+      "npat": 4902.14
+    }
+  ],
+  "ratios_quarterly": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "nim": [
+      0.0699,
+      0.0682,
+      0.0881,
+      0.0798,
+      0.081,
+      0.079,
+      0.0752,
+      0.0673,
+      0.0782,
+      0.0644,
+      0.0724,
+      0.0572
+    ],
+    "ldr": [
+      0.7779,
+      0.7316,
+      0.8047,
+      0.8441,
+      0.8846,
+      0.8479,
+      0.8415,
+      0.7955,
+      0.8934,
+      0.8577,
+      0.8317,
+      0.8178
+    ],
+    "casa": [
+      0.0,
+      0.0008,
+      0.0,
+      0.0,
+      0.0,
+      0.0003,
+      0.0,
+      0.0006,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "npl": [
+      -0.0134,
+      -0.0124,
+      -0.0119,
+      -0.0129,
+      -0.0125,
+      -0.0127,
+      -0.0135,
+      -0.0128,
+      -0.0121,
+      -0.0127,
+      -0.0135,
+      -0.0132
+    ]
+  },
+  "thesis": [
+    "Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh (HDB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu HDB."
+  ],
+  "risks": [
+    "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.47% so kế hoạch.",
+    "Rủi ro nợ xấu: thị trường bất động sản hồi phục chậm, nợ nhóm 2 tăng có thể chuyển thành NPL trong 6–12 tháng.",
+    "Rủi ro pháp lý: Thông tư siết TPDN và nâng chuẩn CAR có thể hạn chế room tín dụng của HDB."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 4,
+      "desc": "Mạng lưới khách hàng HDB rộng — hiệu ứng mạng lưới tạo CASA ổn định."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "CASA cao giúp COF thấp hơn ngành, tạo lợi thế chi phí vốn bền vững."
+    },
+    "Switching Cost": {
+      "score": 3,
+      "desc": "Hệ sinh thái ứng dụng số tích hợp tạo rào cản chuyển đổi khách hàng."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu ngân hàng uy tín và quan hệ doanh nghiệp/cá nhân lâu năm."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô tài sản tạo hiệu quả vận hành trên chi phí cố định hạ tầng CNTT."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "GDP 6–7%, nhu cầu tín dụng sản xuất–tiêu dùng cao, lãi suất huy động dần giảm.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt thúc đẩy CASA và dịch vụ phí.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Chuyển đổi số banking giảm CIR, tăng CASA và cross-sell — đây là lợi thế cạnh tranh dài hạn.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — tạo áp lực pháp lý ngắn hạn.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",
+      "impact": "Negative"
+    }
+  ],
+  "valuation": {
+    "bear": 25267,
+    "base": 29726,
+    "bull": 34185
+  },
+  "comments": {
+    "businessModel": "Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh (HDB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu HDB."
+  },
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      13890.78,
+      18011.57,
+      22183.97,
+      30857.08,
+      34746.19,
+      45281.25,
+      52480.26,
+      59539.11
+    ],
+    "npat": [
+      6453.5,
+      8209.47,
+      10336.01,
+      13247.65,
+      17073.62,
+      20403.48,
+      24843.98,
+      28898.37
+    ],
+    "eps": [
+      1257.3,
+      1599.4,
+      2013.7,
+      2581.0,
+      3326.4,
+      3975.1,
+      4840.3,
+      5630.2
+    ],
+    "equity": [
+      30790.11,
+      38994.89,
+      46400.32,
+      56657.26,
+      78285.52,
+      92567.96,
+      109958.74,
+      130187.6
+    ]
+  },
+  "ratios": {
+    "nim": [
+      0.0413,
+      0.0508,
+      0.0495,
+      0.0541,
+      0.0469,
+      0.0492,
+      0.0507,
+      0.0516
+    ],
+    "roe": [
+      0.2096,
+      0.2353,
+      0.2421,
+      0.2571,
+      0.253,
+      null,
+      null,
+      null
+    ],
+    "roa": [
+      0.0172,
+      0.0197,
+      0.0172,
+      0.019,
+      0.0183,
+      null,
+      null,
+      null
+    ],
+    "npl": [
+      0.0167,
+      0.0169,
+      0.0182,
+      0.0196,
+      0.0247,
+      0.0235,
+      0.0222,
+      0.021
+    ],
+    "ldr": [
+      1.0266,
+      1.226,
+      0.9909,
+      1.064,
+      1.0768,
+      null,
+      null,
+      null
+    ],
+    "casa": [
+      0.1305,
+      0.103,
+      0.1088,
+      0.1177,
+      0.121,
+      0.131,
+      0.141,
+      0.151
+    ]
+  }
+}

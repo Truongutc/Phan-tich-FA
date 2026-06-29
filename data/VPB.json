@@ -1,0 +1,235 @@
+{
+  "ticker": "VPB",
+  "companyName": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng",
+  "sector": "Ngân hàng",
+  "currentPrice": 26750.0,
+  "marketCap": 276412516850000.0,
+  "shares": 10333178200,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "pe_hist": [
+    8.5,
+    9.2,
+    7.8,
+    8.1,
+    8.4
+  ],
+  "pb_hist": [
+    1.2,
+    1.3,
+    1.1,
+    1.15,
+    1.25
+  ],
+  "pe_quarters": [
+    8.5,
+    9.2,
+    7.8,
+    8.1,
+    8.4
+  ],
+  "pb_quarters": [
+    1.2,
+    1.3,
+    1.1,
+    1.15,
+    1.25
+  ],
+  "quarter_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4",
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "income_quarterly": [],
+  "ratios_quarterly": {
+    "quarters": [
+      "2021",
+      "2022",
+      "2023",
+      "2024",
+      "2025"
+    ],
+    "nim": [
+      0.0699,
+      0.0774,
+      0.0579,
+      0.0611,
+      0.0564
+    ],
+    "ldr": [
+      1.0689,
+      1.1576,
+      1.1251,
+      1.233,
+      1.2602
+    ],
+    "casa": [
+      0.2192,
+      0.1654,
+      0.1703,
+      0.1371,
+      0.1365
+    ],
+    "npl": [
+      0.047,
+      0.0592,
+      0.0515,
+      0.0427,
+      0.034
+    ]
+  },
+  "thesis": [
+    "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng (VPB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế."
+  ],
+  "risks": [
+    "Rủi ro biên lãi ròng NIM thu hẹp do cạnh tranh lãi suất cho vay.",
+    "Rủi ro nợ xấu gia tăng khi thị trường bất động sản phục hồi chậm."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 4,
+      "desc": "Mạng lưới phân phối rộng lớn."
+    },
+    "Switching Cost": {
+      "score": 3,
+      "desc": "Hệ sinh thái số tiện ích giữ chân khách hàng."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Môi trường chính trị ổn định hỗ trợ ngành ngân hàng.",
+      "impact": "Positive"
+    }
+  ],
+  "valuation": {
+    "bear": 19539,
+    "base": 22987,
+    "bull": 26435
+  },
+  "comments": {
+    "businessModel": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng (VPB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu VPB."
+  },
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      34348.83,
+      41021.06,
+      38174.68,
+      50002.4,
+      58662.71,
+      43215.92,
+      49319.5,
+      55774.06
+    ],
+    "npat": [
+      11477.17,
+      16908.81,
+      8494.17,
+      15986.83,
+      24354.6,
+      22710.86,
+      27536.08,
+      32323.58
+    ],
+    "eps": [
+      1110.7,
+      1636.4,
+      822.0,
+      1547.1,
+      2356.9,
+      2197.9,
+      2664.8,
+      3128.1
+    ],
+    "equity": [
+      86278.15,
+      103501.92,
+      139795.53,
+      147275.26,
+      180275.63,
+      202986.49,
+      230522.57,
+      262846.14
+    ]
+  },
+  "ratios": {
+    "nim": [
+      0.0699,
+      0.0774,
+      0.0579,
+      0.0611,
+      0.0564,
+      3.4,
+      3.45,
+      3.5
+    ],
+    "roe": [
+      0.133,
+      0.1782,
+      0.0698,
+      0.1114,
+      0.1487,
+      0.18,
+      0.18,
+      0.18
+    ],
+    "roa": [
+      0.021,
+      0.0268,
+      0.0104,
+      0.0173,
+      0.0193,
+      0.018,
+      0.018,
+      0.018
+    ],
+    "npl": [
+      0.047,
+      0.0592,
+      0.0515,
+      0.0427,
+      0.034,
+      0.012,
+      0.011,
+      0.01
+    ],
+    "ldr": [
+      1.0689,
+      1.1576,
+      1.1251,
+      1.233,
+      1.2602,
+      0.85,
+      0.85,
+      0.85
+    ],
+    "casa": [
+      0.2192,
+      0.1654,
+      0.1703,
+      0.1371,
+      0.1365,
+      0.055,
+      0.065,
+      0.075
+    ]
+  }
+}

@@ -1,6 +1,14 @@
 {
   "ticker": "TCB",
-  "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
+  "companyName": "Ngân hàng TCB",
+  "analysis_comments": {
+    "ytd_loans_growth": 0.0,
+    "ytd_dep_growth": 0.0,
+    "profit_source_comment": "Lợi nhuận ghi nhận sự đóng góp lớn từ các khoản thu nhập ngoài lãi đột biến (chiếm 30.4% tổng thu nhập HĐ), cho thấy nguồn lợi nhuận không hoàn toàn đi liền với hoạt động tín dụng cốt lõi.",
+    "provision_comment": "Bộ đệm hoàn nhập dự phòng hoặc cắt giảm chi phí trích lập dự phòng (chỉ chiếm 10.5% LNTT) là bệ phóng thúc đẩy lợi nhuận quý này thay vì do tăng trưởng quy mô kinh doanh cốt lõi.",
+    "nii_latest_val": 9522.05,
+    "npat_latest_val": 6950.28
+  },
   "sector": "Ngân hàng",
   "currentPrice": 33400.0,
   "marketCap": 262612062440000.0,
@@ -8,113 +16,359 @@
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
   "pe_hist": [
-    8.5,
-    9.2,
-    7.8,
-    8.1,
-    8.4
+    11.6477870099,
+    13.5226658764,
+    11.7340730437,
+    8.9041391191,
+    9.0847665895
   ],
   "pb_hist": [
-    1.2,
-    1.3,
-    1.1,
-    1.15,
-    1.25
+    1.6382492399,
+    1.831859987,
+    1.574749298,
+    1.327280517,
+    1.3379662441
   ],
   "pe_quarters": [
-    8.5,
-    9.2,
-    7.8,
-    8.1,
-    8.4
+    10.8486033885,
+    10.206529667,
+    10.0607684914,
+    8.5457101092,
+    9.4717886055,
+    8.7821250597,
+    5.9406023083,
+    6.5290253263,
+    7.5261695389,
+    10.2860934157,
+    11.2185517693,
+    13.1316545048,
+    9.8186642285,
+    8.8579073991,
+    6.614888531,
+    4.3885697734,
+    4.6050342182,
+    5.0385353485,
+    5.8110753933,
+    6.4222572428,
+    7.1247900953,
+    9.2616863103,
+    8.1382371231,
+    7.9891802171,
+    7.3616543745,
+    8.512548075,
+    11.6477870099,
+    13.5226658764,
+    11.7340730437,
+    8.9041391191,
+    9.0847665895
   ],
   "pb_quarters": [
-    1.2,
-    1.3,
-    1.1,
-    1.15,
-    1.25
+    2.0494710047,
+    1.8832315269,
+    1.6464212149,
+    1.3519337912,
+    1.4846296787,
+    1.3913662797,
+    0.968766836,
+    1.062294609,
+    1.2188483813,
+    1.6737236525,
+    1.8651941237,
+    2.3877963955,
+    1.9531524668,
+    1.7365199257,
+    1.297252187,
+    0.8591419325,
+    0.8981549631,
+    0.9051804774,
+    0.9531244902,
+    0.9427913607,
+    0.9693953468,
+    1.2814120995,
+    1.1767518385,
+    1.2506132202,
+    1.1648980259,
+    1.2631495845,
+    1.6382492399,
+    1.831859987,
+    1.574749298,
+    1.327280517,
+    1.3379662441
   ],
   "quarter_labels": [
-    "Q1",
-    "Q2",
-    "Q3",
-    "Q4",
-    "Q1",
-    "Q2",
-    "Q3",
-    "Q4"
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
   ],
-  "income_quarterly": [],
+  "income_quarterly": [
+    {
+      "quarter": "2023-Q2",
+      "nii": 6294.88,
+      "nonii": 3030.29,
+      "toi": 9325.17,
+      "ppop": 6456.28,
+      "npat": 4503.45
+    },
+    {
+      "quarter": "2023-Q3",
+      "nii": 7272.16,
+      "nonii": 3146.33,
+      "toi": 10418.49,
+      "ppop": 6787.76,
+      "npat": 4668.7
+    },
+    {
+      "quarter": "2023-Q4",
+      "nii": 7597.2,
+      "nonii": 3420.25,
+      "toi": 11017.45,
+      "ppop": 7407.36,
+      "npat": 4481.61
+    },
+    {
+      "quarter": "2024-Q1",
+      "nii": 8499.54,
+      "nonii": 3762.22,
+      "toi": 12261.77,
+      "ppop": 9012.63,
+      "npat": 6277.0
+    },
+    {
+      "quarter": "2024-Q2",
+      "nii": 9477.93,
+      "nonii": 3941.77,
+      "toi": 13419.7,
+      "ppop": 9470.72,
+      "npat": 6269.97
+    },
+    {
+      "quarter": "2024-Q3",
+      "nii": 8928.68,
+      "nonii": 2825.66,
+      "toi": 11754.33,
+      "ppop": 8323.43,
+      "npat": 5793.02
+    },
+    {
+      "quarter": "2024-Q4",
+      "nii": 8601.82,
+      "nonii": 952.78,
+      "toi": 9554.6,
+      "ppop": 4813.88,
+      "npat": 3420.11
+    },
+    {
+      "quarter": "2025-Q1",
+      "nii": 8305.39,
+      "nonii": 3305.8,
+      "toi": 11611.2,
+      "ppop": 8326.28,
+      "npat": 6013.51
+    },
+    {
+      "quarter": "2025-Q2",
+      "nii": 9137.08,
+      "nonii": 3605.95,
+      "toi": 12743.03,
+      "ppop": 8912.34,
+      "npat": 6347.61
+    },
+    {
+      "quarter": "2025-Q3",
+      "nii": 9924.64,
+      "nonii": 4317.48,
+      "toi": 14242.12,
+      "ppop": 9749.27,
+      "npat": 6613.52
+    },
+    {
+      "quarter": "2025-Q4",
+      "nii": 10787.98,
+      "nonii": 4006.79,
+      "toi": 14794.77,
+      "ppop": 9970.8,
+      "npat": 6979.83
+    },
+    {
+      "quarter": "2026-Q1",
+      "nii": 9522.05,
+      "nonii": 4152.22,
+      "toi": 13674.27,
+      "ppop": 9805.26,
+      "npat": 6950.28
+    }
+  ],
   "ratios_quarterly": {
     "quarters": [
-      "2021",
-      "2022",
-      "2023",
-      "2024",
-      "2025"
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
     ],
     "nim": [
-      0.0513,
-      0.0532,
-      0.0404,
-      0.0426,
-      0.0378
+      0.0546,
+      0.0619,
+      0.0593,
+      0.0615,
+      0.0648,
+      0.0578,
+      0.0552,
+      0.0507,
+      0.0522,
+      0.0525,
+      0.057,
+      0.0485
     ],
     "ldr": [
-      1.0917,
-      1.16,
-      1.1272,
-      1.1692,
-      1.2233
+      1.0546,
+      0.9973,
+      0.9502,
+      1.0014,
+      0.9846,
+      0.995,
+      0.9255,
+      0.9639,
+      0.9768,
+      0.9733,
+      0.9076,
+      0.9608
     ],
     "casa": [
-      0.4698,
-      0.3434,
-      0.38,
-      0.3594,
-      0.3448
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0017,
+      0.0013,
+      0.002,
+      0.0029,
+      0.0039,
+      0.0037
     ],
     "npl": [
-      0.0067,
-      0.0073,
-      0.0117,
-      0.0114,
-      0.0108
+      -0.0126,
+      -0.0128,
+      -0.012,
+      -0.0121,
+      -0.0126,
+      -0.0135,
+      -0.013,
+      -0.0133,
+      -0.0136,
+      -0.0141,
+      -0.0139,
+      -0.0143
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế."
+    "Ngân hàng TCB (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu TCB."
   ],
   "risks": [
-    "Rủi ro biên lãi ròng NIM thu hẹp do cạnh tranh lãi suất cho vay.",
-    "Rủi ro nợ xấu gia tăng khi thị trường bất động sản phục hồi chậm."
+    "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.38% so kế hoạch.",
+    "Rủi ro nợ xấu: thị trường bất động sản hồi phục chậm, nợ nhóm 2 tăng có thể chuyển thành NPL trong 6–12 tháng.",
+    "Rủi ro pháp lý: Thông tư siết TPDN và nâng chuẩn CAR có thể hạn chế room tín dụng của TCB."
   ],
   "moats": {
     "Network Effect": {
       "score": 4,
-      "desc": "Mạng lưới phân phối rộng lớn."
+      "desc": "Mạng lưới khách hàng TCB rộng — hiệu ứng mạng lưới tạo CASA ổn định."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "CASA cao giúp COF thấp hơn ngành, tạo lợi thế chi phí vốn bền vững."
     },
     "Switching Cost": {
       "score": 3,
-      "desc": "Hệ sinh thái số tiện ích giữ chân khách hàng."
+      "desc": "Hệ sinh thái ứng dụng số tích hợp tạo rào cản chuyển đổi khách hàng."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu ngân hàng uy tín và quan hệ doanh nghiệp/cá nhân lâu năm."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô tài sản tạo hiệu quả vận hành trên chi phí cố định hạ tầng CNTT."
     }
   },
   "pestle": [
     {
       "factor": "Political",
-      "content": "Môi trường chính trị ổn định hỗ trợ ngành ngân hàng.",
+      "content": "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",
       "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "GDP 6–7%, nhu cầu tín dụng sản xuất–tiêu dùng cao, lãi suất huy động dần giảm.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt thúc đẩy CASA và dịch vụ phí.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Chuyển đổi số banking giảm CIR, tăng CASA và cross-sell — đây là lợi thế cạnh tranh dài hạn.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — tạo áp lực pháp lý ngắn hạn.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",
+      "impact": "Negative"
     }
   ],
   "valuation": {
-    "bear": 24055,
-    "base": 28301,
-    "bull": 32546
+    "bear": 26676,
+    "base": 31383,
+    "bull": 36091
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "businessModel": "Ngân hàng TCB (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
     "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
     "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu TCB."
   },
@@ -135,9 +389,9 @@
       27691.12,
       35507.96,
       38155.09,
-      39980.44,
-      45627.06,
-      51598.37
+      46683.04,
+      53958.95,
+      61328.35
     ],
     "npat": [
       18415.38,
@@ -145,9 +399,9 @@
       18190.87,
       21760.1,
       25954.47,
-      22395.79,
-      26958.04,
-      31467.74
+      30460.23,
+      36049.91,
+      41392.45
     ],
     "eps": [
       2342.1,
@@ -155,9 +409,9 @@
       2313.6,
       2767.5,
       3301.0,
-      2848.4,
-      3428.6,
-      4002.2
+      3874.0,
+      4585.0,
+      5264.4
     ],
     "equity": [
       93041.47,
@@ -165,9 +419,71 @@
       131616.07,
       147939.62,
       179501.44,
-      201897.23,
-      228855.27,
-      260323.01
+      200823.6,
+      226058.54,
+      255033.26
+    ]
+  },
+  "ratios": {
+    "nim": [
+      0.0513,
+      0.0532,
+      0.0404,
+      0.0426,
+      0.0378,
+      0.0397,
+      0.0408,
+      0.0416
+    ],
+    "roe": [
+      0.1979,
+      0.198,
+      0.1485,
+      0.1557,
+      0.1585,
+      null,
+      null,
+      null
+    ],
+    "roa": [
+      0.0324,
+      0.0292,
+      0.0214,
+      0.0222,
+      0.0218,
+      null,
+      null,
+      null
+    ],
+    "npl": [
+      0.0067,
+      0.0073,
+      0.0117,
+      0.0114,
+      0.0108,
+      0.0103,
+      0.0097,
+      0.0092
+    ],
+    "ldr": [
+      1.2993,
+      1.3058,
+      1.1393,
+      1.0527,
+      0.9995,
+      null,
+      null,
+      null
+    ],
+    "casa": [
+      0.4698,
+      0.3434,
+      0.38,
+      0.3594,
+      0.3448,
+      0.3548,
+      0.3648,
+      0.3748
     ]
   }
 }

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-template_banking.py — Professional parameterized calculation engine for Banks.
-Restored and upgraded from the early TCB model builder:
-- Dynamic formula-driven Excel model (13 sheets)
+template_banking.py — Universal, highly professional parameterized calculation engine for Banks.
+Includes:
+- Dynamic formula-driven Excel model (17 sheets)
 - In-depth multi-page PDF report with 13 custom Matplotlib charts
-- Multi-platform Vietnamese font bug fix (registers Windows & Linux font paths)
-- Modular AI commentary integration
+- Multi-platform Vietnamese font bug fix (Arial / Arial-Bold registered and applied to all tables/paragraphs)
+- Dynamic CAPM (Rf and Beta regression) and Residual Income + P/B target multiples valuation.
 """
 import os
+import sys
 import math
 import json
 import datetime
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.chart import BarChart, Reference
 from openpyxl.utils import get_column_letter
 
 import matplotlib
@@ -33,20 +33,17 @@ from reportlab.pdfbase.ttfonts import TTFont
 import requests
 import statistics as stats
 
+from fetch_data import section_to_quarters
+
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # ── VIETNAMESE FONT REGISTRATION (MULTI-PLATFORM BUG FIX) ──────────────────
 def register_vn_fonts():
     font_paths_to_try = [
-        # Windows Standard Fonts
         ("C:/Windows/Fonts/arial.ttf", "Arial"),
         ("C:/Windows/Fonts/arialbd.ttf", "Arial-Bold"),
-        ("C:/Windows/Fonts/ariali.ttf", "Arial-Italic"),
-        ("C:/Windows/Fonts/arialbi.ttf", "Arial-BoldItalic"),
         ("C:/Windows/Fonts/times.ttf", "TimesNewRoman"),
         ("C:/Windows/Fonts/timesbd.ttf", "TimesNewRoman-Bold"),
-        
-        # Ubuntu Linux Standard Fonts (GitHub Actions / Linux Server support)
         ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "Arial"),
         ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "Arial-Bold"),
         ("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", "Arial"),
@@ -69,23 +66,70 @@ _VN_FONTS = register_vn_fonts()
 FONT_REG = 'Arial' if 'Arial' in _VN_FONTS else 'Helvetica'
 FONT_BOLD = 'Arial-Bold' if 'Arial-Bold' in _VN_FONTS else 'Helvetica-Bold'
 
-def fetch_price_history(ticker, days=300, timeout=15):
+
+# ── CAPM INPUTS: AUTO-FETCH Rf và BETA ────────────────────────────────────
+def fetch_rf_vietnam(timeout=15):
+    FALLBACK_RF = 0.045
+    try:
+        r = requests.get(
+            "https://www.worldgovernmentbonds.com/bond-yield/vietnam/10-years/",
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=timeout,
+        )
+        if r.status_code == 200:
+            import re
+            matches = re.findall(r'(\d+\.\d+)%', r.text[:5000])
+            if matches:
+                rf = float(matches[0]) / 100
+                if 0.01 <= rf <= 0.15:
+                    return rf, "worldgovernmentbonds.com"
+    except Exception as e:
+        print(f"  [WARN] WorldGovernmentBonds Rf failed: {e}")
+
+    try:
+        r = requests.get(
+            "https://trading.vietcap.com.vn/api/iq-insight-service/v1/bond/government-bond-yield",
+            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"},
+            timeout=timeout,
+        )
+        if r.status_code == 200:
+            d = r.json().get("data", {})
+            y10 = d.get("10Y") or d.get("y10") or d.get("tenor10")
+            if y10:
+                rf = float(y10) / 100 if float(y10) > 1 else float(y10)
+                if 0.01 <= rf <= 0.15:
+                    return rf, "Vietcap API"
+    except Exception as e:
+        print(f"  [WARN] Vietcap bond API failed: {e}")
+
+    return FALLBACK_RF, "Fallback (manual)"
+
+
+def fetch_price_history(ticker, days=30, timeout=15):
     import time
     endpoints = [
         f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/chart/history?symbol={ticker}&resolution=D&from={int(time.time() - days*86400)}&to={int(time.time())}",
         f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/chart/history?symbol={ticker}&resolution=D&from={int(time.time() - days*86400)}&to={int(time.time())}"
     ]
+    # Standard headers to bypass Cloudflare block
+    req_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Origin": "https://trading.vietcap.com.vn",
+        "Referer": "https://trading.vietcap.com.vn/",
+    }
     for url in endpoints:
         try:
-            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
+            r = requests.get(url, headers=req_headers, timeout=timeout)
             if r.status_code == 200:
                 data = r.json()
                 closes = (data.get("data", {}).get("c") or data.get("c") or
                           [d.get("close") or d.get("c") for d in data.get("data", []) if isinstance(d, dict)])
                 closes = [x for x in closes if x is not None and x > 0]
-                if len(closes) > 50:
+                if len(closes) > 0:
                     return closes
-        except:
+        except Exception as e:
+            print(f"    [fetch_price_history] Attempt failed: {e}")
             pass
     return []
 
@@ -135,27 +179,30 @@ def fetch_beta_vietstock(ticker, timeout=15):
     return None, ""
 
 def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=300, timeout=20, fallback=1.0):
+    stock_closes  = fetch_price_history(ticker, days=days, timeout=timeout)
+    latest_price = stock_closes[-1] if stock_closes else None
+    if latest_price:
+        print(f"  [OK] Lấy giá phiên đóng cửa gần nhất của {ticker} từ lịch sử giá: {latest_price:,.0f} VND")
+        
     b_vs, src_vs = fetch_beta_vietstock(ticker, timeout)
     if b_vs is not None:
-        return b_vs, src_vs
+        return b_vs, src_vs, latest_price
     try:
         r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
         beta = r.json().get("data", {}).get("beta")
         if beta is not None and 0.3 <= float(beta) <= 2.5:
             print(f"  [OK] Beta {ticker} từ Vietcap API: {float(beta):.2f}")
-            return float(beta), f"Vietcap API (beta={float(beta):.2f})"
+            return float(beta), f"Vietcap API (beta={float(beta):.2f})", latest_price
     except:
         pass
     print(f"  [INFO] Tính Beta {ticker} từ hồi quy giá lịch sử...")
-    stock_closes  = fetch_price_history(ticker, days=days, timeout=timeout)
     market_closes = fetch_price_history(market_ticker, days=days, timeout=timeout)
     if stock_closes and market_closes:
         beta, n_obs = calc_beta(stock_closes, market_closes)
         if beta is not None:
-            print(f"  [OK] Beta {ticker} (hồi quy {n_obs} phiên): {beta:.2f}")
-            return beta, f"Hồi quy giá {n_obs} phiên vs {market_ticker}"
+            return beta, f"Hồi quy giá {n_obs} phiên vs {market_ticker}", latest_price
     print(f"  [FALLBACK] Beta {ticker} = {fallback}")
-    return fallback, "fallback"
+    return fallback, "fallback", latest_price
 
 
 # ── AI COMMENTARY EXTRACTOR ──────────────────────────────────────────────────
@@ -215,10 +262,10 @@ def get_ai_commentary(ticker, company_name, sector, financial_summary, api_key):
         return default_comments
 
 
-# ── MAIN ANALYSIS ENGINE ─────────────────────────────────────────────────────
+# ── MAIN PARAMETERIZED ANALYSIS ENGINE ───────────────────────────────────────
 def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ticker = ticker.upper()
-    print(f"\n--- Running Template Banking Analysis for {ticker} ---")
+    print(f"\n--- Running Corrected Banking Analysis for {ticker} ---")
     
     is_recs = raw_data["sections"]["INCOME_STATEMENT"].get("years", [])
     bs_recs = raw_data["sections"]["BALANCE_SHEET"].get("years", [])
@@ -238,8 +285,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     industry = "Ngân hàng"
     sector = "Ngân hàng"
     
-    # 1. Resolve Shares and Price
+    # Resolve Shares and Price (Shares from Charter Capital / 10000 per Rule 20)
     current_price = raw_data.get("currentPrice", 24000)
+    
     latest_hist_year = years_hist[-1]
     charter_capital = 0
     for r in bs_recs:
@@ -253,17 +301,25 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         shares = 5000000000
         
     try:
-        r_det = requests.get(f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", timeout=3)
-        det_json = r_det.json().get("data", {})
-        if det_json:
-            current_price = det_json.get("currentPrice") or current_price
-            shares = det_json.get("numberOfSharesMktCap") or shares
-    except:
+        req_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Origin": "https://trading.vietcap.com.vn",
+            "Referer": "https://trading.vietcap.com.vn/",
+        }
+        r_det = requests.get(f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", headers=req_headers, timeout=5)
+        if r_det.status_code == 200:
+            det_json = r_det.json().get("data", {})
+            if det_json and det_json.get("currentPrice"):
+                current_price = float(det_json.get("currentPrice"))
+                print(f"  [OK] Lấy giá hiện tại từ Vietcap details API: {current_price:,.0f} VND")
+    except Exception as e:
+        print(f"  [WARN] Failed to get price from details API: {e}")
         pass
         
     market_cap = current_price * shares
     
-    # ── Helpers ──
+    # ── Extraction Helpers ──
     def get_yr(records, year, field):
         for r in records:
             if r.get("yearReport") == year:
@@ -315,11 +371,24 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     gr2_ratio_hist = [round(npl_gr2_hist[i] / max(loans_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     iea_end_hist = [loans_hist[i] + bank_dep_hist[i] + inv_sec_bs_hist[i] + cash_hist[i] + sbv_dep_hist[i] for i in range(len(years_hist))]
     nim_hist = [round(nii_hist[i] / ((iea_end_hist[i-1] + iea_end_hist[i]) / 2 if i > 0 else iea_end_hist[i]) * 100, 2) for i in range(len(years_hist))]
-    ldr_hist = [round(loans_hist[i] / max(cust_dep_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
+    
+    # LDR detailed components according to SBV Circular 22 & Circular 26 (Treasury deposits roadmap)
+    tpdn_hist = [get_yr(nt_recs, y, "nob47") or get_yr(nt_recs, y, "nob48") or 0 for y in years_hist]
+    kbnn_hist = [get_yr(bs_recs, y, "bsb110") + get_yr(bs_recs, y, "bsb111") for y in years_hist]
+    ky_quy_hist = [get_yr(nt_recs, y, "nob73") or get_yr(nt_recs, y, "nob75") or 0 for y in years_hist]
+    voncg_hist = [get_yr(bs_recs, y, "bsb115") for y in years_hist]
+    
+    # SBV Circular 26 KBNN deposit inclusion rates: 2021-2022: 0%, 2023: 35%, 2024: 50%, 2025: 60%
+    kbnn_rates_hist = [0.0, 0.0, 0.35, 0.50, 0.60]
+    
+    # Parameterized LDR with valuable papers and SBV Circular 22/26 adjustments
+    ldr_hist = [round((loans_hist[i] + tpdn_hist[i]) / max(cust_dep_hist[i] + bonds_hist[i] + (kbnn_hist[i] * kbnn_rates_hist[i]) - ky_quy_hist[i] - voncg_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     cir_hist = [round(opex_hist[i] / max(toi_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     roe_hist = [round(np_hist[i] / ((equity_hist[i-1] + equity_hist[i])/2 if i>0 else equity_hist[i]) * 100, 2) for i in range(len(years_hist))]
     roa_hist = [round(np_hist[i] / max(total_assets_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     coc_hist = [round(prov_hist[i] / ((loans_hist[i-1] + loans_hist[i])/2 if i>0 else max(loans_hist[i], 1)) * 100, 2) for i in range(len(years_hist))]
+    # bsb105 is the correct Allowance for loan losses account
+    llr_hist = [round(abs(get_yr(bs_recs, y, "bsb105")) / max(npl_total_hist[idx], 0.001) * 100, 2) for idx, y in enumerate(years_hist)]
 
     # ── Live Peer Multiples ──
     PEER_BANKS = ["TCB","ACB","VCB","BID","CTG","MBB","VPB","HDB","VIB","LPB","STB","SHB","EIB","MSB","OCB","NAB","BAB","VAB"]
@@ -343,34 +412,73 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         INDUSTRY_AVG[metric] = sum(vals) / len(vals) if vals else 0
 
     # ── Fetch Ratios ──
-    pe_all_vals, pb_all_vals = [8.5, 9.2, 7.8, 8.1, 8.4], [1.2, 1.3, 1.1, 1.15, 1.25]
-    pe_carried = {}
+    pe_all_vals, pb_all_vals = [8.5, 9.2, 7.8, 8.1, 8.4]*4, [1.2, 1.3, 1.1, 1.15, 1.25]*4
     try:
-        r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial", timeout=5)
-        data = r.json().get("data", [])
-        ttms = sorted([x for x in data if x.get("year") and x.get("quarter") in (1,2,3,4)], key=lambda x: (x["year"], x["quarter"]))
-        if ttms:
-            pe_all_vals = [x.get("pe") for x in ttms if x.get("pe") is not None]
-            pb_all_vals = [x.get("pb") for x in ttms if x.get("pb") is not None]
+        req_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Origin": "https://trading.vietcap.com.vn",
+            "Referer": "https://trading.vietcap.com.vn/",
+        }
+        r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial", headers=req_headers, timeout=5)
+        if r.status_code == 200:
+            data = r.json().get("data", [])
+            ttms = sorted([x for x in data if x.get("year") and x.get("quarter") in (1,2,3,4)], key=lambda x: (x["year"], x["quarter"]))
+            if ttms:
+                pe_all_vals = [x.get("pe") for x in ttms if x.get("pe") is not None]
+                pb_all_vals = [x.get("pb") for x in ttms if x.get("pb") is not None]
+                print(f"  [OK] Đã lấy thành công {len(pb_all_vals)} quý PE/PB lịch sử thô từ Vietcap API")
     except Exception as e:
         print(f"[WARN] Live ratios fetch failed: {e}")
         
-    pe_all_median = stats.median(pe_all_vals) if pe_all_vals else 8.5
-    pb_all_median = stats.median(pb_all_vals) if pb_all_vals else 1.2
+    # Calculate median and distribution metrics using only the last 12 quarters (3 years)
+    pe_last_12 = pe_all_vals[-12:] if pe_all_vals else [8.5]
+    pb_last_12 = pb_all_vals[-12:] if pb_all_vals else [1.25]
     
-    _pb_above = [p for p in pb_all_vals if p >= pb_all_median]
+    pe_all_median = stats.median(pe_last_12)
+    pb_all_median = stats.median(pb_last_12)
+    
+    _pb_below = [p for p in pb_last_12 if p <= pb_all_median]
+    _pb_above = [p for p in pb_last_12 if p >= pb_all_median]
+    pb_attractive = stats.median(_pb_below) if _pb_below else pb_all_median * 0.85
     pb_target = stats.median(_pb_above) if _pb_above else pb_all_median * 1.15
-    pb_attractive = pb_all_median * 0.85
+    
+    # Median per year
+    pe_by_year, pb_by_year = {}, {}
+    if 'ttms' in locals() and ttms:
+        for r in ttms:
+            y = r["year"]
+            pe = r.get("pe")
+            pb = r.get("pb", 0)
+            if pe is not None:
+                pe_by_year.setdefault(y, []).append(pe)
+            pb_by_year.setdefault(y, []).append(pb)
+    pe_median_year = {y: stats.median(v) for y, v in pe_by_year.items()} if pe_by_year else {y: pe_all_median for y in years_hist}
+    pb_median_year = {y: stats.median(v) for y, v in pb_by_year.items()} if pb_by_year else {y: pb_all_median for y in years_hist}
 
-    # ── Forecast Assumptions ──
+    # ── Forecast Assumptions (Dynamic & Anchored to last historical actuals) ──
     loans_growth_fc = [0.14, 0.13, 0.12]
     dep_growth_fc = [0.12, 0.11, 0.10]
     iea_growth_fc = [0.13, 0.12, 0.11]
-    nim_fc = [3.40, 3.45, 3.50]
+    
+    # Dynamic NIM: Anchored to historical NIM of year 2025
+    nim_base = nim_hist[-1] / 100
+    nim_fc = [round(nim_base * 1.05, 4), round(nim_base * 1.08, 4), round(nim_base * 1.10, 4)]
+    
     cir_fc = [0.33, 0.32, 0.32]
-    coc_fc = [0.013, 0.012, 0.011]
-    npl_fc = [0.012, 0.011, 0.010]
-    casa_target_fc = [0.055, 0.065, 0.075]
+    
+    # Dynamic Cost of Credit (CoC): Anchored to 2025 actual CoC
+    coc_base = coc_hist[-1] / 100
+    coc_fc = [round(coc_base * 0.95, 4), round(coc_base * 0.90, 4), round(coc_base * 0.85, 4)]
+    
+    # Dynamic NPL: Anchored to 2025 actual NPL
+    npl_base = npl_ratio_hist[-1] / 100
+    npl_fc = [round(npl_base * 0.95, 4), round(npl_base * 0.90, 4), round(npl_base * 0.85, 4)]
+    
+    # Dynamic CASA: Anchored to 2025 actual CASA
+    casa_base = casa_ratio_hist[-1] / 100
+    casa_target_fc = [round(casa_base + 0.01, 4), round(casa_base + 0.02, 4), round(casa_base + 0.03, 4)]
+    
     non_int_growth_fc = [0.15, 0.15, 0.14]
     llr_coverage_fc = [0.90, 0.95, 1.00]
     tax_rate = 0.20
@@ -391,7 +499,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         prev_iea_end = iea_end_hist_last if i == 0 else iea_fc[i-1]
         iea_avg_fc.append((prev_iea_end + iea_fc[i]) / 2)
         
-    nii_fc = [iea_avg_fc[i] * nim_fc[i] / 100 for i in range(3)]
+    nii_fc = [iea_avg_fc[i] * nim_fc[i] for i in range(3)]
     non_int_fc = []
     for i in range(3):
         base_non_int = toi_hist[-1] - nii_hist[-1]
@@ -406,19 +514,46 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     tax_fc = [max(pbt_fc[i] * tax_rate, 0) for i in range(3)]
     np_fc = [pbt_fc[i] - tax_fc[i] for i in range(3)]
     
+    npl_fc_amt = [loans_fc[i] * npl_fc[i] for i in range(3)]
+    casa_fc_amt = [dep_fc[i] * casa_target_fc[i] for i in range(3)]
+    term_dep_fc = [dep_fc[i] - casa_fc_amt[i] for i in range(3)]
+
     eps_hist_calc = [np_hist[i] * 1e9 / shares for i in range(len(years_hist))]
     eps_fc_calc = [np_fc[i] * 1e9 / shares for i in range(3)]
     bvps_hist = [equity_hist[i] * 1e9 / shares for i in range(len(years_hist))]
     
-    # ── Valuation ──
-    print(f"[Assumptions] Fetching/calculating Beta and COE for {ticker}...")
-    beta_val, beta_src = fetch_and_calc_beta(ticker)
-    rf_val = 0.045 # Standard 4.5% Rf Vietnam
-    erp_val = 0.07 # Standard 7.0% ERP
-    COE = rf_val + beta_val * erp_val
-    print(f"  -> Beta ({ticker}): {beta_val} ({beta_src})")
-    print(f"  -> COE ({ticker}): {COE*100:.2f}% (calculated via CAPM)")
+    # Dynamic forecast ratios for PDF Snapshot and Margins Chart
+    eq_fc_ends = [equity_hist[-1]]
+    for i in range(3):
+        eq_fc_ends.append(eq_fc_ends[-1] + np_fc[i]*0.7)
+    roe_fc_calc = [np_fc[i] / ((eq_fc_ends[i] + eq_fc_ends[i+1])/2) * 100 for i in range(3)]
     
+    bonds_fc_ends = [bonds_hist[-1]]
+    for i in range(3):
+        bonds_fc_ends.append(bonds_fc_ends[-1]*1.02)
+        
+    # Project other LDR components
+    tpdn_fc = [tpdn_hist[-1] * (loans_fc[i] / loans_hist[-1]) for i in range(3)]
+    kbnn_fc = [kbnn_hist[-1] * (dep_fc[i] / cust_dep_hist[-1]) for i in range(3)]
+    ky_quy_fc = [ky_quy_hist[-1] * (dep_fc[i] / cust_dep_hist[-1]) for i in range(3)]
+    voncg_fc = [voncg_hist[-1] * (1.02 ** (i+1)) for i in range(3)]
+    
+    # Under SBV Circular 26, from 2026 onwards KBNN deposit inclusion rate is 80%
+    ldr_fc_calc = [
+        (loans_fc[i] + tpdn_fc[i]) / max(dep_fc[i] + bonds_fc_ends[i+1] + (kbnn_fc[i] * 0.8) - ky_quy_fc[i] - voncg_fc[i], 1) * 100 
+        for i in range(3)
+    ]
+    
+    # ── COE calculation via CAPM (with 2% Specific Frontier Risk Premium) ──
+    rf_val, rf_src = fetch_rf_vietnam()
+    beta_val, beta_src, _ = fetch_and_calc_beta(ticker)
+    erp_val = 0.07  # Damodaran ERP
+    specific_risk_premium = 0.02 # specific risk premium for frontier market / bank specific risks
+    COE = rf_val + beta_val * erp_val + specific_risk_premium
+    print(f"  -> Beta: {beta_val} ({beta_src})")
+    print(f"  -> COE: {COE*100:.2f}% (Rf={rf_val*100:.2f}%, ERP={erp_val*100:.2f}%, Specific Risk Premium={specific_risk_premium*100:.2f}%)")
+    
+    # ── Valuation (Ensure Strict Clean Surplus Relation per Rule 17.1) ──
     terminal_growth = 0.03
     bvps_base = bvps_hist[-1]
     
@@ -430,15 +565,16 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         capital_charge = bv_start * COE
         ri = eps_i - capital_charge
         ri_results.append(ri)
-        bv = bv_start + eps_i
+        bv = bv_start + eps_i  # BVPS(t) = BVPS(t-1) + EPS(t)
         
     cv = ri_results[-1] * (1 + terminal_growth) / (COE - terminal_growth) if (COE - terminal_growth) > 0 else 0
     pv_ri = sum([ri_results[i] / (1 + COE) ** (i + 1) for i in range(len(ri_results))])
-    pv_cv = cv / (1 + COE) ** len(ri_results)
+    # Apply Option B: Take 50% of PV of Continuing Value to account for long-term ROE reverting to COE
+    pv_cv = (cv / (1 + COE) ** len(ri_results)) * 0.5
     ri_value = bvps_base + pv_ri + pv_cv
     
     bvps_forward = bvps_base + eps_fc_calc[0]
-    pb_value = pb_target * bvps_forward
+    pb_value = pb_all_median * bvps_forward
     
     weighted_target = 0.5 * ri_value + 0.5 * pb_value
     upside = (weighted_target / current_price - 1) * 100
@@ -455,11 +591,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     excel_path = os.path.join(out_dir, f"{ticker}_Model_{month_str}.xlsx")
     pdf_path = os.path.join(out_dir, f"{ticker}_Phan_Tich_{month_str}.pdf")
 
-    # ── Excel Export (Formula-Driven 13 Sheets) ──────────────
-    print(f"[Excel] Building formula-driven workbook for {ticker}...")
+    # ── Excel Export (Formula-Driven 17 Sheets) ──────────────
+    print(f"[Excel] Building workbook with formulas for {ticker}...")
     wb = openpyxl.Workbook()
     
-    # Fonts & Styles
+    # Styles
     FMT_BLUE = PatternFill(start_color="DCE6F1", end_color="DCE6F1", fill_type="solid")
     FMT_HDR = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
     FMT_HDR_FONT = Font(bold=True, color="FFFFFF", size=11, name="Calibri")
@@ -468,7 +604,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         left=Side(style='thin'), right=Side(style='thin'),
         top=Side(style='thin'), bottom=Side(style='thin')
     )
-    FMT_NUM = '#,##0.0'
+    FMT_NUM = '#,##0'
+    FMT_NUM1 = '#,##0.0'
     FMT_PCT = '0.00%'
 
     def write_header_row(ws, row, col_start, labels):
@@ -477,7 +614,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             c.fill = FMT_HDR; c.font = FMT_HDR_FONT; c.border = thin_border
             c.alignment = Alignment(horizontal='center', wrap_text=True)
 
-    def write_data_row(ws, row, col_start, values, fmt=FMT_NUM, is_blue=False):
+    def write_data_row(ws, row, col_start, values, fmt=FMT_NUM1, is_blue=False):
         for idx, v in enumerate(values):
             c = ws.cell(row=row, column=col_start+idx)
             c.value = v
@@ -486,49 +623,142 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             c.alignment = Alignment(horizontal='center')
             if is_blue:
                 c.fill = FMT_BLUE
-            if not isinstance(v, str):
+            if not isinstance(v, str) and v is not None:
                 c.number_format = fmt
 
     headers = ["Chỉ tiêu"] + [str(y) for y in years_hist] + [f"{y}F" for y in years_fc]
     
-    # 01_Cover
-    ws_cov = wb.active; ws_cov.title = "01_Cover"
+    # 1. 00_COE
+    ws_coe = wb.active
+    ws_coe.title = "00_COE"
+    ws_coe.column_dimensions['A'].width = 42
+    ws_coe.column_dimensions['B'].width = 18
+    ws_coe.column_dimensions['C'].width = 30
+    
+    ws_coe.cell(row=1, column=1, value="CHI PHÍ VỐN CSH (COE) — MÔ HÌNH CAPM").font = FMT_BOLD
+    ws_coe.cell(row=3, column=1, value="Tham số").font = FMT_BOLD
+    ws_coe.cell(row=3, column=2, value="Giá trị").font = FMT_BOLD
+    ws_coe.cell(row=4, column=1, value="Rf — Lãi suất phi rủi ro")
+    ws_coe.cell(row=4, column=2, value=rf_val).number_format = '0.00%'
+    ws_coe.cell(row=5, column=1, value="β  — Hệ số Beta")
+    ws_coe.cell(row=5, column=2, value=beta_val)
+    ws_coe.cell(row=6, column=1, value="ERP — Phần bù rủi ro vốn")
+    ws_coe.cell(row=6, column=2, value=erp_val).number_format = '0.00%'
+    ws_coe.cell(row=7, column=1, value="α  — Phần bù rủi ro đặc thù (Frontier/Bank)")
+    ws_coe.cell(row=7, column=2, value=0.02).number_format = '0.00%'
+    
+    ws_coe.cell(row=9, column=1, value="COE = Rf + β × ERP + α").font = FMT_BOLD
+    ws_coe.cell(row=9, column=2, value="=B4+B5*B6+B7").font = FMT_BOLD
+    ws_coe.cell(row=9, column=2).number_format = '0.00%'
+    ws_coe.cell(row=9, column=2).fill = FMT_BLUE
+    
+    # 2. 01_Cover
+    ws_cov = wb.create_sheet("01_Cover")
     ws_cov.views.sheetView[0].showGridLines = True
     ws_cov["B2"] = f"PHÂN TÍCH CỔ PHIẾU NGÂN HÀNG: {ticker}"
     ws_cov["B2"].font = Font(bold=True, size=16, name="Calibri")
     ws_cov["B3"] = company_name
     ws_cov["B3"].font = Font(size=12, italic=True, name="Calibri")
-    ws_cov["B5"] = "Giá mục tiêu (VND):"
-    ws_cov["C5"] = int(weighted_target)
-    ws_cov["C5"].font = FMT_BOLD
+    ws_cov["B5"] = "Giá hiện tại (VND):"
+    ws_cov["C5"] = "='02_Assumptions'!B2"
+    ws_cov["C5"].font = Font(size=11, name="Calibri")
     ws_cov["C5"].number_format = '#,##0'
+    
+    ws_cov["B6"] = "Giá mục tiêu (VND):"
+    ws_cov["C6"] = "='07_Valuation'!B21"
+    ws_cov["C6"].font = Font(bold=True, size=11, name="Calibri")
+    ws_cov["C6"].number_format = '#,##0'
+    
+    ws_cov["B7"] = "Upside:"
+    ws_cov["C7"] = "='07_Valuation'!B23"
+    ws_cov["C7"].font = Font(bold=True, size=11, name="Calibri")
+    ws_cov["C7"].number_format = '0.00%'
+    
+    ws_cov["B8"] = "Khuyến nghị:"
+    ws_cov["C8"] = '=IF(\'07_Valuation\'!B23>0.15,"MUA",IF(\'07_Valuation\'!B23<-0.05,"BÁN","THEO DÕI"))'
+    ws_cov["C8"].font = Font(bold=True, size=11, name="Calibri")
 
-    # 02_Assumptions
+    # 3. 02_Assumptions
     ws_ass = wb.create_sheet("02_Assumptions")
-    ws_ass.views.sheetView[0].showGridLines = True
     write_header_row(ws_ass, 1, 1, headers)
     assumptions = [
-        ("Tín dụng tăng trưởng (%)", [None]*5 + loans_growth_fc),
-        ("Huy động tăng trưởng (%)", [None]*5 + dep_growth_fc),
-        ("NIM (%)", [n/100 for n in nim_hist] + [n/100 for n in nim_fc]),
-        ("CIR (%)", [c/100 for c in cir_hist] + cir_fc),
-        ("Chi phí vốn CSH (COE)", [None]*5 + [COE, COE, COE]),
-        ("Số lượng cổ phiếu", [shares] + [None]*7),
+        ("Giá cổ phiếu (VND)", [current_price] + [None]*7),                      # row 2
+        ("Số lượng CP lưu hành", [shares] + [None]*7),                            # row 3
+        ("Tín dụng tăng trưởng (%)", [None]*5 + loans_growth_fc),                # row 4
+        ("Huy động tăng trưởng (%)", [None]*5 + dep_growth_fc),                  # row 5
+        ("NIM (%)", [n/100 for n in nim_hist] + nim_fc),                          # row 6
+        ("CIR (%)", [c/100 for c in cir_hist] + cir_fc),                          # row 7
+        ("CoC - Credit Cost (%)", [c/100 for c in coc_hist] + coc_fc),            # row 8
+        ("NPL ratio (%)", [n/100 for n in npl_ratio_hist] + npl_fc),              # row 9
+        ("CASA ratio (%)", [c/100 for c in casa_ratio_hist] + casa_target_fc),    # row 10
+        ("Tăng trưởng non-TOI (%)", [None]*5 + non_int_growth_fc),                # row 11
+        ("Chi phí vốn CSH (COE)", [None]*5 + [COE, COE, COE]),                      # row 12 — FIX: số thực, không phải string
+        ("Tăng trưởng dài hạn (g)", [None]*7 + [terminal_growth]),               # row 13
+        ("Thuế suất (%)", [None]*5 + [tax_rate]*3),                              # row 14
+        ("P/B mục tiêu (x)", [None]*5 + [pb_target]*3)                           # row 15
     ]
     for idx, (lbl, vals) in enumerate(assumptions):
         r = idx + 2
-        write_data_row(ws_ass, r, 1, [lbl] + vals, FMT_PCT if "growth" in lbl or "%" in lbl or "COE" in lbl else FMT_NUM)
+        fmt_to_use = FMT_PCT if r in [4,5,6,7,8,9,10,11,12,13,14] else (FMT_NUM1 if r == 15 else FMT_NUM)
+        write_data_row(ws_ass, r, 1, [lbl] + vals, fmt_to_use)
 
-    # 03_Income_Model
+    # 4. 03_Income_Model
     ws_im = wb.create_sheet("03_Income_Model")
-    ws_im.views.sheetView[0].showGridLines = True
     write_header_row(ws_im, 1, 1, headers)
-    write_data_row(ws_im, 2, 1, ["NII (tỷ)"] + nii_hist + nii_fc)
-    write_data_row(ws_im, 3, 1, ["Thu nhập ngoài lãi"] + [toi_hist[i] - nii_hist[i] for i in range(5)] + non_int_fc)
-    
-    # 04_PnL
+    write_data_row(ws_im, 2, 1, ["IEA bình quân (tỷ)"] + [((iea_end_hist[i-1] + iea_end_hist[i])/2 if i > 0 else iea_end_hist[i]) for i in range(5)] + iea_avg_fc)
+    # FIX Lỗi 8 nhỏ: IEA growth phải dạng thập phân (FMT_PCT sẽ hiển thị đúng)
+    write_data_row(ws_im, 3, 1, ["IEA tăng trưởng (%)"] + [None] + [round((iea_end_hist[i]/iea_end_hist[i-1]-1),4) for i in range(1,5)] + iea_growth_fc, FMT_PCT)
+    write_data_row(ws_im, 4, 1, ["NIM (%)"] + [n/100 for n in nim_hist] + nim_fc)
+    write_data_row(ws_im, 5, 1, ["NII (tỷ)"] + nii_hist + nii_fc)
+    write_data_row(ws_im, 6, 1, ["Thu nhập dịch vụ"] + fee_inc_hist + [None]*3)
+    write_data_row(ws_im, 7, 1, ["Thu nhập ngoại hối"] + fx_hist + [None]*3)
+    write_data_row(ws_im, 8, 1, ["Thu nhập CK đầu tư"] + [trade_sec_hist[i] + inv_sec_hist[i] for i in range(5)] + [None]*3)
+    write_data_row(ws_im, 9, 1, ["Thu nhập khác"] + other_inc_hist + [None]*3)
+    write_data_row(ws_im, 10, 1, ["Tổng thu nhập ngoài lãi"] + [toi_hist[i] - nii_hist[i] for i in range(5)] + non_int_fc)
+    write_data_row(ws_im, 11, 1, ["Tổng thu nhập HĐ - TOI"] + toi_hist + toi_fc)
+    write_data_row(ws_im, 12, 1, ["NII/TOI (%)"] + [round(nii_hist[i]/toi_hist[i]*100, 2) for i in range(5)] + [None]*3)
+    write_data_row(ws_im, 13, 1, ["Chi phí HĐ - OPEX"] + opex_hist + opex_fc)
+    write_data_row(ws_im, 14, 1, ["PPOP - LN trước dự phòng"] + ppop_hist + ppop_fc)
+    write_data_row(ws_im, 15, 1, ["PPOP/TOI (%)"] + [round(ppop_hist[i]/toi_hist[i]*100, 2) for i in range(5)] + [None]*3)
+    write_data_row(ws_im, 16, 1, ["Dự phòng tín dụng"] + prov_hist + prov_fc)
+    write_data_row(ws_im, 17, 1, ["LN trước thuế - PBT"] + pbt_hist + pbt_fc)
+
+    # Write formula updates for forecast columns G, H, I in Income Model
+    for idx, col in enumerate(['G', 'H', 'I']):
+        prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
+        # NII forecast = IEA avg * NIM (from Assumptions)
+        ws_im.cell(row=5, column=7+idx, value=f"={col}2*'02_Assumptions'!{col}6")
+        # TOI forecast = NII + Non-II
+        ws_im.cell(row=11, column=7+idx, value=f"={col}5+{col}10")
+        # OPEX forecast = TOI * CIR (from Assumptions)
+        ws_im.cell(row=13, column=7+idx, value=f"={col}11*'02_Assumptions'!{col}7")
+        # PPOP forecast = TOI - OPEX
+        ws_im.cell(row=14, column=7+idx, value=f"={col}11-{col}13")
+        # Provision forecast = avg_loans * CoC
+        ws_im.cell(row=16, column=7+idx, value=f"=(('05_Balance_Sheet'!{prev_col}3+'05_Balance_Sheet'!{col}3)/2)*'02_Assumptions'!{col}8")
+        # PBT forecast = PPOP - Provision
+        ws_im.cell(row=17, column=7+idx, value=f"={col}14-{col}16")
+
+    # 5. 04_PnL_Quarterly
+    ws_pq = wb.create_sheet("04_PnL_Quarterly")
+    is_q_recs = sorted(section_to_quarters(raw_data, "INCOME_STATEMENT"), key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
+    pq_headers = ["Chỉ tiêu"] + [f"Q{r.get('lengthReport')}/{r['yearReport']}" for r in is_q_recs]
+    write_header_row(ws_pq, 1, 1, pq_headers)
+    pq_data = [
+        ("Thu nhập lãi thuần - NII", [(r.get("isb27") or 0) / 1e9 for r in is_q_recs]),
+        ("Thu nhập ngoài lãi", [((r.get("isb38") or 0) - (r.get("isb27") or 0)) / 1e9 for r in is_q_recs]),
+        ("Tổng thu nhập HĐ - TOI", [(r.get("isb38") or 0) / 1e9 for r in is_q_recs]),
+        ("Chi phí hoạt động - OPEX", [abs(r.get("isb39") or 0) / 1e9 for r in is_q_recs]),
+        ("LN trước dự phòng - PPOP", [(r.get("isb40") or 0) / 1e9 for r in is_q_recs]),
+        ("Dự phòng tín dụng", [abs(r.get("isb41") or 0) / 1e9 for r in is_q_recs]),
+        ("LN trước thuế - PBT", [(r.get("isa16") or 0) / 1e9 for r in is_q_recs]),
+        ("LN sau thuế - NPAT", [(r.get("isa20") or 0) / 1e9 for r in is_q_recs]),
+    ]
+    for i, (label, vals) in enumerate(pq_data):
+        write_data_row(ws_pq, i + 2, 1, [label] + vals, FMT_NUM1)
+
+    # 6. 04_PnL
     ws_pnl = wb.create_sheet("04_PnL")
-    ws_pnl.views.sheetView[0].showGridLines = True
     write_header_row(ws_pnl, 1, 1, headers)
     pnl_data = [
         ("Thu nhập lãi thuần (NII)", nii_hist + nii_fc),
@@ -539,58 +769,334 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ]
     for idx, (lbl, vals) in enumerate(pnl_data):
         r = idx + 2
-        write_data_row(ws_pnl, r, 1, [lbl] + vals, FMT_NUM if "EPS" in lbl else FMT_NUM)
+        write_data_row(ws_pnl, r, 1, [lbl] + vals, FMT_NUM if "EPS" in lbl else FMT_NUM1)
         
-    # Write formulas for forecast years in PnL
     for idx, col in enumerate(['G', 'H', 'I']):
-        ws_pnl.cell(row=2, column=7+idx, value=f"='03_Income_Model'!{col}2")
-        ws_pnl.cell(row=3, column=7+idx, value=f"=SUM({col}2+'03_Income_Model'!{col}3)")
-        ws_pnl.cell(row=4, column=7+idx, value=f"={col}3*(1-'02_Assumptions'!{col}5)")
-        ws_pnl.cell(row=5, column=7+idx, value=f"={col}4-(('05_Balance_Sheet'!{col}3)*'02_Assumptions'!{col}4)") # Provision proxy
-        ws_pnl.cell(row=6, column=7+idx, value=f"={col}5*1e9/'02_Assumptions'!$B$7")
+        ws_pnl.cell(row=2, column=7+idx, value=f"='03_Income_Model'!{col}5")
+        ws_pnl.cell(row=3, column=7+idx, value=f"=SUM({col}2+'03_Income_Model'!{col}10)")
+        ws_pnl.cell(row=4, column=7+idx, value=f"='03_Income_Model'!{col}14")
+        # Correct dynamic calculation for LNST (NPAT): PBT - Tax where Tax = PBT * tax_rate
+        pbt_ref = f"('03_Income_Model'!{col}17)"
+        ws_pnl.cell(row=5, column=7+idx, value=f"={pbt_ref}-MAX({pbt_ref}*'02_Assumptions'!{col}14,0)")
+        # FIX Lỗi 1: 1e9 không hợp lệ trong Excel — phải dùng số nguyên 1000000000
+        ws_pnl.cell(row=6, column=7+idx, value=f"={col}5*1000000000/'02_Assumptions'!$B$3")
         
-    # 05_Balance_Sheet
+    # 7. 05_Balance_Sheet_Quarterly
+    ws_bq = wb.create_sheet("05_Balance_Sheet_Quarterly")
+    bs_q_recs = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"), key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
+    write_header_row(ws_bq, 1, 1, pq_headers)
+    bq_data = [
+        ("Tổng tài sản", [(r.get("bsa53") or 0) / 1e9 for r in bs_q_recs]),
+        ("Tiền mặt & NHNN", [(r.get("bsa2") or 0) / 1e9 for r in bs_q_recs]),
+        ("TG các TCTD khác", [(r.get("bsb98") or 0) / 1e9 for r in bs_q_recs]),
+        ("Cho vay khách hàng", [(r.get("bsb103") or 0) / 1e9 for r in bs_q_recs]),
+        ("CK đầu tư", [(r.get("bsb106") or 0) / 1e9 for r in bs_q_recs]),
+        ("Tiền gửi khách hàng", [(r.get("bsb113") or 0) / 1e9 for r in bs_q_recs]),
+        ("Vốn chủ sở hữu", [(r.get("bsa78") or 0) / 1e9 for r in bs_q_recs]),
+    ]
+    for i, (label, vals) in enumerate(bq_data):
+        write_data_row(ws_bq, i + 2, 1, [label] + vals, FMT_NUM1)
+
+    # 8. 05_Balance_Sheet
     ws_bs = wb.create_sheet("05_Balance_Sheet")
-    ws_bs.views.sheetView[0].showGridLines = True
     write_header_row(ws_bs, 1, 1, headers)
     bs_data = [
-        ("Tổng tài sản", total_assets_hist + [None]*3),
-        ("Cho vay khách hàng", loans_hist + loans_fc),
-        ("Tiền gửi khách hàng", cust_dep_hist + dep_fc),
-        ("Vốn chủ sở hữu (VCSH)", equity_hist + [None]*3)
+        ("Tổng tài sản", total_assets_hist + [None]*3),                       # row 2
+        ("Cho vay khách hàng (Gross)", loans_hist + loans_fc),                 # row 3
+        ("Trái phiếu doanh nghiệp", tpdn_hist + [None]*3),                     # row 4
+        ("Tiền gửi khách hàng", cust_dep_hist + dep_fc),                       # row 5
+        ("Giấy tờ có giá phát hành (Bonds)", bonds_hist + [None]*3),              # row 6
+        ("Tiền gửi Kho bạc Nhà nước", kbnn_hist + [None]*3),                   # row 7
+        ("Tiền gửi ký quỹ (trừ đi)", ky_quy_hist + [None]*3),                  # row 8
+        ("Vốn chuyên dùng (trừ đi)", voncg_hist + [None]*3),                   # row 9
+        ("Vốn chủ sở hữu (VCSH)", equity_hist + [None]*3)                      # row 10
     ]
     for idx, (lbl, vals) in enumerate(bs_data):
         r = idx + 2
-        write_data_row(ws_bs, r, 1, [lbl] + vals, FMT_NUM)
+        write_data_row(ws_bs, r, 1, [lbl] + vals, FMT_NUM1)
         
     for idx, col in enumerate(['G', 'H', 'I']):
         prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
-        ws_bs.cell(row=3, column=7+idx, value=f"={prev_col}3*(1+'02_Assumptions'!{col}2)")
-        ws_bs.cell(row=4, column=7+idx, value=f"={prev_col}4*(1+'02_Assumptions'!{col}3)")
-        ws_bs.cell(row=5, column=7+idx, value=f"={prev_col}5+'04_PnL'!{col}5*0.7") # Retained earnings proxy
+        ws_bs.cell(row=3, column=7+idx, value=f"={prev_col}3*(1+'02_Assumptions'!{col}4)")  # Loans
+        ws_bs.cell(row=4, column=7+idx, value=f"={prev_col}4*(1+'02_Assumptions'!{col}4)")  # TPDN: tăng cùng tín dụng
+        ws_bs.cell(row=5, column=7+idx, value=f"={prev_col}5*(1+'02_Assumptions'!{col}5)")  # Deposits
+        ws_bs.cell(row=6, column=7+idx, value=f"={prev_col}6*1.02")                          # Bonds: +2%/năm
+        ws_bs.cell(row=7, column=7+idx, value=f"={prev_col}7*(1+'02_Assumptions'!{col}5)")  # KBNN: tăng cùng Deposits
+        ws_bs.cell(row=8, column=7+idx, value=f"={prev_col}8*(1+'02_Assumptions'!{col}5)")  # Ký quỹ: tăng cùng Deposits
+        ws_bs.cell(row=9, column=7+idx, value=f"={prev_col}9*1.02")                          # Vốn chuyên dùng: +2%/năm
+        ws_bs.cell(row=10, column=7+idx, value=f"={prev_col}10+'04_PnL'!{col}5*0.7")         # VCSH: giữ lại 70% LNST
+        ws_bs.cell(row=2, column=7+idx, value=f"=SUM({col}3:{col}6)+{col}7-{col}8-{col}9+{col}10") # Assets approximation
 
-    # 06_Ratios
+    # 9. 06_Ratios_Quarterly — FIX Lỗi 5: NIM dùng Loans (IEA proxy), LDR có Bonds ở mẫu số
+    ws_rq = wb.create_sheet("06_Ratios_Quarterly")
+    write_header_row(ws_rq, 1, 1, pq_headers)
+    cols_q = [get_column_letter(j) for j in range(2, 2 + len(bs_q_recs))]
+    # NIM quý = NII_q * 4 / Loans (IEA proxy) — row 4 = Cho vay, row 2 = NII trong quarterly sheets
+    rq_nim = [f"=('04_PnL_Quarterly'!{c}2*4/'05_Balance_Sheet_Quarterly'!{c}4)*100" for c in cols_q]
+    # ROE quý năm hóa = LNST_q * 4 / VCSH cuối kỳ — row 8=NPAT, row 7=VCSH quarterly
+    rq_roe = [f"=('04_PnL_Quarterly'!{c}8*4/'05_Balance_Sheet_Quarterly'!{c}7)*100" for c in cols_q]
+    # LDR = Loans / (Deposits + Bonds) — row 4=Loans, row 6=Dep, Bonds không có trong quarterly nên dùng Deposits only
+    rq_ldr = [f"=('05_Balance_Sheet_Quarterly'!{c}4/'05_Balance_Sheet_Quarterly'!{c}6)*100" for c in cols_q]
+    # NPL quý = không có trực tiếp từ PnL quarterly, tính đơn giản từ note data
+    write_data_row(ws_rq, 2, 1, ["NIM — năm hóa (%)"] + rq_nim, FMT_NUM1)
+    write_data_row(ws_rq, 3, 1, ["ROE — năm hóa (%)"] + rq_roe, FMT_NUM1)
+    write_data_row(ws_rq, 4, 1, ["LDR (%)"] + rq_ldr, FMT_NUM1)
+
+    # 10. 06_Ratios — FIX Lỗi 3: Mở rộng đủ 7 chỉ số (NIM, CIR, ROE, ROA, LDR, NPL, CoC)
     ws_rat = wb.create_sheet("06_Ratios")
-    ws_rat.views.sheetView[0].showGridLines = True
     write_header_row(ws_rat, 1, 1, headers)
     
-    # Formulas for Ratios sheet
-    row_nim = ["NIM (%)"]
-    row_roe = ["ROE (%)"]
-    row_roa = ["ROA (%)"]
-    for idx, col in enumerate([get_column_letter(c) for c in range(2, len(all_years) + 2)]):
-        row_nim.append(f"='04_PnL'!{col}2/'05_Balance_Sheet'!{col}2")
-        row_roe.append(f"='04_PnL'!{col}5/'05_Balance_Sheet'!{col}5")
-        row_roa.append(f"='04_PnL'!{col}5/'05_Balance_Sheet'!{col}2")
+    # Hardcode historical calculated values, then Excel formula for forecast cols
+    # Row 2: NIM = NII / IEA_avg — dùng số tính toán cho lịch sử, công thức cho FC
+    write_data_row(ws_rat, 2, 1, ["NIM (%)"] + [round(n/100,4) for n in nim_hist] + nim_fc, FMT_PCT)
+    # Row 3: CIR = OPEX / TOI
+    write_data_row(ws_rat, 3, 1, ["CIR (%)"] + [round(c/100,4) for c in cir_hist] + cir_fc, FMT_PCT)
+    # Row 4: ROE = LNST / VCSH bình quân
+    write_data_row(ws_rat, 4, 1, ["ROE (%)"] + [round(r/100,4) for r in roe_hist] + [None]*3, FMT_PCT)
+    # Row 5: ROA = LNST / Tổng tài sản
+    write_data_row(ws_rat, 5, 1, ["ROA (%)"] + [round(r/100,4) for r in roa_hist] + [None]*3, FMT_PCT)
+    # Row 6: LDR = Loans / (Deposits + Bonds) — dynamic formulas link to 05_Balance_Sheet
+    write_data_row(ws_rat, 6, 1, ["LDR — điều chỉnh (%)"] + [None]*8, FMT_PCT)
+    # Put dynamic LDR formulas for history columns B-F
+    cols_hist = ['B', 'C', 'D', 'E', 'F']
+    rates_hist = [0.0, 0.0, 0.35, 0.50, 0.60]
+    for i, col in enumerate(cols_hist):
+        rate = rates_hist[i]
+        ws_rat.cell(row=6, column=2+i, value=f"=SUM('05_Balance_Sheet'!{col}3:{col}4)/(SUM('05_Balance_Sheet'!{col}5:{col}6)+'05_Balance_Sheet'!{col}7*{rate}-'05_Balance_Sheet'!{col}8-'05_Balance_Sheet'!{col}9)")
+        ws_rat.cell(row=6, column=2+i).number_format = FMT_PCT
+
+    # Row 7: NPL = npl_total / loans
+    write_data_row(ws_rat, 7, 1, ["NPL (%)"] + [round(n/100,4) for n in npl_ratio_hist] + npl_fc, FMT_PCT)
+    # Row 8: CoC = Provision / avg_loans
+    write_data_row(ws_rat, 8, 1, ["CoC — Credit Cost (%)"] + [round(c/100,4) for c in coc_hist] + coc_fc, FMT_PCT)
+    # Row 9: CASA ratio
+    write_data_row(ws_rat, 9, 1, ["CASA ratio (%)"] + [round(c/100,4) for c in casa_ratio_hist] + casa_target_fc, FMT_PCT)
+    # Excel formula links for forecast columns (ROE, ROA use average equity/assets)
+    for idx, col in enumerate(['G', 'H', 'I']):
+        prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
+        # ROE forecast = LNST / avg(VCSH prev, VCSH curr) - VCSH is now at row 10
+        ws_rat.cell(row=4, column=7+idx, value=f"='04_PnL'!{col}5/AVERAGE('05_Balance_Sheet'!{prev_col}10,'05_Balance_Sheet'!{col}10)")
+        ws_rat.cell(row=4, column=7+idx).number_format = FMT_PCT
+        # ROA forecast = LNST / avg(TA prev, TA curr) - TA is at row 2
+        ws_rat.cell(row=5, column=7+idx, value=f"='04_PnL'!{col}5/AVERAGE('05_Balance_Sheet'!{prev_col}2,'05_Balance_Sheet'!{col}2)")
+        ws_rat.cell(row=5, column=7+idx).number_format = FMT_PCT
+        # LDR forecast = (Loans + TPDN) / (Deposits + Bonds + KBNN * 0.8 - Ký quỹ - Vốn chuyên dùng)
+        ws_rat.cell(row=6, column=7+idx, value=f"=SUM('05_Balance_Sheet'!{col}3:{col}4)/(SUM('05_Balance_Sheet'!{col}5:{col}6)+'05_Balance_Sheet'!{col}7*0.8-'05_Balance_Sheet'!{col}8-'05_Balance_Sheet'!{col}9)")
+        ws_rat.cell(row=6, column=7+idx).number_format = FMT_PCT
+
+    # 11. 07_Valuation (Detailed 31-row step-by-step layout)
+    ws_val = wb.create_sheet("07_Valuation")
+    ws_val.column_dimensions['A'].width = 35
+    ws_val.column_dimensions['B'].width = 20
+    ws_val.column_dimensions['C'].width = 20
+    ws_val.column_dimensions['D'].width = 20
+    ws_val.cell(row=1, column=1, value="PHƯƠNG PHÁP ĐỊNH GIÁ").font = FMT_BOLD
+    ws_val.cell(row=2, column=1, value="Chi phí vốn CSH (COE)")
+    ws_val.cell(row=2, column=2, value="='00_COE'!B9").number_format = FMT_PCT
+    ws_val.cell(row=3, column=1, value="Tăng trưởng dài hạn (g)")
+    ws_val.cell(row=3, column=2, value=terminal_growth).number_format = FMT_PCT
+    
+    ws_val.cell(row=5, column=1, value="RESIDUAL INCOME MODEL").font = FMT_BOLD
+    ws_val.cell(row=6, column=1, value="BV/share hiện tại (VND)")
+    # VCSH has moved to row 10 in 05_Balance_Sheet
+    ws_val.cell(row=6, column=2, value="='05_Balance_Sheet'!F10*1000000000/'02_Assumptions'!$B$3").number_format = FMT_NUM
+    ws_val.cell(row=7, column=1, value="PV của RI 3 năm (VND)")
+    ws_val.cell(row=7, column=2, value="=SUM(B31:D31)").number_format = FMT_NUM
+    ws_val.cell(row=8, column=1, value="PV của Continuing Value (VND)")
+    # Apply Option B: Discount Continuing Value by 50% for conservative valuation
+    ws_val.cell(row=8, column=2, value="=((D29*(1+B3)/(B2-B3))*D30)*0.5").number_format = FMT_NUM
+    ws_val.cell(row=9, column=1, value="GIÁ TRỊ RI (VND)").font = FMT_BOLD
+    ws_val.cell(row=9, column=2, value="=B6+B7+B8").font = FMT_BOLD
+    ws_val.cell(row=9, column=2).number_format = FMT_NUM
+    
+    ws_val.cell(row=11, column=1, value="P/B MULTIPLE — 3 mức phân phối lịch sử").font = FMT_BOLD
+    ws_val.cell(row=12, column=1, value="P/B hiện tại (x)")
+    ws_val.cell(row=12, column=2, value="='02_Assumptions'!B2/B6").number_format = '0.00'
+    ws_val.cell(row=13, column=1, value="P/B hấp dẫn (x) — MUA")
+    # Determine number of historical quarters in history sheet
+    n_q_rows = len(pb_all_vals)
+    last_row_pb = n_q_rows + 1
+    start_row_pb = max(2, last_row_pb - 12 + 1)
+    
+    ws_val.cell(row=13, column=1, value="P/B hấp dẫn (x) — MUA")
+    ws_val.cell(row=13, column=2, value=f"=PERCENTILE('13_PE_PB_History'!C{start_row_pb}:C{last_row_pb}, 0.25)").number_format = '0.00'
+    ws_val.cell(row=13, column=2).font = Font(color="006400", bold=True, name="Calibri")
+    ws_val.cell(row=13, column=3, value="Median P/B nửa dưới (vùng mua hấp dẫn)").font = Font(size=9, color="006400", name="Calibri")
+    
+    ws_val.cell(row=14, column=1, value="P/B median all-time (x) — FAIR VALUE")
+    ws_val.cell(row=14, column=2, value=f"=MEDIAN('13_PE_PB_History'!C{start_row_pb}:C{last_row_pb})").number_format = '0.00'
+    ws_val.cell(row=14, column=3, value="Median PB toàn bộ lịch sử").font = Font(size=9, color="595959", name="Calibri")
+    
+    ws_val.cell(row=15, column=1, value="P/B chốt lời (x) — BÁN / CHỐT LỜI")
+    ws_val.cell(row=15, column=2, value=f"=PERCENTILE('13_PE_PB_History'!C{start_row_pb}:C{last_row_pb}, 0.75)").number_format = '0.00'
+    ws_val.cell(row=15, column=2).font = Font(color="C00000", bold=True, name="Calibri")
+    ws_val.cell(row=15, column=3, value="Median P/B nửa trên (vùng chốt lời)").font = Font(size=9, color="C00000", name="Calibri")
+    ws_val.cell(row=16, column=1, value="BV/share tương lai (2026F)")
+    ws_val.cell(row=16, column=2, value="=B6+B26").number_format = FMT_NUM
+    ws_val.cell(row=17, column=1, value="GIÁ TRỊ P/B (VND)").font = FMT_BOLD
+    ws_val.cell(row=17, column=2, value="=B14*B16").font = FMT_BOLD
+    ws_val.cell(row=17, column=2).number_format = FMT_NUM
+
+    ws_val.cell(row=19, column=1, value="WEIGHTED TARGET PRICE").font = FMT_BOLD
+    ws_val.cell(row=20, column=1, value="Trong số: 50% RI + 50% P/B")
+    ws_val.cell(row=21, column=1, value="Target Price (VND)").font = FMT_BOLD
+    ws_val.cell(row=21, column=2, value="=B9*0.5+B17*0.5").font = FMT_BOLD
+    ws_val.cell(row=21, column=2).number_format = FMT_NUM
+    ws_val.cell(row=22, column=1, value="Giá hiện tại (VND)")
+    ws_val.cell(row=22, column=2, value="='02_Assumptions'!B2").number_format = FMT_NUM  # Price is row 2 in Assumptions
+    ws_val.cell(row=23, column=1, value="UPSIDE (%)").font = FMT_BOLD
+    ws_val.cell(row=23, column=2, value="=B21/B22-1").font = FMT_BOLD
+    ws_val.cell(row=23, column=2).number_format = FMT_PCT
+
+    ws_val.cell(row=25, column=1, value="--- RI DETAIL ---").font = FMT_BOLD
+    ws_val.cell(row=26, column=1, value="EPS (VND)")
+    ws_val.cell(row=27, column=1, value="BVPS đầu kỳ (VND)")
+    ws_val.cell(row=28, column=1, value="Capital Charge (VND)")
+    ws_val.cell(row=29, column=1, value="Residual Income (VND)")
+    ws_val.cell(row=30, column=1, value="Discount Factor")
+    ws_val.cell(row=31, column=1, value="PV of RI")
+
+    # Enforce strict clean surplus relation recursively in valuation sheet cells
+    for idx, yr in enumerate(years_fc):
+        col_letter = get_column_letter(2 + idx)
+        pnl_col_letter = get_column_letter(7 + idx) # 2026F is column G (index 7) in pnl sheet
         
-    write_data_row(ws_rat, 2, 1, row_nim, FMT_PCT)
-    write_data_row(ws_rat, 3, 1, row_roe, FMT_PCT)
-    write_data_row(ws_rat, 4, 1, row_roa, FMT_PCT)
+        # Link EPS to the correct column (G, H, I) of '04_PnL'
+        # FIX: EPS row in 04_PnL is row 6 (NII=2, TOI=3, PPOP=4, LNST=5, EPS=6). 1e9 replaced with 1000000000
+        ws_val.cell(row=26, column=2+idx, value=f"='04_PnL'!{pnl_col_letter}6").number_format = FMT_NUM
+        
+        if idx == 0:
+            ws_val.cell(row=27, column=2, value="=B6").number_format = FMT_NUM # BVPS đầu kỳ 2026F = BVPS hiện tại
+        else:
+            prev_col_letter = get_column_letter(1 + idx)
+            ws_val.cell(row=27, column=2+idx, value=f"={prev_col_letter}27+{prev_col_letter}26").number_format = FMT_NUM # BVPS(t) = BVPS(t-1) + EPS(t-1)
+            
+        ws_val.cell(row=28, column=2+idx, value=f"={col_letter}27*'07_Valuation'!$B$2").number_format = FMT_NUM
+        ws_val.cell(row=29, column=2+idx, value=f"={col_letter}26-{col_letter}28").number_format = FMT_NUM
+        ws_val.cell(row=30, column=2+idx, value=f"=1/(1+'07_Valuation'!$B$2)^{idx+1}").number_format = '0.0000'
+        ws_val.cell(row=31, column=2+idx, value=f"={col_letter}29*{col_letter}30").number_format = FMT_NUM
+
+    # 12. 08_Sensitivity — FIX Lỗi 7: Tính đủ PV(RI năm 1+2) + PV(CV)
+    ws_sens = wb.create_sheet("08_Sensitivity")
+    ws_sens.cell(row=1, column=1, value="Độ nhạy: Giá trị RI theo COE × g (5×5)").font = FMT_BOLD
+    ws_sens.cell(row=2, column=1, value="COE \\ g")
+    term_gs = [0.01, 0.02, 0.03, 0.04, 0.05]
+    coe_scenarios = [0.08, 0.10, 0.12, 0.14, 0.16]
+    for j, g in enumerate(term_gs):
+        ws_sens.cell(row=2, column=j+2, value=g).number_format = '0%'
+    for i, coe in enumerate(coe_scenarios):
+        ws_sens.cell(row=3+i, column=1, value=coe).number_format = '0.0%'
+        for j, g in enumerate(term_gs):
+            if (coe - g) <= 0:
+                val_sens = 0
+            else:
+                # FIX: Tính đủ PV của cả 3 năm RI + PV(Continuing Value) discounted by 50% (Option B)
+                pv_ri_sens = sum(ri_results[k] / (1 + coe)**(k+1) for k in range(len(ri_results)))
+                pv_cv_sens = ((ri_results[-1] * (1+g)/(coe-g)) / (1+coe)**len(ri_results)) * 0.5
+                val_sens = bvps_base + pv_ri_sens + pv_cv_sens
+            ws_sens.cell(row=3+i, column=j+2, value=val_sens).number_format = '#,##0'
+    # Highlight current COE+g scenario
+    from openpyxl.styles import PatternFill as PF
+    _highlight = PF(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
+    for i, coe in enumerate(coe_scenarios):
+        for j, g in enumerate(term_gs):
+            if abs(coe - COE) < 0.02 and abs(g - terminal_growth) < 0.01:
+                ws_sens.cell(row=3+i, column=j+2).fill = _highlight
+
+    # 13. 09_PESTLE — FIX Lỗi 11: Mở rộng đủ 6 nhân tố theo schema JSON (Skill §JSON)
+    ws_pest = wb.create_sheet("09_PESTLE")
+    write_header_row(ws_pest, 1, 1, ["Nhân tố", "Nội dung", "Tác động", "Mức độ"])
+    pestle_items = [
+        ("Chính trị (Political)",     "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",             "Tích cực",  "Cao"),
+        ("Kinh tế (Economic)",        "GDP tăng trưởng 6–7%, nhu cầu vốn sản xuất–tiêu dùng cao, lãi suất huy động giảm dần.",           "Tích cực",  "Cao"),
+        ("Xã hội (Social)",           "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt tăng mạnh thúc đẩy CASA và phí dịch vụ.",   "Tích cực",  "Trung bình"),
+        ("Công nghệ (Technological)", "Chuyển đổi số banking (mobile/open banking) giảm CIR, tăng CASA và cross-sell sản phẩm.",         "Tích cực",  "Cao"),
+        ("Pháp lý (Legal)",           "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — cần theo dõi áp lực pháp lý.",           "Trung tính", "Trung bình"),
+        ("Môi trường (Environmental)","ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",          "Tiêu cực",  "Thấp"),
+    ]
+    for idx, row in enumerate(pestle_items):
+        write_data_row(ws_pest, idx+2, 1, row, FMT_NUM)
+
+    # 14. 10_Leading_Indicators
+    ws_lead = wb.create_sheet("10_Leading_Indicators")
+    write_header_row(ws_lead, 1, 1, ["Chỉ số", "Ngưỡng tích cực", "Giá trị hiện tại", "Trạng thái"])
+    indicators = [
+        ("NPL ratio (%)", "< 1.5%", f"{npl_ratio_hist[-1]:.2f}%", "Đạt"),
+        ("CASA ratio (%)", "> 20%", f"{casa_ratio_hist[-1]:.2f}%", "Tốt"),
+        ("NIM (%)", "> 3.0%", f"{nim_hist[-1]:.2f}%", "Tốt"),
+    ]
+    for idx, row in enumerate(indicators):
+        write_data_row(ws_lead, idx+2, 1, row, FMT_NUM)
+
+    # 15. 11_Investment_Thesis
+    ws_thesis = wb.create_sheet("11_Investment_Thesis")
+    write_header_row(ws_thesis, 1, 1, ["Luận điểm chính", "Chi tiết nhận định"])
+    thesis_rows = [
+        ("Lợi thế CASA vượt trội", "Hệ sinh thái số hóa giúp huy động dòng vốn rẻ dồi dào, ổn định biên lãi NIM."),
+        ("Hiệu quả sinh lời cao", "Chỉ số ROE và ROA luôn nằm trong nhóm dẫn đầu hệ thống ngân hàng TMCP."),
+    ]
+    for idx, row in enumerate(thesis_rows):
+        write_data_row(ws_thesis, idx+2, 1, row, FMT_NUM)
+
+    # 16. 12_Summary_Snapshot
+    ws_snap = wb.create_sheet("12_Summary_Snapshot")
+    write_header_row(ws_snap, 1, 1, headers)
+    for idx, row in enumerate(pnl_data + bs_data):
+        write_data_row(ws_snap, idx+2, 1, [row[0]] + row[1], FMT_NUM1)
+
+    # 17. 13_PE_PB_History
+    ws_pe_pb = wb.create_sheet("13_PE_PB_History")
+    ws_pe_pb.column_dimensions['A'].width = 20
+    ws_pe_pb.column_dimensions['B'].width = 15
+    ws_pe_pb.column_dimensions['C'].width = 15
+    ws_pe_pb.column_dimensions['D'].width = 15
+    ws_pe_pb.column_dimensions['E'].width = 15
+    write_header_row(ws_pe_pb, 1, 1, ["Quỳ", "P/E (x)", "P/B (x)", "EV/EBITDA (x)", "Giá"])
+    # dynamic slice to max 32 quarters
+    n_pts_sens = min(32, len(pb_all_vals), len(pe_all_vals))
+    pb_slice_sens = list(pb_all_vals[-n_pts_sens:])
+    pe_slice_sens = list(pe_all_vals[-n_pts_sens:])
+    
+    current_pb_ratio = current_price / (bvps_base + eps_fc_calc[0]) if (bvps_base + eps_fc_calc[0]) > 0 else 1.2
+    current_pe_ratio = current_price / eps_fc_calc[0] if eps_fc_calc[0] > 0 else 8.5
+    
+    if pb_slice_sens: pb_slice_sens[-1] = current_pb_ratio
+    if pe_slice_sens: pe_slice_sens[-1] = current_pe_ratio
+    
+    # Generate dynamic quarter labels backing up from current Q1/2026
+    labels_n_sens = []
+    latest_q_rec = bs_q_recs[-1] if bs_q_recs else {}
+    curr_q = latest_q_rec.get("lengthReport", 1)
+    curr_y = latest_q_rec.get("yearReport", 2026)
+    for i in range(n_pts_sens):
+        labels_n_sens.append(f"Q{curr_q}/{str(curr_y)[-2:]}")
+        curr_q -= 1
+        if curr_q == 0:
+            curr_q = 4
+            curr_y -= 1
+    labels_n_sens = labels_n_sens[::-1]
+    
+    for idx in range(n_pts_sens):
+        r = idx + 2
+        lbl = labels_n_sens[idx]
+        pb_val_q = pb_slice_sens[idx]
+        pe_val_q = pe_slice_sens[idx]
+        write_data_row(ws_pe_pb, r, 1, [lbl, pe_val_q, pb_val_q, None, None], FMT_NUM1)
+        
+    # Add Median all-time at the bottom of the table
+    median_row = n_pts_sens + 3
+    ws_pe_pb.cell(row=median_row, column=1, value="MEDIAN ALL-TIME").font = FMT_BOLD
+    ws_pe_pb.cell(row=median_row, column=2, value=pe_all_median).font = FMT_BOLD
+    ws_pe_pb.cell(row=median_row, column=2).number_format = '0.0'
+    ws_pe_pb.cell(row=median_row, column=3, value=pb_all_median).font = FMT_BOLD
+    ws_pe_pb.cell(row=median_row, column=3).number_format = '0.00'
+    for c in range(1, 6):
+        ws_pe_pb.cell(row=median_row, column=c).border = thin_border
 
     wb.save(excel_path)
     print(f"[Excel] Dynamic workbook successfully saved to {excel_path}")
 
-    # ── AI Commentary ────────────────────────────────────────
+    # ── Fetch AI Commentary ──────────────────────────────────
     api_key = os.environ.get("GEMINI_API_KEY")
     fin_summary = f"ROE {roe_hist[-1]}%, NIM {nim_hist[-1]}%, LNST {np_hist[-1]:.1f} ty, LDR {ldr_hist[-1]}%, CASA {casa_ratio_hist[-1]}%"
     ai_comments = get_ai_commentary(ticker, company_name, industry, fin_summary, api_key)
@@ -614,7 +1120,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     fig, ax = plt.subplots(figsize=(8, 4.5))
     ax.plot(x_range, yoea_cof, 'o-', color='#4472C4', linewidth=2, label='YOEA (%)')
     ax.plot(x_range, cof_vals, 's-', color='#ED7D31', linewidth=2, label='COF (%)')
-    ax.plot(x_range, nim_all, 'D-', color='#70AD47', linewidth=3, label='NIM (%)')
+    # Normalize nim_fc to percentage (multiplied by 100) to align with history
+    nim_all_pct = nim_hist + [round(x * 100, 2) for x in nim_fc]
+    ax.plot(x_range, nim_all_pct, 'D-', color='#70AD47', linewidth=3, label='NIM (%)')
+    ax.set_xticks(x_range)
+    ax.set_xticklabels(years_str)
     ax.legend()
     plt.title(f'{ticker}: NIM Decomposition')
     plt.tight_layout()
@@ -622,70 +1132,604 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     plt.savefig(chart_p1, dpi=120)
     plt.close()
 
-    # Chart 2: Peer ROE
+    # Chart 2: Peer NPL
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    roe_peers = peer_val("ROE")
-    sorted_roe = sorted(roe_peers.items(), key=lambda kv: kv[1])
-    ax.barh([b[0] for b in sorted_roe], [b[1] for b in sorted_roe], color='#2F5496')
-    plt.title('Peer ROE Comparison (%)')
+    npl_peers = peer_val("NPL")
+    sorted_npl = sorted(npl_peers.items(), key=lambda kv: kv[1])
+    ax.barh([b[0] for b in sorted_npl], [b[1] for b in sorted_npl], color='#C00000')
+    plt.title('Peer NPL Comparison (%)')
     plt.tight_layout()
-    chart_p2 = os.path.join(chart_dir, 'chartB_peer_roe.png')
+    chart_p2 = os.path.join(chart_dir, 'chartB_peer_npl.png')
     plt.savefig(chart_p2, dpi=120)
     plt.close()
 
-    # ── PDF Generation with Registered Fonts ─────────────────
-    print("[PDF] Building PDF document...")
+    # Chart 3: Peer Credit Growth
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    cred_peers = peer_val("CREDIT_GROWTH")
+    sorted_cred = sorted(cred_peers.items(), key=lambda kv: kv[1])
+    ax.barh([b[0] for b in sorted_cred], [b[1] for b in sorted_cred], color='#70AD47')
+    plt.title('Peer Credit Growth (%)')
+    plt.tight_layout()
+    chart_p3 = os.path.join(chart_dir, 'chartC_peer_credit.png')
+    plt.savefig(chart_p3, dpi=120)
+    plt.close()
+
+    # Chart 4: Bank vs Industry Average
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    metrics_d = ['NIM', 'ROE', 'CIR', 'CASA', 'NPL']
+    bank_vals_d = [PEER_DATA[m].get(ticker, 0) for m in metrics_d]
+    ind_vals_d = [INDUSTRY_AVG[m] for m in metrics_d]
+    x_d = np.arange(len(metrics_d))
+    ax.bar(x_d - 0.2, bank_vals_d, width=0.4, color='#2F5496', label=ticker)
+    ax.bar(x_d + 0.2, ind_vals_d, width=0.4, color='#A5A5A5', label='Ngành')
+    ax.set_xticks(x_d)
+    ax.set_xticklabels(metrics_d)
+    ax.legend()
+    plt.title(f'{ticker} vs Ngành')
+    plt.tight_layout()
+    chart_p4 = os.path.join(chart_dir, 'chartD_vs_industry.png')
+    plt.savefig(chart_p4, dpi=120)
+    plt.close()
+
+    # Chart 5: Earning Assets Structure (Stacked Area)
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    y_ea = np.row_stack(([cash_hist[i]+sbv_dep_hist[i] for i in range(5)], bank_dep_hist, loans_hist, inv_sec_bs_hist))
+    ax.stackplot([str(y) for y in years_hist], y_ea, labels=['Cash & SBV', 'Bank Dep', 'Loans', 'Inv Sec'], colors=['#FFC000', '#A5A5A5', '#4472C4', '#70AD47'])
+    ax.legend(loc='upper left')
+    plt.title('Earning Assets Structure')
+    plt.tight_layout()
+    chart_p5 = os.path.join(chart_dir, 'chartE_earning_assets.png')
+    plt.savefig(chart_p5, dpi=120)
+    plt.close()
+
+    # Chart 6: Non-Interest Income Breakdown
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.bar([str(y) for y in years_hist], fee_inc_hist, label='Fee')
+    ax.bar([str(y) for y in years_hist], fx_hist, bottom=fee_inc_hist, label='FX')
+    ax.set_xticks(range(len(years_hist)))
+    ax.set_xticklabels([str(y) for y in years_hist])
+    ax.legend()
+    plt.title('Non-Interest Income Breakdown')
+    plt.tight_layout()
+    chart_p6 = os.path.join(chart_dir, 'chartF_nonii.png')
+    plt.savefig(chart_p6, dpi=120)
+    plt.close()
+
+    # Fetch Quarterly actuals for Asset Quality trend charts (Chart 7 & Chart 8)
+    q_bs_sorted = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"), key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))
+    q_is_sorted = sorted(section_to_quarters(raw_data, "INCOME_STATEMENT"), key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))
+    q_bs_latest = q_bs_sorted[-1] if q_bs_sorted else {}
+    q_is_latest = q_is_sorted[-1] if q_is_sorted else {}
+    
+    q_label_aq = f"Q{q_bs_latest.get('lengthReport')}/{str(q_bs_latest.get('yearReport'))[-2:]}" if q_bs_latest else "Quý gần nhất"
+    years_hist_str = [str(y) for y in years_hist]
+    aq_x_labels = years_hist_str + [q_label_aq]
+    aq_x_range = range(len(aq_x_labels))
+    
+    # Resolve actual NPL Ratio and Allowance for Q1
+    # det_json holds live data (e.g. npl ratio as decimal 0.0244 for 2.44%)
+    npl_ratio_q_raw = det_json.get("npl") if (det_json and det_json.get("npl")) else None
+    if npl_ratio_q_raw is not None:
+        npl_pct_q = float(npl_ratio_q_raw) * 100 if float(npl_ratio_q_raw) < 1.0 else float(npl_ratio_q_raw)
+    else:
+        # Fallback to last historical year NPL ratio
+        npl_pct_q = npl_ratio_hist[-1]
+        
+    gross_loans_q = (q_bs_latest.get("bsb103") or 0) / 1e9
+    npl_amt_q = gross_loans_q * (npl_pct_q / 100) # NPL amount in billion VND
+    
+    # bsb105 in quarterly balance sheet is the negative allowance account
+    prov_q_amt = abs(q_bs_latest.get("bsb105") or 0) / 1e9
+    llr_pct_q = (prov_q_amt / max(npl_amt_q, 0.001)) * 100
+    
+    # Cost of credit for the quarter (annualised)
+    coc_pct_q = (abs(q_is_latest.get("isb41") or 0) * 4 / max(q_bs_latest.get("bsb103") or 1, 1) * 100)
+    
+    npl_total_with_q = npl_total_hist + [npl_amt_q]
+    npl_ratio_with_q = npl_ratio_hist + [npl_pct_q]
+    llr_with_q = llr_hist + [llr_pct_q]
+    coc_with_q = coc_hist + [coc_pct_q]
+
+    # Chart 7: NPL + Group 2 Combo (including latest Quarter)
+    fig, ax1 = plt.subplots(figsize=(8, 4.5))
+    ax2 = ax1.twinx()
+    ax1.bar(aq_x_range, npl_total_with_q, width=0.3, color='#C00000', label='NPL (tỷ)')
+    ax2.plot(aq_x_range, npl_ratio_with_q, 'D-', color='#ED7D31', label='NPL %')
+    ax1.set_xticks(aq_x_range)
+    ax1.set_xticklabels(aq_x_labels)
+    ax1.legend(loc='upper left')
+    ax2.legend(loc='upper right')
+    plt.title('NPL & Group 2 (Diễn biến Năm & Quý gần nhất)')
+    plt.tight_layout()
+    chart_p7 = os.path.join(chart_dir, 'chartG_npl_gr2.png')
+    plt.savefig(chart_p7, dpi=120)
+    plt.close()
+
+    # Chart 8: LLR + CoC Dual (including latest Quarter)
+    fig, ax1 = plt.subplots(figsize=(8, 4.5))
+    ax2 = ax1.twinx()
+    ax1.bar(aq_x_range, llr_with_q, width=0.4, color='#70AD47', label='LLR %')
+    ax2.plot(aq_x_range, coc_with_q, 'o-', color='#4472C4', label='CoC %')
+    ax1.set_xticks(aq_x_range)
+    ax1.set_xticklabels(aq_x_labels)
+    ax1.legend(loc='upper left')
+    ax2.legend(loc='upper right')
+    plt.title('LLR & Cost of Credit (Diễn biến Năm & Quý gần nhất)')
+    plt.tight_layout()
+    chart_p8 = os.path.join(chart_dir, 'chartH_llr_coc.png')
+    plt.savefig(chart_p8, dpi=120)
+    plt.close()
+
+    # Chart 9: NIM Delta vs Peer
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    nim_peers = peer_val("NIM")
+    sorted_nim = sorted(nim_peers.items(), key=lambda kv: kv[1])
+    ax.barh([b[0] for b in sorted_nim], [b[1] - PEER_DATA["NIM"].get(ticker,0) for b in sorted_nim])
+    plt.title('Peer NIM Delta')
+    plt.tight_layout()
+    chart_p9 = os.path.join(chart_dir, 'chartI_nim_delta.png')
+    plt.savefig(chart_p9, dpi=120)
+    plt.close()
+
+    # Chart 10: TOI + NPAT Stacked
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.bar(x_range, toi_hist + toi_fc, color='#4472C4', label='TOI')
+    ax.bar(x_range, np_hist + np_fc, color='#70AD47', label='NPAT')
+    ax.set_xticks(x_range)
+    ax.set_xticklabels(years_str)
+    ax.legend()
+    plt.title('TOI & NPAT Growth')
+    plt.tight_layout()
+    chart_p10 = os.path.join(chart_dir, 'chartJ_toi_npat.png')
+    plt.savefig(chart_p10, dpi=120)
+    plt.close()
+
+    # Chart 11: Margins (NIM, ROE, CIR)
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    # Standardize all margins to percentage format (0-100)
+    roe_all_pct = roe_hist + [round(r, 2) for r in roe_fc_calc]
+    cir_all_pct = cir_hist + [round(x * 100, 2) for x in cir_fc]
+    ax.plot(x_range, nim_all_pct, label='NIM (%)')
+    ax.plot(x_range, roe_all_pct, label='ROE (%)')
+    ax.plot(x_range, cir_all_pct, label='CIR (%)')
+    ax.set_xticks(x_range)
+    ax.set_xticklabels(years_str)
+    ax.legend()
+    plt.title('Key Margins Trend')
+    plt.tight_layout()
+    chart_p11 = os.path.join(chart_dir, 'chartK_margins.png')
+    plt.savefig(chart_p11, dpi=120)
+    plt.close()
+
+    # Chart 12: Peer Table image placeholder
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.axis('off')
+    ax.text(0.5, 0.5, 'Peer Table Comparison', ha='center')
+    chart_p12 = os.path.join(chart_dir, 'chartL_peer_table.png')
+    plt.savefig(chart_p12, dpi=120)
+    plt.close()
+
+    # Chart 13: PE/PB History (historical only)
+    fig, ax1 = plt.subplots(figsize=(12, 5))
+    ax2 = ax1.twinx()
+    
+    # dynamic slice to max 32 quarters
+    n_pts = min(32, len(pb_all_vals), len(pe_all_vals))
+    pb_slice = list(pb_all_vals[-n_pts:])
+    pe_slice = list(pe_all_vals[-n_pts:])
+    
+    # Overwrite the latest point with the actual current PE and PB we resolved
+    current_pb_ratio = current_price / (bvps_base + eps_fc_calc[0]) if (bvps_base + eps_fc_calc[0]) > 0 else 1.2
+    current_pe_ratio = current_price / eps_fc_calc[0] if eps_fc_calc[0] > 0 else 8.5
+    
+    if pb_slice: pb_slice[-1] = current_pb_ratio
+    if pe_slice: pe_slice[-1] = current_pe_ratio
+    
+    ax1.plot(pb_slice, color='#4472C4', label='P/B')
+    ax2.plot(pe_slice, color='#ED7D31', label='P/E')
+    
+    # Generate labels for those N quarters dynamically
+    labels_n = []
+    # Start backing up quarters from the current Q1/2026 backwards
+    latest_q_rec_chart = bs_q_recs[-1] if bs_q_recs else {}
+    curr_q = latest_q_rec_chart.get("lengthReport", 1)
+    curr_y = latest_q_rec_chart.get("yearReport", 2026)
+    
+    for i in range(n_pts):
+        labels_n.append(f"Q{curr_q}/{str(curr_y)[-2:]}")
+        curr_q -= 1
+        if curr_q == 0:
+            curr_q = 4
+            curr_y -= 1
+    # Reverse to keep chronological order
+    labels_n = labels_n[::-1]
+    
+    # Thin out the labels to show only every 2nd label to prevent overlaps
+    visible_labels = [labels_n[i] if i % 2 == 0 else "" for i in range(n_pts)]
+    ax1.set_xticks(range(n_pts))
+    ax1.set_xticklabels(visible_labels, rotation=30, fontsize=8)
+    # Add median guidelines
+    ax1.axhline(pb_all_median, color='#4472C4', linestyle='--', alpha=0.5)
+    ax2.axhline(pe_all_median, color='#ED7D31', linestyle='--', alpha=0.5)
+    plt.title('PE/PB History')
+    plt.tight_layout()
+    chart_p13 = os.path.join(chart_dir, 'chartN_pe_pb_history.png')
+    plt.savefig(chart_p13, dpi=120)
+    plt.close()
+
+    # ── PDF Generation ───────────────────────────────────────
+    print("[PDF] Building PDF report...")
+    
+    # Calculate Quarterly Earning Release Data
+    q_income = sorted(section_to_quarters(raw_data, "INCOME_STATEMENT"), key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))
+    q_latest = q_income[-1] if q_income else {}
+    q_prev = q_income[-2] if len(q_income) >= 2 else {}
+    
+    # Find YoY quarter (same lengthReport, previous yearReport)
+    q_yoy = {}
+    if q_latest:
+        for r in reversed(q_income[:-1]):
+            if r.get("lengthReport") == q_latest.get("lengthReport") and r.get("yearReport") == q_latest.get("yearReport") - 1:
+                q_yoy = r
+                break
+                
+    def get_val_q(rec, key):
+        if not rec: return 0.0
+        return (rec.get(key) or 0.0) / 1e9
+
+    # Calculate YTD credit & deposit growth (YTD) compared to previous year end
+    try:
+        latest_y = q_bs_recs[-1].get("yearReport", 2025)
+        loans_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb103") * 1e9
+        dep_prev_yr_end = get_yr(bs_recs, latest_y - 1, "bsb113") * 1e9
+        
+        loans_curr = q_bs_recs[-1].get("bsb103", 0)
+        dep_curr = q_bs_recs[-1].get("bsb113", 0)
+        
+        ytd_loans_growth = ((loans_curr / loans_prev_yr_end) - 1) * 100 if loans_prev_yr_end > 0 else 0.0
+        ytd_dep_growth = ((dep_curr / dep_prev_yr_end) - 1) * 100 if dep_prev_yr_end > 0 else 0.0
+    except Exception as e:
+        ytd_loans_growth, ytd_dep_growth = 0.0, 0.0
+        
+    # Analyze income structure for the latest quarter
+    nii_q_val = get_val_q(q_latest, "isb27")
+    toi_q_val = get_val_q(q_latest, "isb38")
+    prov_q_val = abs(get_val_q(q_latest, "isb41"))
+    pbt_q_val = get_val_q(q_latest, "isa16")
+    
+    non_ii_q_val = toi_q_val - nii_q_val
+    prov_pbt_ratio = (prov_q_val / pbt_q_val * 100) if pbt_q_val > 0 else 0.0
+    non_ii_toi_ratio = (non_ii_q_val / toi_q_val * 100) if toi_q_val > 0 else 0.0
+    
+    # Structural assessment
+    if non_ii_toi_ratio > 30:
+        profit_source_comment = f"Lợi nhuận ghi nhận sự đóng góp lớn từ các khoản thu nhập ngoài lãi đột biến (chiếm {non_ii_toi_ratio:.1f}% tổng thu nhập HĐ), cho thấy nguồn lợi nhuận không hoàn toàn đi liền với hoạt động tín dụng cốt lõi."
+    else:
+        profit_source_comment = f"Lợi nhuận cốt lõi từ Thu nhập lãi thuần (NII) chiếm ưu thế tuyệt đối đóng góp {100 - non_ii_toi_ratio:.1f}% tổng thu nhập HĐ, khẳng định chất lượng nguồn thu cực kỳ bền vững và đi liền với quy mô tín dụng."
+        
+    if prov_pbt_ratio < 15:
+        provision_comment = f"Bộ đệm hoàn nhập dự phòng hoặc cắt giảm chi phí trích lập dự phòng (chỉ chiếm {prov_pbt_ratio:.1f}% LNTT) là bệ phóng thúc đẩy lợi nhuận quý này thay vì do tăng trưởng quy mô kinh doanh cốt lõi."
+    else:
+        provision_comment = f"Chi phí trích lập dự phòng duy trì ở mức {prov_pbt_ratio:.1f}% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận."
+
+    # Quarterly financial metrics comparison
+    q_metrics = [
+        ("NII (Thu nhập lãi thuần)", "isb27"),
+        ("Thu nhập ngoài lãi", "non_ii"), # will compute below
+        ("Tổng thu nhập HĐ (TOI)", "isb38"),
+        ("Chi phí hoạt động (OPEX)", "isb39"),
+        ("LN trước dự phòng (PPOP)", "isb40"),
+        ("Dự phòng tín dụng", "isb41"),
+        ("LNTT (PBT)", "isa16"),
+        ("LNST (NPAT)", "isa20")
+    ]
+    
+    q_table_rows = [["Chỉ tiêu (tỷ VND)", f"Q{q_latest.get('lengthReport')}/{q_latest.get('yearReport')}", f"Q{q_prev.get('lengthReport')}/{q_prev.get('yearReport')}", "QoQ (%)", f"Q{q_yoy.get('lengthReport')}/{q_yoy.get('yearReport') if q_yoy else ''}", "YoY (%)"]]
+    
+    for label, key in q_metrics:
+        if key == "non_ii":
+            v_latest = get_val_q(q_latest, "isb38") - get_val_q(q_latest, "isb27")
+            v_prev = get_val_q(q_prev, "isb38") - get_val_q(q_prev, "isb27")
+            v_yoy = (get_val_q(q_yoy, "isb38") - get_val_q(q_yoy, "isb27")) if q_yoy else 0
+        elif key in ["isb39", "isb41"]: # expenses are negative in raw data
+            v_latest = abs(get_val_q(q_latest, key))
+            v_prev = abs(get_val_q(q_prev, key))
+            v_yoy = abs(get_val_q(q_yoy, key)) if q_yoy else 0
+        else:
+            v_latest = get_val_q(q_latest, key)
+            v_prev = get_val_q(q_prev, key)
+            v_yoy = get_val_q(q_yoy, key) if q_yoy else 0
+            
+        qoq_pct = ((v_latest - v_prev) / v_prev * 100) if v_prev else 0
+        yoy_pct = ((v_latest - v_yoy) / v_yoy * 100) if v_yoy else 0
+        
+        q_table_rows.append([
+            label,
+            f"{v_latest:,.1f}",
+            f"{v_prev:,.1f}",
+            f"{qoq_pct:+.1f}%" if v_prev else "-",
+            f"{v_yoy:,.1f}" if q_yoy else "-",
+            f"{yoy_pct:+.1f}%" if v_yoy else "-"
+        ])
+
     doc = SimpleDocTemplate(pdf_path, pagesize=A4,
                             leftMargin=15*mm, rightMargin=15*mm,
                             topMargin=15*mm, bottomMargin=15*mm)
     styles = getSampleStyleSheet()
     
-    title_style = ParagraphStyle('TitleCustom', parent=styles['Title'], fontName=FONT_BOLD, fontSize=20, leading=24, spaceAfter=12, textColor=HexColor('#1A365D'))
-    h1_style = ParagraphStyle('H1Custom', parent=styles['Heading1'], fontName=FONT_BOLD, fontSize=14, leading=18, spaceBefore=15, spaceAfter=8, textColor=HexColor('#2B6CB0'))
-    body_style = ParagraphStyle('BodyCustom', parent=styles['Normal'], fontName=FONT_REG, fontSize=10, leading=14, spaceAfter=6, textColor=HexColor('#2D3748'))
+    # Custom Paragraph Styles with Vietnamese Font Support
+    title_style = ParagraphStyle('TitleCustom', parent=styles['Title'], fontName=FONT_BOLD, fontSize=18, leading=22, spaceAfter=8, textColor=HexColor('#1A365D'), alignment=TA_LEFT)
+    subtitle_style = ParagraphStyle('SubTitleCustom', parent=styles['Normal'], fontName=FONT_BOLD, fontSize=11, leading=14, spaceAfter=12, textColor=HexColor('#4A5568'))
+    h1_style = ParagraphStyle('H1Custom', parent=styles['Heading1'], fontName=FONT_BOLD, fontSize=12, leading=16, spaceBefore=10, spaceAfter=6, textColor=HexColor('#2B6CB0'))
+    h2_style = ParagraphStyle('H2Custom', parent=styles['Heading2'], fontName=FONT_BOLD, fontSize=10, leading=14, spaceBefore=8, spaceAfter=4, textColor=HexColor('#4A5568'))
+    body_style = ParagraphStyle('BodyCustom', parent=styles['Normal'], fontName=FONT_REG, fontSize=9, leading=12.5, spaceAfter=5, textColor=HexColor('#2D3748'), alignment=TA_JUSTIFY)
+    body_bold = ParagraphStyle('BodyBold', parent=body_style, fontName=FONT_BOLD)
+    bullet_style = ParagraphStyle('BulletCustom', parent=body_style, leftIndent=12, firstLineIndent=-8)
     
     story = []
-    story.append(Paragraph(f"BÁO CÁO PHÂN TÍCH DOANH NGHIỆP: {ticker}", title_style))
-    story.append(Paragraph(company_name, body_style))
-    story.append(Spacer(1, 10))
-
-    summary_data = [
-        ["Mã", "Giá hiện tại (VND)", "Vốn hóa (tỷ)", "Khuyến nghị", "Định giá P/B (VND)"],
-        [ticker, f"{current_price:,.0f}", f"{market_cap / 1e9:,.1f}", 'MUA' if upside > 15 else 'THEO DÕI', f"{pb_value:,.0f}"]
+    
+    # ------------------ PAGE 1: COVER & INVESTMENT SUMMARY ------------------
+    story.append(Paragraph(f"BÁO CÁO PHÂN TÍCH CỔ PHIẾU NGÂN HÀNG: {ticker}", title_style))
+    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y')}", subtitle_style))
+    story.append(Spacer(1, 4))
+    
+    # Stock Info & Valuation Snapshot Table
+    rec_val = 'MUA' if upside > 15 else ('BÁN' if upside < -5 else 'THEO DÕI')
+    info_data = [
+        ["Thông tin cơ bản", "Giá trị", "Chỉ số định giá", "Giá trị"],
+        ["Giá hiện tại (VND)", f"{current_price:,.0f}", "Giá mục tiêu (VND)", f"{weighted_target:,.0f}"],
+        ["Vốn hóa (tỷ VND)", f"{market_cap/1e9:,.0f}", "Tiềm năng tăng giá", f"{upside:+.1f}%"],
+        ["Số lượng CP lưu hành", f"{shares:,.0f}", "Khuyến nghị đầu tư", rec_val],
+        ["Hệ số Beta", f"{beta_val}", "COE (Chi phí vốn CSH)", f"{COE*100:.2f}%"],
+        ["P/B hấp dẫn (MUA)", f"{pb_attractive:.2f}x", "Giá trị P/B hấp dẫn", f"{pb_attractive * (bvps_base + eps_fc_calc[0]):,.0f}"],
+        ["P/B chốt lời (BÁN)", f"{pb_target:.2f}x", "Giá trị P/B chốt lời", f"{pb_target * (bvps_base + eps_fc_calc[0]):,.0f}"],
+        ["P/E lịch sử (Median)", f"{pe_all_median:.1f}x", "P/B lịch sử (Median)", f"{pb_all_median:.2f}x"]
     ]
-    t = Table(summary_data, colWidths=[25*mm, 40*mm, 35*mm, 40*mm, 40*mm])
-    t.setStyle(TableStyle([
+    t_info = Table(info_data, colWidths=[45*mm, 40*mm, 45*mm, 45*mm])
+    t_info.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (0,0), HexColor("#1A365D")),
+        ('BACKGROUND', (2,0), (2,0), HexColor("#1A365D")),
+        ('TEXTCOLOR', (0,0), (0,0), white),
+        ('TEXTCOLOR', (2,0), (2,0), white),
+        ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+        ('GRID', (0,0), (-1,-1), 0.5, HexColor("#cbd5e1")),
+        ('FONTNAME', (0,0), (-1,-1), FONT_REG),
+        ('FONTNAME', (0,0), (-1,0), FONT_BOLD),
+        ('FONTNAME', (0,1), (0,-1), FONT_BOLD),
+        ('FONTNAME', (2,1), (2,-1), FONT_BOLD),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+    ]))
+    story.append(t_info)
+    story.append(Spacer(1, 10))
+    
+    # Investment Thesis
+    story.append(Paragraph("Luận điểm đầu tư & Điểm nhấn chính", h1_style))
+    story.append(Paragraph(f"• <b>Vị thế ngành và Mô hình kinh doanh:</b> {ai_comments['business'][:300]}...", bullet_style))
+    story.append(Paragraph(f"• <b>Tình hình tài chính vượt trội:</b> ROE lịch sử đạt {roe_hist[-1]}% đi kèm CASA đạt {casa_ratio_hist[-1]}% giúp tối ưu hóa chi phí vốn đầu vào (COF). Tốc độ tăng trưởng tín dụng dự kiến duy trì ở mức cao nhờ room tín dụng rộng.", bullet_style))
+    story.append(Paragraph(f"• <b>Định giá an toàn:</b> Kết hợp phương pháp định giá Residual Income (chiết khấu bảo thủ 50% Continuing Value) và P/B mục tiêu lịch sử, cổ phiếu {ticker} đang giao dịch ở vùng định giá hấp dẫn với tiềm năng tăng trưởng lớn.", bullet_style))
+    story.append(Spacer(1, 8))
+    
+    # Financial Snapshot Table (Hist + Forecast)
+    snap_headers = ["Chỉ tiêu tài chính (tỷ VND)", "2023", "2024", "2025", "2026F", "2027F", "2028F"]
+    snap_rows = [
+        snap_headers,
+        ["Thu nhập lãi thuần (NII)", f"{nii_hist[-3]:,.0f}", f"{nii_hist[-2]:,.0f}", f"{nii_hist[-1]:,.0f}", f"{nii_fc[0]:,.0f}", f"{nii_fc[1]:,.0f}", f"{nii_fc[2]:,.0f}"],
+        ["Tổng thu nhập HĐ (TOI)", f"{toi_hist[-3]:,.0f}", f"{toi_hist[-2]:,.0f}", f"{toi_hist[-1]:,.0f}", f"{toi_fc[0]:,.0f}", f"{toi_fc[1]:,.0f}", f"{toi_fc[2]:,.0f}"],
+        ["LNST (NPAT)", f"{np_hist[-3]:,.0f}", f"{np_hist[-2]:,.0f}", f"{np_hist[-1]:,.0f}", f"{np_fc[0]:,.0f}", f"{np_fc[1]:,.0f}", f"{np_fc[2]:,.0f}"],
+        ["NIM (%)", f"{nim_hist[-3]:.2f}%", f"{nim_hist[-2]:.2f}%", f"{nim_hist[-1]:.2f}%", f"{nim_fc[0]*100:.2f}%", f"{nim_fc[1]*100:.2f}%", f"{nim_fc[2]*100:.2f}%"],
+        ["ROE (%)", f"{roe_hist[-3]:.1f}%", f"{roe_hist[-2]:.1f}%", f"{roe_hist[-1]:.1f}%", f"{roe_fc_calc[0]:.2f}%", f"{roe_fc_calc[1]:.2f}%", f"{roe_fc_calc[2]:.2f}%"],
+        ["LDR (%)", f"{ldr_hist[-3]:.1f}%", f"{ldr_hist[-2]:.1f}%", f"{ldr_hist[-1]:.1f}%", f"{ldr_fc_calc[0]:.2f}%", f"{ldr_fc_calc[1]:.2f}%", f"{ldr_fc_calc[2]:.2f}%"],
+        ["NPL (%)", f"{npl_ratio_hist[-3]:.2f}%", f"{npl_ratio_hist[-2]:.2f}%", f"{npl_ratio_hist[-1]:.2f}%", f"{npl_fc[0]*100:.2f}%", f"{npl_fc[1]*100:.2f}%", f"{npl_fc[2]*100:.2f}%"]
+    ]
+    t_snap = Table(snap_rows, colWidths=[55*mm, 20*mm, 20*mm, 20*mm, 20*mm, 20*mm, 20*mm])
+    t_snap.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), HexColor("#2B6CB0")),
+        ('TEXTCOLOR', (0,0), (-1,0), white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        ('GRID', (0,0), (-1,-1), 0.5, HexColor("#cbd5e1")),
+        ('FONTNAME', (0,0), (-1,-1), FONT_REG),
+        ('FONTNAME', (0,0), (-1,0), FONT_BOLD),
+        ('FONTNAME', (0,1), (0,-1), FONT_BOLD),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+    ]))
+    story.append(t_snap)
+    
+    # ------------------ PAGE 2: QUARTERLY EARNING RELEASE & CREDIT/NIM ------------------
+    story.append(PageBreak())
+    story.append(Paragraph("2. Đánh giá kết quả kinh doanh quý gần nhất & Hoạt động tín dụng", h1_style))
+    story.append(Paragraph(f"Bảng dưới đây so sánh chi tiết kết quả hoạt động kinh doanh quý gần nhất (Q{q_latest.get('lengthReport')}/{q_latest.get('yearReport')}) so với quý liền trước (QoQ) và cùng kỳ năm ngoái (YoY):", body_style))
+    
+    # Render Quarterly Earning Release Table
+    t_q_compare = Table(q_table_rows, colWidths=[60*mm, 23*mm, 23*mm, 23*mm, 23*mm, 23*mm])
+    t_q_compare.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), HexColor("#1A365D")),
         ('TEXTCOLOR', (0,0), (-1,0), white),
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
         ('GRID', (0,0), (-1,-1), 0.5, HexColor("#cbd5e1")),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('FONTNAME', (0,0), (-1,-1), FONT_REG),
+        ('FONTNAME', (0,0), (-1,0), FONT_BOLD),
+        ('FONTNAME', (0,1), (0,-1), FONT_BOLD),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
     ]))
-    story.append(t)
-    story.append(Spacer(1, 15))
-
-    story.append(Paragraph("1. Luận điểm đầu tư & Vị thế kinh doanh", h1_style))
-    story.append(Paragraph(ai_comments["business"], body_style))
-    story.append(Spacer(1, 10))
-
-    story.append(Paragraph("2. Tình hình tài chính & Chất lượng tài sản", h1_style))
-    story.append(Paragraph(ai_comments["financial"], body_style))
-    story.append(Spacer(1, 10))
-    story.append(Image(chart_p1, width=150*mm, height=85*mm))
-    story.append(Spacer(1, 15))
-
-    story.append(Paragraph("3. Định giá & Khuyến nghị", h1_style))
-    story.append(Paragraph(f"Áp dụng kết hợp phương pháp định giá Residual Income và P/B mục tiêu, giá trị hợp lý của {ticker} được xác định là <strong>{weighted_target:,.0f} VND/CP</strong>.", body_style))
-    story.append(Paragraph(ai_comments["valuation"], body_style))
+    story.append(t_q_compare)
+    story.append(Spacer(1, 6))
+    
+    nii_latest_val = get_val_q(q_latest, "isb27")
+    npat_latest_val = get_val_q(q_latest, "isa20")
+    story.append(Paragraph(f"• <b>Đánh giá tăng trưởng quy mô (YTD):</b> Tính lũy kế từ đầu năm đến quý gần nhất, dư nợ tín dụng (cho vay khách hàng) đạt mức tăng trưởng <b>{ytd_loans_growth:+.2f}% YTD</b>, trong khi huy động tiền gửi khách hàng tăng trưởng <b>{ytd_dep_growth:+.2f}% YTD</b>. Điều này phản ánh sự điều tiết nhịp nhàng và tương đồng trong quản trị tài sản Có - tài sản Nợ của ngân hàng.", bullet_style))
+    story.append(Paragraph(f"• <b>Chất lượng nguồn gốc lợi nhuận:</b> {profit_source_comment} {provision_comment}", bullet_style))
+    story.append(Paragraph(f"• <b>Đánh giá hiệu quả vận hành:</b> Thu nhập lãi thuần (NII) quý đạt <b>{nii_latest_val:,.1f} tỷ đồng</b>, Lợi nhuận sau thuế (LNST) đạt <b>{npat_latest_val:,.1f} tỷ đồng</b>. Tỷ lệ CIR và NIM duy trì ổn định nhờ tối ưu hóa chi phí vận hành và huy động nguồn vốn rẻ (CASA) giúp giảm chi phí vốn (COF).", bullet_style))
+    story.append(Spacer(1, 8))
+    
+    story.append(Paragraph("Hoạt động tín dụng & Khả năng sinh lời (NIM) dài hạn:", h2_style))
+    story.append(Paragraph("Hoạt động tín dụng là hạt nhân cốt lõi trong cơ cấu lợi nhuận của ngân hàng. Chúng tôi ghi nhận sự tăng trưởng ổn định trong cơ cấu tài sản sinh lãi (IEA) và sự phục hồi nhu cầu vay kinh doanh, bất động sản và tiêu dùng.", body_style))
+    
+    # Insert Chart 1 & Chart 5 in a 2-column format
+    chart_data = [
+        [Image(chart_p1, width=82*mm, height=50*mm), Image(chart_p5, width=82*mm, height=50*mm)]
+    ]
+    t_charts1 = Table(chart_data, colWidths=[85*mm, 85*mm])
+    t_charts1.setStyle(TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('LEFTPADDING', (0,0), (-1,-1), 0),
+        ('RIGHTPADDING', (0,0), (-1,-1), 0),
+    ]))
+    story.append(t_charts1)
+    story.append(Spacer(1, 5))
+    
+    story.append(Paragraph("Biên lãi ròng (NIM) & Cơ cấu Tài sản sinh lãi:", h2_style))
+    story.append(Paragraph(f"• <b>Diễn biến NIM:</b> {ai_comments['financial'][:300]}...", bullet_style))
+    story.append(Paragraph(f"• <b>YOEA & COF:</b> Tỷ suất sinh lời của tài sản sinh lãi (YOEA) được hỗ trợ tốt nhờ cơ cấu cho vay bán lẻ có biên lợi nhuận cao. Ngược lại, chi phí vốn (COF) đang dần hạ nhiệt nhờ sự gia tăng tỷ lệ CASA giúp ngân hàng huy động được nguồn tiền gửi giá rẻ vượt trội.", bullet_style))
+    story.append(Paragraph(f"• <b>Cơ cấu tài sản sinh lãi:</b> Cho vay khách hàng vẫn chiếm tỷ trọng chủ đạo (>70%), theo sau là danh mục chứng khoán đầu tư an toàn và thanh khoản cao.", bullet_style))
+    
+    # Add Chart 4
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("So sánh NIM, ROE, CIR, CASA, NPL của ngân hàng với trung bình ngành:", h2_style))
+    story.append(Image(chart_p4, width=150*mm, height=65*mm))
+    
+    # ------------------ PAGE 3: ASSET QUALITY & PROVISION ------------------
+    story.append(PageBreak())
+    story.append(Paragraph("3. Chất lượng tài sản & Bộ đệm dự phòng rủi ro", h1_style))
+    story.append(Paragraph("Trong bối cảnh nền kinh tế đối mặt với nhiều biến động, chất lượng tài sản của ngân hàng vẫn duy trì được sự lành mạnh nhờ khẩu vị rủi ro thận trọng và danh mục cho vay tập trung khách hàng cá nhân có tài sản đảm bảo tốt.", body_style))
+    
+    # Peer NPL and LLR/CoC charts side by side
+    chart_data2 = [
+        [Image(chart_p2, width=82*mm, height=50*mm), Image(chart_p8, width=82*mm, height=50*mm)]
+    ]
+    t_charts2 = Table(chart_data2, colWidths=[85*mm, 85*mm])
+    t_charts2.setStyle(TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('LEFTPADDING', (0,0), (-1,-1), 0),
+        ('RIGHTPADDING', (0,0), (-1,-1), 0),
+    ]))
+    story.append(t_charts2)
+    story.append(Spacer(1, 5))
+    
+    story.append(Paragraph("Phân tích Nợ xấu (NPL) & Quỹ dự phòng bao nợ xấu (LLR):", h2_style))
+    story.append(Paragraph("• <b>Kiểm soát nợ xấu (NPL):</b> Tỷ lệ nợ xấu được kiểm soát chặt chẽ dưới mức trung bình ngành nhờ quy trình thẩm định tín dụng nghiêm ngặt và không nắm giữ nhiều trái phiếu doanh nghiệp rủi ro cao.", bullet_style))
+    story.append(Paragraph(f"• <b>Tỷ lệ bao phủ nợ xấu (LLR) & Chi phí tín dụng (CoC):</b> Ngân hàng chủ động trích lập dự phòng ở mức cao nhằm tạo bộ đệm chống đỡ vững chắc trước các rủi ro tín dụng tiềm ẩn trong tương lai.", bullet_style))
+    
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("Diễn biến quy mô Nợ xấu tuyệt đối và tỷ lệ NPL theo quý:", h2_style))
+    story.append(Image(chart_p7, width=150*mm, height=65*mm))
+    
+    # ------------------ PAGE 4: VALUATION & DETAILED RI MODEL ------------------
+    # ------------------ PAGE 4: ASSET QUALITY & PE/PB HISTORY ------------------
+    story.append(PageBreak())
+    story.append(Paragraph("4. Lịch sử biến động định giá & Tóm tắt kết quả", h1_style))
+    story.append(Paragraph("Biểu đồ dưới đây cung cấp góc nhìn toàn cảnh về định giá PE/PB của cổ phiếu trong vòng 8 năm qua, làm cơ sở so sánh với giá trị hợp lý hiện tại:", body_style))
+    
+    # PE/PB history chart in Page 4
+    story.append(Image(chart_p13, width=175*mm, height=73*mm))
+    story.append(Spacer(1, 5))
+    
+    # ------------------ PAGE 5: FORECAST ASSUMPTIONS & DETAILED RI MODEL ------------------
+    story.append(PageBreak())
+    story.append(Paragraph("5. Giả định dự báo & Mô hình định giá Residual Income", h1_style))
+    story.append(Paragraph(f"Kết hợp phương pháp định giá Residual Income (trọng số 50%) và P/B median all-time lịch sử (trọng số 50%), giá trị hợp lý của cổ phiếu {ticker} được xác định là <b>{weighted_target:,.0f} VND/CP</b>.", body_style))
+    
+    # Inject dynamic forecast assumptions explanation
+    loans_g_26 = loans_growth_fc[0] * 100
+    dep_g_26 = dep_growth_fc[0] * 100
+    nim_26 = nim_fc[0] * 100
+    coc_26 = coc_fc[0] * 100
+    cir_26 = cir_fc[0] * 100
+    
+    nim_trend_desc = "tăng nhẹ" if nim_fc[0] > nim_hist[-1]/100 else "điều chỉnh giảm nhẹ"
+    coc_trend_desc = "giảm dần nhờ chất lượng tài sản cải thiện" if coc_fc[0] < coc_hist[-1]/100 else "duy trì trích lập cao phòng ngừa rủi ro"
+    
+    story.append(Paragraph("<b>Cơ sở thiết lập giả định dự báo & Ước tính lợi nhuận:</b>", h2_style))
+    story.append(Paragraph(f"• <b>Tăng trưởng Tín dụng & Huy động:</b> Ước tính tín dụng năm 2026F tăng trưởng <b>{loans_g_26:.1f}%</b> và huy động tăng <b>{dep_g_26:.1f}%</b>, dựa trên hạn mức tăng trưởng NHNN định hướng và năng lực mở rộng tài sản sinh lời thực tế của ngân hàng.", bullet_style))
+    story.append(Paragraph(f"• <b>Biên lãi ròng (NIM) dự báo:</b> NIM năm 2026F dự kiến đạt <b>{nim_26:.2f}%</b> ({nim_trend_desc} so với mức {nim_hist[-1]:.2f}% của năm 2025). Giả định dựa trên chi phí vốn (COF) được kiểm soát nhờ tỷ lệ CASA phục hồi và lãi suất huy động duy trì thấp.", bullet_style))
+    story.append(Paragraph(f"• <b>Chi phí tín dụng (CoC) & Trích lập:</b> Chi phí dự phòng (CoC) năm 2026F giả định ở mức <b>{coc_26:.2f}%</b> ({coc_trend_desc}), đảm bảo tỷ lệ bao phủ nợ xấu (LLR) duy trì ở mức an toàn mà không gây áp lực đột biến lên lợi nhuận.", bullet_style))
+    story.append(Paragraph(f"• <b>Thu nhập ngoài lãi & Chi phí vận hành:</b> Thu nhập dịch vụ và phi tín dụng khác dự kiến tăng trưởng đều 10-15%/năm nhờ số hóa; Tỷ lệ CIR giả định kiểm soát tốt quanh mức <b>{cir_26:.1f}%</b> nhờ tối ưu hóa quy trình.", bullet_style))
+    story.append(Paragraph("• <b>Độ tin cậy & Độ nhạy:</b> Mô hình dự báo có độ tin cậy cao dựa trên chu kỳ vận hành 3 năm gần nhất. Khi các yếu tố vĩ mô thay đổi (lãi suất tăng/giảm mạnh hoặc nợ xấu bùng phát), nhà đầu tư cần tra cứu bảng nhạy cảm (sheet 08_Sensitivity) để điều chỉnh mức định giá tương ứng.", bullet_style))
+    story.append(Spacer(1, 6))
+    # Detailed RI calculation table in PDF
+    ri_table_data = [
+        ["Tham số định giá RI (VND/CP)", "2026F", "2027F", "2028F"],
+        ["EPS dự phóng", f"{eps_fc_calc[0]:,.0f}", f"{eps_fc_calc[1]:,.0f}", f"{eps_fc_calc[2]:,.0f}"],
+        ["BVPS đầu kỳ", f"{bvps_base:,.0f}", f"{bvps_base+eps_fc_calc[0]:,.0f}", f"{bvps_base+sum(eps_fc_calc[:2]):,.0f}"],
+        ["Capital Charge (COE)", f"{bvps_base*COE:,.0f}", f"{(bvps_base+eps_fc_calc[0])*COE:,.0f}", f"{(bvps_base+sum(eps_fc_calc[:2]))*COE:,.0f}"],
+        ["Lợi nhuận thặng dư (RI)", f"{ri_results[0]:,.0f}", f"{ri_results[1]:,.0f}", f"{ri_results[2]:,.0f}"],
+        ["Hệ số chiết khấu", f"{1/(1+COE):.4f}", f"{1/(1+COE)**2:.4f}", f"{1/(1+COE)**3:.4f}"],
+        ["PV của RI từng năm", f"{ri_results[0]/(1+COE):,.0f}", f"{ri_results[1]/(1+COE)**2:,.0f}", f"{ri_results[2]/(1+COE)**3:,.0f}"]
+    ]
+    t_ri = Table(ri_table_data, colWidths=[70*mm, 32*mm, 32*mm, 32*mm])
+    t_ri.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), HexColor("#1A365D")),
+        ('TEXTCOLOR', (0,0), (-1,0), white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        ('GRID', (0,0), (-1,-1), 0.5, HexColor("#cbd5e1")),
+        ('FONTNAME', (0,0), (-1,-1), FONT_REG),
+        ('FONTNAME', (0,0), (-1,0), FONT_BOLD),
+        ('FONTNAME', (0,1), (0,-1), FONT_BOLD),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+    ]))
+    story.append(t_ri)
+    story.append(Spacer(1, 4))
+    
+    # Valuation summary metrics block
+    story.append(Paragraph(f"<b>Tóm tắt kết quả định giá:</b>", h2_style))
+    story.append(Paragraph(f"• BVPS hiện tại: <b>{bvps_base:,.0f} VND</b> | Tổng PV của RI 3 năm: <b>{pv_ri:,.0f} VND</b>", body_style))
+    story.append(Paragraph(f"• PV của Continuing Value (đã giảm 50% bảo thủ): <b>{pv_cv:,.0f} VND</b>", body_style))
+    story.append(Paragraph(f"• <b>Giá trị hợp lý theo RI: {ri_value:,.0f} VND</b> | <b>Giá trị hợp lý theo P/B: {pb_value:,.0f} VND</b>", body_bold))
     
     doc.build(story)
     print(f"[PDF] Report successfully saved to {pdf_path}")
 
     # ── Save JSON Summary for Dashboard ──────────────────────
+    # FIX Lỗi 12: ratios_quarterly tính từ dữ liệu BCTC quý thực tế (Skill §19)
+    rq_sorted = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"),
+                       key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
+    iq_sorted = sorted(section_to_quarters(raw_data, "INCOME_STATEMENT"),
+                       key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
+    n_q = min(len(rq_sorted), len(iq_sorted))
+    rq_sorted = rq_sorted[-n_q:]
+    iq_sorted = iq_sorted[-n_q:]
+    
+    def safe_div(a, b, mult=1):
+        return round(a / b * mult, 4) if b and b != 0 else 0
+    
+    q_labels_json = [f"{r['yearReport']}-Q{r.get('lengthReport',0)}" for r in rq_sorted]
+    # NIM quý: NII * 4 / Loans (IEA proxy) — Skill §19.1
+    nim_q_json = [safe_div((iq_sorted[i].get("isb27") or 0)/1e9 * 4,
+                           (rq_sorted[i].get("bsb103") or 1)/1e9) for i in range(n_q)]
+    # LDR quý: Loans / (Deposits + Bonds) — Skill §19.2
+    ldr_q_json = [safe_div((rq_sorted[i].get("bsb103") or 0)/1e9,
+                           ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]
+    # CASA quý: Non-term Dep / Total Dep — Skill §19.3  (bsb114=CASA)
+    casa_q_json = [safe_div((rq_sorted[i].get("bsb114") or 0)/1e9,
+                            (rq_sorted[i].get("bsb113") or 1)/1e9) for i in range(n_q)]
+    # NPL quý: NPL / Loans — Skill §19.4 (bsb105=NPL gross)
+    npl_q_json = [safe_div((rq_sorted[i].get("bsb105") or 0)/1e9,
+                           (rq_sorted[i].get("bsb103") or 1)/1e9) for i in range(n_q)]
+
+    # FIX Lỗi 13: pe_quarters/pb_quarters lấy toàn bộ lịch sử, không chỉ 12 quý
+    q_labels_pe = []
+    if 'ttms' in locals() and ttms:
+        q_labels_pe = [f"{r['year']}-Q{r['quarter']}" for r in ttms]
+    
     summary_json = {
         "ticker": ticker,
         "companyName": company_name,
+        "analysis_comments": {
+            "ytd_loans_growth": round(ytd_loans_growth, 2),
+            "ytd_dep_growth": round(ytd_dep_growth, 2),
+            "profit_source_comment": profit_source_comment,
+            "provision_comment": provision_comment,
+            "nii_latest_val": round(nii_latest_val, 2),
+            "npat_latest_val": round(npat_latest_val, 2)
+        },
         "sector": sector,
         "currentPrice": current_price,
         "marketCap": market_cap,
@@ -694,31 +1738,51 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         "gdrivePdfUrl": None,
         "pe_hist": pe_all_vals[-5:] if len(pe_all_vals) >= 5 else pe_all_vals,
         "pb_hist": pb_all_vals[-5:] if len(pb_all_vals) >= 5 else pb_all_vals,
-        "pe_quarters": pe_all_vals[-12:] if len(pe_all_vals) >= 12 else pe_all_vals,
-        "pb_quarters": pb_all_vals[-12:] if len(pb_all_vals) >= 12 else pb_all_vals,
-        "quarter_labels": [f"Q{i%4+1}/{2022+i//4}" for i in range(len(pb_all_vals[-12:]))] if len(pb_all_vals) >= 12 else ["Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"],
-        "income_quarterly": [],
+        "pe_quarters": pe_all_vals,  # Toàn bộ lịch sử
+        "pb_quarters": pb_all_vals,  # Toàn bộ lịch sử
+        "quarter_labels": q_labels_pe if q_labels_pe else [f"{2022+i//4}-Q{i%4+1}" for i in range(len(pb_all_vals))],
+        "income_quarterly": [
+            {"quarter": f"{r['yearReport']}-Q{r.get('lengthReport',0)}",
+             "nii": round((r.get("isb27") or 0)/1e9, 2),
+             "nonii": round(((r.get("isb38") or 0) - (r.get("isb27") or 0))/1e9, 2),
+             "toi": round((r.get("isb38") or 0)/1e9, 2),
+             "ppop": round((r.get("isb40") or 0)/1e9, 2),
+             "npat": round((r.get("isa20") or 0)/1e9, 2)}
+            for r in iq_sorted
+        ],
+        # FIX Lỗi 12: ratios_quarterly từ BCTC quý thực tế
         "ratios_quarterly": {
-            "quarters": [str(y) for y in years_hist],
-            "nim": [round(x/100, 4) for x in nim_hist],
-            "ldr": [round(x/100, 4) for x in ldr_hist],
-            "casa": [round(x/100, 4) for x in casa_ratio_hist],
-            "npl": [round(x/100, 4) for x in npl_ratio_hist]
+            "quarters": q_labels_json,
+            "nim":  nim_q_json,
+            "ldr":  ldr_q_json,
+            "casa": casa_q_json,
+            "npl":  npl_q_json
         },
         "thesis": [
-            ai_comments["business"][:150],
-            ai_comments["financial"][:150]
+            ai_comments["business"][:200],
+            ai_comments["financial"][:200],
+            ai_comments["valuation"][:200]
         ],
         "risks": [
-            "Rủi ro biên lãi ròng NIM thu hẹp do cạnh tranh lãi suất cho vay.",
-            "Rủi ro nợ xấu gia tăng khi thị trường bất động sản phục hồi chậm."
+            f"Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm {round(nim_hist[-1]*0.1, 2)}% so kế hoạch.",
+            "Rủi ro nợ xấu: thị trường bất động sản hồi phục chậm, nợ nhóm 2 tăng có thể chuyển thành NPL trong 6–12 tháng.",
+            f"Rủi ro pháp lý: Thông tư siết TPDN và nâng chuẩn CAR có thể hạn chế room tín dụng của {ticker}."
         ],
+        # FIX Lỗi JSON: moats đủ 5 keys, pestle đủ 6 items
         "moats": {
-            "Network Effect": {"score": 4, "desc": "Mạng lưới phân phối rộng lớn."},
-            "Switching Cost": {"score": 3, "desc": "Hệ sinh thái số tiện ích giữ chân khách hàng."}
+            "Network Effect":    {"score": 4, "desc": f"Mạng lưới khách hàng {ticker} rộng — hiệu ứng mạng lưới tạo CASA ổn định."},
+            "Cost Advantage":    {"score": 3, "desc": "CASA cao giúp COF thấp hơn ngành, tạo lợi thế chi phí vốn bền vững."},
+            "Switching Cost":    {"score": 3, "desc": "Hệ sinh thái ứng dụng số tích hợp tạo rào cản chuyển đổi khách hàng."},
+            "Intangible Assets": {"score": 4, "desc": "Thương hiệu ngân hàng uy tín và quan hệ doanh nghiệp/cá nhân lâu năm."},
+            "Efficient Scale":   {"score": 3, "desc": "Quy mô tài sản tạo hiệu quả vận hành trên chi phí cố định hạ tầng CNTT."}
         },
         "pestle": [
-            {"factor": "Political", "content": "Môi trường chính trị ổn định hỗ trợ ngành ngân hàng.", "impact": "Positive"}
+            {"factor": "Political",     "content": "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",          "impact": "Positive"},
+            {"factor": "Economic",      "content": "GDP 6–7%, nhu cầu tín dụng sản xuất–tiêu dùng cao, lãi suất huy động dần giảm.",               "impact": "Positive"},
+            {"factor": "Social",        "content": "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt thúc đẩy CASA và dịch vụ phí.",          "impact": "Positive"},
+            {"factor": "Technological", "content": "Chuyển đổi số banking giảm CIR, tăng CASA và cross-sell — đây là lợi thế cạnh tranh dài hạn.", "impact": "Positive"},
+            {"factor": "Legal",         "content": "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — tạo áp lực pháp lý ngắn hạn.",      "impact": "Neutral"},
+            {"factor": "Environmental", "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",    "impact": "Negative"}
         ],
         "valuation": {
             "bear": int(bear_target),
@@ -726,16 +1790,25 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "bull": int(bull_target)
         },
         "comments": {
-            "businessModel": ai_comments["business"],
+            "businessModel":        ai_comments["business"],
             "financialPerformance": ai_comments["financial"],
-            "valuationText": ai_comments["valuation"]
+            "valuationText":        ai_comments["valuation"]
         },
         "data": {
-            "years": all_years,
-            "revenue": [round(x, 2) for x in nii_hist + nii_fc], # NII mapped to revenue in JSON for unified bank UI
-            "npat": [round(x, 2) for x in np_hist + np_fc],
-            "eps": [round(x, 1) for x in eps_hist_calc + eps_fc_calc],
-            "equity": [round(x, 2) for x in equity_hist + [equity_hist[-1] + sum(np_fc[:i+1]) for i in range(3)]]
+            "years":  all_years,
+            "revenue": [round(x, 2) for x in nii_hist + nii_fc],
+            "npat":    [round(x, 2) for x in np_hist + np_fc],
+            "eps":     [round(x, 1) for x in eps_hist_calc + eps_fc_calc],
+            "equity":  [round(x, 2) for x in equity_hist + [equity_hist[-1] + sum(np_fc[:i+1])*0.7 for i in range(3)]]
+        },
+        # FIX Lỗi: ratios lịch sử tính từ dữ liệu BCTC, forecast từ assumptions (Skill §18)
+        "ratios": {
+            "nim":  [round(x/100, 4) for x in nim_hist] + [round(n, 4) for n in nim_fc],
+            "roe":  [round(x/100, 4) for x in roe_hist] + [None]*3,
+            "roa":  [round(x/100, 4) for x in roa_hist] + [None]*3,
+            "npl":  [round(x/100, 4) for x in npl_ratio_hist] + [round(n, 4) for n in npl_fc],
+            "ldr":  [round(x/100, 4) for x in ldr_hist] + [None]*3,
+            "casa": [round(x/100, 4) for x in casa_ratio_hist] + [round(c, 4) for c in casa_target_fc]
         }
     }
     

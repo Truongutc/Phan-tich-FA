@@ -1,51 +1,122 @@
 {
   "ticker": "VIB",
-  "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
+  "companyName": "Ngân hàng VIB",
+  "analysis_comments": {
+    "ytd_loans_growth": 0.0,
+    "ytd_dep_growth": 0.0,
+    "profit_source_comment": "Lợi nhuận ghi nhận sự đóng góp lớn từ các khoản thu nhập ngoài lãi đột biến (chiếm 31.1% tổng thu nhập HĐ), cho thấy nguồn lợi nhuận không hoàn toàn đi liền với hoạt động tín dụng cốt lõi.",
+    "provision_comment": "Chi phí trích lập dự phòng duy trì ở mức 43.0% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận.",
+    "nii_latest_val": 4038.57,
+    "npat_latest_val": 2241.19
+  },
   "sector": "Ngân hàng",
   "currentPrice": 16150.0,
-  "marketCap": 54974692055000.0,
-  "shares": 3404005700,
+  "marketCap": 54977834845000.0,
+  "shares": 3404200300,
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
   "pe_hist": [
-    8.5,
-    9.2,
-    7.8,
-    8.1,
-    8.4
+    8.0830990662,
+    9.0175849713,
+    8.1589111122,
+    8.0965147871,
+    7.2381006027
   ],
   "pb_hist": [
-    1.2,
-    1.3,
-    1.1,
-    1.15,
-    1.25
+    1.3242610736,
+    1.5604776374,
+    1.3650690329,
+    1.2591371432,
+    1.1186434314
   ],
   "pe_quarters": [
-    8.5,
-    8.2,
-    8.6,
-    9.0,
-    9.2,
-    8.9,
-    8.4,
-    7.8,
-    8.1,
-    8.4
+    10.8404066634,
+    8.6097537634,
+    6.7369145928,
+    6.7946987686,
+    5.6456248765,
+    5.9902457908,
+    5.0097999806,
+    4.2397969301,
+    5.1957877959,
+    8.3521689341,
+    9.1080981078,
+    13.0956663006,
+    14.6204119762,
+    11.8410566023,
+    10.0316192382,
+    7.5122704978,
+    5.6887744772,
+    5.5206208614,
+    5.1658114065,
+    5.772929156,
+    5.5443837974,
+    6.0018846541,
+    6.9812717748,
+    6.4216107143,
+    7.334694021,
+    8.016820841,
+    7.6111809076,
+    8.0830990662,
+    9.0175849713,
+    8.1589111122,
+    8.0965147871,
+    7.2381006027
   ],
   "pb_quarters": [
-    1.2,
-    1.15,
-    1.22,
-    1.28,
-    1.3,
-    1.25,
-    1.18,
-    1.1,
-    1.15,
-    1.25
+    1.7099060254,
+    1.5164805477,
+    1.327130287,
+    1.3404628245,
+    1.2713374958,
+    1.445698406,
+    1.295482365,
+    1.0312172904,
+    1.2754079035,
+    2.0286368471,
+    2.2855458137,
+    3.382390309,
+    3.9540347287,
+    3.04200176,
+    2.6471042014,
+    1.9689948548,
+    1.4697924308,
+    1.5248567286,
+    1.342670695,
+    1.5655259495,
+    1.4700234275,
+    1.4816914574,
+    1.5779997237,
+    1.4065594356,
+    1.479837028,
+    1.4469720249,
+    1.3130084318,
+    1.3242610736,
+    1.5604776374,
+    1.3650690329,
+    1.2591371432,
+    1.1186434314
   ],
   "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
     "2023-Q1",
     "2023-Q2",
     "2023-Q3",
@@ -55,205 +126,106 @@
     "2024-Q3",
     "2024-Q4",
     "2025-Q1",
-    "2025-Q2"
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
   ],
   "income_quarterly": [
     {
-      "yearReport": 2018,
-      "quarter": 1,
-      "nii": 1052.54,
-      "npat": 414.49
-    },
-    {
-      "yearReport": 2018,
-      "quarter": 2,
-      "nii": 1203.86,
-      "npat": 506.03
-    },
-    {
-      "yearReport": 2018,
-      "quarter": 3,
-      "nii": 1273.5,
-      "npat": 455.98
-    },
-    {
-      "yearReport": 2018,
-      "quarter": 4,
-      "nii": 1298.92,
-      "npat": 816.85
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 1,
-      "nii": 1385.18,
-      "npat": 647.78
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 2,
-      "nii": 1532.09,
-      "npat": 808.37
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 3,
-      "nii": 1618.52,
-      "npat": 876.03
-    },
-    {
-      "yearReport": 2019,
-      "quarter": 4,
-      "nii": 1674.52,
-      "npat": 933.41
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 1,
-      "nii": 1799.49,
-      "npat": 860.25
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 2,
-      "nii": 1901.94,
-      "npat": 1024.92
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 3,
-      "nii": 2233.42,
-      "npat": 1334.88
-    },
-    {
-      "yearReport": 2020,
-      "quarter": 4,
-      "nii": 2561.26,
-      "npat": 1420.56
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 1,
-      "nii": 2778.39,
-      "npat": 1446.21
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 2,
-      "nii": 2959.61,
-      "npat": 1717.78
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 3,
-      "nii": 2678.43,
-      "npat": 1108.05
-    },
-    {
-      "yearReport": 2021,
-      "quarter": 4,
-      "nii": 3399.73,
-      "npat": 2137.7
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 1,
-      "nii": 3515.89,
-      "npat": 1823.14
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 2,
-      "nii": 3699.59,
-      "npat": 2195.31
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 3,
-      "nii": 3836.03,
-      "npat": 2233.41
-    },
-    {
-      "yearReport": 2022,
-      "quarter": 4,
-      "nii": 3911.04,
-      "npat": 2216.92
-    },
-    {
-      "yearReport": 2023,
-      "quarter": 1,
-      "nii": 4304.11,
-      "npat": 2155.11
-    },
-    {
-      "yearReport": 2023,
-      "quarter": 2,
+      "quarter": "2023-Q2",
       "nii": 4401.86,
+      "nonii": 962.04,
+      "toi": 5363.9,
+      "ppop": 3808.16,
       "npat": 2358.4
     },
     {
-      "yearReport": 2023,
-      "quarter": 3,
+      "quarter": "2023-Q3",
       "nii": 4673.19,
+      "nonii": 1351.31,
+      "toi": 6024.5,
+      "ppop": 4307.58,
       "npat": 2146.9
     },
     {
-      "yearReport": 2023,
-      "quarter": 4,
+      "quarter": "2023-Q4",
       "nii": 4333.29,
+      "nonii": 1509.2,
+      "toi": 5842.49,
+      "ppop": 4071.93,
       "npat": 1902.01
     },
     {
-      "yearReport": 2024,
-      "quarter": 1,
+      "quarter": "2024-Q1",
       "nii": 4357.79,
+      "nonii": 960.72,
+      "toi": 5318.51,
+      "ppop": 3447.42,
       "npat": 2001.14
     },
     {
-      "yearReport": 2024,
-      "quarter": 2,
+      "quarter": "2024-Q2",
       "nii": 4316.91,
+      "nonii": 722.28,
+      "toi": 5039.19,
+      "ppop": 3233.0,
       "npat": 1682.96
     },
     {
-      "yearReport": 2024,
-      "quarter": 3,
+      "quarter": "2024-Q3",
       "nii": 4159.34,
+      "nonii": 776.64,
+      "toi": 4935.98,
+      "ppop": 3153.72,
       "npat": 1599.17
     },
     {
-      "yearReport": 2024,
-      "quarter": 4,
+      "quarter": "2024-Q4",
       "nii": 3916.36,
+      "nonii": 1359.01,
+      "toi": 5275.37,
+      "ppop": 3523.63,
       "npat": 1921.19
     },
     {
-      "yearReport": 2025,
-      "quarter": 1,
+      "quarter": "2025-Q1",
       "nii": 3737.11,
+      "nonii": 864.05,
+      "toi": 4601.15,
+      "ppop": 2842.12,
       "npat": 1936.46
     },
     {
-      "yearReport": 2025,
-      "quarter": 2,
+      "quarter": "2025-Q2",
       "nii": 3968.69,
+      "nonii": 1148.12,
+      "toi": 5116.82,
+      "ppop": 3231.2,
       "npat": 2076.47
     },
     {
-      "yearReport": 2025,
-      "quarter": 3,
+      "quarter": "2025-Q3",
       "nii": 4172.73,
+      "nonii": 834.31,
+      "toi": 5007.03,
+      "ppop": 3187.87,
       "npat": 1624.51
     },
     {
-      "yearReport": 2025,
-      "quarter": 4,
+      "quarter": "2025-Q4",
       "nii": 4213.63,
+      "nonii": 1068.01,
+      "toi": 5281.64,
+      "ppop": 3310.44,
       "npat": 1647.98
     },
     {
-      "yearReport": 2026,
-      "quarter": 1,
+      "quarter": "2026-Q1",
       "nii": 4038.57,
+      "nonii": 1821.77,
+      "toi": 5860.34,
+      "ppop": 4007.59,
       "npat": 2241.19
     }
   ],
@@ -273,18 +245,18 @@
       "2026-Q1"
     ],
     "nim": [
-      0.06,
-      0.06,
-      0.06,
-      0.06,
-      0.0595,
-      0.053,
-      0.0459,
-      0.0421,
-      0.0417,
-      0.0423,
-      0.0409,
-      0.0388
+      0.0761,
+      0.0773,
+      0.0661,
+      0.0663,
+      0.063,
+      0.0569,
+      0.0492,
+      0.0454,
+      0.0452,
+      0.0454,
+      0.0447,
+      0.0424
     ],
     "ldr": [
       1.003,
@@ -297,173 +269,111 @@
       1.0687,
       1.0533,
       1.0979,
-      1.1,
+      1.144,
       1.0861
     ],
     "casa": [
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1,
-      0.1
+      0.0,
+      0.0,
+      0.0,
+      0.0003,
+      0.0027,
+      0.001,
+      0.0,
+      0.0,
+      0.0002,
+      0.0012,
+      0.0004,
+      0.0008
     ],
     "npl": [
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005,
-      0.005
+      -0.0144,
+      -0.0155,
+      -0.0163,
+      -0.0182,
+      -0.0179,
+      -0.0185,
+      -0.0179,
+      -0.0149,
+      -0.0134,
+      -0.0132,
+      -0.0129,
+      -0.0128
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam (VIB) là một ngân hàng TMCP hàng đầu với lợi thế cạnh tranh về tỷ lệ CASA và hệ sinh thái số hóa vượt trội.",
-    "Tăng trưởng tín dụng định hướng bền vững và NIM tự tính toán duy trì quanh mức 3.5% hỗ trợ LNST tăng trưởng ổn định.",
-    "Chất lượng tài sản được cải thiện đáng kể với tỷ lệ nợ xấu NPL thực tế được kiểm soát tốt."
+    "Ngân hàng VIB (VIB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu VIB."
   ],
   "risks": [
-    "Rủi ro biến động lãi suất toàn cầu và áp lực lạm phát nội địa tác động tiêu cực đến NIM.",
-    "Nợ xấu gia tăng từ phân khúc khách hàng cá nhân và doanh nghiệp nhỏ do tác động của kinh tế vĩ mô.",
-    "Sự cạnh tranh khốc liệt về lãi suất huy động và làn sóng Fintech có thể làm suy giảm NIM."
+    "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.31% so kế hoạch.",
+    "Rủi ro nợ xấu: thị trường bất động sản hồi phục chậm, nợ nhóm 2 tăng có thể chuyển thành NPL trong 6–12 tháng.",
+    "Rủi ro pháp lý: Thông tư siết TPDN và nâng chuẩn CAR có thể hạn chế room tín dụng của VIB."
   ],
   "moats": {
     "Network Effect": {
       "score": 4,
-      "desc": "Hệ sinh thái khách hàng rộng lớn tạo sự liên kết chặt chẽ."
-    },
-    "Switching Cost": {
-      "score": 4,
-      "desc": "Khách hàng sử dụng nhiều dịch vụ tích hợp có xu hướng trung thành cao."
-    },
-    "Intangible Assets": {
-      "score": 4,
-      "desc": "Thương hiệu lâu năm và uy tín hàng đầu trong nhóm ngân hàng tư nhân."
+      "desc": "Mạng lưới khách hàng VIB rộng — hiệu ứng mạng lưới tạo CASA ổn định."
     },
     "Cost Advantage": {
       "score": 3,
-      "desc": "Lợi thế chi phí huy động nhờ tỷ lệ CASA thuộc hàng top."
+      "desc": "CASA cao giúp COF thấp hơn ngành, tạo lợi thế chi phí vốn bền vững."
+    },
+    "Switching Cost": {
+      "score": 3,
+      "desc": "Hệ sinh thái ứng dụng số tích hợp tạo rào cản chuyển đổi khách hàng."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu ngân hàng uy tín và quan hệ doanh nghiệp/cá nhân lâu năm."
     },
     "Efficient Scale": {
       "score": 3,
-      "desc": "Quy mô tài sản và mạng lưới chi nhánh tối ưu giúp phục vụ lượng lớn khách hàng."
+      "desc": "Quy mô tài sản tạo hiệu quả vận hành trên chi phí cố định hạ tầng CNTT."
     }
   },
   "pestle": [
     {
       "factor": "Political",
-      "content": "Định hướng của NHNN về ưu tiên tín dụng cho các ngành sản xuất và ESG.",
+      "content": "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",
       "impact": "Positive"
     },
     {
       "factor": "Economic",
-      "content": "Chu kỳ kinh tế phục hồi thúc đẩy nhu cầu vay vốn của doanh nghiệp.",
+      "content": "GDP 6–7%, nhu cầu tín dụng sản xuất–tiêu dùng cao, lãi suất huy động dần giảm.",
       "impact": "Positive"
     },
     {
       "factor": "Social",
-      "content": "Dân số trẻ và xu hướng chuyển dịch không dùng tiền mặt là lợi thế lớn cho ngân hàng số.",
+      "content": "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt thúc đẩy CASA và dịch vụ phí.",
       "impact": "Positive"
     },
     {
       "factor": "Technological",
-      "content": "Đầu tư mạnh vào Cloud và AI giúp tối ưu chi phí CIR và tăng trải nghiệm người dùng.",
+      "content": "Chuyển đổi số banking giảm CIR, tăng CASA và cross-sell — đây là lợi thế cạnh tranh dài hạn.",
       "impact": "Positive"
     },
     {
       "factor": "Legal",
-      "content": "Tuân thủ chặt chẽ Basel II/III bảo đảm an toàn vốn phòng ngừa rủi ro tín dụng.",
+      "content": "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — tạo áp lực pháp lý ngắn hạn.",
       "impact": "Neutral"
     },
     {
       "factor": "Environmental",
-      "content": "Thúc đẩy tín dụng xanh và các khoản vay ESG theo định hướng chính phủ.",
-      "impact": "Positive"
+      "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",
+      "impact": "Negative"
     }
   ],
   "valuation": {
-    "bear": 16449,
-    "base": 19351,
-    "bull": 22254
+    "bear": 19800,
+    "base": 23294,
+    "bull": 26788
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam vận hành mô hình dịch vụ tài chính đa dạng với trọng tâm là ngân hàng bán lẻ và khách hàng doanh nghiệp lớn.",
-    "financialPerformance": "Hệ số sinh lời tự tính toán ROE và ROA duy trì ổn định. CASA dồi dào hỗ trợ giảm giá vốn và duy trì NIM.",
-    "valuationText": "Kết hợp mô hình định giá Residual Income và P/B Target, giá trị hợp lý của cổ phiếu VIB dao động quanh 19,352 VND/CP."
-  },
-  "ratios": {
-    "nim": [
-      0.0382,
-      0.0436,
-      0.0451,
-      0.034,
-      0.0289,
-      0.0251,
-      0.0263,
-      0.0275
-    ],
-    "roe": [
-      0.2639,
-      0.2594,
-      0.2257,
-      0.1721,
-      0.1553,
-      0.1885,
-      0.1833,
-      0.1791
-    ],
-    "roa": [
-      0.0207,
-      0.0247,
-      0.0209,
-      0.0146,
-      0.0131,
-      0.0169,
-      0.0174,
-      0.0179
-    ],
-    "npl": [
-      -0.0121,
-      -0.0134,
-      -0.0163,
-      -0.0179,
-      -0.0129,
-      0.012,
-      0.012,
-      0.012
-    ],
-    "ldr": [
-      0.9224,
-      0.987,
-      1.0061,
-      1.0626,
-      1.144,
-      1.1752,
-      1.2072,
-      1.2401
-    ],
-    "casa": [
-      0.0004,
-      0.0,
-      0.0,
-      0.0,
-      0.0004,
-      0.32,
-      0.32,
-      0.32
-    ]
+    "businessModel": "Ngân hàng VIB (VIB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu VIB."
   },
   "data": {
     "years": [
@@ -477,44 +387,106 @@
       2028
     ],
     "revenue": [
-      11816.1,
-      14962.6,
-      18484.1,
-      16750.4,
-      16092.2,
-      15658.5,
-      18333.6,
-      21466.9
+      11816.15,
+      14962.56,
+      18484.07,
+      16750.41,
+      16092.16,
+      19045.78,
+      22008.46,
+      24969.99
     ],
     "npat": [
-      6409.8,
-      8468.8,
-      8563.1,
-      7204.5,
-      7285.4,
-      10531.1,
-      12126.8,
-      13979.5
+      6409.75,
+      8468.77,
+      8563.05,
+      7204.47,
+      7285.43,
+      9554.74,
+      11492.29,
+      13292.56
     ],
     "eps": [
-      2997.0,
-      3971.0,
-      2837.0,
-      2385.0,
-      2140.0,
-      3094.0,
-      3563.0,
-      4107.0
+      1882.9,
+      2487.7,
+      2515.4,
+      2116.3,
+      2140.1,
+      2806.8,
+      3375.9,
+      3904.8
     ],
     "equity": [
-      24290.7,
-      32651.0,
-      37939.6,
-      41861.8,
-      46904.7,
-      55856.1,
-      66163.9,
-      78046.5
+      24290.74,
+      32651.04,
+      37939.59,
+      41861.81,
+      46904.74,
+      53593.06,
+      61637.66,
+      70942.45
+    ]
+  },
+  "ratios": {
+    "nim": [
+      0.0396,
+      0.0474,
+      0.0504,
+      0.0378,
+      0.0312,
+      0.0328,
+      0.0337,
+      0.0343
+    ],
+    "roe": [
+      0.2639,
+      0.2975,
+      0.2426,
+      0.1806,
+      0.1641,
+      null,
+      null,
+      null
+    ],
+    "roa": [
+      0.0207,
+      0.0247,
+      0.0209,
+      0.0146,
+      0.0131,
+      null,
+      null,
+      null
+    ],
+    "npl": [
+      0.0235,
+      0.0248,
+      0.032,
+      0.0357,
+      0.0301,
+      0.0286,
+      0.0271,
+      0.0256
+    ],
+    "ldr": [
+      1.0687,
+      1.1048,
+      1.0944,
+      1.1515,
+      1.3151,
+      null,
+      null,
+      null
+    ],
+    "casa": [
+      0.1611,
+      0.1364,
+      0.132,
+      0.1395,
+      0.1439,
+      0.1539,
+      0.1639,
+      0.1739
     ]
   }
 }

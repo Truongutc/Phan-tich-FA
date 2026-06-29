@@ -1099,6 +1099,15 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
     if (yoyYtdNpat) {
         commentary += `Lũy kế từ đầu năm (YTD), LNST đạt ${formatNumber(ytdNpat/1e9, 1)} tỷ đồng, thay đổi ${yoyYtdNpat.toFixed(1)}% so với cùng kỳ năm trước.`;
     }
+    
+    // Inject structural bank quality commentary from Python json export
+    if (localJson && localJson.analysis_comments) {
+        const ac = localJson.analysis_comments;
+        commentary += `<br><br><strong>🎯 Đánh giá chất lượng tài sản & nguồn gốc lợi nhuận thực tế:</strong><br>`;
+        commentary += `• Tăng trưởng tín dụng Cho vay lũy kế đạt <strong>${ac.ytd_loans_growth >= 0 ? '+' : ''}${ac.ytd_loans_growth}% YTD</strong> so với đầu năm. Tăng trưởng huy động tiền gửi đạt <strong>${ac.ytd_dep_growth >= 0 ? '+' : ''}${ac.ytd_dep_growth}% YTD</strong>.<br>`;
+        commentary += `• <strong>Chất lượng nguồn thu:</strong> ${ac.profit_source_comment}<br>`;
+        commentary += `• <strong>Áp lực dự phòng:</strong> ${ac.provision_comment}`;
+    }
 
     container.innerHTML = `
         <div class="quarterly-ytd-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">

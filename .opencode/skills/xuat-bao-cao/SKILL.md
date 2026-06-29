@@ -251,9 +251,11 @@ Tối thiểu **3 biểu đồ** (khác biệt so với Excel):
 3. **Sensitivity** — Heatmap hoặc tornado chart
 
 Định dạng: Font tiếng Việt (Arial/Time New Roman), màu sắc hài hòa, legend rõ, trục có nhãn.
+- **Trục hoành (X-axis) biểu đồ**: Bắt buộc cấu hình tường minh bằng `ax.set_xticks()` và `ax.set_xticklabels()` sử dụng nhãn năm/quý thực tế (`all_years`, `years_hist`, hoặc quý). Không được để chỉ mục mặc định (`0, 1, 2...`).
+- **Đồng bộ hóa đơn vị đo**: Tất cả tỷ lệ phần trăm trên biểu đồ (NIM, ROE, LDR, NPL, CASA, CIR, CoC) phải đồng bộ thang đo (nhân 100 thành tỷ lệ %), tránh lệch pha giữa lịch sử (%) và dự phòng (thập phân) gây sụt giảm ảo về 0%.
 
 ### Yêu cầu nội dung
-
+- **Bắt buộc có phần Earning Release quý gần nhất**: Phải hiển thị bảng so sánh số liệu quý mới nhất với quý liền trước (QoQ) và cùng kỳ năm ngoái (YoY) cho các chỉ tiêu chính (NII, TOI, OPEX, PPOP, Dự phòng, LNTT, LNST) đi kèm nhận định phân tích tăng trưởng cụ thể.
 - **Ngôn ngữ**: Tiếng Việt, giữ thuật ngữ TA không có từ tương đương (EV, EBITDA, NIM...)
 - **Số liệu**: Ghi nguồn & ngày lấy
 - **Kết luận**: BUY/HOLD/SELL rõ ràng, không mơ hồ
@@ -402,7 +404,7 @@ Nếu Q1/2026 NIM annualized = 3.44% → nim_fc[0] không được thấp hơn 3
 | B29/C29/D29 | Discount Factor | `=1/(1+$B$2)^1` |
 | B30/C30/D30 | PV of RI | `=B28*B29` |
 | B7 | PV tổng RI | `=SUM(B30:D30)` |
-| B8 | PV Continuing Value | `=(D28*(1+B3)/(B2-B3))*D29` |
+| B8 | PV Continuing Value | `=((D29*(1+B3)/(B2-B3))*D30)*0.5` (Áp dụng Phương án B: chiết khấu tiếp 50% để bảo thủ) |
 | B9 | RI Value | `=B6+B7+B8` |
 | B13 | P/B hấp dẫn | giá trị số `pb_attractive` từ code |
 | B14 | P/B median all-time | giá trị số `pb_all_median` từ code |
@@ -419,13 +421,22 @@ Nếu Q1/2026 NIM annualized = 3.44% → nim_fc[0] không được thấp hơn 3
   ```python
   _pb_below     = [p for p in pb_all_vals if p <= pb_all_median]
   _pb_above     = [p for p in pb_all_vals if p >= pb_all_median]
-  pb_attractive = stats.median(_pb_below)  # median nửa dưới → MUA
-  pb_target     = stats.median(_pb_above)  # median nửa trên → BÁN / mục tiêu
-  # pb_value = pb_target × BVPS_forward (dùng P/B mục tiêu để định giá)
+  pb_attractive = stats.median(_pb_below)  # median nửa dưới → Vùng mua hấp dẫn
+  pb_target     = stats.median(_pb_above)  # median nửa trên → Vùng bán chốt lời
+  # pb_value = pb_all_median × BVPS_forward (BẮT BUỘC dùng P/B median all-time để định giá cốt lõi)
   ```
+- **SAI:** `pb_value = pb_target * BVPS_forward` (P/B chốt lời chỉ làm chốt chặn tham chiếu vùng bán, không dùng định giá Fair Value).
 - **SAI:** `bv = bv_start + ri` trong vòng lặp RI → BVPS tăng sai
 - **ĐÚNG:** `bv = bv_start + eps_fc_calc[i]` → BVPS tăng bằng EPS
 - **ĐÚNG:** Để RI âm hiển thị, giải thích trong báo cáo (ROE < COE = overvalued)
+
+### Quy tắc đồng bộ khuyến nghị và giá hiện tại (BẮT BUỘC)
+- **Cover Excel & PDF Cover**: Bắt buộc phải liên kết động khuyến nghị và giá mục tiêu bằng công thức Excel, không ghi chuỗi tĩnh.
+  - Ô Khuyến nghị tại `01_Cover`: `=IF('07_Valuation'!B23>0.15,"MUA",IF('07_Valuation'!B23<-0.05,"BÁN","THEO DÕI"))`
+  - Ô Giá hiện tại tại `01_Cover`: `='02_Assumptions'!B2`
+  - Ô Giá mục tiêu tại `01_Cover`: `='07_Valuation'!B21`
+- **Giá hiện tại**: Bắt buộc lấy giá đóng cửa phiên gần nhất thực tế từ lịch sử giao dịch (price history close) làm giá hiện tại để loại trừ lỗi API `/details` trả về sai lệch hoặc bị chặn.
+- **Trang bìa PDF & Excel**: Hiển thị đầy đủ cả 3 mốc P/B hấp dẫn/fair/mục tiêu và giá trị định giá tương ứng để đảm bảo tính chuyên nghiệp.
 
 ---
 
@@ -593,4 +604,6 @@ def save_json_summary(ticker, company_name, sector, current_price, market_cap, s
 - [ ] `gdriveExcelUrl` = `null` (không tự upload, để orchestrator xử lý)
 - [ ] File lưu tại `data/<TICKER>.json` (KHÔNG phải `Bao cao/`)
 - [ ] JSON hợp lệ (không trailing comma, không comment `//`)
+- [ ] **Bắt buộc** xuất thêm khóa `analysis_comments` chứa `ytd_loans_growth`, `ytd_dep_growth`, `profit_source_comment`, và `provision_comment` để đồng bộ hóa nhận định chất lượng tài sản lên Web Dashboard.
+- [ ] **Bắt buộc** biểu đồ PE/PB lịch sử có chiều ngang rộng `12x5` và giãn cách nhãn x-axis cách quãng, hiển thị trong PDF tối thiểu kích thước `175mm x 73mm` để đảm bảo độ trực quan cao nhất.
 

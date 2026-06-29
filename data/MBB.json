@@ -1,9 +1,9 @@
 {
   "ticker": "MBB",
-  "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
+  "companyName": "Ngân hàng MBB",
   "sector": "Ngân hàng",
-  "currentPrice": 24750.0,
-  "marketCap": 207814721400000.0,
+  "currentPrice": 24000,
+  "marketCap": 201517305600000,
   "shares": 8396554400,
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
@@ -62,11 +62,11 @@
       0.0391
     ],
     "ldr": [
-      0.9223,
-      1.0113,
-      1.0565,
-      1.0713,
-      1.1623
+      0.7857,
+      0.8305,
+      0.864,
+      0.9074,
+      0.966
     ],
     "casa": [
       0.4455,
@@ -84,7 +84,7 @@
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Ngân hàng MBB (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
     "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế."
   ],
   "risks": [
@@ -114,7 +114,7 @@
     "bull": 43603
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "businessModel": "Ngân hàng MBB (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
     "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
     "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu MBB."
   },
