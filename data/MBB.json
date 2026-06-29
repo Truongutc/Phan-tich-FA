@@ -1,120 +1,732 @@
 {
   "ticker": "MBB",
-  "companyName": "Ngân hàng MBB",
+  "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
+  "analysis_comments": {
+    "ytd_loans_growth": 3.26,
+    "ytd_dep_growth": -1.53,
+    "profit_source_comment": "Lợi nhuận cốt lõi từ Thu nhập lãi thuần (NII) chiếm ưu thế tuyệt đối đóng góp 85.6% tổng thu nhập HĐ, khẳng định chất lượng nguồn thu cực kỳ bền vững và đi liền với quy mô tín dụng.",
+    "provision_comment": "Chi phí trích lập dự phòng duy trì ở mức 35.9% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận.",
+    "nii_latest_val": 14913.12,
+    "npat_latest_val": 7702.72
+  },
+  "credit_funding_growth": {
+    "quarters": [
+      "Q2/18",
+      "Q3/18",
+      "Q4/18",
+      "Q1/19",
+      "Q2/19",
+      "Q3/19",
+      "Q4/19",
+      "Q1/20",
+      "Q2/20",
+      "Q3/20",
+      "Q4/20",
+      "Q1/21",
+      "Q2/21",
+      "Q3/21",
+      "Q4/21",
+      "Q1/22",
+      "Q2/22",
+      "Q3/22",
+      "Q4/22",
+      "Q1/23",
+      "Q2/23",
+      "Q3/23",
+      "Q4/23",
+      "Q1/24",
+      "Q2/24",
+      "Q3/24",
+      "Q4/24",
+      "Q1/25",
+      "Q2/25",
+      "Q3/25",
+      "Q4/25",
+      "Q1/26"
+    ],
+    "credit_absolute": [
+      206185.4,
+      207511.8,
+      214997.1,
+      230813.8,
+      239383.7,
+      239696.4,
+      250326.6,
+      246749.4,
+      259251.5,
+      266543.4,
+      297317.0,
+      322229.6,
+      328414.5,
+      332726.8,
+      359474.2,
+      411009.1,
+      409929.1,
+      422560.8,
+      454074.0,
+      474940.8,
+      511194.4,
+      529177.3,
+      604967.2,
+      608565.4,
+      667758.4,
+      696655.2,
+      769660.5,
+      790456.6,
+      871595.8,
+      922166.4,
+      1075163.9,
+      1110188.7
+    ],
+    "funding_absolute": [
+      240884.0,
+      238732.6,
+      251122.0,
+      257267.3,
+      277888.3,
+      278218.4,
+      298998.1,
+      272110.8,
+      290681.1,
+      304207.7,
+      361883.9,
+      378156.2,
+      395568.1,
+      398266.7,
+      451579.1,
+      462210.1,
+      488536.2,
+      478918.4,
+      540183.8,
+      568637.8,
+      599252.5,
+      606768.6,
+      704222.0,
+      674629.0,
+      731469.4,
+      760729.3,
+      857617.8,
+      885330.9,
+      971506.7,
+      979382.9,
+      1138323.1,
+      1149004.9
+    ],
+    "credit_ytd": [
+      5.39,
+      0.64,
+      3.61,
+      7.36,
+      3.71,
+      0.13,
+      4.43,
+      -1.43,
+      5.07,
+      2.81,
+      11.55,
+      8.38,
+      1.92,
+      1.31,
+      8.04,
+      14.34,
+      -0.26,
+      3.08,
+      7.46,
+      4.6,
+      7.63,
+      3.52,
+      14.32,
+      0.59,
+      9.73,
+      4.33,
+      10.48,
+      2.7,
+      10.26,
+      5.8,
+      16.59,
+      3.26
+    ],
+    "funding_ytd": [
+      3.32,
+      -0.89,
+      5.19,
+      2.45,
+      8.02,
+      0.12,
+      7.47,
+      -8.99,
+      6.82,
+      4.65,
+      18.96,
+      4.5,
+      4.6,
+      0.68,
+      13.39,
+      2.35,
+      5.7,
+      -1.97,
+      12.79,
+      5.27,
+      5.38,
+      1.25,
+      16.06,
+      -4.2,
+      8.43,
+      4.0,
+      12.74,
+      3.23,
+      9.73,
+      0.81,
+      16.23,
+      0.94
+    ]
+  },
   "sector": "Ngân hàng",
-  "currentPrice": 24000,
-  "marketCap": 201517305600000,
+  "currentPrice": 24750.0,
+  "marketCap": 207814721400000.0,
   "shares": 8396554400,
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "assumptions": {
+    "loans_growth": [
+      14.0,
+      13.0,
+      12.0
+    ],
+    "dep_growth": [
+      12.0,
+      11.0,
+      10.0
+    ],
+    "nim": [
+      4.11,
+      4.22,
+      4.3
+    ],
+    "cir": [
+      33.0,
+      32.0,
+      32.0
+    ],
+    "coc": [
+      1.42,
+      1.35,
+      1.27
+    ],
+    "npl": [
+      1.24,
+      1.18,
+      1.11
+    ]
+  },
+  "financial_snapshot": {
+    "years": [
+      "2023",
+      "2024",
+      "2025",
+      "2026F",
+      "2027F",
+      "2028F"
+    ],
+    "nii": [
+      38683.8,
+      41152.2,
+      51610.1,
+      67969.6,
+      78491.0,
+      89154.0
+    ],
+    "toi": [
+      47306.1,
+      55413.2,
+      67693.0,
+      86464.9,
+      99760.7,
+      113401.3
+    ],
+    "npat": [
+      21053.8,
+      22951.3,
+      27383.0,
+      33328.6,
+      40228.3,
+      46833.7
+    ],
+    "nim": [
+      5.0,
+      4.22,
+      3.91,
+      4.11,
+      4.22,
+      4.3
+    ],
+    "roe": [
+      23.9,
+      21.5,
+      21.1,
+      21.69,
+      22.42,
+      22.31
+    ],
+    "ldr": [
+      89.7,
+      93.6,
+      96.4,
+      97.88,
+      100.86,
+      103.74
+    ],
+    "npl": [
+      1.64,
+      1.65,
+      1.31,
+      1.24,
+      1.18,
+      1.11
+    ]
+  },
+  "forecast_text": {
+    "loans_g_26": 14.0,
+    "dep_g_26": 12.0,
+    "nim_26": 4.11,
+    "coc_26": 1.42,
+    "cir_26": 33.0,
+    "nim_trend": "tăng nhẹ",
+    "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
+  },
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/18GVXkA0yfBZa6wcaV0XZ7h8KpKVbB_JJ/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1lTWJib15Na6867K7d6jy8kkIuO_aJXww/view?usp=drivesdk",
   "pe_hist": [
-    8.5,
-    9.2,
-    7.8,
-    8.1,
-    8.4
+    6.6199518929,
+    8.8810600998,
+    8.999767326,
+    8.0011758067,
+    7.1902232318
   ],
   "pb_hist": [
-    1.2,
-    1.3,
-    1.1,
-    1.15,
-    1.25
+    1.3791227132,
+    1.7765964082,
+    1.7159471718,
+    1.5738889813,
+    1.3884621202
   ],
   "pe_quarters": [
-    8.5,
-    9.2,
-    7.8,
-    8.1,
-    8.4
+    12.1797692909,
+    10.0821857346,
+    8.4372435294,
+    7.6342112914,
+    7.3289558278,
+    7.6483610363,
+    7.0248161773,
+    4.8681399058,
+    4.88907507,
+    5.9136626027,
+    8.6214066704,
+    10.026216045,
+    11.0862338913,
+    10.1580540843,
+    9.3434776188,
+    6.9823393028,
+    5.0192843194,
+    4.7082111222,
+    4.7459362997,
+    5.3013759809,
+    5.2482676006,
+    4.9772280168,
+    6.2230229745,
+    5.9664522485,
+    6.3511609636,
+    6.042346307,
+    6.1686849885,
+    6.6199518929,
+    8.8810600998,
+    8.999767326,
+    8.0011758067,
+    7.1902232318
   ],
   "pb_quarters": [
-    1.2,
-    1.3,
-    1.1,
-    1.15,
-    1.25
+    1.4360078468,
+    1.5254321407,
+    1.3569983963,
+    1.3984373404,
+    1.3587745532,
+    1.5499580163,
+    1.4530667746,
+    1.0185681614,
+    0.9356592838,
+    1.1147921814,
+    1.564957625,
+    1.7292683977,
+    2.1897754268,
+    2.0133089953,
+    1.9914331915,
+    1.4942663391,
+    1.1657482138,
+    1.1409716638,
+    1.0924678869,
+    1.1766142342,
+    1.1643459061,
+    1.267188724,
+    1.3878847764,
+    1.2373823055,
+    1.3670254117,
+    1.2262773688,
+    1.2514836989,
+    1.3791227132,
+    1.7765964082,
+    1.7159471718,
+    1.5738889813,
+    1.3884621202
   ],
   "quarter_labels": [
-    "Q1",
-    "Q2",
-    "Q3",
-    "Q4",
-    "Q1",
-    "Q2",
-    "Q3",
-    "Q4"
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
   ],
-  "income_quarterly": [],
+  "income_quarterly": [
+    {
+      "quarter": "2023-Q2",
+      "nii": 9481.37,
+      "nonii": 2079.47,
+      "toi": 11560.83,
+      "ppop": 7425.67,
+      "npat": 4982.44
+    },
+    {
+      "quarter": "2023-Q3",
+      "nii": 9811.79,
+      "nonii": 2253.36,
+      "toi": 12065.15,
+      "ppop": 8731.19,
+      "npat": 5820.71
+    },
+    {
+      "quarter": "2023-Q4",
+      "nii": 9163.49,
+      "nonii": 2586.87,
+      "toi": 11750.36,
+      "ppop": 7874.45,
+      "npat": 5045.09
+    },
+    {
+      "quarter": "2024-Q1",
+      "nii": 9062.29,
+      "nonii": 2954.41,
+      "toi": 12016.7,
+      "ppop": 8502.41,
+      "npat": 4624.22
+    },
+    {
+      "quarter": "2024-Q2",
+      "nii": 10531.11,
+      "nonii": 3598.14,
+      "toi": 14129.25,
+      "ppop": 9638.74,
+      "npat": 6101.98
+    },
+    {
+      "quarter": "2024-Q3",
+      "nii": 10416.64,
+      "nonii": 2287.13,
+      "toi": 12703.76,
+      "ppop": 8947.87,
+      "npat": 5843.44
+    },
+    {
+      "quarter": "2024-Q4",
+      "nii": 11142.18,
+      "nonii": 5421.33,
+      "toi": 16563.51,
+      "ppop": 11316.96,
+      "npat": 6381.62
+    },
+    {
+      "quarter": "2025-Q1",
+      "nii": 11692.18,
+      "nonii": 3630.51,
+      "toi": 15322.7,
+      "ppop": 11372.74,
+      "npat": 6674.88
+    },
+    {
+      "quarter": "2025-Q2",
+      "nii": 12372.12,
+      "nonii": 4873.56,
+      "toi": 17245.68,
+      "ppop": 12289.21,
+      "npat": 6004.71
+    },
+    {
+      "quarter": "2025-Q3",
+      "nii": 12990.52,
+      "nonii": 2606.17,
+      "toi": 15596.69,
+      "ppop": 11051.43,
+      "npat": 5800.44
+    },
+    {
+      "quarter": "2025-Q4",
+      "nii": 14555.29,
+      "nonii": 4972.65,
+      "toi": 19527.95,
+      "ppop": 13298.49,
+      "npat": 8902.95
+    },
+    {
+      "quarter": "2026-Q1",
+      "nii": 14913.12,
+      "nonii": 2517.09,
+      "toi": 17430.21,
+      "ppop": 13083.2,
+      "npat": 7702.72
+    }
+  ],
   "ratios_quarterly": {
     "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "nim": [
+      0.0749,
+      0.0749,
+      0.0611,
+      0.0601,
+      0.0636,
+      0.0603,
+      0.0583,
+      0.0595,
+      0.0571,
+      0.0566,
+      0.0544,
+      0.0539
+    ],
+    "ldr": [
+      0.8615,
+      0.8795,
+      0.864,
+      0.9119,
+      0.9228,
+      0.9252,
+      0.9074,
+      0.9048,
+      0.9096,
+      0.9563,
+      0.966,
+      0.992
+    ],
+    "casa": [
+      0.0,
+      0.0,
+      0.0,
+      0.0007,
+      0.0017,
+      0.0,
+      0.0003,
+      0.0007,
+      0.0011,
+      0.0016,
+      0.0008,
+      0.0007
+    ],
+    "npl": [
+      1.48,
+      1.93,
+      1.64,
+      2.54,
+      1.66,
+      2.27,
+      1.65,
+      1.87,
+      1.63,
+      1.9,
+      1.31,
+      1.44
+    ],
+    "llr": [
+      156.1,
+      122.0,
+      117.0,
+      80.1,
+      101.7,
+      68.8,
+      92.2,
+      75.3,
+      88.9,
+      79.2,
+      93.7,
+      92.2
+    ]
+  },
+  "earning_assets": {
+    "years": [
       "2021",
       "2022",
       "2023",
       "2024",
       "2025"
     ],
-    "nim": [
-      0.0467,
-      0.0578,
-      0.05,
-      0.0422,
-      0.0391
+    "cash_sbv": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
     ],
-    "ldr": [
-      0.7857,
-      0.8305,
-      0.864,
-      0.9074,
-      0.966
+    "bank_dep": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
     ],
-    "casa": [
-      0.4455,
-      0.3764,
-      0.3808,
-      0.3803,
-      0.3683
+    "loans": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
     ],
-    "npl": [
-      0.0092,
-      0.0112,
-      0.0164,
-      0.0165,
-      0.0131
+    "inv_sec": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
     ]
   },
   "thesis": [
-    "Ngân hàng MBB (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế."
+    "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
+    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu MBB."
   ],
   "risks": [
-    "Rủi ro biên lãi ròng NIM thu hẹp do cạnh tranh lãi suất cho vay.",
-    "Rủi ro nợ xấu gia tăng khi thị trường bất động sản phục hồi chậm."
+    "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.39% so kế hoạch.",
+    "Rủi ro nợ xấu: thị trường bất động sản hồi phục chậm, nợ nhóm 2 tăng có thể chuyển thành NPL trong 6–12 tháng.",
+    "Rủi ro pháp lý: Thông tư siết TPDN và nâng chuẩn CAR có thể hạn chế room tín dụng của MBB."
   ],
   "moats": {
     "Network Effect": {
       "score": 4,
-      "desc": "Mạng lưới phân phối rộng lớn."
+      "desc": "Mạng lưới khách hàng MBB rộng — hiệu ứng mạng lưới tạo CASA ổn định."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "CASA cao giúp COF thấp hơn ngành, tạo lợi thế chi phí vốn bền vững."
     },
     "Switching Cost": {
       "score": 3,
-      "desc": "Hệ sinh thái số tiện ích giữ chân khách hàng."
+      "desc": "Hệ sinh thái ứng dụng số tích hợp tạo rào cản chuyển đổi khách hàng."
+    },
+    "Intangible Assets": {
+      "score": 4,
+      "desc": "Thương hiệu ngân hàng uy tín và quan hệ doanh nghiệp/cá nhân lâu năm."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Quy mô tài sản tạo hiệu quả vận hành trên chi phí cố định hạ tầng CNTT."
     }
   },
   "pestle": [
     {
       "factor": "Political",
-      "content": "Môi trường chính trị ổn định hỗ trợ ngành ngân hàng.",
+      "content": "Môi trường chính trị ổn định, NHNN điều hành linh hoạt hỗ trợ tăng trưởng tín dụng.",
       "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "GDP 6–7%, nhu cầu tín dụng sản xuất–tiêu dùng cao, lãi suất huy động dần giảm.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Tầng lớp trung lưu mở rộng, thanh toán không tiền mặt thúc đẩy CASA và dịch vụ phí.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Chuyển đổi số banking giảm CIR, tăng CASA và cross-sell — đây là lợi thế cạnh tranh dài hạn.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Thông tư 06/2024 siết TPDN, Basel II/III nâng chuẩn CAR — tạo áp lực pháp lý ngắn hạn.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "ESG lending ngày càng được yêu cầu; rủi ro tín dụng BĐS liên quan biến đổi khí hậu tăng.",
+      "impact": "Negative"
     }
   ],
   "valuation": {
-    "bear": 32228,
-    "base": 37916,
-    "bull": 43603
+    "weightedTarget": 31163,
+    "upside": 25.91,
+    "bear": 26488,
+    "base": 31163,
+    "bull": 35837,
+    "pbAttractive": 1.24,
+    "pbAttractivePrice": 25988,
+    "pbTarget": 1.48,
+    "pbTargetPrice": 30932,
+    "COE": 11.61,
+    "peMedian": 6.29,
+    "pbMedian": 1.37,
+    "bvpsBase": 16914,
+    "riValue": 33651,
+    "pbValue": 28675,
+    "pvRi": 5565,
+    "pvCv": 11172,
+    "epsFc": [
+      3969,
+      4791,
+      5578
+    ],
+    "riResults": [
+      2006,
+      2366,
+      2597
+    ],
+    "recommend": "MUA"
   },
   "comments": {
-    "businessModel": "Ngân hàng MBB (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
+    "businessModel": "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
     "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
     "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu MBB."
   },
@@ -135,9 +747,9 @@
       38683.85,
       41152.22,
       51610.12,
-      56227.89,
-      64169.2,
-      72567.17
+      67969.59,
+      78491.02,
+      89153.95
     ],
     "npat": [
       13221.44,
@@ -145,9 +757,9 @@
       21053.79,
       22951.26,
       27382.98,
-      28135.02,
-      33997.36,
-      39799.21
+      33328.58,
+      40228.27,
+      46833.74
     ],
     "eps": [
       1574.6,
@@ -155,9 +767,9 @@
       2507.4,
       2733.4,
       3261.2,
-      3350.8,
-      4049.0,
-      4739.9
+      3969.3,
+      4791.0,
+      5577.7
     ],
     "equity": [
       62486.02,
@@ -165,9 +777,71 @@
       96711.16,
       117059.58,
       142022.52,
-      170157.54,
-      204154.91,
-      243954.11
+      165352.53,
+      193512.31,
+      226295.93
+    ]
+  },
+  "ratios": {
+    "nim": [
+      0.0467,
+      0.0578,
+      0.05,
+      0.0422,
+      0.0391,
+      0.0411,
+      0.0422,
+      0.043
+    ],
+    "roe": [
+      0.2116,
+      0.2555,
+      0.2388,
+      0.2147,
+      0.2114,
+      null,
+      null,
+      null
+    ],
+    "roa": [
+      0.0218,
+      0.0249,
+      0.0223,
+      0.0203,
+      0.0169,
+      null,
+      null,
+      null
+    ],
+    "npl": [
+      0.0092,
+      0.0112,
+      0.0164,
+      0.0165,
+      0.0131,
+      0.0124,
+      0.0118,
+      0.0111
+    ],
+    "ldr": [
+      0.8453,
+      0.8805,
+      0.8972,
+      0.9356,
+      0.9642,
+      null,
+      null,
+      null
+    ],
+    "casa": [
+      0.4455,
+      0.3764,
+      0.3808,
+      0.3803,
+      0.3683,
+      0.3783,
+      0.3883,
+      0.3983
     ]
   }
 }
