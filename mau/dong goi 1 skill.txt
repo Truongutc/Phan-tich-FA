@@ -776,7 +776,88 @@ KPIs theo dõi:
 
 **Định giá**: Residual Income model + P/B — không dùng EV (ngân hàng không có EV theo nghĩa thông thường).
 
----
+#### 6.4.1 Tính Số Lượng Cổ Phiếu Ngân Hàng (BẮT BUỘC)
+- **Công thức bắt buộc**: Số lượng cổ phiếu = Vốn điều lệ / 10,000 (mệnh giá 10,000 VNĐ/CP)
+- **Nguồn**: Lấy Vốn điều lệ (Charter Capital) từ Bảng cân đối kế toán (VCSH, dòng `bsa69` hoặc tương đương).
+- **TUYỆT ĐỐI KHÔNG** hardcode giá trị cổ phần hoặc dùng số lượng cổ phiếu của năm khác (vì ngân hàng thường xuyên tăng vốn).
+- **TUYỆT ĐỐI KHÔNG** lấy từ field `numberOfSharesMktCap` của API nếu giá trị bất thường (ví dụ: trả về 7.8 tỷ CP cho TCB khi thực tế chỉ ~7.0 tỷ CP). Phải cross-check với Vốn điều lệ / 10,000.
+
+#### 6.4.2 Tính P/B Median và Ngưỡng Định Giá (BẮT BUỘC)
+- **PB Median all-time**: Trung vị của toàn bộ chuỗi dữ liệu P/B lịch sử (không chỉ 1 hoặc 5 năm).
+- **PB Hấp dẫn**: Trung vị của **nửa dưới** của toàn bộ chuỗi (tức là median của các giá trị ≤ median all-time). Đây là vùng P/B hấp dẫn để mua.
+- **PB Overvalued**: Trung vị của **nửa trên** của toàn bộ chuỗi (tức là median của các giá trị > median all-time). Đây là vùng P/B đắt, cần thận trọng.
+- **Kiểm tra**: PB Hấp dẫn < PB Median all-time < PB Overvalued. Nếu cả 3 bằng nhau → dữ liệu bị lỗi.
+- **Sử dụng trong định giá**: Giá trị `pb_value = pb_median_alltime × bvps_base`
+
+#### 6.4.3 Tính Tăng Trưởng Tín Dụng Quý (YTD — BẮT BUỘC)
+- **Công thức**: TTTD Quý = (Dư nợ quý hiện tại / Dư nợ Q4 năm trước) - 1
+- **Ý nghĩa**: So sánh tích lũy từ đầu năm (Year-to-Date), không phải so sánh quý liền kề (QoQ) hay cùng kỳ năm ngoái (YoY).
+- **Ví dụ**: Tại Q1/2026 → so với Q4/2025. Tại Q2/2026 → cũng so với Q4/2025 (cùng gốc đầu năm).
+- **Trong JSON/Dashboard**: Nhãn hiển thị phải là "TTTD YTD" hoặc "So với đầu năm" — KHÔNG được hiển thị "QoQ".
+
+#### 6.4.4 Chỉ Số Then Chốt Ngân Hàng Trên Web Dashboard (BẮT BUỘC)
+Khi tạo Web Dashboard cho ngân hàng, **bắt buộc** hiển thị đúng 6 chỉ số sau:
+1. **Tăng trưởng LN Quý YoY** (LNST quý gần nhất / cùng kỳ năm ngoái - 1)
+2. **ROE Quý gần nhất (Năm hóa)** (LNST quý × 4 / Vốn chủ sở hữu)
+3. **P/B Hiện tại** (Trailing PB = Giá hiện tại / BVPS)
+4. **Tỷ lệ Nợ xấu NPL Quý** (NPL ratio từ dữ liệu quý gần nhất — không nhân thêm 100 nếu đã ở dạng %)
+5. **Tăng trưởng tín dụng YTD** (so với Q4 năm trước — xem §6.4.3)
+6. **P/E Hiện tại** (Trailing PE)
+
+**Lưu ý quan trọng**: Tuyệt đối KHÔNG nhân thêm × 100 khi `npl_ratio` đã ở dạng phần trăm (ví dụ: 1.53). Điều này sẽ gây hiển thị 153% thay vì 1.53%.
+
+#### 6.4.5 Biểu Đồ Cơ Cấu Hoạt Động Quý (Bổ Sung BẮT BUỘC cho Ngân Hàng)
+Ngoài biểu đồ cơ cấu tài sản sinh lãi tiêu chuẩn, **bắt buộc** bổ sung 4 biểu đồ cột chồng (stacked bar) theo quý, cập nhật tới quý gần nhất, vào cả PDF và Web Dashboard:
+
+1. **Cơ cấu cho vay theo nhóm ngành** (mã Notes: `nob60`, `nob63`, `nob64` hoặc forward-fill từ BCTC năm):
+   - Bất động sản, Cá nhân/Bán lẻ, Thương mại & Dịch vụ, Khác.
+   - Màu sắc tương phản cao: `#ED7D31`, `#2E75B6`, `#70AD47`, `#FFC000`.
+
+2. **Biến động nợ nhóm 2–5** (mã Notes: `nob41`–`nob44` — **KHÔNG bao gồm Nhóm 1** vì quá lớn che khuất biến động):
+   - Nhóm 2 (Cần chú ý): `#FFC000`, Nhóm 3 (Dưới tiêu chuẩn): `#ED7D31`, Nhóm 4 (Nghi ngờ): `#7030A0`, Nhóm 5 (Mất vốn): `#C00000`.
+
+3. **Cơ cấu thời hạn cho vay** (mã Notes: `nob46`–`nob48`):
+   - Ngắn hạn: `#2E75B6`, Trung hạn: `#70AD47`, Dài hạn: `#FFC000`.
+
+4. **Cơ cấu loại hình tiền gửi** (mã Notes: `nob65`–`nob67`):
+   - Không kỳ hạn (CASA): `#ED7D31`, Có kỳ hạn: `#2E75B6`, Ký quỹ & Khác: `#7F7F7F`.
+
+**Xử lý dữ liệu Notes theo quý**: Dữ liệu chi tiết phân loại này thường chỉ có trong BCTC năm, không có theo quý. Kỹ thuật bắt buộc: **Forward-fill từ dữ liệu năm** (tức là các quý trong cùng năm dùng số liệu của BCTC năm đó; nếu BCTC năm chưa có → dùng số liệu năm gần nhất có).
+
+#### 6.4.6 Biểu Đồ Cơ Cấu Tài Sản Sinh Lãi — Màu Sắc Tương Phản
+Biểu đồ Earning Assets Structure phải sử dụng màu sắc có độ tương phản cao:
+- **Cash & SBV**: Đỏ san hô `#E74C3C` / `rgba(231,76,60,0.8)`
+- **Bank Deposits**: Xanh lá `#27AE60` / `rgba(39,174,96,0.8)`
+- **Loans**: Xanh dương đậm `#2980B9` / `rgba(41,128,185,0.8)`
+- **Investment Securities**: Tím đậm `#8E44AD` / `rgba(142,68,173,0.8)`
+
+#### 6.4.7 Đánh Giá Chuyên Gia Tự Động (AI Commentary — BẮT BUỘC)
+Khi gọi AI để tạo nhận định chuyên gia cho ngân hàng, **bắt buộc** truyền đầy đủ dữ liệu định lượng vào prompt:
+
+**Input cần truyền vào prompt**:
+- Tên ngân hàng, ticker, giá hiện tại, giá mục tiêu, upside (%)
+- Tỷ trọng cho vay theo ngành: % BĐS, % Cá nhân, % Thương mại, % Khác
+- CASA ratio hiện tại (%) vs. trung bình ngành (%)
+- NIM, ROE vs. trung bình ngành
+- NPL ratio quý gần nhất vs. trung bình ngành
+- Tỷ lệ bao phủ nợ xấu LLR
+- Tăng trưởng tín dụng YTD vs. trung bình ngành
+
+**Yêu cầu 3 đoạn nhận định**:
+1. **Mô hình Kinh doanh**: Đặc điểm thiên hướng cho vay (BĐS cao hay bán lẻ), CASA tốt/kém so ngành, lợi thế cạnh tranh.
+2. **Sức khỏe Tài chính**: So sánh NPL, TTTD, LLR với trung bình ngành → ngân hàng đang tốt hơn hay xấu hơn mặt bằng.
+3. **Triển vọng Định giá**: Nêu rõ giá hiện tại, giá mục tiêu, upside (%) cụ thể và khuyến nghị có đáng đầu tư không.
+
+**Kết quả trả về** phải là JSON với 3 keys: `business`, `financial`, `valuation`.
+
+#### 6.4.8 File Lock Handling trên Windows (BẮT BUỘC)
+Khi ghi file Excel/PDF trên Windows, nếu file đang mở bởi Chrome/Excel:
+- Sẽ phát sinh `PermissionError: [Errno 13]`.
+- **Giải pháp**: Tự động thử tên file với hậu tố tăng dần `_v1`, `_v2`, `_v3`... cho đến khi ghi thành công.
+- **Quy tắc tìm file mới nhất**: Sắp xếp theo số phiên bản giảm dần, lấy file có số phiên bản lớn nhất làm file phân tích mới nhất.
+- **Không được dừng pipeline** khi gặp lỗi lock file — phải tự động xử lý.
+
+
 
 ### 6.5 Chứng khoán
 **Ví dụ mẫu**: SSI, VND, HCM, MBS

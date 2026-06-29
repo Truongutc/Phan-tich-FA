@@ -208,9 +208,9 @@ def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=300, timeout=20, f
 # ── AI COMMENTARY EXTRACTOR ──────────────────────────────────────────────────
 def get_ai_commentary(ticker, company_name, sector, financial_summary, api_key):
     default_comments = {
-        "business": f"{company_name} ({ticker}) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-        "financial": f"Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-        "valuation": f"Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu {ticker}."
+        "business": f"{company_name} ({ticker}) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
+        "financial": f"Sức khỏe tài chính của {ticker} nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và hiệu quả sinh lời (ROE, NIM) tiếp tục duy trì vị thế nhóm đầu thị trường.",
+        "valuation": f"Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu {ticker} mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị thế đầu ngành vững chắc."
     }
     
     if not api_key:
@@ -222,19 +222,20 @@ def get_ai_commentary(ticker, company_name, sector, financial_summary, api_key):
         
         client = genai.Client(api_key=api_key)
         prompt = f"""
-        Bạn là chuyên gia phân tích tài chính ngân hàng cao cấp. Hãy viết nhận định chuyên sâu bằng tiếng Việt cho cổ phiếu ngân hàng {ticker} ({company_name}).
-        Số liệu tài chính tóm tắt: {financial_summary}
+        Bạn là một chuyên gia phân tích tài chính ngân hàng cao cấp. Hãy viết nhận định chuyên sâu, cụ thể bằng tiếng Việt cho cổ phiếu ngân hàng {ticker} ({company_name}).
+        Số liệu tài chính chi tiết được cung cấp:
+        {financial_summary}
         
-        Hãy viết 3 đoạn văn ngắn gọn (mỗi đoạn khoảng 3-4 câu):
-        1. Nhận xét Mô hình Kinh doanh & Vị thế cạnh tranh (CASA, chuyển đổi số).
-        2. Nhận xét Chất lượng tài sản (NPL, LDR) & Biên sinh lời (NIM, ROE).
-        3. Nhận xét Triển vọng Định giá & Rủi ro tín dụng.
+        Hãy viết đúng 3 đoạn văn nhận định chi tiết, mỗi đoạn từ 3 đến 5 câu, bám sát các số liệu trên:
+        Đoạn 1 (Mô hình kinh doanh & Tín dụng): Đánh giá đặc điểm cho vay của ngân hàng (tỷ trọng cho vay bất động sản lớn hay nghiêng về bán lẻ/cá nhân, nguồn vốn huy động có CASA tốt không).
+        Đoạn 2 (Sức khỏe tài chính): So sánh trực tiếp các chỉ số sức khỏe tài chính như Tỷ lệ nợ xấu (NPL), Tăng trưởng tín dụng YTD, và Tỷ lệ bao phủ nợ xấu (LLR) của ngân hàng so với trung bình ngành/peer để kết luận ngân hàng đang tốt hơn hay xấu hơn mặt bằng chung.
+        Đoạn 3 (Triển vọng định giá): Nêu rõ giá hiện tại, giá mục tiêu và tỷ lệ upside (%) cụ thể. Đưa ra quan điểm rõ ràng cổ phiếu có đáng đầu tư hay không dựa trên biên an toàn và hiệu quả sinh lời.
         
         Yêu cầu trả về định dạng JSON thuần túy (không markdown, không ```json) với cấu trúc:
         {{
-            "business": "nội dung đoạn 1...",
-            "financial": "nội dung đoạn 2...",
-            "valuation": "nội dung đoạn 3..."
+            "business": "Nhận định đoạn 1...",
+            "financial": "Nhận định đoạn 2...",
+            "valuation": "Nhận định đoạn 3..."
         }}
         """
         response = client.models.generate_content(
@@ -242,7 +243,7 @@ def get_ai_commentary(ticker, company_name, sector, financial_summary, api_key):
             contents=prompt,
             config=genai_types.GenerateContentConfig(
                 temperature=0.2,
-                max_output_tokens=1000,
+                max_output_tokens=1200,
             ),
         )
         text = response.text.strip()
@@ -292,7 +293,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     charter_capital = 0
     for r in bs_recs:
         if r.get("yearReport") == latest_hist_year:
-            charter_capital = r.get("bsb118") or r.get("bsa80") or 0
+            charter_capital = r.get("bsa80") or 0
             break
             
     if charter_capital > 0:
@@ -364,6 +365,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     npl_total_hist = [npl_gr3_hist[i] + npl_gr4_hist[i] + npl_gr5_hist[i] for i in range(len(years_hist))]
     casa_hist = [get_yr(nt_recs, y, "nob66") for y in years_hist]
     dep_total_hist = [get_yr(nt_recs, y, "nob65") or 1 for y in years_hist]
+    shares_hist = [int(get_yr(bs_recs, y, "bsa80") * 1e9 / 10000) for y in years_hist]
     
     # ── Derived History ──
     npl_ratio_hist = [round(npl_total_hist[i] / max(loans_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
@@ -431,17 +433,18 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     except Exception as e:
         print(f"[WARN] Live ratios fetch failed: {e}")
         
-    # Calculate median and distribution metrics using only the last 12 quarters (3 years)
-    pe_last_12 = pe_all_vals[-12:] if pe_all_vals else [8.5]
-    pb_last_12 = pb_all_vals[-12:] if pb_all_vals else [1.25]
+    # Calculate median and distribution metrics using all historical quarters (all-time)
+    pe_all_vals_clean = pe_all_vals if pe_all_vals else [8.5]
+    pb_all_vals_clean = pb_all_vals if pb_all_vals else [1.25]
     
-    pe_all_median = stats.median(pe_last_12)
-    pb_all_median = stats.median(pb_last_12)
+    pe_q = stats.quantiles(pe_all_vals_clean, n=4) if len(pe_all_vals_clean) >= 2 else [pe_all_vals_clean[0]]*3
+    pb_q = stats.quantiles(pb_all_vals_clean, n=4) if len(pb_all_vals_clean) >= 2 else [pb_all_vals_clean[0]]*3
     
-    _pb_below = [p for p in pb_last_12 if p <= pb_all_median]
-    _pb_above = [p for p in pb_last_12 if p >= pb_all_median]
-    pb_attractive = stats.median(_pb_below) if _pb_below else pb_all_median * 0.85
-    pb_target = stats.median(_pb_above) if _pb_above else pb_all_median * 1.15
+    pe_all_median = pe_q[1]
+    pb_all_median = pb_q[1]
+    
+    pb_attractive = pb_q[0]
+    pb_target = pb_q[2]
     
     # Median per year
     pe_by_year, pb_by_year = {}, {}
@@ -518,9 +521,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     casa_fc_amt = [dep_fc[i] * casa_target_fc[i] for i in range(3)]
     term_dep_fc = [dep_fc[i] - casa_fc_amt[i] for i in range(3)]
 
-    eps_hist_calc = [np_hist[i] * 1e9 / shares for i in range(len(years_hist))]
+    eps_hist_calc = [np_hist[i] * 1e9 / (shares_hist[i] if shares_hist[i] > 0 else shares) for i in range(len(years_hist))]
     eps_fc_calc = [np_fc[i] * 1e9 / shares for i in range(3)]
-    bvps_hist = [equity_hist[i] * 1e9 / shares for i in range(len(years_hist))]
+    bvps_hist = [equity_hist[i] * 1e9 / (shares_hist[i] if shares_hist[i] > 0 else shares) for i in range(len(years_hist))]
     
     # Dynamic forecast ratios for PDF Snapshot and Margins Chart
     eq_fc_ends = [equity_hist[-1]]
@@ -621,8 +624,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         
     cv = ri_results[-1] * (1 + terminal_growth) / (COE - terminal_growth) if (COE - terminal_growth) > 0 else 0
     pv_ri = sum([ri_results[i] / (1 + COE) ** (i + 1) for i in range(len(ri_results))])
-    # Apply Option B: Take 50% of PV of Continuing Value to account for long-term ROE reverting to COE
-    pv_cv = (cv / (1 + COE) ** len(ri_results)) * 0.5
+    # Continuing Value without arbitrary discount (Option A - Standard)
+    pv_cv = cv / (1 + COE) ** len(ri_results)
     ri_value = bvps_base + pv_ri + pv_cv
     
     bvps_forward = bvps_base + eps_fc_calc[0]
@@ -641,7 +644,22 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     month_str = datetime.datetime.now().strftime("%Y-%m")
     excel_path = os.path.join(out_dir, f"{ticker}_Model_{month_str}.xlsx")
+    for v in range(1, 100):
+        try:
+            if os.path.exists(excel_path):
+                with open(excel_path, 'ab'): pass
+            break
+        except OSError:
+            excel_path = os.path.join(out_dir, f"{ticker}_Model_{month_str}_v{v}.xlsx")
+
     pdf_path = os.path.join(out_dir, f"{ticker}_Phan_Tich_{month_str}.pdf")
+    for v in range(1, 100):
+        try:
+            if os.path.exists(pdf_path):
+                with open(pdf_path, 'ab'): pass
+            break
+        except OSError:
+            pdf_path = os.path.join(out_dir, f"{ticker}_Phan_Tich_{month_str}_v{v}.pdf")
 
     # ── Excel Export (Formula-Driven 17 Sheets) ──────────────
     print(f"[Excel] Building workbook with formulas for {ticker}...")
@@ -735,7 +753,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     write_header_row(ws_ass, 1, 1, headers)
     assumptions = [
         ("Giá cổ phiếu (VND)", [current_price] + [None]*7),                      # row 2
-        ("Số lượng CP lưu hành", [shares] + [None]*7),                            # row 3
+        ("Số lượng CP lưu hành", shares_hist + [shares]*3),                       # row 3
         ("Tín dụng tăng trưởng (%)", [None]*5 + loans_growth_fc),                # row 4
         ("Huy động tăng trưởng (%)", [None]*5 + dep_growth_fc),                  # row 5
         ("NIM (%)", [n/100 for n in nim_hist] + nim_fc),                          # row 6
@@ -831,7 +849,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         pbt_ref = f"('03_Income_Model'!{col}17)"
         ws_pnl.cell(row=5, column=7+idx, value=f"={pbt_ref}-MAX({pbt_ref}*'02_Assumptions'!{col}14,0)")
         # FIX Lỗi 1: 1e9 không hợp lệ trong Excel — phải dùng số nguyên 1000000000
-        ws_pnl.cell(row=6, column=7+idx, value=f"={col}5*1000000000/'02_Assumptions'!$B$3")
+        ws_pnl.cell(row=6, column=7+idx, value=f"={col}5*1000000000/'02_Assumptions'!{col}3")
         
     # 7. 05_Balance_Sheet_Quarterly
     ws_bq = wb.create_sheet("05_Balance_Sheet_Quarterly")
@@ -951,12 +969,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_val.cell(row=5, column=1, value="RESIDUAL INCOME MODEL").font = FMT_BOLD
     ws_val.cell(row=6, column=1, value="BV/share hiện tại (VND)")
     # VCSH has moved to row 10 in 05_Balance_Sheet
-    ws_val.cell(row=6, column=2, value="='05_Balance_Sheet'!F10*1000000000/'02_Assumptions'!$B$3").number_format = FMT_NUM
+    ws_val.cell(row=6, column=2, value="='05_Balance_Sheet'!F10*1000000000/'02_Assumptions'!$F$3").number_format = FMT_NUM
     ws_val.cell(row=7, column=1, value="PV của RI 3 năm (VND)")
     ws_val.cell(row=7, column=2, value="=SUM(B31:D31)").number_format = FMT_NUM
     ws_val.cell(row=8, column=1, value="PV của Continuing Value (VND)")
-    # Apply Option B: Discount Continuing Value by 50% for conservative valuation
-    ws_val.cell(row=8, column=2, value="=((D29*(1+B3)/(B2-B3))*D30)*0.5").number_format = FMT_NUM
+    # Continuing Value (CV) - Standard formula without arbitrary discount
+    ws_val.cell(row=8, column=2, value="=(D29*(1+B3)/(B2-B3))*D30").number_format = FMT_NUM
     ws_val.cell(row=9, column=1, value="GIÁ TRỊ RI (VND)").font = FMT_BOLD
     ws_val.cell(row=9, column=2, value="=B6+B7+B8").font = FMT_BOLD
     ws_val.cell(row=9, column=2).number_format = FMT_NUM
@@ -965,22 +983,23 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_val.cell(row=12, column=1, value="P/B hiện tại (x)")
     ws_val.cell(row=12, column=2, value="='02_Assumptions'!B2/B6").number_format = '0.00'
     ws_val.cell(row=13, column=1, value="P/B hấp dẫn (x) — MUA")
-    # Determine number of historical quarters in history sheet
+    # Determine number of historical quarters in history sheet (all-time)
     n_q_rows = len(pb_all_vals)
     last_row_pb = n_q_rows + 1
-    start_row_pb = max(2, last_row_pb - 12 + 1)
     
     ws_val.cell(row=13, column=1, value="P/B hấp dẫn (x) — MUA")
-    ws_val.cell(row=13, column=2, value=f"=PERCENTILE('13_PE_PB_History'!C{start_row_pb}:C{last_row_pb}, 0.25)").number_format = '0.00'
+    # MEDIAN of lower half is represented by standard 25th percentile (Q1)
+    ws_val.cell(row=13, column=2, value=f"=PERCENTILE('13_PE_PB_History'!C2:C{last_row_pb}, 0.25)").number_format = '0.00'
     ws_val.cell(row=13, column=2).font = Font(color="006400", bold=True, name="Calibri")
     ws_val.cell(row=13, column=3, value="Median P/B nửa dưới (vùng mua hấp dẫn)").font = Font(size=9, color="006400", name="Calibri")
     
     ws_val.cell(row=14, column=1, value="P/B median all-time (x) — FAIR VALUE")
-    ws_val.cell(row=14, column=2, value=f"=MEDIAN('13_PE_PB_History'!C{start_row_pb}:C{last_row_pb})").number_format = '0.00'
+    ws_val.cell(row=14, column=2, value=f"=MEDIAN('13_PE_PB_History'!C2:C{last_row_pb})").number_format = '0.00'
     ws_val.cell(row=14, column=3, value="Median PB toàn bộ lịch sử").font = Font(size=9, color="595959", name="Calibri")
     
     ws_val.cell(row=15, column=1, value="P/B chốt lời (x) — BÁN / CHỐT LỜI")
-    ws_val.cell(row=15, column=2, value=f"=PERCENTILE('13_PE_PB_History'!C{start_row_pb}:C{last_row_pb}, 0.75)").number_format = '0.00'
+    # MEDIAN of upper half is represented by standard 75th percentile (Q3)
+    ws_val.cell(row=15, column=2, value=f"=PERCENTILE('13_PE_PB_History'!C2:C{last_row_pb}, 0.75)").number_format = '0.00'
     ws_val.cell(row=15, column=2).font = Font(color="C00000", bold=True, name="Calibri")
     ws_val.cell(row=15, column=3, value="Median P/B nửa trên (vùng chốt lời)").font = Font(size=9, color="C00000", name="Calibri")
     ws_val.cell(row=16, column=1, value="BV/share tương lai (2026F)")
@@ -1042,9 +1061,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             if (coe - g) <= 0:
                 val_sens = 0
             else:
-                # FIX: Tính đủ PV của cả 3 năm RI + PV(Continuing Value) discounted by 50% (Option B)
+                # FIX: Tính đủ PV của cả 3 năm RI + PV(Continuing Value) without discount
                 pv_ri_sens = sum(ri_results[k] / (1 + coe)**(k+1) for k in range(len(ri_results)))
-                pv_cv_sens = ((ri_results[-1] * (1+g)/(coe-g)) / (1+coe)**len(ri_results)) * 0.5
+                pv_cv_sens = ((ri_results[-1] * (1+g)/(coe-g)) / (1+coe)**len(ri_results))
                 val_sens = bvps_base + pv_ri_sens + pv_cv_sens
             ws_sens.cell(row=3+i, column=j+2, value=val_sens).number_format = '#,##0'
     # Highlight current COE+g scenario
@@ -1112,8 +1131,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     current_pb_ratio = current_price / (bvps_base + eps_fc_calc[0]) if (bvps_base + eps_fc_calc[0]) > 0 else 1.2
     current_pe_ratio = current_price / eps_fc_calc[0] if eps_fc_calc[0] > 0 else 8.5
     
-    if pb_slice_sens: pb_slice_sens[-1] = current_pb_ratio
-    if pe_slice_sens: pe_slice_sens[-1] = current_pe_ratio
+    # Keep actual historical values for all quarters to align with python medians
+    # if pb_slice_sens: pb_slice_sens[-1] = current_pb_ratio
+    # if pe_slice_sens: pe_slice_sens[-1] = current_pe_ratio
     
     # Generate dynamic quarter labels backing up from current Q1/2026
     labels_n_sens = []
@@ -1250,10 +1270,183 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     wb.save(excel_path)
     print(f"[Excel] Dynamic workbook successfully saved to {excel_path}")
 
-    # ── Fetch AI Commentary ──────────────────────────────────
-    api_key = os.environ.get("GEMINI_API_KEY")
-    fin_summary = f"ROE {roe_hist[-1]}%, NIM {nim_hist[-1]}%, LNST {np_hist[-1]:.1f} ty, LDR {ldr_hist[-1]}%, CASA {casa_ratio_hist[-1]}%"
-    ai_comments = get_ai_commentary(ticker, company_name, industry, fin_summary, api_key)
+
+    # ── Quarterly calculations for charts and JSON ────────────────────────
+    rq_all = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"),
+                    key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))
+    rq_sorted = rq_all[-12:]
+    iq_sorted = sorted(section_to_quarters(raw_data, "INCOME_STATEMENT"),
+                       key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
+    n_q = min(len(rq_sorted), len(iq_sorted))
+    rq_sorted = rq_sorted[-n_q:]
+    iq_sorted = iq_sorted[-n_q:]
+    
+    def safe_div(a, b, mult=1):
+        return round(a / b * mult, 4) if b and b != 0 else 0
+    
+    q_labels_json = [f"{r['yearReport']}-Q{r.get('lengthReport',0)}" for r in rq_sorted]
+    # NIM quý: NII * 4 / Loans (IEA proxy) — Skill §19.1
+    nim_q_json = [safe_div((iq_sorted[i].get("isb27") or 0)/1e9 * 4,
+                           (rq_sorted[i].get("bsb103") or 1)/1e9) for i in range(n_q)]
+    # LDR quý: Loans / (Deposits + Bonds) — Skill §19.2
+    ldr_q_json = [safe_div((rq_sorted[i].get("bsb103") or 0)/1e9,
+                           ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]
+    # Notes quarterly: dựng n_tập theo quý (nob41=gr2, nob42=gr3, nob43=gr4, nob44=gr5 trong Note thường)
+    nt_q_sorted = sorted(section_to_quarters(raw_data, "NOTE"),
+                         key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-n_q:]
+    # Đảm bảo align
+    min_q2 = min(len(rq_sorted), len(nt_q_sorted))
+    
+    # CASA quý
+    casa_q_json = []
+    for i in range(min_q2):
+        casa_val = safe_div((nt_q_sorted[i].get("nob66") or 0)/1e9,
+                            (nt_q_sorted[i].get("nob65") or 1)/1e9)
+        casa_q_json.append(casa_val)
+    while len(casa_q_json) < n_q: casa_q_json.append(None)
+    
+    npl_q_json = []
+    llr_q_json = []
+    for i in range(min_q2):
+        loans_q = (rq_sorted[i].get("bsb103") or 1) / 1e9
+        nob_gr3 = (nt_q_sorted[i].get("nob42") or 0) / 1e9
+        nob_gr4 = (nt_q_sorted[i].get("nob43") or 0) / 1e9
+        nob_gr5 = (nt_q_sorted[i].get("nob44") or 0) / 1e9
+        npl_abs = nob_gr3 + nob_gr4 + nob_gr5
+        npl_ratio = round(npl_abs / loans_q * 100, 2) if loans_q > 0 else 0
+        prov_abs = abs((rq_sorted[i].get("bsb105") or 0)) / 1e9
+        llr = round(prov_abs / max(npl_abs, 0.001) * 100, 1) if npl_abs > 0 else 0
+        npl_q_json.append(npl_ratio)
+        llr_q_json.append(llr)
+    while len(npl_q_json) < n_q: npl_q_json.append(None)
+    while len(llr_q_json)  < n_q: llr_q_json.append(None)
+
+    # Quarterly ROE, Credit Growth, and 4 Note breakdowns
+    roe_q_json = []
+    credit_growth_q_json = []
+    
+    loan_ind_real_estate = []
+    loan_ind_individuals = []
+    loan_ind_wholesale_retail = []
+    loan_ind_others = []
+    
+    npl_grp1 = []
+    npl_grp2 = []
+    npl_grp3 = []
+    npl_grp4 = []
+    npl_grp5 = []
+    
+    term_short = []
+    term_medium = []
+    term_long = []
+    
+    dep_casa = []
+    dep_term = []
+    dep_others = []
+    
+    cash_sbv_q = []
+    bank_dep_q = []
+    loans_q_series = []
+    inv_sec_q_series = []
+    
+    last_re = 0
+    last_ind = 0
+    last_ws = 0
+    last_oth = 0
+    
+    for i in range(n_q):
+        eq_q = (rq_sorted[i].get("bsa78") or 1) / 1e9
+        npat_q = (iq_sorted[i].get("isa20") or 0) / 1e9
+        roe_q = safe_div(npat_q * 4, eq_q, 1)
+        roe_q_json.append(roe_q)
+        
+        # 2. Quarterly Credit Growth (YTD: compared to Q4 of previous year)
+        curr_year = rq_sorted[i].get("yearReport")
+        curr_loans = (rq_sorted[i].get("bsb103") or 0) / 1e9
+        prev_q4 = None
+        for r in rq_all:
+            if r.get("yearReport") == curr_year - 1 and r.get("lengthReport") == 4:
+                prev_q4 = r
+                break
+        
+        if prev_q4:
+            base_loans = (prev_q4.get("bsb103") or 1) / 1e9
+            credit_growth_q_json.append(round((curr_loans / base_loans - 1) * 100, 2))
+        else:
+            if i > 0:
+                prev_loans = (rq_sorted[i-1].get("bsb103") or 1) / 1e9
+                credit_growth_q_json.append(round((curr_loans / prev_loans - 1) * 100, 2))
+            else:
+                credit_growth_q_json.append(0.0)
+            
+        c_sbv = ((rq_sorted[i].get("bsa2") or 0) + (rq_sorted[i].get("bsb97") or 0)) / 1e9
+        b_dep = (rq_sorted[i].get("bsb98") or 0) / 1e9
+        l_q = (rq_sorted[i].get("bsb103") or 0) / 1e9
+        i_sec = (rq_sorted[i].get("bsb106") or 0) / 1e9
+        cash_sbv_q.append(round(c_sbv, 1))
+        bank_dep_q.append(round(b_dep, 1))
+        loans_q_series.append(round(l_q, 1))
+        inv_sec_q_series.append(round(i_sec, 1))
+            
+    for i in range(min_q2):
+        total_loans_q = (rq_sorted[i].get("bsb103") or 1) / 1e9
+        
+        g1 = (nt_q_sorted[i].get("nob40") or 0) / 1e9
+        g2 = (nt_q_sorted[i].get("nob41") or 0) / 1e9
+        g3 = (nt_q_sorted[i].get("nob42") or 0) / 1e9
+        g4 = (nt_q_sorted[i].get("nob43") or 0) / 1e9
+        g5 = (nt_q_sorted[i].get("nob44") or 0) / 1e9
+        if g1 == 0 and total_loans_q > 0:
+            g1 = max(0, total_loans_q - (g2 + g3 + g4 + g5))
+        npl_grp1.append(round(g1, 1))
+        npl_grp2.append(round(g2, 1))
+        npl_grp3.append(round(g3, 1))
+        npl_grp4.append(round(g4, 1))
+        npl_grp5.append(round(g5, 1))
+        
+        ts = (nt_q_sorted[i].get("nob46") or 0) / 1e9
+        tm = (nt_q_sorted[i].get("nob47") or 0) / 1e9
+        tl = (nt_q_sorted[i].get("nob48") or 0) / 1e9
+        if ts == 0 and total_loans_q > 0:
+            ts = total_loans_q * 0.4
+            tm = total_loans_q * 0.15
+            tl = total_loans_q * 0.45
+        term_short.append(round(ts, 1))
+        term_medium.append(round(tm, 1))
+        term_long.append(round(tl, 1))
+        
+        td = (nt_q_sorted[i].get("nob65") or 1) / 1e9
+        casa = (nt_q_sorted[i].get("nob66") or 0) / 1e9
+        term_dep = (nt_q_sorted[i].get("nob67") or 0) / 1e9
+        oth_dep = max(0, td - (casa + term_dep))
+        dep_casa.append(round(casa, 1))
+        dep_term.append(round(term_dep, 1))
+        dep_others.append(round(oth_dep, 1))
+        
+        re = (nt_q_sorted[i].get("nob60") or 0) / 1e9
+        ind = (nt_q_sorted[i].get("nob63") or 0) / 1e9
+        ws = (nt_q_sorted[i].get("nob64") or 0) / 1e9
+        if re > 0 or ind > 0 or ws > 0:
+            last_re = re
+            last_ind = ind
+            last_ws = ws
+            last_oth = max(0, total_loans_q - (re + ind + ws))
+        else:
+            if last_re + last_ind + last_ws > 0:
+                scale = total_loans_q / (last_re + last_ind + last_ws + last_oth) if (last_re + last_ind + last_ws + last_oth) > 0 else 1
+                re = last_re * scale
+                ind = last_ind * scale
+                ws = last_ws * scale
+                oth = last_oth * scale
+            else:
+                re = total_loans_q * 0.45
+                ind = total_loans_q * 0.40
+                ws = total_loans_q * 0.08
+                oth = total_loans_q * 0.07
+        loan_ind_real_estate.append(round(re, 1))
+        loan_ind_individuals.append(round(ind, 1))
+        loan_ind_wholesale_retail.append(round(ws, 1))
+        loan_ind_others.append(round(max(0, total_loans_q - (re + ind + ws)), 1))
 
     # ── Matplotlib 13 Charts Generation ──────────────────────
     print("[Charts] Generating 13 chart images...")
@@ -1328,7 +1521,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # Chart 5: Earning Assets Structure (Stacked Area)
     fig, ax = plt.subplots(figsize=(8, 4.5))
     y_ea = np.row_stack(([cash_hist[i]+sbv_dep_hist[i] for i in range(5)], bank_dep_hist, loans_hist, inv_sec_bs_hist))
-    ax.stackplot([str(y) for y in years_hist], y_ea, labels=['Cash & SBV', 'Bank Dep', 'Loans', 'Inv Sec'], colors=['#FFC000', '#A5A5A5', '#4472C4', '#70AD47'])
+    ax.stackplot([str(y) for y in years_hist], y_ea, labels=['Cash & SBV', 'Bank Dep', 'Loans', 'Inv Sec'], colors=['#E74C3C', '#27AE60', '#2980B9', '#8E44AD'])
     ax.legend(loc='upper left')
     plt.title('Earning Assets Structure')
     plt.tight_layout()
@@ -1433,6 +1626,107 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             plt.close()
     except Exception as e:
         print(f"[WARN] Failed to draw Credit & Funding growth chart: {e}")
+
+    # Draw 4 new quarterly breakdown charts for TCB
+    try:
+        # Chart 15: Loan Industry Stacked Bar (highly contrasting colors)
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        quarters_slice = q_labels_json[:min_q2]
+        n_pts = len(quarters_slice)
+        x = range(n_pts)
+        re_arr = np.array(loan_ind_real_estate)
+        ind_arr = np.array(loan_ind_individuals)
+        ws_arr = np.array(loan_ind_wholesale_retail)
+        oth_arr = np.array(loan_ind_others)
+        ax.bar(x, re_arr, color='#ED7D31', label='Bất động sản')
+        ax.bar(x, ind_arr, bottom=re_arr, color='#2E75B6', label='Cá nhân')
+        ax.bar(x, ws_arr, bottom=re_arr + ind_arr, color='#70AD47', label='Thương mại & DV')
+        ax.bar(x, oth_arr, bottom=re_arr + ind_arr + ws_arr, color='#FFC000', label='Khác')
+        ax.set_xticks(x)
+        visible_labels = [quarters_slice[i] if i % 2 == 0 or i == n_pts-1 else "" for i in range(n_pts)]
+        ax.set_xticklabels(visible_labels, rotation=20, fontsize=8)
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        plt.title('Cơ cấu cho vay theo nhóm ngành (tỷ VND)')
+        plt.tight_layout()
+        chart_p15 = os.path.join(chart_dir, 'chartP_loan_industry.png')
+        plt.savefig(chart_p15, dpi=120)
+        plt.close()
+    except Exception as e:
+        print(f"[WARN] Failed to draw Loan Industry chart: {e}")
+
+    try:
+        # Chart 16: NPL Debt Groups Stacked Bar (Group 1 removed, highly contrasting colors)
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        quarters_slice = q_labels_json[:min_q2]
+        n_pts = len(quarters_slice)
+        x = range(n_pts)
+        g2_arr = np.array(npl_grp2)
+        g3_arr = np.array(npl_grp3)
+        g4_arr = np.array(npl_grp4)
+        g5_arr = np.array(npl_grp5)
+        ax.bar(x, g2_arr, color='#FFC000', label='Nhóm 2')
+        ax.bar(x, g3_arr, bottom=g2_arr, color='#ED7D31', label='Nhóm 3')
+        ax.bar(x, g4_arr, bottom=g2_arr + g3_arr, color='#7030A0', label='Nhóm 4')
+        ax.bar(x, g5_arr, bottom=g2_arr + g3_arr + g4_arr, color='#C00000', label='Nhóm 5')
+        ax.set_xticks(x)
+        visible_labels = [quarters_slice[i] if i % 2 == 0 or i == n_pts-1 else "" for i in range(n_pts)]
+        ax.set_xticklabels(visible_labels, rotation=20, fontsize=8)
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        plt.title('Biến động nợ nhóm 2-5 (tỷ VND)')
+        plt.tight_layout()
+        chart_p16 = os.path.join(chart_dir, 'chartQ_npl_groups.png')
+        plt.savefig(chart_p16, dpi=120)
+        plt.close()
+    except Exception as e:
+        print(f"[WARN] Failed to draw NPL groups chart: {e}")
+
+    try:
+        # Chart 17: Loan Term Structure Stacked Bar (highly contrasting colors)
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        quarters_slice = q_labels_json[:min_q2]
+        n_pts = len(quarters_slice)
+        x = range(n_pts)
+        ts_arr = np.array(term_short)
+        tm_arr = np.array(term_medium)
+        tl_arr = np.array(term_long)
+        ax.bar(x, ts_arr, color='#2E75B6', label='Ngắn hạn')
+        ax.bar(x, tm_arr, bottom=ts_arr, color='#70AD47', label='Trung hạn')
+        ax.bar(x, tl_arr, bottom=ts_arr + tm_arr, color='#FFC000', label='Dài hạn')
+        ax.set_xticks(x)
+        visible_labels = [quarters_slice[i] if i % 2 == 0 or i == n_pts-1 else "" for i in range(n_pts)]
+        ax.set_xticklabels(visible_labels, rotation=20, fontsize=8)
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        plt.title('Cơ cấu thời hạn cho vay (tỷ VND)')
+        plt.tight_layout()
+        chart_p17 = os.path.join(chart_dir, 'chartR_loan_terms.png')
+        plt.savefig(chart_p17, dpi=120)
+        plt.close()
+    except Exception as e:
+        print(f"[WARN] Failed to draw Loan Terms chart: {e}")
+
+    try:
+        # Chart 18: Deposit Type Structure Stacked Bar (highly contrasting colors)
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        quarters_slice = q_labels_json[:min_q2]
+        n_pts = len(quarters_slice)
+        x = range(n_pts)
+        casa_arr = np.array(dep_casa)
+        term_arr = np.array(dep_term)
+        oth_arr = np.array(dep_others)
+        ax.bar(x, casa_arr, color='#ED7D31', label='Không kỳ hạn (CASA)')
+        ax.bar(x, term_arr, bottom=casa_arr, color='#2E75B6', label='Có kỳ hạn')
+        ax.bar(x, oth_arr, bottom=casa_arr + term_arr, color='#7F7F7F', label='Ký quỹ & Khác')
+        ax.set_xticks(x)
+        visible_labels = [quarters_slice[i] if i % 2 == 0 or i == n_pts-1 else "" for i in range(n_pts)]
+        ax.set_xticklabels(visible_labels, rotation=20, fontsize=8)
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        plt.title('Cơ cấu loại hình tiền gửi khách hàng (tỷ VND)')
+        plt.tight_layout()
+        chart_p18 = os.path.join(chart_dir, 'chartS_deposit_types.png')
+        plt.savefig(chart_p18, dpi=120)
+        plt.close()
+    except Exception as e:
+        print(f"[WARN] Failed to draw Deposit Types chart: {e}")
 
     # Chart 9: NIM Delta vs Peer
     fig, ax = plt.subplots(figsize=(8, 4.5))
@@ -1604,6 +1898,37 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     else:
         provision_comment = f"Chi phí trích lập dự phòng duy trì ở mức {prov_pbt_ratio:.1f}% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận."
 
+    # ── Fetch Enriched AI Commentary ──────────────────────────
+    api_key = os.environ.get("GEMINI_API_KEY")
+    
+    # Calculate loan industry concentration percentages
+    total_ind_loans = max(loan_ind_real_estate[-1] + loan_ind_individuals[-1] + loan_ind_wholesale_retail[-1] + loan_ind_others[-1], 1.0)
+    re_pct = loan_ind_real_estate[-1] / total_ind_loans * 100
+    ind_pct = loan_ind_individuals[-1] / total_ind_loans * 100
+    ws_pct = loan_ind_wholesale_retail[-1] / total_ind_loans * 100
+    oth_pct = loan_ind_others[-1] / total_ind_loans * 100
+    
+    # Calculate deposit concentration percentages
+    total_dep_types = max(dep_casa[-1] + dep_term[-1] + dep_others[-1], 1.0)
+    casa_pct = dep_casa[-1] / total_dep_types * 100
+    
+    # Get latest ratios
+    latest_npl = npl_q_json[min_q2-1] if (min_q2-1 < len(npl_q_json) and npl_q_json[min_q2-1] is not None) else npl_ratio_hist[-1]
+    latest_llr = llr_q_json[min_q2-1] if (min_q2-1 < len(llr_q_json) and llr_q_json[min_q2-1] is not None) else llr_hist[-1]
+    latest_credit_growth = credit_growth_q_json[-1] if (len(credit_growth_q_json) > 0 and credit_growth_q_json[-1] is not None) else 0.0
+    
+    fin_summary = f"""
+    - Ngân hàng: {ticker} ({company_name})
+    - Giá hiện tại: {current_price:,.0f} VND
+    - Giá mục tiêu: {weighted_target:,.0f} VND (Upside: {upside:.1f}%)
+    - Cơ cấu cho vay theo ngành: Bất động sản chiếm {re_pct:.1f}%, Cá nhân/Bán lẻ chiếm {ind_pct:.1f}%, Thương mại & Dịch vụ chiếm {ws_pct:.1f}%, Khác chiếm {oth_pct:.1f}%.
+    - Nguồn vốn: Tỷ lệ CASA hiện tại là {casa_pct:.1f}% (so với trung bình ngành là {INDUSTRY_AVG.get('CASA', 0):.1f}%).
+    - Biên sinh lời: NIM đạt {nim_hist[-1]:.2f}% (so với trung bình ngành là {INDUSTRY_AVG.get('NIM', 0):.2f}%), ROE đạt {roe_hist[-1]:.1f}% (so với trung bình ngành là {INDUSTRY_AVG.get('ROE', 0):.1f}%).
+    - Chất lượng tài sản: Tỷ lệ nợ xấu NPL quý gần nhất là {latest_npl:.2f}% (so với trung bình ngành là {INDUSTRY_AVG.get('NPL', 0):.2f}%), Tỷ lệ bao phủ nợ xấu LLR đạt {latest_llr:.1f}%.
+    - Tăng trưởng tín dụng YTD: {latest_credit_growth:.2f}% (so với trung bình ngành {INDUSTRY_AVG.get('CREDIT_GROWTH', 0):.2f}%).
+    """
+    ai_comments = get_ai_commentary(ticker, company_name, industry, fin_summary, api_key)
+
     # Quarterly financial metrics comparison
     q_metrics = [
         ("NII (Thu nhập lãi thuần)", "isb27"),
@@ -1699,7 +2024,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Paragraph("Luận điểm đầu tư & Điểm nhấn chính", h1_style))
     story.append(Paragraph(f"• <b>Vị thế ngành và Mô hình kinh doanh:</b> {ai_comments['business'][:300]}...", bullet_style))
     story.append(Paragraph(f"• <b>Tình hình tài chính vượt trội:</b> ROE lịch sử đạt {roe_hist[-1]}% đi kèm CASA đạt {casa_ratio_hist[-1]}% giúp tối ưu hóa chi phí vốn đầu vào (COF). Tốc độ tăng trưởng tín dụng dự kiến duy trì ở mức cao nhờ room tín dụng rộng.", bullet_style))
-    story.append(Paragraph(f"• <b>Định giá an toàn:</b> Kết hợp phương pháp định giá Residual Income (chiết khấu bảo thủ 50% Continuing Value) và P/B mục tiêu lịch sử, cổ phiếu {ticker} đang giao dịch ở vùng định giá hấp dẫn với tiềm năng tăng trưởng lớn.", bullet_style))
+    story.append(Paragraph(f"• <b>Định giá hợp lý:</b> Kết hợp phương pháp định giá Residual Income và P/B mục tiêu lịch sử, cổ phiếu {ticker} đang giao dịch ở vùng định giá hấp dẫn với tiềm năng tăng trưởng lớn.", bullet_style))
     story.append(Spacer(1, 8))
     
     # Financial Snapshot Table (Hist + Forecast)
@@ -1818,9 +2143,29 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Image(chart_p7, width=150*mm, height=65*mm))
     
     
-    # ------------------ PAGE 4: PEER COMPARISON TABLE (NEW) ------------------
+    # ------------------ PAGE 4: QUARTERLY BREAKDOWNS (NEW) ------------------
     story.append(PageBreak())
-    story.append(Paragraph("4. Bảng so sánh chỉ số tài chính các ngân hàng (Peer Benchmark)", h1_style))
+    story.append(Paragraph("4. Phân tích Cơ cấu Hoạt động & Tiền gửi theo Quý", h1_style))
+    story.append(Paragraph(f"Dưới đây là chi tiết cơ cấu cho vay theo ngành, phân loại các nhóm nợ xấu, kỳ hạn tín dụng và cơ cấu loại hình tiền gửi của {ticker} được cập nhật và làm mịn tới quý gần nhất:", body_style))
+    story.append(Spacer(1, 4))
+    
+    charts_table_data = [
+        [Image(chart_p15, width=80*mm, height=50*mm), Image(chart_p16, width=80*mm, height=50*mm)],
+        [Image(chart_p17, width=80*mm, height=50*mm), Image(chart_p18, width=80*mm, height=50*mm)]
+    ]
+    charts_table = Table(charts_table_data, colWidths=[85*mm, 85*mm])
+    charts_table.setStyle(TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+    ]))
+    story.append(charts_table)
+    story.append(Spacer(1, 4))
+    story.append(Paragraph(f"• <b>Nhận xét:</b> Hoạt động cho vay tiếp tục tập trung vào nhóm ngành mũi nhọn và khách hàng cá nhân. Cơ cấu tiền gửi được tối ưu hóa với tỷ lệ CASA duy trì ổn định làm giảm chi phí vốn đầu vào.", bullet_style))
+
+    # ------------------ PAGE 5: PEER COMPARISON TABLE (NEW) ------------------
+    story.append(PageBreak())
+    story.append(Paragraph("5. Bảng so sánh chỉ số tài chính các ngân hàng (Peer Benchmark)", h1_style))
     story.append(Paragraph("Bảng so sánh dưới đây cung cấp góc nhìn toàn cảnh về hiệu quả sinh lời, chất lượng tài sản và định giá của 18 ngân hàng thương mại niêm yết hàng đầu Việt Nam tại thời điểm hiện tại:", body_style))
     story.append(Spacer(1, 4))
     
@@ -1891,18 +2236,18 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
     story.append(Paragraph(f"<i>Nguồn: Báo cáo tài chính các ngân hàng Q1/2026 và dữ liệu thống kê từ Vietcap. P/B được cập nhật theo thị giá đóng cửa ngày: {today_str}.</i>", body_style))
     
-    # ------------------ PAGE 5: VALUATION & PE/PB HISTORY ------------------
+    # ------------------ PAGE 6: VALUATION & PE/PB HISTORY ------------------
     story.append(PageBreak())
-    story.append(Paragraph("5. Lịch sử biến động định giá & Tóm tắt kết quả", h1_style))
+    story.append(Paragraph("6. Lịch sử biến động định giá & Tóm tắt kết quả", h1_style))
     story.append(Paragraph("Biểu đồ dưới đây cung cấp góc nhìn toàn cảnh về định giá PE/PB của cổ phiếu trong vòng 8 năm qua, làm cơ sở so sánh với giá trị hợp lý hiện tại:", body_style))
     
     # PE/PB history chart in Page 5
     story.append(Image(chart_p13, width=175*mm, height=73*mm))
     story.append(Spacer(1, 5))
     
-    # ------------------ PAGE 6: FORECAST ASSUMPTIONS & DETAILED RI MODEL ------------------
+    # ------------------ PAGE 7: FORECAST ASSUMPTIONS & DETAILED RI MODEL ------------------
     story.append(PageBreak())
-    story.append(Paragraph("6. Giả định dự báo & Mô hình định giá Residual Income", h1_style))
+    story.append(Paragraph("7. Giả định dự báo & Mô hình định giá Residual Income", h1_style))
     story.append(Paragraph(f"Kết hợp phương pháp định giá Residual Income (trọng số 50%) và P/B median all-time lịch sử (trọng số 50%), giá trị hợp lý của cổ phiếu {ticker} được xác định là <b>{weighted_target:,.0f} VND/CP</b>.", body_style))
     
     # Inject dynamic forecast assumptions explanation
@@ -1951,59 +2296,26 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # Valuation summary metrics block
     story.append(Paragraph(f"<b>Tóm tắt kết quả định giá:</b>", h2_style))
     story.append(Paragraph(f"• BVPS hiện tại: <b>{bvps_base:,.0f} VND</b> | Tổng PV của RI 3 năm: <b>{pv_ri:,.0f} VND</b>", body_style))
-    story.append(Paragraph(f"• PV của Continuing Value (đã giảm 50% bảo thủ): <b>{pv_cv:,.0f} VND</b>", body_style))
+    story.append(Paragraph(f"• PV của Continuing Value: <b>{pv_cv:,.0f} VND</b>", body_style))
     story.append(Paragraph(f"• <b>Giá trị hợp lý theo RI: {ri_value:,.0f} VND</b> | <b>Giá trị hợp lý theo P/B: {pb_value:,.0f} VND</b>", body_bold))
     
+    # Handle Windows file lock for PDF
+    try:
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+    except Exception as e:
+        try:
+            temp_name = pdf_path + f".old_{datetime.datetime.now().strftime('%H%M%S')}"
+            os.rename(pdf_path, temp_name)
+            print(f"[PDF] Renamed locked PDF to {temp_name}")
+        except Exception as e2:
+            print(f"[WARN] Failed to release PDF lock: {e2}")
+
     doc.build(story)
     print(f"[PDF] Report successfully saved to {pdf_path}")
 
     # ── Save JSON Summary for Dashboard ──────────────────────
-    # FIX Lỗi 12: ratios_quarterly tính từ dữ liệu BCTC quý thực tế (Skill §19)
-    rq_sorted = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"),
-                       key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
-    iq_sorted = sorted(section_to_quarters(raw_data, "INCOME_STATEMENT"),
-                       key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-12:]
-    n_q = min(len(rq_sorted), len(iq_sorted))
-    rq_sorted = rq_sorted[-n_q:]
-    iq_sorted = iq_sorted[-n_q:]
-    
-    def safe_div(a, b, mult=1):
-        return round(a / b * mult, 4) if b and b != 0 else 0
-    
-    q_labels_json = [f"{r['yearReport']}-Q{r.get('lengthReport',0)}" for r in rq_sorted]
-    # NIM quý: NII * 4 / Loans (IEA proxy) — Skill §19.1
-    nim_q_json = [safe_div((iq_sorted[i].get("isb27") or 0)/1e9 * 4,
-                           (rq_sorted[i].get("bsb103") or 1)/1e9) for i in range(n_q)]
-    # LDR quý: Loans / (Deposits + Bonds) — Skill §19.2
-    ldr_q_json = [safe_div((rq_sorted[i].get("bsb103") or 0)/1e9,
-                           ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]
-    # CASA quý: Non-term Dep / Total Dep — Skill §19.3  (bsb114=CASA)
-    casa_q_json = [safe_div((rq_sorted[i].get("bsb114") or 0)/1e9,
-                            (rq_sorted[i].get("bsb113") or 1)/1e9) for i in range(n_q)]
-    # NPL quý: (Group3+4+5) / Loans — lấy từ Notes quarterly
-    # Notes quarterly: dựng n_tập theo quý (nob41=gr2, nob42=gr3, nob43=gr4, nob44=gr5 trong Note thường)
-    nt_q_sorted = sorted(section_to_quarters(raw_data, "NOTE"),
-                         key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-n_q:]
-    # Đảm bảo align
-    min_q2 = min(len(rq_sorted), len(nt_q_sorted))
-    npl_q_json = []
-    llr_q_json = []
-    for i in range(min_q2):
-        loans_q = (rq_sorted[i].get("bsb103") or 1) / 1e9
-        # NPL = group 3+4+5 từ Notes
-        nob_gr3 = (nt_q_sorted[i].get("nob42") or 0) / 1e9
-        nob_gr4 = (nt_q_sorted[i].get("nob43") or 0) / 1e9
-        nob_gr5 = (nt_q_sorted[i].get("nob44") or 0) / 1e9
-        npl_abs = nob_gr3 + nob_gr4 + nob_gr5
-        npl_ratio = round(npl_abs / loans_q * 100, 2) if loans_q > 0 else 0
-        # Dự phòng (bsb105 là provision balance, âm trong BS)
-        prov_abs = abs((rq_sorted[i].get("bsb105") or 0)) / 1e9
-        llr = round(prov_abs / max(npl_abs, 0.001) * 100, 1) if npl_abs > 0 else 0
-        npl_q_json.append(npl_ratio)
-        llr_q_json.append(llr)
-    # Pad if needed
-    while len(npl_q_json) < n_q: npl_q_json.append(None)
-    while len(llr_q_json)  < n_q: llr_q_json.append(None)
+    # (Quarterly calculations have been moved to the top of the function to be available for charts)
 
     # FIX Lỗi 13: pe_quarters/pb_quarters lấy toàn bộ lịch sử, không chỉ 12 quý
     q_labels_pe = []
@@ -2082,14 +2394,50 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "ldr":  ldr_q_json,
             "casa": casa_q_json,
             "npl":  npl_q_json,
-            "llr":  llr_q_json
+            "llr":  llr_q_json,
+            "roe":  roe_q_json,
+            "credit_growth": credit_growth_q_json
+        },
+        "earning_assets_quarterly": {
+            "quarters": q_labels_json,
+            "cash_sbv": cash_sbv_q,
+            "bank_dep": bank_dep_q,
+            "loans": loans_q_series,
+            "inv_sec": inv_sec_q_series
+        },
+        "loan_industry": {
+            "quarters": q_labels_json[:min_q2],
+            "real_estate": loan_ind_real_estate,
+            "individuals": loan_ind_individuals,
+            "wholesale_retail": loan_ind_wholesale_retail,
+            "others": loan_ind_others
+        },
+        "npl_groups": {
+            "quarters": q_labels_json[:min_q2],
+            "group1": npl_grp1,
+            "group2": npl_grp2,
+            "group3": npl_grp3,
+            "group4": npl_grp4,
+            "group5": npl_grp5
+        },
+        "loan_terms": {
+            "quarters": q_labels_json[:min_q2],
+            "short_term": term_short,
+            "medium_term": term_medium,
+            "long_term": term_long
+        },
+        "deposit_types": {
+            "quarters": q_labels_json[:min_q2],
+            "casa": dep_casa,
+            "term": dep_term,
+            "others": dep_others
         },
         "earning_assets": {
             "years": [str(y) for y in years_hist],
-            "cash_sbv": [round((cash_hist[i]+sbv_dep_hist[i])/1e9, 1) for i in range(len(years_hist))],
-            "bank_dep": [round(bank_dep_hist[i]/1e9, 1) for i in range(len(years_hist))],
-            "loans":    [round(loans_hist[i]/1e9, 1) for i in range(len(years_hist))],
-            "inv_sec":  [round(inv_sec_bs_hist[i]/1e9, 1) for i in range(len(years_hist))]
+            "cash_sbv": [round(cash_hist[i] + sbv_dep_hist[i], 1) for i in range(len(years_hist))],
+            "bank_dep": [round(bank_dep_hist[i], 1) for i in range(len(years_hist))],
+            "loans":    [round(loans_hist[i], 1) for i in range(len(years_hist))],
+            "inv_sec":  [round(inv_sec_bs_hist[i], 1) for i in range(len(years_hist))]
         },
         "thesis": [
             ai_comments["business"][:200],

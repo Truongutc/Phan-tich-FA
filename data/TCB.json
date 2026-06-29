@@ -183,8 +183,8 @@
   },
   "sector": "Ngân hàng",
   "currentPrice": 33400.0,
-  "marketCap": 262612062440000.0,
-  "shares": 7862636600,
+  "marketCap": 236680429360000.0,
+  "shares": 7086240400,
   "assumptions": {
     "loans_growth": [
       14.0,
@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1-PneazDH7mI8T9_p0A4u2uOU8vLHvLbh/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1Y0nWtO90cmsCJg5ohd6Trqw9_uj3Li65/view?usp=drivesdk",
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
   "pe_hist": [
     11.6477870099,
     13.5226658764,
@@ -549,18 +549,18 @@
       0.9608
     ],
     "casa": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0017,
-      0.0013,
-      0.002,
-      0.0029,
-      0.0039,
-      0.0037
+      0.3284,
+      0.3201,
+      0.38,
+      0.3905,
+      0.3599,
+      0.3492,
+      0.3594,
+      0.3373,
+      0.352,
+      0.3708,
+      0.3448,
+      0.3145
     ],
     "npl": [
       1.09,
@@ -589,6 +589,380 @@
       119.2,
       128.1,
       129.4
+    ],
+    "roe": [
+      0.1471,
+      0.1469,
+      0.1362,
+      0.1821,
+      0.181,
+      0.1605,
+      0.0925,
+      0.1562,
+      0.1569,
+      0.1474,
+      0.1555,
+      0.1489
+    ],
+    "credit_growth": [
+      10.82,
+      12.95,
+      23.27,
+      7.82,
+      14.09,
+      20.57,
+      21.68,
+      5.03,
+      12.37,
+      21.24,
+      21.4,
+      3.76
+    ]
+  },
+  "earning_assets_quarterly": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "cash_sbv": [
+      10973.0,
+      30934.3,
+      30761.3,
+      17252.8,
+      31693.4,
+      44223.3,
+      57737.9,
+      66488.9,
+      52152.1,
+      81632.1,
+      86523.6,
+      98475.1
+    ],
+    "bank_dep": [
+      71193.3,
+      69386.0,
+      104072.3,
+      89074.5,
+      88903.7,
+      90014.3,
+      84590.5,
+      81883.4,
+      80845.7,
+      92999.1,
+      114958.3,
+      87777.3
+    ],
+    "loans": [
+      460753.0,
+      469588.5,
+      512513.7,
+      552577.1,
+      584713.5,
+      617924.6,
+      623634.3,
+      655007.2,
+      700801.9,
+      756078.0,
+      757118.8,
+      785612.5
+    ],
+    "inv_sec": [
+      107847.6,
+      121243.2,
+      104993.9,
+      131188.8,
+      113677.2,
+      102135.2,
+      148623.6,
+      124378.7,
+      146985.6,
+      139296.5,
+      145526.4,
+      141064.0
+    ]
+  },
+  "loan_industry": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "real_estate": [
+      253811.7,
+      258106.5,
+      290539.8,
+      313251.4,
+      342633.3,
+      362094.5,
+      345650.9,
+      363039.4,
+      388312.9,
+      418941.3,
+      397515.5,
+      412475.8
+    ],
+    "individuals": [
+      197546.2,
+      200888.8,
+      204861.3,
+      220875.5,
+      214958.8,
+      227168.3,
+      246405.3,
+      258801.1,
+      268946.2,
+      290159.5,
+      312327.9,
+      324082.2
+    ],
+    "wholesale_retail": [
+      10417.0,
+      10593.2,
+      16619.6,
+      17918.8,
+      24694.1,
+      26096.7,
+      25911.2,
+      27214.8,
+      33858.2,
+      36528.8,
+      43954.0,
+      45608.2
+    ],
+    "others": [
+      0,
+      0.0,
+      493.0,
+      531.5,
+      2427.3,
+      2565.2,
+      5666.8,
+      5951.9,
+      9684.5,
+      10448.4,
+      3321.3,
+      3446.3
+    ]
+  },
+  "npl_groups": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "group1": [
+      452390.5,
+      463162.4,
+      508203.5,
+      546871.8,
+      579941.6,
+      613044.4,
+      620183.3,
+      650716.5,
+      697155.3,
+      753251.8,
+      755566.5,
+      782726.7
+    ],
+    "group2": [
+      9143.4,
+      5975.7,
+      4439.0,
+      6088.2,
+      4854.6,
+      5162.5,
+      4440.9,
+      5192.4,
+      4227.4,
+      4542.1,
+      3852.3,
+      5441.7
+    ],
+    "group3": [
+      1472.8,
+      2406.6,
+      1856.8,
+      1709.6,
+      2084.0,
+      1727.8,
+      1365.7,
+      1487.2,
+      1846.5,
+      1372.7,
+      918.1,
+      1391.4
+    ],
+    "group4": [
+      2035.0,
+      2269.7,
+      2762.2,
+      2741.6,
+      2669.0,
+      3214.3,
+      2465.6,
+      2388.6,
+      2718.5,
+      2460.4,
+      1339.1,
+      1395.1
+    ],
+    "group5": [
+      1504.6,
+      1791.2,
+      1380.1,
+      1865.7,
+      2534.0,
+      3141.8,
+      3269.5,
+      3908.2,
+      4365.2,
+      5083.0,
+      5941.2,
+      5909.0
+    ]
+  },
+  "loan_terms": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "short_term": [
+      161477.5,
+      164724.4,
+      187102.9,
+      215991.0,
+      233839.6,
+      256894.4,
+      237697.4,
+      260262.8,
+      284827.5,
+      324345.2,
+      295546.7,
+      299794.4
+    ],
+    "medium_term": [
+      85281.8,
+      97536.6,
+      118208.8,
+      128918.9,
+      123614.0,
+      122666.2,
+      85211.6,
+      88850.2,
+      94521.6,
+      100178.8,
+      97010.9,
+      101597.8
+    ],
+    "long_term": [
+      219787.0,
+      213344.6,
+      213329.8,
+      214367.0,
+      234629.7,
+      246730.2,
+      308816.0,
+      314579.9,
+      330964.0,
+      342185.9,
+      375059.5,
+      395471.7
+    ]
+  },
+  "deposit_types": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "casa": [
+      125420.9,
+      130935.9,
+      172755.7,
+      178880.3,
+      173434.3,
+      172862.1,
+      191719.8,
+      179318.9,
+      191852.4,
+      220673.3,
+      213415.1,
+      188622.5
+    ],
+    "term": [
+      248571.0,
+      271464.4,
+      273187.0,
+      272687.5,
+      301766.3,
+      314110.0,
+      334149.9,
+      345210.5,
+      346701.5,
+      366844.1,
+      396881.1,
+      403992.1
+    ],
+    "others": [
+      7954.6,
+      6644.3,
+      8718.1,
+      6472.9,
+      6659.6,
+      7981.9,
+      7522.6,
+      7053.6,
+      6525.0,
+      7569.5,
+      8615.4,
+      7193.6
     ]
   },
   "earning_assets": {
@@ -600,38 +974,38 @@
       "2025"
     ],
     "cash_sbv": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      8487.2,
+      15691.3,
+      30761.3,
+      57737.9,
+      86523.6
     ],
     "bank_dep": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      70515.3,
+      82873.8,
+      104072.3,
+      84590.5,
+      114958.3
     ],
     "loans": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      343605.6,
+      415752.3,
+      512513.7,
+      623634.3,
+      757118.8
     ],
     "inv_sec": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      97586.1,
+      103651.9,
+      104993.9,
+      148623.6,
+      145526.4
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu TCB."
+    "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụ",
+    "Sức khỏe tài chính của TCB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và h",
+    "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu TCB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị th"
   ],
   "risks": [
     "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.38% so kế hoạch.",
@@ -693,39 +1067,39 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 31384,
-    "upside": -6.04,
-    "bear": 26676,
-    "base": 31383,
-    "bull": 36091,
-    "pbAttractive": 1.17,
-    "pbAttractivePrice": 31265,
-    "pbTarget": 1.46,
-    "pbTargetPrice": 38890,
+    "weightedTarget": 37690,
+    "upside": 12.84,
+    "bear": 32036,
+    "base": 37689,
+    "bull": 43343,
+    "pbAttractive": 1.06,
+    "pbAttractivePrice": 31475,
+    "pbTarget": 1.67,
+    "pbTargetPrice": 49592,
     "COE": 13.36,
-    "peMedian": 8.71,
-    "pbMedian": 1.27,
-    "bvpsBase": 22830,
-    "riValue": 28793,
-    "pbValue": 33975,
-    "pvRi": 2263,
-    "pvCv": 3700,
+    "peMedian": 8.78,
+    "pbMedian": 1.33,
+    "bvpsBase": 25331,
+    "riValue": 36053,
+    "pbValue": 39327,
+    "pvRi": 2511,
+    "pvCv": 8211,
     "epsFc": [
-      3874,
-      4585,
-      5264
+      4299,
+      5087,
+      5841
     ],
     "riResults": [
-      824,
-      1017,
-      1084
+      914,
+      1129,
+      1203
     ],
-    "recommend": "BÁN"
+    "recommend": "THEO DÕI"
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu TCB."
+    "businessModel": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
+    "financialPerformance": "Sức khỏe tài chính của TCB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và hiệu quả sinh lời (ROE, NIM) tiếp tục duy trì vị thế nhóm đầu thị trường.",
+    "valuationText": "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu TCB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị thế đầu ngành vững chắc."
   },
   "data": {
     "years": [
@@ -759,14 +1133,14 @@
       41392.45
     ],
     "eps": [
-      2342.1,
-      2599.2,
-      2313.6,
-      2767.5,
-      3301.0,
-      3874.0,
-      4585.0,
-      5264.4
+      5245.2,
+      5810.4,
+      5164.2,
+      3080.1,
+      3662.7,
+      4298.5,
+      5087.3,
+      5841.2
     ],
     "equity": [
       93041.47,

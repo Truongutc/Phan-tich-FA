@@ -35,25 +35,51 @@ const SECTOR_CONFIG = {
         primaryValuation: 'P/B',
         extraMetrics: (ratios, localJson) => {
             const latest = ratios?.[ratios.length - 1] || {};
-            // Ưu tiên đọc từ ratios tự tính toán trong localJson
-            const localRatios = localJson?.ratios || {};
+            const rq = localJson?.ratios_quarterly || {};
+            const latest_idx = rq.quarters ? rq.quarters.length - 1 : -1;
             
-            const getVal = (key, rawLive, factor = 100, decimals = 2) => {
-                if (localRatios[key] !== undefined && localRatios[key] !== null) {
-                    const arr = localRatios[key];
-                    const lastVal = arr[arr.length - 1];
-                    return lastVal !== null && lastVal !== undefined ? (lastVal * (factor === 1 ? 1 : 100)).toFixed(decimals) + '%' : '-';
+            // 1. Tăng trưởng Quý gần nhất (YoY)
+            let npatYoY = '-';
+            const iq = localJson?.income_quarterly || [];
+            if (iq.length >= 5) {
+                const latest_q = iq[iq.length - 1];
+                const yoy_q = iq[iq.length - 5];
+                if (latest_q && yoy_q && yoy_q.npat > 0) {
+                    npatYoY = ((latest_q.npat / yoy_q.npat - 1) * 100).toFixed(1) + '%';
                 }
-                return rawLive ? (rawLive * factor).toFixed(decimals) + '%' : '-';
-            };
+            }
+            
+            // 2. ROE Quý gần nhất (Năm hóa)
+            let roeQ = '-';
+            if (latest_idx !== -1 && rq.roe?.[latest_idx] !== undefined && rq.roe?.[latest_idx] !== null) {
+                roeQ = (rq.roe[latest_idx] * 100).toFixed(1) + '%';
+            }
+            
+            // 3. P/B Hiện tại
+            const currentPB = latest.pb ? latest.pb.toFixed(2) + 'x' : '-';
+            
+            // 4. Tỷ lệ Nợ xấu Quý hiện tại
+            let nplQ = '-';
+            if (latest_idx !== -1 && rq.npl?.[latest_idx] !== undefined && rq.npl?.[latest_idx] !== null) {
+                nplQ = rq.npl[latest_idx].toFixed(2) + '%';
+            }
+            
+            // 5. Tăng trưởng Tín dụng Quý hiện tại (QoQ)
+            let creditGrowthQ = '-';
+            if (latest_idx !== -1 && rq.credit_growth?.[latest_idx] !== undefined && rq.credit_growth?.[latest_idx] !== null) {
+                creditGrowthQ = rq.credit_growth[latest_idx].toFixed(2) + '%';
+            }
+            
+            // 6. P/E Hiện tại
+            const currentPE = latest.pe ? latest.pe.toFixed(1) + 'x' : '-';
 
             return [
-                { label: 'NIM (Net Interest Margin)', value: getVal('nim', latest.netInterestMargin, 100, 2), desc: 'Biên lãi ròng' },
-                { label: 'ROE', value: getVal('roe', latest.roe, 100, 1), desc: 'Tỷ suất vốn chủ' },
-                { label: 'ROA', value: getVal('roa', latest.roa, 100, 2), desc: 'Tỷ suất tổng tài sản' },
-                { label: 'NPL Ratio', value: getVal('npl', latest.npl, 100, 2), desc: 'Tỷ lệ nợ xấu' },
-                { label: 'LDR', value: getVal('ldr', latest.ldrLoanDepositRatio, 100, 1), desc: 'Tỷ lệ tín dụng/tiền gửi' },
-                { label: 'CASA Ratio', value: getVal('casa', latest.casaRatio, 100, 1), desc: 'Tiền gửi không kỳ hạn' },
+                { label: 'Tăng trưởng LN Quý YoY', value: npatYoY, desc: 'Tăng trưởng LNST so cùng kỳ' },
+                { label: 'ROE Quý gần nhất (năm hóa)', value: roeQ, desc: 'Tỷ suất LN/Vốn chủ quý gần nhất' },
+                { label: 'P/B Hiện tại', value: currentPB, desc: 'Hệ số Giá/Sách trailing' },
+                { label: 'Tỉ lệ Nợ xấu Quý hiện tại', value: nplQ, desc: 'Tỷ lệ nợ xấu NPL quý hiện tại' },
+                { label: 'Tăng trưởng tín dụng YTD', value: creditGrowthQ, desc: 'So với đầu năm (cuối năm trước)' },
+                { label: 'P/E Hiện tại', value: currentPE, desc: 'Hệ số Giá/Thu nhập trailing' }
             ];
         }
     },
@@ -629,6 +655,7 @@ async function loadStockDashboard(ticker) {
     renderNiiBreakdownChart(localJson, sectorKey);
     renderNplLlrChart(localJson, sectorKey);
     renderEarningAssetsChart(localJson, sectorKey);
+    renderOperationCharts(localJson, sectorKey);
 
     // ── Qualitative sections ─────────────────────────────
     const q = localJson || {};
@@ -636,7 +663,7 @@ async function loadStockDashboard(ticker) {
     renderMoatScorecard(q.moats, cfg.color);
     renderPESTLE(q.pestle);
     renderCommentary(q.comments);
-    renderFinancialTable(annualYears, cfg, incomeLabels);
+    renderFinancialTable(annualYears, cfg, incomeLabels, localJson);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -932,17 +959,27 @@ function renderPESTLE(pestleData) {
 
 function renderCommentary(comments) {
     const data = comments || {};
-    document.getElementById('comment-business').textContent  = data.overall   || 'Chưa có đánh giá mô hình kinh doanh.';
-    document.getElementById('comment-financial').textContent = data.financial  || 'Chưa có đánh giá sức khỏe tài chính.';
-    document.getElementById('comment-valuation').textContent = data.valuation  || 'Chưa có đánh giá định giá.';
+    document.getElementById('comment-business').textContent  = data.businessModel || data.overall || 'Chưa có đánh giá mô hình kinh doanh.';
+    document.getElementById('comment-financial').textContent = data.financialPerformance || data.financial || 'Chưa có đánh giá sức khỏe tài chính.';
+    document.getElementById('comment-valuation').textContent = data.valuationText || data.valuation || 'Chưa có đánh giá định giá.';
 }
 
-function renderFinancialTable(annualYears, cfg, labels) {
+function renderFinancialTable(annualYears, cfg, labels, localJson) {
     const table = document.getElementById('financial-table');
     const thead = table.querySelector('thead tr');
     const tbody = table.querySelector('tbody');
+    if (!table || !thead || !tbody) return;
 
-    thead.innerHTML = '<th>Chỉ tiêu</th>' + labels.map(y => `<th>${y}</th>`).join('');
+    // Build lists of years to display: historical years + 2026F + 2027F
+    const mergedYears = [...labels];
+    const forecastYears = [2026, 2027];
+    forecastYears.forEach(fy => {
+        if (!mergedYears.includes(fy.toString()) && !mergedYears.includes(fy.toString() + 'F')) {
+            mergedYears.push(fy.toString() + 'F');
+        }
+    });
+
+    thead.innerHTML = '<th>Chỉ tiêu</th>' + mergedYears.map(y => `<th>${y}</th>`).join('');
     tbody.innerHTML = '';
 
     const rows = [
@@ -953,12 +990,49 @@ function renderFinancialTable(annualYears, cfg, labels) {
 
     rows.forEach(row => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td><strong>${row.label}</strong></td>` +
-            annualYears.map(yr => {
-                const v = yr[row.field];
-                const fmt = v ? formatNumber(Math.round(v / (row.div || 1e9))) : '-';
-                return `<td class="${row.highlight ? 'highlight' : ''}">${fmt}</td>`;
-            }).join('');
+        let tdHtml = `<td><strong>${row.label}</strong></td>`;
+        
+        mergedYears.forEach(yearLabel => {
+            const isForecast = yearLabel.endsWith('F');
+            const numericYear = parseInt(yearLabel);
+            let rawVal = null;
+            
+            if (!isForecast) {
+                const histYearData = annualYears.find(yr => yr.yearReport === numericYear);
+                if (histYearData) {
+                    rawVal = histYearData[row.field];
+                }
+            } else {
+                const fcData = localJson?.data;
+                if (fcData && fcData.years) {
+                    const fcIdx = fcData.years.indexOf(numericYear);
+                    if (fcIdx !== -1) {
+                        if (row.field === cfg.incomeField) {
+                            rawVal = fcData.revenue?.[fcIdx];
+                        } else if (row.field === cfg.incomeField2) {
+                            const yearsList = localJson?.years || fcData.years;
+                            const yrIdx = yearsList.indexOf(numericYear);
+                            if (yrIdx !== -1 && localJson?.toi) {
+                                rawVal = localJson.toi[yrIdx];
+                            } else {
+                                rawVal = fcData.toi?.[fcIdx];
+                            }
+                        } else if (row.field === cfg.npat) {
+                            rawVal = fcData.npat?.[fcIdx];
+                        }
+                        
+                        if (rawVal != null && rawVal < 1e9) {
+                            rawVal = rawVal * 1e9;
+                        }
+                    }
+                }
+            }
+            
+            const fmt = rawVal ? formatNumber(Math.round(rawVal / (row.div || 1e9))) : '-';
+            tdHtml += `<td class="${row.highlight ? 'highlight' : ''}">${fmt}</td>`;
+        });
+        
+        tr.innerHTML = tdHtml;
         tbody.appendChild(tr);
     });
 
@@ -1063,7 +1137,7 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
             const nimVal = rq.nim[idx] ? (rq.nim[idx] * 100).toFixed(2) + '%' : '-';
             const ldrVal = rq.ldr[idx] ? (rq.ldr[idx] * 100).toFixed(1) + '%' : '-';
             const casaVal = rq.casa[idx] ? (rq.casa[idx] * 100).toFixed(1) + '%' : '-';
-            const nplVal = rq.npl[idx] ? (rq.npl[idx] * 100).toFixed(2) + '%' : '-';
+            const nplVal = rq.npl[idx] ? rq.npl[idx].toFixed(2) + '%' : '-';
             
             ratioTextHTML = `
                 <div class="q-ytd-item">
@@ -1631,14 +1705,14 @@ function renderNplLlrChart(localJson, sectorKey) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// EARNING ASSETS STRUCTURE AREA CHART
+// EARNING ASSETS STRUCTURE AREA CHART (highly contrasting colors)
 // ═══════════════════════════════════════════════════════════
 let chartEarningAssets = null;
 function renderEarningAssetsChart(localJson, sectorKey) {
     const card = document.getElementById('chart-iea-card');
     const analysisEl = document.getElementById('analysis-text-iea');
     if (!card || !analysisEl) return;
-    const ea = localJson?.earning_assets;
+    const ea = localJson?.earning_assets_quarterly || localJson?.earning_assets;
     if (!ea || sectorKey !== 'banks') { card.style.display = 'none'; return; }
     card.style.display = 'flex';
     const ctx = document.getElementById('earningAssetsChart').getContext('2d');
@@ -1646,12 +1720,12 @@ function renderEarningAssetsChart(localJson, sectorKey) {
     chartEarningAssets = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ea.years,
+            labels: ea.quarters || ea.years,
             datasets: [
-                { label: 'Inv Sec', data: ea.inv_sec, fill: true, backgroundColor: 'rgba(112,173,71,0.5)' },
-                { label: 'Loans', data: ea.loans, fill: true, backgroundColor: 'rgba(68,114,196,0.5)' },
-                { label: 'Bank Dep', data: ea.bank_dep, fill: true, backgroundColor: 'rgba(165,165,165,0.5)' },
-                { label: 'Cash & SBV', data: ea.cash_sbv, fill: true, backgroundColor: 'rgba(255,192,0,0.5)' }
+                { label: 'Inv Sec', data: ea.inv_sec, fill: true, backgroundColor: 'rgba(142, 68, 173, 0.8)' },
+                { label: 'Loans', data: ea.loans, fill: true, backgroundColor: 'rgba(41, 128, 185, 0.8)' },
+                { label: 'Bank Dep', data: ea.bank_dep, fill: true, backgroundColor: 'rgba(39, 174, 96, 0.8)' },
+                { label: 'Cash & SBV', data: ea.cash_sbv, fill: true, backgroundColor: 'rgba(231, 76, 60, 0.8)' }
             ]
         },
         options: {
@@ -1662,5 +1736,134 @@ function renderEarningAssetsChart(localJson, sectorKey) {
         }
     });
     const lastLoans = ea.loans[ea.loans.length - 1] || 0;
-    analysisEl.innerHTML = `Cho vay khach hang quy gan nhat dat <strong>${lastLoans.toLocaleString('vi-VN')} ty</strong>, la dong luc phat trien cot loi.`;
+    analysisEl.innerHTML = `Cho vay khách hàng quý gần nhất đạt <strong>${lastLoans.toLocaleString('vi-VN')} tỷ</strong>, là động lực phát triển cốt lõi.`;
+}
+
+// ── 4 NEW QUARTERLY BREAKDOWN CHARTS FOR BANKS ──────────────────────
+let chartLoanIndustry = null;
+let chartNplGroups = null;
+let chartLoanTerms = null;
+let chartDepositTypes = null;
+
+function renderOperationCharts(localJson, sectorKey) {
+    const card = document.getElementById('chart-operation-card');
+    if (!card) return;
+    if (sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    
+    const indData = localJson?.loan_industry;
+    const nplData = localJson?.npl_groups;
+    const termData = localJson?.loan_terms;
+    const depData = localJson?.deposit_types;
+    
+    if (!indData || !nplData || !termData || !depData) {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = 'flex';
+    
+    // 1. Loan Industry Chart (highly contrasting colors)
+    const ctxInd = document.getElementById('loanIndustryChart').getContext('2d');
+    if (chartLoanIndustry) chartLoanIndustry.destroy();
+    chartLoanIndustry = new Chart(ctxInd, {
+        type: 'bar',
+        data: {
+            labels: indData.quarters,
+            datasets: [
+                { label: 'Bất động sản', data: indData.real_estate, backgroundColor: '#ED7D31' },
+                { label: 'Cá nhân', data: indData.individuals, backgroundColor: '#2E75B6' },
+                { label: 'Thương mại & DV', data: indData.wholesale_retail, backgroundColor: '#70AD47' },
+                { label: 'Khác', data: indData.others, backgroundColor: '#FFC000' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                title: { display: true, text: 'Cơ cấu cho vay theo ngành (tỷ VND)' }
+            },
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true }
+            }
+        }
+    });
+    
+    // 2. NPL Groups Chart (Group 1 removed, highly contrasting colors)
+    const ctxNpl = document.getElementById('nplGroupsChart').getContext('2d');
+    if (chartNplGroups) chartNplGroups.destroy();
+    chartNplGroups = new Chart(ctxNpl, {
+        type: 'bar',
+        data: {
+            labels: nplData.quarters,
+            datasets: [
+                { label: 'Nhóm 2 (Cần chú ý)', data: nplData.group2, backgroundColor: '#FFC000' },
+                { label: 'Nhóm 3 (Dưới tiêu chuẩn)', data: nplData.group3, backgroundColor: '#ED7D31' },
+                { label: 'Nhóm 4 (Nghi ngờ)', data: nplData.group4, backgroundColor: '#7030A0' },
+                { label: 'Nhóm 5 (Mất vốn)', data: nplData.group5, backgroundColor: '#C00000' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                title: { display: true, text: 'Biến động nợ nhóm 2-5 (tỷ VND)' }
+            },
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true }
+            }
+        }
+    });
+    
+    // 3. Loan Terms Chart (highly contrasting colors)
+    const ctxTerm = document.getElementById('loanTermsChart').getContext('2d');
+    if (chartLoanTerms) chartLoanTerms.destroy();
+    chartLoanTerms = new Chart(ctxTerm, {
+        type: 'bar',
+        data: {
+            labels: termData.quarters,
+            datasets: [
+                { label: 'Ngắn hạn', data: termData.short_term, backgroundColor: '#2E75B6' },
+                { label: 'Trung hạn', data: termData.medium_term, backgroundColor: '#70AD47' },
+                { label: 'Dài hạn', data: termData.long_term, backgroundColor: '#FFC000' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                title: { display: true, text: 'Cơ cấu kỳ hạn cho vay (tỷ VND)' }
+            },
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true }
+            }
+        }
+    });
+    
+    // 4. Deposit Types Chart (highly contrasting colors)
+    const ctxDep = document.getElementById('depositTypesChart').getContext('2d');
+    if (chartDepositTypes) chartDepositTypes.destroy();
+    chartDepositTypes = new Chart(ctxDep, {
+        type: 'bar',
+        data: {
+            labels: depData.quarters,
+            datasets: [
+                { label: 'Không kỳ hạn (CASA)', data: depData.casa, backgroundColor: '#ED7D31' },
+                { label: 'Có kỳ hạn', data: depData.term, backgroundColor: '#2E75B6' },
+                { label: 'Ký quỹ & Khác', data: depData.others, backgroundColor: '#7F7F7F' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                title: { display: true, text: 'Cơ cấu loại tiền gửi (tỷ VND)' }
+            },
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true }
+            }
+        }
+    });
 }

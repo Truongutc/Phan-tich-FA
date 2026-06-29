@@ -307,6 +307,27 @@
                     </div>
                 </div>
 
+                <!-- NEW: Quarterly operations breakdowns (banks only) -->
+                <div class="chart-card-split margin-top-20" id="chart-operation-card" style="display:none">
+                    <div class="chart-split-left" style="width: 100%;">
+                        <h3>Chi tiết Cơ cấu Hoạt động & Tiền gửi theo Quý</h3>
+                        <div class="operation-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                            <div class="chart-container" style="position: relative; height:280px;">
+                                <canvas id="loanIndustryChart"></canvas>
+                            </div>
+                            <div class="chart-container" style="position: relative; height:280px;">
+                                <canvas id="nplGroupsChart"></canvas>
+                            </div>
+                            <div class="chart-container" style="position: relative; height:280px;">
+                                <canvas id="loanTermsChart"></canvas>
+                            </div>
+                            <div class="chart-container" style="position: relative; height:280px;">
+                                <canvas id="depositTypesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- RIGHT: Moat + Valuation -->
