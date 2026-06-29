@@ -183,8 +183,8 @@
   },
   "sector": "Ngân hàng",
   "currentPrice": 24750.0,
-  "marketCap": 207814721400000.0,
-  "shares": 8396554400,
+  "marketCap": 199361247525000.0,
+  "shares": 8054999900,
   "assumptions": {
     "loans_growth": [
       14.0,
@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/18GVXkA0yfBZa6wcaV0XZ7h8KpKVbB_JJ/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1lTWJib15Na6867K7d6jy8kkIuO_aJXww/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1d-s8wL6sZhLG8AeIlupM0m_QPuoIUf5Z/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1ty8vur_Ng07xKmcxJ56rSlhyRxCRM0EY/view?usp=drivesdk",
   "pe_hist": [
     6.6199518929,
     8.8810600998,
@@ -552,18 +552,18 @@
       0.992
     ],
     "casa": [
-      0.0,
-      0.0,
-      0.0,
-      0.0007,
-      0.0017,
-      0.0,
-      0.0003,
-      0.0007,
-      0.0011,
-      0.0016,
-      0.0008,
-      0.0007
+      0.3458,
+      0.3359,
+      0.3808,
+      0.3473,
+      0.3721,
+      0.3566,
+      0.3803,
+      0.3482,
+      0.3694,
+      0.3593,
+      0.3683,
+      0.3227
     ],
     "npl": [
       1.48,
@@ -592,6 +592,380 @@
       79.2,
       93.7,
       92.2
+    ],
+    "roe": [
+      0.2316,
+      0.2537,
+      0.2087,
+      0.1825,
+      0.2342,
+      0.2124,
+      0.2181,
+      0.2159,
+      0.1879,
+      0.1743,
+      0.2507,
+      0.2058
+    ],
+    "credit_growth": [
+      12.88,
+      16.8,
+      33.66,
+      0.58,
+      10.51,
+      15.29,
+      27.6,
+      2.8,
+      13.37,
+      19.95,
+      39.97,
+      3.27
+    ]
+  },
+  "earning_assets_quarterly": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "cash_sbv": [
+      30672.2,
+      25045.9,
+      69997.0,
+      15656.6,
+      22416.5,
+      14466.3,
+      33174.4,
+      19746.0,
+      20514.1,
+      21929.0,
+      73460.2,
+      20897.3
+    ],
+    "bank_dep": [
+      21618.2,
+      36980.9,
+      46343.8,
+      77809.4,
+      90063.8,
+      77398.1,
+      76785.6,
+      64338.6,
+      96081.3,
+      108324.8,
+      182923.7,
+      165298.0
+    ],
+    "loans": [
+      506395.4,
+      523969.2,
+      599579.3,
+      603072.4,
+      662584.5,
+      691232.9,
+      765048.0,
+      786487.0,
+      867340.2,
+      917699.0,
+      1070868.8,
+      1105852.2
+    ],
+    "inv_sec": [
+      183949.2,
+      154950.5,
+      147923.2,
+      139447.3,
+      167176.3,
+      197206.2,
+      209637.4,
+      240234.8,
+      262474.3,
+      235603.6,
+      225574.9,
+      262829.9
+    ]
+  },
+  "loan_industry": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "real_estate": [
+      222679.9,
+      232081.6,
+      270589.5,
+      276314.5,
+      311216.7,
+      326602.7,
+      359331.2,
+      365293.1,
+      404668.2,
+      434655.3,
+      520091.9,
+      529067.8
+    ],
+    "individuals": [
+      242143.8,
+      249059.6,
+      275696.8,
+      276578.8,
+      291444.6,
+      301544.0,
+      331346.3,
+      341418.9,
+      373274.9,
+      382094.9,
+      437687.0,
+      459681.6
+    ],
+    "wholesale_retail": [
+      8394.5,
+      9788.6,
+      13269.3,
+      14780.7,
+      14666.2,
+      17492.7,
+      23045.3,
+      21508.2,
+      24036.6,
+      27163.1,
+      25276.2,
+      25172.9
+    ],
+    "others": [
+      33177.3,
+      33039.4,
+      40023.6,
+      35398.4,
+      45257.0,
+      45593.5,
+      51325.2,
+      58266.7,
+      65360.5,
+      73785.7,
+      87813.8,
+      91929.9
+    ]
+  },
+  "npl_groups": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "group1": [
+      491966.9,
+      510255.8,
+      587326.3,
+      585902.9,
+      650405.9,
+      673077.4,
+      751875.6,
+      767616.9,
+      854351.1,
+      901388.7,
+      1059781.8,
+      1092777.7
+    ],
+    "group2": [
+      18624.4,
+      15935.2,
+      13917.9,
+      14119.4,
+      12370.1,
+      13257.5,
+      12196.8,
+      15237.6,
+      11420.2,
+      12687.7,
+      10210.0,
+      11837.3
+    ],
+    "group3": [
+      2825.5,
+      4403.4,
+      3210.7,
+      4039.0,
+      3665.5,
+      6054.8,
+      3379.6,
+      4552.3,
+      3971.1,
+      4817.6,
+      3276.2,
+      4381.9
+    ],
+    "group4": [
+      2783.0,
+      3824.8,
+      3704.2,
+      5207.4,
+      4816.5,
+      5582.6,
+      4599.3,
+      4942.4,
+      4665.9,
+      7125.7,
+      4330.0,
+      4159.2
+    ],
+    "group5": [
+      1871.5,
+      1882.6,
+      2889.7,
+      6048.1,
+      2541.1,
+      4047.3,
+      4606.5,
+      5187.5,
+      5480.3,
+      5478.8,
+      6421.3,
+      7406.5
+    ]
+  },
+  "loan_terms": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "short_term": [
+      266471.3,
+      272323.6,
+      323299.5,
+      321105.2,
+      363057.3,
+      375377.9,
+      424250.3,
+      448601.2,
+      496167.8,
+      516258.5,
+      602177.5,
+      588410.8
+    ],
+    "medium_term": [
+      74558.4,
+      72487.8,
+      75334.4,
+      75779.7,
+      76894.0,
+      83102.8,
+      88454.2,
+      90684.4,
+      97081.2,
+      106670.1,
+      127883.7,
+      142997.9
+    ],
+    "long_term": [
+      177041.6,
+      191490.4,
+      212415.0,
+      218431.8,
+      233847.8,
+      243538.9,
+      263953.3,
+      258251.1,
+      286639.5,
+      308570.0,
+      353958.1,
+      389153.8
+    ]
+  },
+  "deposit_types": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "casa": [
+      164396.5,
+      161140.8,
+      216092.3,
+      194084.9,
+      230210.2,
+      223762.5,
+      271579.8,
+      251624.2,
+      289331.5,
+      283168.8,
+      339352.8,
+      292374.3
+    ],
+    "term": [
+      299231.2,
+      307250.3,
+      339421.4,
+      354037.2,
+      379611.4,
+      398256.2,
+      433476.8,
+      463221.6,
+      486409.5,
+      496803.0,
+      573482.5,
+      605909.9
+    ],
+    "others": [
+      11778.4,
+      11341.6,
+      12018.8,
+      10703.9,
+      8796.0,
+      5548.6,
+      9098.0,
+      7776.7,
+      7550.8,
+      8058.5,
+      8532.8,
+      7634.1
     ]
   },
   "earning_assets": {
@@ -603,38 +977,38 @@
       "2025"
     ],
     "cash_sbv": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      41526.4,
+      43398.6,
+      69997.0,
+      33174.4,
+      73460.2
     ],
     "bank_dep": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      35983.2,
+      32937.2,
+      46343.8,
+      76785.6,
+      182923.7
     ],
     "loans": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      354797.1,
+      448598.6,
+      599579.3,
+      765048.0,
+      1070868.8
     ],
     "inv_sec": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      128806.2,
+      159580.0,
+      147923.2,
+      209637.4,
+      225574.9
     ]
   },
   "thesis": [
-    "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu MBB."
+    "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến",
+    "Sức khỏe tài chính của MBB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và h",
+    "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu MBB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị th"
   ],
   "risks": [
     "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.39% so kế hoạch.",
@@ -696,39 +1070,39 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 31163,
-    "upside": 25.91,
-    "bear": 26488,
-    "base": 31163,
-    "bull": 35837,
-    "pbAttractive": 1.24,
-    "pbAttractivePrice": 25988,
-    "pbTarget": 1.48,
-    "pbTargetPrice": 30932,
+    "weightedTarget": 38421,
+    "upside": 55.24,
+    "bear": 32657,
+    "base": 38421,
+    "bull": 44184,
+    "pbAttractive": 1.19,
+    "pbAttractivePrice": 25884,
+    "pbTarget": 1.56,
+    "pbTargetPrice": 33986,
     "COE": 11.61,
-    "peMedian": 6.29,
-    "pbMedian": 1.37,
-    "bvpsBase": 16914,
-    "riValue": 33651,
-    "pbValue": 28675,
-    "pvRi": 5565,
-    "pvCv": 11172,
+    "peMedian": 7.0,
+    "pbMedian": 1.38,
+    "bvpsBase": 17632,
+    "riValue": 46724,
+    "pbValue": 30118,
+    "pvRi": 5800,
+    "pvCv": 23292,
     "epsFc": [
-      3969,
-      4791,
-      5578
+      4138,
+      4994,
+      5814
     ],
     "riResults": [
-      2006,
-      2366,
-      2597
+      2091,
+      2467,
+      2707
     ],
     "recommend": "MUA"
   },
   "comments": {
-    "businessModel": "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu MBB."
+    "businessModel": "Ngân hàng Thương mại Cổ phần Quân đội (MBB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
+    "financialPerformance": "Sức khỏe tài chính của MBB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và hiệu quả sinh lời (ROE, NIM) tiếp tục duy trì vị thế nhóm đầu thị trường.",
+    "valuationText": "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu MBB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị thế đầu ngành vững chắc."
   },
   "data": {
     "years": [
@@ -762,14 +1136,14 @@
       46833.74
     ],
     "eps": [
-      1574.6,
-      2162.2,
-      2507.4,
-      2733.4,
-      3261.2,
-      3969.3,
-      4791.0,
-      5577.7
+      3499.3,
+      4004.2,
+      4037.9,
+      4325.3,
+      3399.5,
+      4137.6,
+      4994.2,
+      5814.2
     ],
     "equity": [
       62486.02,
