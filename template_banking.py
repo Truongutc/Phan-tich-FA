@@ -577,19 +577,24 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             funding_absolute.append(d_val + b_val + k_val * get_kbnn_rate(yr))
             
         for idx, q_rec in enumerate(q_bs_slice):
-            yr = q_rec.get("yearReport", 2026)
-            q4_prev = next((x for x in reversed(q_bs_sorted_all) if x.get("yearReport") == yr - 1 and x.get("lengthReport") == 4), None)
-            if q4_prev:
-                c_prev = (q4_prev.get("bsb103", 0) + (q4_prev.get("bsb108", 0) or 0)) / 1e9
-                f_prev = (q4_prev.get("bsb113", 0) + q4_prev.get("bsb116", 0) + (q4_prev.get("bsb110", 0) or q4_prev.get("bsb111", 0) or 0) * get_kbnn_rate(yr-1)) / 1e9
+            if idx > 0:
+                c_prev = credit_absolute[idx - 1]
+                f_prev = funding_absolute[idx - 1]
             else:
-                c_prev = credit_absolute[max(0, idx - q_rec.get("lengthReport", 1))]
-                f_prev = funding_absolute[max(0, idx - q_rec.get("lengthReport", 1))]
+                slice_start_idx = len(q_bs_sorted_all) - n_pts_g
+                if slice_start_idx > 0:
+                    prev_rec = q_bs_sorted_all[slice_start_idx - 1]
+                    prev_yr = prev_rec.get("yearReport", 2020)
+                    c_prev = (prev_rec.get("bsb103", 0) + (prev_rec.get("bsb108", 0) or 0)) / 1e9
+                    f_prev = (prev_rec.get("bsb113", 0) + prev_rec.get("bsb116", 0) + (prev_rec.get("bsb110", 0) or prev_rec.get("bsb111", 0) or 0) * get_kbnn_rate(prev_yr)) / 1e9
+                else:
+                    c_prev = credit_absolute[0]
+                    f_prev = funding_absolute[0]
                 
             credit_ytd_pct.append(round(((credit_absolute[idx] / max(c_prev, 0.001)) - 1) * 100, 2))
             funding_ytd_pct.append(round(((funding_absolute[idx] / max(f_prev, 0.001)) - 1) * 100, 2))
     except Exception as e:
-        print(f"[WARN] Failed to pre-calculate Credit & Funding growth: {e}")
+        print(f"[WARN] Failed to pre-calculate Credit & Funding QoQ growth: {e}")
     
     # ── COE calculation via CAPM (with 2% Specific Frontier Risk Premium) ──
     rf_val, rf_src = fetch_rf_vietnam()
@@ -1147,7 +1152,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_g_hist.column_dimensions['C'].width = 25
     ws_g_hist.column_dimensions['D'].width = 20
     ws_g_hist.column_dimensions['E'].width = 20
-    write_header_row(ws_g_hist, 1, 1, ["Quý", "Tổng Tín dụng (tỷ VND)", "Tổng Huy động (tỷ VND)", "Tăng trưởng Tín dụng YTD (%)", "Tăng trưởng Huy động YTD (%)"])
+    write_header_row(ws_g_hist, 1, 1, ["Quý", "Tổng Tín dụng (tỷ VND)", "Tổng Huy động (tỷ VND)", "Tăng trưởng Tín dụng QoQ (%)", "Tăng trưởng Huy động QoQ (%)"])
     
     for idx in range(len(labels_g)):
         r = idx + 2
@@ -1336,15 +1341,15 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     try:
         if labels_g:
             n_pts_g = len(labels_g)
-            # Draw Chart 14: Credit & Funding YTD Growth Trend (Quarterly)
+            # Draw Chart 14: Credit & Funding QoQ Growth Trend (Quarterly)
             fig, ax = plt.subplots(figsize=(12, 5))
-            ax.plot(credit_ytd_pct, 'o-', color='#4472C4', linewidth=2.5, label='TT Tín dụng YTD (%)')
-            ax.plot(funding_ytd_pct, 's-', color='#ED7D31', linewidth=2.5, label='TT Huy động YTD (%)')
+            ax.plot(credit_ytd_pct, 'o-', color='#4472C4', linewidth=2.5, label='TT Tín dụng QoQ (%)')
+            ax.plot(funding_ytd_pct, 's-', color='#ED7D31', linewidth=2.5, label='TT Huy động QoQ (%)')
             ax.set_xticks(range(n_pts_g))
             visible_labels_g = [labels_g[i] if i % 2 == 0 else "" for i in range(n_pts_g)]
             ax.set_xticklabels(visible_labels_g, rotation=30, fontsize=8)
             ax.legend()
-            plt.title('Tăng trưởng Tín dụng & Huy động lũy kế YTD theo Quý')
+            plt.title('Tăng trưởng Tín dụng & Huy động liên quý QoQ theo Quý')
             plt.tight_layout()
             chart_p14 = os.path.join(chart_dir, 'chartO_credit_funding_growth.png')
             plt.savefig(chart_p14, dpi=120)
@@ -1697,9 +1702,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Paragraph(f"• <b>Diễn biến NIM:</b> {ai_comments['financial'][:300]}...", bullet_style))
     story.append(Paragraph(f"• <b>YOEA & COF:</b> Tỷ suất sinh lời của tài sản sinh lãi (YOEA) được hỗ trợ tốt nhờ cơ cấu cho vay bán lẻ có biên lợi nhuận cao. Ngược lại, chi phí vốn (COF) đang dần hạ nhiệt nhờ sự gia tăng tỷ lệ CASA giúp ngân hàng huy động được nguồn tiền gửi giá rẻ vượt trội.", bullet_style))
     story.append(Paragraph(f"• <b>Cơ cấu tài sản sinh lãi:</b> Cho vay khách hàng vẫn chiếm tỷ trọng chủ đạo (>70%), theo sau là danh mục chứng khoán đầu tư an toàn và thanh khoản cao.", bullet_style))
-    # Add Chart 14: Quarterly Credit & Funding YTD Growth Trend
+    # Add Chart 14: Quarterly Credit & Funding QoQ Growth Trend
     story.append(Spacer(1, 5))
-    story.append(Paragraph("Diễn biến Tăng trưởng Tín dụng & Huy động lũy kế YTD qua các Quý:", h2_style))
+    story.append(Paragraph("Diễn biến Tăng trưởng Tín dụng & Huy động liên quý QoQ qua các Quý:", h2_style))
     story.append(Image(chart_p14, width=175*mm, height=73*mm))
     
     # ------------------ PAGE 3: ASSET QUALITY & PROVISION ------------------

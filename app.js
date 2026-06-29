@@ -1264,7 +1264,7 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
             labels: cg.quarters,
             datasets: [
                 {
-                    label: 'Tăng trưởng Tín dụng YTD (%)',
+                    label: 'Tăng trưởng Tín dụng QoQ (%)',
                     data: cg.credit_ytd,
                     borderColor: '#4472C4',
                     backgroundColor: 'rgba(68,114,196,0.1)',
@@ -1273,7 +1273,7 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
                     tension: 0.2
                 },
                 {
-                    label: 'Tăng trưởng Huy động YTD (%)',
+                    label: 'Tăng trưởng Huy động QoQ (%)',
                     data: cg.funding_ytd,
                     borderColor: '#ED7D31',
                     backgroundColor: 'rgba(237,125,49,0.1)',
@@ -1300,12 +1300,12 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
         }
     });
 
-    const lastCreditYtd = cg.credit_ytd[cg.credit_ytd.length - 1];
-    const lastFundingYtd = cg.funding_ytd[cg.funding_ytd.length - 1];
+    const lastCreditQoq = cg.credit_ytd[cg.credit_ytd.length - 1];
+    const lastFundingQoq = cg.funding_ytd[cg.funding_ytd.length - 1];
     
     analysisEl.innerHTML = `
-        Tăng trưởng tín dụng lũy kế YTD quý gần nhất đạt <strong>${lastCreditYtd >= 0 ? '+' : ''}${lastCreditYtd.toFixed(2)}%</strong>. <br>
-        Tăng trưởng huy động lũy kế YTD tương ứng đạt <strong>${lastFundingYtd >= 0 ? '+' : ''}${lastFundingYtd.toFixed(2)}%</strong>. <br>
+        Tăng trưởng tín dụng liên quý QoQ gần nhất đạt <strong>${lastCreditQoq >= 0 ? '+' : ''}${lastCreditQoq.toFixed(2)}%</strong>. <br>
+        Tăng trưởng huy động liên quý QoQ tương ứng đạt <strong>${lastFundingQoq >= 0 ? '+' : ''}${lastFundingQoq.toFixed(2)}%</strong>. <br>
         Mức độ tương đồng tăng trưởng phản ánh sự kiểm soát nhịp nhàng thanh khoản và tỷ lệ LDR pháp lý.
     `;
 }
