@@ -1,6 +1,6 @@
 {
   "ticker": "VIB",
-  "companyName": "Ngân hàng VIB",
+  "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
   "analysis_comments": {
     "ytd_loans_growth": 1.13,
     "ytd_dep_growth": 5.5,
@@ -183,8 +183,8 @@
   },
   "sector": "Ngân hàng",
   "currentPrice": 16150.0,
-  "marketCap": 54977834845000.0,
-  "shares": 3404200300,
+  "marketCap": 54974692055000.0,
+  "shares": 3404005700,
   "assumptions": {
     "loans_growth": [
       14.0,
@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1svyQ_PbD2zVp9C0W0nNSBifZaTKjRE3L/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1zS9AX8TV2YAHZ-qli_9B460HmHmIPf2_/view?usp=drivesdk",
   "pe_hist": [
     8.0830990662,
     9.0175849713,
@@ -552,18 +552,18 @@
       1.0861
     ],
     "casa": [
-      0.0,
-      0.0,
-      0.0,
-      0.0003,
-      0.0027,
-      0.001,
-      0.0,
-      0.0,
-      0.0002,
-      0.0012,
-      0.0004,
-      0.0008
+      0.1196,
+      0.1277,
+      0.132,
+      0.1322,
+      0.1466,
+      0.1353,
+      0.1395,
+      0.1495,
+      0.1661,
+      0.1528,
+      0.1439,
+      0.1393
     ],
     "npl": [
       3.69,
@@ -592,6 +592,380 @@
       39.4,
       42.9,
       43.1
+    ],
+    "roe": [
+      0.2782,
+      0.2383,
+      0.2005,
+      0.2084,
+      0.1755,
+      0.1601,
+      0.1836,
+      0.1775,
+      0.1904,
+      0.1436,
+      0.1405,
+      0.1824
+    ],
+    "credit_growth": [
+      1.08,
+      5.68,
+      14.5,
+      0.32,
+      4.55,
+      11.47,
+      21.46,
+      3.44,
+      10.38,
+      15.57,
+      18.47,
+      1.13
+    ]
+  },
+  "earning_assets_quarterly": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "cash_sbv": [
+      7656.6,
+      5867.1,
+      9898.8,
+      5463.5,
+      7533.8,
+      6593.0,
+      11548.4,
+      7363.9,
+      7044.2,
+      9859.4,
+      12550.6,
+      6189.3
+    ],
+    "bank_dep": [
+      79806.1,
+      74707.1,
+      68197.6,
+      92771.8,
+      114455.7,
+      82657.1,
+      105588.5,
+      102269.0,
+      97946.4,
+      104756.6,
+      104411.1,
+      114132.2
+    ],
+    "loans": [
+      231347.0,
+      241890.7,
+      262074.2,
+      262910.8,
+      273996.2,
+      292146.2,
+      318316.1,
+      329264.1,
+      351360.1,
+      367863.4,
+      377113.2,
+      381362.0
+    ],
+    "inv_sec": [
+      50259.4,
+      52384.6,
+      60988.4,
+      44298.4,
+      28742.1,
+      57909.6,
+      50344.3,
+      49438.6,
+      67210.4,
+      53170.1,
+      51149.5,
+      49089.1
+    ]
+  },
+  "loan_industry": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "real_estate": [
+      27257.7,
+      30503.3,
+      35366.1,
+      35650.2,
+      42308.1,
+      51182.9,
+      58132.1,
+      65601.6,
+      78929.2,
+      93053.2,
+      105472.6,
+      113664.3
+    ],
+    "individuals": [
+      201509.5,
+      209028.3,
+      224800.9,
+      224987.9,
+      227588.8,
+      237064.4,
+      254572.9,
+      257155.0,
+      264303.2,
+      266909.3,
+      266644.0,
+      262676.2
+    ],
+    "wholesale_retail": [
+      0.4,
+      0.4,
+      0.4,
+      0.3,
+      0.3,
+      13.5,
+      13.4,
+      36.2,
+      36.2,
+      0.2,
+      2.0,
+      1.8
+    ],
+    "others": [
+      2579.4,
+      2358.7,
+      1906.8,
+      2272.4,
+      4098.9,
+      3885.4,
+      5597.6,
+      6471.2,
+      8091.5,
+      7900.7,
+      4994.7,
+      5019.7
+    ]
+  },
+  "npl_groups": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "group1": [
+      211092.0,
+      220748.9,
+      243146.7,
+      242962.6,
+      256271.6,
+      275242.7,
+      301905.6,
+      310436.4,
+      333057.9,
+      350150.7,
+      361491.1,
+      365055.1
+    ],
+    "group2": [
+      15057.4,
+      15841.5,
+      14824.2,
+      15112.8,
+      12433.2,
+      10845.8,
+      10730.6,
+      11046.7,
+      10343.0,
+      10204.1,
+      9146.2,
+      9845.0
+    ],
+    "group3": [
+      3149.0,
+      3057.6,
+      2479.3,
+      2529.7,
+      2266.8,
+      2265.1,
+      2305.5,
+      2905.9,
+      2567.1,
+      2428.2,
+      2149.2,
+      2311.8
+    ],
+    "group4": [
+      3539.3,
+      4673.1,
+      3697.1,
+      3538.1,
+      3728.9,
+      3210.1,
+      2670.6,
+      2986.4,
+      3502.5,
+      3480.4,
+      2824.2,
+      2932.0
+    ],
+    "group5": [
+      1840.4,
+      1308.9,
+      2198.1,
+      3565.4,
+      4205.5,
+      5986.1,
+      6397.4,
+      6782.8,
+      6595.6,
+      6472.6,
+      6361.3,
+      6113.4
+    ]
+  },
+  "loan_terms": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "short_term": [
+      77768.3,
+      86068.1,
+      102695.8,
+      105267.6,
+      113738.8,
+      125465.6,
+      142051.3,
+      151074.6,
+      162730.7,
+      163849.9,
+      158864.4,
+      159418.7
+    ],
+    "medium_term": [
+      15686.5,
+      15247.9,
+      15123.4,
+      14238.6,
+      16521.5,
+      18253.4,
+      20244.7,
+      22018.9,
+      25978.0,
+      34047.1,
+      43794.7,
+      48365.7
+    ],
+    "long_term": [
+      141223.4,
+      144314.0,
+      148526.4,
+      148202.5,
+      148645.8,
+      153830.7,
+      161713.7,
+      161064.7,
+      167357.4,
+      174839.1,
+      179312.9,
+      178472.9
+    ]
+  },
+  "deposit_types": {
+    "quarters": [
+      "2023-Q2",
+      "2023-Q3",
+      "2023-Q4",
+      "2024-Q1",
+      "2024-Q2",
+      "2024-Q3",
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2",
+      "2025-Q3",
+      "2025-Q4",
+      "2026-Q1"
+    ],
+    "casa": [
+      24563.8,
+      27269.3,
+      31229.7,
+      30962.7,
+      36312.1,
+      34596.3,
+      38534.5,
+      42205.8,
+      50571.9,
+      47049.8,
+      42377.9,
+      44063.8
+    ],
+    "term": [
+      180389.8,
+      185752.4,
+      204957.9,
+      202914.9,
+      210798.6,
+      220692.9,
+      237301.0,
+      239585.3,
+      253260.7,
+      260373.3,
+      251612.1,
+      271563.1
+    ],
+    "others": [
+      349.1,
+      512.0,
+      389.6,
+      333.2,
+      519.1,
+      343.4,
+      472.9,
+      507.0,
+      560.3,
+      506.1,
+      587.6,
+      746.9
     ]
   },
   "earning_assets": {
@@ -603,38 +977,38 @@
       "2025"
     ],
     "cash_sbv": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      26412.3,
+      11680.6,
+      9898.8,
+      11548.4,
+      12550.6
     ],
     "bank_dep": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      27985.1,
+      51899.8,
+      68197.6,
+      105588.5,
+      104411.1
     ],
     "loans": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      199116.4,
+      228879.2,
+      262075.0,
+      318316.1,
+      377113.2
     ],
     "inv_sec": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      44737.2,
+      40278.7,
+      60988.4,
+      50344.3,
+      51149.5
     ]
   },
   "thesis": [
-    "Ngân hàng VIB (VIB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu VIB."
+    "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam (VIB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng",
+    "Sức khỏe tài chính của VIB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và h",
+    "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu VIB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị th"
   ],
   "risks": [
     "Rủi ro NIM thu hẹp: cạnh tranh lãi suất cho vay trong bối cảnh NHNN giảm lãi suất — NIM có thể giảm 0.31% so kế hoạch.",
@@ -696,23 +1070,23 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 23294,
-    "upside": 44.24,
-    "bear": 19800,
-    "base": 23294,
-    "bull": 26788,
+    "weightedTarget": 26646,
+    "upside": 64.99,
+    "bear": 22648,
+    "base": 26645,
+    "bull": 30642,
     "pbAttractive": 1.32,
-    "pbAttractivePrice": 21870,
-    "pbTarget": 1.48,
-    "pbTargetPrice": 24559,
+    "pbAttractivePrice": 21976,
+    "pbTarget": 1.68,
+    "pbTargetPrice": 27814,
     "COE": 12.1,
-    "peMedian": 7.47,
-    "pbMedian": 1.43,
-    "bvpsBase": 13778,
-    "riValue": 22926,
-    "pbValue": 23663,
-    "pvRi": 3163,
-    "pvCv": 5984,
+    "peMedian": 7.29,
+    "pbMedian": 1.47,
+    "bvpsBase": 13779,
+    "riValue": 28911,
+    "pbValue": 24380,
+    "pvRi": 3164,
+    "pvCv": 11968,
     "epsFc": [
       2807,
       3376,
@@ -721,14 +1095,14 @@
     "riResults": [
       1140,
       1369,
-      1489
+      1490
     ],
     "recommend": "MUA"
   },
   "comments": {
-    "businessModel": "Ngân hàng VIB (VIB) duy trì vị thế cạnh tranh mạnh trong phân tích cơ bản ngành Ngân hàng thương mại Việt Nam.",
-    "financialPerformance": "Biên lãi ròng (NIM) và chất lượng tài sản (NPL, CASA) thể hiện khả năng thích ứng linh hoạt trong chu kỳ kinh tế.",
-    "valuationText": "Kịch bản định giá Residual Income và P/B mục tiêu phản ánh kỳ vọng hợp lý của nhà đầu tư đối với cổ phiếu VIB."
+    "businessModel": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam (VIB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
+    "financialPerformance": "Sức khỏe tài chính của VIB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và hiệu quả sinh lời (ROE, NIM) tiếp tục duy trì vị thế nhóm đầu thị trường.",
+    "valuationText": "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu VIB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị thế đầu ngành vững chắc."
   },
   "data": {
     "years": [
@@ -762,14 +1136,14 @@
       13292.56
     ],
     "eps": [
-      1882.9,
-      2487.7,
-      2515.4,
-      2116.3,
-      2140.1,
-      2806.8,
-      3375.9,
-      3904.8
+      4127.0,
+      4018.1,
+      3375.5,
+      2418.3,
+      2140.3,
+      2806.9,
+      3376.1,
+      3905.0
     ],
     "equity": [
       24290.74,

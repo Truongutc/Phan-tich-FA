@@ -32,14 +32,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "VIB",
-    "companyName": "Ngân hàng VIB",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-29 18:26",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "TCB",
     "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
     "sector": "Ngân hàng",
@@ -62,5 +54,13 @@
     "lastUpdated": "2026-06-29 16:03",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1-TRBhNvDTw8PduKkaDHSGSAJ-Ga34tUU/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1TbwH-HRW41LQRtyaimAD7M_5UO0sIKL_/view?usp=drivesdk"
+  },
+  {
+    "ticker": "VIB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-29 16:08",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1svyQ_PbD2zVp9C0W0nNSBifZaTKjRE3L/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1zS9AX8TV2YAHZ-qli_9B460HmHmIPf2_/view?usp=drivesdk"
   }
 ]
