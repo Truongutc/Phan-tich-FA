@@ -50,7 +50,7 @@ def get_or_create_folder(service, folder_name, parent_id):
     if not service:
         return parent_id
     try:
-        query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps-script.folder' and '{parent_id}' in parents and trashed = false"
+        query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder' and '{parent_id}' in parents and trashed = false"
         results = service.files().list(q=query, fields="files(id)").execute()
         files = results.get("files", [])
         if files:
@@ -58,7 +58,7 @@ def get_or_create_folder(service, folder_name, parent_id):
         else:
             folder_metadata = {
                 'name': folder_name,
-                'mimeType': 'application/vnd.google-apps-script.folder',
+                'mimeType': 'application/vnd.google-apps.folder',
                 'parents': [parent_id]
             }
             folder = service.files().create(body=folder_metadata, fields='id').execute()
