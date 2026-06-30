@@ -924,13 +924,13 @@ function renderSpreadChart(localJson, sectorKey) {
     const ctx = document.getElementById('spreadChart').getContext('2d');
     if (chartSpread) chartSpread.destroy();
     chartSpread = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels,
             datasets: [
-                { label: 'Spread (USD/t)', data: q.spreadUsd, backgroundColor: '#2980B9', borderRadius: 3, order: 2, yAxisID: 'y' },
-                { label: 'GP Margin (%)', data: q.gpMargin, type: 'line', borderColor: '#E67E22', backgroundColor: 'rgba(230,126,34,0.1)', borderWidth: 2.5, pointRadius: 4, tension: 0.3, fill: true, order: 1, yAxisID: 'y1' },
-                { label: 'Giá HRC (USD/t)', data: q.hrcPrice, type: 'line', borderColor: '#7F8C8D', borderWidth: 1.5, pointRadius: 2, tension: 0.3, borderDash: [3,3], order: 3, yAxisID: 'y' }
+                { label: 'Giá HRC (USD/t)', data: q.hrcPrice, type: 'bar', backgroundColor: 'rgba(127,140,141,0.2)', borderColor: 'rgba(127,140,141,0.4)', borderWidth: 1, borderRadius: 2, order: 1, yAxisID: 'y' },
+                { label: 'Spread (USD/t)', data: q.spreadUsd, borderColor: '#2980B9', backgroundColor: 'rgba(41,128,185,0.08)', borderWidth: 2.5, pointRadius: 4, tension: 0.3, fill: true, order: 2, yAxisID: 'y' },
+                { label: 'GP Margin (%)', data: q.gpMargin, borderColor: '#E67E22', backgroundColor: 'rgba(230,126,34,0.1)', borderWidth: 2.5, pointRadius: 5, tension: 0.3, fill: true, order: 3, yAxisID: 'y1' }
             ]
         },
         options: {
