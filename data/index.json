@@ -1,13 +1,5 @@
 [
   {
-    "ticker": "HPG",
-    "companyName": "CTCP Tập đoàn Hòa Phát",
-    "sector": "Thép (Sản xuất Commodity)",
-    "lastUpdated": "2026-06-27 10:35",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "GMD",
     "companyName": "Công ty Cổ phần Tập đoàn Gemadept",
     "sector": "General",
@@ -20,14 +12,6 @@
     "companyName": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-06-29 09:38",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
-    "ticker": "TCB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-29 22:40",
     "excelUrl": null,
     "pdfUrl": null
   },
@@ -64,14 +48,6 @@
     "pdfUrl": "https://drive.google.com/file/d/1jQwjXrEB_M9e8qwzQRRtgnc1nUW5yYp1/view?usp=drivesdk"
   },
   {
-    "ticker": "STB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Sài Gòn Tài Lộc",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-30 01:59",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1C1rzpBzXIwBkF3RbBOzP8HeE-XlJifMl/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1tUiAlFYtUp12lY7ZaiQmwIppZ8Rc-Vm2/view?usp=drivesdk"
-  },
-  {
     "ticker": "MSB",
     "companyName": "Ngân hàng Thương mại Cổ phần Hàng Hải Việt Nam",
     "sector": "Ngân hàng",
@@ -86,5 +62,29 @@
     "lastUpdated": "2026-06-30 09:56",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1hYbQKihR3ZL70-_a0NLwUuDtVIMrYtJi/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1lXNwcAsvCZwlbAIl5nxizApbD11KOiRj/view?usp=drivesdk"
+  },
+  {
+    "ticker": "STB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Sài Gòn Tài Lộc",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-30 10:54",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "TCB",
+    "companyName": "Ngân hàng TCB",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-30 11:51",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "HPG",
+    "companyName": "Hoa Phat Group Joint Stock Company",
+    "sector": "Basic Resources",
+    "lastUpdated": "2026-06-30 16:03",
+    "excelUrl": null,
+    "pdfUrl": null
   }
 ]
