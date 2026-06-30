@@ -5,9 +5,9 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": null,
-  "gdriveExcelUrl": null,
-  "lastUpdated": "2026-06-30 21:46",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1K0AgPitK2SzZQdXYHUaHInrm7ak3th7D/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/19M05y4bjYA0qiOpR0_9lXIHZ4xzjbI22/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "lastUpdated": "2026-06-30 15:20",
   "data": {
     "years": [
       2021,
