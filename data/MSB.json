@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1Z14QaAnXmAadNbo7uiLLmvKv_1aX-ddi/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1ob6muAA9vABTaxh3W_fMF2_cFqseHPH6/view?usp=drivesdk",
   "pe_hist": [
     6.0221451106,
     8.1081717191,
@@ -1185,5 +1185,5 @@
       0.3113
     ]
   },
-  "lastUpdated": "2026-06-30 03:14"
+  "lastUpdated": "2026-06-30 03:22"
 }
