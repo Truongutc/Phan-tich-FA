@@ -622,10 +622,11 @@ def build_excel():
         return j >= 7
 
     R3_NAME = "'03_Revenue_Model'"
+    # GP margin forecast cells: use Q1-actual + spread-trend, NOT spread/price formula
+    fc_gpm_vals = {7: gp_margin_fc[0], 8: gp_margin_fc[1], 9: gp_margin_fc[2]}
     for j in range(7, 10):
-        cl = col_ltr(j)
         gpm_cell = ws2.cell(row=6, column=j)
-        gpm_cell.value = f"=(1-({S_ASSUMP}!{cl}{R_IRON}*1.6+{S_ASSUMP}!{cl}{R_COKE}*0.5+{S_ASSUMP}!{cl}{R_CONV})/{R3_NAME}!{cl}6)*100"
+        gpm_cell.value = fc_gpm_vals[j]
         gpm_cell.number_format = '0.00'
         gpm_cell.font = Font(name=FONT_NAME, color="006600", size=10)
 
