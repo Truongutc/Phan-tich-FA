@@ -111,10 +111,42 @@ da_hist       = [get_yr(cf_recs, y, "cfa2") for y in years_hist]
 capex_hist    = [abs(get_yr(cf_recs, y, "cfa19")) for y in years_hist]  # displayed as positive amount
 begin_cash_hist = [get_yr(cf_recs, y, "cfa36") for y in years_hist]
 
+# Spread assumptions (shared between build_excel and make_charts)
+HRC_PRICE_A = [680, 580, 560, 580, 560, 620, 600, 580]     # 2021..2028
+IRON_ORE_A  = [160, 120, 110, 105, 100, 105, 100,  95]     # USD/t
+COKE_A      = [400, 350, 280, 240, 230, 240, 220, 200]     # USD/t
+CONV_A      = [170, 175, 180, 185, 190, 200, 200, 200]     # USD/t
+SPREAD_A    = [HRC_PRICE_A[i] - 1.6*IRON_ORE_A[i] - 0.5*COKE_A[i] - CONV_A[i] for i in range(8)]
+
 # Forecast (2026-2028)
 years_fc   = [2026, 2027, 2028]
 revenue_fc = [210000, 240000, 270000]
-gp_margin_fc = [17.5, 19.0, 20.0]
+
+# GP margin 2026E = actual Q1 + spread-trend projection for remaining quarters
+_is_qs_mod = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
+def _get_q_mod(records, yr, qtr, field):
+    for r in records:
+        if r.get("yearReport") == yr and r.get("lengthReport") == qtr:
+            return (r.get(field, 0) or 0) / 1e9
+    return 0
+
+q1_rev = _get_q_mod(_is_qs_mod, 2026, 1, 'isa3')
+q1_gp  = _get_q_mod(_is_qs_mod, 2026, 1, 'isa5')
+q1_gpm = q1_gp / q1_rev if q1_rev else 0
+
+# spread ratio = current annual spread / most recent actual quarter spread
+spr_cur  = SPREAD_A[5]; spr_recent = SPREAD_A[5]  # both 2026 annual avg
+spr_ratio = spr_cur / spr_recent if spr_recent else 1.0
+
+remaining_rev = revenue_fc[0] - q1_rev
+gp_2026  = q1_gp + remaining_rev * q1_gpm * spr_ratio
+gpm_2026 = round(gp_2026 / revenue_fc[0] * 100, 1)
+
+# 2027-2028: apply same spread-trend method
+gpm_2027 = round(gpm_2026 * (SPREAD_A[6]/SPREAD_A[5]), 1) if SPREAD_A[5] else round(gpm_2026 * 1.02, 1)
+gpm_2028 = round(gpm_2027 * (SPREAD_A[7]/SPREAD_A[6]), 1) if SPREAD_A[6] else round(gpm_2027 * 1.02, 1)
+gp_margin_fc = [gpm_2026, gpm_2027, gpm_2028]
+
 ni_fc      = [22000, 28000, 34000]
 da_fc      = [7000,  8000,   9000]
 capex_fc   = [15000, 18000,  20000]
@@ -392,7 +424,7 @@ def build_excel():
         ("Số CP lưu hành (triệu)", shares_all[0], shares_all[1], shares_all[2], shares_all[3], shares_all[4], shares_all[5], shares_all[6], shares_all[7], "Vốn điều lệ từng năm / 10,000. Post-split 1.1:1 T05/2026"),
         ("Doanh thu (tỷ)", 149680, 141410, 118950, 138860, 156120, 210000, 240000, 270000, "2026: Kế hoạch ĐHĐCĐ"),
         ("Tăng trưởng DT (%)", 48.0, -5.5, -15.9, 16.7, 12.4, 34.5, 14.3, 12.5, "DQ2 full + giá HRC hồi phục. CFO target 2026: ~15M tấn (+40%)"),
-        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, 17.5, 19.0, 20.0, "Cải thiện nhờ DQ2 hiện đại, tiết kiệm 15-20% CP"),
+        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, gp_margin_fc[0], gp_margin_fc[1], gp_margin_fc[2], f"Q1/2026 actual: {gp_margin_hist[4]}% → spread ratio {spr_ratio:.2f} → full-year {gp_margin_fc[0]}%"),
         ("EBIT Margin (%)", 24.1, 7.8, 6.5, 9.3, 11.84, 14.3, 15.8, 16.7, ""),
         ("Thuế TNDN (%)", 4.0, 13.5, 10.5, 4.0, 12.5, 12.0, 12.0, 12.0, "HPG ưu đãi Dung Quất"),
         ("D&A (tỷ)", 3000, 3500, 4000, 4800, 5500, 7000, 8000, 9000, "DQ2 full năm"),
@@ -1465,7 +1497,7 @@ def build_excel():
         ("3", "Moat: Chi phí thấp nhất ngành (lò cao BOF công suất lớn). Quy mô 16M tấn. "
               "Mạng lưới phân phối rộng. Khó sao chép do CAPEX khổng lồ (DQ2 ~$3 tỷ).", "Rộng"),
         ("4", "Tài chính: D/E 0.65x an toàn. ROE TTM 16.5%. FCF cải thiện nhờ DQ2 vận hành. "
-              "Biên LNG phục hồi từ 10.9% (2023) lên ~17.5% (2026E).", "Tốt"),
+              f"Biên LNG phục hồi từ 10.9% (2023) lên ~{gp_margin_fc[0]}% (2026E).", "Tốt"),
         ("5", "Rủi ro: (1) Giá HRC giảm mạnh do suy giảm TQ, (2) Chi phí nguyên liệu tăng (quặng/than), "
               "(3) Tỷ giá USD tăng gây áp lực nợ vay, (4) Cạnh tranh từ HSG/NKG tôn mạ.", "Trung bình"),
         ("6", "Định giá: P/B 1.56x (dưới median lịch sử 1.61x HPG). EV/EBITDA 2026E ~7.0x. "
@@ -1809,7 +1841,7 @@ def build_excel():
         ("Biên GP 2025A", "15.7%", "Cơ sở"),
         ("+ Cải thiện nhờ DQ2 (ĐMTK thấp hơn)", "+1.5%", "DQ2 BOF hiện đại, tiết kiệm 15-20% CP"),
         ("+ Tồn kho giá rẻ (quặng mua H2/2025)", "+0.5%", "Giá quặng 105 USD/tấn thấp hơn 2024"),
-        ("= Biên GP 2026E", "17.5%", "Dự báo"),
+        (f"= Biên GP 2026E", f"{gp_margin_fc[0]}%", "Spread trend từ Q1/2026"),
         ("", "", ""),
         ("LNST 2025A", f"{ni_hist[4]:,.0f} tỷ", "Cơ sở"),
         ("+ Tăng từ DT + biên GP mở rộng", f"+{ni_fc[0]-ni_hist[4]:,.0f} tỷ", "Operating leverage"),
@@ -2968,16 +3000,11 @@ def make_charts():
     # Chart 7 (annual): Spread estimate vs Actual GP margin — annual
     wb_chart = openpyxl.load_workbook(EXCEL_FILE)
     ws2c = wb_chart['02_Assumptions']
-    ws3c = wb_chart['03_Revenue_Model']
     n_years = 8
-    hrc_price_a = [ws3c.cell(row=6, column=j).value for j in range(2, 10)]
-    iron_ore = [ws2c.cell(row=19, column=j).value for j in range(2, 10)]
-    coke = [ws2c.cell(row=20, column=j).value for j in range(2, 10)]
-    conv = [ws2c.cell(row=21, column=j).value for j in range(2, 10)]
     gp_excel = [ws2c.cell(row=6, column=j).value for j in range(2, 10)]
     wb_chart.close()
-    spread_usd_a = [hrc_price_a[i] - 1.6*iron_ore[i] - 0.5*coke[i] - conv[i] for i in range(n_years)]
-    spread_pct_a = [spread_usd_a[i]/hrc_price_a[i]*100 for i in range(n_years)]
+    spread_usd_a = SPREAD_A[:n_years]
+    spread_pct_a = [spread_usd_a[i]/HRC_PRICE_A[i]*100 for i in range(n_years)]
     actual_gpm_a = [gp_excel[i] if isinstance(gp_excel[i], (int, float)) else all_gpm[i] for i in range(n_years)]
 
     fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -3018,9 +3045,9 @@ def make_charts():
                 continue
             q_lbls.append(lbl); q_gpm.append(round(gpm_q, 1))
             idx = yr_idx.get(str(yr), 5)
-            ann_s = hrc_price_a[idx] - 1.6*iron_ore[idx] - 0.5*coke[idx] - conv[idx]
+            ann_s = HRC_PRICE_A[idx] - 1.6*IRON_ORE_A[idx] - 0.5*COKE_A[idx] - CONV_A[idx]
             q_spread.append(round(ann_s, 0))
-            q_hrc_est.append(hrc_price_a[idx])
+            q_hrc_est.append(HRC_PRICE_A[idx])
     # Append Q2/2026 estimate — spread & project GP margin from spread trend
     fc_start = len(q_lbls)
     if q_lbls:
@@ -3029,12 +3056,12 @@ def make_charts():
             lbl = f"Q{qnum}-{y}"
             if lbl not in q_lbls:
                 idx = yr_idx.get(str(y), 5)
-                cur_s = hrc_price_a[idx] - 1.6*iron_ore[idx] - 0.5*coke[idx] - conv[idx]
+                cur_s = HRC_PRICE_A[idx] - 1.6*IRON_ORE_A[idx] - 0.5*COKE_A[idx] - CONV_A[idx]
                 spr_ratio = cur_s / last_spr if last_spr else 1.0
                 q_lbls.append(lbl)
                 q_gpm.append(round(last_gpm * spr_ratio, 1))
                 q_spread.append(round(cur_s, 0))
-                q_hrc_est.append(hrc_price_a[idx])
+                q_hrc_est.append(HRC_PRICE_A[idx])
     nq_s = len(q_lbls)
 
     if nq_s > 0:
@@ -3205,23 +3232,32 @@ def build_pdf():
     bs_qs = section_to_quarters(FIN_DATA, "BALANCE_SHEET")
     cf_qs = section_to_quarters(FIN_DATA, "CASH_FLOW")
 
-    # Try to register Vietnamese font
+    # Try to register Vietnamese-supporting font (Arial on Win, DejaVu on Linux)
     FONT = 'Helvetica'
     FONT_BOLD = 'Helvetica-Bold'
     FONT_ITALIC = 'Helvetica-Oblique'
-    arial_path = "C:/Windows/Fonts/arial.ttf"
-    arial_bold_path = "C:/Windows/Fonts/arialbd.ttf"
-    arial_i_path = "C:/Windows/Fonts/ariali.ttf"
-    if os.path.exists(arial_path) and os.path.exists(arial_bold_path) and os.path.exists(arial_i_path):
-        try:
-            pdfmetrics.registerFont(TTFont('Arial', arial_path))
-            pdfmetrics.registerFont(TTFont('Arial-Bold', arial_bold_path))
-            pdfmetrics.registerFont(TTFont('Arial-Italic', arial_i_path))
-            FONT = 'Arial'
-            FONT_BOLD = 'Arial-Bold'
-            FONT_ITALIC = 'Arial-Italic'
-        except:
-            pass  # registration failed, keep Helvetica
+    _font_ok = False
+    _font_candidates = [
+        ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arialbd.ttf", "C:/Windows/Fonts/ariali.ttf",
+         "Arial", "Arial-Bold", "Arial-Italic"),
+        ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+         "Arial", "Arial-Bold", "Arial-Italic"),
+    ]
+    for rp, bp, ip, rn, bn, _in in _font_candidates:
+        _r = os.path.exists(rp); _b = os.path.exists(bp); _i = os.path.exists(ip)
+        if _r and _b:
+            try:
+                pdfmetrics.registerFont(TTFont(rn, rp))
+                pdfmetrics.registerFont(TTFont(bn, bp))
+                if _i:
+                    pdfmetrics.registerFont(TTFont(_in, ip))
+                FONT = rn; FONT_BOLD = bn; FONT_ITALIC = _in if _i else rn
+                _font_ok = True
+                break
+            except:
+                continue
 
     styles = getSampleStyleSheet()
     # Override/add styles
@@ -3331,7 +3367,7 @@ def build_pdf():
     )
     add_body("<b>Ba lý do mua:</b>")
     add_body("1. <b>DQ2 full công suất</b> — Sản lượng HRC tăng gấp đôi (~6 triệu tấn/năm), "
-             "biên LNG cải thiện từ 15.7% (2025) lên 17.5%+ (2026E).")
+             f"biên LNG cải thiện từ 15.7% (2025) lên {gp_margin_fc[0]}% (2026E).")
     add_body("2. <b>Giá HRC hồi phục</b> — Thuế CBPG 27.8% với HRC TQ + nguồn cung toàn cầu thắt chặt "
              "(Gary Works #14 reline) hỗ trợ giá đầu ra.")
     add_body("3. <b>Định giá hấp dẫn</b> — P/B 1.56x (dưới median lịch sử HPG 1.61x), "
@@ -3363,7 +3399,7 @@ def build_pdf():
          f"{revenue_fc[1]:,}", f"{revenue_fc[2]:,}", "20.0%"],
         ["LNST (tỷ)", f"{ni_hist[4]:,.0f}", f"{ni_fc[0]:,}",
          f"{ni_fc[1]:,}", f"{ni_fc[2]:,}", "30.0%"],
-        ["Biên LNG (%)", "15.7%", "17.5%", "19.0%", "20.0%", "-"],
+        [f"Biên LNG (%)", "15.7%", f"{gp_margin_fc[0]}%", f"{gp_margin_fc[1]}%", f"{gp_margin_fc[2]}%", "-"],
         ["EPS (VND)", "1,830", "2,600", "3,320", "4,030", "30.1%"],
         ["P/B (x)", "1.53", "1.35", "1.17", "1.02", "-"],
         ["EV/EBITDA (x)", "10.8", "7.0", "5.8", "5.0", "-"],
@@ -3589,7 +3625,7 @@ def build_pdf():
 ["LNST", f"{ni_hist[0]:,.0f}", f"{ni_hist[1]:,.0f}", f"{ni_hist[2]:,.0f}",
          f"{ni_hist[3]:,.0f}", f"{ni_hist[4]:,.0f}", f"{ni_fc[0]:,}",
          f"{ni_fc[1]:,}", f"{ni_fc[2]:,}"],
-        ["GP Margin", "27.5%", "11.9%", "10.9%", "13.3%", "15.7%", "17.5%", "19.0%", "20.0%"],
+        ["GP Margin", "27.5%", "11.9%", "10.9%", "13.3%", "15.7%", f"{gp_margin_fc[0]}%", f"{gp_margin_fc[1]}%", f"{gp_margin_fc[2]}%"],
         ["EBITDA", f"{revenue_hist[0]*0.12+da_hist[0]:,.0f}",
          f"{revenue_hist[1]*0.12+da_hist[1]:,.0f}",
          f"{revenue_hist[2]*0.12+da_hist[2]:,.0f}",
@@ -3872,7 +3908,7 @@ def build_pdf():
         "- Giá HRC hồi phục nhờ (a) thuế CBPG 27.8% HRC TQ, (b) nguồn cung Gary Works #14 giảm, "
         "(c) nhu cầu VN phục hồi<br/>"
         "- Chi phí đầu vào: quặng giảm 140→105 USD/tấn, than cốc giảm 400→220 USD/tấn<br/>"
-        f"- Kết quả: GM cải thiện từ 10.9% (2023) lên 15.7% (2025) → dự báo 17.5%+ (2026E)"
+        f"- Kết quả: GM cải thiện từ 10.9% (2023) lên 15.7% (2025) → dự báo {gp_margin_fc[0]}% (2026E)"
     )
     add_body(
         "3. <b>HÀNG TỒN KHO GIÁ RẺ ✅ — ĐANG XẢY RA</b><br/>"
@@ -4135,7 +4171,7 @@ def save_json_summary():
         },
         "thesis": [
             "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
-            "Spread thép mở rộng nhờ (i) giá quặng/than giảm, (ii) DQ2 tiết kiệm 15-20% chi phí. GP margin dự phóng từ 15.7% (2025) lên 17.5%+ (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
+            f"Spread thép mở rộng nhờ (i) giá quặng/than giảm, (ii) DQ2 tiết kiệm 15-20% chi phí. GP margin dự phóng từ 15.7% (2025) lên {gp_margin_fc[0]}% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
             "Định giá hấp dẫn: P/B 1.56x (dưới median 1.61x), EV/EBITDA 2026E ~7.0x (dưới median 8.95x). Giá mục tiêu 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%."
         ],
         "risks": [
@@ -4186,7 +4222,10 @@ if __name__ == "__main__":
 
     build_excel()
     make_charts()
-    build_pdf()
+    try:
+        build_pdf()
+    except Exception as e:
+        print(f"[WARN] PDF generation failed: {e}")
     save_json_summary()
 
     print(f"\n  COMPLETE")
