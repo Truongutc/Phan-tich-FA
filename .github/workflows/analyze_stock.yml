@@ -42,18 +42,27 @@ jobs:
         run: |
           TICKER="${{ github.event.inputs.ticker }}"
           BUILDER="build_${TICKER,,}_model.py"
+          # Danh sách ticker có custom builder thủ công — tuyệt đối không xoá
+          CUSTOM_TICKERS="HPG MBB VCB BID ACB CTG"
+          IS_CUSTOM=false
+          for t in $CUSTOM_TICKERS; do
+            if [ "${TICKER,,}" = "${t,,}" ]; then IS_CUSTOM=true; break; fi
+          done
           if [ -f "$BUILDER" ]; then
             LINES=$(wc -l < "$BUILDER")
             echo "Found $BUILDER with $LINES lines"
-            if [ "$LINES" -gt 500 ]; then
+            if [ "$IS_CUSTOM" = true ]; then
               echo "CUSTOM_BUILDER=true" >> "$GITHUB_ENV"
               echo "Custom builder detected — skipping Gemini, running directly."
+            elif [ "$LINES" -gt 500 ]; then
+              echo "CUSTOM_BUILDER=true" >> "$GITHUB_ENV"
+              echo "Large builder (>500 lines) — protected, running directly."
             else
               echo "GENERATED_BUILDER=true" >> "$GITHUB_ENV"
             fi
           fi
 
-      - name: Force Regenerate Generated Builder (only if <500 lines)
+      - name: Force Regenerate Generated Builder (only if <500 lines, not in custom list)
         if: ${{ env.GENERATED_BUILDER == 'true' && github.event.inputs.force_regenerate == 'true' }}
         run: |
           TICKER="${{ github.event.inputs.ticker }}"
