@@ -151,6 +151,56 @@ def fetch_aligned_history(ticker, days=720, timeout=15):
         print(f"[Beta Calc] Error fetching history: {e}")
     return []
 
+def fetch_beta_vietstock(ticker, timeout=15):
+    try:
+        search_url = f"https://finance.vietstock.vn/search?query={ticker}"
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        r1 = requests.get(search_url, headers=headers, timeout=timeout)
+        if r1.status_code == 200:
+            data = json.loads(r1.text).get("data", "")
+            lines = data.split('\r\n')
+            target_url = ""
+            for line in lines:
+                parts = line.split('|')
+                if len(parts) >= 3 and parts[0].strip().upper() == ticker.upper():
+                    target_url = parts[2]
+                    break
+            if target_url:
+                headers_r2 = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Referer': 'https://finance.vietstock.vn/'
+                }
+                r2 = requests.get(target_url, headers=headers_r2, timeout=timeout)
+                if r2.status_code == 200:
+                    import re
+                    m = re.search(r'\"Beta\":\"([\d\.]+)\"', r2.text)
+                    if m:
+                        beta = float(m.group(1))
+                        if 0.3 <= beta <= 2.5:
+                            print(f"  [OK] Beta {ticker} từ Vietstock: {beta:.2f}")
+                            return beta
+    except Exception as e:
+        print(f"  [WARN] Vietstock scrape failed: {e}")
+    return None
+
+def fetch_beta_vietcap(ticker, timeout=15):
+    try:
+        url = f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Referer": "https://trading.vietcap.com.vn/"
+        }
+        r = requests.get(url, headers=headers, timeout=timeout)
+        if r.status_code == 200:
+            d = r.json().get("data", {})
+            beta = d.get("beta")
+            if beta is not None and 0.3 <= float(beta) <= 2.5:
+                print(f"  [OK] Beta {ticker} từ Vietcap: {float(beta):.2f}")
+                return float(beta)
+    except:
+        pass
+    return None
+
 def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=720, timeout=20, fallback=1.0):
     print(f"  [INFO] Đang tải lịch sử giá để tự tính Beta cho {ticker}...")
     aligned_data = fetch_aligned_history(ticker, days=days, timeout=timeout)
@@ -162,48 +212,51 @@ def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=720, timeout=20, f
         
     num_sessions = len(aligned_data)
     
-    if num_sessions < 30:
-        print(f"  [WARN] Số phiên giao dịch ({num_sessions}) < 30. Không đủ điều kiện tính Beta. Sử dụng fallback hoặc API...")
-        # Fallback to Vietcap details API
-        try:
-            r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
-            beta = r.json().get("data", {}).get("beta")
-            if beta is not None and 0.3 <= float(beta) <= 2.5:
-                print(f"  [OK] Beta {ticker} từ Vietcap API: {float(beta):.2f}")
-                return float(beta), f"Vietcap API (Beta={float(beta):.2f})", latest_price, aligned_data
-        except:
-            pass
-        return fallback, "fallback", latest_price, aligned_data
-
-    # Slice data based on rules (using 2 years of trading sessions if available: ~500 sessions)
-    max_sessions = 500
-    if num_sessions > max_sessions:
-        # Take the last 501 closing prices to compute exactly 500 returns (approx 2 years)
-        sliced_data = aligned_data[-(max_sessions + 1):]
-        source_str = f"Tự tính toán (500 phiên gần nhất, ~2 năm)"
-    else:
-        sliced_data = aligned_data
-        source_str = f"Tự tính toán ({num_sessions - 1} phiên lịch sử)"
+    # 1. Fetch Web Beta (for less than 1 year, or as reference)
+    web_beta = fetch_beta_vietstock(ticker, timeout)
+    if web_beta is None:
+        web_beta = fetch_beta_vietcap(ticker, timeout)
+    if web_beta is None:
+        web_beta = fallback
         
-    s = [x[1] for x in sliced_data]
-    m = [x[2] for x in sliced_data]
+    # 2. Calculate Beta from history
+    calculated_beta = fallback
+    is_enough_sessions = False
     
-    # Calculate returns: R = (p1 - p0) / p0
-    rs = [(s[i] - s[i-1]) / s[i-1] for i in range(1, len(s))]
-    rm = [(m[i] - m[i-1]) / m[i-1] for i in range(1, len(m))]
-    
-    n_ret = len(rs)
-    mean_rs = sum(rs) / n_ret
-    mean_rm = sum(rm) / n_ret
-    
-    cov_sm = sum((rs[i] - mean_rs) * (rm[i] - mean_rm) for i in range(n_ret)) / (n_ret - 1) if n_ret > 1 else 0
-    var_m  = sum((rm[i] - mean_rm) ** 2 for i in range(n_ret)) / (n_ret - 1) if n_ret > 1 else 1.0
-    
-    beta = cov_sm / var_m if var_m > 0 else 1.0
-    beta = max(0.3, min(2.5, beta))
-    
-    print(f"  [OK] Đã tính thành công hệ số Beta cho {ticker}: {beta:.4f} (dựa trên {n_ret} phiên)")
-    return round(beta, 4), source_str, latest_price, sliced_data
+    if num_sessions >= 30:
+        max_sessions = 500
+        if num_sessions > max_sessions:
+            sliced_data = aligned_data[-(max_sessions + 1):]
+        else:
+            sliced_data = aligned_data
+            
+        s = [x[1] for x in sliced_data]
+        m = [x[2] for x in sliced_data]
+        rs = [(s[i] - s[i-1]) / s[i-1] for i in range(1, len(s))]
+        rm = [(m[i] - m[i-1]) / m[i-1] for i in range(1, len(m))]
+        
+        n_ret = len(rs)
+        mean_rs = sum(rs) / n_ret
+        mean_rm = sum(rm) / n_ret
+        
+        cov_sm = sum((rs[i] - mean_rs) * (rm[i] - mean_rm) for i in range(n_ret)) / (n_ret - 1) if n_ret > 1 else 0
+        var_m  = sum((rm[i] - mean_rm) ** 2 for i in range(n_ret)) / (n_ret - 1) if n_ret > 1 else 1.0
+        
+        calculated_beta = cov_sm / var_m if var_m > 0 else fallback
+        calculated_beta = max(0.3, min(2.5, calculated_beta))
+        calculated_beta = round(calculated_beta, 4)
+        
+        if num_sessions >= 250:
+            is_enough_sessions = True
+            
+    if is_enough_sessions:
+        source_str = f"Tự tính toán (500 phiên gần nhất, ~2 năm)"
+        # Slice aligned_data to exactly the last 501 rows (500 returns) for matching Excel formulas
+        aligned_data = aligned_data[-501:]
+    else:
+        source_str = f"Web/API ({web_beta:.2f}) - do lịch sử chỉ có {num_sessions} phiên < 1 năm (250 phiên)"
+        
+    return calculated_beta, web_beta, is_enough_sessions, source_str, latest_price, aligned_data
 
 
 # ── AI COMMENTARY EXTRACTOR ──────────────────────────────────────────────────
@@ -602,7 +655,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     # ── COE calculation via CAPM (with 2% Specific Frontier Risk Premium) ──
     rf_val, rf_src = fetch_rf_vietnam()
-    beta_val, beta_src, _, aligned_data = fetch_and_calc_beta(ticker)
+    beta_calc, beta_web, is_enough_sessions, beta_src, _, aligned_data = fetch_and_calc_beta(ticker)
+    beta_val = beta_calc if is_enough_sessions else beta_web
     erp_val = 0.07  # Damodaran ERP
     specific_risk_premium = 0.02 # specific risk premium for frontier market / bank specific risks
     COE = rf_val + beta_val * erp_val + specific_risk_premium
@@ -755,10 +809,16 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_coe.cell(row=1, column=1, value="CHI PHÍ VỐN CSH (COE) — MÔ HÌNH CAPM").font = FMT_BOLD
     ws_coe.cell(row=3, column=1, value="Tham số").font = FMT_BOLD
     ws_coe.cell(row=3, column=2, value="Giá trị").font = FMT_BOLD
+    ws_coe.cell(row=3, column=3, value="Ghi chú / Tra cứu").font = FMT_BOLD
     ws_coe.cell(row=4, column=1, value="Rf — Lãi suất phi rủi ro")
     ws_coe.cell(row=4, column=2, value=rf_val).number_format = '0.00%'
     ws_coe.cell(row=5, column=1, value="β  — Hệ số Beta")
-    ws_coe.cell(row=5, column=2, value="='00_Beta'!C1")
+    if is_enough_sessions:
+        ws_coe.cell(row=5, column=2, value="='00_Beta'!C1")
+        ws_coe.cell(row=5, column=3, value=f'=HYPERLINK("https://trading.vietcap.com.vn/iq/company?ticker={ticker}&tab=information&isIndex=false", "Tra cứu tham khảo (đủ 1 năm)")').font = Font(color="0563C1", underline="single", name="Calibri", size=11)
+    else:
+        ws_coe.cell(row=5, column=2, value=beta_web)
+        ws_coe.cell(row=5, column=3, value=f'=HYPERLINK("https://trading.vietcap.com.vn/iq/company?ticker={ticker}&tab=information&isIndex=false", "Tra cứu Beta trên Vietcap (Số phiên < 1 năm)")').font = Font(color="0563C1", underline="single", name="Calibri", size=11)
     ws_coe.cell(row=6, column=1, value="ERP — Phần bù rủi ro vốn")
     ws_coe.cell(row=6, column=2, value=erp_val).number_format = '0.00%'
     ws_coe.cell(row=7, column=1, value="α  — Phần bù rủi ro đặc thù (Frontier/Bank)")

@@ -27,16 +27,22 @@ Với:
 - $P_t$: Giá đóng cửa điều chỉnh tại ngày $t$.
 - $P_{t-1}$: Giá đóng cửa điều chỉnh tại ngày $t-1$.
 
-## 2. Quy tắc số phiên giao dịch
+## 2. Quy tắc số phiên giao dịch và Nguồn dữ liệu
 
-- **Dưới 30 phiên**: Không thực hiện tính toán Beta (sử dụng hệ số fallback hoặc Vietcap details API).
-- **Từ 30 đến dưới 500 phiên**: Tính Beta dựa trên toàn bộ dữ liệu lịch sử từ khi niêm yết đến phiên gần nhất.
-- **Từ 500 phiên trở lên**: Chỉ tính toán dựa trên **500 phiên giao dịch gần nhất** (tương đương khoảng 2 năm giao dịch) để phản ánh chính xác rủi ro hệ thống hiện tại và ổn định trong trung hạn.
+Hệ thống sẽ tải tối đa dữ liệu lịch sử giá của Cổ phiếu và VN-Index (lên tới 2 năm, khoảng 500 phiên).
+- **Dưới 250 phiên (< 1 năm)**: 
+  - Vẫn tạo trang tính `00_Beta` và điền dữ liệu kèm công thức tính toán.
+  - Tuy nhiên, trong trang tính `00_COE` ô `B5` (Hệ số Beta), giá trị sẽ lấy **theo Web** (Vietstock/Vietcap API) thay vì liên kết sang `00_Beta`.
+  - Bên cạnh ô Beta (ô `C5`), hệ thống chèn một liên kết tìm kiếm: `=HYPERLINK("...", "Tra cứu Beta trên Vietcap (Số phiên < 1 năm)")` để người dùng dễ dàng kiểm tra.
+- **Từ 250 phiên trở lên (>= 1 năm)**:
+  - Tự động lấy hệ số Beta tự tính toán từ trang tính `00_Beta`.
+  - Liên kết trực tiếp `00_COE!B5` sang `='00_Beta'!C1`.
+  - Cột `C5` sẽ hiển thị liên kết tra cứu tham khảo thông thường.
 
 ## 3. Tích hợp trong Excel Model
 
 Hệ thống sẽ tự động tạo một trang tính riêng tên là `00_Beta` nằm trước trang tính `00_COE`.
 - **Dữ liệu nguồn**: Tối đa 501 dòng giá đóng cửa điều chỉnh gần nhất của Cổ phiếu và VN-Index xếp theo thứ tự thời gian tăng dần.
-- **Công thức tính tỷ suất sinh lời (Cột C và E)**: `=(B5-B4)/B4`
+- **Công thức tính tỷ suất sinh lời (Cột C và E)**: `=(B6-B5)/B5`
 - **Công thức tính Beta (Ô C1)**: `=COVAR(C6:C{last_row}, E6:E{last_row})/VAR(E6:E{last_row})`
-- **Liên kết sang COE**: Trong trang tính `00_COE`, ô hệ số Beta (`B5`) sẽ được liên kết trực tiếp bằng công thức: `='00_Beta'!C1`.
+- **Số phiên thực tế (Ô C2)**: `=COUNT(C6:C{last_row})`
