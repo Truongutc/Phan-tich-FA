@@ -83,16 +83,8 @@
     "ticker": "HPG",
     "companyName": "CTCP Tập đoàn Hòa Phát",
     "sector": "Basic Resources",
-    "lastUpdated": "2026-06-30 12:28",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1TNajrRy8SW8kteTPMEusV20najqik7DD/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/18NERFGLejUiBYyhFe9SToAmOxGKJJmmb/view?usp=drivesdk"
-  },
-  {
-    "ticker": "TPB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Tiên Phong",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-30 14:06",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1cUxvLSHKAmhi9v_g61KagXZq2M_DcsrI/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1W_ndd4gaPJLK0ivfG7G36FIZaQ2HgugD/view?usp=drivesdk"
+    "lastUpdated": "2026-06-30 21:46",
+    "excelUrl": null,
+    "pdfUrl": null
   }
 ]

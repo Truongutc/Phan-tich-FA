@@ -424,7 +424,7 @@ def build_excel():
         ("Số CP lưu hành (triệu)", shares_all[0], shares_all[1], shares_all[2], shares_all[3], shares_all[4], shares_all[5], shares_all[6], shares_all[7], "Vốn điều lệ từng năm / 10,000. Post-split 1.1:1 T05/2026"),
         ("Doanh thu (tỷ)", 149680, 141410, 118950, 138860, 156120, 210000, 240000, 270000, "2026: Kế hoạch ĐHĐCĐ"),
         ("Tăng trưởng DT (%)", 48.0, -5.5, -15.9, 16.7, 12.4, 34.5, 14.3, 12.5, "DQ2 full + giá HRC hồi phục. CFO target 2026: ~15M tấn (+40%)"),
-        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, gp_margin_fc[0], gp_margin_fc[1], gp_margin_fc[2], f"Q1/2026 actual: {gp_margin_hist[4]}% → spread ratio {spr_ratio:.2f} → full-year {gp_margin_fc[0]}%"),
+        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, gp_margin_fc[0], gp_margin_fc[1], gp_margin_fc[2], "2026E: Excel formula = Q1_GPM × (Spread_2026 / Q1_Spread) | 2027-28E: carry-forward spread ratio"),
         ("EBIT Margin (%)", 24.1, 7.8, 6.5, 9.3, 11.84, 14.3, 15.8, 16.7, ""),
         ("Thuế TNDN (%)", 4.0, 13.5, 10.5, 4.0, 12.5, 12.0, 12.0, 12.0, "HPG ưu đãi Dung Quất"),
         ("D&A (tỷ)", 3000, 3500, 4000, 4800, 5500, 7000, 8000, 9000, "DQ2 full năm"),
@@ -586,7 +586,7 @@ def build_excel():
     V_EV = r; V_PB = r+1; V_PE = r+2
     ws2.cell(row=V_EV, column=1, value="EV/EBITDA (2026E)").font = bold_font
     ws2.cell(row=V_EV, column=1).border = thin_border
-    ev_f = f"=(({S_PNL}!G16*{ev_k}-({S_ASSUMP}!G11-{S_ASSUMP}!G12))*1000000000)/({S_ASSUMP}!G3*1000000)*0.90"
+    ev_f = f"=(({S_PNL}!G16*{ev_k}-({S_ASSUMP}!G11-{S_ASSUMP}!G12))*1000000000)/({S_ASSUMP}!G3*1000000)"
     ws2.cell(row=V_EV, column=10, value=ev_f).number_format = '#,##0'
     ws2.cell(row=V_EV, column=10).border = thin_border
     ws2.cell(row=V_EV, column=10).alignment = Alignment(horizontal='center')
@@ -602,7 +602,7 @@ def build_excel():
     ws2.cell(row=V_PB, column=11).border = thin_border
     ws2.cell(row=V_PE, column=1, value="P/E (2026E)").font = bold_font
     ws2.cell(row=V_PE, column=1).border = thin_border
-    pe_f = f"={pe_k}*{S_PNL}!G15*0.90"
+    pe_f = f"={pe_k}*{S_PNL}!G15"
     ws2.cell(row=V_PE, column=10, value=pe_f).number_format = '#,##0'
     ws2.cell(row=V_PE, column=10).border = thin_border
     ws2.cell(row=V_PE, column=10).alignment = Alignment(horizontal='center')
@@ -622,11 +622,44 @@ def build_excel():
         return j >= 7
 
     R3_NAME = "'03_Revenue_Model'"
-    # GP margin forecast cells: use Q1-actual + spread-trend, NOT spread/price formula
-    fc_gpm_vals = {7: gp_margin_fc[0], 8: gp_margin_fc[1], 9: gp_margin_fc[2]}
+    # ── Q1/2026 reference data (for GP margin formula below, rows 40+) ──
+    R_Q1_REV = 40; R_Q1_GP = 41; R_Q1_GPM = 42; R_Q1_SPR = 43
+    for rn in (R_Q1_REV, R_Q1_GP, R_Q1_GPM, R_Q1_SPR):
+        ws2.cell(row=rn, column=1).font = Font(name=FONT_NAME, bold=True, size=9, color="1F4E79")
+        ws2.cell(row=rn, column=1).border = thin_border
+    ws2.cell(row=R_Q1_REV, column=1, value="Q1/2026 Doanh thu (tỷ)")
+    ws2.cell(row=R_Q1_REV, column=7, value=q1_rev).number_format = '#,##0'
+    ws2.cell(row=R_Q1_REV, column=7).font = data_font
+    ws2.cell(row=R_Q1_GP, column=1, value="Q1/2026 LN gộp (tỷ)")
+    ws2.cell(row=R_Q1_GP, column=7, value=q1_gp).number_format = '#,##0'
+    ws2.cell(row=R_Q1_GP, column=7).font = data_font
+    ws2.cell(row=R_Q1_GPM, column=1, value="Q1/2026 Biên LNG (%)")
+    ws2.cell(row=R_Q1_GPM, column=7, value=f"=G{R_Q1_GP}/G{R_Q1_REV}*100").number_format = '0.00'
+    ws2.cell(row=R_Q1_GPM, column=7).font = data_font
+    ws2.cell(row=R_Q1_SPR, column=1, value="Q1/2026 Spread (USD/t)")
+    ws2.cell(row=R_Q1_SPR, column=7, value=f"={S_R3}!G6-1.6*G19-0.5*G20-G21").number_format = '#,##0'
+    ws2.cell(row=R_Q1_SPR, column=7).font = data_font
+
+    # ── Annual spread (USD/t) for all years ──
+    R_ANN_SPR = 45
+    ws2.cell(row=R_ANN_SPR, column=1, value="Spread hàng năm (USD/t)").font = Font(name=FONT_NAME, bold=True, size=9, color="1F4E79")
+    ws2.cell(row=R_ANN_SPR, column=1).border = thin_border
+    for j in range(2, 10):
+        cl = col_ltr(j)
+        c = ws2.cell(row=R_ANN_SPR, column=j)
+        c.value = f"={S_R3}!{cl}6-1.6*{cl}19-0.5*{cl}20-{cl}21"
+        c.number_format = '#,##0'
+        c.font = data_font
+        c.border = thin_border
+
+    # GP margin forecast cells: formula = Q1_GPM * (annual_spread / Q1_spread)
     for j in range(7, 10):
         gpm_cell = ws2.cell(row=6, column=j)
-        gpm_cell.value = fc_gpm_vals[j]
+        cl = col_ltr(j)
+        if j == 7:
+            gpm_cell.value = f"=G{R_Q1_GPM}*({cl}{R_ANN_SPR}/G{R_Q1_SPR})"
+        else:
+            gpm_cell.value = f"={col_ltr(j-1)}6*({cl}{R_ANN_SPR}/{col_ltr(j-1)}{R_ANN_SPR})"
         gpm_cell.number_format = '0.00'
         gpm_cell.font = Font(name=FONT_NAME, color="006600", size=10)
 
@@ -1196,9 +1229,9 @@ def build_excel():
     as_pe_cell = f"{S_ASSUMP}!J{V_PE}"
 
     labels_val = [
-        ("EV/EBITDA (2026E, HPG median)", 0.40, as_ev_cell, "40% — EV/EBITDA dùng median lịch sử HPG, chiết khấu 10%"),
+        ("EV/EBITDA (2026E, HPG median)", 0.40, as_ev_cell, "40% — EV/EBITDA dùng median lịch sử HPG"),
         ("P/B (2026E, HPG median)", 0.40, as_pb_cell, "40% — P/B là thước đo chu kỳ tin cậy"),
-        ("P/E (2026E, HPG median)", 0.20, as_pe_cell, "20% — P/E tham khảo bổ sung, chiết khấu 10%"),
+        ("P/E (2026E, HPG median)", 0.20, as_pe_cell, "20% — P/E tham khảo bổ sung"),
     ]
 
     for i, (name, weight, formula, note) in enumerate(labels_val, 2):
@@ -3293,9 +3326,9 @@ def build_pdf():
     eps_2026e_val = 2600
     bvps_2026e_val = 148000e9 / SHARES
 
-    price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.90)
+    price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     price_pb_val = PB_MULTIPLE * bvps_2026e_val
-    price_pe_val = PE_MULTIPLE * eps_2026e_val * 0.90
+    price_pe_val = PE_MULTIPLE * eps_2026e_val
     weighted_price_val = price_ev_ebitda_val * 0.4 + price_pb_val * 0.4 + price_pe_val * 0.2
     upside_val = (weighted_price_val / PRICE - 1) * 100
 
@@ -3962,14 +3995,14 @@ def build_pdf():
     pb_price = round(PB_MULTIPLE * bvps_2026e_val)
     pb_upper = round(PB_MULTIPLE * 1.2 * bvps_2026e_val)
     pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
-    ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.90)
+    ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     add_body(
-        f"- <b>EV/EBITDA ({EV_MULTIPLE}x, chiết khấu 10%)</b> → <b>{ev_price:,} VND</b><br/>"
+        f"- <b>EV/EBITDA ({EV_MULTIPLE}x, HPG median)</b> → <b>{ev_price:,} VND</b><br/>"
         f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
         f"P/B cao ({PB_MULTIPLE*1.2:.1f}x) → <b>{pb_upper:,} VND</b>  |  "
         f"P/B hấp dẫn ({PB_MULTIPLE*0.8:.1f}x) → <b>{pb_attr:,} VND</b><br/>"
-        f"- <b>P/E ({PE_MULTIPLE}x, HPG median, chiết khấu 10%)</b> → <b>{pe_price:,} VND</b>"
+        f"- <b>P/E ({PE_MULTIPLE}x, HPG median)</b> → <b>{pe_price:,} VND</b>"
     )
     add_body(
         f"<b>Giá mục tiêu (40% EV/EBITDA + 40% P/B + 20% P/E): {target_price:,} VND</b>  |  "
@@ -4111,9 +4144,9 @@ def save_json_summary():
     net_debt_26 = 80000 - 25000
     eps_26 = round(ni_fc[0] * 1e9 / (shares_fc[0] * 1e6))
     bvps_26 = round(equity_fc_val[0] * 1e9 / SHARES)
-    ev_price = max(0, (ebitda_26 * ev_mul - net_debt_26) * 1e9 / SHARES * 0.90)
+    ev_price = max(0, (ebitda_26 * ev_mul - net_debt_26) * 1e9 / SHARES)
     pb_price = round(pb_mul * bvps_26)
-    pe_price = round(pe_mul * eps_26 * 0.90)
+    pe_price = round(pe_mul * eps_26)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     upside = round((target_price / PRICE - 1) * 100, 1)
 
