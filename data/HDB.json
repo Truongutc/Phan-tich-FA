@@ -182,8 +182,8 @@
     ]
   },
   "sector": "Ngân hàng",
-  "currentPrice": 25400.0,
-  "marketCap": 127134018020000.0,
+  "currentPrice": 25800.0,
+  "marketCap": 129136128540000.0,
   "shares": 5005276300,
   "assumptions": {
     "loans_growth": [
@@ -292,21 +292,21 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1OygsLW_lRo3bysak3StdmFuPy2ivPgis/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1jQwjXrEB_M9e8qwzQRRtgnc1nUW5yYp1/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1zIkbEIqPfqMg17qxoY458m2LZkGjQ5EC/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1l9ETlsuWWBCjssZcE5baIR_OGR_ckiPW/view?usp=drivesdk",
   "pe_hist": [
     6.1230727704,
     7.977782242,
     9.0218325072,
     7.526968614,
-    7.1649854057
+    7.2778198216
   ],
   "pb_hist": [
     1.451727229,
     1.9053619507,
     1.9911801653,
     1.7452534634,
-    1.582545987
+    1.607467971
   ],
   "pe_quarters": [
     13.6324591833,
@@ -340,7 +340,7 @@
     7.977782242,
     9.0218325072,
     7.526968614,
-    7.1649854057
+    7.2778198216
   ],
   "pb_quarters": [
     2.2035968125,
@@ -374,7 +374,7 @@
     1.9053619507,
     1.9911801653,
     1.7452534634,
-    1.582545987
+    1.607467971
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -1070,32 +1070,32 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 35825,
-    "upside": 41.05,
-    "bear": 30451,
-    "base": 35825,
-    "bull": 41199,
+    "weightedTarget": 32526,
+    "upside": 26.07,
+    "bear": 27647,
+    "base": 32526,
+    "bull": 37405,
     "pbAttractive": 1.35,
     "pbAttractivePrice": 26629,
     "pbTarget": 1.81,
     "pbTargetPrice": 35644,
-    "COE": 12.66,
-    "peMedian": 7.31,
+    "COE": 14.2,
+    "peMedian": 7.33,
     "pbMedian": 1.55,
     "bvpsBase": 15641,
-    "riValue": 41051,
+    "riValue": 34453,
     "pbValue": 30600,
-    "pvRi": 5657,
-    "pvCv": 19753,
+    "pvRi": 4807,
+    "pvCv": 14006,
     "epsFc": [
       4076,
       4964,
       5774
     ],
     "riResults": [
-      2096,
-      2467,
-      2649
+      1855,
+      2163,
+      2269
     ],
     "recommend": "MUA"
   },
@@ -1217,5 +1217,6 @@
       0.141,
       0.151
     ]
-  }
+  },
+  "lastUpdated": "2026-06-30 11:22"
 }

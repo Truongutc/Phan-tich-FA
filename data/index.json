@@ -40,14 +40,6 @@
     "pdfUrl": "https://drive.google.com/file/d/1zS9AX8TV2YAHZ-qli_9B460HmHmIPf2_/view?usp=drivesdk"
   },
   {
-    "ticker": "HDB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-29 16:10",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1OygsLW_lRo3bysak3StdmFuPy2ivPgis/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1jQwjXrEB_M9e8qwzQRRtgnc1nUW5yYp1/view?usp=drivesdk"
-  },
-  {
     "ticker": "MSB",
     "companyName": "Ngân hàng Thương mại Cổ phần Hàng Hải Việt Nam",
     "sector": "Ngân hàng",
@@ -86,5 +78,13 @@
     "lastUpdated": "2026-06-30 16:03",
     "excelUrl": null,
     "pdfUrl": null
+  },
+  {
+    "ticker": "HDB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-06-30 11:22",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1zIkbEIqPfqMg17qxoY458m2LZkGjQ5EC/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1l9ETlsuWWBCjssZcE5baIR_OGR_ckiPW/view?usp=drivesdk"
   }
 ]
