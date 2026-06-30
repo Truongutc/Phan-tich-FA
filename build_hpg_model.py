@@ -554,7 +554,7 @@ def build_excel():
     V_EV = r; V_PB = r+1; V_PE = r+2
     ws2.cell(row=V_EV, column=1, value="EV/EBITDA (2026E)").font = bold_font
     ws2.cell(row=V_EV, column=1).border = thin_border
-    ev_f = f"=(({S_PNL}!G16*{ev_k}-({S_ASSUMP}!G11-{S_ASSUMP}!G12))*1000000000)/({S_ASSUMP}!G3*1000000)*0.95"
+    ev_f = f"=(({S_PNL}!G16*{ev_k}-({S_ASSUMP}!G11-{S_ASSUMP}!G12))*1000000000)/({S_ASSUMP}!G3*1000000)*0.90"
     ws2.cell(row=V_EV, column=10, value=ev_f).number_format = '#,##0'
     ws2.cell(row=V_EV, column=10).border = thin_border
     ws2.cell(row=V_EV, column=10).alignment = Alignment(horizontal='center')
@@ -570,7 +570,7 @@ def build_excel():
     ws2.cell(row=V_PB, column=11).border = thin_border
     ws2.cell(row=V_PE, column=1, value="P/E (2026E)").font = bold_font
     ws2.cell(row=V_PE, column=1).border = thin_border
-    pe_f = f"={pe_k}*{S_PNL}!G15"
+    pe_f = f"={pe_k}*{S_PNL}!G15*0.90"
     ws2.cell(row=V_PE, column=10, value=pe_f).number_format = '#,##0'
     ws2.cell(row=V_PE, column=10).border = thin_border
     ws2.cell(row=V_PE, column=10).alignment = Alignment(horizontal='center')
@@ -1163,9 +1163,9 @@ def build_excel():
     as_pe_cell = f"{S_ASSUMP}!J{V_PE}"
 
     labels_val = [
-        ("EV/EBITDA (2026E, HPG median)", 0.40, as_ev_cell, "40% — EV/EBITDA dùng median lịch sử HPG"),
+        ("EV/EBITDA (2026E, HPG median)", 0.40, as_ev_cell, "40% — EV/EBITDA dùng median lịch sử HPG, chiết khấu 10%"),
         ("P/B (2026E, HPG median)", 0.40, as_pb_cell, "40% — P/B là thước đo chu kỳ tin cậy"),
-        ("P/E (2026E, HPG median)", 0.20, as_pe_cell, "20% — P/E tham khảo bổ sung"),
+        ("P/E (2026E, HPG median)", 0.20, as_pe_cell, "20% — P/E tham khảo bổ sung, chiết khấu 10%"),
     ]
 
     for i, (name, weight, formula, note) in enumerate(labels_val, 2):
@@ -3256,9 +3256,9 @@ def build_pdf():
     eps_2026e_val = 2600
     bvps_2026e_val = 148000e9 / SHARES
 
-    price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.95)
+    price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.90)
     price_pb_val = PB_MULTIPLE * bvps_2026e_val
-    price_pe_val = PE_MULTIPLE * eps_2026e_val
+    price_pe_val = PE_MULTIPLE * eps_2026e_val * 0.90
     weighted_price_val = price_ev_ebitda_val * 0.4 + price_pb_val * 0.4 + price_pe_val * 0.2
     upside_val = (weighted_price_val / PRICE - 1) * 100
 
@@ -3925,14 +3925,14 @@ def build_pdf():
     pb_price = round(PB_MULTIPLE * bvps_2026e_val)
     pb_upper = round(PB_MULTIPLE * 1.2 * bvps_2026e_val)
     pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
-    ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.95)
+    ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.90)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     add_body(
-        f"- <b>EV/EBITDA ({EV_MULTIPLE}x, chiết khấu 5%)</b> → <b>{ev_price:,} VND</b><br/>"
+        f"- <b>EV/EBITDA ({EV_MULTIPLE}x, chiết khấu 10%)</b> → <b>{ev_price:,} VND</b><br/>"
         f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
         f"P/B cao ({PB_MULTIPLE*1.2:.1f}x) → <b>{pb_upper:,} VND</b>  |  "
         f"P/B hấp dẫn ({PB_MULTIPLE*0.8:.1f}x) → <b>{pb_attr:,} VND</b><br/>"
-        f"- <b>P/E ({PE_MULTIPLE}x, HPG median)</b> → <b>{pe_price:,} VND</b>"
+        f"- <b>P/E ({PE_MULTIPLE}x, HPG median, chiết khấu 10%)</b> → <b>{pe_price:,} VND</b>"
     )
     add_body(
         f"<b>Giá mục tiêu (40% EV/EBITDA + 40% P/B + 20% P/E): {target_price:,} VND</b>  |  "
@@ -4045,6 +4045,137 @@ def build_pdf():
     return True
 
 
+# ── JSON EXPORT (for web dashboard) ───────────────────────────────────────
+
+def save_json_summary():
+    import json
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+    os.makedirs(data_dir, exist_ok=True)
+
+    eps_fc = [round(ni_fc[i] * 1e9 / (shares_fc[i] * 1e6)) for i in range(3)]
+    equity_fc_val = [148000, 170000, 195000]
+    all_years = years_hist + years_fc
+    all_rev = revenue_hist + revenue_fc
+    all_npat = ni_hist + ni_fc
+    all_eps = eps_hist + eps_fc
+    all_equity = equity_hist + equity_fc_val
+
+    # Ratio calculations
+    all_gpm = [round(g/100, 4) for g in gp_margin_hist] + [round(g/100, 4) for g in gp_margin_fc]
+    all_roe = [round(ni_hist[i]/equity_hist[i], 4) for i in range(5)] + [round(ni_fc[i]/equity_fc_val[i], 4) for i in range(3)]
+    debt_fc = [78000, 75000, 72000]
+    all_de = [round(total_debt_hist[i]/equity_hist[i], 4) for i in range(5)] + [round(debt_fc[i]/equity_fc_val[i], 4) for i in range(3)]
+    all_ebit = ebit_hist + [round(revenue_fc[i] * (14.3 if i==0 else 15.8 if i==1 else 16.7)/100) for i in range(3)]
+    all_ebit_margin = [round(all_ebit[i]/all_rev[i], 4) for i in range(8)]
+
+    # Target price from PDF valuation
+    ev_mul = 9.0; pb_mul = 1.6; pe_mul = 12.0
+    ebitda_26 = revenue_fc[0] * 0.143 + da_fc[0]
+    net_debt_26 = 80000 - 25000
+    eps_26 = round(ni_fc[0] * 1e9 / (shares_fc[0] * 1e6))
+    bvps_26 = round(equity_fc_val[0] * 1e9 / SHARES)
+    ev_price = max(0, (ebitda_26 * ev_mul - net_debt_26) * 1e9 / SHARES * 0.90)
+    pb_price = round(pb_mul * bvps_26)
+    pe_price = round(pe_mul * eps_26 * 0.90)
+    target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
+    upside = round((target_price / PRICE - 1) * 100, 1)
+
+    # PE/PB history arrays
+    pe_arr = []
+    pb_arr = []
+    q_labels = []
+    for r in HPG_RATIOS:
+        q = r.get("quarter")
+        if q is None or q == 5: continue
+        pe0 = r.get("pe"); pb0 = r.get("pb")
+        pe_arr.append(round(pe0, 1) if pe0 and 0 < pe0 < 50 else None)
+        pb_arr.append(round(pb0, 2) if pb0 and pb0 > 0 else None)
+        q_labels.append(f"{int(r['year'])}-Q{int(q)}")
+
+    # Valuation scenarios
+    bear_price = round(pb_mul * 0.8 * bvps_26)
+    base_price = target_price
+    bull_price = round(pb_mul * 1.2 * bvps_26)
+
+    summary = {
+        "ticker": TICKER,
+        "companyName": COMPANY,
+        "sector": "Basic Resources",
+        "currentPrice": PRICE,
+        "marketCap": MARKET_CAP,
+        "shares": SHARES,
+        "gdrivePdfUrl": None,
+        "gdriveExcelUrl": None,
+        "lastUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "data": {
+            "years": all_years,
+            "revenue": [round(v, 1) for v in all_rev],
+            "npat": [round(v, 1) for v in all_npat],
+            "eps": [round(v) for v in all_eps],
+            "equity": [round(v, 1) for v in all_equity],
+        },
+        "ratios": {
+            "gross_margin": all_gpm,
+            "roe": all_roe,
+            "debt_to_equity": all_de,
+            "ebitMargin": all_ebit_margin,
+            "nim": [],
+            "npl": [],
+            "ldr": [],
+            "casa": [],
+        },
+        "valuation": {
+            "weightedTarget": target_price,
+            "upside": upside,
+            "recommend": "MUA",
+            "bear": bear_price,
+            "base": base_price,
+            "bull": bull_price,
+            "COE": 12.0,
+        },
+        "thesis": [
+            "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
+            "Spread thép mở rộng nhờ (i) giá quặng/than giảm, (ii) DQ2 tiết kiệm 15-20% chi phí. GP margin dự phóng từ 15.7% (2025) lên 17.5%+ (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
+            "Định giá hấp dẫn: P/B 1.56x (dưới median 1.61x), EV/EBITDA 2026E ~7.0x (dưới median 8.95x). Giá mục tiêu 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%."
+        ],
+        "risks": [
+            "Giá HRC giảm do suy thoái TQ hoặc dư cung toàn cầu (640 triệu tấn) kéo spread thu hẹp, GP margin về 12-14%.",
+            "Chi phí quặng sắt/than cốc tăng làm giảm spread. Mỗi 10 USD tăng quặng = ~16 USD/tấn giảm spread.",
+            "Tỷ giá USD/VNĐ biến động mạnh — dư nợ vay USD ~$3 tỷ, ảnh hưởng đến chi phí tài chính."
+        ],
+        "moats": {
+            "Cost Advantage": {"score": 4, "desc": "Quy mô 14,5 triệu tấn/năm, DQ2 công nghệ BOF Nhật Bản, tiết kiệm 15-20% chi phí so với đối thủ."},
+            "Efficient Scale": {"score": 4, "desc": "Dẫn đầu thị phần HRC (~70%) và thép XD (~40%). DQ2 tăng tổng công suất lên ~14,5 triệu tấn."},
+            "Intangible Assets": {"score": 3, "desc": "Thương hiệu Hòa Phát uy tín trong ngành thép VN, quan hệ đại lý lâu năm."},
+            "Switching Cost": {"score": 2, "desc": "Thép là hàng hóa tiêu chuẩn, khách hàng có thể chuyển đổi nhà cung cấp nhưng chi phí logistics cao."},
+            "Network Effect": {"score": 1, "desc": "Hiệu ứng mạng lưới hạn chế trong ngành thép."},
+        },
+        "pestle": {
+            "Political": "Thuế CBPG HRC 27.83% bảo vệ thị trường nội địa. Ổn định chính trị VN tạo môi trường đầu tư thuận lợi.",
+            "Economic": "GDP VN 2026E ~6.5%. Đầu tư công kế hoạch trung hạn 8.5 triệu tỷ (2026-2030). Lãi suất giảm hỗ trợ BĐS.",
+            "Social": "Đô thị hoá ~38%, nhu cầu nhà ở và hạ tầng tăng mạnh, thúc đẩy tiêu thụ thép.",
+            "Technological": "DQ2 công nghệ BOF Nhật Bản, tiêu hao năng lượng thấp hơn DQ1 15%. HPG đầu tư tự động hóa.",
+            "Legal": "CBAM EU buộc DN thép VN chuyển đổi xanh. NĐ 153 siết chặt trái phiếu doanh nghiệp.",
+            "Environmental": "Áp lực giảm phát thải carbon. HPG đầu tư xử lý nước thải, lọc bụi đạt chuẩn quốc tế.",
+        },
+        "comments": {
+            "overall": "HPG là doanh nghiệp thép tích hợp dọc hàng đầu VN với lợi thế quy mô và công nghệ vượt trội. Chu kỳ tăng trưởng mới đang bắt đầu nhờ DQ2 full công suất và bảo hộ thương mại HRC.",
+            "financial": "Doanh thu và LNST phục hồi mạnh từ đáy 2023. Biên LNG cải thiện nhờ spread mở rộng. CFO/LNST >1.0 phản ánh chất lượng lợi nhuận tốt. D/E ~0.65 là an toàn.",
+            "valuation": "P/B 1.56x dưới median lịch sử 1.61x. EV/EBITDA 2026E ~7.0x thấp hơn median 8.95x. Kết hợp 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%.",
+        },
+        "pe_hist": [round(v, 1) for v in [14.2, 25.5, 13.8, 13.9, 9.5]] if False else [],
+        "pb_hist": [round(v, 2) for v in [1.67, 1.69, 1.45, 1.25, 2.14]] if False else [],
+        "pe_quarters": pe_arr,
+        "pb_quarters": pb_arr,
+        "quarter_labels": q_labels,
+    }
+
+    json_path = os.path.join(data_dir, f"{TICKER}.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(f"[OK] JSON summary saved: {json_path}")
+
+
 # ── MAIN ───────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -4056,6 +4187,7 @@ if __name__ == "__main__":
     build_excel()
     make_charts()
     build_pdf()
+    save_json_summary()
 
     print(f"\n  COMPLETE")
     print(f"  Excel: {EXCEL_FILE}")
