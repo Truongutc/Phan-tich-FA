@@ -30,13 +30,13 @@ Với:
 ## 2. Quy tắc số phiên giao dịch
 
 - **Dưới 30 phiên**: Không thực hiện tính toán Beta (sử dụng hệ số fallback hoặc Vietcap details API).
-- **Từ 30 đến dưới 100 phiên**: Tính Beta dựa trên toàn bộ dữ liệu lịch sử từ khi niêm yết đến phiên gần nhất.
-- **Từ 100 phiên trở lên**: Chỉ tính toán dựa trên **100 phiên giao dịch gần nhất** để phản ánh chính xác rủi ro hệ thống hiện tại.
+- **Từ 30 đến dưới 500 phiên**: Tính Beta dựa trên toàn bộ dữ liệu lịch sử từ khi niêm yết đến phiên gần nhất.
+- **Từ 500 phiên trở lên**: Chỉ tính toán dựa trên **500 phiên giao dịch gần nhất** (tương đương khoảng 2 năm giao dịch) để phản ánh chính xác rủi ro hệ thống hiện tại và ổn định trong trung hạn.
 
 ## 3. Tích hợp trong Excel Model
 
 Hệ thống sẽ tự động tạo một trang tính riêng tên là `00_Beta` nằm trước trang tính `00_COE`.
-- **Dữ liệu nguồn**: 101 dòng giá đóng cửa điều chỉnh gần nhất của Cổ phiếu và VN-Index xếp theo thứ tự thời gian tăng dần.
+- **Dữ liệu nguồn**: Tối đa 501 dòng giá đóng cửa điều chỉnh gần nhất của Cổ phiếu và VN-Index xếp theo thứ tự thời gian tăng dần.
 - **Công thức tính tỷ suất sinh lời (Cột C và E)**: `=(B5-B4)/B4`
-- **Công thức tính Beta (Ô C1)**: `=COVAR(C5:C104, E5:E104)/VAR(E5:E104)`
+- **Công thức tính Beta (Ô C1)**: `=COVAR(C6:C{last_row}, E6:E{last_row})/VAR(E6:E{last_row})`
 - **Liên kết sang COE**: Trong trang tính `00_COE`, ô hệ số Beta (`B5`) sẽ được liên kết trực tiếp bằng công thức: `='00_Beta'!C1`.

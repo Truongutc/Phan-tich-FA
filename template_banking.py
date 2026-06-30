@@ -175,11 +175,12 @@ def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=720, timeout=20, f
             pass
         return fallback, "fallback", latest_price, aligned_data
 
-    # Slice data based on rules
-    if num_sessions > 100:
-        # Take the last 101 closing prices to compute exactly 100 returns
-        sliced_data = aligned_data[-101:]
-        source_str = f"Tự tính toán (100 phiên gần nhất)"
+    # Slice data based on rules (using 2 years of trading sessions if available: ~500 sessions)
+    max_sessions = 500
+    if num_sessions > max_sessions:
+        # Take the last 501 closing prices to compute exactly 500 returns (approx 2 years)
+        sliced_data = aligned_data[-(max_sessions + 1):]
+        source_str = f"Tự tính toán (500 phiên gần nhất, ~2 năm)"
     else:
         sliced_data = aligned_data
         source_str = f"Tự tính toán ({num_sessions - 1} phiên lịch sử)"
