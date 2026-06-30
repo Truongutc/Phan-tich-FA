@@ -729,6 +729,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_cov["B2"].font = Font(bold=True, size=16, name="Calibri")
     ws_cov["B3"] = company_name
     ws_cov["B3"].font = Font(size=12, italic=True, name="Calibri")
+    ws_cov["B4"] = f"Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws_cov["B4"].font = Font(size=10, italic=True, name="Calibri", color="555555")
     ws_cov["B5"] = "Giá hiện tại (VND):"
     ws_cov["C5"] = "='02_Assumptions'!B2"
     ws_cov["C5"].font = Font(size=11, name="Calibri")
@@ -1987,7 +1989,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     # ------------------ PAGE 1: COVER & INVESTMENT SUMMARY ------------------
     story.append(Paragraph(f"BÁO CÁO PHÂN TÍCH CỔ PHIẾU NGÂN HÀNG: {ticker}", title_style))
-    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y')}", subtitle_style))
+    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}", subtitle_style))
     story.append(Spacer(1, 4))
     
     # Stock Info & Valuation Snapshot Table

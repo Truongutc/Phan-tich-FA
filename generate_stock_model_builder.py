@@ -325,7 +325,7 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
 
 4. **Excel Model** (openpyxl):
    - Create workbook with properly named sheets per sector rules
-   - Cover sheet with key metrics and thesis
+   - Cover sheet with key metrics, thesis, and the analysis date and time in the format "Ngày lập: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
    - Assumptions sheet (all parameters in one place)
    - Revenue/Income Model sheet with driver-based calculations
    - P&L sheet (5Y historical + 2-3Y forecast)
@@ -342,7 +342,7 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
    - Chart 1: Bar chart of Revenue & NPAT by year (historical + forecast)
    - Chart 2: Line chart of margin trends (GP%, NPAT%)
    - Chart 3: Valuation sensitivity heatmap or bar chart
-   - PDF sections: Cover → Investment Summary → Financial Analysis → Valuation → Risks → Conclusion
+   - PDF sections: Cover (must display the analysis date and time as "Ngày lập: %d/%m/%Y %H:%M") → Investment Summary → Financial Analysis → Valuation → Risks → Conclusion
    - Investment Summary must include: Rating (BUY/HOLD/SELL), Target Price, Upside %, 3 bull points, 3 risk points, snapshot table
    - Write all analysis in Vietnamese, keep financial terms in English (EPS, P/E, NIM, EBITDA, etc.)
    - Save to: `os.path.join(OUT_DIR, f"{{TICKER}}_Phan_Tich_{{MONTH}}.pdf")`

@@ -173,23 +173,27 @@ def run_analysis(ticker: str):
     pdf_url = None
 
     print(f"\n[Step 4] Uploading to Google Drive...")
+    # Load ticker_json early to find the sector name
+    ticker_json = load_ticker_json(ticker)
+    upload_sector = "Ngân hàng" if is_bank else (ticker_json.get("sector") if (ticker_json and ticker_json.get("sector")) else "Unknown")
+    
     if excel_path and os.path.exists(excel_path):
-        _, excel_url = google_drive_uploader.upload_file(excel_path)
+        _, excel_url = google_drive_uploader.upload_file(excel_path, sector=upload_sector, ticker=ticker)
     if pdf_path and os.path.exists(pdf_path):
-        _, pdf_url = google_drive_uploader.upload_file(pdf_path)
+        _, pdf_url = google_drive_uploader.upload_file(pdf_path, sector=upload_sector, ticker=ticker)
 
     # ── STEP 5: Read or build JSON summary ────────────────────────────────────
     print(f"\n[Step 5] Updating data registry...")
-    ticker_json = load_ticker_json(ticker)
 
     # Patch the upload URLs into the JSON file
     if ticker_json:
         ticker_json["gdriveExcelUrl"] = excel_url
         ticker_json["gdrivePdfUrl"] = pdf_url
+        ticker_json["lastUpdated"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         json_path = os.path.join(PROJECT_ROOT, "data", f"{ticker}.json")
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(ticker_json, f, ensure_ascii=False, indent=2)
-        print(f"[OK] Patched GDrive URLs into data/{ticker}.json")
+        print(f"[OK] Patched GDrive URLs and lastUpdated into data/{ticker}.json")
     else:
         # Build a basic JSON if the builder didn't create one
         print(f"[WARN] data/{ticker}.json not found, creating minimal entry...")
@@ -202,6 +206,7 @@ def run_analysis(ticker: str):
             "shares": 0,
             "gdriveExcelUrl": excel_url,
             "gdrivePdfUrl": pdf_url,
+            "lastUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "data": {"years": [], "revenue": [], "npat": [], "eps": [], "equity": []}
         }
         os.makedirs(os.path.join(PROJECT_ROOT, "data"), exist_ok=True)

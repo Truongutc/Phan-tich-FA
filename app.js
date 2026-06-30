@@ -478,11 +478,6 @@ function _makeStockCard(s, cfg) {
     card.style.setProperty('--sector-color', cfg.color);
     card.innerHTML = `
         <div class="stock-card-ticker" style="color:${cfg.color}">${s.ticker}</div>
-        <div class="stock-card-name">${s.companyName || ''}</div>
-        <div class="stock-card-meta">
-            <span class="stock-card-price">${s.currentPrice ? formatNumber(s.currentPrice) + ' VND' : ''}</span>
-            <span class="stock-card-arrow">→</span>
-        </div>
     `;
     card.onclick = () => loadStockDashboard(s.ticker);
     return card;
@@ -533,6 +528,27 @@ async function loadStockDashboard(ticker) {
     document.getElementById('ticker-badge').textContent = ticker;
     document.getElementById('company-name').textContent = companyName;
     document.getElementById('company-sector').textContent = `${cfg.icon} ${cfg.label} · ${sector}`;
+
+    // ── Report Date ─────────────────────────────────────
+    const reportDateEl = document.getElementById('report-date');
+    if (reportDateEl) {
+        if (localJson?.lastUpdated) {
+            const parts = localJson.lastUpdated.split(' ');
+            if (parts.length === 2) {
+                const dateParts = parts[0].split('-');
+                if (dateParts.length === 3) {
+                    reportDateEl.innerHTML = `🕒 Thời gian lập báo cáo: <b>${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${parts[1]}</b>`;
+                } else {
+                    reportDateEl.innerHTML = `🕒 Thời gian lập báo cáo: <b>${localJson.lastUpdated}</b>`;
+                }
+            } else {
+                reportDateEl.innerHTML = `🕒 Thời gian lập báo cáo: <b>${localJson.lastUpdated}</b>`;
+            }
+            reportDateEl.style.display = 'block';
+        } else {
+            reportDateEl.style.display = 'none';
+        }
+    }
 
     // ── Live badge ─────────────────────────────────────
     const liveBadge = `<span class="live-badge"><span class="live-dot"></span>Live · Vietcap IQ</span>`;

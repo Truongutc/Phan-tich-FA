@@ -288,6 +288,8 @@ def run_generic_analysis(ticker, raw_data):
     ws["B2"].font = Font(name="Segoe UI", size=16, bold=True, color="1A365D")
     ws["B3"] = company_name
     ws["B3"].font = Font(name="Segoe UI", size=11, italic=True, color="4A5568")
+    ws["B4"] = f"Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws["B4"].font = Font(name="Segoe UI", size=10, italic=True, color="555555")
     
     ws["B5"] = "Giá hiện tại:"
     ws["C5"] = current_price
@@ -437,7 +439,7 @@ def run_generic_analysis(ticker, raw_data):
     
     story = []
     story.append(Paragraph(f"BÁO CÁO PHÂN TÍCH DOANH NGHIỆP: {ticker}", title_style))
-    story.append(Paragraph(company_name, body_style))
+    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}", body_style))
     story.append(Spacer(1, 10))
     
     summary_data = [

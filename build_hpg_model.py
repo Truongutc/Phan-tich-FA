@@ -317,7 +317,7 @@ def build_excel():
         ("Khuyến nghị", "MUA", None),
         ("Giá mục tiêu Base", "='07_Valuation'!C10", '#,##0'),
         ("Upside", "='07_Valuation'!C13", '0.0%'),
-        ("Ngày phân tích", "=TEXT(TODAY(),\"DD/MM/YYYY\")", None),
+        ("Ngày phân tích", f"{datetime.now().strftime('%d/%m/%Y %H:%M')}", None),
     ]
     for i, (k, v, nf) in enumerate(info, 2):
         ws.cell(row=i, column=1, value=k).font = bold_font
@@ -2880,7 +2880,7 @@ def build_pdf():
         ParagraphStyle('CoverSub2', fontName=FONT, fontSize=14, alignment=TA_CENTER,
                        textColor=HexColor('#1F4E79'))))
     elements.append(Spacer(1, 20*mm))
-    elements.append(Paragraph(f"Ngày phân tích: 24/06/2026 | Chuyên viên phân tích: AI FA Framework v2.0",
+    elements.append(Paragraph(f"Ngày phân tích: {datetime.now().strftime('%d/%m/%Y %H:%M')} | Chuyên viên phân tích: AI FA Framework v2.0",
         styles['SmallText']))
     elements.append(PageBreak())
 

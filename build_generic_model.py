@@ -390,6 +390,8 @@ def build_generic(ticker):
     ws_cover["A2"].font = Font(name="Calibri", size=18, bold=True)
     ws_cover["A3"] = company_name
     ws_cover["A3"].font = Font(name="Calibri", size=12, italic=True)
+    ws_cover["A4"] = f"Ngày lập: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws_cover["A4"].font = Font(name="Calibri", size=10, italic=True, color="555555")
     
     ws_cover["A5"] = "Giá hiện tại:"
     ws_cover["B5"] = current_price
@@ -488,7 +490,7 @@ def build_generic(ticker):
     
     # Title Page / Header
     story.append(Paragraph(f"BÁO CÁO PHÂN TÍCH DOANH NGHIỆP: {ticker}", title_style))
-    story.append(Paragraph(company_name, ParagraphStyle('Subtitle', parent=body_style, fontName='Helvetica-Oblique', fontSize=12, textColor=HexColor("#4A5568"))))
+    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {datetime.now().strftime('%d/%m/%Y %H:%M')}", ParagraphStyle('Subtitle', parent=body_style, fontName='Helvetica-Oblique', fontSize=11, textColor=HexColor("#4A5568"))))
     story.append(Spacer(1, 15))
     
     # Summary Table
@@ -592,8 +594,8 @@ def build_generic(ticker):
     
     try:
         print("[GDrive] Starting upload to Google Drive...")
-        _, gdrive_excel_url = google_drive_uploader.upload_file(excel_path)
-        _, gdrive_pdf_url = google_drive_uploader.upload_file(pdf_path)
+        _, gdrive_excel_url = google_drive_uploader.upload_file(excel_path, sector=sector, ticker=ticker)
+        _, gdrive_pdf_url = google_drive_uploader.upload_file(pdf_path, sector=sector, ticker=ticker)
     except Exception as e:
         print(f"[GDrive] Upload failed: {e}")
         

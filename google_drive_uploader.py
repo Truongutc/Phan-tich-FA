@@ -45,15 +45,64 @@ def get_drive_service():
     return None
 
 
-def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
+def get_or_create_folder(service, folder_name, parent_id):
+    """Checks if a folder with the given name exists under parent_id, otherwise creates it."""
+    if not service:
+        return parent_id
+    try:
+        query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps-script.folder' and '{parent_id}' in parents and trashed = false"
+        results = service.files().list(q=query, fields="files(id)").execute()
+        files = results.get("files", [])
+        if files:
+            return files[0]["id"]
+        else:
+            folder_metadata = {
+                'name': folder_name,
+                'mimeType': 'application/vnd.google-apps-script.folder',
+                'parents': [parent_id]
+            }
+            folder = service.files().create(body=folder_metadata, fields='id').execute()
+            return folder.get('id')
+    except Exception as e:
+        print(f"[GDrive] Error getting or creating folder '{folder_name}': {e}")
+        return parent_id
+
+
+def upload_file(file_path, folder_id=None, sector=None, ticker=None):
     """
     Uploads a file to a specific Google Drive folder.
+    Creates subfolders based on sector and ticker if they are supplied.
     Returns: (file_id, web_view_link) or (None, None)
     """
     if not os.path.exists(file_path):
         print(f"[GDrive] File not found: {file_path}")
         return None, None
-        
+
+    BANK_FOLDER_ID = "1WZnuR6MH2914b-efJj1_4XQel2ZaGRKw"
+    
+    is_bank = False
+    if sector:
+        sec_lower = sector.lower()
+        if any(k in sec_lower for k in ["bank", "ngân hàng", "tài chính", "financial"]):
+            is_bank = True
+            
+    base_folder_id = folder_id if folder_id is not None else (BANK_FOLDER_ID if is_bank else DEFAULT_FOLDER_ID)
+    
+    service = get_drive_service()
+    resolved_folder_id = base_folder_id
+    
+    if service:
+        if is_bank:
+            if ticker:
+                resolved_folder_id = get_or_create_folder(service, ticker.upper(), base_folder_id)
+        else:
+            if sector:
+                resolved_folder_id = get_or_create_folder(service, sector, base_folder_id)
+            if ticker:
+                resolved_folder_id = get_or_create_folder(service, ticker.upper(), resolved_folder_id)
+    else:
+        print(f"[GDrive] No service account available to resolve subfolders. Using base folder ID: {base_folder_id}")
+
     # ── Try Web App Upload if URL is configured ──
     webapp_url = os.environ.get("GDRIVE_WEBAPP_URL")
     if webapp_url:
@@ -61,8 +110,8 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
         import requests
         
         file_name = os.path.basename(file_path)
-        ticker = os.path.basename(os.path.dirname(file_path)).upper()
-        print(f"[GDrive] Uploading via Google Apps Script Web App: {file_name} (Ticker: {ticker})...")
+        actual_ticker = ticker.upper() if ticker else os.path.basename(os.path.dirname(file_path)).upper()
+        print(f"[GDrive] Uploading via Google Apps Script Web App: {file_name} (Ticker: {actual_ticker})...")
         
         mime_type = "application/octet-stream"
         if file_name.endswith(".pdf"):
@@ -79,8 +128,8 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
             
             payload = {
                 "token": "FA_PIPELINE_SECRET_2026",
-                "folderId": folder_id,
-                "ticker": ticker,
+                "folderId": resolved_folder_id,
+                "ticker": actual_ticker,
                 "fileName": file_name,
                 "fileContent": encoded_content,
                 "mimeType": mime_type
@@ -99,7 +148,6 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
         except Exception as err:
             print(f"[GDrive] Error during Web App upload: {err}. Trying Service Account fallback...")
             
-    service = get_drive_service()
     if not service:
         return None, None
         
@@ -116,16 +164,16 @@ def upload_file(file_path, folder_id=DEFAULT_FOLDER_ID):
         
     file_metadata = {
         "name": file_name,
-        "parents": [folder_id]
+        "parents": [resolved_folder_id]
     }
     
     media = MediaFileUpload(file_path, mimetype=mime_type, resumable=True)
     
     try:
-        print(f"[GDrive] Uploading {file_name} to folder {folder_id}...")
+        print(f"[GDrive] Uploading {file_name} to folder {resolved_folder_id}...")
         
         # Check if file with same name already exists in the destination folder to avoid duplicates (optional but neat)
-        query = f"name = '{file_name}' and '{folder_id}' in parents and trashed = false"
+        query = f"name = '{file_name}' and '{resolved_folder_id}' in parents and trashed = false"
         results = service.files().list(q=query, fields="files(id)").execute()
         files = results.get("files", [])
         
