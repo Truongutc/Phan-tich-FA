@@ -37,28 +37,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Skip Regenerate if Builder is Custom (HPG has hardcoded logic)
+      - name: Check Build Status
+        id: check_build
         run: |
           TICKER="${{ github.event.inputs.ticker }}"
           BUILDER="build_${TICKER,,}_model.py"
-          # KEEP custom builders (HPG) — skip regeneration regardless of force_regenerate
           if [ -f "$BUILDER" ]; then
             LINES=$(wc -l < "$BUILDER")
+            echo "Found $BUILDER with $LINES lines"
             if [ "$LINES" -gt 500 ]; then
-              echo "Builder has $LINES lines — too complex to regenerate. Keeping existing builder."
-              echo "FORCE_REGENERATE_SKIP=true" >> "$GITHUB_ENV"
+              echo "CUSTOM_BUILDER=true" >> "$GITHUB_ENV"
+              echo "Custom builder detected — skipping Gemini, running directly."
+            else
+              echo "GENERATED_BUILDER=true" >> "$GITHUB_ENV"
             fi
           fi
 
-      - name: Force Regenerate Builder (if requested)
-        if: ${{ github.event.inputs.force_regenerate == 'true' && env.FORCE_REGENERATE_SKIP != 'true' }}
+      - name: Force Regenerate Generated Builder (only if <500 lines)
+        if: ${{ env.GENERATED_BUILDER == 'true' && github.event.inputs.force_regenerate == 'true' }}
         run: |
           TICKER="${{ github.event.inputs.ticker }}"
           BUILDER="build_${TICKER,,}_model.py"
-          if [ -f "$BUILDER" ]; then
-            echo "Deleting existing $BUILDER for regeneration..."
-            rm "$BUILDER"
-          fi
+          echo "Deleting $BUILDER for regeneration..."
+          rm -f "$BUILDER"
 
       - name: Run Financial Analysis
         env:
