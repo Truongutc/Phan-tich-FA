@@ -90,6 +90,18 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
   - Handshake: GET `https://trading.vietcap.com.vn/iq/company?ticker={ticker}` + User-Agent browser
   - Trả về TTM quarterly data: pe, pb, evToEbitda, marketCap, ebitda, roe, roa, roic
 
+**API CafeF — Số CP lưu hành (bsa80 = Vốn góp)**:
+  - `/api/iq-insight-service/v1/company/{ticker}/balance-sheet`
+  - Số CP = Vốn góp (bsa80) / 10,000 mỗi năm
+
+**API CafeF — Biểu đồ quý PE/PB/EV riêng lẻ**:
+  - Mỗi chỉ số vẽ một biểu đồ line chart riêng (3 charts)
+  - Dữ liệu quý từ HPG_RATIOS, trim trailing None
+  - Labels quý: Q1-YYYY format, spaced every N quarters
+
+**API CafeF — BCTC quý cho dữ liệu volume & sản lượng**:
+  - `GET /api/iq-insight-service/v1/company/{ticker}/income-statement`
+
 ---
 
 ## Phân tích Doanh nghiệp Thép
@@ -160,27 +172,29 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 
 ## Định giá
 
-### Phương pháp kết hợp (khuyến nghị: DCF 70% + So sánh 30%)
-- **DCF (Chiết khấu dòng tiền):** FCFF/FCFE với WACC phù hợp ngành thép chu kỳ. Tăng trưởng dài hạn thận trọng (1-2%).
-- **So sánh (P/B, EV/EBITDA, P/E tham khảo):** Tỷ trọng 30%
-
-**P/E là bẫy chết người cho cổ phiếu chu kỳ**:
-- P/E thấp (2-5x) = lúc LN đỉnh → giá sắp rơi
-- P/E cao vót/âm = lúc lỗ nặng → đáy chu kỳ, điểm mua vàng
-
-**P/B — công cụ chính**:
-- Mua khi P/B ~0.7-1.0x (ngành bi đát nhất)
-- Bán khi P/B ~2.0-2.5x (mọi người hô hào)
-
-**EV/EBITDA — phương pháp phụ**: Loại bỏ yếu tố cấu trúc vốn và khấu hao, dùng cho tầm nhìn M&A và so sánh quốc tế.
+### Phương pháp kết hợp (40% EV/EBITDA + 40% P/B + 20% P/E)
+- **EV/EBITDA (40%, chiết khấu 5%):** Loại bỏ yếu tố cấu trúc vốn và khấu hao, dùng cho tầm nhìn M&A và so sánh quốc tế. Chiết khấu 5% vì tính thận trọng.
+- **P/B (40%):** Mua khi P/B ~0.7-1.0x (ngành bi đát nhất). Bán khi P/B ~2.0-2.5x (mọi người hô hào). Công cụ chính cho chu kỳ.
+- **P/E (20%, tham khảo):** P/E là bẫy cho cổ phiếu chu kỳ — P/E thấp (2-5x) = lúc LN đỉnh, P/E cao/âm = đáy chu kỳ. Dùng tỷ trọng nhỏ để bổ sung.
 
 **QUY TẮC multiple mục tiêu — dùng lịch sử của CHÍNH cổ phiếu:**
   - Fetch data từ Vietcap API `statistics-financial` (TTM quarterly, quarter != 5)
-  - Tính **median** P/B và EV/EBITDA của toàn bộ lịch sử TTM
+  - Tính **median** P/B, EV/EBITDA, P/E của toàn bộ lịch sử TTM
   - Dùng median làm multiple mục tiêu cho Base case
-  - Kịch bản: Bear = median × 0.75, Base = median, Bull = median × 1.3
-  - Vẽ biểu đồ P/B và EV/EBITDA lịch sử có median band + buy/sell zones
+  - Kịch bản P/B: Hấp dẫn = median × 0.8, Base = median, Cao = median × 1.2
+  - Vẽ biểu đồ riêng cho từng multiple (P/E, P/B, EV/EBITDA) dạng line chart quý
   - **KHÔNG lấy trung bình ngành làm primary** — chỉ để cross-check
+
+**Công thức định giá tổng hợp:**
+  - Giá EV/EBITDA = (EBITDA × Multiple - Nợ ròng) × 1e9 / Số CP × 0.95
+  - Giá P/B = Multiple × BVPS
+  - Giá P/E = Multiple × EPS
+  - Giá mục tiêu = EV/EBITDA × 40% + P/B × 40% + P/E × 20%
+
+### GP Margin Forecast Methodology
+  - **KHÔNG** lấy spread thay thế cho GP margin (spread chỉ đồng pha, không bằng nhau)
+  - GP margin dự phóng = BLNG quý gần nhất × (spread hiện tại / spread quý gần nhất)
+  - Spread = Giá HRC - (1.6 × Giá quặng + 0.5 × Giá than cốc + 200 USD chi phí chuyển đổi)
 
 ---
 

@@ -126,17 +126,33 @@ peers = {
     "NKG": {"pe": 22.5, "pb": 0.9, "roe": 6.4,  "ev_ebitda": 9.0, "ni_growth": 18.0},
 }
 
+# Shares từ Vốn điều lệ (bsa80) / 10,000
+def shares_from_charter(records, year):
+    for r in records:
+        if r.get("yearReport") == year:
+            v = r.get("bsa80")
+            if v is not None:
+                return round(v / 10000 / 1e6)
+    return 8445
+
+shares_hist = [shares_from_charter(bs_recs, y) for y in years_hist]
+shares_fc   = [8445, 8445, 8445]
+shares_all  = shares_hist + shares_fc
+print(f"[SHARES] Hist: {shares_hist} | Fc: {shares_fc}")
+
 # Leading indicators
 leading_indicators = [
     ("Giá HRC (USD/tấn)", 1100, 900, 1110, "Tích cực"),
     ("Giá quặng sắt (USD/tấn)", 90, 120, 106, "Trung tính"),
     ("Giá than cốc (USD/tấn)", 200, 280, 240, "Trung tính"),
     ("Tỷ giá USD/VNĐ", 24000, 26000, 25400, "Trung tính"),
-    ("Sản lượng thép VN (triệu tấn/tháng)", 2.5, 1.5, 2.8, "Tích cực"),
+    ("Sản lượng thép VN (triệu tấn/tháng)", 2.5, 1.5, 2.92, "Tích cực"),
+    ("SX ngành thép 4M (triệu tấn)", 12.5, 8, 11.67, "Phục hồi (+23.5%)"),
     ("LNST QoQ HPG (tỷ)", 7000, 3000, 9056, "Tích cực"),
     ("D/E", 0.5, 1.5, 0.65, "Tích cực"),
     ("CIP (tỷ)", 10000, 40000, 15000, "Tích cực (DQ2 done)"),
     ("Spread thép (USD/tấn)", 200, 50, 180, "Tích cực"),
+    ("Đầu tư công 4M (nghìn tỷ)", 200, 150, 187, "Tích cực (+10.4%)"),
     ("Room ngoại (tỷ USD)", 1.5, 0.5, 1.2, "Trung tính"),
     ("KLGD BQ 20 phiên (triệu cp)", 50, 20, 33.2, "Trung tính"),
     ("Biến động giá 1 tháng (%)", 10, -5, 3.3, "Trung tính"),
@@ -145,7 +161,7 @@ leading_indicators = [
 
 # PESTLE
 pestle = [
-    ("Chính trị - Pháp luật", "Thuế chống bán phá giá HRC TQ 27.8% (7/2025), 5 năm. Ổn định chính trị VN.", "Tích cực"),
+    ("Chính trị - Pháp luật", "Thuế CBPG HRC khổ hẹp 19.38-27.83% + AD chống lẩn tránh HRC rộng 27.83% (17/04/2026). Ổn định chính trị VN.", "Tích cực"),
     ("Kinh tế", "GDP VN 2026E ~6.5%. Đầu tư công tăng mạnh (cao tốc, Long Thành). LS giảm.", "Tích cực"),
     ("Xã hội", "Đô thị hoá ~38%. Nhu cầu nhà ở & hạ tầng tăng.", "Tích cực"),
     ("Công nghệ", "DQ2 BOF hiện đại, tự động hoá cao. Tiết kiệm 15-20% chi phí so với cũ.", "Tích cực"),
@@ -291,6 +307,7 @@ def build_excel():
     S_PNL    = "'04_PnL'"
     S_BS     = "'05_Balance_Sheet'"
     S_HIST   = "'08_Hist_Multiples'"
+    S_R3     = "'03_Revenue_Model'"
 
     wb = openpyxl.Workbook()
     # ─── Sheet 1: Cover (built here; formulas reference later sheets) ───
@@ -302,59 +319,67 @@ def build_excel():
     ws['A1'].alignment = Alignment(horizontal='center')
     ws.row_dimensions[1].height = 35
 
+    left_align = Alignment(horizontal='left', vertical='center')
+    right_align = Alignment(horizontal='right', vertical='center')
     info = [
-        ("Ticker", TICKER, None),
-        ("Sàn", EXCHANGE, None),
-        ("Ngành", INDUSTRY, None),
-        ("Giá hiện tại (VND)", PRICE, '#,##0'),
-        ("Số CP lưu hành", SHARES, '#,##0'),
-        ("Vốn hóa (tỷ)", MARKET_CAP / 1e9, '#,##0'),
-        ("P/E TTM", "='02_Assumptions'!J22", '0.0"x"'),
-        ("P/B", "='02_Assumptions'!J23", '0.00"x"'),
-        ("EV/EBITDA", "='02_Assumptions'!J24", '0.0"x"'),
-        ("52W Cao/Thấp", "28,045 / 19,789", None),
-        ("Room ngoại", "20.6%", None),
-        ("Khuyến nghị", "MUA", None),
-        ("Giá mục tiêu Base", "='07_Valuation'!C10", '#,##0'),
-        ("Upside", "='07_Valuation'!C13", '0.0%'),
-        ("Ngày phân tích", f"{datetime.now().strftime('%d/%m/%Y %H:%M')}", None),
+        ("Ticker", TICKER, None, left_align),
+        ("Sàn", EXCHANGE, None, left_align),
+        ("Ngành", INDUSTRY, None, left_align),
+        ("Giá hiện tại (VND)", PRICE, '#,##0', right_align),
+        ("Số CP lưu hành", SHARES, '#,##0', right_align),
+        ("Vốn hóa (tỷ)", MARKET_CAP / 1e9, '#,##0', right_align),
+        ("P/E TTM", "='02_Assumptions'!J22", '0.0"x"', right_align),
+        ("P/B", "='02_Assumptions'!J23", '0.00"x"', right_align),
+        ("EV/EBITDA", "='02_Assumptions'!J24", '0.0"x"', right_align),
+        ("52W Cao/Thấp", "28,045 / 19,789", None, right_align),
+        ("Room ngoại", "20.6%", None, right_align),
+        ("Khuyến nghị", "MUA", None, Alignment(horizontal='center', vertical='center')),
+        ("Giá mục tiêu Base", "='07_Valuation'!C10", '#,##0', right_align),
+        ("Upside", "='07_Valuation'!C13", '0.0%', right_align),
+        ("Ngày phân tích", f"{datetime.now().strftime('%d/%m/%Y %H:%M')}", None, left_align),
     ]
-    for i, (k, v, nf) in enumerate(info, 2):
+    for i, (k, v, nf, al) in enumerate(info, 2):
         ws.cell(row=i, column=1, value=k).font = bold_font
         ws.cell(row=i, column=1).border = thin_border
+        ws.cell(row=i, column=1).alignment = left_align
+        cell = ws.cell(row=i, column=2)
         if nf and isinstance(v, (int, float)):
-            ws.cell(row=i, column=2, value=v).number_format = nf
+            cell.value = v; cell.number_format = nf
         else:
-            ws.cell(row=i, column=2, value=v)
-        ws.cell(row=i, column=2).font = data_font
-        ws.cell(row=i, column=2).border = thin_border
+            cell.value = v
+        cell.font = data_font
+        cell.border = thin_border
+        cell.alignment = al
     # Add EPS, BVPS, KLGD, shareholder, price perf
     eps_val = round(sum(eps_hist[y_idx] for y_idx in [3,4])/2) if len(eps_hist) >=5 else eps_hist[-1]
     bvps_val = round(equity_hist[4] * 1e9 / SHARES)
     extra_rows = [
-        ("EPS TTM (VND)", eps_val, '#,##0'),
-        ("BVPS (VND)", bvps_val, '#,##0'),
-        ("KLGD BQ 20 phiên (cp)", 33200000, '#,##0'),
-        ("KLGD BQ 20 phiên (tỷ)", 890.7, '#,##0.0'),
-        ("Cổ đông sáng lập", "35.7% (Ông Trần Đình Long & gia đình)", None),
-        ("Biến động 1 tháng", "+3.3%", None),
-        ("Biến động 3 tháng", "+6.9%", None),
-        ("Biến động YTD", "+6.1%", None),
-        ("VNINDEX 1 tháng", "+4.4%", None),
-        ("VNINDEX 3 tháng", "-6.3%", None),
-        ("VNINDEX YTD", "-1.9%", None),
+        ("EPS TTM (VND)", eps_val, '#,##0', right_align),
+        ("BVPS (VND)", bvps_val, '#,##0', right_align),
+        ("KLGD BQ 20 phiên (cp)", 33200000, '#,##0', right_align),
+        ("KLGD BQ 20 phiên (tỷ)", 890.7, '#,##0.0', right_align),
+        ("Cổ đông sáng lập", "35.7% (Ông Trần Đình Long & gia đình)", None, left_align),
+        ("Biến động 1 tháng", "+3.3%", None, right_align),
+        ("Biến động 3 tháng", "+6.9%", None, right_align),
+        ("Biến động YTD", "+6.1%", None, right_align),
+        ("VNINDEX 1 tháng", "+4.4%", None, right_align),
+        ("VNINDEX 3 tháng", "-6.3%", None, right_align),
+        ("VNINDEX YTD", "-1.9%", None, right_align),
     ]
-    for i, (k, v, nf) in enumerate(extra_rows, len(info) + 2):
+    for i, (k, v, nf, al) in enumerate(extra_rows, len(info) + 2):
         ws.cell(row=i, column=1, value=k).font = bold_font
         ws.cell(row=i, column=1).border = thin_border
+        ws.cell(row=i, column=1).alignment = left_align
+        cell = ws.cell(row=i, column=2)
         if nf and isinstance(v, (int, float)):
-            ws.cell(row=i, column=2, value=v).number_format = nf
+            cell.value = v; cell.number_format = nf
         else:
-            ws.cell(row=i, column=2, value=v)
-        ws.cell(row=i, column=2).font = data_font
-        ws.cell(row=i, column=2).border = thin_border
-    ws.column_dimensions['A'].width = 22
-    ws.column_dimensions['B'].width = 42
+            cell.value = v
+        cell.font = data_font
+        cell.border = thin_border
+        cell.alignment = al
+    ws.column_dimensions['A'].width = 24
+    ws.column_dimensions['B'].width = 44
 
     # ─── Sheet 2: Assumptions ───
     ws2 = wb.create_sheet("02_Assumptions")
@@ -363,11 +388,11 @@ def build_excel():
     header_row(ws2, 1, headers, widths)
 
     assumptions = [
-        ("Giá HPG (VND)", 23600, 23600, 23600, 23600, 23600, 23600, 23600, 23600, "Giá tại ngày phân tích"),
-        ("Số CP lưu hành (triệu)", 8445, 8445, 8445, 8445, 8445, 8445, 8445, 8445, "Post-split 1.1:1 T05/2026"),
+        ("Giá HPG (VND)", 23600, 23600, 23600, 23600, 23600, 23600, 23600, 23600, "Giá 24/06/2026. Broker targets: SSI 36k, VND 37k, SHS 38k, VCBS 38k, BVSC 38.65k"),
+        ("Số CP lưu hành (triệu)", shares_all[0], shares_all[1], shares_all[2], shares_all[3], shares_all[4], shares_all[5], shares_all[6], shares_all[7], "Vốn điều lệ từng năm / 10,000. Post-split 1.1:1 T05/2026"),
         ("Doanh thu (tỷ)", 149680, 141410, 118950, 138860, 156120, 210000, 240000, 270000, "2026: Kế hoạch ĐHĐCĐ"),
-        ("Tăng trưởng DT (%)", 48.0, -5.5, -15.9, 16.7, 12.4, 34.5, 14.3, 12.5, "DQ2 full + giá HRC hồi phục"),
-        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, 17.5, 19.0, 20.0, "Cải thiện nhờ DQ2"),
+        ("Tăng trưởng DT (%)", 48.0, -5.5, -15.9, 16.7, 12.4, 34.5, 14.3, 12.5, "DQ2 full + giá HRC hồi phục. CFO target 2026: ~15M tấn (+40%)"),
+        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, 17.5, 19.0, 20.0, "Cải thiện nhờ DQ2 hiện đại, tiết kiệm 15-20% CP"),
         ("EBIT Margin (%)", 24.1, 7.8, 6.5, 9.3, 11.84, 14.3, 15.8, 16.7, ""),
         ("Thuế TNDN (%)", 4.0, 13.5, 10.5, 4.0, 12.5, 12.0, 12.0, 12.0, "HPG ưu đãi Dung Quất"),
         ("D&A (tỷ)", 3000, 3500, 4000, 4800, 5500, 7000, 8000, 9000, "DQ2 full năm"),
@@ -380,7 +405,17 @@ def build_excel():
         ("P/B mục tiêu (x)", 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6, 1.6, "HPG lịch sử median 1.61x (TTM 2018-2026)"),
         ("EV/EBITDA mục tiêu (x)", 6.5, 6.5, 6.5, 6.5, 6.5, 9.0, 9.0, 8.5, "HPG lịch sử median 8.95x (TTM 2018-2026)"),
         ("P/E mục tiêu (x)", 10.0, 10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 11.0, "Tham khảo - HPG median 11.1x (TTM)"),
+        # Spread-based GP margin drivers (rows 19+)
+        ("Quặng sắt 62% Fe (USD/t)", 140, 110, 105, 110, 108, 105, 110, 115, "Giá CFR Trung Quốc"),
+        ("Than cốc luyện kim (USD/t)", 280, 240, 220, 230, 250, 240, 250, 260, "FOB Úc"),
+        ("Chi phí SX ngoài NVL (USD/t)", 140, 150, 160, 170, 180, 200, 210, 220, "LN + NL + điện + KH + CP QL"),
+        ("Doanh thu TC (tỷ)", 1500, 2100, 1800, 1950, 2200, 2500, 2800, 3000, ""),
+        ("Chi phí TC (tỷ)", 1800, 3500, 2100, 2500, 3200, 3800, 4000, 4200, ""),
+        ("Thu nhập khác (tỷ)", 0, 0, 0, 0, 0, 0, 0, 0, "Q1/2026: ~4,915 tỷ từ Phố Nối"),
     ]
+    # Map rows in Assumptions
+    R_IRON = 19; R_COKE = 20; R_CONV = 21
+    # Assumption column letters: B=2021A, C=2022A, ... I=2028E
 
     for i, row in enumerate(assumptions, 2):
         ws2.cell(row=i, column=1, value=row[0]).font = bold_font
@@ -519,7 +554,7 @@ def build_excel():
     V_EV = r; V_PB = r+1; V_PE = r+2
     ws2.cell(row=V_EV, column=1, value="EV/EBITDA (2026E)").font = bold_font
     ws2.cell(row=V_EV, column=1).border = thin_border
-    ev_f = f"=(({S_PNL}!G16*{ev_k}-({S_ASSUMP}!G11-{S_ASSUMP}!G12))*1000000000)/({S_ASSUMP}!$B$3*1000000)"
+    ev_f = f"=(({S_PNL}!G16*{ev_k}-({S_ASSUMP}!G11-{S_ASSUMP}!G12))*1000000000)/({S_ASSUMP}!G3*1000000)*0.95"
     ws2.cell(row=V_EV, column=10, value=ev_f).number_format = '#,##0'
     ws2.cell(row=V_EV, column=10).border = thin_border
     ws2.cell(row=V_EV, column=10).alignment = Alignment(horizontal='center')
@@ -527,7 +562,7 @@ def build_excel():
     ws2.cell(row=V_EV, column=11).border = thin_border
     ws2.cell(row=V_PB, column=1, value="P/B (2026E)").font = bold_font
     ws2.cell(row=V_PB, column=1).border = thin_border
-    pb_f = f"={pb_k}*({S_ASSUMP}!G13*1000000000)/({S_ASSUMP}!$B$3*1000000)"
+    pb_f = f"={pb_k}*({S_ASSUMP}!G13*1000000000)/({S_ASSUMP}!G3*1000000)"
     ws2.cell(row=V_PB, column=10, value=pb_f).number_format = '#,##0'
     ws2.cell(row=V_PB, column=10).border = thin_border
     ws2.cell(row=V_PB, column=10).alignment = Alignment(horizontal='center')
@@ -554,6 +589,14 @@ def build_excel():
         """Columns G(7), H(8), I(9) are forecast"""
         return j >= 7
 
+    R3_NAME = "'03_Revenue_Model'"
+    for j in range(7, 10):
+        cl = col_ltr(j)
+        gpm_cell = ws2.cell(row=6, column=j)
+        gpm_cell.value = f"=(1-({S_ASSUMP}!{cl}{R_IRON}*1.6+{S_ASSUMP}!{cl}{R_COKE}*0.5+{S_ASSUMP}!{cl}{R_CONV})/{R3_NAME}!{cl}6)*100"
+        gpm_cell.number_format = '0.00'
+        gpm_cell.font = Font(name=FONT_NAME, color="006600", size=10)
+
     ws3 = wb.create_sheet("03_Revenue_Model")
     headers3 = ["Chỉ tiêu", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"]
     widths3 = [40] + [14]*8
@@ -568,12 +611,12 @@ def build_excel():
         ("Doanh thu (tỷ)", all_rev, "Tăng trưởng mạnh 2026 nhờ DQ2 full công suất"),
         ("YoY Growth (%)", None, ""),
         ("Sản lượng HRC (triệu tấn)", [2.0, 2.2, 2.5, 2.8, 3.2, 6.0, 6.8, 7.5], ""),
-        ("Sản lượng thép XD (triệu tấn)", [2.8, 2.6, 2.3, 2.5, 2.8, 3.0, 3.2, 3.5], ""),
-        ("Giá HRC bq (USD/tấn)", [680, 550, 480, 520, 580, 620, 640, 650], ""),
+        ("Sản lượng thép XD (triệu tấn)", [2.8, 2.6, 2.3, 2.5, 2.8, 3.0, 3.2, 3.5], "FY2025 XD: 4.85M tấn (VietnamBiz). HPG total 2026 target ~15M tấn (CFO)"),
+        ("Giá HRC bq (USD/tấn)", [680, 550, 480, 520, 580, 620, 640, 650], "SHFE Q3/2026 ~580 + premium VN ~40. AD 27.83% hỗ trợ giá nội địa"),
         ("Giá thép XD bq (USD/tấn)", [720, 580, 520, 550, 590, 610, 620, 630], ""),
         ("Doanh thu HRC (tỷ)", None, ""),
         ("Doanh thu thép XD (tỷ)", None, ""),
-        ("Doanh thu khác (tỷ)", None, ""),
+        ("Doanh thu khác (tỷ)", None, "Ống thép, tôn mạ, container, KCN, phôi billet"),
     ]
 
     for i, (name, vals, note) in enumerate(rev_rows, 2):
@@ -581,7 +624,7 @@ def build_excel():
         c.font = bold_font
         c.border = thin_border
 
-    # Doanh thu (tỷ) — row 2: hardcode historical, formula forecast
+    # Doanh thu (tỷ) — row 2: hardcode historical, SUM(HRC+XD+Khác) forecast
     for j, v in enumerate(all_rev, 2):
         cell = ws3.cell(row=2, column=j)
         cell.font = bold_font
@@ -590,7 +633,8 @@ def build_excel():
         if not is_fc(j):
             cell.value = v; cell.number_format = '#,##0'
         else:
-            cell.value = f"={col_ltr(j-1)}2*(1+{S_ASSUMP}!{col_ltr(j)}5/100)"
+            cl = col_ltr(j)
+            cell.value = f"={cl}8+{cl}9+{cl}10"
             cell.number_format = '#,##0'
 
     # YoY Growth (row 3): formula for all years
@@ -624,7 +668,6 @@ def build_excel():
     # HPG total 2021 revenue = 149,680. HRC + XD would cover most of it.
     # Actually a simpler approach: link directly to PnL or use growth rates
     # For forecast years, HRC rev growth follows volume × price mix
-    # Let's use formulas for all years:
     for j in range(2, 10):
         cl = col_ltr(j)
         for row in [8, 9]:
@@ -633,14 +676,15 @@ def build_excel():
             cell.alignment = Alignment(horizontal='center')
             cell.font = data_font
             cell.number_format = '#,##0'
-        # HRC rev = SL_HRC * Giá_HRC * 25400/1000 / 1e9 ... hmm
-        # Simpler: doanh thu HRC (tỷ) = (SL_HRC_triệu_tấn * 1e6 * Giá_USD * 25400) / 1e12
-        # = SL_HRC_triệu_tấn * Giá_HRC * 25400 / 1e6
-        ws3.cell(row=8, column=j).value = f"={cl}4*{cl}6*25400/1000000"
-        # XD rev = SL_XD * Giá_XD * 25400 / 1e6
-        ws3.cell(row=9, column=j).value = f"={cl}5*{cl}7*25400/1000000"
-        # Doanh thu khác (row 10) = Tổng DT - HRC - XD
-        ws3.cell(row=10, column=j).value = f"={cl}2-{cl}8-{cl}9"
+        # HRC rev = SL_HRC(triệu tấn) * Giá_HRC * 25400 / 1000 = tỷ VND
+        ws3.cell(row=8, column=j).value = f"={cl}4*{cl}6*25400/1000"
+        # XD rev = SL_XD(triệu tấn) * Giá_XD * 25400 / 1000 = tỷ VND
+        ws3.cell(row=9, column=j).value = f"={cl}5*{cl}7*25400/1000"
+        # Doanh thu khác (row 10): historical = residual, forecast = prev*(1+growth)
+        if not is_fc(j):
+            ws3.cell(row=10, column=j).value = f"={cl}2-{cl}8-{cl}9"
+        else:
+            ws3.cell(row=10, column=j).value = f"={col_ltr(j-1)}10*(1+{S_ASSUMP}!{cl}5/100)"
         ws3.cell(row=10, column=j).border = thin_border
         ws3.cell(row=10, column=j).alignment = Alignment(horizontal='center')
         ws3.cell(row=10, column=j).font = data_font
@@ -673,6 +717,61 @@ def build_excel():
         cell.font = data_font
         cell.value = f"={S_PNL}!{cl}15"; cell.number_format = '#,##0'
 
+    # ── PROFIT BRIDGE (rows 20-28) — từ Spread → EBIT ước tính ──
+    pb_title_font = Font(name=FONT_NAME, bold=True, size=10, color="1F4E79")
+    pb_data_font = Font(name=FONT_NAME, size=9)
+    pb_section = 20
+    ws3.cell(row=pb_section, column=1, value="B. PHÂN TÍCH LỢI NHUẬN TỪ SPREAD (công thức nội bộ)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
+    ws3.merge_cells(start_row=pb_section, start_column=1, end_row=pb_section, end_column=9)
+    ws3.cell(row=pb_section, column=1).border = thin_border
+    R_PB_COST = 21; R_PB_SP_HRC = 22; R_PB_SP_XD = 23; R_PB_GP_STEEL = 24; R_PB_GP_OTHER = 25
+    R_PB_GP = 26; R_PB_GPM = 27; R_PB_SGKA = 28; R_PB_EBIT = 29
+    # Base formula templates (using B col) — each mapped per-column below
+    base_cost   = f"={S_ASSUMP}!$B$19*1.6+{S_ASSUMP}!$B$20*0.5+{S_ASSUMP}!$B$21"
+    for j in range(2, 10):
+        cl = col_ltr(j)
+        c21 = ws3.cell(row=R_PB_COST, column=j); c21.value = base_cost; c21.number_format = '#,##0'
+        c21.font = pb_data_font; c21.border = thin_border; c21.alignment = Alignment(horizontal='center')
+        c22 = ws3.cell(row=R_PB_SP_HRC, column=j); c22.value = f"={cl}6-{cl}{R_PB_COST}"; c22.number_format = '#,##0'
+        c22.font = pb_data_font; c22.border = thin_border; c22.alignment = Alignment(horizontal='center')
+        c23 = ws3.cell(row=R_PB_SP_XD, column=j); c23.value = f"={cl}7-{cl}{R_PB_COST}"; c23.number_format = '#,##0'
+        c23.font = pb_data_font; c23.border = thin_border; c23.alignment = Alignment(horizontal='center')
+        c24 = ws3.cell(row=R_PB_GP_STEEL, column=j); c24.value = f"=({cl}4*{cl}{R_PB_SP_HRC}+{cl}5*{cl}{R_PB_SP_XD})*25400/1000"
+        c24.number_format = '#,##0'; c24.font = pb_data_font; c24.border = thin_border; c24.alignment = Alignment(horizontal='center')
+        c25 = ws3.cell(row=R_PB_GP_OTHER, column=j); c25.value = f"={cl}10*0.15"
+        c25.number_format = '#,##0'; c25.font = pb_data_font; c25.border = thin_border; c25.alignment = Alignment(horizontal='center')
+        c26 = ws3.cell(row=R_PB_GP, column=j); c26.value = f"={cl}{R_PB_GP_STEEL}+{cl}{R_PB_GP_OTHER}"
+        c26.number_format = '#,##0'; c26.font = Font(name=FONT_NAME, bold=True, size=9); c26.border = thin_border; c26.alignment = Alignment(horizontal='center')
+        c27 = ws3.cell(row=R_PB_GPM, column=j); c27.value = f"={cl}{R_PB_GP}/{cl}2*100"
+        c27.number_format = '0.0'; c27.font = pb_data_font; c27.border = thin_border; c27.alignment = Alignment(horizontal='center')
+        c28 = ws3.cell(row=R_PB_SGKA, column=j); c28.value = f"={cl}2*{S_ASSUMP}!{cl}15/100"
+        c28.number_format = '#,##0'; c28.font = pb_data_font; c28.border = thin_border; c28.alignment = Alignment(horizontal='center')
+        c29 = ws3.cell(row=R_PB_EBIT, column=j); 
+        if not is_fc(j):
+            c29.value = f"={S_PNL}!{cl}7"
+        else:
+            c29.value = f"={cl}{R_PB_GP}-{cl}{R_PB_SGKA}"
+        c29.number_format = '#,##0'; c29.font = Font(name=FONT_NAME, bold=True, color="006600", size=9)
+        c29.border = thin_border; c29.alignment = Alignment(horizontal='center')
+    # Label column
+    labels_pb = [
+        ("Tổng CF SX/tấn (USD)", R_PB_COST, "Quặng*1.6 + Cốc*0.5 + CP khác"),
+        ("  Spread HRC (USD/t)", R_PB_SP_HRC, "Giá HRC bq - CF/tấn"),
+        ("  Spread XD (USD/t)", R_PB_SP_XD, "Giá XD bq - CF/tấn"),
+        ("  LN gộp thép (tỷ)", R_PB_GP_STEEL, "(SL_HRC*Spr_HRC + SL_XD*Spr_XD)*25400/1000"),
+        ("  LN gộp KD khác (tỷ)", R_PB_GP_OTHER, "Giả định biên 15% cho ống/tôn/KCN"),
+        ("Tổng LN gộp ước tính (tỷ)", R_PB_GP, "Đối chiếu PnL!GP"),
+        ("Biên LNG ước tính (%)", R_PB_GPM, ""),
+        ("CP QLDN (tỷ)", R_PB_SGKA, "= DT * SGKA%"),
+        ("EBIT ước tính (tỷ)", R_PB_EBIT, "Forecast: LN gộp - CP QL"),
+    ]
+    for label, row_n, note in labels_pb:
+        c = ws3.cell(row=row_n, column=1, value=label)
+        c.font = pb_title_font if not label.startswith("  ") else pb_data_font
+        c.border = thin_border
+        ws3.cell(row=row_n, column=10, value=note).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
+        ws3.cell(row=row_n, column=10).border = thin_border
+
     # ── Sheet 4: PnL (FORMULA-BASED) ──
     ws4 = wb.create_sheet("04_PnL")
     header_row(ws4, 1, headers3, widths3)
@@ -697,7 +796,7 @@ def build_excel():
         ws4.cell(row=i, column=1, value=lbl).font = bold_font
         ws4.cell(row=i, column=1).border = thin_border
 
-    # ── Revenue (row 2) ──
+    # ── Revenue (row 2): link to 03_Revenue_Model driver-based total ──
     for j in range(2, 10):
         c = ws4.cell(row=R_REV, column=j)
         c.font = data_font
@@ -705,8 +804,8 @@ def build_excel():
         if not is_fc(j):
             c.value = all_rev[j-2]; c.number_format = '#,##0'
         else:
-            c.value = f"={col_ltr(j-1)}{R_REV}*(1+{S_ASSUMP}!{col_ltr(j)}5/100)"
-            c.font = Font(name=FONT_NAME, color="006600", size=10)  # xanh lá = link
+            c.value = f"={S_R3}!{col_ltr(j)}2"
+            c.font = Font(name=FONT_NAME, color="006600", size=10)
 
     # ── COGS (row 3): = Rev * (1 - GPM%) ──
     for j in range(2, 10):
@@ -826,7 +925,7 @@ def build_excel():
     for j in range(2, 10):
         c = ws4.cell(row=R_EPS, column=j)
         c.border = thin_border; c.alignment = Alignment(horizontal='center')
-        c.value = f"={col_ltr(j)}{R_NI}*1000000000/({S_ASSUMP}!$B$3*1000000)"
+        c.value = f"={col_ltr(j)}{R_NI}*1000000000/({S_ASSUMP}!{col_ltr(j)}3*1000000)"
         c.number_format = '#,##0'
 
     # ── EBITDA (row 16): = EBIT + D&A ──
@@ -1064,9 +1163,9 @@ def build_excel():
     as_pe_cell = f"{S_ASSUMP}!J{V_PE}"
 
     labels_val = [
-        ("EV/EBITDA (2026E, HPG median)", 0.50, as_ev_cell, "Phương pháp chính 50% — dùng median lịch sử HPg"),
-        ("P/B (2026E, HPG median)", 0.50, as_pb_cell, "Phương pháp chính 50% — P/B là thước đo chu kỳ tin cậy"),
-        ("P/E (tham khảo, không tính)", 0.00, as_pe_cell, "P/E là bẫy chu kỳ — KHÔNG dùng để định giá"),
+        ("EV/EBITDA (2026E, HPG median)", 0.40, as_ev_cell, "40% — EV/EBITDA dùng median lịch sử HPG"),
+        ("P/B (2026E, HPG median)", 0.40, as_pb_cell, "40% — P/B là thước đo chu kỳ tin cậy"),
+        ("P/E (2026E, HPG median)", 0.20, as_pe_cell, "20% — P/E tham khảo bổ sung"),
     ]
 
     for i, (name, weight, formula, note) in enumerate(labels_val, 2):
@@ -1078,16 +1177,10 @@ def build_excel():
         ws7.cell(row=i, column=4, value=note).border = thin_border
 
     # P/B buy/sell zone reference
-    zone_row = V_EV7 + 3
-    ws7.cell(row=zone_row, column=1, value="P/B Buy/Sell Zones:").font = Font(name=FONT_NAME, bold=True, size=10, color="C0392B")
-    ws7.cell(row=zone_row, column=1).border = thin_border
-    ws7.cell(row=zone_row, column=2, value="Mua <1.0x | Bán >2.0x").font = Font(name=FONT_NAME, bold=True, size=10, color="006600")
-    ws7.cell(row=zone_row, column=2).border = thin_border
-    ws7.cell(row=zone_row, column=2).alignment = Alignment(horizontal='center')
-    ws7.merge_cells(start_row=zone_row, start_column=2, end_row=zone_row, end_column=4)
+    zone_row = V_PE7 + 1
 
-    # Weighted average (only EV/EBITDA + P/B)
-    V_EV7 = 2; V_PB7 = 3; V_W7 = 10; V_PRICE7 = 12; V_UP7 = 13
+    # Weighted average (40% EV/EBITDA + 40% P/B + 20% P/E)
+    V_EV7 = 2; V_PB7 = 3; V_PE7 = 4; V_W7 = 10; V_PRICE7 = 12; V_UP7 = 13
 
     # DCF note (below valuation rows)
     dcf_note_row = 7
@@ -1101,7 +1194,7 @@ def build_excel():
     ws7.cell(row=V_W7, column=2, value=1.0).border = thin_border
     ws7.cell(row=V_W7, column=2).number_format = '0%'
     ws7.cell(row=V_W7, column=3,
-             value=f"=C{V_EV7}*B{V_EV7}+C{V_PB7}*B{V_PB7}").border = thin_border
+             value=f"=C{V_EV7}*B{V_EV7}+C{V_PB7}*B{V_PB7}+C4*B4").border = thin_border
     ws7.cell(row=V_W7, column=3).fill = assump_fill
     ws7.cell(row=V_W7, column=3).alignment = Alignment(horizontal='center')
     ws7.cell(row=V_W7, column=3).number_format = '#,##0'
@@ -1841,8 +1934,7 @@ def build_excel():
     ws14.merge_cells(start_row=r, start_column=1, end_row=r, end_column=9)
     r += 1
     header_row(ws14, r, ["Chỉ tiêu", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"], [40] + [12]*8)
-
-    S_R3 = "'03_Revenue_Model'"
+    S_R3 = S_R3  # noqa: keep reference alive (defined at top)
     vol_data = [
         ("Sản lượng HRC HPG (triệu tấn)", True),
         ("Sản lượng thép XD HPG (triệu tấn)", True),
@@ -2357,6 +2449,64 @@ def build_excel():
         ws15.cell(row=i, column=status_col).alignment = Alignment(horizontal='center')
         ws15.row_dimensions[i].height = 55
 
+    # ── Quarterly Sales Volume Section (in ws15) ──
+    qv_start = r5 + 10
+    qv_headers = ["Q1/2023", "Q2/2023", "Q3/2023", "Q4/2023", "Q1/2024", "Q2/2024", "Q3/2024", "Q4/2024",
+                   "Q1/2025", "Q2/2025", "Q3/2025", "Q4/2025", "Q1/2026"]
+    hrc_data = [482, 770, 780, 768, 805, 464, 312, 399, 1000, 1180, 1220, 1600, 1400]
+    xd_data  = [870, 970, 970, 970, 956, 1140, 1200, 1100, 1200, 1300, 1000, 1300, 1430]
+    qv_ncol = len(qv_headers) + 1  # +1 for label column
+    ws15.cell(row=qv_start, column=1, value="D. SẢN LƯỢNG TIÊU THỤ QUÝ (nghìn tấn)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
+    ws15.merge_cells(start_row=qv_start, start_column=1, end_row=qv_start, end_column=qv_ncol)
+    qv_start += 1
+    for c, h in enumerate([""] + qv_headers, 1):
+        cell = ws15.cell(row=qv_start, column=c, value=h)
+        cell.font = Font(name=FONT_NAME, bold=True, size=8, color="FFFFFF")
+        cell.fill = PatternFill(start_color="2E4057", end_color="2E4057", fill_type="solid")
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center', text_rotation=60 if c > 1 else 0)
+    qv_data_rows = [
+        ("SL HRC (nghìn tấn)", hrc_data),
+        ("SL XD & Thép CB (nghìn tấn)", xd_data),
+    ]
+    qv_data_end = qv_start + len(qv_data_rows)
+    for i, (label, vals) in enumerate(qv_data_rows, qv_start+1):
+        ws15.cell(row=i, column=1, value=label).font = bold_font
+        ws15.cell(row=i, column=1).border = thin_border
+        for j, v in enumerate(vals, 2):
+            cell = ws15.cell(row=i, column=j, value=v)
+            cell.font = data_font
+            cell.border = thin_border
+            cell.alignment = Alignment(horizontal='center')
+            cell.number_format = '#,##0'
+
+    # ── Openpyxl LineChart: Sản lượng HRC & XD theo quý ──
+    chart_qv = LineChart()
+    chart_qv.title = "Sản lượng HRC & Thép XD theo Quý (nghìn tấn)"
+    chart_qv.width = 26; chart_qv.height = 14
+    chart_qv.y_axis.title = "nghìn tấn"
+    chart_qv.y_axis.scaling.min = 0
+    chart_qv.y_axis.scaling.max = 2200
+    chart_qv.y_axis.majorUnit = 500
+    chart_qv.y_axis.numFmt = '#,##0'
+    chart_qv.style = 10
+    data_ref = Reference(ws15, min_col=2, max_col=qv_ncol, min_row=qv_start+1, max_row=qv_data_end)
+    cats_ref = Reference(ws15, min_col=2, max_col=qv_ncol, min_row=qv_start+1)
+    chart_qv.add_data(data_ref, titles_from_data=True)
+    chart_qv.set_categories(cats_ref)
+    if len(chart_qv.series) >= 2:
+        chart_qv.series[0].graphicalProperties.line.solidFill = "1F4E79"
+        chart_qv.series[0].graphicalProperties.line.width = 22000
+        chart_qv.series[1].graphicalProperties.line.solidFill = "E74C3C"
+        chart_qv.series[1].graphicalProperties.line.width = 22000
+        chart_qv.series[1].graphicalProperties.line.dashStyle = "dash"
+    chart_qv.legend.position = "b"
+    chart_qv.x_axis.delete = False
+    chart_qv.x_axis.tickLblPos = "low"
+    chart_qv.x_axis.numFmt = '@'
+    chart_row = qv_data_end + 2
+    ws15.add_chart(chart_qv, f"A{chart_row}")
+
     # ── Sheet 16: Steel Accounting & Harvest Signs ──
     ws16 = wb.create_sheet("16_Steel_Accounting")
     ws16.cell(row=1, column=1, value="THỦ THUẬT KẾ TOÁN & DẤU HIỆU NGÀNH THÉP").font = Font(name=FONT_NAME, bold=True, size=13, color="1F4E79")
@@ -2589,7 +2739,7 @@ def make_charts():
 
     for i in range(len(ebitda_range_vals)):
         for j in range(len(ev_ebitda_range)):
-            text = ax.text(j, i, f'{data[i][j]:,}',
+            text = ax.text(j, i, f'{data[i][j]:,.0f}',
                           ha="center", va="center", color="black", fontsize=9,
                           fontweight='bold')
 
@@ -2669,17 +2819,27 @@ def make_charts():
     fig.savefig(os.path.join(CHART_DIR, 'turnover.png'), dpi=200, bbox_inches='tight')
     plt.close(fig)
 
-    # Chart 7: Quarterly Revenue & Profit
-    fig, ax1 = plt.subplots(figsize=(14, 5.5))
+    # Chart 7: Quarterly Revenue & Profit (dynamic from API)
+    def _get_q(records, yr, qtr, field):
+        for r in records:
+            if r.get("yearReport") == yr and r.get("lengthReport") == qtr:
+                v = r.get(field)
+                return v / 1e9 if v is not None else 0
+        return 0
+    is_qs_ch = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
+    bs_qs_ch = section_to_quarters(FIN_DATA, "BALANCE_SHEET")
+    q_periods = [(2024,1),(2024,2),(2024,3),(2024,4),
+                 (2025,1),(2025,2),(2025,3),(2025,4),(2026,1)]
     q_labels = ['Q1\n2024','Q2\n2024','Q3\n2024','Q4\n2024',
                 'Q1\n2025','Q2\n2025','Q3\n2025','Q4\n2025','Q1\n2026']
-    q_rev = [30000, 35000, 33000, 40860, 38000, 40000, 37000, 41120, 53400]
-    q_ni  = [2500, 3000, 2800, 3720, 3350, 3800, 3500, 4800, 9056]
+    _q_rev = [_get_q(is_qs_ch, y, q, 'isa3') for y,q in q_periods]
+    _q_ni  = [_get_q(is_qs_ch, y, q, 'isa22') for y,q in q_periods]
+    fig, ax1 = plt.subplots(figsize=(14, 5.5))
     x = np.arange(len(q_labels))
-    bars = ax1.bar(x, [v/1000 for v in q_rev], color='#1F4E79', alpha=0.7, label='Doanh thu (nghìn tỷ)')
+    bars = ax1.bar(x, [v/1000 for v in _q_rev], color='#1F4E79', alpha=0.7, label='Doanh thu (nghìn tỷ)')
     ax2 = ax1.twinx()
-    ax2.plot(x, [v/1000 for v in q_ni], 'o-', color='#E74C3C', linewidth=2, markersize=6, label='LNST (nghìn tỷ)')
-    for bar, val in zip(bars, q_rev):
+    ax2.plot(x, [v/1000 for v in _q_ni], 'o-', color='#E74C3C', linewidth=2, markersize=6, label='LNST (nghìn tỷ)')
+    for bar, val in zip(bars, _q_rev):
         ax1.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.3,
                 f'{val/1000:.1f}', ha='center', va='bottom', fontsize=7)
     ax1.set_xlabel('Quý', fontsize=11)
@@ -2697,62 +2857,335 @@ def make_charts():
     fig.savefig(os.path.join(CHART_DIR, 'quarterly.png'), dpi=200, bbox_inches='tight')
     plt.close(fig)
 
-    # Chart 8: Historical P/E & P/B (Vietcap-style with median bands)
-    fig, ax1 = plt.subplots(figsize=(11, 5.5))
-    yr = [str(y) for y in years_hist]
-    x = np.arange(len(yr))
-    pe_med = stats.median(pe_hist) if pe_hist else 12.0
-    pb_med = stats.median(pb_hist) if pb_hist else 1.5
-    # P/E bars
-    bars = ax1.bar(x, pe_hist, color='#1F4E79', alpha=0.6, label='P/E (x)', width=0.4, zorder=2)
-    for i, v in enumerate(pe_hist):
-        ax1.text(i, v+0.4, f'{v:.1f}', ha='center', fontsize=9, fontweight='bold', color='#1F4E79')
-    # P/B line on secondary axis
-    ax2 = ax1.twinx()
-    ax2.plot(x, pb_hist, 'o-', color='#E74C3C', linewidth=2, markersize=8, label='P/B (x)', zorder=3)
-    for i, v in enumerate(pb_hist):
-        ax2.annotate(f'{v:.1f}', (x[i], v), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=9, color='#E74C3C')
-    # Median reference lines
-    ax1.axhline(y=pe_med, color='#1F4E79', linestyle='--', alpha=0.5, linewidth=1.5, label=f'P/E median {pe_med:.1f}x')
-    ax2.axhline(y=pb_med, color='#E74C3C', linestyle='--', alpha=0.5, linewidth=1.5, label=f'P/B median {pb_med:.1f}x')
-    ax1.fill_between(x, pe_med*0.7, pe_med*1.3, alpha=0.08, color='#1F4E79', label='±30% PE band')
-    ax2.fill_between(x, pb_med*0.8, pb_med*1.2, alpha=0.08, color='#E74C3C', label='±20% PB band')
-    ax1.set_xlabel('Năm', fontsize=11)
-    ax1.set_ylabel('P/E (x)', fontsize=11, color='#1F4E79')
-    ax2.set_ylabel('P/B (x)', fontsize=11, color='#E74C3C')
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(yr)
-    ax1.set_title('HPG - P/E & P/B Lịch sử (2021-2025)', fontsize=13, fontweight='bold')
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=8)
-    ax1.grid(axis='y', alpha=0.3)
+    # Chart 7B: Quarterly BS trend (Tổng TS, Hàng tồn kho, Phải thu, Nợ vay)
+    _q_ta  = [_get_q(bs_qs_ch, y, q, 'bsa53') for y,q in q_periods]
+    _q_inv = [_get_q(bs_qs_ch, y, q, 'bsa15') for y,q in q_periods]
+    _q_rec = [_get_q(bs_qs_ch, y, q, 'bsa8') for y,q in q_periods]
+    _q_debt = [_get_q(bs_qs_ch, y, q, 'bsa56')+_get_q(bs_qs_ch, y, q, 'bsa71') for y,q in q_periods]
+    fig, ax = plt.subplots(figsize=(14, 5))
+    ax.plot(x, [v/1000 for v in _q_ta], 's-', color='#1F4E79', linewidth=2, label='Tổng TS')
+    ax.plot(x, [v/1000 for v in _q_inv], 'o-', color='#E67E22', linewidth=2, label='Hàng tồn kho')
+    ax.plot(x, [v/1000 for v in _q_rec], '^-', color='#27AE60', linewidth=2, label='Phải thu')
+    ax.plot(x, [v/1000 for v in _q_debt], 'v-', color='#E74C3C', linewidth=2, label='Nợ vay')
+    ax.set_xticks(x); ax.set_xticklabels(q_labels, fontsize=8)
+    ax.set_title('HPG - Diễn biến Tài sản & Nợ theo Quý', fontsize=13, fontweight='bold')
+    ax.set_ylabel('Nghìn tỷ VND', fontsize=11)
+    ax.legend(loc='best'); ax.grid(axis='y', alpha=0.3)
     fig.tight_layout()
-    fig.savefig(os.path.join(CHART_DIR, 'pe_pb_hist.png'), dpi=200, bbox_inches='tight')
+    fig.savefig(os.path.join(CHART_DIR, 'quarterly_bs.png'), dpi=200, bbox_inches='tight')
     plt.close(fig)
 
-    # Chart 9: EV/EBITDA Historical
-    fig, ax1 = plt.subplots(figsize=(11, 5.5))
-    ev_med = stats.median(ev_hist) if ev_hist else 9.0
-    colors_ev = ['#27AE60' if v < ev_med else '#E74C3C' if v > ev_med*1.3 else '#F39C12' for v in ev_hist]
-    bars = ax1.bar(x, ev_hist, color=colors_ev, alpha=0.8, edgecolor='white', linewidth=0.5, width=0.5, zorder=2)
-    for i, v in enumerate(ev_hist):
-        ax1.text(i, v+0.3, f'{v:.1f}x', ha='center', fontsize=10, fontweight='bold', color='#2C3E50')
-    ax1.axhline(y=ev_med, color='#1F4E79', linestyle='--', linewidth=2, alpha=0.6, label=f'Median {ev_med:.1f}x')
-    ax1.fill_between(x, ev_med*0.75, ev_med*1.25, alpha=0.1, color='#1F4E79', label='±25% band')
+    # Chart 7C: Comprehensive quarterly quality dashboard
+    _q_interest = [_get_q(is_qs_ch, y, q, 'isa8') for y,q in q_periods]
+    _q_sgka    = [_get_q(is_qs_ch, y, q, 'isa9')+_get_q(is_qs_ch, y, q, 'isa10') for y,q in q_periods]
+    _q_equity  = [_get_q(bs_qs_ch, y, q, 'bsa78') for y,q in q_periods]
+    _q_cash    = [_get_q(bs_qs_ch, y, q, 'bsa2') for y,q in q_periods]
+    _q_gp      = [_get_q(is_qs_ch, y, q, 'isa5') for y,q in q_periods]
+    _q_cogs    = [abs(_get_q(is_qs_ch, y, q, 'isa4')) for y,q in q_periods]
+    _q_gm      = [_q_gp[i]/max(_q_rev[i],1)*100 for i in range(9)]
+    _q_nm      = [_q_ni[i]/max(_q_rev[i],1)*100 for i in range(9)]
+    _q_de      = [_q_debt[i]/max(_q_equity[i],1) for i in range(9)]
+    _q_intrev  = [_q_interest[i]/max(_q_rev[i],1)*100 for i in range(9)]
+    _q_sgarev  = [_q_sgka[i]/max(_q_rev[i],1)*100 for i in range(9)]
+    _q_recday  = [_q_rec[i]/max(_q_rev[i]/90,1) for i in range(9)]
+    _q_invday  = [_q_inv[i]/max(_q_cogs[i]/90,1) for i in range(9)]
+    _q_cash_ta = [_q_cash[i]/max(_q_ta[i],1)*100 for i in range(9)]
+    _q_debt_ta = [_q_debt[i]/max(_q_ta[i],1)*100 for i in range(9)]
+
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9))
+    x = np.arange(9)
+    qlbl = ['Q1\n2024','Q2','Q3','Q4','Q1\n2025','Q2','Q3','Q4','Q1\n2026']
+
+    # Panel 1: Revenue & NI
+    ax = axes[0,0]
+    bars = ax.bar(x, [v/1000 for v in _q_rev], color='#3498DB', alpha=0.6, label='DT (nghìn tỷ)')
+    ax2 = ax.twinx()
+    ax2.plot(x, [v/1000 for v in _q_ni], 'o-', color='#E74C3C', linewidth=2, label='LNST (nghìn tỷ)')
+    for bar, val in zip(bars, _q_rev):
+        ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.3, f'{val/1000:.1f}', ha='center', fontsize=6)
+    ax.set_title('Doanh thu & LNST', fontsize=10, fontweight='bold')
+    ax.set_xticks(x); ax.set_xticklabels(qlbl, fontsize=7)
+    ax.legend(fontsize=7, loc='upper left'); ax2.legend(fontsize=7, loc='upper right')
+
+    # Panel 2: Profit Margins
+    ax = axes[0,1]
+    ax.plot(x, _q_gm, 's-', color='#27AE60', linewidth=2, label='Biên LNG%')
+    ax.plot(x, _q_nm, 'o-', color='#E74C3C', linewidth=2, label='Biên LNST%')
+    ax.axhline(y=stats.median(_q_gm), color='#27AE60', linestyle='--', alpha=0.5, label=f'Median GM {stats.median(_q_gm):.1f}%')
+    ax.axhline(y=stats.median(_q_nm), color='#E74C3C', linestyle='--', alpha=0.5)
+    for i in range(9):
+        ax.annotate(f'{_q_gm[i]:.1f}', (x[i], _q_gm[i]), fontsize=6, ha='center', va='bottom', color='#27AE60')
+    ax.set_title('Biên lợi nhuận', fontsize=10, fontweight='bold')
+    ax.set_xticks(x); ax.set_xticklabels(qlbl, fontsize=7)
+    ax.legend(fontsize=7); ax.grid(axis='y', alpha=0.3)
+
+    # Panel 3: D/E + Interest/Rev + SG&A/Rev
+    ax = axes[0,2]
+    ax.bar(x, _q_de, color='#8E44AD', alpha=0.5, label='D/E (x)')
+    ax.plot(x, _q_intrev, 'v-', color='#E74C3C', linewidth=2, label='Lãi vay/DT%')
+    ax.plot(x, _q_sgarev, '^-', color='#F39C12', linewidth=2, label='CPBH&QL/DT%')
+    ax.set_title('Nợ & Chi phí', fontsize=10, fontweight='bold')
+    ax.set_xticks(x); ax.set_xticklabels(qlbl, fontsize=7)
+    ax.legend(fontsize=7); ax.grid(axis='y', alpha=0.3)
+
+    # Panel 4: Receivables & Inventory days
+    ax = axes[1,0]
+    ax.bar(x-0.15, _q_recday, width=0.3, color='#2980B9', alpha=0.7, label='Phải thu (ngày)')
+    ax.bar(x+0.15, _q_invday, width=0.3, color='#E67E22', alpha=0.7, label='Tồn kho (ngày)')
+    ax.set_title('Phải thu & Tồn kho (ngày)', fontsize=10, fontweight='bold')
+    ax.set_xticks(x); ax.set_xticklabels(qlbl, fontsize=7)
+    ax.legend(fontsize=7); ax.grid(axis='y', alpha=0.3)
+
+    # Panel 5: Cash/TA & Debt/TA
+    ax = axes[1,1]
+    ax.fill_between(x, _q_cash_ta, 0, alpha=0.3, color='#2ECC71', label='Tiền mặt/TS%')
+    ax.fill_between(x, _q_debt_ta, 0, alpha=0.3, color='#E74C3C', label='Nợ vay/TS%')
+    ax.plot(x, _q_cash_ta, 'o-', color='#27AE60', linewidth=2)
+    ax.plot(x, _q_debt_ta, 's-', color='#C0392B', linewidth=2)
+    ax.set_title('Cấu trúc TS (Tiền & Nợ/TS)', fontsize=10, fontweight='bold')
+    ax.set_xticks(x); ax.set_xticklabels(qlbl, fontsize=7)
+    ax.legend(fontsize=7); ax.grid(axis='y', alpha=0.3)
+
+    # Panel 6: Revenue growth QoQ
+    ax = axes[1,2]
+    gr_qoq = [0]
+    for i in range(1, 9):
+        gr_qoq.append((_q_rev[i]/_q_rev[i-1]-1)*100 if _q_rev[i-1] else 0)
+    colors = ['#2ECC71' if v >= 0 else '#E74C3C' for v in gr_qoq]
+    ax.bar(x, gr_qoq, color=colors, alpha=0.7)
+    ax.axhline(y=0, color='black', linewidth=0.5)
+    for i, v in enumerate(gr_qoq):
+        ax.text(i, v+(1 if v>=0 else -3), f'{v:+.0f}%', ha='center', fontsize=7, fontweight='bold')
+    ax.set_title('Tăng trưởng DT QoQ', fontsize=10, fontweight='bold')
+    ax.set_xticks(x); ax.set_xticklabels(qlbl, fontsize=7)
+    ax.grid(axis='y', alpha=0.3)
+
+    fig.suptitle('HPG — Chất lượng Tài sản & KQKD theo Quý', fontsize=14, fontweight='bold', y=1.01)
+    fig.tight_layout()
+    fig.savefig(os.path.join(CHART_DIR, 'quarterly_quality.png'), dpi=200, bbox_inches='tight')
+    plt.close(fig)
+
+    # Chart 7 (annual): Spread estimate vs Actual GP margin — annual
+    wb_chart = openpyxl.load_workbook(EXCEL_FILE)
+    ws2c = wb_chart['02_Assumptions']
+    ws3c = wb_chart['03_Revenue_Model']
+    n_years = 8
+    hrc_price_a = [ws3c.cell(row=6, column=j).value for j in range(2, 10)]
+    iron_ore = [ws2c.cell(row=19, column=j).value for j in range(2, 10)]
+    coke = [ws2c.cell(row=20, column=j).value for j in range(2, 10)]
+    conv = [ws2c.cell(row=21, column=j).value for j in range(2, 10)]
+    gp_excel = [ws2c.cell(row=6, column=j).value for j in range(2, 10)]
+    wb_chart.close()
+    spread_usd_a = [hrc_price_a[i] - 1.6*iron_ore[i] - 0.5*coke[i] - conv[i] for i in range(n_years)]
+    spread_pct_a = [spread_usd_a[i]/hrc_price_a[i]*100 for i in range(n_years)]
+    actual_gpm_a = [gp_excel[i] if isinstance(gp_excel[i], (int, float)) else all_gpm[i] for i in range(n_years)]
+
+    fig, ax1 = plt.subplots(figsize=(10, 5))
+    x_a = np.arange(len(all_years_lbl))
+    ax1.plot(all_years_lbl, spread_pct_a, 's-', color='#2980B9', linewidth=2.5, markersize=7, label='Spread/HRC Price (%)')
+    ax1.plot(all_years_lbl, actual_gpm_a, 'o-', color='#E74C3C', linewidth=2.5, markersize=7, label='GP Margin thực tế (%)')
+    for i, v in enumerate(spread_pct_a):
+        ax1.annotate(f'{v:.1f}%', (all_years_lbl[i], v), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=8, color='#2980B9')
+    for i, v in enumerate(actual_gpm_a):
+        ax1.annotate(f'{v:.1f}%', (all_years_lbl[i], v), textcoords="offset points", xytext=(0, -15), ha='center', fontsize=8, color='#E74C3C')
+    ax2 = ax1.twinx()
+    ax2.bar(x_a, spread_usd_a, alpha=0.15, color='#2980B9', label='Spread ước tính (USD/t)', width=0.5)
     ax1.set_xlabel('Năm', fontsize=11)
-    ax1.set_ylabel('EV/EBITDA (x)', fontsize=11)
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(yr)
-    # Buy/sell zones before legend
-    ax1.axhspan(ev_med*0.5, ev_med*0.75, alpha=0.07, color='#27AE60', label='Vùng mua')
-    ax1.axhspan(ev_med*1.3, ev_med*1.8, alpha=0.07, color='#E74C3C', label='Vùng bán')
-    ax1.set_title('HPG - EV/EBITDA Lịch sử (2021-2025)', fontsize=13, fontweight='bold')
-    ax1.legend(loc='best')
+    ax1.set_ylabel('%', fontsize=11)
+    ax2.set_ylabel('Spread (USD/tấn)', fontsize=11)
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=9)
+    ax1.set_title('HPG — Spread ước tính vs Biên LNG thực tế', fontsize=13, fontweight='bold')
     ax1.grid(axis='y', alpha=0.3)
     fig.tight_layout()
-    fig.savefig(os.path.join(CHART_DIR, 'ev_ebitda_hist.png'), dpi=200, bbox_inches='tight')
+    fig.savefig(os.path.join(CHART_DIR, 'spread_vs_gp.png'), dpi=200, bbox_inches='tight')
     plt.close(fig)
+
+    # Chart 7a (quarterly): Spread & GP Margin by quarter + HRC price bars
+    q_is = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
+    q_lbls = []; q_gpm = []; q_spread = []; q_hrc_est = []
+    yr_idx = {"2021":0,"2022":1,"2023":2,"2024":3,"2025":4,"2026":5,"2027":6,"2028":7}
+    # Build historical quarterly data — spread from annual assumptions, GP margin from actual BCTC
+    for r in q_is:
+        yr = r.get("yearReport"); q = r.get("lengthReport")
+        if yr and q and q != 5:
+            lbl = f"Q{q}-{yr}"
+            rev_q = (r.get("isa3", 0) or 0) / 1e9
+            gp_q = (r.get("isa5", 0) or 0) / 1e9
+            gpm_q = (gp_q / rev_q * 100) if rev_q else 0
+            if not (0 < gpm_q < 60):
+                continue
+            q_lbls.append(lbl); q_gpm.append(round(gpm_q, 1))
+            idx = yr_idx.get(str(yr), 5)
+            ann_s = hrc_price_a[idx] - 1.6*iron_ore[idx] - 0.5*coke[idx] - conv[idx]
+            q_spread.append(round(ann_s, 0))
+            q_hrc_est.append(hrc_price_a[idx])
+    # Append Q2/2026 estimate — spread & project GP margin from spread trend
+    fc_start = len(q_lbls)
+    if q_lbls:
+        last_gpm = q_gpm[-1]; last_spr = q_spread[-1]
+        for y, qnum in [(2026, 2)]:
+            lbl = f"Q{qnum}-{y}"
+            if lbl not in q_lbls:
+                idx = yr_idx.get(str(y), 5)
+                cur_s = hrc_price_a[idx] - 1.6*iron_ore[idx] - 0.5*coke[idx] - conv[idx]
+                spr_ratio = cur_s / last_spr if last_spr else 1.0
+                q_lbls.append(lbl)
+                q_gpm.append(round(last_gpm * spr_ratio, 1))
+                q_spread.append(round(cur_s, 0))
+                q_hrc_est.append(hrc_price_a[idx])
+    nq_s = len(q_lbls)
+
+    if nq_s > 0:
+        fig, ax1 = plt.subplots(figsize=(14, 5.5))
+        x_s = np.arange(nq_s)
+        ax1.plot(x_s, q_spread, 'o-', color='#2980B9', linewidth=2, markersize=4, label='Spread (USD/t)', zorder=3)
+        ax1.bar(x_s, q_hrc_est, alpha=0.1, color='#7F8C8D', label='Giá HRC (USD/t)', width=0.7, zorder=1)
+        ax2 = ax1.twinx()
+        gpm_plot = [v if v is not None else None for v in q_gpm]
+        ax2.plot(x_s[:fc_start], gpm_plot[:fc_start], 's-', color='#E67E22', linewidth=2.5, markersize=5, label='GP Margin (%)', zorder=3)
+        ax1.set_xlabel('Quý', fontsize=11)
+        ax1.set_ylabel('Spread / Giá HRC (USD/t)', fontsize=11, color='#2980B9')
+        ax2.set_ylabel('GP Margin (%)', fontsize=11, color='#E67E22')
+        ax1.set_xticks(np.arange(0, nq_s, max(1, nq_s//12)))
+        ax1.set_xticklabels([q_lbls[i] for i in range(0, nq_s, max(1, nq_s//12))], fontsize=6, rotation=45)
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=8)
+        ax1.set_title('HPG — Spread, GP Margin & Giá HRC theo Quý', fontsize=13, fontweight='bold')
+        ax1.grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(os.path.join(CHART_DIR, 'spread_gp_quarterly.png'), dpi=200, bbox_inches='tight')
+        plt.close(fig)
+
+    # Chart 9: Quarterly Sales Volume Line Chart (HRC & XD) — read from Excel ws15
+    wb_vol = openpyxl.load_workbook(EXCEL_FILE, data_only=True)
+    ws15c = wb_vol['15_Quarterly_Data']
+    vol_labels = ['SL HRC (nghìn tấn)', 'SL XD & Thép CB (nghìn tấn)']
+    vol_start = None
+    for row in range(1, ws15c.max_row+1):
+        v = ws15c.cell(row=row, column=1).value
+        if v and 'SẢN LƯỢNG TIÊU THỤ QUÝ' in str(v):
+            vol_start = row + 2
+            break
+    if vol_start:
+        qv_header_row = vol_start - 1  # row with Q1/2023, Q2/2023, ...
+        qv_rows = {}
+        max_col = ws15c.max_column
+        for i, lbl in enumerate(vol_labels):
+            r = vol_start + i  # HRC at vol_start, XD at vol_start+1
+            vals = [ws15c.cell(row=r, column=j).value for j in range(2, max_col+1)]
+            vals = [v if isinstance(v, (int, float)) else 0 for v in vals]
+            qv_rows[lbl] = vals
+        qv_headers = [str(ws15c.cell(row=qv_header_row, column=j).value or '') for j in range(2, max_col+1)]
+        # Trim trailing empty headers & zero values
+        while qv_headers and not qv_headers[-1]:
+            qv_headers.pop()
+            for lbl in vol_labels:
+                qv_rows[lbl].pop()
+        nq = len(qv_headers)
+    wb_vol.close()
+
+    if vol_start and nq > 0:
+        fig, ax = plt.subplots(figsize=(14, 5.5))
+        x = np.arange(nq)
+        hr = qv_rows[vol_labels[0]]
+        xd = qv_rows[vol_labels[1]]
+        ax.plot(x, hr, 'o-', color='#1F4E79', linewidth=2.5, markersize=6, label='HRC', zorder=3)
+        ax.plot(x, xd, 's-', color='#E74C3C', linewidth=2.5, markersize=6, label='Thép XD', zorder=3)
+        for i in range(nq):
+            if hr[i] > 0:
+                ax.annotate(f'{hr[i]:.0f}', (x[i], hr[i]), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=7, color='#1F4E79')
+            if xd[i] > 0:
+                ax.annotate(f'{xd[i]:.0f}', (x[i], xd[i]), textcoords="offset points", xytext=(0, -14), ha='center', fontsize=7, color='#E74C3C')
+        ax.set_xlabel('Quý', fontsize=11)
+        ax.set_ylabel('nghìn tấn', fontsize=11)
+        ax.set_xticks(x)
+        ax.set_xticklabels(qv_headers, fontsize=7, rotation=45)
+        ax.set_title('HPG – Sản lượng HRC & Thép XD theo Quý', fontsize=13, fontweight='bold')
+        ax.legend(loc='upper left', fontsize=10)
+        ax.set_ylim(min(min(hr), min(xd)) * 0.85, max(max(hr), max(xd)) * 1.35)
+        ax.yaxis.set_major_locator(mticker.MultipleLocator(200))
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
+        ax.grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(os.path.join(CHART_DIR, 'quarterly_volume.png'), dpi=200, bbox_inches='tight')
+        plt.close(fig)
+
+    # ── Quarterly PE / PB / EV data from HPG_RATIOS ──
+    q_pe_pts = []; q_pb_pts = []; q_ev_pts = []; q_labels = []
+    for r in HPG_RATIOS:
+        q = r.get("quarter")
+        if q is None or q == 5: continue
+        y = int(r["year"]); qnum = int(q)
+        lbl = f"Q{qnum}-{y}"
+        pe0 = r.get("pe"); pb0 = r.get("pb"); ev0 = r.get("ev_ebitda")
+        if pe0 and 0 < pe0 < 50: q_pe_pts.append(round(pe0,1))
+        else: q_pe_pts.append(None)
+        q_pb_pts.append(round(pb0,2) if (pb0 and pb0>0) else None)
+        q_ev_pts.append(round(ev0,1) if (ev0 and ev0>0) else None)
+        q_labels.append(lbl)
+    n_ratio_q = len(q_labels)
+    x_r = np.arange(n_ratio_q)
+
+    # Chart: P/E Quarterly Line
+    fig, ax = plt.subplots(figsize=(13, 5))
+    pe_vals = [v if v else None for v in q_pe_pts]
+    ax.plot(x_r, pe_vals, 'o-', color='#1F4E79', linewidth=2, markersize=5, label='P/E', zorder=3)
+    pe_med = stats.median([v for v in pe_vals if v]) if any(v for v in pe_vals if v) else 11.0
+    ax.axhline(y=pe_med, color='#1F4E79', linestyle='--', alpha=0.5, linewidth=1, label=f'Median {pe_med:.1f}x')
+    last_pe = [v for v in pe_vals if v][-1] if any(v for v in pe_vals if v) else 0
+    ax.annotate(f'Hiện tại: {last_pe:.1f}x', (n_ratio_q-1, last_pe), textcoords="offset points",
+                xytext=(10,10), ha='left', fontsize=9, color='#C0392B', fontweight='bold')
+    ax.set_xlabel('Quý', fontsize=10); ax.set_ylabel('P/E (x)', fontsize=10)
+    ax.set_xticks(np.arange(0, n_ratio_q, max(1, n_ratio_q//12)))
+    ax.set_xticklabels([q_labels[i] for i in range(0, n_ratio_q, max(1, n_ratio_q//12))], fontsize=7, rotation=45)
+    ax.set_title('HPG — P/E theo Quý', fontsize=13, fontweight='bold')
+    ax.set_ylim(0, max([v for v in pe_vals if v] or [30])*1.2)
+    ax.yaxis.set_major_locator(mticker.MultipleLocator(5))
+    ax.legend(loc='upper left', fontsize=9); ax.grid(axis='y', alpha=0.3)
+    fig.tight_layout(); fig.savefig(os.path.join(CHART_DIR, 'pe_hist_q.png'), dpi=200, bbox_inches='tight'); plt.close(fig)
+
+    # Chart: P/B Quarterly Line
+    fig, ax = plt.subplots(figsize=(13, 5))
+    pb_vals = [v if v else None for v in q_pb_pts]
+    ax.plot(x_r, pb_vals, 's-', color='#E74C3C', linewidth=2, markersize=5, label='P/B', zorder=3)
+    pb_med = stats.median([v for v in pb_vals if v]) if any(v for v in pb_vals if v) else 1.6
+    ax.axhline(y=pb_med, color='#E74C3C', linestyle='--', alpha=0.5, linewidth=1, label=f'Median {pb_med:.2f}x')
+    ax.fill_between(x_r, pb_med*0.8, pb_med*1.2, alpha=0.08, color='#E74C3C')
+    last_pb = [v for v in pb_vals if v][-1] if any(v for v in pb_vals if v) else 0
+    ax.annotate(f'Hiện tại: {last_pb:.2f}x', (n_ratio_q-1, last_pb), textcoords="offset points",
+                xytext=(10,10), ha='left', fontsize=9, color='#C0392B', fontweight='bold')
+    ax.set_xlabel('Quý', fontsize=10); ax.set_ylabel('P/B (x)', fontsize=10)
+    ax.set_xticks(np.arange(0, n_ratio_q, max(1, n_ratio_q//12)))
+    ax.set_xticklabels([q_labels[i] for i in range(0, n_ratio_q, max(1, n_ratio_q//12))], fontsize=7, rotation=45)
+    ax.set_title('HPG — P/B theo Quý', fontsize=13, fontweight='bold')
+    ax.set_ylim(0, max([v for v in pb_vals if v] or [4])*1.2)
+    ax.yaxis.set_major_locator(mticker.MultipleLocator(0.5))
+    ax.legend(loc='upper left', fontsize=9); ax.grid(axis='y', alpha=0.3)
+    fig.tight_layout(); fig.savefig(os.path.join(CHART_DIR, 'pb_hist_q.png'), dpi=200, bbox_inches='tight'); plt.close(fig)
+
+    # Chart: EV/EBITDA Quarterly Line
+    fig, ax = plt.subplots(figsize=(13, 5))
+    ev_vals = [v if v else None for v in q_ev_pts]
+    ax.plot(x_r, ev_vals, 'D-', color='#27AE60', linewidth=2, markersize=5, label='EV/EBITDA', zorder=3)
+    ev_med = stats.median([v for v in ev_vals if v]) if any(v for v in ev_vals if v) else 9.0
+    ax.axhline(y=ev_med, color='#27AE60', linestyle='--', alpha=0.5, linewidth=1, label=f'Median {ev_med:.1f}x')
+    ax.fill_between(x_r, ev_med*0.75, ev_med*1.25, alpha=0.08, color='#27AE60')
+    ax.axhspan(ev_med*0.5, ev_med*0.75, alpha=0.07, color='#27AE60', label='Vùng mua')
+    ax.axhspan(ev_med*1.3, ev_med*1.8, alpha=0.07, color='#E74C3C', label='Vùng bán')
+    last_ev = [v for v in ev_vals if v][-1] if any(v for v in ev_vals if v) else 0
+    ax.annotate(f'Hiện tại: {last_ev:.1f}x', (n_ratio_q-1, last_ev), textcoords="offset points",
+                xytext=(10,10), ha='left', fontsize=9, color='#C0392B', fontweight='bold')
+    ax.set_xlabel('Quý', fontsize=10); ax.set_ylabel('EV/EBITDA (x)', fontsize=10)
+    ax.set_xticks(np.arange(0, n_ratio_q, max(1, n_ratio_q//12)))
+    ax.set_xticklabels([q_labels[i] for i in range(0, n_ratio_q, max(1, n_ratio_q//12))], fontsize=7, rotation=45)
+    ax.set_title('HPG — EV/EBITDA theo Quý', fontsize=13, fontweight='bold')
+    ax.set_ylim(0, max([v for v in ev_vals if v] or [25])*1.2)
+    ax.yaxis.set_major_locator(mticker.MultipleLocator(2))
+    ax.legend(loc='upper left', fontsize=9); ax.grid(axis='y', alpha=0.3)
+    fig.tight_layout(); fig.savefig(os.path.join(CHART_DIR, 'ev_hist_q.png'), dpi=200, bbox_inches='tight'); plt.close(fig)
 
     print(f"[OK] Charts saved: {CHART_DIR}")
     return True
@@ -2824,7 +3257,7 @@ def build_pdf():
     eps_2026e_val = 2600
     bvps_2026e_val = 148000e9 / SHARES
 
-    price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
+    price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.95)
     price_pb_val = PB_MULTIPLE * bvps_2026e_val
     price_pe_val = PE_MULTIPLE * eps_2026e_val
     weighted_price_val = price_ev_ebitda_val * 0.4 + price_pb_val * 0.4 + price_pe_val * 0.2
@@ -2876,7 +3309,7 @@ def build_pdf():
         fontName=FONT_BOLD, fontSize=20, alignment=TA_CENTER,
         textColor=HexColor('#27AE60'))))
     elements.append(Spacer(1, 4*mm))
-    elements.append(Paragraph("Giá mục tiêu: <b>33,500 VND</b>  |  Upside: <b>+42%</b>",
+    elements.append(Paragraph(f"Giá mục tiêu: <b>{weighted_price_val:,.0f} VND</b>  |  Upside: <b>+{upside_val:.0f}%</b>",
         ParagraphStyle('CoverSub2', fontName=FONT, fontSize=14, alignment=TA_CENTER,
                        textColor=HexColor('#1F4E79'))))
     elements.append(Spacer(1, 20*mm))
@@ -2887,12 +3320,15 @@ def build_pdf():
     # ─── Investment Summary ───
     add_section("INVESTMENT SUMMARY")
     add_body(
-        "HPG là nhà sản xuất thép tích hợp dọc lớn nhất Việt Nam với công suất ~16 triệu tấn/năm, "
-        "dẫn đầu cả thép xây dựng và HRC. Nhà máy Dung Quất 2 (5.6 triệu tấn HRC) đã vận hành full "
-        "công suất từ tháng 12/2025, đưa HPG vào nhóm sản xuất thép chi phí thấp nhất khu vực."
+        "HPG là nhà sản xuất thép tích hợp dọc lớn nhất Việt Nam với 6 nhà máy đang hoạt động "
+        "(công suất ~14,5 triệu tấn/năm + 500k TEUs container), dẫn đầu cả thép xây dựng và HRC. "
+        "Nhà máy Dung Quất 2 (5.6 triệu tấn HRC) đã vận hành full công suất từ tháng 12/2025, "
+        "đưa HPG vào nhóm sản xuất thép chi phí thấp nhất khu vực. "
+        "Thêm 3 dự án tương lai (Đắk Lắk 6M tấn, Ray cao tốc 700k tấn, Ống Long An 400k tấn) "
+        "có thể nâng tổng công suất lên ~21,6 triệu tấn/năm."
     )
     add_body(
-        "<b>Khuyến nghị: MUA</b>  |  <b>Giá mục tiêu (Base): 33,500 VND</b>  |  <b>Upside: +42%</b>"
+        f"<b>Khuyến nghị: MUA</b>  |  <b>Giá mục tiêu (Base): {weighted_price_val:,.0f} VND</b>  |  <b>Upside: +{upside_val:.0f}%</b>"
     )
     add_body("<b>Ba lý do mua:</b>")
     add_body("1. <b>DQ2 full công suất</b> — Sản lượng HRC tăng gấp đôi (~6 triệu tấn/năm), "
@@ -2908,23 +3344,25 @@ def build_pdf():
 
     add_body("<b>Thông tin cổ phiếu & Thị trường:</b>")
     add_body(f"- Giá hiện tại: {PRICE:,} VND | Vốn hóa: {MARKET_CAP/1e9:,.0f} tỷ | KLGD BQ 20 phiên: 33.2 triệu cp (~890.7 tỷ)")
-    add_body(f"- EPS TTM: {eps_hist[4]:,} VND | BVPS: {equity_hist[4]*1e9/SHARES:,.0f} VND | P/E: 14.2x | P/B: 1.25x")
+    add_body(f"- EPS TTM: {eps_hist[4]:,.0f} VND | BVPS: {equity_hist[4]*1e9/SHARES:,.0f} VND | P/E: 14.2x | P/B: 1.25x")
     add_body(f"- Cổ đông sáng lập: Trần Đình Long & gia đình (~35.7%)")
     add_body(f"- Biến động giá: 1 tháng +3.3% | 3 tháng +6.9% | YTD +6.1% (VNINDEX: +4.4% / -6.3% / -1.9%)")
     add_body(f"<b>Kế hoạch ĐHĐCĐ 2026 vs Thực hiện 2025:</b>")
     plan_dt_kh = 170000; plan_dt_th = revenue_hist[4]
     plan_ln_kh = 15000; plan_ln_th = ni_hist[4]
-    add_body(f"- DT: KH {plan_dt_kh:,} tỷ → TH {plan_dt_th:,} tỷ (hoàn thành {plan_dt_th/plan_dt_kh*100:.0f}%)")
-    add_body(f"- LNST: KH {plan_ln_kh:,} tỷ → TH {plan_ln_th:,} tỷ (hoàn thành {plan_ln_th/plan_ln_kh*100:.0f}% — vượt 3%)")
+    add_body(f"- DT: KH {plan_dt_kh:,} tỷ → TH {plan_dt_th:,.0f} tỷ (hoàn thành {plan_dt_th/plan_dt_kh*100:.0f}%)")
+    add_body(f"- LNST: KH {plan_ln_kh:,} tỷ → TH {plan_ln_th:,.0f} tỷ (hoàn thành {plan_ln_th/plan_ln_kh*100:.0f}% — vượt 3%)")
     add_body(f"- KH 2026: DT 210,000 tỷ (+34.5% YoY) | LNST 22,000 tỷ (+42.4% YoY)")
     add_body(f"- Q1/2026: LNST {get_q(is_qs,2026,1,'isa22'):,.0f} tỷ = {get_q(is_qs,2026,1,'isa22')/22000*100:.1f}% KH năm")
+    add_body(f"- Q1 Core NPAT (loại DTTC ĐB ~4,915 tỷ từ Phố Nối): ~5,200 tỷ (+55% YoY)")
+    add_body(f"- Broker targets: SSI 36k | VNDirect P/E 9.7x | SHS 218k DT/25k LNST | VCBS 38k | BVSC 38.65k")
 
     add_body("<b>Snapshot tài chính (2025-2028E):</b>")
     snap_headers = ["Chỉ tiêu", "2025", "2026E", "2027E", "2028E", "CAGR"]
     snap_data = [
-        ["Doanh thu (tỷ)", f"{revenue_hist[4]:,}", f"{revenue_fc[0]:,}",
+        ["Doanh thu (tỷ)", f"{revenue_hist[4]:,.0f}", f"{revenue_fc[0]:,}",
          f"{revenue_fc[1]:,}", f"{revenue_fc[2]:,}", "20.0%"],
-        ["LNST (tỷ)", f"{ni_hist[4]:,}", f"{ni_fc[0]:,}",
+        ["LNST (tỷ)", f"{ni_hist[4]:,.0f}", f"{ni_fc[0]:,}",
          f"{ni_fc[1]:,}", f"{ni_fc[2]:,}", "30.0%"],
         ["Biên LNG (%)", "15.7%", "17.5%", "19.0%", "20.0%", "-"],
         ["EPS (VND)", "1,830", "2,600", "3,320", "4,030", "30.1%"],
@@ -2941,6 +3379,27 @@ def build_pdf():
         "Chuỗi giá trị thép: <b>Quặng sắt + Than cốc → Thiêu kết → Lò cao (BOF) → Thép lỏng → "
         "Đúc phôi → Cán nóng (HRC) / Cán dài (Thép XD)</b>. HPG là doanh nghiệp duy nhất ở VN "
         "tích hợp hoàn chỉnh từ khai thác quặng (trữ lượng 320 triệu tấn) đến sản xuất thép thành phẩm."
+    )
+    add_body("<b>Các nhà máy hiện hữu của HPG:</b>")
+    fac_headers = ["Nhà máy", "Địa điểm", "Sản phẩm", "Công suất", "Trạng thái"]
+    fac_data = [
+        ["Dung Quất 1", "Quảng Ngãi", "Thép XD, HRC", "5,000,000 tấn/năm", "Hoạt động"],
+        ["Dung Quất 2", "Quảng Ngãi", "Thép cuộn HRC", "5,600,000 tấn/năm", "Hoạt động"],
+        ["Hải Dương", "Hải Dương", "Thép XD, phôi thép", "2,500,000 tấn/năm", "Hoạt động"],
+        ["Ống thép HPG", "Hưng Yên", "Ống thép", "1,000,000 tấn/năm", "Hoạt động"],
+        ["Tôn Hòa Phát", "Hưng Yên", "Tôn mạ kẽm, tôn màu", "400,000 tấn/năm", "Hoạt động"],
+        ["Container HPG", "Q.Ngãi/H.Yên", "Vỏ container rỗng", "500,000 TEUs/năm", "Hoạt động"],
+        ["Đắk Lắk", "Đắk Lắk", "Thép thanh lốp, chế tạo", "6,000,000 tấn/năm", "Chưa HĐ"],
+        ["Ray cao tốc", "Q.Ngãi", "Thép ray", "700,000 tấn/năm", "Chưa HĐ"],
+        ["Ống thép Long An", "Long An", "Ống thép", "400,000 tấn/năm", "Chưa HĐ"],
+    ]
+    add_table(fac_headers, fac_data,
+              [doc.width*0.18, doc.width*0.15, doc.width*0.23, doc.width*0.22, doc.width*0.12])
+    add_body(
+        "<b>Tổng công suất thép thành phẩm đang hoạt động:</b> DQ1 (5,0M tấn) + DQ2 (5,6M) + "
+        "Hải Dương (2,5M) + Ống thép (1,0M) + Tôn (0,4M) = <b>~14,5 triệu tấn/năm</b>. "
+        "Container: 500,000 TEUs. Nếu thêm Đắk Lắk (6M) + Ray (0,7M) + Long An (0,4M), "
+        "tổng tiềm năng đạt <b>~21,6 triệu tấn/năm</b>."
     )
     add_body(
         "<b>Capture value</b>: HPG chiếm ~40% thép xây dựng và ~70% HRC nội địa. "
@@ -2969,7 +3428,7 @@ def build_pdf():
     add_body(
         "<b>Đánh giá Moat: RỘNG</b>"
     )
-    add_body("1. <b>Chi phí thấp (Cost Advantage)</b>: Quy mô lớn nhất VN (16M tấn). "
+    add_body("1. <b>Chi phí thấp (Cost Advantage)</b>: Quy mô lớn nhất VN (14,5M tấn + 500k TEUs). "
              "DQ2 sử dụng công nghệ lò cao BOF hiện đại, tiết kiệm 15-20% chi phí sản xuất. "
              "Tự chủ 50% quặng sắt giảm chi phí logistics.")
     add_body("2. <b>Hiệu suất theo quy mô (Efficient Scale)</b>: Thị trường VN chỉ đủ chỗ cho "
@@ -3112,8 +3571,12 @@ def build_pdf():
     )
     add_body("- <b>Đầu tư công — động lực dài hạn:</b> Kế hoạch trung hạn 2026-2030: ~8.5 triệu tỷ đồng "
              "(gấp 3x giai đoạn 2021-2025). Riêng 2026: ~995.4 nghìn tỷ (+10.4% YoY). "
-             "Đây là nguồn cầu khổng lồ đảm bảo sản lượng thép xây dựng cho HPG trong 5 năm tới."
-    )
+             "Đây là nguồn cầu khổng lồ đảm bảo sản lượng thép xây dựng cho HPG trong 5 năm tới.")
+    add_body("- <b>Cập nhật thị trường 4 tháng đầu 2026 (Nguoiquansat 29/05):</b> Ngành thép SX 11.67M tấn "
+             "(+23.5% YoY), tiêu thụ 11.86M tấn (+14.1%). HPG XD 4M: 1.9M tấn (~36% SX ngành, >46% nội địa). "
+             "HRC toàn ngành 4M: 3.36M tấn (+32%), XK 601k (gần gấp đôi). "
+             "Tôn mạ toàn ngành: -17% SX (HSG 24.4% thị phần nội địa, HPG 10.51%). "
+             "Đầu tư công 4M: 187k tỷ (+10.4%).")
 
     elements.append(PageBreak())
     add_section("4. PHÂN TÍCH TÀI CHÍNH & DỰ BÁO")
@@ -3121,11 +3584,11 @@ def build_pdf():
     # Financial table
     fin_headers = ["Chỉ tiêu (tỷ VND)", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"]
     fin_data = [
-        ["Doanh thu", f"{revenue_hist[0]:,}", f"{revenue_hist[1]:,}", f"{revenue_hist[2]:,}",
-         f"{revenue_hist[3]:,}", f"{revenue_hist[4]:,}", f"{revenue_fc[0]:,}",
+["Doanh thu", f"{revenue_hist[0]:,.0f}", f"{revenue_hist[1]:,.0f}", f"{revenue_hist[2]:,.0f}",
+         f"{revenue_hist[3]:,.0f}", f"{revenue_hist[4]:,.0f}", f"{revenue_fc[0]:,}",
          f"{revenue_fc[1]:,}", f"{revenue_fc[2]:,}"],
-        ["LNST", f"{ni_hist[0]:,}", f"{ni_hist[1]:,}", f"{ni_hist[2]:,}",
-         f"{ni_hist[3]:,}", f"{ni_hist[4]:,}", f"{ni_fc[0]:,}",
+["LNST", f"{ni_hist[0]:,.0f}", f"{ni_hist[1]:,.0f}", f"{ni_hist[2]:,.0f}",
+         f"{ni_hist[3]:,.0f}", f"{ni_hist[4]:,.0f}", f"{ni_fc[0]:,}",
          f"{ni_fc[1]:,}", f"{ni_fc[2]:,}"],
         ["GP Margin", "27.5%", "11.9%", "10.9%", "13.3%", "15.7%", "17.5%", "19.0%", "20.0%"],
         ["EBITDA", f"{revenue_hist[0]*0.12+da_hist[0]:,.0f}",
@@ -3158,6 +3621,11 @@ def build_pdf():
         ("growth.png", "Biểu đồ 3: Tăng trưởng Doanh thu YoY"),
         ("turnover.png", "Biểu đồ 4: Vòng quay Hàng tồn kho & Phải thu"),
         ("quarterly.png", "Biểu đồ 5: KQKD theo Quý (Q1/2024 - Q1/2026)"),
+        ("quarterly_bs.png", "Biểu đồ 6: Diễn biến Tài sản & Nợ theo Quý"),
+        ("spread_vs_gp.png", "Biểu đồ 7: Spread ước tính vs Biên LNG thực tế (theo Năm)"),
+        ("spread_gp_quarterly.png", "Biểu đồ 7A: Spread, GP Margin & Giá HRC theo Quý"),
+        ("quarterly_quality.png", "Biểu đồ 8: Chất lượng Tài sản & KQKD (đa chiều)"),
+        ("quarterly_volume.png", "Biểu đồ 9: Sản lượng tiêu thụ theo Quý (HRC, XD, Ống thép, Tôn mạ)"),
     ]:
         chart_path = os.path.join(CHART_DIR, chart_name)
         if os.path.exists(chart_path):
@@ -3165,86 +3633,225 @@ def build_pdf():
             elements.append(Paragraph(caption, styles['SmallText']))
             elements.append(Image(chart_path, width=460, height=230))
 
-    # P/E P/B chart
-    pe_pb_path = os.path.join(CHART_DIR, "pe_pb_hist.png")
-    if os.path.exists(pe_pb_path):
+    # P/E chart
+    pe_path = os.path.join(CHART_DIR, "pe_hist_q.png")
+    if os.path.exists(pe_path):
         elements.append(Spacer(1, 4*mm))
-        elements.append(Paragraph("Biểu đồ 6: P/E & P/B Lịch sử (2021-2025) với median band", styles['SmallText']))
-        elements.append(Image(pe_pb_path, width=460, height=260))
+        elements.append(Paragraph("Biểu đồ 10: P/E theo Quý với median band", styles['SmallText']))
+        elements.append(Image(pe_path, width=460, height=220))
+
+    # P/B chart
+    pb_path = os.path.join(CHART_DIR, "pb_hist_q.png")
+    if os.path.exists(pb_path):
+        elements.append(Spacer(1, 4*mm))
+        elements.append(Paragraph("Biểu đồ 11: P/B theo Quý với median band ±20%", styles['SmallText']))
+        elements.append(Image(pb_path, width=460, height=220))
 
     # EV/EBITDA chart
-    ev_path = os.path.join(CHART_DIR, "ev_ebitda_hist.png")
+    ev_path = os.path.join(CHART_DIR, "ev_hist_q.png")
     if os.path.exists(ev_path):
         elements.append(Spacer(1, 4*mm))
-        elements.append(Paragraph("Biểu đồ 7: EV/EBITDA Lịch sử (2021-2025) với median band", styles['SmallText']))
-        elements.append(Image(ev_path, width=460, height=260))
+        elements.append(Paragraph("Biểu đồ 12: EV/EBITDA theo Quý với buy/sell zones", styles['SmallText']))
+        elements.append(Image(ev_path, width=460, height=220))
 
     elements.append(PageBreak())
 
+    # ─── Concise: Projection Summary ───
+    elements.append(Spacer(1, 4*mm))
+    add_section("4A. DỰ PHÓNG 2026E")
+    add_body(
+        f"<b>Doanh thu 2026E:</b> {revenue_fc[0]:,} tỷ (+{revenue_fc[0]/revenue_hist[4]*100-100:.0f}% YoY). "
+        f"Giả định: thép XD 3,0 triệu tấn, HRC 6,0 triệu tấn, giá bán thép XD 610 USD/t, HRC 620 USD/t. "
+        f"Đầu vào: quặng 105 USD/t (-3% YoY), coke 240 USD/t (-4% YoY), chi phí chuyển đổi 200 USD/t (+11% — DQ2 mới).<br/>"
+        f"<b>Biên LNG:</b> 17,5% (từ spread HRC ~132 USD/t, cải thiện nhờ DQ2 full + tồn kho giá rẻ).<br/>"
+        f"<b>LNST 2026E:</b> ước {ni_fc[0]:,} tỷ (+{ni_fc[0]/ni_hist[4]*100-100:.0f}% YoY). "
+        f"Q1/2026 đạt {get_q(is_qs,2026,1,'isa22'):,.0f} tỷ (chiếm ~41% KH năm). "
+        f"Kỳ vọng Q2-Q4 cao hơn nhờ mùa xây dựng cao điểm."
+    )
+
     # ─── New: Quarterly Trend Analysis ───
     add_section("4B. PHÂN TÍCH XU HƯỚNG QUÝ (Q1/2026)")
+    def q_val(section, yr, q, field):
+        recs = dict(IS=is_qs, BS=bs_qs, CF=cf_qs).get(section)
+        return get_q(recs, yr, q, field)
+    # ── Fetch Q1/2026, Q4/2025, Q1/2025 ──
+    rev_c = q_val('IS',2026,1,'isa3'); rev_p = q_val('IS',2025,4,'isa3'); rev_y = q_val('IS',2025,1,'isa3')
+    cogs_c = abs(q_val('IS',2026,1,'isa4')); cogs_p = abs(q_val('IS',2025,4,'isa4')); cogs_y = abs(q_val('IS',2025,1,'isa4'))
+    gp_c = rev_c - cogs_c; gp_p = rev_p - cogs_p; gp_y = rev_y - cogs_y
+    ni_c = q_val('IS',2026,1,'isa22'); ni_p = q_val('IS',2025,4,'isa22'); ni_y = q_val('IS',2025,1,'isa22')
+    ta_c = q_val('BS',2026,1,'bsa53'); ta_p = q_val('BS',2025,4,'bsa53'); ta_y = q_val('BS',2025,1,'bsa53')
+    inv_c = q_val('BS',2026,1,'bsa15'); inv_p = q_val('BS',2025,4,'bsa15'); inv_y = q_val('BS',2025,1,'bsa15')
+    rec_c = q_val('BS',2026,1,'bsa8'); rec_p = q_val('BS',2025,4,'bsa8'); rec_y = q_val('BS',2025,1,'bsa8')
+    debt_c = q_val('BS',2026,1,'bsa56')+q_val('BS',2026,1,'bsa71')
+    debt_p = q_val('BS',2025,4,'bsa56')+q_val('BS',2025,4,'bsa71')
+    debt_y = q_val('BS',2025,1,'bsa56')+q_val('BS',2025,1,'bsa71')
+    eq_c = q_val('BS',2026,1,'bsa78'); eq_p = q_val('BS',2025,4,'bsa78'); eq_y = q_val('BS',2025,1,'bsa78')
+    cash_c = q_val('BS',2026,1,'bsa2'); cash_p = q_val('BS',2025,4,'bsa2'); cash_y = q_val('BS',2025,1,'bsa2')
+    gm_c = gp_c/rev_c*100; gm_p = gp_p/rev_p*100; gm_y = gp_y/rev_y*100
+
+    # ── Helper: % change or "N/A" ──
+    def pct_chg(new, old):
+        if old == 0: return "N/A"
+        return f"{'+' if new>=old else ''}{(new/old-1)*100:+.1f}%"
+    def pp_chg(new, old):
+        return f"{'+' if new>=old else ''}{new-old:+.1f}pp"
+
+    # ── Table 1: So sánh với quý trước (QoQ) ──
+    add_body("<b>1. So sánh với quý trước (Q vs Q4/2025):</b>")
+    tbl_qoq = [
+        ["Doanh thu (tỷ)", f"{rev_p:,.0f}", f"{rev_c:,.0f}", pct_chg(rev_c, rev_p), "TĂNG — DQ2 full + giá HRC phục hồi"],
+        ["LNST (tỷ)", f"{ni_p:,.0f}", f"{ni_c:,.0f}", pct_chg(ni_c, ni_p), "TĂNG MẠNH — spread nở + sản lượng cao"],
+        ["Biên LNG (%)", f"{gm_p:.1f}%", f"{gm_c:.1f}%", pp_chg(gm_c, gm_p), "CẢI THIỆN — DQ2 giúp giảm chi phí"],
+        ["Tổng TS (tỷ)", f"{ta_p:,.0f}", f"{ta_c:,.0f}", pct_chg(ta_c, ta_p), "MỞ RỘNG — đầu tư DQ2 hoàn tất"],
+        ["Hàng tồn kho (tỷ)", f"{inv_p:,.0f}", f"{inv_c:,.0f}", pct_chg(inv_c, inv_p), "↑ — dự trữ NVL cho SX cao"],
+        ["Phải thu (tỷ)", f"{rec_p:,.0f}", f"{rec_c:,.0f}", pct_chg(rec_c, rec_p), "ỔN ĐỊNH — siết chặt chính sách TD"],
+        ["Nợ vay (tỷ)", f"{debt_p:,.0f}", f"{debt_c:,.0f}", pct_chg(debt_c, debt_p), "GIẢM — không vay thêm DQ2"],
+        ["VCSH (tỷ)", f"{eq_p:,.0f}", f"{eq_c:,.0f}", pct_chg(eq_c, eq_p), "TĂNG — LN giữ lại"],
+        ["Tiền mặt (tỷ)", f"{cash_p:,.0f}", f"{cash_c:,.0f}", pct_chg(cash_c, cash_p), "TĂNG — FCF chuyển dương"],
+    ]
+    add_table(["Chỉ tiêu", "Q4/2025", "Q1/2026", "QoQ", "Đánh giá"], tbl_qoq, [90, 65, 65, 55, 150])
+
+    # ── Table 2: So sánh cùng kỳ (YoY) ──
+    add_body("<b>2. So sánh cùng kỳ (Q1/2026 vs Q1/2025):</b>")
+    tbl_yoy = [
+        ["Doanh thu (tỷ)", f"{rev_y:,.0f}", f"{rev_c:,.0f}", pct_chg(rev_c, rev_y), "TĂNG — DQ2 chưa full Q1/2025"],
+        ["LNST (tỷ)", f"{ni_y:,.0f}", f"{ni_c:,.0f}", pct_chg(ni_c, ni_y), "TĂNG MẠNH — chu kỳ HRC thuận lợi"],
+        ["Biên LNG (%)", f"{gm_y:.1f}%", f"{gm_c:.1f}%", pp_chg(gm_c, gm_y), "CẢI THIỆN — DQ2 giúp giảm giá thành"],
+        ["Tổng TS (tỷ)", f"{ta_y:,.0f}", f"{ta_c:,.0f}", pct_chg(ta_c, ta_y), "MỞ RỘNG — DQ2 đi vào hoạt động"],
+        ["Hàng tồn kho (tỷ)", f"{inv_y:,.0f}", f"{inv_c:,.0f}", pct_chg(inv_c, inv_y), "TĂNG — quy mô SX mở rộng"],
+        ["Phải thu (tỷ)", f"{rec_y:,.0f}", f"{rec_c:,.0f}", pct_chg(rec_c, rec_y), "TĂNG THEO — tương xứng DT"],
+        ["Nợ vay (tỷ)", f"{debt_y:,.0f}", f"{debt_c:,.0f}", pct_chg(debt_c, debt_y), "TĂNG — vay DQ2, đang giảm dần"],
+        ["VCSH (tỷ)", f"{eq_y:,.0f}", f"{eq_c:,.0f}", pct_chg(eq_c, eq_y), "TĂNG — LNGL + phát hành CP"],
+        ["Tiền mặt (tỷ)", f"{cash_y:,.0f}", f"{cash_c:,.0f}", pct_chg(cash_c, cash_y), "TĂNG — FCF chuyển dương"],
+    ]
+    add_table(["Chỉ tiêu", "Q1/2025", "Q1/2026", "YoY", "Đánh giá"], tbl_yoy, [90, 65, 65, 55, 150])
+
+    # ── Đánh giá tổng quan ──
     add_body(
-        f"<b>Doanh thu Q1/2026: 52,901 tỷ (+40.5% YoY)</b> — Mức cao nhất từ trước đến nay. "
+        f"<b>Đánh giá tổng quan:</b> KQKD Q1/2026 khởi sắc trên cả 2 chiều so sánh: "
+        f"(i) <b>QoQ:</b> Doanh thu {pct_chg(rev_c, rev_p)}, LNST {pct_chg(ni_c, ni_p)}, GM {pp_chg(gm_c, gm_p)}; "
+        f"(ii) <b>YoY:</b> Doanh thu {pct_chg(rev_c, rev_y)}, LNST {pct_chg(ni_c, ni_y)}, GM {pp_chg(gm_c, gm_y)}. "
+        f"Cấu trúc tài sản lành mạnh: nợ vay giảm, tiền mặt tăng. "
+        f"Đây là dấu hiệu điển hình của giai đoạn <b>thu hoạch</b> sau đầu tư DQ2."
+    )
+    add_body(
+        f"<b>Doanh thu Q1/2026: {rev_c:,.0f} tỷ ({pct_chg(rev_c, rev_y)} YoY)</b> — Mức cao nhất từ trước đến nay. "
         f"DQ2 full công suất từ T12/2025 đóng góp ~6 triệu tấn HRC/năm, tương đương 120-140 nghìn tỷ doanh thu. "
         f"Q1 thường là quý thấp nhất trong năm (Tết Nguyên đán). Kỳ vọng Q2-Q4 cao hơn 15-20% khi mùa xây dựng cao điểm."
     )
     add_body(
-        f"<b>Biên LNG Q1/2026: {get_q(is_qs,2026,1,'isa5')/get_q(is_qs,2026,1,'isa3')*100:.1f}%</b> — "
-        f"Cải thiện nhẹ so với 2025 (15.7%) nhưng chưa phản ánh hết lợi thế DQ2. Nguyên nhân: "
-        f"(1) DQ2 chạy non tải trong tháng đầu năm, (2) tồn kho giá cao Q4/2025 chưa tiêu thụ hết. "
-        f"Dự báo GM cải thiện lên 17-18% từ Q2/2026 khi tồn kho giá rẻ (quặng 105 USD/tấn) được ghi nhận."
+        f"<b>Biên LNG Q1/2026: {gm_c:.1f}%</b> — "
+        f"Cải thiện {gm_c-gm_p:+.1f}pp QoQ (so với {gm_p:.1f}% Q4/2025) và {gm_c-gm_y:+.1f}pp YoY (so với {gm_y:.1f}% Q1/2025) nhờ "
+        f"(1) DQ2 full công suất giảm ĐMTK, (2) tồn kho giá rẻ bắt đầu được ghi nhận. "
+        f"Dự báo GM tiếp tục cải thiện lên 17-18% khi DQ2 chạy ổn định và spread nở ra."
     )
     add_body(
-        f"<b>LNST Q1/2026: 8,994 tỷ (=40.9% kế hoạch năm)</b> — Khởi đầu rất tích cực. "
-        f"Nếu HPG duy trì LNST bình quân 6,000-7,000 tỷ/ quý trong Q2-Q4, cả năm có thể đạt 26-28,000 tỷ, "
-        f"vượt ~25-30% kế hoạch ĐHĐCĐ (22,000 tỷ). Đây là catalyst quan trọng cho cổ phiếu."
+        f"<b>LNST Q1/2026: {ni_c:,.0f} tỷ ({pct_chg(ni_c, ni_p)} QoQ, {pct_chg(ni_c, ni_y)} YoY)</b> — "
+        f"Khởi đầu rất tích cực. Nếu HPG duy trì LNST bình quân 6,000-7,000 tỷ/quý trong Q2-Q4, "
+        f"cả năm có thể đạt 26-28,000 tỷ, vượt ~25-30% kế hoạch ĐHĐCĐ (22,000 tỷ)."
     )
     add_body(
-        f"<b>Dòng tiền & Vay nợ:</b> CFO Q1/2026 duy trì mạnh, CAPEX giảm rõ rệt khi DQ2 đã xong. "
-        f"D/E giảm từ 0.46x (2025) xuống ~{(get_q(bs_qs,2026,1,'bsa56')+get_q(bs_qs,2026,1,'bsa71'))/max(get_q(bs_qs,2026,1,'bsa78'),1):.2f}x (Q1/2026). "
-        f"FCF dự kiến chuyển dương từ 2026 — HPG không cần huy động vốn thêm cho giai đoạn hiện tại."
+        f"<b>Tài sản & Nguồn vốn:</b> Tổng tài sản {ta_c:,.0f} tỷ ({pct_chg(ta_c, ta_p)} QoQ, {pct_chg(ta_c, ta_y)} YoY). "
+        f"Hàng tồn kho {inv_c:,.0f} tỷ ({(inv_c/rev_c)*365:.0f} ngày doanh thu — phù hợp chu kỳ SX). "
+        f"Nợ vay {debt_c:,.0f} tỷ (giảm {(debt_p-debt_c):,.0f} tỷ so với Q4/2025). "
+        f"D/E = {debt_c/eq_c:.2f}x (an toàn). Tiền mặt {cash_c:,.0f} tỷ. "
+        f"FCF dự kiến chuyển dương từ 2026 — HPG không cần huy động vốn thêm."
     )
+
+    # ── Lũy kế từ đầu năm ──
+    plan_ni = 22000  # kế hoạch LNST 2026 ĐHĐCĐ
     add_body(
-        "<b>Xu hướng dài hạn (2018-2026):</b><br/>"
-        "- Doanh thu quý tăng trưởng kép ~12%/năm, phản ánh mở rộng năng lực sản xuất<br/>"
-        "- Lợi nhuận biến động theo chu kỳ: đỉnh 2021 (giá thép cao), đáy 2023 (giá HRC 480 USD/tấn)<br/>"
-        "- GM biến động 10-28%. Đáy 2023, phục hồi từ 2024. DQ2 giúp GM ổn định hơn ở 17-20%<br/>"
-        "- CFO luôn dương qua mọi chu kỳ — khác biệt so với nhiều doanh nghiệp thép khác"
+        "<b>3. Lũy kế từ đầu năm 2026 & tiến độ kế hoạch:</b><br/>"
+        f"- <b>Lũy kế 3T/2026:</b> Doanh thu {rev_c:,.0f} tỷ, LNST {ni_c:,.0f} tỷ, biên LNG {gm_c:.1f}%. "
+        f"(So với lũy kế 3T/2025: DT {pct_chg(rev_c, rev_y)}, LNST {pct_chg(ni_c, ni_y)}).<br/>"
+        f"- <b>Tiến độ kế hoạch năm:</b> LNST Q1 đã đạt {ni_c/plan_ni*100:.1f}% kế hoạch ĐHĐCĐ (22,000 tỷ). "
+        f"Nếu duy trì ~6,000-7,000 tỷ/quý cho 9 tháng còn lại, HPG có thể đạt 26-28,000 tỷ, vượt 25-30% kế hoạch.<br/>"
+        f"- <b>Tài sản & Nợ (cuối Q1/2026):</b> Tổng TS {ta_c:,.0f} tỷ, nợ vay {debt_c:,.0f} tỷ, "
+        f"VCSH {eq_c:,.0f} tỷ. So với cuối Q1/2025: TS {pct_chg(ta_c, ta_y)}, nợ {pct_chg(debt_c, debt_y)}. "
+        f"D/E {debt_c/eq_c:.2f}x (Q1/2025: {debt_y/eq_y:.2f}x)."
+    )
+
+    # ── Lũy kế dài hạn: đánh giá xu hướng dài hạn ──
+    add_body(
+        "<b>4. Đánh giá lũy kế dài hạn (2018 - nay):</b><br/>"
+        "- <b>Chu kỳ 1 (2018-2020):</b> Tăng trưởng nóng nhờ thép XD, biên LNG 15-20%. "
+        "HPG tích lũy vốn cho DQ2.<br/>"
+        "- <b>Chu kỳ 2 (2021-2022):</b> Đỉnh lợi nhuận nhờ giá thép toàn cầu (HRC >900 USD). "
+        "Biên LNG đạt đỉnh 27.5% (2021). ROE >30%.<br/>"
+        "- <b>Chu kỳ 3 (2023-2024):</b> Đáy chu kỳ — giá HRC rơi về 480 USD. "
+        "Biên LNG chỉ ~10-13%. HPG đầu tư DQ2 mạnh (CAPEX ~25k tỷ/năm). D/E tăng lên 0.6x.<br/>"
+        "- <b>Chu kỳ 4 (2025-nay):</b> Phục hồi + thu hoạch. DQ2 full công suất, "
+        f"biên LNG Q1/2026 đạt {gm_c:.1f}% (cao nhất từ 2022). "
+        "D/E giảm, FCF dương. Kỳ vọng đây là chu kỳ đỉnh mới tương tự 2021.<br/><br/>"
+        f"<b>Kết luận lũy kế:</b> Trong 8 năm qua, HPG đã đầu tư ~100 nghìn tỷ vào DQ2 "
+        f"(tổng tài sản từ {q_val('BS',2018,1,'bsa53'):,.0f} tỷ đầu 2018 lên {ta_c:,.0f} tỷ Q1/2026). "
+        f"DQ2 là bước ngoặt: biến HPG từ nhà sản xuất thép XD nội địa thành "
+        f"tập đoàn thép hợp nhất (HRC + XD) quy mô 8.5 triệu tấn, top đầu ASEAN. "
+        f"Với nợ vay đã qua đỉnh và FCF chuyển dương, HPG bước vào giai đoạn "
+        f"<b>thu hoạch tiền mặt</b> — lợi nhuận cao, cổ tức tăng."
     )
 
     # ─── New: Accounting Quality ───
     elements.append(Spacer(1, 4*mm))
     add_section("4C. CHẤT LƯỢNG LỢI NHUẬN & KẾ TOÁN")
+    # ── Profit decomposition: core vs one-off ──
+    def _q_is(y,q,f): return get_q(is_qs if 'is' in str(True) else is_qs, y, q, f)  # noqa
+    op_p = q_val('IS',2026,1,'isa11')
+    fin_i = q_val('IS',2026,1,'isa6')
+    fin_c = q_val('IS',2026,1,'isa7')
+    sga = abs(q_val('IS',2026,1,'isa9'))+abs(q_val('IS',2026,1,'isa10'))
+    other_inc = q_val('IS',2026,1,'isa14')
+    gp = q_val('IS',2026,1,'isa5')
+    ebit_core = gp - sga
+    # Historical comparison
+    q_hist_op = [(q_val('IS',y,q,'isa11'), q_val('IS',y,q,'isa6'), q_val('IS',y,q,'isa14')) for y,q in [(2025,4),(2025,3),(2025,2),(2025,1)]]
+    hist_avg_fin = sum(f[1] for f in q_hist_op)/4
+    norm_npat = (ebit_core - abs(q_val('IS',2026,1,'isa8')) + other_inc) * (1-0.12) if False else 0  # placeholder
+
     add_body(
-        "<b>Đánh giá chất lượng lợi nhuận HPG: TỐT</b>"
+        "<b>1. Phân tích lợi nhuận Q1/2026: Core vs Đột biến</b><br/>"
+        f"- Lợi nhuận HĐKD (isa11): <b>{op_p:,.0f} tỷ</b>. "
+        f"Trong đó: Lãi gộp {gp:,.0f} tỷ, DTTC {fin_i:,.0f} tỷ, CPTC {abs(fin_c):,.0f} tỷ, CPBH&QL {sga:,.0f} tỷ.<br/>"
+        f"- <b>DTTC Q1/2026: {fin_i:,.0f} tỷ</b> — cao bất thường so với bình quân các quý trước ({hist_avg_fin:,.0f} tỷ). "
+        f"Chênh lệch: {fin_i-hist_avg_fin:+,.0f} tỷ. Nguyên nhân có thể: (i) lãi tỷ giá do USD giảm, "
+        f"(ii) cổ tức từ các công ty con, (iii) lãi tiền gửi lớn. <b>Cần kiểm tra thuyết minh BCTC.</b><br/>"
+        f"- Thu nhập khác (isa14): {other_inc:,.0f} tỷ (không đáng kể).<br/>"
+        f"- <b>Kết luận:</b> Lợi nhuận Q1/2026 có ~{fin_i-hist_avg_fin:+,.0f} tỷ từ DTTC bất thường. "
+        f"Nếu loại trừ, LNST điều chỉnh ~{(ebit_core-abs(q_val('IS',2026,1,'isa8'))+other_inc)*(1-0.12):,.0f} tỷ (so với báo cáo 8,994 tỷ). "
+        f"Các quý sau dự kiến LNST core ~4,500-5,000 tỷ/quý (không phải 2,000 tỷ) — "
+        f"vẫn là mức rất tốt nhờ DQ2 full năm."
     )
+    # ── Historical quality metrics ──
     cfo_ni_avg = sum(cfo_hist[i]/ni_hist[i] for i in range(5))/5
     add_body(
-        f"1. <b>Cash Conversion (CFO/LNST): {cfo_ni_avg:.2f}x</b> (bình quân 2021-2025) — "
+        f"2. <b>Cash Conversion (CFO/LNST): {cfo_ni_avg:.2f}x</b> (bình quân 2021-2025) — "
         f"Trên 1.0 chứng tỏ lợi nhuận được đảm bảo bằng tiền mặt thực, không phải dồn tích ảo. "
         f"Đây là điểm mạnh của HPG so với nhiều doanh nghiệp cùng ngành."
     )
     add_body(
-        f"2. <b>Accruals Ratio: {(cfo_hist[4]-ni_hist[4])/total_assets_hist[4]*100:.1f}%</b> (2025) — "
+        f"3. <b>Accruals Ratio: {(cfo_hist[4]-ni_hist[4])/total_assets_hist[4]*100:.1f}%</b> (2025) — "
         f"Chỉ số dồn tích thấp (<5%), phản ánh chênh lệch nhỏ giữa dòng tiền và lợi nhuận. "
         f"Các khoản phải thu và tồn kho tăng tương xứng với quy mô hoạt động."
     )
     add_body(
-        f"3. <b>Vòng quay tồn kho: ~{sum(inventory_hist[i]/cogs_hist[i]*365 for i in range(5))/5:.0f} ngày</b> — "
+        f"4. <b>Vòng quay tồn kho: ~{sum(inventory_hist[i]/cogs_hist[i]*365 for i in range(5))/5:.0f} ngày</b> — "
         f"Ổn định, phù hợp chu kỳ sản xuất thép (lò cao BOF: 60-90 ngày + dự trữ nguyên liệu 30 ngày). "
         f"Không có hiện tượng tồn kho tăng đột biến so với doanh thu."
     )
     add_body(
-        f"4. <b>Phải thu/Doanh thu: {receivables_hist[4]/revenue_hist[4]*100:.1f}%</b> — "
+        f"5. <b>Phải thu/Doanh thu: {receivables_hist[4]/revenue_hist[4]*100:.1f}%</b> — "
         f"Giảm dần từ {receivables_hist[0]/revenue_hist[0]*100:.0f}% (2021), cho thấy HPG siết chặt chính sách tín dụng. "
         f"HPG bán hàng chủ yếu qua đại lý (thu tiền nhanh) và khách hàng công nghiệp (ngắn hạn 30-45 ngày)."
     )
     add_body(
         "<b>Rủi ro kế toán cần theo dõi:</b><br/>"
+        f"- <b>DTTC bất thường:</b> Q1/2026 DTTC {fin_i:,.0f} tỷ (gấp {fin_i/hist_avg_fin:.1f}x bình quân). "
+        f"Nếu là lãi tỷ giá chưa thực hiện (OCI), các quý sau có thể hoàn nhập khi USD tăng trở lại.<br/>"
         f"- <b>Dự phòng HTK:</b> Với tồn kho {inventory_hist[4]:,.0f} tỷ (2025), cần kiểm tra NOTE về trích lập dự phòng. "
         f"Nếu giá thép giảm >10%, HPG có thể phải trích thêm ~2,000-3,000 tỷ dự phòng.<br/>"
         f"- <b>Tỷ giá:</b> Vay USD ~$2 tỷ, mỗi 1% USD tăng = ~500 tỷ lỗ tỷ giá chưa thực hiện (OCI).<br/>"
-        "- <b>Kết luận: BCTC HPG minh bạch, chất lượng tốt. Rủi ro kế toán thấp.</b>"
+        "- <b>Kết luận: BCTC HPG minh bạch, chất lượng tốt. Rủi ro kế toán thấp. "
+        "Lợi nhuận Q1/2026 có phần đột biến từ DTTC, cần theo dõi các quý sau.</b>"
     )
 
     # ─── New: Harvest Signs ───
@@ -3280,7 +3887,9 @@ def build_pdf():
         f"- DQ2 (5.6 triệu tấn HRC) chạy full công suất từ T12/2025<br/>"
         f"- CIP giảm từ 63,656 tỷ (2024) → {cip_hist[4]:,.0f} tỷ (2025) → tiếp tục giảm 2026<br/>"
         "- DQ2 sử dụng công nghệ BOF Nhật Bản, tiêu hao năng lượng thấp hơn DQ1 15%<br/>"
-        "- Tổng công suất HPG đạt ~16 triệu tấn/năm — lớn nhất Đông Nam Á"
+        "- Tổng công suất HPG đang hoạt động đạt ~14,5 triệu tấn/năm (6 nhà máy) + 500k TEUs container. "
+        "Thêm 3 dự án tương lai (Đắk Lắk 6M, Ray cao tốc 700k, Ống Long An 400k) sẽ nâng lên ~21,6 triệu tấn. "
+        "Lớn nhất Đông Nam Á."
     )
     add_body(
         "<b>KẾT LUẬN HARVEST SIGNALS: HPG ĐÃ HỘI TỤ ĐỦ 4 YẾU TỐ</b><br/>"
@@ -3288,52 +3897,55 @@ def build_pdf():
         "(ii) biên lợi nhuận mở rộng nhờ chi phí thấp, (iii) định giá P/B 1.56x còn hấp dẫn so với median lịch sử. "
         "Các quý Q2-Q4/2026 sẽ là thời điểm HPG ghi nhận lợi nhuận kỷ lục, tạo động lực cho cổ phiếu."
     )
+    add_body(
+        "<b>5. Diễn biến tiêu thụ sản phẩm & Vị trí chu kỳ:</b><br/>"
+        f"- <b>HRC:</b> Sản lượng tăng từ 2.0 triệu tấn (2021) → 3.2 triệu tấn (2025) → 6.0 triệu tấn (2026E). "
+        f"Nhu cầu HRC nội địa ~8 triệu tấn (2026E). HPG + FMS cung cấp ~80%. Với thuế CBPG 27.8% HRC TQ, "
+        f"HPG gần như độc quyền thị trường HRC nội địa. <b>Chưa qua đỉnh — sản lượng mới bắt đầu tăng tốc.</b><br/>"
+        f"- <b>Thép XD:</b> Sản lượng ổn định ~2.5-3.0 triệu tấn/năm. Động lực: đầu tư công cao tốc, "
+        f"BĐS phục hồi. Mùa cao điểm xây dựng Q2-Q4 giúp sản lượng tăng 15-20% so với Q1.<br/>"
+        f"- <b>Giá HRC:</b> 620 USD/tấn (Q1/2026) — phục hồi từ đáy 480 USD (2023) nhưng còn cách xa đỉnh "
+        f"900+ USD (2021). SHFE HRC future Q3/2026 ~580 USD. <b>Giá đang ở pha giữa chu kỳ, chưa tới đỉnh.</b><br/>"
+        f"- <b>Chu kỳ thép toàn cầu:</b> Đáy 2023 → phục hồi 2024-2025 → tăng tốc 2026-2027. "
+        f"Với dư cung toàn cầu ~640 triệu tấn, khả năng giá HRC vượt 800 USD là thấp. "
+        f"Kịch bản cơ sở: HRC 600-650 USD, đủ để HPG đạt LNST 24-28k tỷ.<br/>"
+        f"- <b>Kết luận chu kỳ: HPG đang ở <u>đầu pha tăng tốc</u> của chu kỳ lợi nhuận.</b> "
+        f"Sản lượng chưa qua đỉnh (DQ2 chỉ mới full 6 tháng), giá HRC chưa qua đỉnh (còn cách 2021 ~45%), "
+        f"định giá chưa qua đỉnh (P/B 1.56x vs đỉnh 2021 là 2.8x). "
+        f"Rủi ro chính: dư cung TQ kéo giá HRC xuống dưới 550 USD, làm giảm spread và GM về 12-14%."
+    )
 
     elements.append(Spacer(1, 4*mm))
     add_section("5. ĐỊNH GIÁ")
     add_body(
-        "<b>Phương pháp:</b> EV/EBITDA (40%) + P/B (40%) + P/E tham khảo (20%). "
-        "Multiple mục tiêu dựa trên <b>trung vị lịch sử của chính HPG</b> (TTM 2018-2026 từ Vietcap)."
+        "Multiple dựa trên <b>trung vị lịch sử HPG</b> (TTM 2018-2026 từ Vietcap). "
+        f"EPS 2026E: {eps_2026e_val:,} VND. BVPS 2026E: {bvps_2026e_val:,.0f} VND."
     )
 
-    val_headers = ["Phương pháp", "Trọng số", "Giá CP (VND)", "Cơ sở"]
-    val_data = [
-        [f"EV/EBITDA ({EV_MULTIPLE}x 2026E, HPG median)", "40%", f"{price_ev_ebitda_val:,.0f}",
-         f"EBITDA 2026E: {ebitda_2026e_val:,.0f} tỷ, Nợ ròng: {net_debt_2026e_val:,} tỷ"],
-        [f"P/B ({PB_MULTIPLE}x BVPS 2026E, HPG median)", "40%", f"{price_pb_val:,.0f}",
-         f"BVPS: {bvps_2026e_val:,.0f} VND"],
-        [f"P/E ({PE_MULTIPLE}x EPS 2026E, HPG median)", "20%", f"{price_pe_val:,.0f}",
-         f"EPS: {eps_2026e_val:,} VND"],
-    ]
-    add_table(val_headers, val_data,
-              [doc.width*0.25, doc.width*0.10, doc.width*0.15, doc.width*0.50])
-
+    pe_price = PE_MULTIPLE * eps_2026e_val
+    pb_price = round(PB_MULTIPLE * bvps_2026e_val)
+    pb_upper = round(PB_MULTIPLE * 1.2 * bvps_2026e_val)
+    pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
+    ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES * 0.95)
+    target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     add_body(
-        f"<b>Giá mục tiêu (có trọng số): {weighted_price_val:,.0f} VND</b>  |  "
-        f"<b>Giá hiện tại: {PRICE:,} VND</b>  |  "
-        f"<b>Upside: +{upside_val:.1f}%</b>"
+        f"- <b>EV/EBITDA ({EV_MULTIPLE}x, chiết khấu 5%)</b> → <b>{ev_price:,} VND</b><br/>"
+        f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
+        f"P/B cao ({PB_MULTIPLE*1.2:.1f}x) → <b>{pb_upper:,} VND</b>  |  "
+        f"P/B hấp dẫn ({PB_MULTIPLE*0.8:.1f}x) → <b>{pb_attr:,} VND</b><br/>"
+        f"- <b>P/E ({PE_MULTIPLE}x, HPG median)</b> → <b>{pe_price:,} VND</b>"
     )
-    pb_med = PB_MULTIPLE
-    ev_med = EV_MULTIPLE
-    bear_pb = round(pb_med * 0.75, 2)
-    bull_pb = round(pb_med * 1.3, 2)
-    bear_ev = round(ev_med * 0.7, 1)
-    bull_ev = round(ev_med * 1.2, 1)
-    bear_price = round(PB_MULTIPLE * 0.75 * bvps_2026e_val * 0.5 + (ev_med * 0.7 * ebitda_2026e_val - net_debt_2026e_val) * 1e9 / SHARES * 0.5)
-    bull_price = round(PB_MULTIPLE * 1.3 * bvps_2026e_val * 0.5 + (ev_med * 1.2 * ebitda_2026e_val - net_debt_2026e_val) * 1e9 / SHARES * 0.5)
-    add_body("<b>Kịch bản (Bear/Base/Bull) — multiple từ median lịch sử HPG:</b>")
-    add_body(f"- <b>Bear (20% xác suất):</b> {bear_price:,} VND. P/B {bear_pb}x (median×0.75), EV/EBITDA {bear_ev}x (median×0.7). "
-             f"Giá HRC giảm về 500 USD/tấn, biên LNG chỉ 14%.")
-    add_body(f"- <b>Base (60% xác suất):</b> {weighted_price_val:,.0f} VND. P/B {PB_MULTIPLE}x (HPG median), EV/EBITDA {EV_MULTIPLE}x (HPG median). "
-             f"Giá HRC ổn định ~620 USD/tấn. DQ2 full công suất.")
-    add_body(f"- <b>Bull (20% xác suất):</b> {bull_price:,} VND. P/B {bull_pb}x (median×1.3), EV/EBITDA {bull_ev}x (median×1.2). "
-             f"Giá HRC tăng lên 700 USD/tấn. DQ3 được phê duyệt sớm.")
+    add_body(
+        f"<b>Giá mục tiêu (40% EV/EBITDA + 40% P/B + 20% P/E): {target_price:,} VND</b>  |  "
+        f"Giá hiện tại: {PRICE:,} VND  |  Upside: <b>+{round((target_price/PRICE-1)*100):.0f}%</b>"
+    )
+    add_body(f"<b>Tham chiếu broker:</b> SSI 36k | VNDirect ~36k | SHS 38k | VCBS 38k | BVSC 38.65k.")
 
     # Sensitivity chart
     sens_path = os.path.join(CHART_DIR, "sensitivity.png")
     if os.path.exists(sens_path):
         elements.append(Spacer(1, 4*mm))
-        elements.append(Paragraph("Biểu đồ 9: Sensitivity EV/EBITDA × EBITDA", styles['SmallText']))
+        elements.append(Paragraph("Biểu đồ 13: Sensitivity EV/EBITDA × EBITDA", styles['SmallText']))
         elements.append(Image(sens_path, width=460, height=280))
 
     elements.append(PageBreak())
@@ -3381,7 +3993,7 @@ def build_pdf():
     peers_path = os.path.join(CHART_DIR, "peers.png")
     if os.path.exists(peers_path):
         elements.append(Spacer(1, 4*mm))
-        elements.append(Paragraph("Biểu đồ 8: So sánh định giá Peer 2026E", styles['SmallText']))
+        elements.append(Paragraph("Biểu đồ 14: So sánh định giá Peer 2026E", styles['SmallText']))
         elements.append(Image(peers_path, width=400, height=250))
 
     elements.append(PageBreak())
