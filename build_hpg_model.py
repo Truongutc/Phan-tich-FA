@@ -4159,6 +4159,45 @@ def save_json_summary():
     all_ebit = ebit_hist + [round(revenue_fc[i] * (14.3 if i==0 else 15.8 if i==1 else 16.7)/100) for i in range(3)]
     all_ebit_margin = [round(all_ebit[i]/all_rev[i], 4) for i in range(8)]
 
+    # ── Quarterly data for steel charts ──
+    is_qs = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
+    bs_qs = section_to_quarters(FIN_DATA, "BALANCE_SHEET")
+    def _get_q(records, yr, qtr, field):
+        for r in records:
+            if r.get("yearReport") == yr and r.get("lengthReport") == qtr:
+                v = r.get(field)
+                return v / 1e9 if v is not None else 0
+        return 0
+    sl_pairs = [(2023,1),(2023,2),(2023,3),(2023,4),(2024,1),(2024,2),(2024,3),(2024,4),
+                (2025,1),(2025,2),(2025,3),(2025,4),(2026,1)]
+    sl_labels = []; sl_rev = []; sl_gp = []; sl_gpm = []; sl_sgka = []; sl_ni = []; sl_ebit = []
+    sl_sell = []; sl_admin = []; sl_sgka_ratio = []
+    for yr, qnum in sl_pairs:
+        rev = _get_q(is_qs, yr, qnum, 'isa3'); gp = _get_q(is_qs, yr, qnum, 'isa5')
+        sell = abs(_get_q(is_qs, yr, qnum, 'isa9')); admin = abs(_get_q(is_qs, yr, qnum, 'isa10'))
+        ni = _get_q(is_qs, yr, qnum, 'isa22'); ebit = _get_q(is_qs, yr, qnum, 'isa11')
+        sl_labels.append(f"Q{qnum}/{yr}"); sl_rev.append(round(rev)); sl_gp.append(round(gp))
+        sl_gpm.append(round(gp/rev*100, 1) if rev else 0)
+        sl_sell.append(round(sell)); sl_admin.append(round(admin))
+        sl_sgka.append(round(sell+admin)); sl_sgka_ratio.append(round((sell+admin)/rev*100, 1) if rev else 0)
+        sl_ni.append(round(ni)); sl_ebit.append(round(ebit))
+    # Balance sheet by quarter
+    sl_assets = []; sl_inv = []; sl_rec = []; sl_debt = []
+    for yr, qnum in sl_pairs:
+        a = _get_q(bs_qs, yr, qnum, 'bsa53'); inv = _get_q(bs_qs, yr, qnum, 'bsa15')
+        rec = _get_q(bs_qs, yr, qnum, 'bsa8'); sd = _get_q(bs_qs, yr, qnum, 'bsa56')
+        ld = _get_q(bs_qs, yr, qnum, 'bsa71')
+        sl_assets.append(round(a)); sl_inv.append(round(inv)); sl_rec.append(round(rec))
+        sl_debt.append(round(sd+ld))
+    # Spread & HRC price by quarter
+    yr_idx = {"2021":0,"2022":1,"2023":2,"2024":3,"2025":4,"2026":5}
+    sl_spread = []; sl_hrc = []
+    for yr, qnum in sl_pairs:
+        idx = yr_idx.get(str(yr), 5); spr = HRC_PRICE_A[idx] - 1.6*IRON_ORE_A[idx] - 0.5*COKE_A[idx] - CONV_A[idx]
+        sl_spread.append(round(spr)); sl_hrc.append(HRC_PRICE_A[idx])
+    hrc_sales = [482,770,780,768,805,464,312,399,1000,1180,1220,1600,1400]
+    xd_sales = [870,970,970,970,956,1140,1200,1100,1200,1300,1000,1300,1430]
+
     # PnL-matching derivation (same as Excel 04_PnL)
     ev_mul = 9.0; pb_mul = 1.6; pe_mul = 12.0
     _rev = revenue_fc[0]; _da = da_fc[0]
@@ -4265,6 +4304,17 @@ def save_json_summary():
             "overall": "HPG là doanh nghiệp thép tích hợp dọc hàng đầu VN với lợi thế quy mô và công nghệ vượt trội. Chu kỳ tăng trưởng mới đang bắt đầu nhờ DQ2 full công suất và bảo hộ thương mại HRC.",
             "financial": "Doanh thu và LNST phục hồi mạnh từ đáy 2023. Biên LNG cải thiện nhờ spread mở rộng. CFO/LNST >1.0 phản ánh chất lượng lợi nhuận tốt. D/E ~0.65 là an toàn.",
             "valuation": "P/B 1.56x dưới median lịch sử 1.61x. EV/EBITDA 2026E ~7.0x thấp hơn median 8.95x. Kết hợp 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%.",
+        },
+        "quarterly": {
+            "labels": sl_labels,
+            "revenue": sl_rev, "grossProfit": sl_gp, "gpMargin": sl_gpm,
+            "sellExpense": sl_sell, "adminExpense": sl_admin,
+            "sgka": sl_sgka, "sgkaRatio": sl_sgka_ratio,
+            "netIncome": sl_ni, "ebit": sl_ebit,
+            "totalAssets": sl_assets, "inventory": sl_inv,
+            "receivables": sl_rec, "totalDebt": sl_debt,
+            "spreadUsd": sl_spread, "hrcPrice": sl_hrc,
+            "hrcSales": hrc_sales, "xdSales": xd_sales,
         },
         "pe_hist": [round(v, 1) for v in [14.2, 25.5, 13.8, 13.9, 9.5]] if False else [],
         "pb_hist": [round(v, 2) for v in [1.67, 1.69, 1.45, 1.25, 2.14]] if False else [],

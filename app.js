@@ -11,6 +11,10 @@ let chartEpsEquity = null;
 let chartPE = null;
 let chartPB = null;
 let chartCreditFundingGrowth = null;
+let chartVolume = null;
+let chartSpread = null;
+let chartAsset = null;
+let chartCost = null;
 
 // ── Vietcap API base ──────────────────────────────────────
 const VC_BASE = 'https://trading.vietcap.com.vn/api/iq-insight-service/v1';
@@ -654,6 +658,10 @@ async function loadStockDashboard(ticker) {
     renderPEChart(quarterLabels, peData.map(p => p.y), cfg.color);
     renderPBChart(quarterLabels, pbData.map(p => p.y), cfg.color);
     renderCreditFundingGrowthChart(localJson, cfg);
+    renderVolumeChart(localJson, sectorKey);
+    renderSpreadChart(localJson, sectorKey);
+    renderAssetChart(localJson, sectorKey);
+    renderCostChart(localJson, sectorKey);
 
     // ── Earning Release & YTD Evaluation (New Component) ──
     renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg);
@@ -699,8 +707,8 @@ const CHART_DEFAULTS = {
 };
 
 function destroyCharts() {
-    [chartRevNpat, chartEpsEquity, chartPE, chartPB, chartCreditFundingGrowth].forEach(c => { if (c) c.destroy(); });
-    chartRevNpat = chartEpsEquity = chartPE = chartPB = chartCreditFundingGrowth = null;
+    [chartRevNpat, chartEpsEquity, chartPE, chartPB, chartCreditFundingGrowth, chartVolume, chartSpread, chartAsset, chartCost].forEach(c => { if (c) c.destroy(); });
+    chartRevNpat = chartEpsEquity = chartPE = chartPB = chartCreditFundingGrowth = chartVolume = chartSpread = chartAsset = chartCost = null;
 }
 
 function calcMedian(arr) {
@@ -863,6 +871,138 @@ function renderPBChart(labels, data, color) {
         },
         options: { ...CHART_DEFAULTS }
     });
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEEL-SPECIFIC CHART RENDERERS
+// ═══════════════════════════════════════════════════════════
+
+function renderVolumeChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-volume-card');
+    if (sectorKey !== 'materials' || !localJson?.quarterly?.hrcSales) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const q = localJson.quarterly;
+    const labels = q.labels || [];
+    const ctx = document.getElementById('volumeChart').getContext('2d');
+    if (chartVolume) chartVolume.destroy();
+    chartVolume = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'HRC (nghìn tấn)', data: q.hrcSales, borderColor: '#1F4E79', backgroundColor: 'rgba(31,78,121,0.1)', borderWidth: 2.5, pointRadius: 4, tension: 0.3, fill: true },
+                { label: 'Thép XD (nghìn tấn)', data: q.xdSales, borderColor: '#E74C3C', borderWidth: 2, pointRadius: 4, tension: 0.3, borderDash: [5,3] }
+            ]
+        },
+        options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { ...CHART_DEFAULTS.plugins.legend, position: 'top' } } }
+    });
+    const analysisEl = document.getElementById('analysis-text-volume');
+    if (analysisEl) {
+        const lastHrc = q.hrcSales?.[q.hrcSales.length - 1] || 0;
+        const prevHrc = q.hrcSales?.[q.hrcSales.length - 2] || 0;
+        const lastXd = q.xdSales?.[q.xdSales.length - 1] || 0;
+        const hrcGrowth = prevHrc ? ((lastHrc - prevHrc) / prevHrc * 100).toFixed(0) : 0;
+        analysisEl.innerHTML = `HRC Q1/2026: <b>${lastHrc.toLocaleString('vi-VN')} nghìn tấn</b> (${hrcGrowth >= 0 ? '+' : ''}${hrcGrowth}% QoQ).<br/>Thép XD: <b>${lastXd.toLocaleString('vi-VN')} nghìn tấn</b>.<br/>DQ2 full năm 2026 giúp HRC tăng vọt từ 2025.`;
+    }
+}
+
+function renderSpreadChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-spread-card');
+    if (sectorKey !== 'materials' || !localJson?.quarterly?.spreadUsd) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const q = localJson.quarterly;
+    const labels = q.labels || [];
+    const ctx = document.getElementById('spreadChart').getContext('2d');
+    if (chartSpread) chartSpread.destroy();
+    chartSpread = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Spread (USD/t)', data: q.spreadUsd, backgroundColor: '#2980B9', borderRadius: 3, order: 2, yAxisID: 'y' },
+                { label: 'GP Margin (%)', data: q.gpMargin, type: 'line', borderColor: '#E67E22', backgroundColor: 'rgba(230,126,34,0.1)', borderWidth: 2.5, pointRadius: 4, tension: 0.3, fill: true, order: 1, yAxisID: 'y1' },
+                { label: 'Giá HRC (USD/t)', data: q.hrcPrice, type: 'line', borderColor: '#7F8C8D', borderWidth: 1.5, pointRadius: 2, tension: 0.3, borderDash: [3,3], order: 3, yAxisID: 'y' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'USD/t', color: '#545f74', font: { size: 10 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'GP Margin %', color: '#545f74', font: { size: 10 } } }
+            }
+        }
+    });
+    const analysisEl = document.getElementById('analysis-text-spread');
+    if (analysisEl) {
+        const lastGpm = q.gpMargin?.[q.gpMargin.length - 1] || 0;
+        const lastSpread = q.spreadUsd?.[q.spreadUsd.length - 1] || 0;
+        analysisEl.innerHTML = `Spread Q1/2026: <b>~${lastSpread} USD/t</b>.<br/>GP Margin: <b>${lastGpm}%</b>.<br/>DQ2 full + giá HRC phục hồi giúp spread nở ra.`;
+    }
+}
+
+function renderAssetChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-asset-card');
+    if (sectorKey !== 'materials' || !localJson?.quarterly?.totalAssets) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const q = localJson.quarterly;
+    const labels = q.labels || [];
+    const ctx = document.getElementById('assetChart').getContext('2d');
+    if (chartAsset) chartAsset.destroy();
+    chartAsset = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Tổng TS (tỷ)', data: q.totalAssets, borderColor: '#2E4057', backgroundColor: 'rgba(46,64,87,0.05)', borderWidth: 2.5, pointRadius: 4, tension: 0.3, fill: true },
+                { label: 'Tồn kho (tỷ)', data: q.inventory, borderColor: '#E74C3C', borderWidth: 2, pointRadius: 3, tension: 0.3 },
+                { label: 'Phải thu (tỷ)', data: q.receivables, borderColor: '#F39C12', borderWidth: 2, pointRadius: 3, tension: 0.3, borderDash: [5,3] },
+                { label: 'Nợ vay (tỷ)', data: q.totalDebt, borderColor: '#27AE60', borderWidth: 2, pointRadius: 3, tension: 0.3, borderDash: [3,3] }
+            ]
+        },
+        options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend: { ...CHART_DEFAULTS.plugins.legend, position: 'top' } } }
+    });
+    const analysisEl = document.getElementById('analysis-text-asset');
+    if (analysisEl) {
+        const lastInv = q.inventory?.[q.inventory.length - 1] || 0;
+        const lastAssets = q.totalAssets?.[q.totalAssets.length - 1] || 0;
+        const invRatio = lastAssets > 0 ? (lastInv / lastAssets * 100).toFixed(0) : 0;
+        analysisEl.innerHTML = `Tồn kho: <b>${lastInv.toLocaleString('vi-VN')} tỷ</b> (${invRatio}% tổng TS).<br/>DQ2 full giúp vòng quay tài sản cải thiện.`;
+    }
+}
+
+function renderCostChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-cost-card');
+    if (sectorKey !== 'materials' || !localJson?.quarterly?.sgkaRatio) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const q = localJson.quarterly;
+    const labels = q.labels || [];
+    const ctx = document.getElementById('costChart').getContext('2d');
+    if (chartCost) chartCost.destroy();
+    chartCost = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'SG&A/DT (%)', data: q.sgkaRatio, borderColor: '#8E44AD', backgroundColor: 'rgba(142,68,173,0.1)', borderWidth: 2.5, pointRadius: 4, tension: 0.3, fill: true, yAxisID: 'y' },
+                { label: 'CP Bán hàng (tỷ)', data: q.sellExpense, borderColor: '#E67E22', borderWidth: 2, pointRadius: 3, tension: 0.3, yAxisID: 'y1' },
+                { label: 'CP QLDN (tỷ)', data: q.adminExpense, borderColor: '#3498DB', borderWidth: 2, pointRadius: 3, tension: 0.3, borderDash: [5,3], yAxisID: 'y1' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: '% Doanh thu', color: '#545f74', font: { size: 10 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Tỷ VND', color: '#545f74', font: { size: 10 } } }
+            }
+        }
+    });
+    const analysisEl = document.getElementById('analysis-text-cost');
+    if (analysisEl) {
+        const lastSgka = q.sgkaRatio?.[q.sgkaRatio.length - 1] || 0;
+        analysisEl.innerHTML = `SG&A/DT Q1/2026: <b>${lastSgka}%</b>.<br/>DQ2 giúp tối ưu chi phí bán hàng và QLDN nhờ hiệu suất quy mô.`;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
