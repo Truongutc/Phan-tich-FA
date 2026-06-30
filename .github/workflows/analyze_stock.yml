@@ -37,8 +37,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Skip Regenerate if Builder is Custom (HPG has hardcoded logic)
+        run: |
+          TICKER="${{ github.event.inputs.ticker }}"
+          BUILDER="build_${TICKER,,}_model.py"
+          # KEEP custom builders (HPG) — skip regeneration regardless of force_regenerate
+          if [ -f "$BUILDER" ]; then
+            LINES=$(wc -l < "$BUILDER")
+            if [ "$LINES" -gt 500 ]; then
+              echo "Builder has $LINES lines — too complex to regenerate. Keeping existing builder."
+              echo "FORCE_REGENERATE_SKIP=true" >> "$GITHUB_ENV"
+            fi
+          fi
+
       - name: Force Regenerate Builder (if requested)
-        if: ${{ github.event.inputs.force_regenerate == 'true' }}
+        if: ${{ github.event.inputs.force_regenerate == 'true' && env.FORCE_REGENERATE_SKIP != 'true' }}
         run: |
           TICKER="${{ github.event.inputs.ticker }}"
           BUILDER="build_${TICKER,,}_model.py"

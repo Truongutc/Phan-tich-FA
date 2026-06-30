@@ -362,7 +362,7 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
      - `pe_quarters`: list of all quarterly P/E values from statistics-financial.
      - `pb_quarters`: list of all quarterly P/B values from statistics-financial.
      - `quarter_labels`: list of strings for quarter names corresponding to pe_quarters/pb_quarters (e.g. ["2021-Q1", "2021-Q2", ...]).
-     - `income_quarterly`: list of quarterly records containing {yearReport, quarter, nii, npat} (nii represents Net Interest Income for banks, or net revenue for non-banks, both in billion VND). Use section_to_quarters.
+      - `income_quarterly`: list of quarterly records containing ``yearReport, quarter, nii, npat`` (nii represents Net Interest Income for banks, or net revenue for non-banks, both in billion VND). Use section_to_quarters.
      - `ratios_quarterly`: dict containing:
         - `quarters`: list of quarter labels (e.g., ["2024-Q1", ...])
         - `nim`: quarterly NIM for banks or Gross Margin for non-banks
