@@ -499,6 +499,94 @@
             </div>
         </div>
 
+        <!-- Steel: Factory List Table (shown for materials) -->
+        <div class="card margin-top-20" id="steel-factory-card" style="display:none">
+            <h3 class="border-blue">🏭 Danh mục Nhà máy HPG</h3>
+            <div class="table-container">
+                <table class="web-table" id="steel-factory-table">
+                    <thead><tr><th>Nhà máy</th><th>Địa điểm</th><th>Sản phẩm</th><th>Công suất (triệu tấn)</th><th>Trạng thái</th></tr></thead>
+                    <tbody id="steel-factory-tbody"></tbody>
+                </table>
+            </div>
+            <div id="steel-factory-analysis" class="chart-analysis-text margin-top-10"></div>
+        </div>
+
+        <!-- Steel: Spread & Input Tables (shown for materials) -->
+        <div class="card margin-top-20" id="steel-spread-card" style="display:none">
+            <h3 class="border-blue">📈 Spread &amp; Yếu tố Đầu vào</h3>
+            <p class="chart-analysis-text">Spread = Giá HRC - 1.6×Quặng 62%Fe - 0.6×Coke - Chi phí chuyển đổi (~100 USD/tấn)</p>
+            <div class="table-container">
+                <table class="web-table" id="steel-spread-table">
+                    <thead><tr id="steel-spread-header"></tr></thead>
+                    <tbody id="steel-spread-tbody"></tbody>
+                </table>
+            </div>
+            <div id="steel-spread-analysis" class="chart-analysis-text margin-top-10"></div>
+        </div>
+
+        <!-- Steel: Volume & Market Share (shown for materials) -->
+        <div class="card margin-top-20" id="steel-volume-card" style="display:none">
+            <h3 class="border-blue">📦 Sản lượng &amp; Thị phần HPG</h3>
+            <div class="table-container">
+                <table class="web-table" id="steel-volume-table">
+                    <thead><tr id="steel-volume-header"></tr></thead>
+                    <tbody id="steel-volume-tbody"></tbody>
+                </table>
+            </div>
+            <div id="steel-volume-analysis" class="chart-analysis-text margin-top-10"></div>
+        </div>
+
+        <!-- Steel: Harvest Signals (shown for materials) -->
+        <div class="card margin-top-20" id="steel-harvest-card" style="display:none">
+            <h3 class="border-blue">🌾 Dấu hiệu Sắp hái quả ngọt (Harvest Signals)</h3>
+            <div id="steel-harvest-content" class="chart-analysis-text"></div>
+        </div>
+
+        <!-- Steel: Profit Quality (shown for materials) -->
+        <div class="card margin-top-20" id="steel-quality-card" style="display:none">
+            <h3 class="border-blue">📊 Chất lượng Lợi nhuận &amp; Kế toán</h3>
+            <div id="steel-quality-content" class="chart-analysis-text"></div>
+        </div>
+
+        <!-- Steel: Risk Matrix (shown for materials) -->
+        <div class="card margin-top-20" id="steel-risk-matrix-card" style="display:none">
+            <h3 class="border-blue">⚠️ Risk Matrix</h3>
+            <div class="table-container">
+                <table class="web-table" id="steel-risk-matrix-table">
+                    <thead><tr><th>Rủi ro</th><th>Xác suất</th><th>Tác động</th><th>Chỉ báo dẫn dắt</th></tr></thead>
+                    <tbody id="steel-risk-matrix-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Steel: Peer Comparison (shown for materials) -->
+        <div class="card margin-top-20" id="steel-peer-card" style="display:none">
+            <h3 class="border-blue">🤝 So sánh Peer 2026E</h3>
+            <div class="table-container">
+                <table class="web-table" id="steel-peer-table">
+                    <thead><tr><th>Ticker</th><th>P/E (x)</th><th>P/B (x)</th><th>ROE (%)</th><th>EV/EBITDA (x)</th><th>Tăng trưởng LN 26E (%)</th></tr></thead>
+                    <tbody id="steel-peer-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Steel: Leading Indicators (shown for materials) -->
+        <div class="card margin-top-20" id="steel-leading-card" style="display:none">
+            <h3 class="border-blue">🔮 Leading Indicators cần theo dõi</h3>
+            <div class="table-container">
+                <table class="web-table" id="steel-leading-table">
+                    <thead><tr><th>Chỉ báo</th><th>Ngưỡng tích cực</th><th>Hiện tại</th><th>Trạng thái</th></tr></thead>
+                    <tbody id="steel-leading-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Steel: Chart Gallery (all 15 PNGs, shown for materials) -->
+        <div class="card margin-top-20" id="steel-chart-gallery-card" style="display:none">
+            <h3 class="border-blue">📊 Thư viện Biểu đồ Phân tích</h3>
+            <div class="chart-gallery" id="steel-chart-gallery"></div>
+        </div>
+
         <!-- NEW: Industry Peer Table (Banks) -->
         <div class="card peer-bench-card margin-top-20" id="web-peer-card" style="display:none">
             <h3 class="border-blue">📊 So sánh các chỉ số tài chính so với ngành (Peer Benchmark)</h3>

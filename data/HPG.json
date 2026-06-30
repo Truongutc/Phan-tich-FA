@@ -7,7 +7,7 @@
   "shares": 8444740856,
   "gdrivePdfUrl": null,
   "gdriveExcelUrl": null,
-  "lastUpdated": "2026-06-30 23:22",
+  "lastUpdated": "2026-06-30 23:37",
   "data": {
     "years": [
       2021,
@@ -437,6 +437,209 @@
       1430
     ]
   },
+  "annualTables": {
+    "labels": [
+      "2021",
+      "2022",
+      "2023",
+      "2024",
+      "2025",
+      "2026E",
+      "2027E",
+      "2028E"
+    ],
+    "hrcPrice": [
+      680,
+      580,
+      560,
+      580,
+      560,
+      620,
+      600,
+      580
+    ],
+    "ironOre": [
+      160,
+      120,
+      110,
+      105,
+      100,
+      105,
+      100,
+      95
+    ],
+    "coke": [
+      400,
+      350,
+      280,
+      240,
+      230,
+      240,
+      220,
+      200
+    ],
+    "spreadUsd": [
+      54.0,
+      38.0,
+      64.0,
+      107.0,
+      95.0,
+      132.0,
+      130.0,
+      128.0
+    ],
+    "spreadPct": [
+      8.0,
+      7.0,
+      11.0,
+      18.0,
+      17.0,
+      21.0,
+      22.0,
+      22.0
+    ],
+    "hrcVol": [
+      2.0,
+      2.2,
+      2.5,
+      2.8,
+      3.2,
+      6.0,
+      6.8,
+      7.5
+    ],
+    "xdVol": [
+      2.8,
+      2.6,
+      2.3,
+      2.5,
+      2.8,
+      3.0,
+      3.2,
+      3.5
+    ],
+    "totalVol": [
+      4.8,
+      4.800000000000001,
+      4.8,
+      5.3,
+      6.0,
+      9.0,
+      10.0,
+      11.0
+    ],
+    "marketSize": [
+      28,
+      27,
+      25,
+      26,
+      28,
+      30,
+      32,
+      34
+    ],
+    "marketShare": [
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      30.0,
+      31.0,
+      32.0
+    ]
+  },
+  "factories": [
+    {
+      "name": "Dung Quất 1",
+      "location": "Quảng Ngãi",
+      "product": "HRC, Thép XD, Ống thép",
+      "capacity": "5.0",
+      "status": "Hoạt động"
+    },
+    {
+      "name": "Dung Quất 2",
+      "location": "Quảng Ngãi",
+      "product": "HRC",
+      "capacity": "5.6",
+      "status": "Hoạt động (T12/2025)"
+    },
+    {
+      "name": "Hải Dương",
+      "location": "Hải Dương",
+      "product": "Thép XD, Phôi thép",
+      "capacity": "2.5",
+      "status": "Hoạt động"
+    },
+    {
+      "name": "Ống thép HPG",
+      "location": "Hải Dương",
+      "product": "Ống thép đen, ống thép mạ kẽm",
+      "capacity": "1.0",
+      "status": "Hoạt động"
+    },
+    {
+      "name": "Tôn Hòa Phát",
+      "location": "Hải Dương",
+      "product": "Tôn mạ màu, tôn mạ kẽm",
+      "capacity": "0.4",
+      "status": "Hoạt động"
+    },
+    {
+      "name": "Container HPG",
+      "location": "Bà Rịa-Vũng Tàu",
+      "product": "Container 20', 40'",
+      "capacity": "0.5",
+      "status": "Hoạt động"
+    },
+    {
+      "name": "Đắk Lắk",
+      "location": "Đắk Lắk",
+      "product": "Thép XD",
+      "capacity": "6.0",
+      "status": "Chưa HĐ (KH 2028+)"
+    },
+    {
+      "name": "Ray cao tốc",
+      "location": "Hưng Yên",
+      "product": "Ray đường sắt cao tốc",
+      "capacity": "0.7",
+      "status": "Chưa HĐ"
+    },
+    {
+      "name": "Ống thép Long An",
+      "location": "Long An",
+      "product": "Ống thép",
+      "capacity": "0.4",
+      "status": "Chưa HĐ"
+    }
+  ],
+  "peers": [
+    {
+      "ticker": "HPG",
+      "pe": 12.5,
+      "pb": 1.8,
+      "roe": 15.6,
+      "ev_ebitda": 6.8,
+      "ni_growth": 42.0
+    },
+    {
+      "ticker": "HSG",
+      "pe": 13.7,
+      "pb": 0.9,
+      "roe": 7.1,
+      "ev_ebitda": 7.2,
+      "ni_growth": 25.0
+    },
+    {
+      "ticker": "NKG",
+      "pe": 22.5,
+      "pb": 0.9,
+      "roe": 6.4,
+      "ev_ebitda": 9.0,
+      "ni_growth": 18.0
+    }
+  ],
   "pe_hist": [],
   "pb_hist": [],
   "pe_quarters": [

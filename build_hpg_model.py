@@ -4197,6 +4197,36 @@ def save_json_summary():
         sl_spread.append(round(spr)); sl_hrc.append(HRC_PRICE_A[idx])
     hrc_sales = [482,770,780,768,805,464,312,399,1000,1180,1220,1600,1400]
     xd_sales = [870,970,970,970,956,1140,1200,1100,1200,1300,1000,1300,1430]
+    # Annual tables data (matching PDF tables)
+    ann_labels = ["2021","2022","2023","2024","2025","2026E","2027E","2028E"]
+    ann_hrc_price = HRC_PRICE_A[:]
+    ann_iron_ore = IRON_ORE_A[:]
+    ann_coke = COKE_A[:]
+    ann_spread = SPREAD_A[:]
+    ann_spread_pct = [round(SPREAD_A[i]/HRC_PRICE_A[i]*100, 0) if HRC_PRICE_A[i] else 0 for i in range(8)]
+    ann_hrc_vol = [2.0,2.2,2.5,2.8,3.2,6.0,6.8,7.5]
+    ann_xd_vol = [2.8,2.6,2.3,2.5,2.8,3.0,3.2,3.5]
+    ann_total_vol = [ann_hrc_vol[i]+ann_xd_vol[i] for i in range(8)]
+    ann_market_size = [28,27,25,26,28,30,32,34]
+    ann_market_share = [round(ann_total_vol[i]/ann_market_size[i]*100, 0) for i in range(8)]
+    # Peer comparison
+    peer_data = [
+        {"ticker":"HPG","pe":12.5,"pb":1.80,"roe":15.6,"ev_ebitda":6.8,"ni_growth":42.0},
+        {"ticker":"HSG","pe":13.7,"pb":0.90,"roe":7.1,"ev_ebitda":7.2,"ni_growth":25.0},
+        {"ticker":"NKG","pe":22.5,"pb":0.90,"roe":6.4,"ev_ebitda":9.0,"ni_growth":18.0},
+    ]
+    # Factory list
+    factories = [
+        {"name":"Dung Quất 1","location":"Quảng Ngãi","product":"HRC, Thép XD, Ống thép","capacity":"5.0","status":"Hoạt động"},
+        {"name":"Dung Quất 2","location":"Quảng Ngãi","product":"HRC","capacity":"5.6","status":"Hoạt động (T12/2025)"},
+        {"name":"Hải Dương","location":"Hải Dương","product":"Thép XD, Phôi thép","capacity":"2.5","status":"Hoạt động"},
+        {"name":"Ống thép HPG","location":"Hải Dương","product":"Ống thép đen, ống thép mạ kẽm","capacity":"1.0","status":"Hoạt động"},
+        {"name":"Tôn Hòa Phát","location":"Hải Dương","product":"Tôn mạ màu, tôn mạ kẽm","capacity":"0.4","status":"Hoạt động"},
+        {"name":"Container HPG","location":"Bà Rịa-Vũng Tàu","product":"Container 20', 40'","capacity":"0.5","status":"Hoạt động"},
+        {"name":"Đắk Lắk","location":"Đắk Lắk","product":"Thép XD","capacity":"6.0","status":"Chưa HĐ (KH 2028+)"},
+        {"name":"Ray cao tốc","location":"Hưng Yên","product":"Ray đường sắt cao tốc","capacity":"0.7","status":"Chưa HĐ"},
+        {"name":"Ống thép Long An","location":"Long An","product":"Ống thép","capacity":"0.4","status":"Chưa HĐ"},
+    ]
 
     # PnL-matching derivation (same as Excel 04_PnL)
     ev_mul = 9.0; pb_mul = 1.6; pe_mul = 12.0
@@ -4316,6 +4346,15 @@ def save_json_summary():
             "spreadUsd": sl_spread, "hrcPrice": sl_hrc,
             "hrcSales": hrc_sales, "xdSales": xd_sales,
         },
+        "annualTables": {
+            "labels": ann_labels,
+            "hrcPrice": ann_hrc_price, "ironOre": ann_iron_ore, "coke": ann_coke,
+            "spreadUsd": ann_spread, "spreadPct": ann_spread_pct,
+            "hrcVol": ann_hrc_vol, "xdVol": ann_xd_vol,
+            "totalVol": ann_total_vol, "marketSize": ann_market_size, "marketShare": ann_market_share,
+        },
+        "factories": factories,
+        "peers": peer_data,
         "pe_hist": [round(v, 1) for v in [14.2, 25.5, 13.8, 13.9, 9.5]] if False else [],
         "pb_hist": [round(v, 2) for v in [1.67, 1.69, 1.45, 1.25, 2.14]] if False else [],
         "pe_quarters": pe_arr,

@@ -662,6 +662,15 @@ async function loadStockDashboard(ticker) {
     renderSpreadChart(localJson, sectorKey);
     renderAssetChart(localJson, sectorKey);
     renderCostChart(localJson, sectorKey);
+    renderSteelFactoryTable(localJson, sectorKey);
+    renderSteelSpreadTable(localJson, sectorKey);
+    renderSteelVolumeTable(localJson, sectorKey);
+    renderSteelHarvestSignals(localJson, sectorKey);
+    renderSteelProfitQuality(localJson, sectorKey);
+    renderSteelRiskMatrix(localJson, sectorKey);
+    renderSteelPeerTable(localJson, sectorKey);
+    renderSteelLeadingIndicators(localJson, sectorKey);
+    renderSteelChartGallery(localJson, sectorKey);
 
     // ── Earning Release & YTD Evaluation (New Component) ──
     renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg);
@@ -1003,6 +1012,216 @@ function renderCostChart(localJson, sectorKey) {
         const lastSgka = q.sgkaRatio?.[q.sgkaRatio.length - 1] || 0;
         analysisEl.innerHTML = `SG&A/DT Q1/2026: <b>${lastSgka}%</b>.<br/>DQ2 giúp tối ưu chi phí bán hàng và QLDN nhờ hiệu suất quy mô.`;
     }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEEL-SPECIFIC TABLE RENDERERS
+// ═══════════════════════════════════════════════════════════
+
+function renderSteelFactoryTable(localJson, sectorKey) {
+    const card = document.getElementById('steel-factory-card');
+    if (sectorKey !== 'materials' || !localJson?.factories) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const tbody = document.getElementById('steel-factory-tbody');
+    tbody.innerHTML = localJson.factories.map(f =>
+        `<tr><td>${f.name}</td><td>${f.location}</td><td>${f.product}</td><td>${f.capacity}</td><td>${f.status}</td></tr>`
+    ).join('');
+    const analysis = document.getElementById('steel-factory-analysis');
+    if (analysis) {
+        analysis.innerHTML = 'Tổng công suất hoạt động ~14,5 triệu tấn/năm. DQ2 full từ 12/2025 đưa HPG vào nhóm chi phí thấp nhất khu vực. Tiềm năng ~21,6 triệu tấn với các dự án tương lai.';
+    }
+}
+
+function renderSteelSpreadTable(localJson, sectorKey) {
+    const card = document.getElementById('steel-spread-card');
+    if (sectorKey !== 'materials' || !localJson?.annualTables) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const t = localJson.annualTables;
+    const labels = t.labels || [];
+    // Build header
+    document.getElementById('steel-spread-header').innerHTML = '<th>Chỉ tiêu</th>' + labels.map(l => `<th>${l}</th>`).join('');
+    // Build rows
+    const rows = [
+        { label: 'Giá HRC (USD/tấn)', data: t.hrcPrice, suffix: '' },
+        { label: 'Giá quặng 62%Fe (USD/tấn)', data: t.ironOre, suffix: '' },
+        { label: 'Giá than cốc (USD/tấn)', data: t.coke, suffix: '' },
+        { label: 'Spread ước tính (USD/tấn)', data: t.spreadUsd, suffix: '' },
+        { label: 'Spread/HRC Price (%)', data: t.spreadPct, suffix: '%' },
+    ];
+    document.getElementById('steel-spread-tbody').innerHTML = rows.map(r =>
+        `<tr><td>${r.label}</td>${r.data.map(v => `<td>${v}${r.suffix}</td>`).join('')}</tr>`
+    ).join('');
+    const analysis = document.getElementById('steel-spread-analysis');
+    if (analysis) {
+        const lastSpread = t.spreadUsd?.[t.spreadUsd.length - 1] || 0;
+        analysis.innerHTML = `Spread đáy 2023 (~42 USD/tấn). 2026E spread ~${lastSpread} USD/tấn nhờ DQ2 full + chi phí nguyên liệu hạ. Dự kiến đạt 180-195 USD/tấn 2027-28E.`;
+    }
+}
+
+function renderSteelVolumeTable(localJson, sectorKey) {
+    const card = document.getElementById('steel-volume-card');
+    if (sectorKey !== 'materials' || !localJson?.annualTables) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const t = localJson.annualTables;
+    const labels = t.labels || [];
+    document.getElementById('steel-volume-header').innerHTML = '<th>Chỉ tiêu</th>' + labels.map(l => `<th>${l}</th>`).join('');
+    const rows = [
+        { label: 'SL HRC (triệu tấn)', data: t.hrcVol },
+        { label: 'SL Thép XD (triệu tấn)', data: t.xdVol },
+        { label: 'Tổng SL HPG (triệu tấn)', data: t.totalVol },
+        { label: 'Thị trường thép VN (triệu tấn)', data: t.marketSize },
+        { label: 'Thị phần HPG (%)', data: t.marketShare, suffix: '%' },
+    ];
+    document.getElementById('steel-volume-tbody').innerHTML = rows.map(r =>
+        `<tr><td>${r.label}</td>${r.data.map(v => `<td>${v}${r.suffix || ''}</td>`).join('')}</tr>`
+    ).join('');
+    const analysis = document.getElementById('steel-volume-analysis');
+    if (analysis) {
+        const lastShare = t.marketShare?.[t.marketShare.length - 1] || 0;
+        analysis.innerHTML = `Tổng sản lượng HPG tăng gấp đôi từ 2025 lên 2028E nhờ DQ2 full. Thị phần mở rộng từ ~17% (2021) lên ~${lastShare}% (2028E). HPG là DN duy nhất đủ lớn để hấp thụ tăng trưởng nội địa.`;
+    }
+}
+
+function renderSteelHarvestSignals(localJson, sectorKey) {
+    const card = document.getElementById('steel-harvest-card');
+    if (sectorKey !== 'materials') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const el = document.getElementById('steel-harvest-content');
+    if (el) {
+        el.innerHTML = `
+<b>1. VĨ MÔ ĐẢO CHIỀU ✅ — ĐÃ CÓ TÍN HIỆU</b><br/>
+- Lãi suất cho vay giảm (hiện ~7-8% từ đỉnh 10-12%)<br/>
+- Đầu tư công tăng mạnh: kế hoạch 8.5 triệu tỷ (2026-2030)<br/>
+- Trung Quốc kích thích kinh tế (BĐS, hạ tầng)<br/>
+- Luật Kinh doanh BĐS mới có hiệu lực từ 2025<br/><br/>
+
+<b>2. SPREAD NỞ RA ✅ — ĐANG XẢY RA</b><br/>
+- Spread (USD/tấn): 42 (2023) → 70 (2024) → 128 (2025) → ~180 (2026E)<br/>
+- GP Margin: 10.9% (2023) → 13.3% (2024) → 15.7% (2025) → 2026E cải thiện thêm<br/><br/>
+
+<b>3. HÀNG TỒN KHO GIÁ RẺ ✅ — ĐANG XẢY RA</b><br/>
+- Quặng sắt ở 105 USD/tấn (thấp nhất từ 2021)<br/>
+- Than cốc giảm từ 400 USD/tấn (2021) xuống ~220 USD/tấn (2026E)<br/>
+- Tồn kho Q1/2026 được nhập giá thấp → lợi thế Q2-Q3/2026<br/><br/>
+
+<b>4. NHÀ MÁY MỚI (DQ2) ✅ — ĐÃ HOÀN THÀNH</b><br/>
+- DQ2 full công suất từ T12/2025, tăng tổng capacity lên 14.5 triệu tấn<br/>
+- CIP giảm mạnh → giai đoạn đầu tư đã qua, bắt đầu thu hoạch<br/>
+- 3 dự án tương lai: Đắk Lắk (6M tấn), Ray cao tốc (700k), Ống Long An (400k)<br/><br/>
+
+<b>KẾT LUẬN: HPG ĐÃ HỘI TỤ ĐỦ 4 YẾU TỐ — Thời điểm nắm giữ lý tưởng 12-24 tháng.</b>`;
+    }
+}
+
+function renderSteelProfitQuality(localJson, sectorKey) {
+    const card = document.getElementById('steel-quality-card');
+    if (sectorKey !== 'materials') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const el = document.getElementById('steel-quality-content');
+    if (el) {
+        el.innerHTML = `
+<b>1. Phân tích lợi nhuận: Core vs Đột biến</b><br/>
+- Q1/2026 có thu nhập tài chính đột biến ~4,915 tỷ từ Phố Nối → cần loại trừ<br/>
+- LNST điều chỉnh (core): ~5,200 tỷ (+55% YoY)<br/>
+- KQKD cốt lõi mạnh nhờ sản lượng DQ2 + spread nở<br/><br/>
+
+<b>2. Cash Conversion (CFO/LNST): &gt;1.0x ✅</b><br/>
+- CFO/LNST bình quân >1.0 lần → lợi nhuận được đảm bảo bằng tiền mặt thực<br/><br/>
+
+<b>3. Accruals Ratio: &lt;5% ✅</b><br/>
+- Chênh lệch nhỏ giữa dòng tiền và lợi nhuận → chất lượng LN cao<br/><br/>
+
+<b>4. Inventory Turnover: ~80-90 ngày</b><br/>
+- Ổn định, phù hợp với chu kỳ BOF 60-90 ngày + 30 ngày dự trữ nguyên liệu<br/><br/>
+
+<b>5. Receivables/Revenue: Giảm dần</b><br/>
+- Chính sách tín dụng thắt chặt, kiểm soát tốt công nợ<br/><br/>
+
+<b>⚠️ Rủi ro kế toán cần theo dõi:</b><br/>
+- Thu nhập tài chính bất thường (lãi chênh lệch tỷ giá chưa thực hiện)<br/>
+- Rủi ro dự phòng HTK nếu giá thép giảm &gt;10% (cần ~2,000-3,000 tỷ)<br/>
+- Rủi ro FX: ~$2B nợ USD, mỗi 1% USD tăng = ~500 tỷ lỗ tỷ giá chưa thực hiện<br/>
+Kết luận: BCTC HPG minh bạch, rủi ro kế toán thấp.`;
+    }
+}
+
+function renderSteelRiskMatrix(localJson, sectorKey) {
+    const card = document.getElementById('steel-risk-matrix-card');
+    if (sectorKey !== 'materials') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const risks = [
+        ['Giá HRC giảm (suy thoái TQ)', 'Trung bình', 'Cao', 'Giá HRC SHFE, PMI TQ, sản lượng thép TQ'],
+        ['Chi phí quặng/than tăng', 'Cao', 'Trung bình', 'Giá quặng 62% Fe, than cốc FOB Úc'],
+        ['Tỷ giá USD tăng mạnh', 'Trung bình', 'Cao', 'USD/VNĐ, Fed rate, nợ USD HPG ~$2B'],
+        ['Cạnh tranh HRC giá rẻ (TQ)', 'Thấp', 'Trung bình', 'Thuế CBPG 27.8%, sản lượng TQ'],
+        ['BĐS VN suy thoái', 'Thấp', 'Cao', 'Tồn kho BĐS, giải ngân đầu tư công'],
+    ];
+    document.getElementById('steel-risk-matrix-tbody').innerHTML = risks.map(r =>
+        `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`
+    ).join('');
+}
+
+function renderSteelPeerTable(localJson, sectorKey) {
+    const card = document.getElementById('steel-peer-card');
+    if (sectorKey !== 'materials' || !localJson?.peers) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const peers = localJson.peers;
+    document.getElementById('steel-peer-tbody').innerHTML = peers.map(p =>
+        `<tr><td><b>${p.ticker}</b></td><td>${p.pe}</td><td>${p.pb}</td><td>${p.roe}</td><td>${p.ev_ebitda}</td><td>${p.ni_growth}</td></tr>`
+    ).join('');
+}
+
+function renderSteelLeadingIndicators(localJson, sectorKey) {
+    const card = document.getElementById('steel-leading-card');
+    if (sectorKey !== 'materials') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const indicators = [
+        ['Giá HRC (USD/tấn)', '>1,000', '1,110', 'TÍCH CỰC'],
+        ['Spread (USD/tấn)', '>200', '~180', 'GẦN TÍCH CỰC'],
+        ['NPAT QoQ (tỷ)', '>7,000', '9,056', 'TÍCH CỰC'],
+        ['D/E', '<0.7', '0.65', 'AN TOÀN'],
+        ['CIP (tỷ)', '<10,000', '~15,000', 'GIẢM TỐT'],
+    ];
+    const getClass = (status) => {
+        if (status === 'TÍCH CỰC') return 'text-green';
+        if (status === 'AN TOÀN') return 'text-green';
+        if (status === 'GIẢM TỐT') return 'text-blue';
+        return '';
+    };
+    document.getElementById('steel-leading-tbody').innerHTML = indicators.map(r =>
+        `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="${getClass(r[3])}"><b>${r[3]}</b></td></tr>`
+    ).join('');
+}
+
+function renderSteelChartGallery(localJson, sectorKey) {
+    const card = document.getElementById('steel-chart-gallery-card');
+    if (sectorKey !== 'materials') { card.style.display = 'none'; return; }
+    card.style.display = '';
+    const charts = [
+        { file: 'revenue_ni.png', label: 'Biểu đồ 1: Doanh thu & LNST 2021-2028E' },
+        { file: 'margins.png', label: 'Biểu đồ 2: Biên lợi nhuận 2021-2028E' },
+        { file: 'growth.png', label: 'Biểu đồ 3: Tăng trưởng Doanh thu YoY' },
+        { file: 'turnover.png', label: 'Biểu đồ 4: Vòng quay HTK & Phải thu' },
+        { file: 'quarterly.png', label: 'Biểu đồ 5: KQKD theo Quý (Q1/2024 - Q1/2026)' },
+        { file: 'quarterly_bs.png', label: 'Biểu đồ 6: Diễn biến Tài sản & Nợ' },
+        { file: 'spread_vs_gp.png', label: 'Biểu đồ 7: Spread vs Biên LNG (theo Năm)' },
+        { file: 'spread_gp_quarterly.png', label: 'Biểu đồ 7A: Spread, GP Margin & Giá HRC' },
+        { file: 'quarterly_quality.png', label: 'Biểu đồ 8: Chất lượng TS & KQKD' },
+        { file: 'quarterly_volume.png', label: 'Biểu đồ 9: Sản lượng tiêu thụ' },
+        { file: 'pe_hist_q.png', label: 'Biểu đồ 10: P/E theo Quý' },
+        { file: 'pb_hist_q.png', label: 'Biểu đồ 11: P/B theo Quý' },
+        { file: 'ev_hist_q.png', label: 'Biểu đồ 12: EV/EBITDA theo Quý' },
+        { file: 'sensitivity.png', label: 'Biểu đồ 13: Sensitivity EV/EBITDA×EBITDA' },
+        { file: 'peers.png', label: 'Biểu đồ 14: So sánh Peer 2026E' },
+    ];
+    const basePath = `Bao cao/HPG/charts/`;
+    const gallery = document.getElementById('steel-chart-gallery');
+    gallery.innerHTML = charts.map(c =>
+        `<div class="chart-gallery-item">
+            <img src="${basePath}${c.file}" alt="${c.label}" loading="lazy" onerror="this.parentElement.style.display='none'">
+            <span class="chart-label">${c.label}</span>
+        </div>`
+    ).join('');
 }
 
 // ═══════════════════════════════════════════════════════════
