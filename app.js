@@ -1460,6 +1460,11 @@ function renderValuationSnapshot(localJson) {
         el('snap-recommend').style.background = recColor;
     }
     if (el('snap-coe')) el('snap-coe').textContent = (val.COE != null ? val.COE.toFixed(2) : '-') + '%';
+    if (el('snap-ev-price')) el('snap-ev-price').textContent = val.evEbitdaPrice ? Math.round(val.evEbitdaPrice).toLocaleString('vi-VN') + ' d' : '-';
+    if (el('snap-pb-price')) el('snap-pb-price').textContent = val.pbPrice ? Math.round(val.pbPrice).toLocaleString('vi-VN') + ' d' : '-';
+    if (el('snap-pb-attr')) el('snap-pb-attr').textContent = val.pbAttr ? Math.round(val.pbAttr).toLocaleString('vi-VN') + ' d' : '-';
+    if (el('snap-pb-upper')) el('snap-pb-upper').textContent = val.pbUpper ? Math.round(val.pbUpper).toLocaleString('vi-VN') + ' d' : '-';
+    if (el('snap-pe-price')) el('snap-pe-price').textContent = val.pePrice ? Math.round(val.pePrice).toLocaleString('vi-VN') + ' d' : '-';
 }
 
 // ═══════════════════════════════════════════════════════════

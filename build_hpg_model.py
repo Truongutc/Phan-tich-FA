@@ -3317,13 +3317,19 @@ def build_pdf():
         topMargin=20*mm, bottomMargin=20*mm
     )
 
-    # ── Valuation calculations (multiples from HPG's own historical medians) ──
+    # ── Valuation calculations (matching Excel PnL derivation) ──
     EV_MULTIPLE = 9.0    # HPG median 8.95x (TTM 2018-2026)
     PB_MULTIPLE = 1.6    # HPG median 1.61x (TTM 2018-2026)
     PE_MULTIPLE = 12.0   # HPG median 11.1x (reference)
-    ebitda_2026e_val = revenue_fc[0] * 0.143 + da_fc[0]
-    net_debt_2026e_val = 80000 - 25000
-    eps_2026e_val = 2600
+    # PnL-matching: EBITDA = GP - SG&A + D&A (same as Excel 04_PnL)
+    _rev = revenue_fc[0]; _da = da_fc[0]
+    _gp = _rev * gp_margin_fc[0] / 100
+    _sgka = _rev * 0.035
+    _ebit = _gp - _sgka
+    ebitda_2026e_val = _ebit + _da
+    _ni = (_ebit + 2500 - 3800) * (1 - 0.12)
+    net_debt_2026e_val = 78000 - 25000
+    eps_2026e_val = _ni * 1e9 / SHARES
     bvps_2026e_val = 148000e9 / SHARES
 
     price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
@@ -3331,6 +3337,9 @@ def build_pdf():
     price_pe_val = PE_MULTIPLE * eps_2026e_val
     weighted_price_val = price_ev_ebitda_val * 0.4 + price_pb_val * 0.4 + price_pe_val * 0.2
     upside_val = (weighted_price_val / PRICE - 1) * 100
+    # Individual valuations for display
+    pb_upper_val = round(PB_MULTIPLE * 1.2 * bvps_2026e_val)
+    pb_attr_val  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
 
     elements = []
 
@@ -3381,7 +3390,19 @@ def build_pdf():
     elements.append(Paragraph(f"Giá mục tiêu: <b>{weighted_price_val:,.0f} VND</b>  |  Upside: <b>+{upside_val:.0f}%</b>",
         ParagraphStyle('CoverSub2', fontName=FONT, fontSize=14, alignment=TA_CENTER,
                        textColor=HexColor('#1F4E79'))))
-    elements.append(Spacer(1, 20*mm))
+    elements.append(Spacer(1, 4*mm))
+    elements.append(Paragraph(
+        f"EV/EBITDA ({EV_MULTIPLE}x): {price_ev_ebitda_val:,.0f} VND  |  "
+        f"P/B ({PB_MULTIPLE}x): {price_pb_val:,.0f} VND  |  "
+        f"P/E ({PE_MULTIPLE}x): {price_pe_val:,.0f} VND",
+        ParagraphStyle('CoverSub', fontName=FONT, fontSize=11, alignment=TA_CENTER,
+                       textColor=HexColor('#555555'))))
+    elements.append(Paragraph(
+        f"P/B hấp dẫn ({PB_MULTIPLE*0.8:.1f}x): {pb_attr_val:,} VND  |  "
+        f"P/B over ({PB_MULTIPLE*1.2:.1f}x): {pb_upper_val:,} VND",
+        ParagraphStyle('CoverSub', fontName=FONT, fontSize=11, alignment=TA_CENTER,
+                       textColor=HexColor('#555555'))))
+    elements.append(Spacer(1, 16*mm))
     elements.append(Paragraph(f"Ngày phân tích: {datetime.now().strftime('%d/%m/%Y %H:%M')} | Chuyên viên phân tích: AI FA Framework v2.0",
         styles['SmallText']))
     elements.append(PageBreak())
@@ -4068,7 +4089,7 @@ def build_pdf():
     elements.append(PageBreak())
     add_section("7. KẾT LUẬN")
     add_body(
-        "<b>KHUYẾN NGHỊ: MUA — Giá mục tiêu 33,500 VND (+42%)</b>"
+        f"<b>KHUYẾN NGHỊ: MUA — Giá mục tiêu {weighted_price_val:,.0f} VND (+{upside_val:.0f}%)</b>"
     )
     add_body(
         "HPG đang ở điểm uốn chu kỳ lợi nhuận: Dung Quất 2 full công suất, giá HRC hồi phục, "
@@ -4097,8 +4118,8 @@ def build_pdf():
              "⚠️ Tầng 5 (Rủi ro): TB — Giá HRC, tỷ giá, chi phí đầu vào<br/>"
              f"✅ Tầng 6 (Định giá): Hấp dẫn — P/B 1.56x (dưới median {PB_MULTIPLE}x HPG), EV/EBITDA ~7.0x (dưới median {EV_MULTIPLE}x HPG)")
 
-    add_body("<br/><b>Quan điểm đầu tư:</b> Mua tích lũy ở vùng giá 23,000-25,000 VND cho mục tiêu "
-             "33,500 VND trong 12 tháng. Nếu giá HRC duy trì trên 600 USD/tấn, kết quả kinh doanh "
+    add_body(f"<br/><b>Quan điểm đầu tư:</b> Mua tích lũy ở vùng giá {int(weighted_price_val*0.8):,}-{int(weighted_price_val*0.87):,} VND cho mục tiêu "
+             f"{weighted_price_val:,.0f} VND (+{upside_val:.0f}%) trong 12 tháng. Nếu giá HRC duy trì trên 600 USD/tấn, kết quả kinh doanh "
              "có thể vượt kế hoạch ĐHĐCĐ (22,000 tỷ LNST).")
 
     elements.append(Spacer(1, 8*mm))
@@ -4138,17 +4159,24 @@ def save_json_summary():
     all_ebit = ebit_hist + [round(revenue_fc[i] * (14.3 if i==0 else 15.8 if i==1 else 16.7)/100) for i in range(3)]
     all_ebit_margin = [round(all_ebit[i]/all_rev[i], 4) for i in range(8)]
 
-    # Target price from PDF valuation
+    # PnL-matching derivation (same as Excel 04_PnL)
     ev_mul = 9.0; pb_mul = 1.6; pe_mul = 12.0
-    ebitda_26 = revenue_fc[0] * 0.143 + da_fc[0]
-    net_debt_26 = 80000 - 25000
-    eps_26 = round(ni_fc[0] * 1e9 / (shares_fc[0] * 1e6))
+    _rev = revenue_fc[0]; _da = da_fc[0]
+    _gp = _rev * gp_margin_fc[0] / 100
+    _sgka = _rev * 0.035
+    _ebit = _gp - _sgka
+    ebitda_26 = _ebit + _da
+    net_debt_26 = 78000 - 25000
+    _ni = (_ebit + 2500 - 3800) * (1 - 0.12)
+    eps_26 = round(_ni * 1e9 / SHARES)
     bvps_26 = round(equity_fc_val[0] * 1e9 / SHARES)
     ev_price = max(0, (ebitda_26 * ev_mul - net_debt_26) * 1e9 / SHARES)
     pb_price = round(pb_mul * bvps_26)
     pe_price = round(pe_mul * eps_26)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     upside = round((target_price / PRICE - 1) * 100, 1)
+    pb_upper = round(pb_mul * 1.2 * bvps_26)
+    pb_attr  = round(pb_mul * 0.8 * bvps_26)
 
     # PE/PB history arrays
     pe_arr = []
@@ -4202,6 +4230,11 @@ def save_json_summary():
             "base": base_price,
             "bull": bull_price,
             "COE": 12.0,
+            "evEbitdaPrice": round(ev_price),
+            "pbPrice": pb_price,
+            "pbUpper": pb_upper,
+            "pbAttr": pb_attr,
+            "pePrice": pe_price,
         },
         "thesis": [
             "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
