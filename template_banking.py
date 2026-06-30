@@ -105,104 +105,104 @@ def fetch_rf_vietnam(timeout=15):
     return FALLBACK_RF, "Fallback (manual)"
 
 
-def fetch_price_history(ticker, days=30, timeout=15):
+def fetch_aligned_history(ticker, days=720, timeout=15):
     import time
-    endpoints = [
-        f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/chart/history?symbol={ticker}&resolution=D&from={int(time.time() - days*86400)}&to={int(time.time())}",
-        f"https://iq.vietcap.com.vn/api/iq-insight-service/v1/chart/history?symbol={ticker}&resolution=D&from={int(time.time() - days*86400)}&to={int(time.time())}"
-    ]
-    # Standard headers to bypass Cloudflare block
-    req_headers = {
+    # Use VNDIRECT's public UDF chart history API which is highly stable and public
+    from_time = 1577836800
+    to_time = 2000000000
+    url_stock = f"https://dchart-api.vndirect.com.vn/dchart/history?symbol={ticker}&resolution=D&from={from_time}&to={to_time}"
+    url_index = f"https://dchart-api.vndirect.com.vn/dchart/history?symbol=VNINDEX&resolution=D&from={from_time}&to={to_time}"
+    
+    headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Accept": "application/json, text/plain, */*",
-        "Origin": "https://trading.vietcap.com.vn",
-        "Referer": "https://trading.vietcap.com.vn/",
+        "Referer": "https://dchart.vndirect.com.vn/",
     }
-    for url in endpoints:
-        try:
-            r = requests.get(url, headers=req_headers, timeout=timeout)
-            if r.status_code == 200:
-                data = r.json()
-                closes = (data.get("data", {}).get("c") or data.get("c") or
-                          [d.get("close") or d.get("c") for d in data.get("data", []) if isinstance(d, dict)])
-                closes = [x for x in closes if x is not None and x > 0]
-                if len(closes) > 0:
-                    return closes
-        except Exception as e:
-            print(f"    [fetch_price_history] Attempt failed: {e}")
-            pass
+    
+    try:
+        r_stock = requests.get(url_stock, headers=headers, timeout=timeout)
+        r_index = requests.get(url_index, headers=headers, timeout=timeout)
+        
+        if r_stock.status_code == 200 and r_index.status_code == 200:
+            d_stock = r_stock.json()
+            d_index = r_index.json()
+            
+            t_s = d_stock.get("t") or []
+            c_s = d_stock.get("c") or []
+            t_m = d_index.get("t") or []
+            c_m = d_index.get("c") or []
+            
+            map_stock = {t_s[i]: c_s[i] for i in range(min(len(t_s), len(c_s))) if c_s[i] is not None and c_s[i] > 0}
+            map_index = {t_m[i]: c_m[i] for i in range(min(len(t_m), len(c_m))) if c_m[i] is not None and c_m[i] > 0}
+            
+            # Find common timestamps
+            common_t = sorted(list(set(map_stock.keys()) & set(map_index.keys())))
+            
+            aligned = []
+            for t in common_t:
+                date_str = datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d")
+                # VNDIRECT stock price is divided by 1000, so scale it up if it is under 1000
+                p_s = map_stock[t]
+                if p_s < 1000:
+                    p_s = p_s * 1000
+                aligned.append((date_str, p_s, map_index[t]))
+            return aligned
+    except Exception as e:
+        print(f"[Beta Calc] Error fetching history: {e}")
     return []
 
-def calc_beta(stock_closes, market_closes, min_days=100):
-    if len(stock_closes) < min_days or len(market_closes) < min_days:
-        return None, 0
-    n = min(len(stock_closes), len(market_closes))
-    s = stock_closes[-n:]
-    m = market_closes[-n:]
+def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=720, timeout=20, fallback=1.0):
+    print(f"  [INFO] Đang tải lịch sử giá để tự tính Beta cho {ticker}...")
+    aligned_data = fetch_aligned_history(ticker, days=days, timeout=timeout)
+    
+    latest_price = None
+    if aligned_data:
+        latest_price = aligned_data[-1][1]
+        print(f"  [OK] Lấy giá đóng cửa gần nhất của {ticker} từ lịch sử giá: {latest_price:,.0f} VND")
+        
+    num_sessions = len(aligned_data)
+    
+    if num_sessions < 30:
+        print(f"  [WARN] Số phiên giao dịch ({num_sessions}) < 30. Không đủ điều kiện tính Beta. Sử dụng fallback hoặc API...")
+        # Fallback to Vietcap details API
+        try:
+            r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
+            beta = r.json().get("data", {}).get("beta")
+            if beta is not None and 0.3 <= float(beta) <= 2.5:
+                print(f"  [OK] Beta {ticker} từ Vietcap API: {float(beta):.2f}")
+                return float(beta), f"Vietcap API (Beta={float(beta):.2f})", latest_price, aligned_data
+        except:
+            pass
+        return fallback, "fallback", latest_price, aligned_data
+
+    # Slice data based on rules
+    if num_sessions > 100:
+        # Take the last 101 closing prices to compute exactly 100 returns
+        sliced_data = aligned_data[-101:]
+        source_str = f"Tự tính toán (100 phiên gần nhất)"
+    else:
+        sliced_data = aligned_data
+        source_str = f"Tự tính toán ({num_sessions - 1} phiên lịch sử)"
+        
+    s = [x[1] for x in sliced_data]
+    m = [x[2] for x in sliced_data]
+    
+    # Calculate returns: R = (p1 - p0) / p0
     rs = [(s[i] - s[i-1]) / s[i-1] for i in range(1, len(s))]
     rm = [(m[i] - m[i-1]) / m[i-1] for i in range(1, len(m))]
+    
     n_ret = len(rs)
     mean_rs = sum(rs) / n_ret
     mean_rm = sum(rm) / n_ret
-    cov_sm = sum((rs[i] - mean_rs) * (rm[i] - mean_rm) for i in range(n_ret)) / (n_ret - 1)
-    var_m  = sum((rm[i] - mean_rm) ** 2 for i in range(n_ret)) / (n_ret - 1)
+    
+    cov_sm = sum((rs[i] - mean_rs) * (rm[i] - mean_rm) for i in range(n_ret)) / (n_ret - 1) if n_ret > 1 else 0
+    var_m  = sum((rm[i] - mean_rm) ** 2 for i in range(n_ret)) / (n_ret - 1) if n_ret > 1 else 1.0
+    
     beta = cov_sm / var_m if var_m > 0 else 1.0
     beta = max(0.3, min(2.5, beta))
-    return round(beta, 4), n_ret
-
-def fetch_beta_vietstock(ticker, timeout=15):
-    try:
-        search_url = f"https://finance.vietstock.vn/search?query={ticker}"
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        r1 = requests.get(search_url, headers=headers, timeout=timeout)
-        if r1.status_code == 200:
-            data = json.loads(r1.text).get("data", "")
-            lines = data.split('\r\n')
-            target_url = ""
-            for line in lines:
-                parts = line.split('|')
-                if len(parts) >= 3 and parts[0].strip().upper() == ticker.upper():
-                    target_url = parts[2]
-                    break
-            if target_url:
-                r2 = requests.get(target_url, headers=headers, timeout=timeout)
-                if r2.status_code == 200:
-                    import re
-                    m = re.search(r'\"Beta\":\"([\d\.]+)\"', r2.text)
-                    if m:
-                        beta = float(m.group(1))
-                        if 0.3 <= beta <= 2.5:
-                            print(f"  [OK] Beta {ticker} từ Vietstock: {beta:.2f}")
-                            return beta, f"Vietstock ({beta:.2f})"
-    except Exception as e:
-        print(f"  [WARN] Vietstock scrape failed: {e}")
-    return None, ""
-
-def fetch_and_calc_beta(ticker, market_ticker="VNINDEX", days=300, timeout=20, fallback=1.0):
-    stock_closes  = fetch_price_history(ticker, days=days, timeout=timeout)
-    latest_price = stock_closes[-1] if stock_closes else None
-    if latest_price:
-        print(f"  [OK] Lấy giá phiên đóng cửa gần nhất của {ticker} từ lịch sử giá: {latest_price:,.0f} VND")
-        
-    b_vs, src_vs = fetch_beta_vietstock(ticker, timeout)
-    if b_vs is not None:
-        return b_vs, src_vs, latest_price
-    try:
-        r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/details?ticker={ticker}", headers={"User-Agent": "Mozilla/5.0", "Referer": "https://trading.vietcap.com.vn/"}, timeout=timeout)
-        beta = r.json().get("data", {}).get("beta")
-        if beta is not None and 0.3 <= float(beta) <= 2.5:
-            print(f"  [OK] Beta {ticker} từ Vietcap API: {float(beta):.2f}")
-            return float(beta), f"Vietcap API (beta={float(beta):.2f})", latest_price
-    except:
-        pass
-    print(f"  [INFO] Tính Beta {ticker} từ hồi quy giá lịch sử...")
-    market_closes = fetch_price_history(market_ticker, days=days, timeout=timeout)
-    if stock_closes and market_closes:
-        beta, n_obs = calc_beta(stock_closes, market_closes)
-        if beta is not None:
-            return beta, f"Hồi quy giá {n_obs} phiên vs {market_ticker}", latest_price
-    print(f"  [FALLBACK] Beta {ticker} = {fallback}")
-    return fallback, "fallback", latest_price
+    
+    print(f"  [OK] Đã tính thành công hệ số Beta cho {ticker}: {beta:.4f} (dựa trên {n_ret} phiên)")
+    return round(beta, 4), source_str, latest_price, sliced_data
 
 
 # ── AI COMMENTARY EXTRACTOR ──────────────────────────────────────────────────
@@ -601,7 +601,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     # ── COE calculation via CAPM (with 2% Specific Frontier Risk Premium) ──
     rf_val, rf_src = fetch_rf_vietnam()
-    beta_val, beta_src, _ = fetch_and_calc_beta(ticker)
+    beta_val, beta_src, _, aligned_data = fetch_and_calc_beta(ticker)
     erp_val = 0.07  # Damodaran ERP
     specific_risk_premium = 0.02 # specific risk premium for frontier market / bank specific risks
     COE = rf_val + beta_val * erp_val + specific_risk_premium
@@ -670,6 +670,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     FMT_HDR = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
     FMT_HDR_FONT = Font(bold=True, color="FFFFFF", size=11, name="Calibri")
     FMT_BOLD = Font(bold=True, size=11, name="Calibri")
+    FMT_ITALIC = Font(italic=True, size=11, name="Calibri")
     thin_border = Border(
         left=Side(style='thin'), right=Side(style='thin'),
         top=Side(style='thin'), bottom=Side(style='thin')
@@ -701,6 +702,51 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # 1. 00_COE
     ws_coe = wb.active
     ws_coe.title = "00_COE"
+    
+    # 0. 00_Beta (inserted at index 0, before 00_COE)
+    ws_beta = wb.create_sheet(title="00_Beta", index=0)
+    ws_beta.views.sheetView[0].showGridLines = True
+    ws_beta.column_dimensions['A'].width = 15
+    ws_beta.column_dimensions['B'].width = 18
+    ws_beta.column_dimensions['C'].width = 25
+    ws_beta.column_dimensions['D'].width = 18
+    ws_beta.column_dimensions['E'].width = 25
+    
+    ws_beta.cell(row=1, column=1, value="BẢNG TÍNH HỆ SỐ BETA LỊCH SỬ").font = FMT_BOLD
+    ws_beta.cell(row=1, column=2, value="HỆ SỐ BETA (TÍNH TOÁN):").font = FMT_BOLD
+    ws_beta.cell(row=1, column=3).font = FMT_BOLD
+    ws_beta.cell(row=1, column=3).number_format = '0.0000'
+    ws_beta.cell(row=1, column=3).fill = FMT_BLUE
+    
+    ws_beta.cell(row=2, column=2, value="Số phiên giao dịch:").font = FMT_ITALIC
+    ws_beta.cell(row=2, column=3).font = FMT_ITALIC
+    
+    ws_beta.cell(row=4, column=1, value="Ngày").font = FMT_BOLD
+    ws_beta.cell(row=4, column=2, value=f"Giá {ticker}").font = FMT_BOLD
+    ws_beta.cell(row=4, column=3, value=f"Tỷ suất sinh lời {ticker}").font = FMT_BOLD
+    ws_beta.cell(row=4, column=4, value="Giá VNINDEX").font = FMT_BOLD
+    ws_beta.cell(row=4, column=5, value="Tỷ suất sinh lời VNINDEX").font = FMT_BOLD
+    
+    if aligned_data:
+        date_str0, p_s0, p_m0 = aligned_data[0]
+        ws_beta.cell(row=5, column=1, value=date_str0)
+        ws_beta.cell(row=5, column=2, value=p_s0)
+        ws_beta.cell(row=5, column=4, value=p_m0)
+        
+        for r_idx, (date_str, p_s, p_m) in enumerate(aligned_data[1:], start=6):
+            ws_beta.cell(row=r_idx, column=1, value=date_str)
+            ws_beta.cell(row=r_idx, column=2, value=p_s)
+            ws_beta.cell(row=r_idx, column=3, value=f"=(B{r_idx}-B{r_idx-1})/B{r_idx-1}").number_format = '0.00%'
+            ws_beta.cell(row=r_idx, column=4, value=p_m)
+            ws_beta.cell(row=r_idx, column=5, value=f"=(D{r_idx}-D{r_idx-1})/D{r_idx-1}").number_format = '0.00%'
+            
+        last_row = 4 + len(aligned_data)
+        ws_beta.cell(row=1, column=3, value=f"=COVAR(C6:C{last_row}, E6:E{last_row})/VAR(E6:E{last_row})")
+        ws_beta.cell(row=2, column=3, value=f"=COUNT(C6:C{last_row})")
+    else:
+        ws_beta.cell(row=1, column=3, value=beta_val)
+        ws_beta.cell(row=2, column=3, value=0)
+        
     ws_coe.column_dimensions['A'].width = 42
     ws_coe.column_dimensions['B'].width = 18
     ws_coe.column_dimensions['C'].width = 30
@@ -711,7 +757,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_coe.cell(row=4, column=1, value="Rf — Lãi suất phi rủi ro")
     ws_coe.cell(row=4, column=2, value=rf_val).number_format = '0.00%'
     ws_coe.cell(row=5, column=1, value="β  — Hệ số Beta")
-    ws_coe.cell(row=5, column=2, value=beta_val)
+    ws_coe.cell(row=5, column=2, value="='00_Beta'!C1")
     ws_coe.cell(row=6, column=1, value="ERP — Phần bù rủi ro vốn")
     ws_coe.cell(row=6, column=2, value=erp_val).number_format = '0.00%'
     ws_coe.cell(row=7, column=1, value="α  — Phần bù rủi ro đặc thù (Frontier/Bank)")
