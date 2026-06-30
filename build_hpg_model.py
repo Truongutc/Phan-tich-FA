@@ -3206,23 +3206,22 @@ def build_pdf():
     cf_qs = section_to_quarters(FIN_DATA, "CASH_FLOW")
 
     # Try to register Vietnamese font
-    try:
-        arial_path = "C:/Windows/Fonts/arial.ttf"
-        arial_bold_path = "C:/Windows/Fonts/arialbd.ttf"
-        arial_i_path = "C:/Windows/Fonts/ariali.ttf"
-        if os.path.exists(arial_path):
+    FONT = 'Helvetica'
+    FONT_BOLD = 'Helvetica-Bold'
+    FONT_ITALIC = 'Helvetica-Oblique'
+    arial_path = "C:/Windows/Fonts/arial.ttf"
+    arial_bold_path = "C:/Windows/Fonts/arialbd.ttf"
+    arial_i_path = "C:/Windows/Fonts/ariali.ttf"
+    if os.path.exists(arial_path) and os.path.exists(arial_bold_path) and os.path.exists(arial_i_path):
+        try:
             pdfmetrics.registerFont(TTFont('Arial', arial_path))
-        if os.path.exists(arial_bold_path):
             pdfmetrics.registerFont(TTFont('Arial-Bold', arial_bold_path))
-        if os.path.exists(arial_i_path):
             pdfmetrics.registerFont(TTFont('Arial-Italic', arial_i_path))
-        FONT = 'Arial'
-        FONT_BOLD = 'Arial-Bold'
-        FONT_ITALIC = 'Arial-Italic'
-    except:
-        FONT = 'Helvetica'
-        FONT_BOLD = 'Helvetica-Bold'
-        FONT_ITALIC = 'Helvetica-Oblique'
+            FONT = 'Arial'
+            FONT_BOLD = 'Arial-Bold'
+            FONT_ITALIC = 'Arial-Italic'
+        except:
+            pass  # registration failed, keep Helvetica
 
     styles = getSampleStyleSheet()
     # Override/add styles
