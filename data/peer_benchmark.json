@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "updated": "2026-06-29",
+    "updated": "2026-06-30",
     "source": "Vietcap Live API Engine"
   },
   "peers": [
@@ -11,11 +11,11 @@
       "casa": 32.55,
       "roe": 16.17,
       "cir": 32.5,
-      "pb": 2.19,
+      "pb": 2.21,
       "cg": 4.78,
-      "mcap": 513038.4507716,
+      "mcap": 518051.855828,
       "name": "Vietcombank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "BID",
@@ -24,11 +24,11 @@
       "casa": 19.49,
       "roe": 14.43,
       "cir": 32.02,
-      "pb": 1.59,
+      "pb": 1.62,
       "cg": 2.33,
-      "mcap": 303578.719257,
+      "mcap": 308674.764904,
       "name": "BIDV",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "CTG",
@@ -37,11 +37,11 @@
       "casa": 24.08,
       "roe": 18.99,
       "cir": 24.94,
-      "pb": 1.38,
+      "pb": 1.4,
       "cg": 1.87,
-      "mcap": 260969.3398032,
+      "mcap": 263299.4231943,
       "name": "VietinBank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "TCB",
@@ -50,11 +50,11 @@
       "casa": 31.45,
       "roe": 14.89,
       "cir": 28.29,
-      "pb": 1.27,
+      "pb": 1.28,
       "cg": 3.76,
-      "mcap": 236680.4298276,
+      "mcap": 239514.9259932,
       "name": "Techcombank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "MBB",
@@ -63,11 +63,11 @@
       "casa": 32.27,
       "roe": 20.58,
       "cir": 24.94,
-      "pb": 1.33,
+      "pb": 1.35,
       "cg": 3.27,
-      "mcap": 199361.24774775,
+      "mcap": 202180.4977159,
       "name": "MBBank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "ACB",
@@ -76,11 +76,11 @@
       "casa": 21.23,
       "roe": 17.5,
       "cir": 32.01,
-      "pb": 1.33,
+      "pb": 1.35,
       "cg": 3.25,
-      "mcap": 131179.9362282,
+      "mcap": 132921.2628153,
       "name": "ACB",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "VIB",
@@ -89,11 +89,11 @@
       "casa": 13.93,
       "roe": 18.24,
       "cir": 31.61,
-      "pb": 1.12,
+      "pb": 1.15,
       "cg": 1.13,
-      "mcap": 54974.6922165,
+      "mcap": 56336.2945005,
       "name": "VIB",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "HDB",
@@ -102,11 +102,11 @@
       "casa": 10.21,
       "roe": 23.57,
       "cir": 25.99,
-      "pb": 1.53,
+      "pb": 1.55,
       "cg": 10.06,
-      "mcap": 127134.0186042,
+      "mcap": 129136.1291334,
       "name": "HDBank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "STB",
@@ -115,11 +115,11 @@
       "casa": 15.92,
       "roe": 10.31,
       "cir": 45.21,
-      "pb": 2.26,
+      "pb": 2.3,
       "cg": -0.24,
-      "mcap": 138940.3982692,
+      "mcap": 141202.6571284,
       "name": "Sacombank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "VPB",
@@ -128,11 +128,11 @@
       "casa": 13.09,
       "roe": 13.57,
       "cir": 21.69,
-      "pb": 1.14,
+      "pb": 1.15,
       "cg": 10.23,
-      "mcap": 212232.45632675,
+      "mcap": 214612.63340705,
       "name": "VPBank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "TPB",
@@ -141,11 +141,11 @@
       "casa": 17.45,
       "roe": 14.01,
       "cir": 45.85,
-      "pb": 0.93,
+      "pb": 0.94,
       "cg": 3.26,
-      "mcap": 44662.1546553,
+      "mcap": 45355.66637355,
       "name": "TPBank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "MSB",
@@ -154,11 +154,11 @@
       "casa": 25.51,
       "roe": 13.77,
       "cir": 34.51,
-      "pb": 1.13,
+      "pb": 1.14,
       "cg": 4.64,
-      "mcap": 49608.0,
+      "mcap": 49920.0,
       "name": "MSB",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "EIB",
@@ -167,11 +167,11 @@
       "casa": 13.37,
       "roe": 4.07,
       "cir": 56.98,
-      "pb": 1.45,
+      "pb": 1.46,
       "cg": 2.89,
-      "mcap": 38372.0445042,
+      "mcap": 38558.3165649,
       "name": "Eximbank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "LPB",
@@ -180,11 +180,11 @@
       "casa": 6.49,
       "roe": 18.43,
       "cir": 30.14,
-      "pb": 3.2,
+      "pb": 3.3,
       "cg": 2.84,
-      "mcap": 158325.9513,
+      "mcap": 163404.33087,
       "name": "LienVietPostBank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "SHB",
@@ -193,11 +193,11 @@
       "casa": 6.63,
       "roe": 20.78,
       "cir": 17.17,
-      "pb": 1.02,
+      "pb": 1.01,
       "cg": 2.01,
-      "mcap": 72941.5573887,
+      "mcap": 72674.3721968,
       "name": "SHB",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "OCB",
@@ -206,11 +206,11 @@
       "casa": 10.67,
       "roe": 11.18,
       "cir": 37.09,
-      "pb": 0.97,
+      "pb": 0.83,
       "cg": 2.72,
-      "mcap": 33820.7640068,
+      "mcap": 29063.16784038832,
       "name": "OCB",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "BAB",
@@ -219,11 +219,11 @@
       "casa": 3.05,
       "roe": 8.82,
       "cir": 51.22,
-      "pb": 1.01,
+      "pb": 1.0,
       "cg": 2.46,
-      "mcap": 13715.3535204,
+      "mcap": 13600.0984488,
       "name": "BacABank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     },
     {
       "ticker": "NAB",
@@ -232,11 +232,11 @@
       "casa": 5.89,
       "roe": 21.25,
       "cir": 38.9,
-      "pb": 1.14,
+      "pb": 1.15,
       "cg": 1.91,
-      "mcap": 28172.6307801,
+      "mcap": 28388.5130083,
       "name": "NamABank",
-      "date_updated": "2026-06-29"
+      "date_updated": "2026-06-30"
     }
   ]
 }
