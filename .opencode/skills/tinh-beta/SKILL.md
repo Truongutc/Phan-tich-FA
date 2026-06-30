@@ -33,11 +33,11 @@ Hệ thống sẽ tải tối đa dữ liệu lịch sử giá của Cổ phiế
 - **Dưới 250 phiên (< 1 năm)**: 
   - Vẫn tạo trang tính `00_Beta` và điền dữ liệu kèm công thức tính toán.
   - Tuy nhiên, trong trang tính `00_COE` ô `B5` (Hệ số Beta), giá trị sẽ lấy **theo Web** (Vietstock/Vietcap API) thay vì liên kết sang `00_Beta`.
-  - Bên cạnh ô Beta (ô `C5`), hệ thống chèn một liên kết tìm kiếm: `=HYPERLINK("...", "Tra cứu Beta trên Vietcap (Số phiên < 1 năm)")` để người dùng dễ dàng kiểm tra.
+  - Bên cạnh ô Beta (ô `C5`), hệ thống chèn một liên kết tìm kiếm: `=HYPERLINK("https://finance.vietstock.vn/search?query={ticker}", "Tra cứu Beta trên Vietstock (Số phiên < 1 năm)")` để người dùng dễ dàng kiểm tra.
 - **Từ 250 phiên trở lên (>= 1 năm)**:
   - Tự động lấy hệ số Beta tự tính toán từ trang tính `00_Beta`.
   - Liên kết trực tiếp `00_COE!B5` sang `='00_Beta'!C1`.
-  - Cột `C5` sẽ hiển thị liên kết tra cứu tham khảo thông thường.
+  - Cột `C5` sẽ hiển thị liên kết tra cứu tham khảo Vietstock thông thường.
 
 ## 3. Tích hợp trong Excel Model
 

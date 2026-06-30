@@ -815,10 +815,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_coe.cell(row=5, column=1, value="β  — Hệ số Beta")
     if is_enough_sessions:
         ws_coe.cell(row=5, column=2, value="='00_Beta'!C1")
-        ws_coe.cell(row=5, column=3, value=f'=HYPERLINK("https://trading.vietcap.com.vn/iq/company?ticker={ticker}&tab=information&isIndex=false", "Tra cứu tham khảo (đủ 1 năm)")').font = Font(color="0563C1", underline="single", name="Calibri", size=11)
+        ws_coe.cell(row=5, column=3, value=f'=HYPERLINK("https://finance.vietstock.vn/search?query={ticker}", "Tra cứu tham khảo trên Vietstock (đủ 1 năm)")').font = Font(color="0563C1", underline="single", name="Calibri", size=11)
     else:
         ws_coe.cell(row=5, column=2, value=beta_web)
-        ws_coe.cell(row=5, column=3, value=f'=HYPERLINK("https://trading.vietcap.com.vn/iq/company?ticker={ticker}&tab=information&isIndex=false", "Tra cứu Beta trên Vietcap (Số phiên < 1 năm)")').font = Font(color="0563C1", underline="single", name="Calibri", size=11)
+        ws_coe.cell(row=5, column=3, value=f'=HYPERLINK("https://finance.vietstock.vn/search?query={ticker}", "Tra cứu Beta trên Vietstock (Số phiên < 1 năm)")').font = Font(color="0563C1", underline="single", name="Calibri", size=11)
     ws_coe.cell(row=6, column=1, value="ERP — Phần bù rủi ro vốn")
     ws_coe.cell(row=6, column=2, value=erp_val).number_format = '0.00%'
     ws_coe.cell(row=7, column=1, value="α  — Phần bù rủi ro đặc thù (Frontier/Bank)")
