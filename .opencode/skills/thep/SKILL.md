@@ -102,6 +102,12 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 **API CafeF — BCTC quý cho dữ liệu volume & sản lượng**:
   - `GET /api/iq-insight-service/v1/company/{ticker}/income-statement`
 
+**PDF Font (multi-platform)**:
+  - Windows: `C:/Windows/Fonts/arial.ttf` (Arial, có Vietnamese)
+  - Linux (GitHub Actions): `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` (DejaVu Sans, có Vietnamese)
+  - Workflow: `sudo apt-get install fonts-dejavu-core`
+  - Fallback: Helvetica (không hỗ trợ Vietnamese — chỉ dùng khi không có font nào khác)
+
 ---
 
 ## Phân tích Doanh nghiệp Thép
@@ -173,9 +179,9 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 ## Định giá
 
 ### Phương pháp kết hợp (40% EV/EBITDA + 40% P/B + 20% P/E)
-- **EV/EBITDA (40%, chiết khấu 5%):** Loại bỏ yếu tố cấu trúc vốn và khấu hao, dùng cho tầm nhìn M&A và so sánh quốc tế. Chiết khấu 5% vì tính thận trọng.
+- **EV/EBITDA (40%, chiết khấu 10%):** Loại bỏ yếu tố cấu trúc vốn và khấu hao, dùng cho tầm nhìn M&A và so sánh quốc tế. Chiết khấu 10% vì tính thận trọng.
 - **P/B (40%):** Mua khi P/B ~0.7-1.0x (ngành bi đát nhất). Bán khi P/B ~2.0-2.5x (mọi người hô hào). Công cụ chính cho chu kỳ.
-- **P/E (20%, tham khảo):** P/E là bẫy cho cổ phiếu chu kỳ — P/E thấp (2-5x) = lúc LN đỉnh, P/E cao/âm = đáy chu kỳ. Dùng tỷ trọng nhỏ để bổ sung.
+- **P/E (20%, tham khảo, chiết khấu 10%):** P/E là bẫy cho cổ phiếu chu kỳ — P/E thấp (2-5x) = lúc LN đỉnh, P/E cao/âm = đáy chu kỳ. Dùng tỷ trọng nhỏ để bổ sung. Chiết khấu 10% cho an toàn.
 
 **QUY TẮC multiple mục tiêu — dùng lịch sử của CHÍNH cổ phiếu:**
   - Fetch data từ Vietcap API `statistics-financial` (TTM quarterly, quarter != 5)
@@ -186,15 +192,22 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
   - **KHÔNG lấy trung bình ngành làm primary** — chỉ để cross-check
 
 **Công thức định giá tổng hợp:**
-  - Giá EV/EBITDA = (EBITDA × Multiple - Nợ ròng) × 1e9 / Số CP × 0.95
+  - Giá EV/EBITDA = (EBITDA × Multiple - Nợ ròng) × 1e9 / Số CP × 0.90
   - Giá P/B = Multiple × BVPS
-  - Giá P/E = Multiple × EPS
+  - Giá P/E = Multiple × EPS × 0.90
   - Giá mục tiêu = EV/EBITDA × 40% + P/B × 40% + P/E × 20%
 
 ### GP Margin Forecast Methodology
   - **KHÔNG** lấy spread thay thế cho GP margin (spread chỉ đồng pha, không bằng nhau)
-  - GP margin dự phóng = BLNG quý gần nhất × (spread hiện tại / spread quý gần nhất)
-  - Spread = Giá HRC - (1.6 × Giá quặng + 0.5 × Giá than cốc + 200 USD chi phí chuyển đổi)
+  - **Cách tính (bottom-up từ quý gần nhất):**
+    1. Lấy LNG & doanh thu quý gần nhất từ BCTC (VD: Q1/2026)
+    2. Tính BLNG quý gần nhất = LNG / Doanh thu
+    3. Tính tỉ lệ Spread = Spread hiện tại / Spread quý gần nhất
+    4. BLNG các quý còn lại = BLNG quý gần nhất × tỉ lệ Spread
+    5. LNG 2026 = LNG lũy kế + Doanh thu ước tính các quý còn lại × BLNG các quý còn lại
+    6. BLNG 2026 = LNG 2026 / Tổng doanh thu 2026
+  - Spread = Giá HRC - (1.6 × Giá quặng + 0.5 × Giá than cốc + Chi phí chuyển đổi)
+  - **Quan trọng:** Không hardcode BLNG dự phóng (VD: 17.5%), phải tính từ số thực tế
 
 ---
 
@@ -205,6 +218,11 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 3. **Rủi ro địa chính trị:** Xung đột Trung Đông, phong tỏa eo biển Hormuz → tăng giá than cốc, thép phế, logistics
 
 ---
+
+## GitHub Actions — Bảo vệ Custom Builder
+  - **CUSTOM_TICKERS whitelist:** HPG, MBB, VCB, BID, ACB, CTG — không bao giờ bị xoá/dùng Gemini generate lại
+  - **Size guard:** Builder >500 dòng tự động coi là custom, không bị regenerate
+  - **Error handling:** Wrap `build_pdf()` trong try/except để `save_json_summary()` luôn chạy (tránh mất data JSON khi PDF lỗi font)
 
 ## Lưu ý Khi Viết Báo Cáo
 
