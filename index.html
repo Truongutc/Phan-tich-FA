@@ -74,23 +74,19 @@ const SECTOR_PAGES = {
 };
 
 async function loadStockList() {
-    const tickers = ['ACB','BID','CTG','EIB','HDB','LPB','MBB','MSB','NAB','OCB','SHB','SSB','STB','TCB','VIB','VPB','BAB','HPG'];
-    const stocks = [];
-    for (const t of tickers) {
-        try {
-            const r = await fetch(`data/${t}.json`);
-            if (!r.ok) continue;
-            const j = await r.json();
-            stocks.push({ ticker: j.ticker, companyName: j.companyName, sector: j.sector || '' });
-        } catch(e) {}
+    try {
+        const r = await fetch('data/index.json');
+        if (!r.ok) return [];
+        return await r.json();
+    } catch(e) {
+        return [];
     }
-    return stocks;
 }
 
 function getSectorKey(s) {
     const v = (s || '').toLowerCase();
-    if (v.includes('bank') || v.includes('financial') || v.includes('ngan hang')) return 'banks';
-    if (v.includes('basic resource') || v.includes('material') || v.includes('steel') || v.includes('thép')) return 'materials';
+    if (v.includes('bank') || v.includes('financial') || v.includes('ngân hàng') || v.includes('ngan hang')) return 'banks';
+    if (v.includes('basic resource') || v.includes('material') || v.includes('steel') || v.includes('thép') || v.includes('th\u00e9p')) return 'materials';
     return 'other';
 }
 
