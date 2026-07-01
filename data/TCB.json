@@ -182,8 +182,8 @@
     ]
   },
   "sector": "Ngân hàng",
-  "currentPrice": 33400.0,
-  "marketCap": 236680429360000.0,
+  "currentPrice": 33500.0,
+  "marketCap": 237389053400000.0,
   "shares": 7086240400,
   "assumptions": {
     "loans_growth": [
@@ -292,21 +292,21 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1z5vfanaRDPVzW_1W_bCPvmICPLjE8_0x/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1nr6Vrl9XU8BIExtETxa38d-fYWvnfzDA/view?usp=drivesdk",
   "pe_hist": [
     11.6477870099,
     13.5226658764,
     11.7340730437,
     8.9041391191,
-    9.0847665895
+    9.1119664895
   ],
   "pb_hist": [
     1.6382492399,
     1.831859987,
     1.574749298,
     1.327280517,
-    1.3379662441
+    1.341972131
   ],
   "pe_quarters": [
     10.8486033885,
@@ -339,7 +339,7 @@
     13.5226658764,
     11.7340730437,
     8.9041391191,
-    9.0847665895
+    9.1119664895
   ],
   "pb_quarters": [
     2.0494710047,
@@ -372,7 +372,7 @@
     1.831859987,
     1.574749298,
     1.327280517,
-    1.3379662441
+    1.341972131
   ],
   "quarter_labels": [
     "2018-Q2",
@@ -1067,32 +1067,32 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 37690,
-    "upside": 12.84,
-    "bear": 32036,
-    "base": 37689,
-    "bull": 43343,
+    "weightedTarget": 36043,
+    "upside": 7.59,
+    "bear": 30636,
+    "base": 36043,
+    "bull": 41449,
     "pbAttractive": 1.06,
     "pbAttractivePrice": 31475,
     "pbTarget": 1.67,
     "pbTargetPrice": 49592,
-    "COE": 13.36,
+    "COE": 14.23,
     "peMedian": 8.78,
     "pbMedian": 1.33,
     "bvpsBase": 25331,
-    "riValue": 36053,
+    "riValue": 32760,
     "pbValue": 39327,
-    "pvRi": 2511,
-    "pvCv": 8211,
+    "pvRi": 1880,
+    "pvCv": 5548,
     "epsFc": [
       4299,
       5087,
       5841
     ],
     "riResults": [
-      914,
-      1129,
-      1203
+      694,
+      871,
+      901
     ],
     "recommend": "THEO DÕI"
   },
@@ -1214,5 +1214,6 @@
       0.3648,
       0.3748
     ]
-  }
+  },
+  "lastUpdated": "2026-07-01 02:35"
 }
