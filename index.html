@@ -71,6 +71,7 @@
 const SECTOR_PAGES = {
     banks: 'banking.html',
     materials: 'steel.html',
+    other: 'index.html',
 };
 
 async function loadStockList() {
@@ -93,6 +94,7 @@ function getSectorKey(s) {
 const SECTOR_CFG = {
     banks:  { label: 'Ngân Hàng',           icon: '🏦', color: '#3b82f6' },
     materials: { label: 'Thép & Vật Liệu',   icon: '🔩', color: '#dc2626' },
+    other:  { label: 'Ngành Khác',          icon: '📁', color: '#a0aec0' },
 };
 
 function groupAndRender(stocks) {
@@ -104,7 +106,7 @@ function groupAndRender(stocks) {
     });
     const container = document.getElementById('sector-groups-container');
     container.innerHTML = '';
-    const order = ['banks', 'materials'];
+    const order = ['banks', 'materials', 'other'];
     order.forEach(key => {
         if (!groups[key]) return;
         const cfg = SECTOR_CFG[key] || { label: 'Khác', icon: '📁', color: '#a0aec0' };
