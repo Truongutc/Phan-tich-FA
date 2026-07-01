@@ -1290,10 +1290,10 @@ function renderValuationSnapshot(localJson) {
     }
     if (el('snap-coe')) el('snap-coe').textContent = (val.COE != null ? val.COE.toFixed(2) : '-') + '%';
     if (el('snap-bvps')) el('snap-bvps').textContent = fmt(val.bvpsBase);
-    if (el('snap-pb-median')) el('snap-pb-median').textContent = val.pbMedian ? val.pbMedian.toFixed(2) + 'x' : '-';
-    if (el('snap-pb-attractive')) el('snap-pb-attractive').textContent = val.pbAttractive ? val.pbAttractive.toFixed(2) + 'x' : '-';
-    if (el('snap-pb-target')) el('snap-pb-target').textContent = val.pbTarget ? val.pbTarget.toFixed(2) + 'x' : '-';
-    if (el('snap-pe-median')) el('snap-pe-median').textContent = val.peMedian ? val.peMedian.toFixed(2) + 'x' : '-';
+    if (el('snap-pb-median')) el('snap-pb-median').textContent = val.pbMedianPrice ? fmt(val.pbMedianPrice) : '-';
+    if (el('snap-pb-attractive')) el('snap-pb-attractive').textContent = val.pbAttractivePrice ? fmt(val.pbAttractivePrice) : '-';
+    if (el('snap-pb-target')) el('snap-pb-target').textContent = val.pbTargetPrice ? fmt(val.pbTargetPrice) : '-';
+    if (el('snap-pe-median')) el('snap-pe-median').textContent = val.peMedianPrice ? fmt(val.peMedianPrice) : '-';
 }
 
 // ═══════════════════════════════════════════════════════════

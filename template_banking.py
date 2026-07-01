@@ -2485,9 +2485,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         ["Vốn hóa (tỷ VND)", f"{market_cap/1e9:,.0f}", "Tiềm năng tăng giá", f"{upside:+.1f}%"],
         ["Số lượng CP lưu hành", f"{shares:,.0f}", "Khuyến nghị đầu tư", rec_val],
         ["Hệ số Beta", f"{beta_val}", "COE (Chi phí vốn CSH)", f"{COE*100:.2f}%"],
-        ["P/B hấp dẫn (MUA)", f"{pb_attractive:.2f}x", "Giá trị P/B hấp dẫn", f"{pb_attractive * (bvps_base + eps_fc_calc[0]):,.0f}"],
-        ["P/B chốt lời (BÁN)", f"{pb_target:.2f}x", "Giá trị P/B chốt lời", f"{pb_target * (bvps_base + eps_fc_calc[0]):,.0f}"],
-        ["P/E lịch sử (Median)", f"{pe_all_median:.1f}x", "P/B lịch sử (Median)", f"{pb_all_median:.2f}x"]
+        ["Giá P/B Hấp dẫn (MUA)", f"{pb_attractive * (bvps_base + eps_fc_calc[0]):,.0f}", "Giá P/B Chốt lời (BÁN)", f"{pb_target * (bvps_base + eps_fc_calc[0]):,.0f}"],
+        ["Giá P/B Median (VND)", f"{pb_all_median * (bvps_base + eps_fc_calc[0]):,.0f}", "Giá P/E Median (VND)", f"{pe_all_median * eps_fc_calc[0]:,.0f}"],
     ]
     t_info = Table(info_data, colWidths=[45*mm, 40*mm, 45*mm, 45*mm])
     t_info.setStyle(TableStyle([
@@ -2967,6 +2966,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "pbAttractivePrice": round(pb_attractive * (bvps_base + eps_fc_calc[0])),
             "pbTarget": round(pb_target, 2),
             "pbTargetPrice": round(pb_target * (bvps_base + eps_fc_calc[0])),
+            "pbMedianPrice": round(pb_all_median * (bvps_base + eps_fc_calc[0])),
+            "peMedianPrice": round(pe_all_median * eps_fc_calc[0]),
             "COE": round(COE * 100, 2),
             "peMedian": round(pe_all_median, 2),
             "pbMedian": round(pb_all_median, 2),
