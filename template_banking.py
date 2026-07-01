@@ -1751,9 +1751,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # NIM quý: NII * 4 / Loans (IEA proxy) — Skill §19.1
     nim_q_json = [safe_div((iq_sorted[i].get("isb27") or 0)/1e9 * 4,
                            (rq_sorted[i].get("bsb103") or 1)/1e9) for i in range(n_q)]
+    # Multiply by 100 to display as percentage (e.g., 5.0 for 5%)
+    nim_q_json = [round(x * 100, 2) for x in nim_q_json]
     # COF quý: Chi phí lãi * 4 / (Tiền gửi + Trái phiếu) — Skill §19.1
     cof_q_json = [safe_div(abs(iq_sorted[i].get("isb30") or 0)/1e9 * 4,
                            ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]
+    cof_q_json = [round(x * 100, 2) for x in cof_q_json]
     # LDR quý: Loans / (Deposits + Bonds) — Skill §19.2
     ldr_q_json = [safe_div((rq_sorted[i].get("bsb103") or 0)/1e9,
                            ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]

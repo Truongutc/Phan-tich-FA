@@ -948,7 +948,7 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
         const rq = localJson.ratios_quarterly;
         const idx = rq.quarters.indexOf(`${latestQ.yearReport}-Q${latestQ.quarter}`);
         if (idx !== -1) {
-            const nimVal = rq.nim[idx] ? (rq.nim[idx] * 100).toFixed(2) + '%' : '-';
+            const nimVal = rq.nim[idx] ? rq.nim[idx].toFixed(2) + '%' : '-';
             const ldrVal = rq.ldr[idx] ? (rq.ldr[idx] * 100).toFixed(1) + '%' : '-';
             const casaVal = rq.casa[idx] ? (rq.casa[idx] * 100).toFixed(1) + '%' : '-';
             const nplVal = rq.npl[idx] ? rq.npl[idx].toFixed(2) + '%' : '-';
