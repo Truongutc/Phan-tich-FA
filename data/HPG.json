@@ -5,9 +5,9 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": null,
-  "gdriveExcelUrl": null,
-  "lastUpdated": "2026-06-30 23:37",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1ctzzsd3yaQXPXMKFXbp2BBbCeBLM_4su/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/15qbjYG-paoyLsU3uYvY4fl9_UQZwmmR2/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "lastUpdated": "2026-07-01 21:05",
   "data": {
     "years": [
       2021,
@@ -114,11 +114,17 @@
     "base": 28836,
     "bull": 33650,
     "COE": 12.0,
-    "evEbitdaPrice": 28713,
-    "pbPrice": 28042,
-    "pbUpper": 33650,
-    "pbAttr": 22433,
-    "pePrice": 30672
+    "evEbitdaTarget": 28713,
+    "pbAttractive": 1.28,
+    "pbAttractivePrice": 22433,
+    "pbMedian": 1.61,
+    "pbOver": 1.92,
+    "peMedian": 9.7,
+    "peTarget": 30672,
+    "evWeight": 40,
+    "pbWeight": 40,
+    "peWeight": 20,
+    "bvpsBase": 17526
   },
   "thesis": [
     "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
@@ -674,7 +680,7 @@
     16.2,
     14.5,
     13.9,
-    9.5
+    9.3
   ],
   "pb_quarters": [
     1.64,
@@ -708,7 +714,7 @@
     1.79,
     1.67,
     1.67,
-    1.44
+    1.42
   ],
   "quarter_labels": [
     "2018-Q1",

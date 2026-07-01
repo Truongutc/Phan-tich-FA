@@ -6,7 +6,6 @@
     <title>AIC FA System — Hệ thống Phân Tích Cơ Bản Chuyên Sâu</title>
     <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa theo nhóm ngành">
 
-    <!-- Favicon & Mobile Icons -->
     <link rel="icon" type="image/png" href="app_icon.png">
     <link rel="shortcut icon" type="image/png" href="app_icon.png">
     <link rel="apple-touch-icon" href="app_icon.png">
@@ -14,51 +13,33 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.2">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app-shell">
 
-    <!-- ══════════════════════════════════════════
-         TOP NAVBAR — persistent across all views
-    ══════════════════════════════════════════ -->
+    <!-- TOP NAVBAR -->
     <header class="top-navbar">
-        <button class="logo-btn" id="home-btn" onclick="goHome()" title="Quay lại Tổng quan">
+        <button class="logo-btn" onclick="location.href='index.html'" title="Trang chủ">
             <img src="logoaic.png" alt="AIC Logo" class="logo-img">
             <div class="logo-text">
                 <span class="logo-title">AIC FA SYSTEM</span>
                 <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
             </div>
         </button>
-
-        <!-- Breadcrumb: shows current sector > ticker when in analysis view -->
         <div class="nav-breadcrumb" id="nav-breadcrumb">
             <span class="breadcrumb-home">Tổng quan</span>
         </div>
-
-        <!-- Sector badge (hidden on overview) -->
-        <div class="sector-badge-nav" id="sector-badge-nav" style="display:none">
-            <span class="sector-icon-nav" id="sector-icon-nav">🏦</span>
-            <span class="sector-label-nav" id="sector-label-nav">Ngân Hàng</span>
-        </div>
-
-        <button class="home-text-btn" id="back-btn" onclick="goHome()" style="display:none">
-            ← Chọn cổ phiếu khác
-        </button>
     </header>
 
-    <!-- ══════════════════════════════════════════
-         VIEW 1: OVERVIEW (default)
-    ══════════════════════════════════════════ -->
+    <!-- VIEW: OVERVIEW (stock grid) -->
     <main id="view-overview" class="view view-overview" style="display:flex">
 
-        <!-- Hero intro (compact) -->
         <div class="overview-hero card">
             <div class="hero-content">
                 <div class="hero-icon">📊</div>
                 <h2>AIC FA System — Phân Tích Cơ Bản Chuyên Sâu</h2>
-                <p>Chọn mã cổ phiếu để xem dashboard theo đúng nhóm ngành. Hệ thống tự nhận diện ngành và hiển thị các chỉ số, biểu đồ phù hợp.</p>
+                <p>Chọn mã cổ phiếu để xem dashboard chuyên sâu theo đúng nhóm ngành.</p>
                 <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
                     <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing"
                        target="_blank" class="btn btn-secondary">📁 Google Drive ↗</a>
@@ -66,7 +47,6 @@
             </div>
         </div>
 
-        <!-- Search Bar -->
         <div class="search-bar-wrap">
             <div class="search-bar card">
                 <span class="search-icon">🔍</span>
@@ -75,7 +55,6 @@
             </div>
         </div>
 
-        <!-- Sector groups: populated by JS -->
         <div id="sector-groups-container">
             <div class="loading-state card">
                 <span>Đang tải danh sách cổ phiếu...</span>
@@ -84,580 +63,134 @@
 
     </main>
 
-    <!-- ══════════════════════════════════════════
-         VIEW 2: ANALYSIS (sector-adaptive)
-    ══════════════════════════════════════════ -->
-    <main id="view-analysis" class="view view-analysis" style="display:none">
-
-        <!-- Header Info Card -->
-        <div class="card header-card">
-            <div class="sector-ribbon" id="sector-ribbon">NGÂN HÀNG</div>
-            <div class="header-main">
-                <div class="header-info">
-                    <span id="ticker-badge" class="badge">TCB</span>
-                    <h2 id="company-name">Ngân hàng TMCP Kỹ thương Việt Nam</h2>
-                    <p id="company-sector" class="subtitle">Banks</p>
-                    <p id="report-date" class="subtitle" style="margin-top: 4px; font-size: 0.85em; color: var(--text-muted); display: none;"></p>
-                </div>
-                <div class="actions">
-                    <a id="download-pdf" href="#" target="_blank" class="btn btn-primary hidden">
-                        📥 Báo Cáo PDF
-                    </a>
-                    <a id="download-excel" href="#" target="_blank" class="btn btn-excel hidden">
-                        🟢 Excel Model
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEW: Valuation & recommendation snapshot (populates for all stocks dynamically) -->
-        <div class="card val-snapshot-card margin-top-20">
-            <h3 class="border-blue">💎 Tóm tắt Khuyến nghị &amp; Snapshot Định giá</h3>
-            <div class="val-snapshot-grid">
-                <div class="val-snap-box">
-                    <span class="lbl">Giá hiện tại</span>
-                    <span class="val" id="snap-curr-price">- VND</span>
-                </div>
-                <div class="val-snap-box highlight">
-                    <span class="lbl">Giá mục tiêu (Weighted)</span>
-                    <span class="val text-blue" id="snap-target-price">- VND</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">Tiềm năng tăng giá</span>
-                    <span class="val text-green" id="snap-upside">- %</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">Khuyến nghị đầu tư</span>
-                    <span class="val badge-rec" id="snap-recommend">-</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">Chi phí vốn CSH (COE)</span>
-                    <span class="val" id="snap-coe">- %</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">EV/EBITDA</span>
-                    <span class="val" id="snap-ev-price">- VND</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">P/B median</span>
-                    <span class="val" id="snap-pb-price">- VND</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">P/B hấp dẫn</span>
-                    <span class="val text-green" id="snap-pb-attr">- VND</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">P/B over</span>
-                    <span class="val" id="snap-pb-upper">- VND</span>
-                </div>
-                <div class="val-snap-box">
-                    <span class="lbl">P/E</span>
-                    <span class="val" id="snap-pe-price">- VND</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dynamic Metrics Grid (populated by JS per sector) -->
-        <div class="metrics-grid" id="dynamic-metrics-grid">
-            <!-- Injected by JS -->
-        </div>
-
-        <!-- NEW: Earning Release & YTD Evaluation Card -->
-        <div class="card quarterly-ytd-card margin-top-20">
-            <h3 class="border-blue">🚀 Đánh giá Quý gần nhất &amp; Lũy kế YTD</h3>
-            <div id="quarterly-ytd-evaluation-container">
-                <!-- Injected dynamically by JS -->
-                <div class="loading-state">Đang tính toán số liệu tăng trưởng quý...</div>
-            </div>
-        </div>
-
-        <!-- NEW: Financial Snapshot Table (Hist + Forecast, mirrors PDF Page 1) -->
-        <div class="card margin-top-20" id="web-financial-snapshot-card" style="display:none">
-            <h3 class="border-blue">📋 Bảng tài chính tóm tắt (Lịch sử &amp; Dự báo)</h3>
-            <div class="table-container">
-                <table class="web-table" id="web-financial-snapshot-table">
-                    <thead>
-                        <tr>
-                            <th>Chỉ tiêu (tỷ VND)</th>
-                            <th>2023</th>
-                            <th>2024</th>
-                            <th>2025</th>
-                            <th style="color:#60a5fa">2026F</th>
-                            <th style="color:#60a5fa">2027F</th>
-                            <th style="color:#60a5fa">2028F</th>
-                        </tr>
-                    </thead>
-                    <tbody id="web-financial-snapshot-tbody">
-                        <!-- Injected by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Two-column: Charts Left | Moat+Valuation Right -->
-        <div class="dashboard-grid-two margin-top-20">
-
-            <!-- LEFT: Charts -->
-            <div class="col-left">
-
-                <!-- Chart 1: Primary Income Chart (Split Layout) -->
-                <div class="chart-card-split">
-                    <div class="chart-split-left">
-                        <h3 id="chart1-title">Doanh thu &amp; Lợi nhuận sau thuế</h3>
-                        <div class="chart-container">
-                            <canvas id="revNpatChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>💡 Phân tích Xu hướng KQKD</h4>
-                        <div id="analysis-text-rev-npat" class="chart-analysis-text">
-                            Đang phân tích xu hướng tăng trưởng...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 2: Secondary Chart (Split Layout) -->
-                <div class="chart-card-split margin-top-20" id="chart2-card">
-                    <div class="chart-split-left">
-                        <h3 id="chart2-title">EPS &amp; Vốn chủ sở hữu</h3>
-                        <div class="chart-container">
-                            <canvas id="epsEquityChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>📈 Đánh giá Hiệu quả Vốn (ROE) &amp; EPS</h4>
-                        <div id="analysis-text-eps-equity" class="chart-analysis-text">
-                            Đang phân tích hiệu suất sử dụng vốn...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 3: P/E TTM (Split Layout) -->
-                <div class="chart-card-split margin-top-20" id="chart-pe-card">
-                    <div class="chart-split-left">
-                        <h3 id="chart-pe-title">Định giá Lịch sử P/E - TTM</h3>
-                        <div class="chart-container">
-                            <canvas id="peChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>🔍 Nhận định Hệ số P/E</h4>
-                        <div id="analysis-text-pe" class="chart-analysis-text">
-                            Đang so sánh P/E với trung vị lịch sử...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 4: P/B TTM (Split Layout) -->
-                <div class="chart-card-split margin-top-20">
-                    <div class="chart-split-left">
-                        <h3>Định giá Lịch sử P/B - TTM</h3>
-                        <div class="chart-container">
-                            <canvas id="pbChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>📊 Nhận định Hệ số P/B</h4>
-                        <div id="analysis-text-pb" class="chart-analysis-text">
-                            Đang so sánh P/B với trung vị lịch sử...
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Steel Chart 1: Production Volume (materials only) -->
-                <div class="chart-card-split margin-top-20" id="chart-volume-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Sản lượng tiêu thụ theo Quý (nghìn tấn)</h3>
-                        <div class="chart-container">
-                            <canvas id="volumeChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>🏭 Sản lượng HRC &amp; Thép XD</h4>
-                        <div id="analysis-text-volume" class="chart-analysis-text">
-                            Đang phân tích sản lượng tiêu thụ theo quý...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Steel Chart 2: Spread & GP Margin (materials only) -->
-                <div class="chart-card-split margin-top-20" id="chart-spread-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Spread, Biên LNG &amp; Giá HRC theo Quý</h3>
-                        <div class="chart-container">
-                            <canvas id="spreadChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>📈 Spread &amp; Biên lợi nhuận gộp</h4>
-                        <div id="analysis-text-spread" class="chart-analysis-text">
-                            Đang phân tích spread và biên lợi nhuận gộp...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Steel Chart 3: Asset Structure (materials only) -->
-                <div class="chart-card-split margin-top-20" id="chart-asset-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Cơ cấu Tài sản theo Quý (tỷ VND)</h3>
-                        <div class="chart-container">
-                            <canvas id="assetChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>🏛️ Tài sản, Tồn kho, Phải thu &amp; Nợ</h4>
-                        <div id="analysis-text-asset" class="chart-analysis-text">
-                            Đang phân tích cơ cấu tài sản...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Steel Chart 4: Cost & Margin (materials only) -->
-                <div class="chart-card-split margin-top-20" id="chart-cost-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Chi phí Bán hàng &amp; QLDN theo Quý</h3>
-                        <div class="chart-container">
-                            <canvas id="costChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>📊 Tỷ lệ Chi phí / Doanh thu</h4>
-                        <div id="analysis-text-cost" class="chart-analysis-text">
-                            Đang phân tích cơ cấu chi phí...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 5: Tăng trưởng Tín dụng & Huy động (Split Layout) -->
-                <div class="chart-card-split margin-top-20" id="chart-growth-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Tăng trưởng Tín dụng &amp; Huy động liên quý QoQ theo Quý</h3>
-                        <div class="chart-container">
-                            <canvas id="creditFundingGrowthChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>📈 Đánh giá Quy mô Tín dụng &amp; Huy động</h4>
-                        <div id="analysis-text-growth" class="chart-analysis-text">
-                            Đang phân tích xu hướng tăng trưởng tín dụng và huy động...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 6: NII Breakdown (banks only) -->
-                <div class="chart-card-split margin-top-20" id="chart-nii-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>NII &amp; Thu nhập ngoài lãi (NonII) theo Quý</h3>
-                        <div class="chart-container">
-                            <canvas id="niiBreakdownChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>💡 Phân tích cơ cấu Thu nhập</h4>
-                        <div id="analysis-text-nii" class="chart-analysis-text">
-                            Đang phân tích cơ cấu thu nhập lãi và phi lãi...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 7: NPL + LLR Quarterly (banks only) -->
-                <div class="chart-card-split margin-top-20" id="chart-npl-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Nợ xấu (NPL %) &amp; Bao phủ nợ xấu (LLR %) theo Quý</h3>
-                        <div class="chart-container">
-                            <canvas id="nplLlrChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>⚠️ Đánh giá Chất lượng Tài sản</h4>
-                        <div id="analysis-text-npl" class="chart-analysis-text">
-                            Đang phân tích chất lượng tài sản và bộ đệm dự phòng...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart 8: Earning Assets Structure (banks only) -->
-                <div class="chart-card-split margin-top-20" id="chart-iea-card" style="display:none">
-                    <div class="chart-split-left">
-                        <h3>Cơ cấu Tài sản sinh lãi (Earning Assets Structure)</h3>
-                        <div class="chart-container">
-                            <canvas id="earningAssetsChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-split-right">
-                        <h4>🏛️ Phân tích Cơ cấu Tài sản</h4>
-                        <div id="analysis-text-iea" class="chart-analysis-text">
-                            Đang phân tích cơ cấu tài sản sinh lãi qua các năm...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NEW: Quarterly operations breakdowns (banks only) -->
-                <div class="chart-card-split margin-top-20" id="chart-operation-card" style="display:none">
-                    <div class="chart-split-left" style="width: 100%;">
-                        <h3>Chi tiết Cơ cấu Hoạt động & Tiền gửi theo Quý</h3>
-                        <div class="operation-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
-                            <div class="chart-container" style="position: relative; height:280px;">
-                                <canvas id="loanIndustryChart"></canvas>
-                            </div>
-                            <div class="chart-container" style="position: relative; height:280px;">
-                                <canvas id="nplGroupsChart"></canvas>
-                            </div>
-                            <div class="chart-container" style="position: relative; height:280px;">
-                                <canvas id="loanTermsChart"></canvas>
-                            </div>
-                            <div class="chart-container" style="position: relative; height:280px;">
-                                <canvas id="depositTypesChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT: Moat + Valuation -->
-            <div class="col-right">
-                <div class="card moat-card">
-                    <h3>Lợi thế cạnh tranh (Moat Scorecard)</h3>
-                    <div class="moat-list" id="moat-scorecard-list"></div>
-                </div>
-
-                <div class="card valuation-card margin-top-20">
-                    <h3>Định giá &amp; Kịch bản đầu tư</h3>
-                    <div class="scenarios-grid">
-                        <div class="scenario-box bear">
-                            <div class="scenario-title">Bear Case</div>
-                            <div class="scenario-price" id="val-bear">- VND</div>
-                        </div>
-                        <div class="scenario-box base">
-                            <div class="scenario-title">Base Case</div>
-                            <div class="scenario-price" id="val-base">- VND</div>
-                        </div>
-                        <div class="scenario-box bull">
-                            <div class="scenario-title">Bull Case</div>
-                            <div class="scenario-price" id="val-bull">- VND</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NEW: Forecast Assumptions Table (2026F - 2028F) -->
-                <div class="card assumptions-card margin-top-20" id="web-assumptions-card" style="display:none">
-                    <h3>🔮 Giả định dự báo (Forecast Assumptions)</h3>
-                    <table class="web-table">
-                        <thead>
-                            <tr>
-                                <th>Chỉ số dự báo</th>
-                                <th>2026F</th>
-                                <th>2027F</th>
-                                <th>2028F</th>
-                            </tr>
-                        </thead>
-                        <tbody id="web-assumptions-tbody">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- NEW: Detailed Residual Income Model Table -->
-                <div class="card detailed-ri-card margin-top-20" id="web-detailed-ri-card" style="display:none">
-                    <h3>💎 Chi tiết mô hình định giá Residual Income (RI)</h3>
-                    <table class="web-table">
-                        <thead>
-                            <tr>
-                                <th>Tham số định giá RI (VND/CP)</th>
-                                <th>2026F</th>
-                                <th>2027F</th>
-                                <th>2028F</th>
-                            </tr>
-                        </thead>
-                        <tbody id="web-ri-tbody">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
-                    <div class="ri-summary-box margin-top-10" id="web-ri-summary-box">
-                        <!-- Summary metrics like Continuing Value, Fair value -->
-                    </div>
-                </div>
-
-                <!-- Bank-specific extra metrics card (shown for banks only) -->
-                <div class="card bank-kpi-card margin-top-20 hidden" id="bank-kpi-card">
-                    <h3>Chỉ số Ngân hàng then chốt</h3>
-                    <div class="bank-kpi-grid" id="bank-kpi-grid"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Investment Thesis + Risks -->
-        <div class="dashboard-grid-two margin-top-20">
-            <div class="card thesis-card">
-                <h3 class="border-blue">Luận điểm đầu tư (Thesis)</h3>
-                <ul id="thesis-list" class="thesis-ul"></ul>
-            </div>
-            <div class="card risks-card">
-                <h3 class="border-red">Rủi ro chính (Investment Risks)</h3>
-                <ul id="risks-list" class="risks-ul"></ul>
-            </div>
-        </div>
-
-        <!-- Steel: Factory List Table (shown for materials) -->
-        <div class="card margin-top-20" id="steel-factory-card" style="display:none">
-            <h3 class="border-blue">🏭 Danh mục Nhà máy HPG</h3>
-            <div class="table-container">
-                <table class="web-table" id="steel-factory-table">
-                    <thead><tr><th>Nhà máy</th><th>Địa điểm</th><th>Sản phẩm</th><th>Công suất (triệu tấn)</th><th>Trạng thái</th></tr></thead>
-                    <tbody id="steel-factory-tbody"></tbody>
-                </table>
-            </div>
-            <div id="steel-factory-analysis" class="chart-analysis-text margin-top-10"></div>
-        </div>
-
-        <!-- Steel: Spread & Input Tables (shown for materials) -->
-        <div class="card margin-top-20" id="steel-spread-card" style="display:none">
-            <h3 class="border-blue">📈 Spread &amp; Yếu tố Đầu vào</h3>
-            <p class="chart-analysis-text">Spread = Giá HRC - 1.6×Quặng 62%Fe - 0.6×Coke - Chi phí chuyển đổi (~100 USD/tấn)</p>
-            <div class="table-container">
-                <table class="web-table" id="steel-spread-table">
-                    <thead><tr id="steel-spread-header"></tr></thead>
-                    <tbody id="steel-spread-tbody"></tbody>
-                </table>
-            </div>
-            <div id="steel-spread-analysis" class="chart-analysis-text margin-top-10"></div>
-        </div>
-
-        <!-- Steel: Volume & Market Share (shown for materials) -->
-        <div class="card margin-top-20" id="steel-volume-card" style="display:none">
-            <h3 class="border-blue">📦 Sản lượng &amp; Thị phần HPG</h3>
-            <div class="table-container">
-                <table class="web-table" id="steel-volume-table">
-                    <thead><tr id="steel-volume-header"></tr></thead>
-                    <tbody id="steel-volume-tbody"></tbody>
-                </table>
-            </div>
-            <div id="steel-volume-analysis" class="chart-analysis-text margin-top-10"></div>
-        </div>
-
-        <!-- Steel: Harvest Signals (shown for materials) -->
-        <div class="card margin-top-20" id="steel-harvest-card" style="display:none">
-            <h3 class="border-blue">🌾 Dấu hiệu Sắp hái quả ngọt (Harvest Signals)</h3>
-            <div id="steel-harvest-content" class="chart-analysis-text"></div>
-        </div>
-
-        <!-- Steel: Profit Quality (shown for materials) -->
-        <div class="card margin-top-20" id="steel-quality-card" style="display:none">
-            <h3 class="border-blue">📊 Chất lượng Lợi nhuận &amp; Kế toán</h3>
-            <div id="steel-quality-content" class="chart-analysis-text"></div>
-        </div>
-
-        <!-- Steel: Risk Matrix (shown for materials) -->
-        <div class="card margin-top-20" id="steel-risk-matrix-card" style="display:none">
-            <h3 class="border-blue">⚠️ Risk Matrix</h3>
-            <div class="table-container">
-                <table class="web-table" id="steel-risk-matrix-table">
-                    <thead><tr><th>Rủi ro</th><th>Xác suất</th><th>Tác động</th><th>Chỉ báo dẫn dắt</th></tr></thead>
-                    <tbody id="steel-risk-matrix-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Steel: Peer Comparison (shown for materials) -->
-        <div class="card margin-top-20" id="steel-peer-card" style="display:none">
-            <h3 class="border-blue">🤝 So sánh Peer 2026E</h3>
-            <div class="table-container">
-                <table class="web-table" id="steel-peer-table">
-                    <thead><tr><th>Ticker</th><th>P/E (x)</th><th>P/B (x)</th><th>ROE (%)</th><th>EV/EBITDA (x)</th><th>Tăng trưởng LN 26E (%)</th></tr></thead>
-                    <tbody id="steel-peer-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Steel: Leading Indicators (shown for materials) -->
-        <div class="card margin-top-20" id="steel-leading-card" style="display:none">
-            <h3 class="border-blue">🔮 Leading Indicators cần theo dõi</h3>
-            <div class="table-container">
-                <table class="web-table" id="steel-leading-table">
-                    <thead><tr><th>Chỉ báo</th><th>Ngưỡng tích cực</th><th>Hiện tại</th><th>Trạng thái</th></tr></thead>
-                    <tbody id="steel-leading-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Steel: Chart Gallery (all 15 PNGs, shown for materials) -->
-        <div class="card margin-top-20" id="steel-chart-gallery-card" style="display:none">
-            <h3 class="border-blue">📊 Thư viện Biểu đồ Phân tích</h3>
-            <div class="chart-gallery" id="steel-chart-gallery"></div>
-        </div>
-
-        <!-- NEW: Industry Peer Table (Banks) -->
-        <div class="card peer-bench-card margin-top-20" id="web-peer-card" style="display:none">
-            <h3 class="border-blue">📊 So sánh các chỉ số tài chính so với ngành (Peer Benchmark)</h3>
-            <div style="font-size:0.85em; color:#a0aec0; margin:-10px 0 15px 0" id="peer-update-date">
-                Số liệu tính toán tự động dựa trên thị giá đóng cửa ngày: --
-            </div>
-            <div class="table-container">
-                <table class="web-table">
-                    <thead>
-                        <tr>
-                            <th>Ngân hàng</th>
-                            <th>NPL (Nợ xấu %)</th>
-                            <th>NIM (Biên lãi ròng %)</th>
-                            <th>CASA (%)</th>
-                            <th>ROE (%)</th>
-                            <th>CIR (%)</th>
-                            <th>P/B (x)</th>
-                            <th>Tăng trưởng Tín dụng (%)</th>
-                            <th>Vốn hóa (tỷ VND)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="web-peer-tbody">
-                        <!-- Injected by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- PESTLE -->
-        <div class="card pestle-card margin-top-20">
-            <h3>Bối cảnh vĩ mô (PESTLE Matrix)</h3>
-            <div class="pestle-grid" id="pestle-grid-container"></div>
-        </div>
-
-        <!-- Commentary -->
-        <div class="card commentary-card margin-top-20">
-            <h3>Đánh giá chi tiết của Chuyên gia</h3>
-            <div class="commentary-sections">
-                <div class="commentary-box">
-                    <h4>Mô hình Kinh doanh</h4>
-                    <p id="comment-business">-</p>
-                </div>
-                <div class="commentary-box">
-                    <h4>Sức khỏe Tài chính</h4>
-                    <p id="comment-financial">-</p>
-                </div>
-                <div class="commentary-box">
-                    <h4>Triển vọng Định giá</h4>
-                    <p id="comment-valuation">-</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Financial Data Table -->
-        <div class="card table-card margin-top-20">
-            <h3 id="table-title">Bảng dữ liệu tài chính chi tiết</h3>
-            <div class="table-wrapper">
-                <table id="financial-table">
-                    <thead><tr><th>Chỉ tiêu</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="footer">
-        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
-    </footer>
-
 </div>
-<script src="app.js"></script>
+
+<script>
+'use strict';
+
+const SECTOR_PAGES = {
+    banks: 'banking.html',
+    materials: 'steel.html',
+    other: 'index.html',
+};
+
+async function loadStockList() {
+    try {
+        const r = await fetch('data/index.json');
+        if (!r.ok) return [];
+        return await r.json();
+    } catch(e) {
+        return [];
+    }
+}
+
+function getSectorKey(s) {
+    const v = (s || '').toLowerCase();
+    if (v.includes('bank') || v.includes('financial') || v.includes('ngân hàng') || v.includes('ngan hang')) return 'banks';
+    if (v.includes('basic resource') || v.includes('material') || v.includes('steel') || v.includes('thép') || v.includes('th\u00e9p')) return 'materials';
+    return 'other';
+}
+
+const SECTOR_CFG = {
+    banks:  { label: 'Ngân Hàng',           icon: '🏦', color: '#3b82f6' },
+    materials: { label: 'Thép & Vật Liệu',   icon: '🔩', color: '#dc2626' },
+    other:  { label: 'Ngành Khác',          icon: '📁', color: '#a0aec0' },
+};
+
+function groupAndRender(stocks) {
+    const groups = {};
+    stocks.forEach(s => {
+        const k = getSectorKey(s.sector);
+        if (!groups[k]) groups[k] = [];
+        groups[k].push(s);
+    });
+    const container = document.getElementById('sector-groups-container');
+    container.innerHTML = '';
+    const order = ['banks', 'materials', 'other'];
+    order.forEach(key => {
+        if (!groups[key]) return;
+        const cfg = SECTOR_CFG[key] || { label: 'Khác', icon: '📁', color: '#a0aec0' };
+        const div = document.createElement('div');
+        div.className = 'card sector-group';
+        div.innerHTML = `
+            <div class="sector-group-header">
+                <div class="sector-group-dot" style="background:${cfg.color}"></div>
+                <h3 style="color:${cfg.color}">${cfg.icon} ${cfg.label}</h3>
+                <span class="sector-count-badge">${groups[key].length} mã</span>
+            </div>
+            <div class="stocks-grid" id="grid-${key}"></div>
+        `;
+        container.appendChild(div);
+        const grid = div.querySelector(`#grid-${key}`);
+        groups[key].forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'stock-card';
+            card.style.setProperty('--sector-color', cfg.color);
+            card.innerHTML = `<div class="stock-card-ticker" style="color:${cfg.color}">${s.ticker}</div>`;
+            const page = SECTOR_PAGES[key] || 'index.html';
+            card.onclick = () => { location.href = `${page}?ticker=${s.ticker}`; };
+            grid.appendChild(card);
+        });
+    });
+}
+
+function clearSearch() {
+    const inp = document.getElementById('stock-search-input');
+    if (inp) inp.value = '';
+    document.getElementById('search-clear').style.opacity = '0';
+    if (window._allStocks) groupAndRender(window._allStocks);
+}
+
+(async () => {
+    const stocks = await loadStockList();
+    window._allStocks = stocks;
+    if (stocks.length === 0) {
+        document.getElementById('sector-groups-container').innerHTML =
+            '<div class="loading-state card">Chưa có dữ liệu. Hãy chạy phân tích ít nhất một mã cổ phiếu.</div>';
+        return;
+    }
+    groupAndRender(stocks);
+    const inp = document.getElementById('stock-search-input');
+    if (inp) {
+        inp.addEventListener('input', () => {
+            const q = inp.value.trim().toLowerCase();
+            document.getElementById('search-clear').style.opacity = q ? '1' : '0';
+            if (!q) { groupAndRender(window._allStocks); return; }
+            const filtered = window._allStocks.filter(s =>
+                s.ticker.toLowerCase().includes(q) || (s.companyName || '').toLowerCase().includes(q)
+            );
+            const container = document.getElementById('sector-groups-container');
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="loading-state card">Không tìm thấy mã nào khớp với "${q}"</div>`;
+                return;
+            }
+            container.innerHTML = '';
+            const card = document.createElement('div');
+            card.className = 'card sector-group';
+            card.innerHTML = `
+                <div class="sector-group-header">
+                    <h3 style="color:var(--text-muted)">🔍 Kết quả tìm kiếm</h3>
+                    <span class="sector-count-badge">${filtered.length} mã</span>
+                </div>
+                <div class="stocks-grid" id="grid-search"></div>
+            `;
+            container.appendChild(card);
+            const grid = card.querySelector('#grid-search');
+            filtered.forEach(s => {
+                const k = getSectorKey(s.sector);
+                const cfg = SECTOR_CFG[k] || { icon: '📁', color: '#a0aec0' };
+                const c2 = document.createElement('div');
+                c2.className = 'stock-card';
+                c2.style.setProperty('--sector-color', cfg.color);
+                c2.innerHTML = `<div class="stock-card-ticker" style="color:${cfg.color}">${s.ticker}</div>`;
+                const page = SECTOR_PAGES[k] || 'index.html';
+                c2.onclick = () => { location.href = `${page}?ticker=${s.ticker}`; };
+                grid.appendChild(c2);
+            });
+        });
+    }
+})();
+</script>
+
 </body>
 </html>

@@ -4259,6 +4259,11 @@ def save_json_summary():
         pb_arr.append(round(pb0, 2) if pb0 and pb0 > 0 else None)
         q_labels.append(f"{int(r['year'])}-Q{int(q)}")
 
+    pe_valid = [v for v in pe_arr if v is not None]
+    pb_valid = [v for v in pb_arr if v is not None]
+    pb_median = round(stats.median(pb_valid), 2) if len(pb_valid) > 0 else 1.6
+    pe_median = round(stats.median(pe_valid), 1) if len(pe_valid) > 0 else 10.0
+
     # Valuation scenarios
     bear_price = round(pb_mul * 0.8 * bvps_26)
     base_price = target_price
@@ -4299,11 +4304,17 @@ def save_json_summary():
             "base": base_price,
             "bull": bull_price,
             "COE": 12.0,
-            "evEbitdaPrice": round(ev_price),
-            "pbPrice": pb_price,
-            "pbUpper": pb_upper,
-            "pbAttr": pb_attr,
-            "pePrice": pe_price,
+            "evEbitdaTarget": round(ev_price),
+            "pbAttractive": round(pb_mul * 0.8, 2),
+            "pbAttractivePrice": bear_price,
+            "pbMedian": pb_median,
+            "pbOver": round(pb_mul * 1.2, 2),
+            "peMedian": pe_median,
+            "peTarget": round(pe_price),
+            "evWeight": 40,
+            "pbWeight": 40,
+            "peWeight": 20,
+            "bvpsBase": round(bvps_26),
         },
         "thesis": [
             "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",

@@ -64,14 +64,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "TCB",
-    "companyName": "Ngân hàng TCB",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-30 11:51",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "HDB",
     "companyName": "Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh",
     "sector": "Ngân hàng",
@@ -83,7 +75,15 @@
     "ticker": "HPG",
     "companyName": "CTCP Tập đoàn Hòa Phát",
     "sector": "Basic Resources",
-    "lastUpdated": "2026-06-30 23:03",
+    "lastUpdated": "2026-07-01 02:02",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/15qbjYG-paoyLsU3uYvY4fl9_UQZwmmR2/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1ctzzsd3yaQXPXMKFXbp2BBbCeBLM_4su/view?usp=drivesdk"
+  },
+  {
+    "ticker": "TCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-07-01 20:53",
     "excelUrl": null,
     "pdfUrl": null
   }
