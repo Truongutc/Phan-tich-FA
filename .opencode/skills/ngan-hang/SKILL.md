@@ -54,6 +54,17 @@ Phân biệt 2 khái niệm:
 → **Total earning credit** = Loan book + Corporate bond book. Luôn tách riêng.
 → CoC, NPL, nợ nhóm 2 đều tính trên **tổng tín dụng** (cho vay + trái phiếu TCKT).
 
+**⚠️ Công thức dự phóng tăng trưởng tín dụng tương lai (2026-07, phải là công thức sống, không số chết):**
+```
+02_Assumptions row "Tín dụng tăng trưởng (%)":
+  Năm dự phóng đầu (G) = AVERAGE(3 năm lịch sử gần nhất) × 0.9   → Excel: "=AVERAGE(D4:F4)*0.9"
+  Năm dự phóng kế tiếp = MAX(năm trước - 1%, sàn 5%)              → Excel: "=MAX(G4-0.01,0.05)"
+```
+Hệ số ×0.9 phản ánh giả định thận trọng (tăng trưởng chậm lại so với trung bình lịch sử do nền đã cao +
+room tín dụng NHNN hạn chế), sàn 5% tránh dự phóng âm phi thực tế. **Không dùng override cứng một quý bất
+thường** (từng có lỗi: 1 quý suy giảm đột biến kéo tụt trung bình 3 năm xuống ~14% dù xu hướng thật ~19%) —
+luôn dùng đúng 3 năm gần nhất không lọc, để công thức tự phản ánh biến động thật.
+
 **Loan mix** (cơ cấu cho vay) — phân tích 3 nhóm:
 - **Cho vay cá nhân (Retail)**: Biên cao hơn, rủi ro phân tán, CASA từ cá nhân thường tốt
 - **Cho vay doanh nghiệp (Corporate)**: Quy mô lớn, biên thấp hơn, rủi ro tập trung
@@ -70,7 +81,42 @@ Phân biệt 2 khái niệm:
 | **CASA2** | (TG không kỳ hạn VNĐ + TG không kỳ hạn USD + TG có kỳ hạn USD) / Tổng TG KH | Phản ánh sâu hơn chất lượng vốn giá rẻ (VD: VCB có USD lớn) |
 | **Market 1 Funding** | Tiền gửi KH + Giấy tờ có giá (CD, trái phiếu, kỳ phiếu) | Đầy đủ nhất |
 | **LDR Thuần túy (Simple LDR)** | Cho vay khách hàng / Tiền gửi khách hàng | LDR đơn giản từ API (thường bị vọt lên >100% như TCB ~130% do chưa tính Giấy tờ có giá CD/Trái phiếu ở mẫu số) |
-| **LDR điều chỉnh (NHNN)** | Cho vay khách hàng / (Tiền gửi KH + Giấy tờ có giá CD + Tiền gửi KBNN theo lộ trình) | LDR pháp lý theo Thông tư 26, NHNN quy định trần <85% |
+| **LDR điều chỉnh (NHNN)** | **Tổng tín dụng** / **Tổng huy động** — xem công thức đầy đủ bên dưới | LDR pháp lý theo Thông tư 22/2019/TT-NHNN, NHNN quy định trần <85% |
+
+**⚠️ Công thức LDR ĐÚNG (2026-07, sửa từ lỗi dùng "Cho vay khách hàng" làm tử số):**
+
+```
+Tổng tín dụng  = Cho vay khách hàng + Trái phiếu doanh nghiệp (TPDN) nắm giữ
+Tổng huy động  = Tiền gửi KH + Giấy tờ có giá (CD/trái phiếu/kỳ phiếu)
+               + Tiền gửi KBNN × tỷ lệ giữ lại theo lộ trình (bảng dưới)
+               + Tiền gửi của TCTD khác (bsb270)
+               − (KHÔNG cộng Vay TCTD khác/bsb271 — đây mới là đề xuất ngành, chưa phải quy định
+                  chính thức đã xác nhận, nên không đưa vào tử số/mẫu số)
+LDR = Tổng tín dụng / Tổng huy động
+```
+
+- Cả "Tổng tín dụng" và "Tổng huy động" phải là **dòng riêng, tường minh** trong `05_Balance_Sheet` và
+  `05_Balance_Sheet_Quarterly` — sheet Ratios chỉ **LINK công thức** về 2 dòng đó (`=BS!Tổng tín dụng / BS!Tổng huy động`),
+  KHÔNG tính lại độc lập → tránh 2 công thức lệch nhau âm thầm.
+- **Tiền gửi TCTD khác (bsb270)** phải cộng vào Tổng huy động theo Điều 20, Thông tư 22/2019/TT-NHNN
+  (định nghĩa "Tổng nguồn vốn huy động" bao gồm "tiền gửi của tổ chức tín dụng, chi nhánh ngân hàng nước ngoài khác").
+  Thiếu dòng này khiến LDR bị đẩy lên sai (~98-100% thay vì ~89-90% thực tế).
+- **Tỷ lệ giữ lại tiền gửi KBNN theo lộ trình** (Thông tư 26/2022/TT-NHNN, cập nhật Thông tư 08/2026/TT-NHNN
+  hiệu lực 15/05/2026):
+
+  | Năm | Tỷ lệ giữ lại KBNN | Nguồn |
+  |---|---|---|
+  | 2021 và trước | 0% | — |
+  | 2022 | 0% | TT 26/2022 lộ trình giảm dần |
+  | 2023 | 50% | TT 26/2022 |
+  | 2024 | 40% | TT 26/2022 |
+  | 2025 | 20% | TT 26/2022 |
+  | 2026+ | 20% (khôi phục, KHÔNG về 0%) | TT 08/2026/TT-NHNN sửa lại lộ trình gốc |
+
+  Mảng chuẩn: `kbnn_rates_hist = [0.0, 0.0, 0.50, 0.40, 0.20]` cho 5 năm lịch sử gần nhất — **không** dùng
+  `[0.0, 0.0, 0.35, 0.50, 0.60]` (lỗi từng gặp, sai thứ tự/giá trị so với TT 26/2022).
+- Ô LDR trong Excel (`06_Ratios`, `06_Ratios_Quarterly`, `02_Assumptions`) **luôn phải là công thức sống**
+  tham chiếu tới các dòng Balance Sheet — người dùng yêu cầu rõ "đừng fix số chết" để tự kiểm chứng được.
 
 
 ### Earning Assets Structure (Tài sản sinh lãi)
@@ -266,12 +312,18 @@ PV của Equity = BV(0) + Σ RI(t)/(1+Ke)^t + Terminal Value/(1+Ke)^n
 
 ### So sánh consensus CTCK
 
-| Nguồn | Khuyến nghị | Giá mục tiêu | P/B target |
+| Nguồn | Khuyến nghị | Giá mục tiêu | P/B over |
 |---|---|---|---|
 | Báo cáo này | [tự đánh giá] | [TP] | [P/B] |
 | SSI Research | | | |
 | VCBS | | | |
 | MBS | | | |
+
+**⚠️ Không hiển thị target price cá nhân của 1 analyst cụ thể (2026-07):** Web/PDF từng hiển thị target
+price + tên analyst cá nhân lấy từ API Vietcap (VD: "Quan Vu"). Đã bỏ field này khỏi hiển thị — chỉ dùng
+tên CTCK/nguồn tổ chức (VD: "Vietcap", "SSI Research") khi so sánh consensus, không gắn tên cá nhân người
+phân tích. Thay vào đó, đảm bảo card định giá Residual Income (RI) luôn hiển thị đầy đủ trên web (từng bị
+thiếu sau khi tách trang ngân hàng/thép — kiểm tra `app_banking.js` có card RI riêng, không chỉ P/B).
 
 ---
 
@@ -638,7 +690,7 @@ evebitda_all_median = median([r["evToEbitda"] for r in ttms if r.get("evToEbitda
 _pb_below = [p for p in pb_all_vals if p <= pb_all_median]
 _pb_above = [p for p in pb_all_vals if p >= pb_all_median]
 pb_attractive = median(_pb_below) if _pb_below else pb_all_median * 0.85
-pb_target     = median(_pb_above) if _pb_above else pb_all_median * 1.15
+pb_over     = median(_pb_above) if _pb_above else pb_all_median * 1.15
 ```
 
 ### 14.4 Excel Formula Rules cho Banking
@@ -889,7 +941,9 @@ Không dùng một P/B median duy nhất. Phân phối P/B lịch sử chia thà
 |---|---|---|---|
 | **P/B hấp dẫn** | `pb_attractive` | Median của P/B ≤ median all-time | **Vùng MUA** — giá rẻ so lịch sử |
 | **P/B fair value** | `pb_all_median` | Median toàn bộ lịch sử | Điểm cân bằng — nắm giữ |
-| **P/B mục tiêu** | `pb_target` | Median của P/B ≥ median all-time | **Vùng BÁN / chốt lời** |
+| **P/B over** | `pb_over` | Median của P/B ≥ median all-time | **Vùng BÁN / chốt lời** |
+
+> ⚠️ **Đặt tên (2026-07):** Gọi mức median-nửa-trên là **"P/B over"**, KHÔNG gọi là "P/B target"/"P/B mục tiêu" — nhãn "mục tiêu/target" dễ hiểu nhầm là mức định giá kỳ vọng đạt tới (giống target price), trong khi bản chất đây chỉ là ngưỡng thống kê của nửa trên phân phối lịch sử, dùng cho vùng CHỐT LỜI. Áp dụng nhất quán tên biến + nhãn hiển thị ở cả Excel, PDF và web (trước đây dùng `pb_target`/`pbTarget` không nhất quán về ý nghĩa).
 
 **✅ ĐÚNG — code Python:**
 ```python
@@ -900,30 +954,32 @@ _pb_below = [p for p in pb_all_vals if p <= pb_all_median]
 _pb_above = [p for p in pb_all_vals if p >= pb_all_median]
 
 pb_attractive = stats.median(_pb_below)  # Median nửa dưới → MUA
-pb_target     = stats.median(_pb_above)  # Median nửa trên → BÁN / mục tiêu
+pb_over     = stats.median(_pb_above)  # Median nửa trên → BÁN / mục tiêu
 
-# Định giá dùng pb_target (mức mục tiêu bán)
+# Định giá dùng pb_over (mức mục tiêu bán)
 bvps_forward = bvps_base + eps_fc_calc[0]
-pb_value = pb_target * bvps_forward
+pb_value = pb_over * bvps_forward
 ```
 
 **❌ SAI — inflate nhân tạo:**
 ```python
-pb_target = max(pb_all_median, pb_current * 1.1)  # Cố đẩy target lên, không khách quan
-pb_target = pb_all_median                          # Dùng fair value làm mục tiêu, quá thận trọng
+pb_over = max(pb_all_median, pb_current * 1.1)  # Cố đẩy target lên, không khách quan
+pb_over = pb_all_median                          # Dùng fair value làm mục tiêu, quá thận trọng
 ```
 
 **Hiển thị trong Excel (sheet 07_Valuation):**
-- Row 13: P/B hấp dẫn = `pb_attractive` (màu xanh lá, nhãn "MUA")
+- Row 13: P/B hấp dẫn = `pb_attractive` — công thức CSE array `=MEDIAN(SMALL(range, ROW(INDIRECT("1:"&k))))` (màu xanh lá, nhãn "MUA")
 - Row 14: P/B median all-time = `pb_all_median` (màu xám, nhãn "FAIR VALUE")
-- Row 15: P/B mục tiêu = `pb_target` (màu đỏ, nhãn "BÁN / CHỐT LỜI")
+- Row 15: P/B over = `pb_over` — công thức CSE array `=MEDIAN(LARGE(range, ROW(INDIRECT("1:"&k))))` (màu đỏ, nhãn "BÁN / CHỐT LỜI")
 - Row 16: BVPS tương lai = `=B6+B26` (BVPS hiện tại + EPS 2026F)
-- Row 17: Giá trị P/B = `=B15×B16` (dùng P/B mục tiêu)
+- Row 17: Giá trị P/B = `=B15×B16` (dùng P/B over)
 
 **Ứng dụng trong phân tích:**
 - Giá hiện tại ≤ P/B hấp dẫn × BVPS → **MUA**
-- P/B hấp dẫn < giá < P/B mục tiêu → **NẮM GIỮ**
-- Giá ≥ P/B mục tiêu × BVPS → **CHỐT LỜI / BÁN**
+- P/B hấp dẫn < giá < P/B over → **NẮM GIỮ**
+- Giá ≥ P/B over × BVPS → **CHỐT LỜI / BÁN**
+
+**⚠️ Excel formula compat (2026-07):** KHÔNG dùng `SEQUENCE()` cho công thức median-nửa — hàm này là dynamic array Excel 365, báo lỗi `#NAME?` trên các bản Excel cũ hơn của user. Dùng `openpyxl.worksheet.formula.ArrayFormula` với pattern CSE-compatible: `MEDIAN(SMALL(range, ROW(INDIRECT("1:"&k))))` (nửa dưới) / `MEDIAN(LARGE(range, ROW(INDIRECT("1:"&k))))` (nửa trên), với `k = len(nửa đó)`. Luôn test bằng cách mở lại file qua `win32com` (nếu máy có Excel) để xác nhận không có `#NAME?`/`#REF!` trước khi báo hoàn thành.
 
 ---
 
@@ -934,7 +990,7 @@ pb_target = pb_all_median                          # Dùng fair value làm mục
 bvps_forward = bvps_hist[-1] + eps_fc_calc[0]
 
 # P/B Value = P/B mục tiêu × BVPS tương lai
-pb_value = pb_target * bvps_forward
+pb_value = pb_over * bvps_forward
 ```
 
 Tương đương trong Excel:
@@ -960,7 +1016,7 @@ Target = 50% × RI Value + 50% × P/B Value
 ### 17.6 Checklist định giá ngân hàng bắt buộc
 
 - [ ] RI model dùng `bv = bv_start + eps_i` (không phải `+ ri`)
-- [ ] P/B target = `pb_target` (median nửa trên P/B >= median all-time, dùng làm giá mục tiêu bán)
+- [ ] P/B target = `pb_over` (median nửa trên P/B >= median all-time, dùng làm giá mục tiêu bán)
 - [ ] P/B value = P/B target × BVPS forward (BV hiện tại + EPS dự phóng)
 - [ ] Nếu RI âm → ghi nhận trong báo cáo, giải thích nguyên nhân
 - [ ] Sensitivity table: COE × g (5×5) để hiển thị range hợp lý

@@ -10,6 +10,7 @@ let chartRevNpat = null;
 let chartEpsEquity = null;
 let chartPE = null;
 let chartPB = null;
+let chartCommodity = null;
 
 // ── Vietcap API base ──────────────────────────────────────
 const VC_BASE = 'https://trading.vietcap.com.vn/api/iq-insight-service/v1';
@@ -433,6 +434,7 @@ async function loadStockDashboard(ticker) {
     renderChart2(incomeLabels, income2Data, npatData, cfg.income2Label, cfg.npatLabel, cfg.color);
     renderPEChart(quarterLabels, peData.map(p => p.y), cfg.color);
     renderPBChart(quarterLabels, pbData.map(p => p.y), cfg.color);
+    renderCommodityPrices(localJson);
 
     renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg);
 
@@ -467,8 +469,8 @@ const CHART_DEFAULTS = {
 };
 
 function destroyCharts() {
-    [chartRevNpat, chartEpsEquity, chartPE, chartPB].forEach(c => { if (c) c.destroy(); });
-    chartRevNpat = chartEpsEquity = chartPE = chartPB = null;
+    [chartRevNpat, chartEpsEquity, chartPE, chartPB, chartCommodity].forEach(c => { if (c) c.destroy(); });
+    chartRevNpat = chartEpsEquity = chartPE = chartPB = chartCommodity = null;
 }
 
 function calcMedian(arr) {
@@ -631,6 +633,55 @@ function renderPBChart(labels, data, color) {
         },
         options: { ...CHART_DEFAULTS }
     });
+}
+
+function renderCommodityPrices(localJson) {
+    const card = document.getElementById('commodity-price-card');
+    const cq = localJson?.commodityQuarterly;
+    if (!cq || !cq.labels || !cq.labels.length) {
+        if (card) card.classList.add('hidden');
+        return;
+    }
+    card.classList.remove('hidden');
+    const labels = [...cq.labels, 'Hiện tại'];
+    const hrc = [...cq.hrcPrice, cq.current?.hrcPrice ?? null];
+    const iron = [...cq.ironOre, cq.current?.ironOre ?? null];
+    const coal = [...cq.cokingCoal, cq.current?.cokingCoal ?? null];
+
+    const ctx = document.getElementById('commodityPriceChart').getContext('2d');
+    if (chartCommodity) chartCommodity.destroy();
+    chartCommodity = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Giá HRC (USD/t)', data: hrc, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.08)', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
+                { label: 'Quặng sắt 62%Fe (USD/t)', data: iron, borderColor: '#2563eb', borderWidth: 1.5, pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' },
+                { label: 'Than cốc luyện kim (USD/t)', data: coal, borderColor: '#16a34a', borderWidth: 1.5, pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Giá HRC (USD/t)', color: '#dc2626', font: { size: 10 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Quặng sắt / Than cốc (USD/t)', color: '#2563eb', font: { size: 10 } } }
+            }
+        }
+    });
+
+    const spreadNow = cq.spreadNow;
+    const spreadTxt = spreadNow !== undefined && spreadNow !== null
+        ? `${spreadNow > 0 ? '+' : ''}${spreadNow.toFixed(0)} USD/t`
+        : '-';
+    const spreadColor = spreadNow >= 0 ? '#10b981' : '#ef4444';
+    document.getElementById('analysis-text-commodity').innerHTML = `
+        Giá hiện tại (fetch tự động từ investing.com): HRC ${formatNumber(cq.current?.hrcPrice, 1)} USD/t,
+        Quặng sắt ${formatNumber(cq.current?.ironOre, 1)} USD/t, Than cốc ${formatNumber(cq.current?.cokingCoal, 1)} USD/t.<br/><br/>
+        Spread hiện tại (TB đầu quý + hiện tại): <b style="color:${spreadColor}">${spreadTxt}</b><br/>
+        <span style="font-size:0.8rem;color:var(--text-dim)">Spread chỉ phản ánh xu hướng giá benchmark quốc tế,
+        không phải biên lợi nhuận thực tế của doanh nghiệp.</span>
+    `;
 }
 
 // ═══════════════════════════════════════════════════════════

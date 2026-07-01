@@ -14,7 +14,7 @@ import json
 import datetime
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.utils import get_column_letter
+from openpyxl.utils import get_column_letter, column_index_from_string
 from openpyxl.worksheet.formula import ArrayFormula
 
 import matplotlib
@@ -435,12 +435,19 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     kbnn_hist = [get_yr(bs_recs, y, "bsb110") + get_yr(bs_recs, y, "bsb111") for y in years_hist]
     ky_quy_hist = [get_yr(nt_recs, y, "nob73") or get_yr(nt_recs, y, "nob75") or 0 for y in years_hist]
     voncg_hist = [get_yr(bs_recs, y, "bsb115") for y in years_hist]
+    # Tiền gửi của các TCTD khác (bsb270) — theo Thông tư 22/2019/TT-NHNN, "Tổng nguồn vốn huy động"
+    # ở mẫu số LDR gồm "tiền gửi của tổ chức trong nước và nước ngoài, BAO GỒM CẢ tiền gửi của tổ
+    # chức tín dụng, chi nhánh ngân hàng nước ngoài khác". Trước đây thiếu hẳn khoản này, khiến LDR
+    # tính ra cao bất thường (gần 100%, sát/vượt trần 85% NHNN). KHÔNG cộng "Vay các TCTD khác"
+    # (bsb271) — khoản này mới chỉ là đề xuất của một số NHTM (VD VPBank) lên NHNN, chưa xác nhận
+    # đã được đưa vào quy định chính thức.
+    tctd_dep_hist = [get_yr(bs_recs, y, "bsb270") for y in years_hist]
     
     # KBNN counted portion per Circular 26/2022: 2023=50%, 2024=40%, 2025=20%, 2026+=20%
     kbnn_rates_hist = [0.0, 0.0, 0.50, 0.40, 0.20]
     
     # Parameterized LDR with valuable papers and SBV Circular 22/26 adjustments
-    ldr_hist = [round((loans_hist[i] + tpdn_hist[i]) / max(cust_dep_hist[i] + bonds_hist[i] + (kbnn_hist[i] * kbnn_rates_hist[i]) - ky_quy_hist[i] - voncg_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
+    ldr_hist = [round((loans_hist[i] + tpdn_hist[i]) / max(cust_dep_hist[i] + bonds_hist[i] + tctd_dep_hist[i] + (kbnn_hist[i] * kbnn_rates_hist[i]) - ky_quy_hist[i] - voncg_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     cir_hist = [round(opex_hist[i] / max(toi_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     roe_hist = [round(np_hist[i] / ((equity_hist[i-1] + equity_hist[i])/2 if i>0 else equity_hist[i]) * 100, 2) for i in range(len(years_hist))]
     roa_hist = [round(np_hist[i] / max(total_assets_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
@@ -546,8 +553,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # nhân 4 rất nhiễu (chịu ảnh hưởng mùa vụ, VD Q1 thường chậm hơn do Tết) và trước đây luôn kéo
     # forecast xuống thấp hơn hẳn xu hướng nhiều năm mỗi khi quý gần nhất tăng chậm hơn trung bình,
     # khiến TTTD dự phóng bị "chết" ở mức thấp không phản ánh đúng đà tăng trưởng thực tế nội tại.
-    pos_credit_vals = [v for v in credit_growth_hist if v > 0]
-    last3_credit = pos_credit_vals[-3:] if len(pos_credit_vals) >= 3 else pos_credit_vals
+    # Lấy đúng 3 năm gần nhất theo trình tự thời gian (không lọc âm/dương) để khớp 1-1 với công thức
+    # Excel "=AVERAGE(D4:F4)*0.9" ở '02_Assumptions' — nếu lọc riêng "chỉ lấy giá trị dương" như
+    # trước thì không thể viết thành 1 công thức Excel đơn giản, sẽ lại phải ghi số tính sẵn.
+    last3_credit = credit_growth_hist[-3:]
     avg3_credit = sum(last3_credit) / len(last3_credit)
     credit_fc_raw = round(avg3_credit * 0.9, 4)
     credit_fc_rate = credit_fc_raw
@@ -661,10 +670,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     kbnn_fc = [kbnn_hist[-1] * (dep_fc[i] / cust_dep_hist[-1]) for i in range(3)]
     ky_quy_fc = [ky_quy_hist[-1] * (dep_fc[i] / cust_dep_hist[-1]) for i in range(3)]
     voncg_fc = [voncg_hist[-1] * (1.02 ** (i+1)) for i in range(3)]
-    
+    tctd_dep_fc = [tctd_dep_hist[-1] * (dep_fc[i] / cust_dep_hist[-1]) for i in range(3)]
+
     # Under SBV Circular 26, from 2026 onwards KBNN deposit inclusion rate is 80% excluded → 20% counts
     ldr_fc_calc = [
-        (loans_fc[i] + tpdn_fc[i]) / max(dep_fc[i] + bonds_fc_ends[i+1] + (kbnn_fc[i] * 0.2) - ky_quy_fc[i] - voncg_fc[i], 1) * 100 
+        (loans_fc[i] + tpdn_fc[i]) / max(dep_fc[i] + bonds_fc_ends[i+1] + tctd_dep_fc[i] + (kbnn_fc[i] * 0.2) - ky_quy_fc[i] - voncg_fc[i], 1) * 100
         for i in range(3)
     ]
     
@@ -974,11 +984,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         write_data_row(ws_ass, r, 1, [lbl] + vals, fmt_to_use)
 
     # Row 4: Tín dụng tăng trưởng — historical formula from BS rows 3+4 (Loans+TPDN = TTTD).
-    # Forecast (G/H/I) PHẢI hardcode đúng loans_growth_fc (Python) — đây chính là tỷ lệ TTTD
-    # thực sự dùng để dựng loans_fc/iea_fc/nii_fc trong 03_Income_Model. Trước đây forecast dùng
-    # công thức Excel độc lập "=MEDIAN(C4:F4)*0.9" nên KHÔNG khớp với NII/NIM thực tế trong workbook
-    # (VD TCB: Excel formula ra 18.96% trong khi NII forecast lại dùng 14.1%) — luôn hardcode để
-    # đồng bộ tuyệt đối, giống cách row 5 (Huy động tăng trưởng) đã làm đúng.
+    # Forecast (G/H/I) = CÔNG THỨC EXCEL SỐNG "=AVERAGE(D4:F4)*0.9" (trung bình TTTD 3 năm gần
+    # nhất x hệ số thận trọng 0.9, đúng công thức đã chốt) — không còn ghi số Python tính sẵn.
+    # G4 dùng AVERAGE(D4:F4) thay vì MEDIAN(C4:F4) như bản cũ (bug: MEDIAN tính luôn cả năm 2022 là
+    # năm tăng trưởng thấp bất thường, kéo TTTD dự phóng lệch khỏi NII/NIM thực tế dùng trong model).
+    # Python (credit_fc_rate) dùng ĐÚNG cùng logic "trung bình 3 năm gần nhất" để đảm bảo công thức
+    # Excel và số liệu NII/IEA dựng từ Python luôn khớp nhau tuyệt đối — xem credit_growth_hist ở trên.
     ws_ass.cell(row=4, column=1, value="Tín dụng tăng trưởng (%)")
     for i, col in enumerate(['B','C','D','E','F','G','H','I']):
         cell = ws_ass.cell(row=4, column=2+i)
@@ -987,8 +998,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         elif i < 5:
             prev_col = ['B','C','D','E'][i-1]
             cell.value = f"=(SUM('05_Balance_Sheet'!{col}3:{col}4)-SUM('05_Balance_Sheet'!{prev_col}3:{prev_col}4))/SUM('05_Balance_Sheet'!{prev_col}3:{prev_col}4)"
-        else:
-            cell.value = loans_growth_fc[i - 5]
+        elif i == 5:
+            cell.value = "=AVERAGE(D4:F4)*0.9"
+        elif i == 6:
+            cell.value = "=MAX(G4-0.01,0.05)"
+        elif i == 7:
+            cell.value = "=MAX(H4-0.01,0.05)"
         cell.number_format = FMT_PCT
 
     # Row 5: Huy động tăng trưởng — historical formula (Circular 26 KBNN rates), forecast hardcoded
@@ -1213,24 +1228,55 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     bq_inv_sec   = [(r.get("bsb106") or 0) / 1e9 for r in bs_q_recs]
     # IEA quý = Cho vay + TG NHNN có lãi + TS sinh lãi liên NH + Chứng khoán đầu tư (Skill §16.1/§3)
     bq_iea = [bq_cash_nhnn[i] + bq_interbank[i] + bq_loans[i] + bq_inv_sec[i] for i in range(len(bs_q_recs))]
+    bq_tpdn = [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob184") for r in bs_q_recs]
+    bq_dep  = [(r.get("bsb113") or 0) / 1e9 for r in bs_q_recs]
+    bq_bonds = [(r.get("bsb116") or 0) / 1e9 for r in bs_q_recs]
+    bq_kbnn = [((r.get("bsb110") or 0) + (r.get("bsb111") or 0)) / 1e9 for r in bs_q_recs]
+    bq_kyquy = [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob73") or get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob75") or 0 for r in bs_q_recs]
+    bq_voncg = [(r.get("bsb115") or 0) / 1e9 for r in bs_q_recs]
+    bq_tctd_dep = [(r.get("bsb270") or 0) / 1e9 for r in bs_q_recs]  # Tiền gửi của TCTD khác — mẫu số LDR theo Circular 22/2019
+
+    def kbnn_rate_for_year(yr):
+        # Circular 26/2022 roadmap (2023=50%/2024=40%/2025=20%), Circular 08/2026/TT-NHNN
+        # (hiệu lực 15/5/2026) khôi phục 20% cho 2026 trở đi thay vì 0%.
+        if yr <= 2022: return 0.0
+        if yr == 2023: return 0.50
+        if yr == 2024: return 0.40
+        return 0.20  # 2025 trở đi
+
     bq_data = [
         ("Tổng tài sản", [(r.get("bsa53") or 0) / 1e9 for r in bs_q_recs]),
         ("Tiền mặt & NHNN", bq_cash_nhnn),
         ("TG các TCTD khác", bq_interbank),
         ("Cho vay khách hàng", bq_loans),
         ("CK đầu tư", bq_inv_sec),
-        ("Tiền gửi khách hàng", [(r.get("bsb113") or 0) / 1e9 for r in bs_q_recs]),
+        ("Tiền gửi khách hàng", bq_dep),
         ("Vốn chủ sở hữu", [(r.get("bsa78") or 0) / 1e9 for r in bs_q_recs]),
         # Thêm các dòng cho tính toán tín dụng & huy động
-        ("TPDN (trái phiếu TCKT)", [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob184") for r in bs_q_recs]),
-        ("Giấy tờ có giá (Bonds)", [(r.get("bsb116") or 0) / 1e9 for r in bs_q_recs]),
-        ("Tiền gửi Kho bạc NN", [((r.get("bsb110") or 0) + (r.get("bsb111") or 0)) / 1e9 for r in bs_q_recs]),
-        ("Tiền gửi ký quỹ (trừ đi)", [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob73") or get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob75") or 0 for r in bs_q_recs]),
-        ("Vốn chuyên dùng (trừ đi)", [(r.get("bsb115") or 0) / 1e9 for r in bs_q_recs]),
+        ("TPDN (trái phiếu TCKT)", bq_tpdn),
+        ("Giấy tờ có giá (Bonds)", bq_bonds),
+        ("Tiền gửi Kho bạc NN", bq_kbnn),
+        ("Tiền gửi ký quỹ (trừ đi)", bq_kyquy),
+        ("Vốn chuyên dùng (trừ đi)", bq_voncg),
         ("Tài sản sinh lãi (IEA)", bq_iea),
+        ("Tổng tín dụng (tỷ)", [None] * len(bs_q_recs)),   # row 15 — công thức, xem bên dưới
+        ("Tổng huy động (tỷ)", [None] * len(bs_q_recs)),   # row 16 — công thức, xem bên dưới
+        ("Tiền gửi của TCTD khác", bq_tctd_dep),            # row 17 — mẫu số LDR (Circular 22/2019)
     ]
     for i, (label, vals) in enumerate(bq_data):
         write_data_row(ws_bq, i + 2, 1, [label] + vals, FMT_NUM1)
+
+    # Row 15/16: Tổng tín dụng = Cho vay(row5) + TPDN(row9) ; Tổng huy động = Tiền gửi(row7) +
+    # GTCG(row10) + TG TCTD khác(row17) + KBNN(row11)*tỷ lệ - Ký quỹ(row12) - Vốn chuyên dùng(row13)
+    # — ghi bằng CÔNG THỨC Excel (không phải số Python tính sẵn) để bấm vào ô là thấy ngay cách tính.
+    # "TG TCTD khác" (row17, bsb270) theo Thông tư 22/2019/TT-NHNN — "Tổng nguồn vốn huy động" ở mẫu
+    # số LDR gồm cả tiền gửi của TCTD/chi nhánh NH nước ngoài khác. KHÔNG cộng "Vay TCTD khác"
+    # (bsb271) vì đây mới là đề xuất của một số NHTM lên NHNN, chưa xác nhận thành quy định chính thức.
+    for i, rec in enumerate(bs_q_recs):
+        col = get_column_letter(2 + i)
+        rate = kbnn_rate_for_year(rec.get("yearReport", 2026))
+        ws_bq.cell(row=15, column=2 + i, value=f"={col}5+{col}9").number_format = FMT_NUM1
+        ws_bq.cell(row=16, column=2 + i, value=f"={col}7+{col}10+{col}17+{col}11*{rate}-{col}12-{col}13").number_format = FMT_NUM1
 
     # 8. 05_Balance_Sheet
     ws_bs = wb.create_sheet("05_Balance_Sheet")
@@ -1244,12 +1290,15 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         ("Tiền gửi Kho bạc Nhà nước", kbnn_hist + [None]*3),                   # row 7
         ("Tiền gửi ký quỹ (trừ đi)", ky_quy_hist + [None]*3),                  # row 8
         ("Vốn chuyên dùng (trừ đi)", voncg_hist + [None]*3),                   # row 9
-        ("Vốn chủ sở hữu (VCSH)", equity_hist + [None]*3)                      # row 10
+        ("Vốn chủ sở hữu (VCSH)", equity_hist + [None]*3),                     # row 10
+        ("Tổng tín dụng (tỷ)", [None]*8),                                      # row 11 = row3+row4
+        ("Tổng huy động (tỷ)", [None]*8),                                      # row 12 = row5+row6+row13+row7*KBNN%-row8-row9
+        ("Tiền gửi của TCTD khác", tctd_dep_hist + [None]*3),                  # row 13 (Circular 22/2019, mẫu số LDR)
     ]
     for idx, (lbl, vals) in enumerate(bs_data):
         r = idx + 2
         write_data_row(ws_bs, r, 1, [lbl] + vals, FMT_NUM1)
-        
+
     for idx, col in enumerate(['G', 'H', 'I']):
         prev_col = 'F' if idx == 0 else get_column_letter(6 + idx)
         ws_bs.cell(row=3, column=7+idx, value=f"={prev_col}3*(1+'02_Assumptions'!{col}4)")  # Loans
@@ -1261,10 +1310,31 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         ws_bs.cell(row=9, column=7+idx, value=f"={prev_col}9*1.02")                          # Vốn chuyên dùng: +2%/năm
         ws_bs.cell(row=10, column=7+idx, value=f"={prev_col}10+'04_PnL'!{col}5*0.7")         # VCSH: giữ lại 70% LNST
         ws_bs.cell(row=2, column=7+idx, value=f"=SUM({col}3:{col}6)+{col}7-{col}8-{col}9+{col}10") # Assets approximation
+        ws_bs.cell(row=13, column=7+idx, value=f"={prev_col}13*(1+'02_Assumptions'!{col}5)")  # TG TCTD khác: tăng cùng Deposits
+        ws_bs.cell(row=13, column=7+idx).number_format = FMT_NUM1
+
+    # Row 11/12: Tổng tín dụng & Tổng huy động — nguồn duy nhất cho mọi công thức LDR ở 06_Ratios,
+    # tránh mỗi sheet tự tính lại (dễ lệch tỷ lệ giữ lại KBNN như đã xảy ra ở 06_Ratios trước đây).
+    # Tỷ lệ giữ lại tiền gửi KBNN theo lộ trình Circular 26/2022 (đã sửa cho đúng 2023=50%/2024=40%/
+    # 2025=20%) và Circular 08/2026/TT-NHNN khôi phục 20% từ 2026 trở đi.
+    # Tổng huy động CỘNG THÊM row13 (Tiền gửi của TCTD khác, bsb270) — theo Thông tư 22/2019/TT-NHNN,
+    # "Tổng nguồn vốn huy động" ở mẫu số LDR bao gồm tiền gửi của tổ chức tín dụng, chi nhánh ngân
+    # hàng nước ngoài khác. Trước đây thiếu hẳn khoản này khiến LDR tính ra cao bất thường (gần
+    # 100%, sát/vượt trần 85% NHNN). KHÔNG cộng "Vay các TCTD khác" (bsb271) vì khoản này mới là đề
+    # xuất của một số NHTM lên NHNN, chưa xác nhận đã thành quy định chính thức.
+    kbnn_rate_cols = {'B': kbnn_rates_hist[0], 'C': kbnn_rates_hist[1], 'D': kbnn_rates_hist[2],
+                       'E': kbnn_rates_hist[3], 'F': kbnn_rates_hist[4],
+                       'G': 0.2, 'H': 0.2, 'I': 0.2}
+    for col in ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
+        ws_bs.cell(row=11, column=column_index_from_string(col), value=f"={col}3+{col}4").number_format = FMT_NUM1
+        rate = kbnn_rate_cols[col]
+        ws_bs.cell(row=12, column=column_index_from_string(col),
+                    value=f"={col}5+{col}6+{col}13+{col}7*{rate}-{col}8-{col}9").number_format = FMT_NUM1
 
     # 9. 06_Ratios_Quarterly
     # Row map in '05_Balance_Sheet_Quarterly': 3=Cash+NHNN, 4=Interbank, 5=Loans, 6=Inv.Securities,
-    # 7=Deposits, 8=Equity, 9=TPDN, 10=Bonds, 11=KBNN, 12=Ky quy, 13=Von chuyen dung, 14=IEA.
+    # 7=Deposits, 8=Equity, 9=TPDN, 10=Bonds, 11=KBNN, 12=Ky quy, 13=Von chuyen dung, 14=IEA,
+    # 15=Tổng tín dụng, 16=Tổng huy động.
     # (Previously these formulas pointed one row too high — e.g. row 4/6/7 instead of 5/7/8 — which
     # silently computed NIM/LDR/COF/ROE off the WRONG account. Fixed to match the actual row layout.)
     ws_rq = wb.create_sheet("06_Ratios_Quarterly")
@@ -1277,8 +1347,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         rq_nim.append(f"=('04_PnL_Quarterly'!{c}2*4/(('05_Balance_Sheet_Quarterly'!{prev_c}14+'05_Balance_Sheet_Quarterly'!{c}14)/2))*100")
     # ROE quý năm hóa = LNST_q * 4 / VCSH cuối kỳ — row 8=NPAT trong 04_PnL_Quarterly, row 8=VCSH trong 05_Balance_Sheet_Quarterly
     rq_roe = [f"=('04_PnL_Quarterly'!{c}8*4/'05_Balance_Sheet_Quarterly'!{c}8)*100" for c in cols_q]
-    # LDR = Loans / (Deposits + Bonds) — row 5=Loans, row 7=Deposits, row 10=Bonds
-    rq_ldr = [f"=('05_Balance_Sheet_Quarterly'!{c}5/('05_Balance_Sheet_Quarterly'!{c}7+'05_Balance_Sheet_Quarterly'!{c}10))*100" for c in cols_q]
+    # LDR = Tổng tín dụng / Tổng huy động — link thẳng row 15/16 của 05_Balance_Sheet_Quarterly
+    # (trước đây chỉ tính Loans/(Deposits+Bonds), thiếu TPDN ở tử số và thiếu KBNN/ký quỹ/vốn
+    # chuyên dùng ở mẫu số — không phải LDR đúng nghĩa "tổng tín dụng/tổng huy động").
+    rq_ldr = [f"=('05_Balance_Sheet_Quarterly'!{c}15/'05_Balance_Sheet_Quarterly'!{c}16)*100" for c in cols_q]
     # NPL quý = không có trực tiếp từ PnL quarterly, tính đơn giản từ note data
     # COF quý = Chi phí lãi * 4 / Tiền gửi — row 7=Deposits
     rq_cof = [f"=('04_PnL_Quarterly'!{c}10*4/'05_Balance_Sheet_Quarterly'!{c}7)*100" for c in cols_q]
@@ -1304,14 +1376,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     write_data_row(ws_rat, 4, 1, ["ROE (%)"] + [round(r/100,4) for r in roe_hist] + [None]*3, FMT_PCT)
     # Row 5: ROA = LNST / Tổng tài sản
     write_data_row(ws_rat, 5, 1, ["ROA (%)"] + [round(r/100,4) for r in roa_hist] + [None]*3, FMT_PCT)
-    # Row 6: LDR = Loans / (Deposits + Bonds) — dynamic formulas link to 05_Balance_Sheet
+    # Row 6: LDR = Tổng tín dụng / Tổng huy động — link thẳng tới 05_Balance_Sheet!row11/row12
+    # (trước đây tự tính lại SUM/KBNN% tại đây với tỷ lệ giữ lại KBNN SAI [0,0,35%,50%,60%] —
+    # đúng phải là [0,0,50%,40%,20%] theo lộ trình Circular 26/2022, đã có sẵn ở kbnn_rates_hist
+    # và giờ dùng chung với row 11/12 của 05_Balance_Sheet để tránh 2 nơi tính lệch nhau).
     write_data_row(ws_rat, 6, 1, ["LDR — điều chỉnh (%)"] + [None]*8, FMT_PCT)
-    # Put dynamic LDR formulas for history columns B-F
-    cols_hist = ['B', 'C', 'D', 'E', 'F']
-    rates_hist = [0.0, 0.0, 0.35, 0.50, 0.60]
-    for i, col in enumerate(cols_hist):
-        rate = rates_hist[i]
-        ws_rat.cell(row=6, column=2+i, value=f"=SUM('05_Balance_Sheet'!{col}3:{col}4)/(SUM('05_Balance_Sheet'!{col}5:{col}6)+'05_Balance_Sheet'!{col}7*{rate}-'05_Balance_Sheet'!{col}8-'05_Balance_Sheet'!{col}9)")
+    for col in ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
+        ws_rat.cell(row=6, column=column_index_from_string(col),
+                    value=f"='05_Balance_Sheet'!{col}11/'05_Balance_Sheet'!{col}12")
         ws_rat.cell(row=6, column=2+i).number_format = FMT_PCT
 
     # Row 7: NPL = npl_total / loans — history hardcoded, FC = base * reduction from Assumptions
@@ -1362,9 +1434,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         # ROA forecast = LNST / avg(TA prev, TA curr) - TA is at row 2
         ws_rat.cell(row=5, column=7+idx, value=f"='04_PnL'!{col}5/AVERAGE('05_Balance_Sheet'!{prev_col}2,'05_Balance_Sheet'!{col}2)")
         ws_rat.cell(row=5, column=7+idx).number_format = FMT_PCT
-        # LDR forecast = (Loans + TPDN) / (Deposits + Bonds + KBNN * 0.2 - Ký quỹ - Vốn chuyên dùng)
-        ws_rat.cell(row=6, column=7+idx, value=f"=SUM('05_Balance_Sheet'!{col}3:{col}4)/(SUM('05_Balance_Sheet'!{col}5:{col}6)+'05_Balance_Sheet'!{col}7*0.2-'05_Balance_Sheet'!{col}8-'05_Balance_Sheet'!{col}9)")
-        ws_rat.cell(row=6, column=7+idx).number_format = FMT_PCT
+        # LDR forecast: đã ghi ở vòng lặp B..I phía trên (link '05_Balance_Sheet'!row11/row12)
 
     # Row 10: YOEA — Yield on Earning Assets (Interest Income / IEA_avg)
     write_data_row(ws_rat, 10, 1, ["YOEA — Lợi suất TSSL (%)"] + [round(y, 4) for y in yo_ea_hist] + [None]*3, FMT_PCT)
@@ -1835,12 +1905,28 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     cof_q_json = [safe_div(abs(iq_sorted[i].get("isb30") or 0)/1e9 * 4,
                            ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]
     cof_q_json = [round(x * 100, 2) for x in cof_q_json]
-    # LDR quý: Loans / (Deposits + Bonds) — Skill §19.2
-    ldr_q_json = [safe_div((rq_sorted[i].get("bsb103") or 0)/1e9,
-                           ((rq_sorted[i].get("bsb113") or 0) + (rq_sorted[i].get("bsb116") or 0))/1e9) for i in range(n_q)]
     # Notes quarterly: dựng n_tập theo quý (nob41=gr2, nob42=gr3, nob43=gr4, nob44=gr5 trong Note thường)
     nt_q_sorted = sorted(section_to_quarters(raw_data, "NOTE"),
                          key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-n_q:]
+    # LDR quý = Tổng tín dụng (Loans+TPDN) / Tổng huy động (Deposits+Bonds+TG TCTD khác+KBNN*tỷ lệ
+    # -Ký quỹ-Vốn chuyên dùng) — trước đây chỉ Loans/(Deposits+Bonds), thiếu TPDN, TG TCTD khác
+    # (bsb270 — Circular 22/2019/TT-NHNN) và KBNN/ký quỹ/vốn chuyên dùng.
+    def _ldr_kbnn_rate(yr):
+        if yr <= 2022: return 0.0
+        if yr == 2023: return 0.50
+        if yr == 2024: return 0.40
+        return 0.20  # 2025 trở đi (Circular 26/2022 + Circular 08/2026/TT-NHNN)
+    ldr_q_json = []
+    for i in range(n_q):
+        rq = rq_sorted[i]
+        nt = nt_q_sorted[i] if i < len(nt_q_sorted) else {}
+        credit_q = (rq.get("bsb103") or 0)/1e9 + (nt.get("nob184") or 0)/1e9
+        kbnn_q = ((rq.get("bsb110") or 0) + (rq.get("bsb111") or 0)) / 1e9
+        ky_quy_q = (nt.get("nob73") or nt.get("nob75") or 0) / 1e9
+        voncg_q = (rq.get("bsb115") or 0) / 1e9
+        tctd_dep_q = (rq.get("bsb270") or 0) / 1e9
+        funding_q = ((rq.get("bsb113") or 0) + (rq.get("bsb116") or 0))/1e9 + tctd_dep_q + kbnn_q*_ldr_kbnn_rate(rq.get("yearReport", 2026)) - ky_quy_q - voncg_q
+        ldr_q_json.append(safe_div(credit_q, funding_q))
     # Đảm bảo align
     min_q2 = min(len(rq_sorted), len(nt_q_sorted))
     

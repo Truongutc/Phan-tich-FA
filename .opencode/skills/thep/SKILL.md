@@ -34,9 +34,21 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 **Định mức tiêu chuẩn (Lò cao BOF)**:
 - 1 tấn thép cần ~1.6 tấn quặng sắt + ~0.6 tấn than cốc
 
-**Spread** = Giá thép - (1.6 × Giá quặng + 0.6 × Giá than) - Chi phí chuyển đổi (điện, nhân công, khấu hao)
+**Spread = Giá thép − 1.6×Giá quặng sắt − 0.6×Giá than cốc − Chi phí SX khác CỐ ĐỊNH (USD/tấn)**
 
 **Lợi nhuận** = Spread × Sản lượng - Chi phí cố định
+
+**⚠️ Chi phí SX khác (2026-07 — đã chốt qua nhiều lần chỉnh với user):**
+- Dùng **một hằng số USD/tấn cố định** cho toàn bộ các năm (gồm nhân công, nhiên liệu, điện, khấu hao,
+  CPQL), KHÔNG dùng mảng biến đổi theo năm kiểu `CONV_A = [.., .., ..]` (từng gây double-count rủi ro khi
+  cộng thêm cả "lương nhân công/tấn" như một khoản riêng — user đã yêu cầu bỏ, quy về 1 số cố định duy nhất).
+- Giá trị hằng số này **do user chỉnh trực tiếp theo từng report** dựa trên đối chiếu BCTC thực tế (đã đổi
+  từ 200 → 100 USD/tấn khi số liệu spread tính ra âm bất hợp lý so với biên LN gộp thực tế công bố) — biến
+  Python là `OTHER_COST_USD`, KHÔNG hardcode giá trị này rải rác nhiều chỗ, chỉ định nghĩa 1 lần rồi mọi
+  công thức/text đều tham chiếu qua biến (kể cả câu chữ trong PDF, không viết số cứng "100 USD/tấn" trực
+  tiếp trong docstring/narrative).
+- **Luôn hiện công thức Spread dưới dạng Excel formula SỐNG** (không phải số Python tính sẵn) ở MỌI nơi
+  hiển thị spread theo quý/năm, để user tự bấm vào ô kiểm chứng — xem mục "Dữ liệu giá hàng hóa" bên dưới.
 
 ---
 
@@ -70,13 +82,66 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 
 ---
 
-## Dữ liệu & Nguồn
+## Dữ liệu giá hàng hóa — tự động hoá không cần AI (2026-07)
 
-**Nguyên liệu** (đầu vào):
-- Quặng sắt, Than cốc: Trading Economics, Investing.com
+**Bối cảnh:** User chạy `build_hpg_model.py` local, không có AI hỗ trợ tại thời điểm chạy — mọi việc lấy
+giá HRC/quặng sắt/than cốc phải tự động 100% bằng Python thuần, không được dựa vào research thủ công mỗi lần.
+
+**Kiến trúc:**
+1. **Sheet Excel riêng `17_Gia_Hang_Hoa`** — nguồn duy nhất cho giá hàng hóa, mọi sheet khác
+   (`02_Assumptions`, `03_Revenue_Model`, `14_Steel_Analysis`) **LINK công thức** về sheet này, không dùng
+   mảng Python độc lập cho từng sheet (tránh lệch số).
+2. **Bảng 18 quý lịch sử** (2021Q4 → hiện tại): tổng hợp thủ công từ nhiều nguồn công khai (xem ghi chú
+   nguồn ngay trong sheet, cột B "NGUỒN DỮ LIỆU"). Đây là **số liệu nghiên cứu, không phải median 3 mốc
+   trong quý** (đầu/giữa/cuối quý) như lý tưởng — vì không có API lịch sử giá theo ngày miễn phí. Độ tin cậy
+   khác nhau theo mặt hàng: quặng sắt (cao, đối chiếu World Bank Pink Sheet), than cốc (trung bình, FPTS/
+   VCBS/Argus), HRC (thấp hơn, chỉ đúng xu hướng — Mysteel/SteelBenchmarker/giá XK HPG).
+3. **Giá năm** = Excel formula `MEDIAN()` của 4 quý trong năm đó (không phải trung bình cộng — median bền
+   hơn với outlier).
+4. **Cột "Spread quý" riêng** (cột E trong sheet 17) — công thức SỐNG cho từng quý, không phải số Python
+   tính sẵn, để user bấm vào ô kiểm chứng trực tiếp.
+5. **Giá hiện tại — fetch tự động khi chạy script**, dùng `subprocess` gọi `curl` (KHÔNG dùng thư viện
+   `requests`):
+   ```python
+   def fetch_via_curl(url, timeout=10):
+       r = subprocess.run(["curl", "-sL", "-A", UA, "--max-time", str(timeout), url],
+                           capture_output=True, text=True, encoding="utf-8", errors="ignore")
+       return r.stdout if r.returncode == 0 else ""
+   ```
+   **Lý do bắt buộc dùng `curl` thay vì `requests`:** investing.com chặn vân tay TLS (JA3/ClientHello) của
+   thư viện `requests`/`urllib3` bằng Cloudflare (trả 403 "Attention Required"), nhưng KHÔNG chặn `curl` dù
+   User-Agent giống hệt — đã verify nhiều lần, không phải do rate-limit. `curl` có sẵn mặc định trên
+   Windows 10+/macOS/Linux nên không cần cài thêm gì.
+   - Parse giá: regex `data-test="instrument-price-last"[^>]*>([\d,\.]+)<` trên HTML server-rendered.
+   - Parse đơn vị tiền tệ: regex `currency-in-label"[^>]*>.*?<span[^>]*>([A-Z]{3})</span>` — nếu CNY thì
+     quy đổi USD qua hằng số tỷ giá riêng (VD: than cốc niêm yết trên sàn Đại Liên bằng CNY).
+   - **Luôn có try/except fallback về giá quý gần nhất** nếu fetch lỗi (mất mạng, site đổi cấu trúc HTML) —
+     script KHÔNG BAO GIỜ được dừng vì lỗi fetch, giống pattern `fetch_rf_vietnam()` đã có sẵn trong
+     `template_banking.py`.
+6. **"Spread hiện tại"** = TB(giá đầu quý gần nhất đã biết, giá hiện tại fetch live) cho cả 3 mặt hàng, rồi
+   áp công thức spread chuẩn — KHÔNG dùng giá dự phóng cả năm để tính "spread hiện tại" (lỗi từng gặp).
+7. **Ghi rõ nguồn URL trong chính sheet Excel** (không chỉ trong skill/code comment) để user tự đối chiếu
+   khi nghi ngờ số liệu — mục "NGUỒN DỮ LIỆU" ở cuối sheet 17, liệt kê từng mặt hàng + URL cụ thể.
+
+**URLs đã verify hoạt động qua `curl` (2026-07):**
+- HRC: `https://www.investing.com/commodities/lme-steel-hrc-fob-china-futures`
+- Quặng sắt 62% Fe CFR: `https://vn.investing.com/commodities/iron-ore-62-cfr-futures`
+- Than cốc luyện kim (niêm yết CNY, sàn Đại Liên): `https://vn.investing.com/commodities/metallurgical-coke-futures`
+- Nguồn thay thế cho quặng sắt (miễn phí, không cần key, nhưng URL có hash đổi mỗi lần cập nhật — phải
+  discover qua trang tĩnh `worldbank.org/en/research/commodity-markets` trước khi tải): World Bank
+  Commodity Markets "Pink Sheet" (`CMO-Historical-Data-Monthly.xlsx`) — có "Iron ore, cfr spot" nhưng
+  KHÔNG có than cốc luyện kim/HRC, nên vẫn cần investing.com cho 2 mặt hàng đó.
+
+**Chưa làm (đề xuất cho lần sau nếu user muốn chính xác hơn):** log file lưu mỗi lần fetch kèm ngày, để
+"giá quý hiện tại" dần trở thành median THẬT của nhiều lần chạy script trong quý (thay vì 1 điểm dữ liệu
+duy nhất) — chỉ có giá trị cho quý đang chạy trở về sau, không backfill được lịch sử.
+
+---
+
+## Dữ liệu & Nguồn (khác — sản lượng, vĩ mô)
 
 **Đầu ra & Ngành**:
-- Giá HRC/Rebar: SHFE (Sàn Thượng Hải) trên Trading Economics
+- Giá HRC/Rebar: SHFE (Sàn Thượng Hải) trên Trading Economics — dùng để đối chiếu chéo, nguồn fetch chính là investing.com (xem mục trên)
 - Hiệp hội Thép VN (VSA): sản lượng, bán hàng, tồn kho nội địa
 - Tổng cục Thống kê (GSO): GDP, FDI, giải ngân đầu tư công (kế hoạch trung hạn 2026-2030)
 - Tổng cục Hải quan: XNK sắt thép hàng tháng
@@ -140,8 +205,9 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 | Hợp kim | Cơ bản | Cao hơn, yêu cầu độ tinh khiết cao |
 
 **Công thức giá vốn chuẩn**:
-- Thép xây dựng: 1.6×Quặng + 0.6×Than + CP chuyển đổi + CP cán
-- HRC: 1.6×Quặng + 0.6×Than + CP chuyển đổi + CP cán nóng (cao hơn)
+- Thép xây dựng: 1.6×Quặng + 0.6×Than + Chi phí SX khác cố định (`OTHER_COST_USD`)
+- HRC: 1.6×Quặng + 0.6×Than + Chi phí SX khác cố định (`OTHER_COST_USD`) — model hiện dùng CHUNG một hằng số
+  cho cả 2 loại thép (đơn giản hoá theo yêu cầu user), dù về lý thuyết CP cán nóng HRC có thể cao hơn
 
 **Kiểm chứng từ BCTC**: Vào Thuyết minh → "Chi phí SXKD theo yếu tố" → chia cho sản lượng → ra chi phí/tấn thực tế → so với công thức chuẩn.
 
@@ -206,8 +272,11 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
     4. BLNG các quý còn lại = BLNG quý gần nhất × tỉ lệ Spread
     5. LNG 2026 = LNG lũy kế + Doanh thu ước tính các quý còn lại × BLNG các quý còn lại
     6. BLNG 2026 = LNG 2026 / Tổng doanh thu 2026
-  - Spread = Giá HRC - (1.6 × Giá quặng + 0.5 × Giá than cốc + Chi phí chuyển đổi)
+  - Spread = Giá HRC - 1.6×Giá quặng - 0.6×Giá than cốc - Chi phí SX khác CỐ ĐỊNH (`OTHER_COST_USD`, USD/tấn)
   - **Quan trọng:** Không hardcode BLNG dự phóng (VD: 17.5%), phải tính từ số thực tế
+  - **Excel formula sống:** cả Spread quý gần nhất VÀ Spread hàng năm (mẫu số + tử số của tỉ lệ ở bước 3)
+    phải là công thức Excel tham chiếu tới sheet `17_Gia_Hang_Hoa` (KHÔNG phải Python tính sẵn rồi ghi số
+    vào ô) — để user bấm vào từng ô kiểm chứng độc lập cách tính BLNG dự phóng.
 
 ---
 

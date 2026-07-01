@@ -5,7 +5,10 @@ Q2 2026 | Framework FA 6 tầng + Skill Thép
 """
 
 import os
+import re
+import json
 import math
+import subprocess
 from datetime import datetime, date
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side, numbers
@@ -111,43 +114,160 @@ da_hist       = [get_yr(cf_recs, y, "cfa2") for y in years_hist]
 capex_hist    = [abs(get_yr(cf_recs, y, "cfa19")) for y in years_hist]  # displayed as positive amount
 begin_cash_hist = [get_yr(cf_recs, y, "cfa36") for y in years_hist]
 
-# Spread assumptions (shared between build_excel and make_charts)
-HRC_PRICE_A = [680, 580, 560, 580, 560, 620, 600, 580]     # 2021..2028
-IRON_ORE_A  = [160, 120, 110, 105, 100, 105, 100,  95]     # USD/t
-COKE_A      = [400, 350, 280, 240, 230, 240, 220, 200]     # USD/t
-CONV_A      = [170, 175, 180, 185, 190, 200, 200, 200]     # USD/t
-SPREAD_A    = [HRC_PRICE_A[i] - 1.6*IRON_ORE_A[i] - 0.5*COKE_A[i] - CONV_A[i] for i in range(8)]
+# ── GIÁ HÀNG HÓA (HRC / Quặng sắt / Than cốc) — nguồn duy nhất, sheet 17_Gia_Hang_Hoa ──────
+# 1. Lịch sử 18 quý (2021Q4-2026Q1): tổng hợp từ World Bank Pink Sheet (quặng sắt — độ tin cậy
+#    cao, đối chiếu khớp số liệu công bố), báo cáo FPTS/VCBS/Argus (than cốc — có điểm neo thật,
+#    phần giữa nội suy), và Mysteel/SteelBenchmarker/HPG export price (HRC — chỉ đúng xu
+#    hướng/độ lớn, một số quý là ước lượng — xem README_COMMODITY.md nếu cần verify lại).
+# 2. "Giá hiện tại" (current spot) — TỰ ĐỘNG fetch mỗi lần chạy script từ investing.com (không
+#    cần AI/thao tác thủ công): HRC FOB China, Quặng sắt 62% CFR, Than cốc luyện kim (DCE, CNY
+#    → quy đổi USD). Nếu fetch lỗi (mất mạng, đổi cấu trúc trang...), tự động dùng giá quý gần
+#    nhất trong bảng lịch sử làm phương án dự phòng — script KHÔNG BAO GIỜ dừng vì lỗi fetch.
+Q18_LABELS = ["2021Q4","2022Q1","2022Q2","2022Q3","2022Q4","2023Q1","2023Q2","2023Q3","2023Q4",
+              "2024Q1","2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4","2026Q1"]
+Q18_HRC  = [640, 870, 720, 580, 570, 640, 615, 605, 620, 605, 600, 510, 500, 480, 470, 470, 460, 475]
+Q18_IRON = [112, 143, 138, 106,  99, 126, 112, 115, 129, 123, 113, 100, 101, 102,  96, 100, 104, 104]
+Q18_COAL = [375, 500, 480, 330, 290, 320, 245, 250, 290, 275, 250, 220, 203, 182, 184, 190, 212, 220]
+CNY_USD_RATE = 7.2  # tỷ giá quy đổi than cốc (Đại Liên, niêm yết CNY) — cập nhật định kỳ nếu lệch nhiều
 
-# Forecast (2026-2028)
-years_fc   = [2026, 2027, 2028]
-revenue_fc = [210000, 240000, 270000]
+def fetch_via_curl(url, timeout=10):
+    """Tải HTML qua curl subprocess (KHÔNG dùng thư viện requests) — investing.com chặn vân tay
+    TLS của Python requests/urllib3 (Cloudflare 403) nhưng vẫn cho phép curl. curl có sẵn mặc định
+    trên Windows 10+/macOS/Linux nên không cần cài thêm gì để chạy 100% bằng Python thuần."""
+    try:
+        r = subprocess.run(
+            ["curl", "-sL", "-A",
+             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+             "--max-time", str(timeout), url],
+            capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=timeout + 5,
+        )
+        return r.stdout if r.returncode == 0 else ""
+    except Exception:
+        return ""
 
-# GP margin 2026E = actual Q1 + spread-trend projection for remaining quarters
-_is_qs_mod = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
-def _get_q_mod(records, yr, qtr, field):
-    for r in records:
-        if r.get("yearReport") == yr and r.get("lengthReport") == qtr:
-            return (r.get(field, 0) or 0) / 1e9
+def fetch_investing_price(url, fallback):
+    """Fetch giá hiện tại (USD/tấn) từ 1 trang investing.com. Trả về fallback nếu fetch lỗi."""
+    html = fetch_via_curl(url)
+    m = re.search(r'data-test="instrument-price-last"[^>]*>([\d,\.]+)<', html)
+    if not m:
+        print(f"  [WARN] Fetch failed for {url} - fallback to last known quarterly price")
+        return fallback
+    price = float(m.group(1).replace(",", ""))
+    c = re.search(r'currency-in-label"[^>]*>.*?<span[^>]*>([A-Z]{3})</span>', html)
+    if c and c.group(1) == "CNY":
+        price = round(price / CNY_USD_RATE, 1)
+    return price
+
+print("[Commodity] Fetching current HRC/iron ore/coking coal prices from investing.com...")
+hrc_now  = fetch_investing_price("https://www.investing.com/commodities/lme-steel-hrc-fob-china-futures", Q18_HRC[-1])
+iron_now = fetch_investing_price("https://vn.investing.com/commodities/iron-ore-62-cfr-futures", Q18_IRON[-1])
+coal_now = fetch_investing_price("https://vn.investing.com/commodities/metallurgical-coke-futures", Q18_COAL[-1])
+print(f"  -> HRC={hrc_now} USD/t | Iron ore={iron_now} USD/t | Coking coal={coal_now} USD/t (converted from CNY if applicable)")
+
+def _year_median(vals_by_year, yr):
+    vs = vals_by_year.get(yr, [])
+    return round(stats.median(vs), 1) if vs else None
+
+_yr_of_q = [int(q[:4]) for q in Q18_LABELS]
+def _group_by_year(vals):
+    d = {}
+    for yr, v in zip(_yr_of_q, vals):
+        d.setdefault(yr, []).append(v)
+    return d
+
+# Giá năm lịch sử (2021-2025) = MEDIAN các quý thuộc năm đó trong bảng 18 quý (2021 chỉ có Q4,
+# 2026 chỉ có Q1 — dùng luôn giá quý đó vì median của 1 giá trị = chính nó).
+_hrc_by_yr, _iron_by_yr, _coal_by_yr = _group_by_year(Q18_HRC), _group_by_year(Q18_IRON), _group_by_year(Q18_COAL)
+years_fc    = [2026, 2027, 2028]
+SL_HRC_A    = [2.0, 2.2, 2.5, 2.8, 3.2, 6.0, 6.8, 7.5]      # Sản lượng HRC (triệu tấn), 2021..2028
+SL_XD_A     = [2.8, 2.6, 2.3, 2.5, 2.8, 3.0, 3.2, 3.5]      # Sản lượng thép XD (triệu tấn)
+XD_PRICE_A  = [720, 580, 520, 550, 590, 610, 620, 630]      # Giá thép XD bq (USD/tấn) — chưa có nguồn fetch tự động, giữ giả định
+FX_RATE     = 25400  # VND/USD
+
+# 2026 = median(Q1/2026 đã biết); 2027-2028 = tiếp nối xu hướng giá hiện tại (giả định thận
+# trọng, không có công thức nội tại vì là giá hàng hóa tương lai — xem ghi chú ở 02_Assumptions).
+HRC_PRICE_A = [_year_median(_hrc_by_yr, y) for y in [2021,2022,2023,2024,2025]] + [
+    round((_year_median(_hrc_by_yr, 2026) + hrc_now) / 2, 1), None, None]
+IRON_ORE_A = [_year_median(_iron_by_yr, y) for y in [2021,2022,2023,2024,2025]] + [
+    round((_year_median(_iron_by_yr, 2026) + iron_now) / 2, 1), None, None]
+COKE_A = [_year_median(_coal_by_yr, y) for y in [2021,2022,2023,2024,2025]] + [
+    round((_year_median(_coal_by_yr, 2026) + coal_now) / 2, 1), None, None]
+HRC_PRICE_A[6] = round(HRC_PRICE_A[5] * 1.02, 1); HRC_PRICE_A[7] = round(HRC_PRICE_A[6] * 1.015, 1)
+IRON_ORE_A[6]  = round(IRON_ORE_A[5] * 1.03, 1);  IRON_ORE_A[7]  = round(IRON_ORE_A[6] * 1.02, 1)
+COKE_A[6]      = round(COKE_A[5] * 1.02, 1);      COKE_A[7]      = round(COKE_A[6] * 1.02, 1)
+
+# CÔNG THỨC SPREAD CHUẨN (áp dụng thống nhất mọi sheet: Profit Bridge 03_Revenue_Model,
+# 14_Steel_Analysis, các biểu đồ spread) — Giá - 1.6xQuặng - 0.6xThan - OTHER_COST_USD (chi phí SX
+# khác CỐ ĐỊNH, gồm nhân công/nhiên liệu/điện/khấu hao/CPQL, thay cho mảng CONV_A biến đổi cũ).
+OTHER_COST_USD = 100  # USD/tấn — cố định theo yêu cầu, không còn dùng mảng CONV_A biến đổi theo năm
+BASE_COST_A = [IRON_ORE_A[i]*1.6 + COKE_A[i]*0.6 + OTHER_COST_USD for i in range(8)]
+SPREAD_A    = [HRC_PRICE_A[i] - BASE_COST_A[i] for i in range(8)]  # spread HRC
+
+# Spread HIỆN TẠI = giá TB(đầu quý Q1/2026, giá hiện tại fetch live) cho cả 3 mặt hàng — theo
+# đúng yêu cầu: không lấy Spread suông làm biên lợi nhuận, spread hiện tại phản ánh cả điểm neo
+# đầu quý gần nhất VÀ diễn biến giá tới hiện tại.
+_hrc_avg_now  = (Q18_HRC[-1] + hrc_now) / 2
+_iron_avg_now = (Q18_IRON[-1] + iron_now) / 2
+_coal_avg_now = (Q18_COAL[-1] + coal_now) / 2
+SPREAD_NOW = _hrc_avg_now - (1.6*_iron_avg_now + 0.6*_coal_avg_now + OTHER_COST_USD)
+
+# Doanh thu HRC/XD bottom-up (tỷ VND) = Sản lượng(triệu tấn) x Giá(USD/tấn) x FX / 1000
+hrc_rev_all = [SL_HRC_A[i] * HRC_PRICE_A[i] * FX_RATE / 1000 for i in range(8)]
+xd_rev_all  = [SL_XD_A[i] * XD_PRICE_A[i] * FX_RATE / 1000 for i in range(8)]
+
+# Doanh thu khác (ống thép, tôn mạ, container, KCN, phôi billet) = phần dư lịch sử; dự phóng
+# tăng 12%/năm — thận trọng hơn tốc độ tăng sản lượng HRC (DQ2 chủ yếu bổ sung công suất HRC,
+# không tác động trực tiếp các mảng phụ trợ này).
+OTHER_REV_GROWTH = 0.12
+other_rev_all = [revenue_hist[i] - hrc_rev_all[i] - xd_rev_all[i] for i in range(5)]
+for i in range(5, 8):
+    other_rev_all.append(other_rev_all[-1] * (1 + OTHER_REV_GROWTH))
+
+revenue_fc = [round(hrc_rev_all[i] + xd_rev_all[i] + other_rev_all[i]) for i in range(5, 8)]
+
+# ── Biên LNG dự phóng: KHÔNG tính trực tiếp từ Spread (Spread chỉ phản ánh XU HƯỚNG chi phí/giá,
+# không phải là biên lợi nhuận thực tế — bỏ qua khấu hao/tồn kho/mix sản phẩm/chi phí khác ngoài
+# spread). Quay lại cách cũ: lấy Biên LNG THỰC TẾ của quý gần nhất đã công bố (Q1/2026) làm mốc,
+# rồi NỘI SUY theo tỷ lệ Spread dự phóng năm / Spread quý gần nhất — Spread chỉ dùng để đo mức độ
+# thay đổi tương đối, không dùng làm biên lợi nhuận tuyệt đối.
+def _get_q_hpg_mod(records, yr, qtr, field):
+    for rec in records:
+        if rec.get("yearReport") == yr and rec.get("lengthReport") == qtr:
+            return (rec.get(field, 0) or 0) / 1e9
     return 0
 
-q1_rev = _get_q_mod(_is_qs_mod, 2026, 1, 'isa3')
-q1_gp  = _get_q_mod(_is_qs_mod, 2026, 1, 'isa5')
+_is_qs_mod = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
+q1_rev = _get_q_hpg_mod(_is_qs_mod, 2026, 1, 'isa3')
+q1_gp  = _get_q_hpg_mod(_is_qs_mod, 2026, 1, 'isa5')
 q1_gpm = q1_gp / q1_rev if q1_rev else 0
+q1_spread = SPREAD_A[5]  # xấp xỉ bằng spread dự phóng bình quân năm 2026 (chưa có ASP thực tế theo quý)
 
-# spread ratio = current annual spread / most recent actual quarter spread
-spr_cur  = SPREAD_A[5]; spr_recent = SPREAD_A[5]  # both 2026 annual avg
-spr_ratio = spr_cur / spr_recent if spr_recent else 1.0
+def _gpm_from_spread_ratio(base_gpm, spread_cur, spread_base):
+    return round(base_gpm * (spread_cur / spread_base), 1) if spread_base else round(base_gpm, 1)
 
-remaining_rev = revenue_fc[0] - q1_rev
-gp_2026  = q1_gp + remaining_rev * q1_gpm * spr_ratio
-gpm_2026 = round(gp_2026 / revenue_fc[0] * 100, 1)
-
-# 2027-2028: apply same spread-trend method
-gpm_2027 = round(gpm_2026 * (SPREAD_A[6]/SPREAD_A[5]), 1) if SPREAD_A[5] else round(gpm_2026 * 1.02, 1)
-gpm_2028 = round(gpm_2027 * (SPREAD_A[7]/SPREAD_A[6]), 1) if SPREAD_A[6] else round(gpm_2027 * 1.02, 1)
+gpm_2026 = _gpm_from_spread_ratio(q1_gpm * 100, SPREAD_A[5], q1_spread)   # tỷ lệ = 1 (neo đúng Q1 thực tế)
+gpm_2027 = _gpm_from_spread_ratio(gpm_2026, SPREAD_A[6], SPREAD_A[5])
+gpm_2028 = _gpm_from_spread_ratio(gpm_2027, SPREAD_A[7], SPREAD_A[6])
 gp_margin_fc = [gpm_2026, gpm_2027, gpm_2028]
 
-ni_fc      = [22000, 28000, 34000]
+# EBIT/EBT/NI dự phóng = GP(= Rev x Biên LNG nội suy) - SGKA (Rev x tỷ lệ CP BH&QLDN/DT) rồi +
+# DTTC - CPTC - Thuế, khớp đúng chuỗi công thức 04_PnL (Rev -> COGS -> GP -> SGKA -> EBIT -> EBT
+# -> Thuế -> NI).
+SGKA_RATE_FC  = 0.035   # Tỷ lệ CP BH&QLDN/DT dự phóng (2026-2028), khớp 02_Assumptions dòng 15
+FIN_INCOME_FC = [2500, 2800, 3000]   # Doanh thu TC dự phóng (tỷ) — khớp 02_Assumptions/04_PnL
+FIN_COST_FC   = [3800, 4000, 4200]   # Chi phí TC dự phóng (tỷ) — khớp 02_Assumptions/04_PnL
+TAX_RATE_FC   = [0.12, 0.12, 0.12]   # Thuế TNDN dự phóng — khớp 02_Assumptions dòng 8
+gp_fc   = [revenue_fc[i] * gp_margin_fc[i] / 100 for i in range(3)]
+ebit_fc = [gp_fc[i] - revenue_fc[i]*SGKA_RATE_FC for i in range(3)]
+ebt_fc  = [ebit_fc[i] + FIN_INCOME_FC[i] - FIN_COST_FC[i] for i in range(3)]
+ni_fc   = [round(ebt_fc[i] * (1 - TAX_RATE_FC[i])) for i in range(3)]
+
+# "Tăng trưởng DT (%)" và "EBIT Margin (%)" dự phóng — tính ra từ revenue_fc/ebit_fc bottom-up
+# ở trên (thay vì số gõ tay độc lập), để 02_Assumptions luôn khớp đúng với 03_Revenue_Model/04_PnL.
+revenue_prev_fc = [revenue_hist[-1]] + revenue_fc[:-1]
+revenue_growth_fc = [round((revenue_fc[i]/revenue_prev_fc[i]-1)*100, 1) for i in range(3)]
+ebit_margin_fc = [round(ebit_fc[i]/revenue_fc[i]*100, 1) for i in range(3)]
+
 da_fc      = [7000,  8000,   9000]
 capex_fc   = [15000, 18000,  20000]
 
@@ -171,6 +291,16 @@ shares_hist = [shares_from_charter(bs_recs, y) for y in years_hist]
 shares_fc   = [8445, 8445, 8445]
 shares_all  = shares_hist + shares_fc
 print(f"[SHARES] Hist: {shares_hist} | Fc: {shares_fc}")
+
+# VCSH dự phóng = roll-forward VCSH năm trước + NI - Cổ tức tiền mặt đã trả (thay vì số gõ tay
+# độc lập trước đây, không khớp với NI thực tế tính từ P&L bottom-up ở trên).
+DIV_PER_SHARE_FC = [0, 800, 1200]  # VND/CP — khớp dòng "Cổ tức" trong 02_Assumptions
+equity_fc_val = []
+prev_equity = equity_hist[-1]
+for i in range(3):
+    dividend_paid = DIV_PER_SHARE_FC[i] * shares_fc[i] / 1000  # VND/CP * triệu CP / 1000 = tỷ VND
+    prev_equity = prev_equity + ni_fc[i] - dividend_paid
+    equity_fc_val.append(round(prev_equity))
 
 # Leading indicators
 leading_indicators = [
@@ -422,27 +552,28 @@ def build_excel():
     assumptions = [
         ("Giá HPG (VND)", 23600, 23600, 23600, 23600, 23600, 23600, 23600, 23600, "Giá 24/06/2026. Broker targets: SSI 36k, VND 37k, SHS 38k, VCBS 38k, BVSC 38.65k"),
         ("Số CP lưu hành (triệu)", shares_all[0], shares_all[1], shares_all[2], shares_all[3], shares_all[4], shares_all[5], shares_all[6], shares_all[7], "Vốn điều lệ từng năm / 10,000. Post-split 1.1:1 T05/2026"),
-        ("Doanh thu (tỷ)", 149680, 141410, 118950, 138860, 156120, 210000, 240000, 270000, "2026: Kế hoạch ĐHĐCĐ"),
-        ("Tăng trưởng DT (%)", 48.0, -5.5, -15.9, 16.7, 12.4, 34.5, 14.3, 12.5, "DQ2 full + giá HRC hồi phục. CFO target 2026: ~15M tấn (+40%)"),
-        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, gp_margin_fc[0], gp_margin_fc[1], gp_margin_fc[2], "2026E: Excel formula = Q1_GPM × (Spread_2026 / Q1_Spread) | 2027-28E: carry-forward spread ratio"),
-        ("EBIT Margin (%)", 24.1, 7.8, 6.5, 9.3, 11.84, 14.3, 15.8, 16.7, ""),
+        ("Doanh thu (tỷ)", 149680, 141410, 118950, 138860, 156120, revenue_fc[0], revenue_fc[1], revenue_fc[2], "Bottom-up = SL HRC/XD x Giá x FX + Doanh thu khác (Sheet 03_Revenue_Model)"),
+        ("Tăng trưởng DT (%)", 48.0, -5.5, -15.9, 16.7, 12.4, revenue_growth_fc[0], revenue_growth_fc[1], revenue_growth_fc[2], "= Doanh thu(t) / Doanh thu(t-1) - 1, tính từ Doanh thu bottom-up"),
+        ("Biên LNG (%)", 27.46, 11.85, 10.88, 13.32, 15.69, gp_margin_fc[0], gp_margin_fc[1], gp_margin_fc[2], "Bottom-up từ Spread (Giá - Quặng*1.6 - Than*0.5 - CP khác) x Sản lượng — khớp Profit Bridge 03_Revenue_Model"),
+        ("EBIT Margin (%)", 24.1, 7.8, 6.5, 9.3, 11.84, ebit_margin_fc[0], ebit_margin_fc[1], ebit_margin_fc[2], "= EBIT / Doanh thu, EBIT = LN gộp - CP BH&QLDN (khớp 04_PnL)"),
         ("Thuế TNDN (%)", 4.0, 13.5, 10.5, 4.0, 12.5, 12.0, 12.0, 12.0, "HPG ưu đãi Dung Quất"),
         ("D&A (tỷ)", 3000, 3500, 4000, 4800, 5500, 7000, 8000, 9000, "DQ2 full năm"),
         ("CAPEX (tỷ)", 12000, 15000, 18000, 22000, 25000, 15000, 18000, 20000, "DQ3-4 nghiên cứu"),
         ("Nợ vay (tỷ)", 45000, 55000, 65000, 72000, 80000, 78000, 75000, 72000, "Q1/2026: 90,6k giảm 2k; giảm dần"),
         ("Tiền mặt (tỷ)", 12000, 15000, 13000, 16000, 20000, 25000, 30000, 35000, ""),
-        ("VCSH (tỷ)", 75000, 90000, 105000, 115000, 130000, 148000, 170000, 195000, ""),
+        ("VCSH (tỷ)", 75000, 90000, 105000, 115000, 130000, equity_fc_val[0], equity_fc_val[1], equity_fc_val[2], "Roll-forward: VCSH(t-1) + NI(t) - Cổ tức tiền mặt(t)"),
         ("Cổ tức (VND/CP)", 0, 0, 0, 0, 0, 0, 800, 1200, "2026: 15% (10% CP + 5% TM)"),
         ("Tỷ lệ CP BH&QLDN/DT (%)", 3.4, 4.0, 4.3, 4.0, 3.8, 3.5, 3.5, 3.5, "Giảm nhờ DQ2 biên lớn"),
         ("P/B mục tiêu (x)", 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6, 1.6, "HPG lịch sử median 1.61x (TTM 2018-2026)"),
         ("EV/EBITDA mục tiêu (x)", 6.5, 6.5, 6.5, 6.5, 6.5, 9.0, 9.0, 8.5, "HPG lịch sử median 8.95x (TTM 2018-2026)"),
         ("P/E mục tiêu (x)", 10.0, 10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 11.0, "Tham khảo - HPG median 11.1x (TTM)"),
-        # Spread-based GP margin drivers (rows 19+)
-        ("Quặng sắt 62% Fe (USD/t)", 140, 110, 105, 110, 108, 105, 110, 115, "Giá CFR Trung Quốc"),
-        ("Than cốc luyện kim (USD/t)", 280, 240, 220, 230, 250, 240, 250, 260, "FOB Úc"),
-        ("Chi phí SX ngoài NVL (USD/t)", 140, 150, 160, 170, 180, 200, 210, 220, "LN + NL + điện + KH + CP QL"),
-        ("Doanh thu TC (tỷ)", 1500, 2100, 1800, 1950, 2200, 2500, 2800, 3000, ""),
-        ("Chi phí TC (tỷ)", 1800, 3500, 2100, 2500, 3200, 3800, 4000, 4200, ""),
+        # Spread-based GP margin drivers (rows 19+) — dùng chung IRON_ORE_A/COKE_A với Profit Bridge
+        # (03_Revenue_Model), 14_Steel_Analysis và gp_margin_fc/ebit_fc (Python), tránh lệch nhau.
+        ("Quặng sắt 62% Fe (USD/t)", *IRON_ORE_A, "Giá CFR Trung Quốc"),
+        ("Than cốc luyện kim (USD/t)", *COKE_A, "FOB Úc"),
+        ("Chi phí SX khác (USD/t)", *([OTHER_COST_USD]*8), "Cố định — gồm nhân công, nhiên liệu, điện, khấu hao, CPQL"),
+        ("Doanh thu TC (tỷ)", 1500, 2100, 1800, 1950, 2200, *FIN_INCOME_FC, ""),
+        ("Chi phí TC (tỷ)", 1800, 3500, 2100, 2500, 3200, *FIN_COST_FC, ""),
         ("Thu nhập khác (tỷ)", 0, 0, 0, 0, 0, 0, 0, 0, "Q1/2026: ~4,915 tỷ từ Phố Nối"),
     ]
     # Map rows in Assumptions
@@ -471,6 +602,19 @@ def build_excel():
         ws2.cell(row=i, column=10, value=row[-1]).font = data_font
         ws2.cell(row=i, column=10).border = thin_border
         ws2.cell(row=i, column=10).fill = assump_fill
+
+    # Doanh thu (row4), Tăng trưởng DT (row5), D&A (row9), VCSH (row13) dự phóng — CÔNG THỨC SỐNG
+    # (không còn số Python tính sẵn) để bấm vào ô là thấy ngay cách tính, kiểm soát/điều chỉnh được.
+    for idx, col in enumerate(['G', 'H', 'I']):
+        prev_col = 'F' if idx == 0 else ['G', 'H'][idx - 1]
+        # Doanh thu = tổng bottom-up từ 03_Revenue_Model (Sản lượng HRC/XD x Giá x FX + Doanh thu khác)
+        ws2.cell(row=4, column=7 + idx, value=f"={S_R3}!{col}2").number_format = '#,##0'
+        # Tăng trưởng DT = Doanh thu(t)/Doanh thu(t-1) - 1
+        ws2.cell(row=5, column=7 + idx, value=f"=({col}4/{prev_col}4-1)*100").number_format = '0.0'
+        # D&A = D&A(t-1) x (1 + Tăng trưởng DT(t)) — tăng theo quy mô doanh thu/tài sản
+        ws2.cell(row=9, column=7 + idx, value=f"={prev_col}9*(1+{col}5/100)").number_format = '#,##0'
+        # VCSH = VCSH(t-1) + LNST(t) [04_PnL!row13] - Cổ tức tiền mặt(t) x Số CP(t) / 1000
+        ws2.cell(row=13, column=7 + idx, value=f"={prev_col}13+'04_PnL'!{col}13-{col}14*{col}3/1000").number_format = '#,##0'
 
     # ─── Bước 1+2: Chuỗi quý đầy đủ (2018-2026) với P/E điều chỉnh ───
     # Nếu LNST lỗ → P/E quý đó lấy theo quý gần nhất (tránh nhiễu)
@@ -622,7 +766,15 @@ def build_excel():
         return j >= 7
 
     R3_NAME = "'03_Revenue_Model'"
-    # ── Q1/2026 reference data (for GP margin formula below, rows 40+) ──
+    # ── Q1/2026 reference data (đối chiếu thực tế Q1 vs Biên LNG dự phóng bottom-up, rows 40+) ──
+    def _get_q_hpg(records, yr, qtr, field):
+        for rec in records:
+            if rec.get("yearReport") == yr and rec.get("lengthReport") == qtr:
+                return (rec.get(field, 0) or 0) / 1e9
+        return 0
+    _is_qs_ref = section_to_quarters(FIN_DATA, "INCOME_STATEMENT")
+    q1_rev = _get_q_hpg(_is_qs_ref, 2026, 1, 'isa3')
+    q1_gp  = _get_q_hpg(_is_qs_ref, 2026, 1, 'isa5')
     R_Q1_REV = 40; R_Q1_GP = 41; R_Q1_GPM = 42; R_Q1_SPR = 43
     for rn in (R_Q1_REV, R_Q1_GP, R_Q1_GPM, R_Q1_SPR):
         ws2.cell(row=rn, column=1).font = Font(name=FONT_NAME, bold=True, size=9, color="1F4E79")
@@ -637,7 +789,7 @@ def build_excel():
     ws2.cell(row=R_Q1_GPM, column=7, value=f"=G{R_Q1_GP}/G{R_Q1_REV}*100").number_format = '0.00'
     ws2.cell(row=R_Q1_GPM, column=7).font = data_font
     ws2.cell(row=R_Q1_SPR, column=1, value="Q1/2026 Spread (USD/t)")
-    ws2.cell(row=R_Q1_SPR, column=7, value=f"={S_R3}!G6-1.6*G19-0.5*G20-G21").number_format = '#,##0'
+    ws2.cell(row=R_Q1_SPR, column=7, value=f"={S_R3}!G6-1.6*G19-0.6*G20-G21").number_format = '#,##0'
     ws2.cell(row=R_Q1_SPR, column=7).font = data_font
 
     # ── Annual spread (USD/t) for all years ──
@@ -647,21 +799,18 @@ def build_excel():
     for j in range(2, 10):
         cl = col_ltr(j)
         c = ws2.cell(row=R_ANN_SPR, column=j)
-        c.value = f"={S_R3}!{cl}6-1.6*{cl}19-0.5*{cl}20-{cl}21"
+        c.value = f"={S_R3}!{cl}6-1.6*{cl}19-0.6*{cl}20-{cl}21"
         c.number_format = '#,##0'
         c.font = data_font
         c.border = thin_border
 
-    # GP margin forecast cells: formula = Q1_GPM * (annual_spread / Q1_spread)
-    for j in range(7, 10):
-        gpm_cell = ws2.cell(row=6, column=j)
-        cl = col_ltr(j)
-        if j == 7:
-            gpm_cell.value = f"=G{R_Q1_GPM}*({cl}{R_ANN_SPR}/G{R_Q1_SPR})"
-        else:
-            gpm_cell.value = f"={col_ltr(j-1)}6*({cl}{R_ANN_SPR}/{col_ltr(j-1)}{R_ANN_SPR})"
-        gpm_cell.number_format = '0.00'
-        gpm_cell.font = Font(name=FONT_NAME, color="006600", size=10)
+    # Biên LNG dự phóng (row 6, cột G/H/I) = CÔNG THỨC SỐNG, neo vào Biên LNG THỰC TẾ quý gần nhất
+    # (G42, Q1/2026) rồi nội suy theo tỷ lệ Spread dự phóng/Spread quý gần nhất — Spread chỉ dùng để
+    # đo mức thay đổi TƯƠNG ĐỐI, không dùng trực tiếp làm biên lợi nhuận (theo yêu cầu: Spread chỉ
+    # phản ánh xu hướng, không phải bản thân biên lợi nhuận).
+    ws2.cell(row=6, column=7, value=f"=G{R_Q1_GPM}*(G{R_ANN_SPR}/G{R_Q1_SPR})").number_format = '0.0'
+    ws2.cell(row=6, column=8, value=f"=G6*(H{R_ANN_SPR}/G{R_ANN_SPR})").number_format = '0.0'
+    ws2.cell(row=6, column=9, value=f"=H6*(I{R_ANN_SPR}/H{R_ANN_SPR})").number_format = '0.0'
 
     ws3 = wb.create_sheet("03_Revenue_Model")
     headers3 = ["Chỉ tiêu", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"]
@@ -676,13 +825,13 @@ def build_excel():
     rev_rows = [
         ("Doanh thu (tỷ)", all_rev, "Tăng trưởng mạnh 2026 nhờ DQ2 full công suất"),
         ("YoY Growth (%)", None, ""),
-        ("Sản lượng HRC (triệu tấn)", [2.0, 2.2, 2.5, 2.8, 3.2, 6.0, 6.8, 7.5], ""),
-        ("Sản lượng thép XD (triệu tấn)", [2.8, 2.6, 2.3, 2.5, 2.8, 3.0, 3.2, 3.5], "FY2025 XD: 4.85M tấn (VietnamBiz). HPG total 2026 target ~15M tấn (CFO)"),
-        ("Giá HRC bq (USD/tấn)", [680, 550, 480, 520, 580, 620, 640, 650], "SHFE Q3/2026 ~580 + premium VN ~40. AD 27.83% hỗ trợ giá nội địa"),
-        ("Giá thép XD bq (USD/tấn)", [720, 580, 520, 550, 590, 610, 620, 630], ""),
+        ("Sản lượng HRC (triệu tấn)", SL_HRC_A, ""),
+        ("Sản lượng thép XD (triệu tấn)", SL_XD_A, "FY2025 XD: 4.85M tấn (VietnamBiz). HPG total 2026 target ~15M tấn (CFO)"),
+        ("Giá HRC bq (USD/tấn)", HRC_PRICE_A, "SHFE Q3/2026 ~580 + premium VN ~40. AD 27.83% hỗ trợ giá nội địa"),
+        ("Giá thép XD bq (USD/tấn)", XD_PRICE_A, ""),
         ("Doanh thu HRC (tỷ)", None, ""),
         ("Doanh thu thép XD (tỷ)", None, ""),
-        ("Doanh thu khác (tỷ)", None, "Ống thép, tôn mạ, container, KCN, phôi billet"),
+        ("Doanh thu khác (tỷ)", None, f"Ống thép, tôn mạ, container, KCN, phôi billet. Dự phóng tăng {OTHER_REV_GROWTH*100:.0f}%/năm"),
     ]
 
     for i, (name, vals, note) in enumerate(rev_rows, 2):
@@ -746,11 +895,13 @@ def build_excel():
         ws3.cell(row=8, column=j).value = f"={cl}4*{cl}6*25400/1000"
         # XD rev = SL_XD(triệu tấn) * Giá_XD * 25400 / 1000 = tỷ VND
         ws3.cell(row=9, column=j).value = f"={cl}5*{cl}7*25400/1000"
-        # Doanh thu khác (row 10): historical = residual, forecast = prev*(1+growth)
+        # Doanh thu khác (row 10): historical = residual, forecast = prev*(1+OTHER_REV_GROWTH)
+        # Dùng hằng số cố định (không phải Assumptions!row5 "Tăng trưởng DT") vì row5 giờ là
+        # KẾT QUẢ tính từ Doanh thu tổng (row2) — tránh vòng lặp tham chiếu circular.
         if not is_fc(j):
             ws3.cell(row=10, column=j).value = f"={cl}2-{cl}8-{cl}9"
         else:
-            ws3.cell(row=10, column=j).value = f"={col_ltr(j-1)}10*(1+{S_ASSUMP}!{cl}5/100)"
+            ws3.cell(row=10, column=j).value = f"={col_ltr(j-1)}10*(1+{OTHER_REV_GROWTH})"
         ws3.cell(row=10, column=j).border = thin_border
         ws3.cell(row=10, column=j).alignment = Alignment(horizontal='center')
         ws3.cell(row=10, column=j).font = data_font
@@ -792,10 +943,11 @@ def build_excel():
     ws3.cell(row=pb_section, column=1).border = thin_border
     R_PB_COST = 21; R_PB_SP_HRC = 22; R_PB_SP_XD = 23; R_PB_GP_STEEL = 24; R_PB_GP_OTHER = 25
     R_PB_GP = 26; R_PB_GPM = 27; R_PB_SGKA = 28; R_PB_EBIT = 29
-    # Base formula templates (using B col) — each mapped per-column below
-    base_cost   = f"={S_ASSUMP}!$B$19*1.6+{S_ASSUMP}!$B$20*0.5+{S_ASSUMP}!$B$21"
     for j in range(2, 10):
         cl = col_ltr(j)
+        # Tổng CF SX/tấn phải dùng giá quặng/than/CP khác của ĐÚNG NĂM đó (cột hiện tại), không
+        # phải cố định $B$19 (2021A) cho mọi năm như trước — bug khiến chi phí SX không đổi qua các năm.
+        base_cost = f"={S_ASSUMP}!{cl}19*1.6+{S_ASSUMP}!{cl}20*0.6+{S_ASSUMP}!{cl}21"
         c21 = ws3.cell(row=R_PB_COST, column=j); c21.value = base_cost; c21.number_format = '#,##0'
         c21.font = pb_data_font; c21.border = thin_border; c21.alignment = Alignment(horizontal='center')
         c22 = ws3.cell(row=R_PB_SP_HRC, column=j); c22.value = f"={cl}6-{cl}{R_PB_COST}"; c22.number_format = '#,##0'
@@ -821,7 +973,7 @@ def build_excel():
         c29.border = thin_border; c29.alignment = Alignment(horizontal='center')
     # Label column
     labels_pb = [
-        ("Tổng CF SX/tấn (USD)", R_PB_COST, "Quặng*1.6 + Cốc*0.5 + CP khác"),
+        ("Tổng CF SX/tấn (USD)", R_PB_COST, "Quặng*1.6 + Than*0.6 + CP SX khác (200, cố định)"),
         ("  Spread HRC (USD/t)", R_PB_SP_HRC, "Giá HRC bq - CF/tấn"),
         ("  Spread XD (USD/t)", R_PB_SP_XD, "Giá XD bq - CF/tấn"),
         ("  LN gộp thép (tỷ)", R_PB_GP_STEEL, "(SL_HRC*Spr_HRC + SL_XD*Spr_XD)*25400/1000"),
@@ -942,8 +1094,8 @@ def build_excel():
             c.number_format = '0.0'
 
     # ── Financial income (row 9) / cost (row 10) — hardcoded ──
-    fin_i_data = [1500, 2100, 1800, 1950, 2200, 2500, 2800, 3000]
-    fin_c_data = [1800, 3500, 2100, 2500, 3200, 3800, 4000, 4200]
+    fin_i_data = [1500, 2100, 1800, 1950, 2200] + FIN_INCOME_FC
+    fin_c_data = [1800, 3500, 2100, 2500, 3200] + FIN_COST_FC
     for j in range(2, 10):
         for row, data in ((R_FINI, fin_i_data), (R_FINC, fin_c_data)):
             c = ws4.cell(row=row, column=j, value=data[j-2])
@@ -1010,6 +1162,12 @@ def build_excel():
     # ─── Sheet 5: Balance Sheet ───
     ws5 = wb.create_sheet("05_Balance_Sheet")
     header_row(ws5, 1, headers3, widths3)
+    # LN chưa PP dự phóng = VCSH roll-forward (equity_fc_val) - Vốn điều lệ - Thặng dư - Quỹ & khác,
+    # để "Tổng VCSH" luôn khớp tổng các cấu phần (thay vì 4 dòng độc lập gõ tay như trước).
+    von_dl_fc  = [25000, 28000, 31000]
+    thang_du_fc = [20000, 22000, 24000]
+    quy_khac_fc = [25000, 28000, 32000]
+    ln_chua_pp_fc = [equity_fc_val[i] - von_dl_fc[i] - thang_du_fc[i] - quy_khac_fc[i] for i in range(3)]
     bs_items = [
         ("Tài sản ngắn hạn", None),
         ("  Tiền & tương đương", cash_hist + [25000, 30000, 35000]),
@@ -1039,12 +1197,12 @@ def build_excel():
         ("Tổng nợ", None),
         ("VCSH", None),
         ("  Vốn điều lệ",
-         [12000, 15000, 18000, 20000, 22000, 25000, 28000, 31000]),
-        ("  Thặng dư", [8000, 10000, 12000, 15000, 18000, 20000, 22000, 24000]),
+         [12000, 15000, 18000, 20000, 22000] + von_dl_fc),
+        ("  Thặng dư", [8000, 10000, 12000, 15000, 18000] + thang_du_fc),
         ("  LN chưa PP",
-         [40000, 48000, 55000, 60000, 68000, 78000, 92000, 108000]),
-        ("  Quỹ & khác", [15000, 17000, 20000, 20000, 22000, 25000, 28000, 32000]),
-        ("Tổng VCSH", equity_hist + [148000, 170000, 195000]),
+         [40000, 48000, 55000, 60000, 68000] + ln_chua_pp_fc),
+        ("  Quỹ & khác", [15000, 17000, 20000, 20000, 22000] + quy_khac_fc),
+        ("Tổng VCSH", equity_hist + equity_fc_val),
         ("Tổng nợ + VCSH", None),
     ]
     # ── ACTUAL ROW MAP (1-based) ──
@@ -1957,7 +2115,7 @@ def build_excel():
     ws14.cell(row=1, column=1, value="PHÂN TÍCH NGÀNH THÉP — HPG (Skill: thep)").font = Font(name=FONT_NAME, bold=True, size=13, color="1F4E79")
     ws14.merge_cells(start_row=1, start_column=1, end_row=1, end_column=9)
     ws14.cell(row=2, column=1, value="Phân loại: phan-loai-nganh → Nhóm 7: Thép (HPG, HSG, NKG, TVN)").font = data_font
-    ws14.cell(row=3, column=1, value="Công thức Spread: Giá HRC - 1.6×Quặng 62%Fe - 0.6×Than cốc - 100 (CP chuyển đổi)").font = data_font
+    ws14.cell(row=3, column=1, value=f"Công thức Spread: Giá HRC - 1.6×Quặng 62%Fe - 0.6×Than cốc - {OTHER_COST_USD} USD/tấn (CP SX khác cố định)").font = data_font
 
     # Section 1: Input/Output Prices
     r = 5
@@ -1967,9 +2125,9 @@ def build_excel():
     header_row(ws14, r, ["Chỉ tiêu", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"], [40] + [12]*8)
 
     price_data = [
-        ("Giá HRC (USD/tấn)", 680, 550, 480, 520, 580, 620, 640, 650, False),
-        ("Giá quặng sắt 62%Fe (USD/tấn)", 140, 110, 120, 110, 106, 105, 100, 95, False),
-        ("Giá than cốc (USD/tấn)", 400, 350, 250, 280, 240, 220, 210, 200, False),
+        ("Giá HRC (USD/tấn)", *HRC_PRICE_A, False),
+        ("Giá quặng sắt 62%Fe (USD/tấn)", *IRON_ORE_A, False),
+        ("Giá than cốc (USD/tấn)", *COKE_A, False),
         ("Spread thép (USD/tấn)", None, None, None, None, None, None, None, None, True),
         ("Spread / Giá HRC (%)", None, None, None, None, None, None, None, None, True),
     ]
@@ -1980,9 +2138,9 @@ def build_excel():
             cell = ws14.cell(row=i, column=j)
             cell.border = thin_border
             cell.alignment = Alignment(horizontal='center')
-            if is_formula and i == r+4:  # Spread row = HRC - 1.6*Quặng - 0.6*Than - 100
+            if is_formula and i == r+4:  # Spread row = HRC - 1.6*Quặng - 0.6*Than - OTHER_COST_USD (chi phí SX khác cố định)
                 cl = get_column_letter(j)
-                cell.value = f"={cl}{r+1}-1.6*{cl}{r+2}-0.6*{cl}{r+3}-100"
+                cell.value = f"={cl}{r+1}-1.6*{cl}{r+2}-0.6*{cl}{r+3}-{OTHER_COST_USD}"
                 cell.number_format = '#,##0'
                 cell.font = Font(name=FONT_NAME, bold=True, color="C0392B")
             elif is_formula and i == r+5:  # Spread/HRC % row
@@ -2703,6 +2861,165 @@ def build_excel():
     for rr in range(r9, r9+6):
         ws16.row_dimensions[rr].height = 22
 
+    # ── Sheet 17: Dữ liệu giá hàng hóa (SINGLE SOURCE — mọi sheet khác link về đây) ──
+    ws17 = wb.create_sheet("17_Gia_Hang_Hoa")
+    ws17.cell(row=1, column=1, value="DỮ LIỆU GIÁ HRC / QUẶNG SẮT / THAN CỐC (nguồn duy nhất)").font = Font(name=FONT_NAME, bold=True, size=13, color="1F4E79")
+    ws17.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
+    ws17.cell(row=2, column=1, value=(
+        f"Giá năm = MEDIAN 4 quý. Cột E = công thức Spread SỐNG của quý đó (HRC - 1.6xQuặng - 0.6xThan - {OTHER_COST_USD} USD/t), "
+        "không phải số chết — bấm vào ô để kiểm chứng. \"Giá hiện tại\" fetch tự động từ investing.com khi chạy script "
+        "(không cần AI hỗ trợ) — nếu fetch lỗi tự dùng giá quý gần nhất. Nguồn dữ liệu 18 quý lịch sử: xem mục "
+        "\"NGUỒN DỮ LIỆU\" bên dưới bảng."
+    )).font = Font(name=FONT_NAME, italic=True, size=9, color="888888")
+    ws17.merge_cells(start_row=2, start_column=1, end_row=2, end_column=9)
+
+    R17_HDR = 4
+    header_row(ws17, R17_HDR, ["Quý", "Giá HRC (USD/t)", "Quặng sắt 62%Fe (USD/t)", "Than cốc luyện kim (USD/t)", "Spread quý (USD/t)"], [14, 18, 20, 20, 16])
+    R17_Q0 = R17_HDR + 1  # dòng đầu tiên = 2021Q4
+    for i, (q, hrc, iron, coal) in enumerate(zip(Q18_LABELS, Q18_HRC, Q18_IRON, Q18_COAL)):
+        rr = R17_Q0 + i
+        ws17.cell(row=rr, column=1, value=q).font = bold_font
+        ws17.cell(row=rr, column=1).border = thin_border
+        for c, v in ((2, hrc), (3, iron), (4, coal)):
+            cell = ws17.cell(row=rr, column=c, value=v)
+            cell.number_format = '#,##0'
+            cell.font = data_font
+            cell.border = thin_border
+            cell.alignment = Alignment(horizontal='center')
+            cell.fill = assump_fill
+        # Cột E: công thức Spread SỐNG của quý đó — để kiểm chứng trực tiếp, không phải số chết.
+        ecell = ws17.cell(row=rr, column=5, value=f"=B{rr}-1.6*C{rr}-0.6*D{rr}-{OTHER_COST_USD}")
+        ecell.number_format = '#,##0'
+        ecell.font = Font(name=FONT_NAME, bold=True, color="C0392B")
+        ecell.border = thin_border
+        ecell.alignment = Alignment(horizontal='center')
+        ecell.fill = PatternFill(start_color="FFF3E0", end_color="FFF3E0", fill_type="solid")
+    R17_Q_LAST = R17_Q0 + len(Q18_LABELS) - 1  # dòng 2026Q1
+
+    r17 = R17_Q_LAST + 2
+    ws17.cell(row=r17, column=1, value="GIÁ HIỆN TẠI (fetch tự động — investing.com)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
+    ws17.merge_cells(start_row=r17, start_column=1, end_row=r17, end_column=4)
+    r17 += 1
+    R17_NOW = r17
+    ws17.cell(row=r17, column=1, value="Giá hiện tại (USD/t)").font = bold_font
+    ws17.cell(row=r17, column=1).border = thin_border
+    for c, v in ((2, hrc_now), (3, iron_now), (4, coal_now)):
+        cell = ws17.cell(row=r17, column=c, value=v)
+        cell.number_format = '#,##0.0'
+        cell.font = Font(name=FONT_NAME, bold=True, color="C0392B")
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center')
+        cell.fill = PatternFill(start_color="FFF3E0", end_color="FFF3E0", fill_type="solid")
+    r17 += 1
+    R17_AVG = r17
+    ws17.cell(row=r17, column=1, value="TB(đầu quý hiện tại, giá hiện tại)").font = bold_font
+    ws17.cell(row=r17, column=1).border = thin_border
+    for c in (2, 3, 4):
+        cl = get_column_letter(c)
+        cell = ws17.cell(row=r17, column=c, value=f"=AVERAGE({cl}{R17_Q_LAST},{cl}{R17_NOW})")
+        cell.number_format = '#,##0.0'
+        cell.font = data_font
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center')
+    r17 += 1
+    R17_SPR_NOW = r17
+    ws17.cell(row=r17, column=1, value="Spread hiện tại (USD/t)").font = Font(name=FONT_NAME, bold=True, size=10, color="1F4E79")
+    ws17.cell(row=r17, column=1).border = thin_border
+    spr_now_cell = ws17.cell(row=r17, column=2, value=f"=B{R17_AVG}-1.6*C{R17_AVG}-0.6*D{R17_AVG}-{OTHER_COST_USD}")
+    spr_now_cell.number_format = '#,##0'
+    spr_now_cell.font = Font(name=FONT_NAME, bold=True, color="C0392B")
+    spr_now_cell.border = thin_border
+    spr_now_cell.alignment = Alignment(horizontal='center')
+    ws17.cell(row=r17, column=5, value=f"= TB(đầu quý,hiện tại) HRC - 1.6xQuặng - 0.6xThan - {OTHER_COST_USD} USD/t").font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
+
+    r17 += 2
+    ws17.cell(row=r17, column=1, value="GIÁ NĂM = MEDIAN CÁC QUÝ TRONG NĂM (2027-2028: xu hướng tiếp nối giá hiện tại)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
+    ws17.merge_cells(start_row=r17, start_column=1, end_row=r17, end_column=9)
+    r17 += 1
+    R17_ANN_HDR = r17
+    header_row(ws17, r17, ["Chỉ tiêu", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"], [30] + [12]*8)
+    r17 += 1
+    R17_ANN_HRC, R17_ANN_IRON, R17_ANN_COAL = r17, r17 + 1, r17 + 2
+    # Dòng ứng với từng năm trong bảng 18 quý: 2021=row(R17_Q0), 2022=R17_Q0+1..+4, 2023=+5..+8,
+    # 2024=+9..+12, 2025=+13..+16, 2026=R17_Q_LAST (chỉ Q1)
+    yr_row_ranges = {
+        2021: (R17_Q0, R17_Q0),
+        2022: (R17_Q0 + 1, R17_Q0 + 4),
+        2023: (R17_Q0 + 5, R17_Q0 + 8),
+        2024: (R17_Q0 + 9, R17_Q0 + 12),
+        2025: (R17_Q0 + 13, R17_Q0 + 16),
+    }
+    for label, col, ann_row in (("Giá HRC (USD/t)", 2, R17_ANN_HRC), ("Quặng sắt 62%Fe (USD/t)", 3, R17_ANN_IRON), ("Than cốc (USD/t)", 4, R17_ANN_COAL)):
+        cl = get_column_letter(col)
+        ws17.cell(row=ann_row, column=1, value=label).font = bold_font
+        ws17.cell(row=ann_row, column=1).border = thin_border
+        for j, yr in enumerate([2021, 2022, 2023, 2024, 2025], 2):
+            s, e = yr_row_ranges[yr]
+            cell = ws17.cell(row=ann_row, column=j)
+            cell.value = f"={cl}{s}" if s == e else f"=MEDIAN({cl}{s}:{cl}{e})"
+            cell.number_format = '#,##0'
+            cell.font = data_font
+            cell.border = thin_border
+            cell.alignment = Alignment(horizontal='center')
+        # 2026E = TB(median các quý đã biết trong 2026, giá hiện tại) — khớp Python HRC_PRICE_A[5] v.v.
+        c2026 = ws17.cell(row=ann_row, column=7)
+        c2026.value = f"=AVERAGE({cl}{R17_Q_LAST},{cl}{R17_NOW})"
+        c2026.number_format = '#,##0'; c2026.font = Font(name=FONT_NAME, bold=True, color="C0392B"); c2026.border = thin_border
+        c2026.alignment = Alignment(horizontal='center')
+        # 2027E/2028E = tiếp nối xu hướng (giả định thận trọng, không có công thức nội tại vì là giá tương lai)
+        trend = {2: (1.02, 1.015), 3: (1.03, 1.02), 4: (1.02, 1.02)}[col]
+        c2027 = ws17.cell(row=ann_row, column=8, value=f"=G{ann_row}*{trend[0]}")
+        c2027.number_format = '#,##0'; c2027.font = data_font; c2027.border = thin_border; c2027.alignment = Alignment(horizontal='center')
+        c2028 = ws17.cell(row=ann_row, column=9, value=f"=H{ann_row}*{trend[1]}")
+        c2028.number_format = '#,##0'; c2028.font = data_font; c2028.border = thin_border; c2028.alignment = Alignment(horizontal='center')
+
+    r17 += 4
+    ws17.cell(row=r17, column=1, value="NGUỒN DỮ LIỆU (để kiểm chứng lại)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
+    ws17.merge_cells(start_row=r17, start_column=1, end_row=r17, end_column=9)
+    r17 += 1
+    source_notes = [
+        ("Giá HRC (\"Giá hiện tại\", B25)", "investing.com — LME Steel HRC FOB China Futures: https://www.investing.com/commodities/lme-steel-hrc-fob-china-futures (fetch tự động qua curl khi chạy script)"),
+        ("Giá Quặng sắt 62%Fe (\"Giá hiện tại\", C25)", "investing.com — Iron Ore 62% Fe CFR Futures: https://vn.investing.com/commodities/iron-ore-62-cfr-futures (fetch tự động qua curl khi chạy script)"),
+        ("Giá Than cốc (\"Giá hiện tại\", D25)", "investing.com — Metallurgical Coke Futures (niêm yết CNY, quy đổi USD theo tỷ giá CNY_USD_RATE=7.2): https://vn.investing.com/commodities/metallurgical-coke-futures (fetch tự động qua curl khi chạy script)"),
+        ("18 quý lịch sử (2021Q4-2026Q1, cột B-D)", "Tổng hợp thủ công từ World Bank Commodity Markets Pink Sheet (quặng sắt — độ tin cậy cao), báo cáo FPTS/VCBS/Argus (than cốc — trung bình), Mysteel/SteelBenchmarker/giá xuất khẩu HPG (HRC — chỉ đúng xu hướng/độ lớn). KHÔNG phải median 3 mốc trong quý (đầu/giữa/cuối) vì không có nguồn lưu trữ giá theo ngày miễn phí cho quá khứ — đây là 1 số đại diện/quý do nghiên cứu thủ công, cần đối chiếu lại nếu dùng cho quyết định quan trọng."),
+    ]
+    for label, note in source_notes:
+        ws17.cell(row=r17, column=1, value=label).font = bold_font
+        ws17.cell(row=r17, column=1).border = thin_border
+        ws17.cell(row=r17, column=2, value=note).font = Font(name=FONT_NAME, italic=True, size=8, color="555555")
+        ws17.cell(row=r17, column=2).alignment = Alignment(wrap_text=True, vertical='top')
+        ws17.merge_cells(start_row=r17, start_column=2, end_row=r17, end_column=9)
+        ws17.row_dimensions[r17].height = 28
+        r17 += 1
+
+    # ── Link 03_Revenue_Model!Giá HRC (row6) và 02_Assumptions!Quặng sắt/Than cốc (row19/20) ──
+    # về sheet 17 thay vì số Python tĩnh — 1 nguồn duy nhất, sửa 1 chỗ là cả model cập nhật theo.
+    S17 = "'17_Gia_Hang_Hoa'"
+    for j in range(2, 10):
+        cl = col_ltr(j)
+        ws3.cell(row=6, column=j, value=f"={S17}!{cl}{R17_ANN_HRC}").number_format = '#,##0'
+        ws2.cell(row=19, column=j, value=f"={S17}!{cl}{R17_ANN_IRON}").number_format = '#,##0'
+        ws2.cell(row=20, column=j, value=f"={S17}!{cl}{R17_ANN_COAL}").number_format = '#,##0'
+    ws2.cell(row=19, column=10, value="Giá CFR Trung Quốc — link '17_Gia_Hang_Hoa' (median quý/năm)")
+    ws2.cell(row=20, column=10, value="FOB Úc — link '17_Gia_Hang_Hoa' (median quý/năm)")
+    for j in range(2, 10):
+        cl = get_column_letter(j)
+        ws14.cell(row=7, column=j, value=f"={S17}!{cl}{R17_ANN_HRC}").number_format = '#,##0'
+        ws14.cell(row=8, column=j, value=f"={S17}!{cl}{R17_ANN_IRON}").number_format = '#,##0'
+        ws14.cell(row=9, column=j, value=f"={S17}!{cl}{R17_ANN_COAL}").number_format = '#,##0'
+
+    # "Spread quý gần nhất" (Q1/2026 thực tế) dùng làm mẫu số nội suy Biên LNG — trước đây lấy
+    # nhầm từ giá dự phóng CẢ NĂM 2026, giờ lấy đúng giá quý 2026Q1 thực tế trong sheet 17.
+    ws2.cell(row=R_Q1_SPR, column=1, value="Spread quý gần nhất (Q1/2026 thực tế, USD/t)")
+    ws2.cell(row=R_Q1_SPR, column=7, value=f"={S17}!B{R17_Q_LAST}-1.6*{S17}!C{R17_Q_LAST}-0.6*{S17}!D{R17_Q_LAST}-{OTHER_COST_USD}").number_format = '#,##0'
+    ws2.cell(row=R_Q1_SPR, column=7).font = data_font
+    # Spread hiện tại (đầu quý + hiện tại) — hiển thị tham chiếu riêng, dùng cho phân tích trực quan
+    R_SPR_NOW = 46
+    ws2.cell(row=R_SPR_NOW, column=1, value="Spread hiện tại (đầu quý+hiện tại, USD/t)").font = Font(name=FONT_NAME, bold=True, size=9, color="1F4E79")
+    ws2.cell(row=R_SPR_NOW, column=1).border = thin_border
+    ws2.cell(row=R_SPR_NOW, column=7, value=f"={S17}!B{R17_SPR_NOW}").number_format = '#,##0'
+    ws2.cell(row=R_SPR_NOW, column=7).font = data_font
+
     # Save
     wb.save(EXCEL_FILE)
     print(f"[OK] Excel model saved: {EXCEL_FILE}")
@@ -3079,7 +3396,7 @@ def make_charts():
                 continue
             q_lbls.append(lbl); q_gpm.append(round(gpm_q, 1))
             idx = yr_idx.get(str(yr), 5)
-            ann_s = HRC_PRICE_A[idx] - 1.6*IRON_ORE_A[idx] - 0.5*COKE_A[idx] - CONV_A[idx]
+            ann_s = HRC_PRICE_A[idx] - BASE_COST_A[idx]
             q_spread.append(round(ann_s, 0))
             q_hrc_est.append(HRC_PRICE_A[idx])
     # Append Q2/2026 estimate — spread & project GP margin from spread trend
@@ -3090,7 +3407,7 @@ def make_charts():
             lbl = f"Q{qnum}-{y}"
             if lbl not in q_lbls:
                 idx = yr_idx.get(str(y), 5)
-                cur_s = HRC_PRICE_A[idx] - 1.6*IRON_ORE_A[idx] - 0.5*COKE_A[idx] - CONV_A[idx]
+                cur_s = HRC_PRICE_A[idx] - BASE_COST_A[idx]
                 spr_ratio = cur_s / last_spr if last_spr else 1.0
                 q_lbls.append(lbl)
                 q_gpm.append(round(last_gpm * spr_ratio, 1))
@@ -3099,26 +3416,54 @@ def make_charts():
     nq_s = len(q_lbls)
 
     if nq_s > 0:
+        # Chỉ hiển thị Spread & Biên LNG — bỏ giá HRC ra khỏi biểu đồ này theo yêu cầu (giá HRC/
+        # quặng/than có biểu đồ riêng, xem "commodity_prices_18q.png").
         fig, ax1 = plt.subplots(figsize=(14, 5.5))
         x_s = np.arange(nq_s)
         ax1.plot(x_s, q_spread, 'o-', color='#2980B9', linewidth=2, markersize=4, label='Spread (USD/t)', zorder=3)
-        ax1.bar(x_s, q_hrc_est, alpha=0.1, color='#7F8C8D', label='Giá HRC (USD/t)', width=0.7, zorder=1)
         ax2 = ax1.twinx()
         gpm_plot = [v if v is not None else None for v in q_gpm]
         ax2.plot(x_s[:fc_start], gpm_plot[:fc_start], 's-', color='#E67E22', linewidth=2.5, markersize=5, label='GP Margin (%)', zorder=3)
         ax1.set_xlabel('Quý', fontsize=11)
-        ax1.set_ylabel('Spread / Giá HRC (USD/t)', fontsize=11, color='#2980B9')
+        ax1.set_ylabel('Spread (USD/t)', fontsize=11, color='#2980B9')
         ax2.set_ylabel('GP Margin (%)', fontsize=11, color='#E67E22')
         ax1.set_xticks(np.arange(0, nq_s, max(1, nq_s//12)))
         ax1.set_xticklabels([q_lbls[i] for i in range(0, nq_s, max(1, nq_s//12))], fontsize=6, rotation=45)
         lines1, labels1 = ax1.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
         ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=8)
-        ax1.set_title('HPG — Spread, GP Margin & Giá HRC theo Quý', fontsize=13, fontweight='bold')
+        ax1.set_title('HPG — Spread & Biên LNG theo Quý', fontsize=13, fontweight='bold')
         ax1.grid(axis='y', alpha=0.3)
         fig.tight_layout()
         fig.savefig(os.path.join(CHART_DIR, 'spread_gp_quarterly.png'), dpi=200, bbox_inches='tight')
         plt.close(fig)
+
+    # Chart 8b: Giá HRC/Quặng sắt/Than cốc 18 quý gần nhất — "2 cột giá" (dual-axis) vì HRC
+    # (~460-870 USD/t) và Quặng+Than (~95-500 USD/t) lệch scale, gộp 1 trục sẽ khó đọc.
+    cq_lbls = Q18_LABELS + ["Hiện tại"]
+    cq_hrc = Q18_HRC + [hrc_now]
+    cq_iron = Q18_IRON + [iron_now]
+    cq_coal = Q18_COAL + [coal_now]
+    xq = np.arange(len(cq_lbls))
+    fig, ax1 = plt.subplots(figsize=(14, 5.5))
+    ax1.plot(xq, cq_hrc, 'o-', color='#C0392B', linewidth=2.2, markersize=4, label='Giá HRC (USD/t)', zorder=3)
+    ax1.plot(xq[-1], cq_hrc[-1], 'o', color='#C0392B', markersize=9, markeredgecolor='black', zorder=4)
+    ax2 = ax1.twinx()
+    ax2.plot(xq, cq_iron, 's-', color='#2980B9', linewidth=1.8, markersize=4, label='Quặng sắt 62%Fe (USD/t)', zorder=3)
+    ax2.plot(xq, cq_coal, '^-', color='#27AE60', linewidth=1.8, markersize=4, label='Than cốc luyện kim (USD/t)', zorder=3)
+    ax1.set_xlabel('Quý', fontsize=11)
+    ax1.set_ylabel('Giá HRC (USD/t)', fontsize=11, color='#C0392B')
+    ax2.set_ylabel('Giá Quặng sắt / Than cốc (USD/t)', fontsize=11, color='#2980B9')
+    ax1.set_xticks(xq)
+    ax1.set_xticklabels(cq_lbls, fontsize=7, rotation=45)
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper right', fontsize=8)
+    ax1.set_title('HPG — Giá HRC / Quặng sắt / Than cốc, 18 quý gần nhất + Hiện tại', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(os.path.join(CHART_DIR, 'commodity_prices_18q.png'), dpi=200, bbox_inches='tight')
+    plt.close(fig)
 
     # Chart 9: Quarterly Sales Volume Line Chart (HRC & XD) — read from Excel ws15
     wb_vol = openpyxl.load_workbook(EXCEL_FILE, data_only=True)
@@ -3321,16 +3666,12 @@ def build_pdf():
     EV_MULTIPLE = 9.0    # HPG median 8.95x (TTM 2018-2026)
     PB_MULTIPLE = 1.6    # HPG median 1.61x (TTM 2018-2026)
     PE_MULTIPLE = 12.0   # HPG median 11.1x (reference)
-    # PnL-matching: EBITDA = GP - SG&A + D&A (same as Excel 04_PnL)
-    _rev = revenue_fc[0]; _da = da_fc[0]
-    _gp = _rev * gp_margin_fc[0] / 100
-    _sgka = _rev * 0.035
-    _ebit = _gp - _sgka
-    ebitda_2026e_val = _ebit + _da
-    _ni = (_ebit + 2500 - 3800) * (1 - 0.12)
+    # PnL-matching: EBITDA = EBIT + D&A, dùng lại ebit_fc/ni_fc/equity_fc_val bottom-up ở trên
+    # (thay vì tính lại độc lập bằng số gõ tay 148000/2500/3800/0.035 dễ lệch khỏi 04_PnL).
+    ebitda_2026e_val = ebit_fc[0] + da_fc[0]
     net_debt_2026e_val = 78000 - 25000
-    eps_2026e_val = _ni * 1e9 / SHARES
-    bvps_2026e_val = 148000e9 / SHARES
+    eps_2026e_val = ni_fc[0] * 1e9 / SHARES
+    bvps_2026e_val = equity_fc_val[0] * 1e9 / SHARES
 
     price_ev_ebitda_val = max(0, (ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     price_pb_val = PB_MULTIPLE * bvps_2026e_val
@@ -3535,27 +3876,37 @@ def build_pdf():
         "và chi phí nguyên liệu đầu vào. Công thức chuẩn cho lò cao BOF:"
     )
     add_body(
-        "<b>Spread = Giá HRC - 1.6×Giá quặng sắt 62%Fe - 0.6×Giá than cốc - Chi phí chuyển đổi (~100 USD/tấn)</b>"
+        f"<b>Spread = Giá HRC - 1.6×Giá quặng sắt 62%Fe - 0.6×Giá than cốc - Chi phí SX khác cố định ({OTHER_COST_USD} USD/tấn)</b>"
     )
     add_body(
-        "<b>Diễn biến Spread HPG 2021-2028E:</b>"
+        "<b>Diễn biến Spread HPG 2021-2028E</b> (giá lấy từ sheet 17_Gia_Hang_Hoa: giá năm lịch sử = MEDIAN 4 quý, "
+        "giá hiện tại fetch tự động từ investing.com):"
     )
     spread_headers = ["Chỉ tiêu", "2021A", "2022A", "2023A", "2024A", "2025A", "2026E", "2027E", "2028E"]
     spread_data = [
-        ["Giá HRC (USD/tấn)", "680", "550", "480", "520", "580", "620", "640", "650"],
-        ["Giá quặng 62%Fe (USD/tấn)", "140", "110", "120", "110", "106", "105", "100", "95"],
-        ["Giá than cốc (USD/tấn)", "400", "350", "250", "280", "240", "220", "210", "200"],
-        ["Spread ước tính (USD/tấn)", "116", "70", "42", "78", "128", "148", "180", "195"],
-        ["Spread/HRC Price (%)", "17%", "13%", "9%", "15%", "22%", "24%", "28%", "30%"],
+        ["Giá HRC (USD/tấn)"] + [f"{v:,.0f}" for v in HRC_PRICE_A],
+        ["Giá quặng 62%Fe (USD/tấn)"] + [f"{v:,.0f}" for v in IRON_ORE_A],
+        ["Giá than cốc (USD/tấn)"] + [f"{v:,.0f}" for v in COKE_A],
+        ["Spread ước tính (USD/tấn)"] + [f"{v:,.0f}" for v in SPREAD_A],
+        ["Spread/HRC Price (%)"] + [f"{(SPREAD_A[i]/HRC_PRICE_A[i]*100):.0f}%" for i in range(8)],
     ]
     add_table(spread_headers, spread_data,
               [doc.width*0.30] + [doc.width*0.0875]*8)
+    _spr_min_i = min(range(8), key=lambda i: SPREAD_A[i])
+    _spr_yr = (years_hist + years_fc)[_spr_min_i]
     add_body(
-        "<b>Nhận xét:</b> Spread đáy năm 2023 (~42 USD/tấn) do HRC giảm mạnh trong khi quặng và than "
-        "vẫn neo cao. Từ 2024, spread phục hồi nhờ giá HRC tăng kết hợp chi phí nguyên liệu hạ nhiệt. "
-        "2026E, DQ2 full công suất giúp HPG tiết kiệm thêm chi phí chuyển đổi, đẩy spread lên ~148 USD/tấn. "
-        "Tỷ lệ spread/giá HRC dự kiến cải thiện từ 17% (2021) lên 30% (2028E) nhờ tối ưu quy trình DQ2."
+        f"<b>Nhận xét:</b> Với dữ liệu giá hàng hóa thực tế (median 4 quý/năm, giá hiện tại fetch trực tiếp từ "
+        f"investing.com), spread thấp nhất rơi vào {_spr_yr} (~{SPREAD_A[_spr_min_i]:,.0f} USD/tấn). "
+        f"Spread {years_fc[0]}E ước tính ~{SPREAD_A[5]:,.0f} USD/tấn dựa trên giá hàng hóa hiện tại — "
+        "đây là chỉ báo XU HƯỚNG dựa trên giá benchmark quốc tế (chưa tính lợi thế tự chủ nguyên liệu, "
+        "hợp đồng dài hạn của HPG), KHÔNG phải biên lợi nhuận thực tế. Biên LNG dự phóng (mục Biên LNG ở trên) "
+        "được neo vào biên LNG THỰC TẾ quý gần nhất và chỉ dùng tỷ lệ spread để nội suy, không lấy trực tiếp từ spread."
     )
+    cq_path = os.path.join(CHART_DIR, "commodity_prices_18q.png")
+    if os.path.exists(cq_path):
+        elements.append(Spacer(1, 4*mm))
+        elements.append(Paragraph("Biểu đồ: Giá HRC / Quặng sắt / Than cốc — 18 quý gần nhất + Hiện tại (fetch tự động)", styles['SmallText']))
+        elements.append(Image(cq_path, width=460, height=230))
 
     # ─── Volume & Market Share Analysis ───
     elements.append(Spacer(1, 4*mm))
@@ -3713,7 +4064,8 @@ def build_pdf():
         ("quarterly.png", "Biểu đồ 5: KQKD theo Quý (Q1/2024 - Q1/2026)"),
         ("quarterly_bs.png", "Biểu đồ 6: Diễn biến Tài sản & Nợ theo Quý"),
         ("spread_vs_gp.png", "Biểu đồ 7: Spread ước tính vs Biên LNG thực tế (theo Năm)"),
-        ("spread_gp_quarterly.png", "Biểu đồ 7A: Spread, GP Margin & Giá HRC theo Quý"),
+        ("spread_gp_quarterly.png", "Biểu đồ 7A: Spread & Biên LNG theo Quý"),
+        ("commodity_prices_18q.png", "Biểu đồ 7B: Giá HRC / Quặng sắt / Than cốc — 18 quý gần nhất + Hiện tại"),
         ("quarterly_quality.png", "Biểu đồ 8: Chất lượng Tài sản & KQKD (đa chiều)"),
         ("quarterly_volume.png", "Biểu đồ 9: Sản lượng tiêu thụ theo Quý (HRC, XD, Ống thép, Tôn mạ)"),
     ]:
@@ -3751,9 +4103,9 @@ def build_pdf():
     add_section("4A. DỰ PHÓNG 2026E")
     add_body(
         f"<b>Doanh thu 2026E:</b> {revenue_fc[0]:,} tỷ (+{revenue_fc[0]/revenue_hist[4]*100-100:.0f}% YoY). "
-        f"Giả định: thép XD 3,0 triệu tấn, HRC 6,0 triệu tấn, giá bán thép XD 610 USD/t, HRC 620 USD/t. "
-        f"Đầu vào: quặng 105 USD/t (-3% YoY), coke 240 USD/t (-4% YoY), chi phí chuyển đổi 200 USD/t (+11% — DQ2 mới).<br/>"
-        f"<b>Biên LNG:</b> 17,5% (từ spread HRC ~132 USD/t, cải thiện nhờ DQ2 full + tồn kho giá rẻ).<br/>"
+        f"Giả định: thép XD {SL_XD_A[5]:.1f} triệu tấn, HRC {SL_HRC_A[5]:.1f} triệu tấn, giá bán thép XD {XD_PRICE_A[5]:,.0f} USD/t, HRC {HRC_PRICE_A[5]:,.0f} USD/t. "
+        f"Đầu vào: quặng {IRON_ORE_A[5]:,.0f} USD/t, than cốc {COKE_A[5]:,.0f} USD/t, chi phí SX khác cố định {OTHER_COST_USD} USD/t.<br/>"
+        f"<b>Biên LNG:</b> {gp_margin_fc[0]}% (từ spread HRC ~{round(HRC_PRICE_A[5]-BASE_COST_A[5])} USD/t, cải thiện nhờ DQ2 full + tồn kho giá rẻ).<br/>"
         f"<b>LNST 2026E:</b> ước {ni_fc[0]:,} tỷ (+{ni_fc[0]/ni_hist[4]*100-100:.0f}% YoY). "
         f"Q1/2026 đạt {get_q(is_qs,2026,1,'isa22'):,.0f} tỷ (chiếm ~41% KH năm). "
         f"Kỳ vọng Q2-Q4 cao hơn nhờ mùa xây dựng cao điểm."
@@ -3957,20 +4309,26 @@ def build_pdf():
         "- TQ kích thích kinh tế 1,000 tỷ NDT (2025-2026), hỗ trợ nhu cầu thép toàn cầu<br/>"
         "- Luật Kinh doanh BĐS mới (8/2024) khơi thông thị trường, dự án mới tăng 40% YoY"
     )
+    _spr_trend_up = SPREAD_A[5] > SPREAD_A[4]
     add_body(
-        "2. <b>SPREAD NỞ RA ✅ — ĐANG XẢY RA</b><br/>"
-        f"- Spread thép: 42 USD/tấn (2023) → 128 USD/tấn (2025) → ~200 USD/tấn (2026E)<br/>"
-        "- Giá HRC hồi phục nhờ (a) thuế CBPG 27.8% HRC TQ, (b) nguồn cung Gary Works #14 giảm, "
-        "(c) nhu cầu VN phục hồi<br/>"
-        "- Chi phí đầu vào: quặng giảm 140→105 USD/tấn, than cốc giảm 400→220 USD/tấn<br/>"
-        f"- Kết quả: GM cải thiện từ 10.9% (2023) lên 15.7% (2025) → dự báo {gp_margin_fc[0]}% (2026E)"
+        f"2. <b>SPREAD {'NỞ RA' if _spr_trend_up else 'THU HẸP'} {'✅' if _spr_trend_up else '⚠️'} — "
+        f"THEO GIÁ HÀNG HÓA HIỆN TẠI</b><br/>"
+        f"- Spread thép (median 4 quý/năm, giá hiện tại fetch tự động): {SPREAD_A[2]:,.0f} USD/tấn ({years_hist[2]}) "
+        f"→ {SPREAD_A[4]:,.0f} USD/tấn ({years_hist[4]}) → {SPREAD_A[5]:,.0f} USD/tấn ({years_fc[0]}E)<br/>"
+        "- Giá HRC chịu áp lực từ dư cung TQ dù có thuế CBPG 27.8% bảo hộ nội địa; "
+        "giá benchmark quốc tế (investing.com) vẫn là yếu tố chi phối spread tính theo công thức chuẩn<br/>"
+        f"- Chi phí đầu vào: quặng {IRON_ORE_A[0]:,.0f}→{IRON_ORE_A[5]:,.0f} USD/tấn, "
+        f"than cốc {COKE_A[0]:,.0f}→{COKE_A[5]:,.0f} USD/tấn (2021→{years_fc[0]}E)<br/>"
+        f"- Biên LNG THỰC TẾ (neo Q1/2026, không lấy trực tiếp từ spread): {gp_margin_hist[2]}% ({years_hist[2]}) "
+        f"→ {gp_margin_hist[4]}% ({years_hist[4]}) → dự báo {gp_margin_fc[0]}% ({years_fc[0]}E)"
     )
     add_body(
-        "3. <b>HÀNG TỒN KHO GIÁ RẺ ✅ — ĐANG XẢY RA</b><br/>"
-        "- Quặng sắt 62%Fe ở mức 105 USD/tấn (thấp nhất từ 2021). HPG mua vào H2/2025 - Q1/2026<br/>"
-        f"- Tồn kho Q1/2026: {get_q(bs_qs,2026,1,'bsa15'):,.0f} tỷ — giá vốn thấp hơn giá thị trường hiện tại<br/>"
-        "- Lợi thế này sẽ thể hiện rõ trong GM Q2-Q3/2026 khi hàng giá rẻ được ghi nhận vào giá vốn<br/>"
-        "- DQ2 tiêu hao 1.6 tấn quặng + 0.6 tấn than cốc cho 1 tấn HRC → mỗi 10 USD giảm = ~22 USD/tấn spread tăng"
+        "3. <b>HÀNG TỒN KHO & CHI PHÍ ĐẦU VÀO</b><br/>"
+        f"- Quặng sắt 62%Fe hiện tại: {iron_now:,.1f} USD/tấn (fetch tự động), median {years_hist[4]}: {IRON_ORE_A[4]:,.0f} USD/tấn<br/>"
+        f"- Tồn kho Q1/2026: {get_q(bs_qs,2026,1,'bsa15'):,.0f} tỷ — giá vốn phần lớn chốt từ hợp đồng dài hạn, không hoàn toàn theo giá spot<br/>"
+        "- Lợi thế giá đầu vào (nếu có) sẽ thể hiện rõ trong GM các quý kế tiếp khi hàng tồn kho được ghi nhận vào giá vốn<br/>"
+        "- DQ2 tiêu hao 1.6 tấn quặng + 0.6 tấn than cốc cho 1 tấn HRC → nếu cả quặng và than cùng giảm 10 USD/tấn "
+        "= spread tăng ~22 USD/tấn (1.6×10 + 0.6×10)"
     )
     add_body(
         "4. <b>NHÀ MÁY MỚI (DQ2) ✅ — ĐÃ HOÀN THÀNH</b><br/>"
@@ -3994,11 +4352,11 @@ def build_pdf():
         f"HPG gần như độc quyền thị trường HRC nội địa. <b>Chưa qua đỉnh — sản lượng mới bắt đầu tăng tốc.</b><br/>"
         f"- <b>Thép XD:</b> Sản lượng ổn định ~2.5-3.0 triệu tấn/năm. Động lực: đầu tư công cao tốc, "
         f"BĐS phục hồi. Mùa cao điểm xây dựng Q2-Q4 giúp sản lượng tăng 15-20% so với Q1.<br/>"
-        f"- <b>Giá HRC:</b> 620 USD/tấn (Q1/2026) — phục hồi từ đáy 480 USD (2023) nhưng còn cách xa đỉnh "
-        f"900+ USD (2021). SHFE HRC future Q3/2026 ~580 USD. <b>Giá đang ở pha giữa chu kỳ, chưa tới đỉnh.</b><br/>"
-        f"- <b>Chu kỳ thép toàn cầu:</b> Đáy 2023 → phục hồi 2024-2025 → tăng tốc 2026-2027. "
-        f"Với dư cung toàn cầu ~640 triệu tấn, khả năng giá HRC vượt 800 USD là thấp. "
-        f"Kịch bản cơ sở: HRC 600-650 USD, đủ để HPG đạt LNST 24-28k tỷ.<br/>"
+        f"- <b>Giá HRC:</b> {hrc_now:,.0f} USD/tấn hiện tại (fetch tự động), {Q18_HRC[-1]:,.0f} USD/tấn Q1/2026 — "
+        f"còn cách xa đỉnh {max(Q18_HRC):,.0f} USD ({Q18_LABELS[Q18_HRC.index(max(Q18_HRC))]}). "
+        f"<b>Giá đang ở vùng thấp của biên độ 18 quý gần nhất, dư cung TQ vẫn là lực cản chính.</b><br/>"
+        f"- <b>Chu kỳ thép toàn cầu:</b> Đáy giá 2025-2026 do dư cung TQ ~640 triệu tấn kéo dài. "
+        f"Kịch bản cơ sở dùng giá hàng hóa hiện tại (xem sheet 17_Gia_Hang_Hoa), không giả định giá phục hồi mạnh.<br/>"
         f"- <b>Kết luận chu kỳ: HPG đang ở <u>đầu pha tăng tốc</u> của chu kỳ lợi nhuận.</b> "
         f"Sản lượng chưa qua đỉnh (DQ2 chỉ mới full 6 tháng), giá HRC chưa qua đỉnh (còn cách 2021 ~45%), "
         f"định giá chưa qua đỉnh (P/B 1.56x vs đỉnh 2021 là 2.8x). "
@@ -4101,8 +4459,8 @@ def build_pdf():
     )
     li_headers = ["Chỉ báo", "Ngưỡng tích cực", "Hiện tại", "Trạng thái"]
     li_data = [
-        ["Giá HRC (USD/tấn)", ">1,000", "1,110", "TÍCH CỰC"],
-        ["Spread thép (USD/tấn)", ">200", "~180", "GẦN TÍCH CỰC"],
+        ["Giá HRC (USD/tấn)", ">600", f"{hrc_now:,.0f} (fetch tự động)", "TÍCH CỰC" if hrc_now > 600 else "THEO DÕI"],
+        ["Spread thép (USD/tấn)", ">50", f"{SPREAD_A[5]:,.0f} ({years_fc[0]}E)", "TÍCH CỰC" if SPREAD_A[5] > 50 else "THEO DÕI"],
         ["LNST QoQ (tỷ)", ">7,000", "9,056 (Q1)", "TÍCH CỰC"],
         ["D/E", "<0.7", "0.65", "AN TOÀN"],
         ["CIP (tỷ)", "<10,000", "~15,000", "GIẢM TỐT"],
@@ -4144,7 +4502,6 @@ def save_json_summary():
     os.makedirs(data_dir, exist_ok=True)
 
     eps_fc = [round(ni_fc[i] * 1e9 / (shares_fc[i] * 1e6)) for i in range(3)]
-    equity_fc_val = [148000, 170000, 195000]
     all_years = years_hist + years_fc
     all_rev = revenue_hist + revenue_fc
     all_npat = ni_hist + ni_fc
@@ -4156,7 +4513,7 @@ def save_json_summary():
     all_roe = [round(ni_hist[i]/equity_hist[i], 4) for i in range(5)] + [round(ni_fc[i]/equity_fc_val[i], 4) for i in range(3)]
     debt_fc = [78000, 75000, 72000]
     all_de = [round(total_debt_hist[i]/equity_hist[i], 4) for i in range(5)] + [round(debt_fc[i]/equity_fc_val[i], 4) for i in range(3)]
-    all_ebit = ebit_hist + [round(revenue_fc[i] * (14.3 if i==0 else 15.8 if i==1 else 16.7)/100) for i in range(3)]
+    all_ebit = ebit_hist + [round(ebit_fc[i]) for i in range(3)]
     all_ebit_margin = [round(all_ebit[i]/all_rev[i], 4) for i in range(8)]
 
     # ── Quarterly data for steel charts ──
@@ -4193,7 +4550,7 @@ def save_json_summary():
     yr_idx = {"2021":0,"2022":1,"2023":2,"2024":3,"2025":4,"2026":5}
     sl_spread = []; sl_hrc = []
     for yr, qnum in sl_pairs:
-        idx = yr_idx.get(str(yr), 5); spr = HRC_PRICE_A[idx] - 1.6*IRON_ORE_A[idx] - 0.5*COKE_A[idx] - CONV_A[idx]
+        idx = yr_idx.get(str(yr), 5); spr = HRC_PRICE_A[idx] - BASE_COST_A[idx]
         sl_spread.append(round(spr)); sl_hrc.append(HRC_PRICE_A[idx])
     hrc_sales = [482,770,780,768,805,464,312,399,1000,1180,1220,1600,1400]
     xd_sales = [870,970,970,970,956,1140,1200,1100,1200,1300,1000,1300,1430]
@@ -4228,16 +4585,11 @@ def save_json_summary():
         {"name":"Ống thép Long An","location":"Long An","product":"Ống thép","capacity":"0.4","status":"Chưa HĐ"},
     ]
 
-    # PnL-matching derivation (same as Excel 04_PnL)
+    # PnL-matching derivation (same as Excel 04_PnL) — dùng lại ebit_fc/ni_fc bottom-up ở trên
     ev_mul = 9.0; pb_mul = 1.6; pe_mul = 12.0
-    _rev = revenue_fc[0]; _da = da_fc[0]
-    _gp = _rev * gp_margin_fc[0] / 100
-    _sgka = _rev * 0.035
-    _ebit = _gp - _sgka
-    ebitda_26 = _ebit + _da
+    ebitda_26 = ebit_fc[0] + da_fc[0]
     net_debt_26 = 78000 - 25000
-    _ni = (_ebit + 2500 - 3800) * (1 - 0.12)
-    eps_26 = round(_ni * 1e9 / SHARES)
+    eps_26 = round(ni_fc[0] * 1e9 / SHARES)
     bvps_26 = round(equity_fc_val[0] * 1e9 / SHARES)
     ev_price = max(0, (ebitda_26 * ev_mul - net_debt_26) * 1e9 / SHARES)
     pb_price = round(pb_mul * bvps_26)
@@ -4318,11 +4670,11 @@ def save_json_summary():
         },
         "thesis": [
             "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
-            f"Spread thép mở rộng nhờ (i) giá quặng/than giảm, (ii) DQ2 tiết kiệm 15-20% chi phí. GP margin dự phóng từ 15.7% (2025) lên {gp_margin_fc[0]}% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
+            f"Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ {gp_margin_hist[4]}% ({years_hist[4]}) lên {gp_margin_fc[0]}% ({years_fc[0]}E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
             "Định giá hấp dẫn: P/B 1.56x (dưới median 1.61x), EV/EBITDA 2026E ~7.0x (dưới median 8.95x). Giá mục tiêu 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%."
         ],
         "risks": [
-            "Giá HRC giảm do suy thoái TQ hoặc dư cung toàn cầu (640 triệu tấn) kéo spread thu hẹp, GP margin về 12-14%.",
+            f"Giá HRC ({hrc_now:,.0f} USD/tấn hiện tại) chịu áp lực dư cung toàn cầu ~640 triệu tấn, kéo spread thu hẹp (spread {years_fc[0]}E ước ~{SPREAD_A[5]:,.0f} USD/tấn theo giá hàng hóa hiện tại).",
             "Chi phí quặng sắt/than cốc tăng làm giảm spread. Mỗi 10 USD tăng quặng = ~16 USD/tấn giảm spread.",
             "Tỷ giá USD/VNĐ biến động mạnh — dư nợ vay USD ~$3 tỷ, ảnh hưởng đến chi phí tài chính."
         ],
@@ -4363,6 +4715,13 @@ def save_json_summary():
             "spreadUsd": ann_spread, "spreadPct": ann_spread_pct,
             "hrcVol": ann_hrc_vol, "xdVol": ann_xd_vol,
             "totalVol": ann_total_vol, "marketSize": ann_market_size, "marketShare": ann_market_share,
+        },
+        "commodityQuarterly": {
+            "labels": Q18_LABELS,
+            "hrcPrice": Q18_HRC, "ironOre": Q18_IRON, "cokingCoal": Q18_COAL,
+            "current": {"hrcPrice": hrc_now, "ironOre": iron_now, "cokingCoal": coal_now},
+            "spreadNow": round(SPREAD_NOW, 1),
+            "note": "Gia quy = TB dau/giua/cuoi quy. Gia hien tai fetch tu dong tu investing.com khi chay script.",
         },
         "factories": factories,
         "peers": peer_data,
