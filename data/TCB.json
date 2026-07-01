@@ -1327,34 +1327,34 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 34921,
-    "upside": 4.24,
-    "bear": 29682,
-    "base": 34921,
-    "bull": 40159,
-    "pbAttractive": 1.06,
-    "pbAttractivePrice": 31273,
-    "pbTarget": 1.67,
-    "pbTargetPrice": 49273,
-    "pbMedianPrice": 39074,
-    "peMedianPrice": 36080,
-    "COE": 13.99,
+    "weightedTarget": 37678,
+    "upside": 12.47,
+    "bear": 32026,
+    "base": 37678,
+    "bull": 43330,
+    "pbAttractive": 1.11,
+    "pbAttractivePrice": 32924,
+    "pbTarget": 1.66,
+    "pbTargetPrice": 49081,
+    "pbMedianPrice": 39242,
+    "peMedianPrice": 37183,
+    "COE": 13.98,
     "peMedian": 8.78,
     "pbMedian": 1.33,
     "bvpsBase": 25331,
-    "riValue": 30768,
-    "pbValue": 39074,
-    "pvRi": 1433,
-    "pvCv": 4004,
+    "riValue": 36116,
+    "pbValue": 39241,
+    "pvRi": 2329,
+    "pvCv": 8456,
     "epsFc": [
-      4108,
-      4783,
-      5421
+      4234,
+      5199,
+      6195
     ],
     "riResults": [
-      564,
-      664,
-      633
+      692,
+      1065,
+      1335
     ],
     "recommend": "THEO DÕI"
   },
@@ -1400,9 +1400,9 @@
       5164.2,
       3080.1,
       3662.7,
-      4108.4,
-      4782.6,
-      5421.0
+      4234,
+      5199,
+      6195
     ],
     "equity": [
       93041.47,
@@ -1476,5 +1476,6 @@
       0.3648,
       0.3748
     ]
-  }
+  },
+  "lastUpdated": "2026-07-01 17:55"
 }

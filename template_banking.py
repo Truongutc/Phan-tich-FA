@@ -1732,6 +1732,62 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     wb.save(excel_path)
     print(f"[Excel] Dynamic workbook successfully saved to {excel_path}")
 
+    # ── Read back Excel-computed valuation values via win32com ──
+    try:
+        import win32com.client, pythoncom
+        pythoncom.CoInitialize()
+        xl = win32com.client.Dispatch('Excel.Application')
+        xl.Visible = False; xl.DisplayAlerts = False; xl.ScreenUpdating = False
+        xl_wb = xl.Workbooks.Open(excel_path)
+        xl.CalculateFull()
+        ws_v = xl_wb.Sheets('07_Valuation')
+        ex_B2  = ws_v.Cells(2, 2).Value    # COE
+        ex_B6  = ws_v.Cells(6, 2).Value    # BVPS base
+        ex_B7  = ws_v.Cells(7, 2).Value    # PV of RI
+        ex_B8  = ws_v.Cells(8, 2).Value    # PV of CV
+        ex_B9  = ws_v.Cells(9, 2).Value    # RI value
+        ex_B13 = ws_v.Cells(13, 2).Value   # PB 25th pct (attractive)
+        ex_B14 = ws_v.Cells(14, 2).Value   # PB median
+        ex_B15 = ws_v.Cells(15, 2).Value   # PB 75th pct (target/chot loi)
+        ex_B16 = ws_v.Cells(16, 2).Value   # BVPS forward
+        ex_B17 = ws_v.Cells(17, 2).Value   # PB value
+        ex_B21 = ws_v.Cells(21, 2).Value   # Target
+        ex_EPS = [ws_v.Cells(26, c).Value for c in [2,3,4]]
+        ex_RI  = [ws_v.Cells(29, c).Value for c in [2,3,4]]
+        # Also read PE median from 13_PE_PB_History
+        ws_h = xl_wb.Sheets('13_PE_PB_History')
+        ex_pe_all_median = None
+        for find_r in range(2, 100):
+            lbl = ws_h.Cells(find_r, 1).Value
+            if lbl and 'MEDIAN' in str(lbl).upper():
+                ex_pe_all_median = ws_h.Cells(find_r, 2).Value
+                break
+        COE            = ex_B2
+        bvps_base      = round(ex_B6)
+        pv_ri          = round(ex_B7)
+        pv_cv          = round(ex_B8)
+        ri_value       = round(ex_B9)
+        pb_attractive  = round(ex_B13, 4) if ex_B13 else pb_attractive
+        pb_all_median  = round(ex_B14, 4)
+        pb_target      = round(ex_B15, 4) if ex_B15 else pb_target
+        bvps_forward   = round(ex_B16)
+        pb_value       = round(ex_B17)
+        weighted_target = round(ex_B21)
+        eps_fc_calc    = [round(e) for e in ex_EPS]
+        ri_results     = [round(r) for r in ex_RI]
+        if ex_pe_all_median:
+            pe_all_median = round(ex_pe_all_median, 4)
+            pe_median_year = {y: pe_all_median for y in years_hist}
+        upside         = (weighted_target / current_price - 1) * 100
+        bear_target    = round(weighted_target * 0.85)
+        bull_target    = round(weighted_target * 1.15)
+        xl_wb.Close(SaveChanges=False)
+        xl.Quit()
+        del xl_wb, xl
+        pythoncom.CoUninitialize()
+        print(f"[Excel] win32com readback OK — RI={ri_value:,} | PB={pb_value:,} | Target={weighted_target:,}")
+    except Exception as e:
+        print(f"[Excel] win32com readback failed (using Python values): {e}")
 
     # ── Quarterly calculations for charts and JSON ────────────────────────
     rq_all = sorted(section_to_quarters(raw_data, "BALANCE_SHEET"),
