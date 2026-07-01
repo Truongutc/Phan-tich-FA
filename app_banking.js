@@ -476,7 +476,7 @@ async function loadStockDashboard(ticker) {
 
     renderValuationScenarios(localJson?.valuation, currentPrice, details, latestRatio, cfg);
     renderValuationSnapshot(localJson);
-    renderNimCofChart(ticker);
+    renderNimCofChart(localJson, ticker);
     renderFinancialSnapshotTable(localJson, sectorKey);
     renderAssumptionsTable(localJson, sectorKey);
     renderResidualIncomeTable(localJson, sectorKey);
@@ -1155,7 +1155,7 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
             labels: cg.quarters,
             datasets: [
                 {
-                    label: 'Tăng trưởng Tín dụng QoQ (%)',
+                    label: 'TT Tín dụng (so cuối năm trước, %)',
                     data: cg.credit_ytd,
                     borderColor: '#4472C4',
                     backgroundColor: 'rgba(68,114,196,0.1)',
@@ -1164,7 +1164,7 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
                     tension: 0.2
                 },
                 {
-                    label: 'Tăng trưởng Huy động QoQ (%)',
+                    label: 'TT Huy động (so cuối năm trước, %)',
                     data: cg.funding_ytd,
                     borderColor: '#ED7D31',
                     backgroundColor: 'rgba(237,125,49,0.1)',
@@ -1195,20 +1195,46 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
     const lastFundingQoq = cg.funding_ytd[cg.funding_ytd.length - 1];
 
     analysisEl.innerHTML = `
-        Tăng trưởng tín dụng liên quý QoQ gần nhất đạt <strong>${lastCreditQoq >= 0 ? '+' : ''}${lastCreditQoq.toFixed(2)}%</strong>. <br>
-        Tăng trưởng huy động liên quý QoQ tương ứng đạt <strong>${lastFundingQoq >= 0 ? '+' : ''}${lastFundingQoq.toFixed(2)}%</strong>. <br>
+        Tăng trưởng tín dụng lũy kế so cuối năm trước gần nhất đạt <strong>${lastCreditQoq >= 0 ? '+' : ''}${lastCreditQoq.toFixed(2)}%</strong>. <br>
+        Tăng trưởng huy động lũy kế tương ứng đạt <strong>${lastFundingQoq >= 0 ? '+' : ''}${lastFundingQoq.toFixed(2)}%</strong>. <br>
         Mức độ tương đồng tăng trưởng phản ánh sự kiểm soát nhịp nhàng thanh khoản và tỷ lệ LDR pháp lý.
     `;
 }
 
-function renderNimCofChart(ticker) {
+function renderNimCofChart(localJson, ticker) {
     const card = document.getElementById('chart-nimcof-card');
-    const img = document.getElementById('nimcof-chart-img');
-    if (!card || !img) return;
-    const chartPath = `Bao cao/${ticker}/charts/chartT_nim_cof_quarterly.png`;
-    img.src = chartPath;
-    img.onload = () => { card.style.display = 'flex'; };
-    img.onerror = () => { card.style.display = 'none'; };
+    const canvas = document.getElementById('nimCofChart');
+    if (!card || !canvas) return;
+    const rq = localJson.ratios_quarterly;
+    if (!rq || !rq.nim || !rq.cof || rq.nim.length === 0 || rq.cof.length === 0) {
+        card.style.display = 'none';
+        return;
+    }
+    const nq = Math.min(rq.nim.length, rq.cof.length, 12);
+    const labels = rq.quarters ? rq.quarters.slice(-nq) : Array.from({length: nq}, (_, i) => `Q${(i % 4)+1} ${Math.floor(i/4)}`);
+    const nimData = rq.nim.slice(-nq);
+    const cofData = rq.cof.slice(-nq);
+    card.style.display = 'flex';
+    const ctx = canvas.getContext('2d');
+    if (window._nimCofChart) window._nimCofChart.destroy();
+    window._nimCofChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'NIM (%)', data: nimData, borderColor: '#70AD47', backgroundColor: 'rgba(112,173,71,0.1)', pointStyle: 'diamond', tension: 0.2, fill: true },
+                { label: 'COF (%)', data: cofData, borderColor: '#ED7D31', backgroundColor: 'rgba(237,125,49,0.1)', pointStyle: 'square', tension: 0.2, fill: true }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 10 } } },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: '%' } },
+                x: { ticks: { maxTicksLimit: 10, maxRotation: 30 } }
+            }
+        }
+    });
 }
 
 // ═══════════════════════════════════════════════════════════
