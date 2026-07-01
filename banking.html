@@ -135,6 +135,26 @@
                     <span class="lbl">Chi phí vốn CSH (COE)</span>
                     <span class="val" id="snap-coe">- %</span>
                 </div>
+                <div class="val-snap-box">
+                    <span class="lbl">BVPS hiện tại</span>
+                    <span class="val" id="snap-bvps">- VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/B Median lịch sử</span>
+                    <span class="val" id="snap-pb-median">- x</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/B Hấp dẫn (Bear)</span>
+                    <span class="val" id="snap-pb-attractive">- x</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/B Target (Bull)</span>
+                    <span class="val" id="snap-pb-target">- x</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/E Median lịch sử</span>
+                    <span class="val" id="snap-pe-median">- x</span>
+                </div>
             </div>
         </div>
 
@@ -245,7 +265,17 @@
                     </div>
                 </div>
 
-                <!-- Chart 5: Tăng trưởng Tín dụng & Huy động (Split Layout) -->
+                <!-- Chart 5: NIM & COF Quarterly (loads PNG from Bao cao/{ticker}/charts/) -->
+                <div class="chart-card-split margin-top-20" id="chart-nimcof-card" style="display:none">
+                    <div class="chart-split-left" style="width:100%">
+                        <h3>NIM &amp; COF theo Quý (12-20 quý gần nhất)</h3>
+                        <div class="chart-container" style="text-align:center">
+                            <img id="nimcof-chart-img" src="" alt="NIM & COF Chart" style="max-width:100%;height:auto;border-radius:8px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 6: Tăng trưởng Tín dụng & Huy động (Split Layout) -->
                 <div class="chart-card-split margin-top-20" id="chart-growth-card" style="display:none">
                     <div class="chart-split-left">
                         <h3>Tăng trưởng Tín dụng &amp; Huy động liên quý QoQ theo Quý</h3>

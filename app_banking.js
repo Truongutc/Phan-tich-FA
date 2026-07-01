@@ -476,6 +476,7 @@ async function loadStockDashboard(ticker) {
 
     renderValuationScenarios(localJson?.valuation, currentPrice, details, latestRatio, cfg);
     renderValuationSnapshot(localJson);
+    renderNimCofChart(ticker);
     renderFinancialSnapshotTable(localJson, sectorKey);
     renderAssumptionsTable(localJson, sectorKey);
     renderResidualIncomeTable(localJson, sectorKey);
@@ -1200,6 +1201,16 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
     `;
 }
 
+function renderNimCofChart(ticker) {
+    const card = document.getElementById('chart-nimcof-card');
+    const img = document.getElementById('nimcof-chart-img');
+    if (!card || !img) return;
+    const chartPath = `Bao cao/${ticker}/charts/chartT_nim_cof_quarterly.png`;
+    img.src = chartPath;
+    img.onload = () => { card.style.display = 'flex'; };
+    img.onerror = () => { card.style.display = 'none'; };
+}
+
 // ═══════════════════════════════════════════════════════════
 // FINANCIAL SNAPSHOT TABLE — mirrors PDF Page 1 summary table
 // ═══════════════════════════════════════════════════════════
@@ -1252,6 +1263,11 @@ function renderValuationSnapshot(localJson) {
         el('snap-recommend').style.background = recColor;
     }
     if (el('snap-coe')) el('snap-coe').textContent = (val.COE != null ? val.COE.toFixed(2) : '-') + '%';
+    if (el('snap-bvps')) el('snap-bvps').textContent = fmt(val.bvpsBase);
+    if (el('snap-pb-median')) el('snap-pb-median').textContent = val.pbMedian ? val.pbMedian.toFixed(2) + 'x' : '-';
+    if (el('snap-pb-attractive')) el('snap-pb-attractive').textContent = val.pbAttractive ? val.pbAttractive.toFixed(2) + 'x' : '-';
+    if (el('snap-pb-target')) el('snap-pb-target').textContent = val.pbTarget ? val.pbTarget.toFixed(2) + 'x' : '-';
+    if (el('snap-pe-median')) el('snap-pe-median').textContent = val.peMedian ? val.peMedian.toFixed(2) + 'x' : '-';
 }
 
 // ═══════════════════════════════════════════════════════════
