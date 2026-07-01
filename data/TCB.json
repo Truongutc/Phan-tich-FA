@@ -1329,9 +1329,9 @@
   "valuation": {
     "weightedTarget": 37678,
     "upside": 12.47,
-    "bear": 32026,
+    "bear": 32924,
     "base": 37678,
-    "bull": 43330,
+    "bull": 49081,
     "pbAttractive": 1.11,
     "pbAttractivePrice": 32924,
     "pbTarget": 1.66,
@@ -1477,5 +1477,5 @@
       0.3748
     ]
   },
-  "lastUpdated": "2026-07-01 17:55"
+  "lastUpdated": "2026-07-01 18:20"
 }

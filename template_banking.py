@@ -789,8 +789,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     weighted_target = 0.5 * ri_value + 0.5 * pb_value
     upside = (weighted_target / current_price - 1) * 100
-    bear_target = weighted_target * 0.85
-    bull_target = weighted_target * 1.15
+    bear_target = pb_attractive * (bvps_base + eps_fc_calc[0])
+    bull_target = pb_target * (bvps_base + eps_fc_calc[0])
 
     # ── Outputs Prep ──
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", ticker)
@@ -1779,8 +1779,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             pe_all_median = round(ex_pe_all_median, 4)
             pe_median_year = {y: pe_all_median for y in years_hist}
         upside         = (weighted_target / current_price - 1) * 100
-        bear_target    = round(weighted_target * 0.85)
-        bull_target    = round(weighted_target * 1.15)
+        bear_target    = round(pb_attractive * (bvps_base + eps_fc_calc[0]))
+        bull_target    = round(pb_target * (bvps_base + eps_fc_calc[0]))
         xl_wb.Close(SaveChanges=False)
         xl.Quit()
         del xl_wb, xl
