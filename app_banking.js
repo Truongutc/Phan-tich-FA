@@ -407,12 +407,6 @@ async function loadStockDashboard(ticker) {
             <div class="metric-value">${cfg.primaryValuation === 'P/B' ? currentPB : currentPE}</div>
             <div class="metric-sub">Trailing twelve months</div>
         </div>
-        ${details.targetPrice ? `
-        <div class="metric-card">
-            <div class="metric-label">Giá mục tiêu (${details.analyst || 'Vietcap'})</div>
-            <div class="metric-value" style="color:#10b981">${formatNumber(details.targetPrice)}</div>
-            <div class="metric-sub">${details.rating || ''} · Upside ${details.upsideToTargetPercent ? (details.upsideToTargetPercent * 100).toFixed(1) + '%' : ''}</div>
-        </div>` : ''}
     `;
 
     const bankKpiCard = document.getElementById('bank-kpi-card');
@@ -736,11 +730,6 @@ function renderValuationScenarios(valData, currentPrice, details, latestRatio, c
         bear = formatNumber(valData.bear || 0) + ' VND';
         base = formatNumber(valData.base || 0) + ' VND';
         bull = formatNumber(valData.bull || 0) + ' VND';
-    } else if (details.targetPrice) {
-        const target = details.targetPrice;
-        bear = formatNumber(Math.round(target * 0.75)) + ' VND';
-        base = formatNumber(Math.round(target)) + ' VND';
-        bull = formatNumber(Math.round(target * 1.2)) + ' VND';
     }
 
     document.getElementById('val-bear').textContent = bear;
@@ -1290,9 +1279,10 @@ function renderValuationSnapshot(localJson) {
     }
     if (el('snap-coe')) el('snap-coe').textContent = (val.COE != null ? val.COE.toFixed(2) : '-') + '%';
     if (el('snap-bvps')) el('snap-bvps').textContent = fmt(val.bvpsBase);
+    if (el('snap-ri-value')) el('snap-ri-value').textContent = val.riValue ? fmt(val.riValue) : '-';
     if (el('snap-pb-median')) el('snap-pb-median').textContent = val.pbMedianPrice ? fmt(val.pbMedianPrice) : '-';
     if (el('snap-pb-attractive')) el('snap-pb-attractive').textContent = val.pbAttractivePrice ? fmt(val.pbAttractivePrice) : '-';
-    if (el('snap-pb-target')) el('snap-pb-target').textContent = val.pbTargetPrice ? fmt(val.pbTargetPrice) : '-';
+    if (el('snap-pb-target')) el('snap-pb-target').textContent = val.pbOverPrice ? fmt(val.pbOverPrice) : '-';
     if (el('snap-pe-median')) el('snap-pe-median').textContent = val.peMedianPrice ? fmt(val.peMedianPrice) : '-';
 }
 
@@ -1374,7 +1364,7 @@ function renderResidualIncomeTable(localJson, sectorKey) {
             <strong>Gia muc tieu Weighted (50% RI + 50% P/B):</strong>
             <span style="color:#3b82f6;font-weight:800;font-size:1.05em"> ${fmt(val.weightedTarget)} VND/CP</span>
             <span style="color:${up >= 0 ? '#10b981' : '#ef4444'};font-weight:700">(${up >= 0 ? '+' : ''}${up.toFixed(1)}% upside)</span><br>
-            <strong>Gia Bull (P/B target ${(val.pbTarget||0).toFixed(2)}x):</strong> ${fmt(val.pbTargetPrice)} VND &nbsp;|&nbsp;
+            <strong>Gia Bull (P/B Over ${(val.pbOver||0).toFixed(2)}x):</strong> ${fmt(val.pbOverPrice)} VND &nbsp;|&nbsp;
             <strong>Gia Bear (P/B attractive ${(val.pbAttractive||0).toFixed(2)}x):</strong> ${fmt(val.pbAttractivePrice)} VND
         `;
     }
