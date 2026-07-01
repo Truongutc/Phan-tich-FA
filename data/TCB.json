@@ -292,8 +292,8 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1z5vfanaRDPVzW_1W_bCPvmICPLjE8_0x/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1nr6Vrl9XU8BIExtETxa38d-fYWvnfzDA/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1f-6gCng0q5XjZh3w_ub3IOVXrIna-BMn/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1HilpiT4sAJGazonF03TfXZVMvRhRpQrM/view?usp=drivesdk",
   "pe_hist": [
     11.6477870099,
     13.5226658764,
@@ -1067,11 +1067,11 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 36043,
-    "upside": 7.59,
-    "bear": 30636,
-    "base": 36043,
-    "bull": 41449,
+    "weightedTarget": 36039,
+    "upside": 7.58,
+    "bear": 30633,
+    "base": 36039,
+    "bull": 41445,
     "pbAttractive": 1.06,
     "pbAttractivePrice": 31475,
     "pbTarget": 1.67,
@@ -1080,10 +1080,10 @@
     "peMedian": 8.78,
     "pbMedian": 1.33,
     "bvpsBase": 25331,
-    "riValue": 32760,
+    "riValue": 32752,
     "pbValue": 39327,
-    "pvRi": 1880,
-    "pvCv": 5548,
+    "pvRi": 1879,
+    "pvCv": 5542,
     "epsFc": [
       4299,
       5087,
@@ -1215,5 +1215,5 @@
       0.3748
     ]
   },
-  "lastUpdated": "2026-07-01 02:35"
+  "lastUpdated": "2026-07-01 03:17"
 }
