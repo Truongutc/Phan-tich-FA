@@ -34,7 +34,38 @@ Ngành thép sống dựa vào **chênh lệch giá (Spread)** giữa đầu và
 **Định mức tiêu chuẩn (Lò cao BOF)**:
 - 1 tấn thép cần ~1.6 tấn quặng sắt + ~0.6 tấn than cốc
 
-**Spread = Giá thép − 1.6×Giá quặng sắt − 0.6×Giá than cốc − Chi phí SX khác CỐ ĐỊNH (USD/tấn)**
+**⚠️ Spread LAG 1 QUÝ (2026-07 — chốt theo yêu cầu user, thay thế công thức "cùng kỳ" cũ):**
+- Vì số ngày tồn kho bình quân (DIO) của HPG dao động quanh ~90 ngày (~1 quý), giá vốn hàng bán ghi
+  nhận trong quý T phần lớn phản ánh giá nguyên liệu MUA VÀO ở quý T-1, trong khi giá bán vẫn là giá
+  của quý T. `total_cost(quý T) = 1.6×Giá quặng bình quân quý T-1 + 0.6×Giá than cốc bình quân quý
+  T-1 + Chi phí SX khác CỐ ĐỊNH (USD/tấn, `OTHER_COST_USD`)`.
+
+**⚠️ 3 LOẠI SPREAD RIÊNG BIỆT (2026-07 — chốt theo yêu cầu user, thay thế 1 spread HRC duy nhất cũ):**
+- **Spread HRC** = Giá HRC bình quân quý T `× 1.15` (nếu quý T ≥ `AD_HRC_EFFECTIVE_Q` = 2025Q3) −
+  `total_cost(quý T)`. Hệ số 1.15 phản ánh **thuế chống bán phá giá (CBPG) HRC Trung Quốc — vụ AD20**:
+  Bộ Công Thương áp thuế chính thức khổ hẹp hiệu lực **06/07/2025** (rơi vào 2025Q3), mở rộng chống
+  lẩn tránh khổ rộng từ 17/04/2026. Không áp dụng thuế này thì Spread HRC tính từ giá CFR quốc tế
+  (investing.com) sẽ bị đánh giá THẤP hơn thực tế vì bỏ qua chi phí thuế NK thực trả.
+- **Spread Rebar** (thép xây dựng) = Giá thép XD bình quân quý T − `total_cost(quý T)` — KHÔNG nhân
+  hệ số CBPG (thuế chỉ áp cho HRC nhập khẩu, không áp cho rebar).
+- **Spread All** = bình quân gia quyền theo sản lượng THỰC TẾ CỦA CHÍNH QUÝ ĐÓ:
+  `(SL_XD(T)×Spread_Rebar(T) + SL_HRC(T)×Spread_HRC(T)) / (SL_XD(T)+SL_HRC(T))`. Chỉ tính được cho
+  các quý có dữ liệu sản lượng tách riêng (2023Q1 trở đi — xem `HRC_SALES_HIST_KT`/`XD_SALES_HIST_KT`);
+  5 quý đầu (2021Q4-2022Q4) để `None`, không suy diễn thiếu căn cứ.
+- **Spread năm** (2021-2025, đủ dữ liệu quý) = MEDIAN các Spread quý (lag-1-quý) thuộc năm đó cho MỖI
+  loại — nhất quán với cách tính "Giá năm = MEDIAN 4 quý".
+- **Spread năm dự phóng xa** (2027E, 2028E — chưa có dữ liệu quý) = xấp xỉ lag-1-quý bằng lag-1-NĂM
+  dùng giá quặng/than năm TRƯỚC (Spread HRC vẫn nhân 1.15 vì đã chắc chắn sau 2025Q3).
+- **Spread năm hiện tại** (2026E) = TB(Spread quý gần nhất đã biết đầy đủ, Spread hiện tại quý đang chạy).
+- Biến Python: `Q18_SPREAD_HRC` (= alias `Q18_SPREAD`, tương thích ngược), `Q18_SPREAD_REBAR`,
+  `Q18_SPREAD_ALL` (mảng 18 quý, lag-1-quý); `SPREAD_A`/`SPREAD_REBAR_A`/`SPREAD_ALL_A` (8 năm);
+  `SPREAD_HRC_NOW`/`SPREAD_REBAR_NOW`/`SPREAD_ALL_NOW` (quý đang chạy — `SPREAD_ALL_NOW` dùng SL quý
+  đang chạy làm quyền số, ưu tiên `CUR_Q_HRC_KT_DIRECT`/`CUR_Q_XD_KT_DIRECT`, fallback SL quý gần
+  nhất). Quý đầu tiên trong bảng lịch sử (2021Q4) không có quý trước (2021Q3) nên dùng tạm giá CÙNG
+  quý — chỉ 1/18 điểm dữ liệu bị ảnh hưởng, không đại diện cho công thức chuẩn.
+- **Excel**: sheet `17_Gia_Hang_Hoa` cột G-L (giá/nguồn XD, Spread Rebar, SL XD/HRC link sheet
+  `15_Quarterly_Data`, Spread All) — TẤT CẢ là công thức sống, không số chết. 3 biểu đồ riêng biệt
+  (Spread HRC/Rebar/All vs BLNG quý) hiển thị ở Excel/PDF/JSON — xem `_make_spread_gpm_chart()`.
 
 **Lợi nhuận** = Spread × Sản lượng - Chi phí cố định
 
@@ -91,11 +122,20 @@ giá HRC/quặng sắt/than cốc phải tự động 100% bằng Python thuần
 1. **Sheet Excel riêng `17_Gia_Hang_Hoa`** — nguồn duy nhất cho giá hàng hóa, mọi sheet khác
    (`02_Assumptions`, `03_Revenue_Model`, `14_Steel_Analysis`) **LINK công thức** về sheet này, không dùng
    mảng Python độc lập cho từng sheet (tránh lệch số).
-2. **Bảng 18 quý lịch sử** (2021Q4 → hiện tại): tổng hợp thủ công từ nhiều nguồn công khai (xem ghi chú
-   nguồn ngay trong sheet, cột B "NGUỒN DỮ LIỆU"). Đây là **số liệu nghiên cứu, không phải median 3 mốc
-   trong quý** (đầu/giữa/cuối quý) như lý tưởng — vì không có API lịch sử giá theo ngày miễn phí. Độ tin cậy
-   khác nhau theo mặt hàng: quặng sắt (cao, đối chiếu World Bank Pink Sheet), than cốc (trung bình, FPTS/
-   VCBS/Argus), HRC (thấp hơn, chỉ đúng xu hướng — Mysteel/SteelBenchmarker/giá XK HPG).
+2. **Bảng 18 quý lịch sử** (2021Q4 → hiện tại), độ tin cậy khác nhau theo mặt hàng:
+   - **Quặng sắt (cột C) — MEDIAN THẬT, tự động (2026-07):** Fetch tự động (curl) file
+     `CMO-Historical-Data-Monthly.xlsx` từ World Bank Commodity Markets "Pink Sheet"
+     (`https://www.worldbank.org/en/research/commodity-markets` — URL file đổi hash mỗi lần cập nhật nên
+     phải discover qua trang tĩnh trước, KHÔNG hardcode URL file), sheet `Monthly Prices`, cột
+     `Iron ore, cfr spot`. Với mỗi quý, lấy 3 giá THÁNG thật rồi tính `statistics.median()` → **median
+     thật của nhiều điểm giá trong quý**, không phải số nghiên cứu tĩnh. Cột F "Nguồn giá Quặng" trong
+     sheet 17 đánh dấu `WB` (median thật) hay `NC` (fallback nghiên cứu thủ công, khi World Bank chưa có
+     đủ 3 tháng hoặc fetch lỗi — script KHÔNG BAO GIỜ dừng vì lỗi fetch này).
+   - **Than cốc & HRC (cột B, D) — vẫn là số nghiên cứu thủ công, KHÔNG phải median:** Chưa tìm được
+     nguồn giá THÁNG/NGÀY miễn phí tương đương World Bank cho 2 mặt hàng này (đã thử: World Bank Pink
+     Sheet KHÔNG có than cốc luyện kim/HRC). Vẫn là 1 số đại diện/quý tổng hợp thủ công (than cốc: FPTS/
+     VCBS/Argus — trung bình; HRC: Mysteel/SteelBenchmarker/giá XK HPG — chỉ đúng xu hướng/độ lớn) — ghi
+     chú rõ trong sheet 17 (không gọi nhầm là "median" để tránh hiểu lầm).
 3. **Giá năm** = Excel formula `MEDIAN()` của 4 quý trong năm đó (không phải trung bình cộng — median bền
    hơn với outlier).
 4. **Cột "Spread quý" riêng** (cột E trong sheet 17) — công thức SỐNG cho từng quý, không phải số Python
@@ -122,11 +162,39 @@ giá HRC/quặng sắt/than cốc phải tự động 100% bằng Python thuần
    áp công thức spread chuẩn — KHÔNG dùng giá dự phóng cả năm để tính "spread hiện tại" (lỗi từng gặp).
 7. **Ghi rõ nguồn URL trong chính sheet Excel** (không chỉ trong skill/code comment) để user tự đối chiếu
    khi nghi ngờ số liệu — mục "NGUỒN DỮ LIỆU" ở cuối sheet 17, liệt kê từng mặt hàng + URL cụ thể.
+8. **Giá thép xây dựng (Rebar/XD) — MEDIAN THẬT + neo nội địa (2026-07):** Trước đây KHÔNG có nguồn giá
+   quý thật cho rebar (chỉ có 1 giả định năm `XD_PRICE_A`, chưa đủ granularity để tính Spread Rebar/All).
+   Đã research và xác nhận VSA (Hiệp hội Thép, bản tin tháng) KHÔNG công bố giá bán rebar (chỉ có giá
+   nguyên liệu đầu vào + sản lượng) → không dùng được. Nguồn thay thế đã verify:
+   - **investing.com Steel Rebar futures (SRRc1 — Shanghai rebar continuous)**: niêm yết THẲNG USD/tấn
+     (không cần quy đổi CNY). Dùng API nội bộ `api.investing.com/api/financialdata/historical/996702`
+     (header `Domain-Id: vn`, `time-frame=Monthly`) để lấy TOÀN BỘ lịch sử tháng 1 lần fetch (khác cách
+     scrape từng trang quý của HRC/than cốc) → tính MEDIAN THẬT 3 tháng/quý như quặng sắt. **Hạn chế:**
+     hợp đồng NGỪNG cập nhật sau 10/2025 (khối lượng giao dịch về 0, giá đứng yên) — chỉ dùng được cho
+     16/18 quý (2021Q4-2025Q3), đánh dấu nguồn `"INV"`.
+   - **SteelOnline.vn** (`bang-gia-thep-xay-dung-hom-nay`): giá thép XD Hòa Phát D10/CB240 NỘI ĐỊA THỰC
+     (VND/kg) nhưng CHỈ có giá HIỆN TẠI (không có kho lưu trữ lịch sử) — bảng ĐẦU TIÊN trên trang là bảng
+     Hòa Phát (xác nhận qua đoạn mô tả ngay sau bảng). Dùng làm "giá hiện tại" (`xd_now`), ưu tiên hơn
+     SRRc1 futures đã hết thanh khoản.
+   - **2026Q1** (futures không có dữ liệu): dùng điểm neo THẬT nội địa từ VSA — bài "Thị trường thép xây
+     dựng Quý I/2026" (báo cáo họp Tổ Điều hành Thị trường trong nước, KHÁC bản tin tháng thường kỳ):
+     giá dao động 15.100-15.700 đồng/kg → median 15.400 quy đổi USD/tấn theo tỷ giá USD/VND fetch live
+     (`fetch_usd_vnd_rate()`, fallback investing.com currencies/usd-vnd). Đánh dấu nguồn `"VN"`.
+   - **2025Q4** (futures chỉ còn 1/3 tháng thật — T10, hết thanh khoản T11-T12): nội suy tuyến tính giữa
+     2025Q3 (thật) và 2026Q1 (thật) — đánh dấu nguồn `"NC"`.
+   - Đối chiếu 2 nguồn tại cùng thời điểm (~10/2025): SRRc1 ~545 USD/tấn vs SteelOnline hiện tại quy đổi
+     ~581 USD/tấn — lệch ~6%, chấp nhận được để ĐO XU HƯỚNG tương đối (không phải mốc tuyệt đối tuyệt đối
+     chính xác — 2 nguồn khác thị trường: futures quốc tế vs bán lẻ nội địa Việt Nam).
+   - Biến Python: `Q18_XD` (18 quý), `Q18_XD_SRC` (nhãn nguồn từng quý), `xd_now`, `XD_NOW_SRC`.
 
 **URLs đã verify hoạt động qua `curl` (2026-07):**
 - HRC: `https://www.investing.com/commodities/lme-steel-hrc-fob-china-futures`
 - Quặng sắt 62% Fe CFR: `https://vn.investing.com/commodities/iron-ore-62-cfr-futures`
 - Than cốc luyện kim (niêm yết CNY, sàn Đại Liên): `https://vn.investing.com/commodities/metallurgical-coke-futures`
+- Thép XD/Rebar futures (SRRc1, niêm yết thẳng USD): `https://vn.investing.com/commodities/steel-rebar`
+  (trang) hoặc `https://api.investing.com/api/financialdata/historical/996702` (API lịch sử tháng)
+- Thép XD nội địa Hòa Phát (VND/kg, chỉ giá hiện tại): `https://www.steelonline.vn/bang-gia-thep-xay-dung-hom-nay`
+- Tỷ giá USD/VND: `https://vn.investing.com/currencies/usd-vnd`
 - Nguồn thay thế cho quặng sắt (miễn phí, không cần key, nhưng URL có hash đổi mỗi lần cập nhật — phải
   discover qua trang tĩnh `worldbank.org/en/research/commodity-markets` trước khi tải): World Bank
   Commodity Markets "Pink Sheet" (`CMO-Historical-Data-Monthly.xlsx`) — có "Iron ore, cfr spot" nhưng
@@ -135,6 +203,55 @@ giá HRC/quặng sắt/than cốc phải tự động 100% bằng Python thuần
 **Chưa làm (đề xuất cho lần sau nếu user muốn chính xác hơn):** log file lưu mỗi lần fetch kèm ngày, để
 "giá quý hiện tại" dần trở thành median THẬT của nhiều lần chạy script trong quý (thay vì 1 điểm dữ liệu
 duy nhất) — chỉ có giá trị cho quý đang chạy trở về sau, không backfill được lịch sử.
+
+---
+
+## Sản lượng thép HPG — tự động dò tin công bố sớm (2026-07)
+
+**Mục đích:** ước tính sản lượng/doanh thu/LNST quý ĐANG CHẠY sớm hơn BCTC chính thức, bằng cách tự
+động dò bài công bố sản lượng tháng/quý mới nhất mà HPG đăng trên chính site của họ.
+
+**Cơ chế — 3 nguồn kết hợp (ưu tiên nguồn tách riêng HRC/XD khi trùng tháng/quý):**
+- **`fetch_hpg_production_updates()`** (`hoaphat.com.vn`): trang danh sách tin tức render JS (không lấy
+  được qua `curl`) NHƯNG mỗi trang bài viết có khung "Tin liên quan" hiện 5 tin mới nhất TOÀN SITE
+  (không phụ thuộc bài đang xem) — dùng làm cửa sổ dò tin. Bổ sung quét `sitemap.xml` →
+  `sitemap-tintuc-page-N.xml` (tĩnh, không cần JS), lọc URL theo từ khóa (`san-luong`, `trieu-tan`,
+  `tan-thep`). Tiêu đề bài công bố có mẫu khá nhất quán: "Sản lượng bán hàng thép Hòa Phát đạt X
+  (triệu/nghìn) tấn trong {tháng N | quý N/YYYY}" — quý có thể viết số Ả Rập hoặc La Mã, có/không kèm
+  năm. **CHỈ lấy TỔNG sản lượng từ tiêu đề** (đáng tin cậy) — KHÔNG tự tách riêng số HRC từ nội dung
+  bài (đã thử và bỏ: câu văn "...(HRC), thép xây dựng, phôi thép đạt X tấn" khiến regex dễ bắt nhầm
+  TỔNG thành riêng HRC).
+- **`fetch_nguoiquansat_production_updates()`** (`nguoiquansat.vn`, 2026-07 thêm — user cung cấp
+  nguồn): đăng lại báo cáo cập nhật sản lượng THÁNG của Vietcap Research, **tách riêng HRC và thép
+  xây dựng** (chi tiết & tin cậy hơn hoaphat.com.vn). Quét `sitemap-article-YYYY-MM-DD.xml` (sitemap
+  THEO NGÀY, có sẵn tiêu đề trong `<image:title>` nên lọc mà không cần fetch từng bài) ngược 70 ngày.
+  Mẫu câu: "sản lượng {thép xây dựng | thép cuộn cán nóng (HRC)} ... trong tháng N[/YYYY] đạt X tấn".
+- **`fetch_dautucophieu_production_updates()`** (`dautucophieu.net`, 2026-07 thêm — user cung cấp
+  nguồn): đăng lại báo cáo cập nhật hàng tháng của HSC Research, cadence RẤT ĐỀU trong lịch sử (gần
+  như tháng nào cũng có bài riêng cho HPG). Discovery qua `/tag/hpg/` (WordPress tag page
+  SERVER-RENDERED, liệt kê bài mới nhất TRƯỚC — chỉ 1 lần fetch, đơn giản nhất trong 3 nguồn). Biểu
+  đồ sản lượng theo tháng trong bài là ẢNH (không đọc được, không dùng OCR/AI) nhưng số liệu quan
+  trọng vẫn nhắc lại bằng TEXT: "HPG bán được X tấn {sản phẩm} trong tháng N[/YYYY]". CHỈ lấy số đã
+  XÁC NHẬN, bỏ qua các câu "dự kiến đạt khoảng..." (ước tính của người viết báo cáo, tránh chồng thêm
+  ước tính lên ước tính).
+- Gộp 3 nguồn theo (loại, năm, quý/tháng) — trùng thì ưu tiên bản có tách HRC/XD riêng
+  (nguoiquansat/dautucophieu) hơn bản gộp chung (hoaphat.com.vn).
+- Quý đang chạy: có bài công bố QUÝ chính thức → dùng thẳng; chỉ có bài THÁNG → ước tính =
+  TB(tháng đã biết)×3 (dùng số HRC/XD tách trực tiếp nếu tất cả tháng đã biết đều có, nếu không mới
+  dùng TỶ LỆ lịch sử của quý gần nhất — không suy tỷ lệ từ văn bản).
+- **Vị trí Excel**: sheet `15_Quarterly_Data` mục D (bảng quý, có cột quý đang chạy đánh dấu nguồn),
+  E (bảng tháng, cột riêng HRC/XD/Tổng + link bài viết + công thức AVERAGE×3 sống cho từng cột), F (dự
+  phóng năm run-rate, formula sống). `03_Revenue_Model!G4/G5` LINK trực tiếp về mục F — chuỗi Doanh
+  thu→LNST 2026E đã sẵn formula sống nên chỉ cần sửa đúng ô gốc sản lượng.
+- VSA (Hiệp hội Thép) chỉ có số TỔNG NGÀNH, không tách HPG — không dùng được cho mục đích ước tính riêng
+  HPG (chỉ dùng cho phần vĩ mô ngành đã có sẵn).
+- **Nguồn đã xem xét nhưng CHƯA tích hợp** (user gợi ý, xem changelog 2026-07-02(f)/(g) để biết lý do
+  từng nguồn): cafef.vn, tapchicongthuong.vn, mekongasean.vn, tinnhanhchungkhoan.vn, 24hmoney.vn,
+  hoaphatdungquat.vn (bài đơn lẻ, không có cơ chế dò bài mới); finance.vietstock.vn (chưa kiểm tra cấu
+  trúc); báo cáo PDF VCBS/Vietstock/Vietcap (cần thư viện đọc PDF + link tải không cố định).
+- **Lưu ý bắt buộc:** MỌI `print()` thêm mới trong các hàm fetch phải là ASCII thuần (không dấu tiếng
+  Việt) — console Windows mặc định dùng codepage cp1252, in ký tự có dấu sẽ crash `UnicodeEncodeError`
+  (đã xảy ra 2 lần trong quá trình phát triển tính năng này, ở cả bản (d) lẫn bản (e)/(f)).
 
 ---
 
@@ -220,6 +337,26 @@ duy nhất) — chỉ có giá trị cho quý đang chạy trở về sau, khôn
 **Vòng quay hàng tồn kho**: Càng cao càng tốt. Tồn kho ứ đọng khi giá thép giảm = thảm họa
 **CFO/LNST**: >1.0 = chất lượng LN tốt. <0.8 liên tục = cảnh báo LN ảo
 
+**DIO (Số ngày tồn kho BQ) & DSO (Số ngày phải thu BQ) — 2026-07 (CHỈ LỊCH SỬ, không dự phóng):**
+- Công thức: DIO = 365 × Tồn kho bình quân (đầu kỳ+cuối kỳ)/2 ÷ GVHB; DSO = 365 × Phải thu bình quân
+  (đầu kỳ+cuối kỳ)/2 ÷ Doanh thu. Dùng số dư BÌNH QUÂN (không phải cuối kỳ) để nhất quán với vòng quay
+  HTK; năm/quý đầu tiên trong chuỗi không có số dư đầu kỳ nên dùng số dư cuối kỳ.
+- **KHÔNG dự phóng 2026E-2028E** (theo yêu cầu user: DIO/DSO ít ảnh hưởng tới model định giá) — cột dự
+  phóng trong Excel để trống (`—`), chỉ D/E và tỷ lệ vay NH/tổng vay vẫn dự phóng đủ (liên quan trực tiếp
+  đòn bẩy/rủi ro tài chính).
+- **Vị trí công thức sống**: sheet `14_Steel_Analysis`, mục "4. HÀNG TỒN KHO, PHẢI THU & ĐÒN BẨY" — link
+  trực tiếp `04_PnL` (Doanh thu/GVHB) và `05_Balance_Sheet` (Phải thu/Tồn kho, chỉ cột B-F lịch sử).
+- **Biểu đồ + đánh giá — CẢ NĂM VÀ QUÝ**: `turnover.png` (DIO/DSO theo Năm, 2021-2025) và
+  `turnover_quarterly.png` (DIO/DSO theo Quý, năm hóa GVHB/DT quý ×4, khớp Q18_LABELS 2021Q4-2026Q1) +
+  narrative tại PDF mục "4C. CHẤT LƯỢNG LỢI NHUẬN & KẾ TOÁN" (so sánh năm đầu vs năm cuối lịch sử, kết
+  luận CẢI THIỆN/XẤU ĐI cho từng chỉ số).
+- **Biểu đồ tương quan Spread ↔ Biên LNG (BLNG)**: `spread_gpm_corr_annual.png` (scatter + hồi quy, 5
+  điểm 2021-2025) và `spread_gpm_corr_quarterly.png` (scatter + hồi quy, tất cả quý có đủ BCTC khớp
+  Q18_SPREAD) — CHỈ dùng dữ liệu THỰC TẾ (không đưa số dự phóng vào vì BLNG dự phóng được nội suy TỪ
+  chính tỷ lệ Spread, sẽ tạo tương quan giả/circular). Với n nhỏ (đặc biệt chuỗi năm chỉ 5 điểm), hệ số
+  Pearson r dễ bị 1 outlier chi phối (VD 2023 — xem giải thích lag-1-quý bên trên) — chỉ mang tính tham
+  khảo xu hướng, không phải kết luận thống kê chắc chắn.
+
 ---
 
 ## Thủ thuật kế toán
@@ -265,18 +402,51 @@ duy nhất) — chỉ có giá trị cho quý đang chạy trở về sau, khôn
 
 ### GP Margin Forecast Methodology
   - **KHÔNG** lấy spread thay thế cho GP margin (spread chỉ đồng pha, không bằng nhau)
-  - **Cách tính (bottom-up từ quý gần nhất):**
-    1. Lấy LNG & doanh thu quý gần nhất từ BCTC (VD: Q1/2026)
-    2. Tính BLNG quý gần nhất = LNG / Doanh thu
-    3. Tính tỉ lệ Spread = Spread hiện tại / Spread quý gần nhất
-    4. BLNG các quý còn lại = BLNG quý gần nhất × tỉ lệ Spread
-    5. LNG 2026 = LNG lũy kế + Doanh thu ước tính các quý còn lại × BLNG các quý còn lại
-    6. BLNG 2026 = LNG 2026 / Tổng doanh thu 2026
-  - Spread = Giá HRC - 1.6×Giá quặng - 0.6×Giá than cốc - Chi phí SX khác CỐ ĐỊNH (`OTHER_COST_USD`, USD/tấn)
+  - **⚠️ Dùng Spread ALL (không phải Spread HRC riêng lẻ), TỔNG QUÁT theo N quý ĐÃ CÓ BCTC — chốt
+    2026-07 theo yêu cầu user (thay thế công thức đơn giản "chỉ neo Q1" trước đó):**
+    - Gọi N = số quý ĐÃ CÓ báo cáo thực tế của năm dự phóng đầu tiên (dùng lại
+      `cumulative_actual_quarters()` ở `fetch_data.py` để xác định N và lũy kế Doanh thu/LN gộp N quý).
+    - **N < 4:**
+      `LNG năm = LNG lũy kế N quý + (4-N)/4 × Doanh thu ước tính năm × (LNG lũy kế N quý / Doanh thu
+      lũy kế N quý) × (Spread All hiện tại / Spread All quý gần nhất đã biết)`, rồi
+      `BLNG năm = LNG năm / Doanh thu ước tính năm`.
+      "Spread All quý gần nhất đã biết" PHẢI dùng sản lượng CỦA CHÍNH quý đó làm quyền số (không phải
+      quyền số quý đang chạy) — luôn lấy dòng CUỐI bảng 18 quý ở sheet `17_Gia_Hang_Hoa` (quy ước: bảng
+      này phải được bảo trì thêm quý mới mỗi khi có BCTC, nên tự động khớp đúng N). "Spread All hiện
+      tại" dùng quyền số = sản lượng quý ĐANG CHẠY (ưu tiên số tách trực tiếp từ nguồn tin, fallback
+      sản lượng quý gần nhất đã biết đầy đủ nếu chưa có).
+    - **N = 4** (đủ cả năm): `BLNG năm = LNG lũy kế 4 quý / Doanh thu lũy kế 4 quý` — không cần ước
+      tính phần còn lại nữa.
+    - **Năm dự phóng SAU** (VD 2027E khi đang ở 2026, CHƯA có quý nào của năm đó):
+      `BLNG năm = BLNG năm TRƯỚC × (Spread All hiện tại / Spread All NĂM TRƯỚC)` — dùng annual Spread
+      All ước tính của CHÍNH năm liền trước (`SPREAD_ALL_A`), và dùng CÙNG "Spread All hiện tại" (không
+      chain qua Spread All của từng năm dự phóng xa) cho mọi năm sau đó.
+  - Spread All = bình quân gia quyền Spread HRC (đã có thuế CBPG)/Spread Rebar theo sản lượng — xem mục
+    "3 LOẠI SPREAD RIÊNG BIỆT" ở trên. Biến Python: `q1_spread_all` (Spread All quý gần nhất thực tế,
+    = `Q18_SPREAD_ALL[-1]`), `SPREAD_ALL_NOW` (Spread All hiện tại), `_n_q_known_mod` (N quý đã biết).
   - **Quan trọng:** Không hardcode BLNG dự phóng (VD: 17.5%), phải tính từ số thực tế
-  - **Excel formula sống:** cả Spread quý gần nhất VÀ Spread hàng năm (mẫu số + tử số của tỉ lệ ở bước 3)
-    phải là công thức Excel tham chiếu tới sheet `17_Gia_Hang_Hoa` (KHÔNG phải Python tính sẵn rồi ghi số
-    vào ô) — để user bấm vào từng ô kiểm chứng độc lập cách tính BLNG dự phóng.
+  - **Excel formula sống:** `02_Assumptions!row6` (BLNG) và `row45` (Spread hàng năm — LINK sang sheet
+    `17_Gia_Hang_Hoa`, KHÔNG tự trừ lại độc lập: ≤2022 dùng Spread HRC, ≥2023 dùng Spread All) phải là
+    công thức Excel tham chiếu — để user bấm vào từng ô kiểm chứng độc lập. Biến Python
+    (`gpm_2026/2027/2028`) PHẢI tính theo ĐÚNG công thức y hệt Excel (dùng cho narrative PDF/JSON) —
+    2 nơi tính riêng nên khi sửa 1 bên phải soát lại bên kia (bài học từ bug SL_HRC_A/SL_XD_A dưới đây).
+  - **Vị trí dòng sheet 17 CỐ ĐỊNH, tính trước qua `_r17_annual_row_layout()`** (chỉ phụ thuộc
+    `len(Q18_LABELS)`) — cần vì `02_Assumptions` được build TRƯỚC `17_Gia_Hang_Hoa` trong code nhưng
+    phải link công thức sang đó. Có `assert` đối chiếu layout thật khi build sheet 17 — lệch sẽ báo lỗi
+    ngay thay vì âm thầm link sai ô.
+
+### ⚠️ Bug lớn đã gặp: SL_HRC_A/SL_XD_A lệch xa số liệu thật (2026-07)
+  - `SL_HRC_A`/`SL_XD_A` (module-level, sản lượng HRC/XD theo năm) là GIẢ ĐỊNH TĨNH viết tay từ đầu dự
+    án — sau khi có `HRC_SALES_HIST_KT`/`XD_SALES_HIST_KT` (dữ liệu quý THẬT, tổng hợp sau này) thì
+    KHÔNG được đồng bộ lại, khiến lệch xa số thật (VD 2025 giả định 3.2 triệu tấn HRC, thật là 5.0 triệu
+    tấn) — kéo theo doanh thu 2025 (`03_Revenue_Model`) bị tính THIẾU, %tăng trưởng DT 2026E bị THỔI
+    PHỒNG giả tạo dù bản chất 2026E không đổi.
+  - **Bài học:** bất kỳ mảng "giả định" nào có SỐ THẬT tương ứng ở nơi khác trong model (dù không cùng
+    granularity — SL_HRC_A theo NĂM, HRC_SALES_HIST_KT theo QUÝ) đều phải kiểm tra định kỳ có bị lệch
+    không, đặc biệt sau khi thêm nguồn dữ liệu thật mới (rất dễ quên đồng bộ ngược lại các chỗ dùng cũ).
+  - **Fix:** năm nào có ĐỦ 4 quý dữ liệu thật thì GHI ĐÈ bằng SUM 4 quý (Python để tính SL_HRC_A/
+    SL_XD_A dùng nội bộ, Excel dùng công thức SUM sống link sheet `15_Quarterly_Data`) — năm chưa có dữ
+    liệu quý (2021-2022) giữ giả định cũ.
 
 ---
 

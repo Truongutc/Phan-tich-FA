@@ -34,7 +34,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 import requests
 import statistics as stats
 
-from fetch_data import section_to_quarters
+from fetch_data import section_to_quarters, cumulative_actual_quarters, blend_annual_estimate, latest_actual_quarter_value, blend_annual_estimate_stock
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -599,6 +599,17 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     llr_coverage_fc = [0.90, 0.95, 1.00]
     tax_rate = 0.20
     
+    # ── Blend forecast NĂM HIỆN TẠI (years_fc[0]) với số quý ĐÃ CÓ báo cáo thực tế (2026-07, áp dụng
+    # đồng nhất với build_hpg_model.py — user yêu cầu chung cho cả 2 template) — tránh 2 sai số ngược
+    # chiều: (1) ngoại suy tuyến tính Q1x4 khi quý đó có yếu tố đột biến 1 lần (VD lãi tỷ giá, hoàn
+    # nhập dự phòng...) sẽ thổi phồng/thổi xẹp sai cả năm; (2) bỏ qua số liệu thực tế đã công bố, giữ
+    # nguyên giả định tăng trưởng cũ dù đã lệch rõ. Công thức: xem docstring blend_annual_estimate()
+    # trong fetch_data.py. Field code: bsb103=Dư nợ tín dụng, isb27=NII, isa20=LNST.
+    _is_q_all = section_to_quarters(raw_data, "INCOME_STATEMENT")
+    _bs_q_all = section_to_quarters(raw_data, "BALANCE_SHEET")
+    _cur_fc_year = years_fc[0]
+    _loans_latest, _n_loans_q = latest_actual_quarter_value(_bs_q_all, _cur_fc_year, "bsb103")
+
     # ── Build Forecast Model ──
     loans_fc = []
     dep_fc = []
@@ -608,7 +619,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         dep_fc.append(cust_dep_hist[-1] * (1 + dep_growth_fc[i]) if i==0 else dep_fc[i-1] * (1 + dep_growth_fc[i]))
         prev_iea = loans_hist[-1] + bank_dep_hist[-1] + inv_sec_bs_hist[-1] + cash_hist[-1] + sbv_dep_hist[-1]
         iea_fc.append(prev_iea * (1 + iea_growth_fc[i]) if i==0 else iea_fc[i-1] * (1 + iea_growth_fc[i]))
-        
+    if _n_loans_q > 0:
+        # bsb103 là số dư CUỐI KỲ (không cộng dồn được như KQKD) — re-anchor về số dư quý gần nhất đã
+        # biết, chỉ "cõng" phần tăng trưởng giả định gốc ứng với các quý CÒN LẠI của năm (xem docstring
+        # blend_annual_estimate_stock() trong fetch_data.py).
+        loans_fc[0] = round(blend_annual_estimate_stock(_loans_latest, _n_loans_q, loans_fc[0], loans_hist[-1]), 1)
+        print(f"  [Blend] {_cur_fc_year}F Du no tin dung: {_n_loans_q}/4 quy da biet (so du gan nhat "
+              f"{_loans_latest:,.0f} ty) -> blend = {loans_fc[0]:,.0f} ty")
+
     iea_end_hist_last = iea_end_hist[-1]
     iea_avg_fc = []
     dep_bonds_fc = []
@@ -633,6 +651,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         nii_val = interest_income - interest_expense
         nii_fc.append(round(nii_val, 1))
         nim_fc.append(round(nii_val / iea_avg_fc[i], 4))
+    _nii_cum, _n_nii_q = cumulative_actual_quarters(_is_q_all, _cur_fc_year, "isb27")
+    if _n_nii_q > 0:
+        nii_fc[0] = round(blend_annual_estimate(_nii_cum, _n_nii_q, nii_fc[0]), 1)
+        nim_fc[0] = round(nii_fc[0] / iea_avg_fc[0], 4)
+        print(f"  [Blend] {_cur_fc_year}F NII: {_n_nii_q}/4 quy da biet (luy ke {_nii_cum:,.0f} ty) "
+              f"-> blend = {nii_fc[0]:,.0f} ty")
     non_int_fc = []
     for i in range(3):
         base_non_int = toi_hist[-1] - nii_hist[-1]
@@ -646,6 +670,22 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     pbt_fc = [ppop_fc[i] - prov_fc[i] for i in range(3)]
     tax_fc = [max(pbt_fc[i] * tax_rate, 0) for i in range(3)]
     np_fc = [pbt_fc[i] - tax_fc[i] for i in range(3)]
+
+    _np_cum, _n_np_q = cumulative_actual_quarters(_is_q_all, _cur_fc_year, "isa20")
+    if _n_np_q > 0:
+        _np_blended = blend_annual_estimate(_np_cum, _n_np_q, np_fc[0])
+        # Back-solve PBT/Dự phòng làm "biến điều chỉnh" để giữ nhất quán nội bộ chuỗi PPOP->PBT->Thuế
+        # ->LNST (thay vì ghi đè thẳng LNST rồi để lệch với PBT-Thuế hiển thị trong sheet) — dự phòng
+        # rủi ro tín dụng là dòng có tính linh hoạt/thời điểm ghi nhận cao nhất ở ngân hàng (NH có thể
+        # tăng/giảm trích lập để điều tiết LNST theo quý) nên hợp lý để "hấp thụ" phần chênh lệch giữa
+        # PPOP theo mô hình (từ NII/non-NII/CIR đã dự phóng) và LNST thực tế đã biết.
+        _pbt_implied = _np_blended / (1 - tax_rate) if _np_blended > 0 else _np_blended
+        prov_fc[0] = ppop_fc[0] - _pbt_implied
+        pbt_fc[0] = _pbt_implied
+        tax_fc[0] = max(pbt_fc[0] * tax_rate, 0)
+        np_fc[0] = round(pbt_fc[0] - tax_fc[0], 1)
+        print(f"  [Blend] {_cur_fc_year}F LNST: {_n_np_q}/4 quy da biet (luy ke {_np_cum:,.0f} ty) -> "
+              f"blend = {np_fc[0]:,.0f} ty (du phong dieu chinh nguoc de khop PPOP->PBT->LNST)")
 
     npl_fc_amt = [loans_fc[i] * npl_fc[i] for i in range(3)]
     casa_fc_amt = [dep_fc[i] * casa_target_fc[i] for i in range(3)]

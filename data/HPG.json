@@ -5,9 +5,9 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1iSYB31mNbKRrs57DP_Q__n34rkWmeOHO/view?usp=drivesdk",
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1LEkIR31g30AnDYK-zkmEDr9ivttFSbU6/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "lastUpdated": "2026-07-01 19:07",
+  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": null,
+  "lastUpdated": "2026-07-02 23:28",
   "data": {
     "years": [
       2021,
@@ -25,9 +25,9 @@
       118953.0,
       138855.1,
       156116.1,
-      202904,
-      228161,
-      255071
+      169424,
+      203335,
+      222166
     ],
     "npat": [
       34478.1,
@@ -35,9 +35,9 @@
       6835.1,
       12021.4,
       15453.2,
-      20818,
-      24443,
-      27900
+      21210,
+      20416,
+      18690
     ],
     "eps": [
       7166,
@@ -45,9 +45,9 @@
       1117,
       1751,
       1973,
-      2465,
-      2894,
-      3304
+      2512,
+      2418,
+      2213
     ],
     "equity": [
       90780.6,
@@ -55,9 +55,9 @@
       102836.4,
       114647.5,
       131220.0,
-      152038,
-      169725,
-      187491
+      152430,
+      166090,
+      174646
     ]
   },
   "ratios": {
@@ -67,9 +67,9 @@
       0.1088,
       0.1332,
       0.1569,
-      0.158,
-      0.162,
-      0.164
+      0.159,
+      0.155,
+      0.136
     ],
     "roe": [
       0.3798,
@@ -77,9 +77,9 @@
       0.0665,
       0.1049,
       0.1178,
-      0.1369,
-      0.144,
-      0.1488
+      0.1391,
+      0.1229,
+      0.107
     ],
     "debt_to_equity": [
       0.6302,
@@ -87,9 +87,9 @@
       0.6358,
       0.7236,
       0.7024,
-      0.513,
-      0.4419,
-      0.384
+      0.5117,
+      0.4516,
+      0.4123
     ],
     "ebitMargin": [
       0.2473,
@@ -97,9 +97,9 @@
       0.0643,
       0.0955,
       0.1147,
-      0.123,
-      0.127,
-      0.129
+      0.124,
+      0.12,
+      0.101
     ],
     "nim": [],
     "npl": [],
@@ -107,32 +107,32 @@
     "casa": []
   },
   "valuation": {
-    "weightedTarget": 28551,
-    "upside": 21.0,
+    "weightedTarget": 27010,
+    "upside": 14.4,
     "recommend": "MUA",
-    "bear": 23045,
-    "base": 28551,
-    "bull": 34568,
+    "bear": 23104,
+    "base": 27010,
+    "bull": 34656,
     "COE": 12.0,
-    "evEbitdaTarget": 27782,
+    "evEbitdaTarget": 23574,
     "pbAttractive": 1.28,
-    "pbAttractivePrice": 23045,
+    "pbAttractivePrice": 23104,
     "pbMedian": 1.61,
     "pbOver": 1.92,
     "peMedian": 9.7,
-    "peTarget": 29580,
+    "peTarget": 30144,
     "evWeight": 40,
     "pbWeight": 40,
     "peWeight": 20,
-    "bvpsBase": 18004
+    "bvpsBase": 18050
   },
   "thesis": [
     "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
-    "Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ 15.69% (2025) lên 15.8% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
+    "Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ 15.69% (2025) lên 15.9% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
     "Định giá hấp dẫn: P/B 1.56x (dưới median 1.61x), EV/EBITDA 2026E ~7.0x (dưới median 8.95x). Giá mục tiêu 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%."
   ],
   "risks": [
-    "Giá HRC (462 USD/tấn hiện tại) chịu áp lực dư cung toàn cầu ~640 triệu tấn, kéo spread thu hẹp (spread 2026E ước ~72 USD/tấn theo giá hàng hóa hiện tại).",
+    "Giá HRC (475 USD/tấn hiện tại) chịu áp lực dư cung toàn cầu ~640 triệu tấn, kéo spread thu hẹp (spread 2026E ước ~150 USD/tấn theo giá hàng hóa hiện tại).",
     "Chi phí quặng sắt/than cốc tăng làm giảm spread. Mỗi 10 USD tăng quặng = ~16 USD/tấn giảm spread.",
     "Tỷ giá USD/VNĐ biến động mạnh — dư nợ vay USD ~$3 tỷ, ảnh hưởng đến chi phí tài chính."
   ],
@@ -383,34 +383,79 @@
       90617
     ],
     "spreadUsd": [
-      163,
-      163,
-      163,
-      163,
-      143,
-      143,
-      143,
-      143,
+      217,
+      119,
+      176,
+      187,
+      121,
+      136,
+      80,
+      108,
       96,
-      96,
-      96,
-      96,
-      72
+      101,
+      175,
+      156,
+      153
     ],
     "hrcPrice": [
-      617.5,
-      617.5,
-      617.5,
-      617.5,
-      555.0,
-      555.0,
-      555.0,
-      555.0,
-      470.0,
-      470.0,
-      470.0,
-      470.0,
-      468.2
+      640,
+      615,
+      605,
+      620,
+      605,
+      600,
+      510,
+      500,
+      480,
+      470,
+      470,
+      460,
+      475
+    ],
+    "spreadRebarUsd": [
+      177,
+      104,
+      171,
+      167,
+      116,
+      136,
+      170,
+      208,
+      216,
+      231,
+      234,
+      226,
+      195
+    ],
+    "spreadAllUsd": [
+      191,
+      110,
+      174,
+      176,
+      118,
+      136,
+      135,
+      167,
+      162,
+      169,
+      202,
+      187,
+      174
+    ],
+    "xdPrice": [
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      587.8
     ],
     "hrcSales": [
       482,
@@ -418,9 +463,9 @@
       780,
       768,
       805,
-      464,
-      312,
-      399,
+      727,
+      738,
+      780,
       1000,
       1180,
       1220,
@@ -460,19 +505,19 @@
       617.5,
       555.0,
       470.0,
-      468.2,
-      477.6,
-      484.8
+      475.0,
+      484.5,
+      491.8
     ],
     "ironOre": [
-      112,
-      122.0,
-      120.5,
-      107.0,
-      101.0,
-      101.2,
-      104.2,
-      106.3
+      117.0,
+      119.9,
+      121.0,
+      107.1,
+      99.9,
+      106.6,
+      109.8,
+      112.0
     ],
     "coke": [
       375,
@@ -480,29 +525,59 @@
       270.0,
       235.0,
       187.0,
-      223.4,
-      227.9,
-      232.5
+      220.0,
+      224.4,
+      228.9
     ],
     "spreadUsd": [
-      135.79999999999995,
-      111.79999999999995,
-      162.7,
-      142.79999999999995,
-      96.19999999999999,
-      72.23999999999995,
-      74.13999999999999,
-      75.21999999999997
+      127.8,
+      94.8,
+      181.7,
+      114.7,
+      128.1,
+      150.2,
+      154.6,
+      155.3
     ],
     "spreadPct": [
-      21.0,
-      17.0,
-      26.0,
-      26.0,
       20.0,
       15.0,
-      16.0,
-      16.0
+      29.0,
+      21.0,
+      27.0,
+      32.0,
+      32.0,
+      32.0
+    ],
+    "xdPrice": [
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      582.5,
+      620,
+      630
+    ],
+    "spreadRebarUsd": [
+      87.8,
+      44.9,
+      169.2,
+      152.8,
+      228.6,
+      189.1,
+      217.4,
+      219.7
+    ],
+    "spreadAllUsd": [
+      104.5,
+      67.8,
+      174.5,
+      137.2,
+      177.3,
+      165.8,
+      184.5,
+      186.0
     ],
     "hrcVol": [
       2.0,
@@ -597,24 +672,24 @@
       475
     ],
     "ironOre": [
-      112,
-      143,
-      138,
-      106,
-      99,
-      126,
-      112,
-      115,
-      129,
-      123,
-      113,
-      100,
-      101,
-      102,
-      96,
-      100,
-      104,
-      104
+      117.0,
+      142.8,
+      131.2,
+      108.6,
+      93.3,
+      127.6,
+      113.5,
+      114.4,
+      131.1,
+      124.4,
+      112.8,
+      99.9,
+      101.4,
+      100.1,
+      97.0,
+      99.7,
+      103.5,
+      104.5
     ],
     "cokingCoal": [
       375,
@@ -636,13 +711,99 @@
       212,
       220
     ],
+    "xdPrice": [
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      600.0,
+      587.8
+    ],
     "current": {
-      "hrcPrice": 461.5,
-      "ironOre": 98.36,
-      "cokingCoal": 226.8
+      "hrcPrice": 475,
+      "ironOre": 108.64,
+      "cokingCoal": 220,
+      "xdPrice": 577.1
     },
-    "spreadNow": 72.3,
-    "note": "Gia quy = TB dau/giua/cuoi quy. Gia hien tai fetch tu dong tu investing.com khi chay script."
+    "spreadHrcUsd": [
+      127.8,
+      357.8,
+      91.5,
+      -17.9,
+      98.2,
+      216.7,
+      118.8,
+      176.4,
+      187.0,
+      121.2,
+      136.0,
+      79.5,
+      108.2,
+      96.0,
+      100.6,
+      174.9,
+      155.5,
+      153.4
+    ],
+    "spreadRebarUsd": [
+      87.8,
+      87.8,
+      -28.5,
+      2.1,
+      128.2,
+      176.7,
+      103.8,
+      171.4,
+      167.0,
+      116.2,
+      136.0,
+      169.5,
+      208.2,
+      216.0,
+      230.6,
+      234.4,
+      226.5,
+      195.0
+    ],
+    "spreadAllUsd": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      191.0,
+      110.4,
+      173.6,
+      175.8,
+      118.5,
+      136.0,
+      135.2,
+      166.7,
+      161.5,
+      168.7,
+      201.7,
+      187.3,
+      174.4
+    ],
+    "spreadNow": 147.0,
+    "spreadHrcNow": 147.0,
+    "spreadRebarNow": 183.2,
+    "spreadAllNow": 161.8,
+    "adDutyEffectiveQuarter": "2025Q3",
+    "adDutyMultiplier": 1.15,
+    "note": "Gia quy = TB dau/giua/cuoi quy. Gia hien tai fetch tu dong tu investing.com/SteelOnline khi chay script. Spread HRC da nhan thue CBPG AD20 tu quy hieu luc."
   },
   "factories": [
     {
@@ -769,7 +930,7 @@
     16.2,
     14.5,
     13.9,
-    9.3
+    9.4
   ],
   "pb_quarters": [
     1.64,

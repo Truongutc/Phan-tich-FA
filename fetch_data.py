@@ -161,6 +161,85 @@ def get_val(records, year, field):
     return None
 
 
+def cumulative_actual_quarters(records, year, field, max_q=4):
+    """Tính lũy kế THỰC TẾ các quý đã có báo cáo trong `year` cho `field` (VD 'isa6' — quarterly
+    records từ section_to_quarters). Dừng lại ngay khi gặp quý chưa có dữ liệu (giả định các quý báo
+    cáo tuần tự Q1->Q4, không có lỗ hổng ở giữa). Trả về (tổng lũy kế tỷ đồng, số quý đã biết) — cả
+    2 giá trị = 0 nếu chưa có quý nào của năm đó được công bố."""
+    total, n = 0.0, 0
+    for q in range(1, max_q + 1):
+        v = None
+        for r in records:
+            if r.get("yearReport") == year and r.get("lengthReport") == q:
+                v = r.get(field)
+                break
+        if v is None:
+            break
+        total += v / 1e9
+        n += 1
+    return total, n
+
+
+def latest_actual_quarter_value(records, year, field, max_q=4):
+    """Giống cumulative_actual_quarters() nhưng dùng cho chỉ tiêu SỐ DƯ CUỐI KỲ (bảng cân đối kế
+    toán — VD 'bsb103' Dư nợ tín dụng, KHÔNG cộng dồn được qua các quý như chỉ tiêu KQKD lũy kế).
+    Trả về (số dư quý GẦN NHẤT đã biết trong `year`, số quý đã biết) — dùng số dư gần nhất làm điểm
+    neo thay vì tổng/trung bình nhiều quý."""
+    latest_val, n = None, 0
+    for q in range(1, max_q + 1):
+        v = None
+        for r in records:
+            if r.get("yearReport") == year and r.get("lengthReport") == q:
+                v = r.get(field)
+                break
+        if v is None:
+            break
+        latest_val = v / 1e9
+        n += 1
+    return latest_val, n
+
+
+def blend_annual_estimate_stock(latest_actual, n_known_quarters, original_year_end_estimate, prior_year_end_actual):
+    """Blend cho chỉ tiêu SỐ DƯ CUỐI KỲ (bảng cân đối — dư nợ, tổng tài sản, huy động...) — KHÔNG
+    cộng dồn được như chỉ tiêu lũy kế KQKD. Ý tưởng tương đương blend_annual_estimate() nhưng áp
+    dụng đúng bản chất "số dư" (compounding), không phải "dòng chảy" (summing): tính lại tỷ lệ tăng
+    trưởng NGỤ Ý bởi giả định gốc cho quãng thời gian còn lại của năm, rồi áp dụng tỷ lệ đó lên số dư
+    THỰC TẾ gần nhất đã biết (thay vì áp lên số dư cuối năm trước như giả định ban đầu vẫn làm).
+
+    VD: giả định gốc cả năm tăng trưởng X% từ số dư cuối năm trước. Nếu đã biết số dư cuối Q2 (n=2),
+    số dư cuối năm mới = số dư cuối Q2 x (1+X%)^((4-2)/4) — chỉ "cõng" phần tăng trưởng giả định ứng
+    với 2 quý CÒN LẠI, thay vì cõng nguyên X% cho cả 4 quý tính từ mốc cũ (cuối năm trước)."""
+    n = max(0, min(4, n_known_quarters))
+    if n <= 0 or latest_actual is None:
+        return original_year_end_estimate
+    if n >= 4:
+        return latest_actual
+    if prior_year_end_actual and prior_year_end_actual > 0:
+        implied_annual_growth = original_year_end_estimate / prior_year_end_actual - 1
+    else:
+        implied_annual_growth = 0.0
+    remaining_frac = (4 - n) / 4
+    return latest_actual * (1 + implied_annual_growth) ** remaining_frac
+
+
+def blend_annual_estimate(cumulative_actual, n_known_quarters, original_annual_estimate):
+    """Ước tính cả năm theo diễn biến số quý ĐÃ CÓ báo cáo thực tế — tránh 2 sai số ngược chiều:
+    (1) ngoại suy tuyến tính (quý đầu x4) khi quý đó có yếu tố đột biến bất thường (VD doanh thu tài
+    chính tăng vọt 1 quý do lãi tỷ giá/cổ tức...) sẽ thổi phồng/thổi xẹp sai lệch cả năm; (2) bỏ qua
+    số liệu thực tế, giữ nguyên giả định ban đầu dù đã lệch rõ so với số đã biết.
+
+    Công thức: Ước tính năm = Lũy kế thực tế n quý đã biết + Giả định ban đầu cả năm x (4-n)/4 — các
+    quý CHƯA có báo cáo vẫn theo giả định gốc (không suy diễn yếu tố đột biến của quý đã biết sang
+    các quý còn lại); khi đủ cả 4 quý (n>=4) trả thẳng số lũy kế thực tế, bỏ hẳn giả định.
+
+    Dùng cho MỌI chỉ tiêu KQKD/tài sản dự phóng cả năm khi đã có báo cáo quý thực tế — áp dụng thống
+    nhất cho các ticker (thép, ngân hàng...), không riêng công thức nào."""
+    n = max(0, min(4, n_known_quarters))
+    if n >= 4:
+        return cumulative_actual
+    return cumulative_actual + original_annual_estimate * (4 - n) / 4
+
+
 if __name__ == "__main__":
     ticker = sys.argv[1] if len(sys.argv) > 1 else "HPG"
     data = fetch_all(ticker, use_cache=False)

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "updated": "2026-07-01",
+    "updated": "2026-07-02",
     "source": "Vietcap Live API Engine"
   },
   "peers": [
@@ -11,11 +11,11 @@
       "casa": 32.55,
       "roe": 16.17,
       "cir": 32.5,
-      "pb": 2.22,
+      "pb": 2.25,
       "cg": 4.78,
-      "mcap": 519722.9908468,
+      "mcap": 526407.530922,
       "name": "Vietcombank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "BID",
@@ -24,11 +24,11 @@
       "casa": 19.49,
       "roe": 14.43,
       "cir": 32.02,
-      "pb": 1.62,
+      "pb": 1.64,
       "cg": 2.33,
-      "mcap": 308674.764904,
+      "mcap": 313406.8072905,
       "name": "BIDV",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "CTG",
@@ -37,11 +37,11 @@
       "casa": 24.08,
       "roe": 18.99,
       "cir": 24.94,
-      "pb": 1.4,
+      "pb": 1.42,
       "cg": 1.87,
-      "mcap": 263687.77042615,
+      "mcap": 267182.8955128,
       "name": "VietinBank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "TCB",
@@ -50,11 +50,11 @@
       "casa": 31.45,
       "roe": 14.89,
       "cir": 28.29,
-      "pb": 1.27,
+      "pb": 1.3,
       "cg": 3.76,
-      "mcap": 237389.053869,
+      "mcap": 243058.0462002,
       "name": "Techcombank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "MBB",
@@ -63,11 +63,11 @@
       "casa": 32.27,
       "roe": 20.58,
       "cir": 24.94,
-      "pb": 1.36,
+      "pb": 1.39,
       "cg": 3.27,
-      "mcap": 202985.9977068,
+      "mcap": 207416.24765675,
       "name": "MBBank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "ACB",
@@ -80,7 +80,7 @@
       "cg": 3.25,
       "mcap": 131470.15732605,
       "name": "ACB",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "VIB",
@@ -89,11 +89,11 @@
       "casa": 13.93,
       "roe": 18.24,
       "cir": 31.61,
-      "pb": 1.14,
+      "pb": 1.15,
       "cg": 1.13,
-      "mcap": 56166.094215,
+      "mcap": 56506.494786,
       "name": "VIB",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "HDB",
@@ -102,11 +102,11 @@
       "casa": 10.21,
       "roe": 23.57,
       "cir": 25.99,
-      "pb": 1.56,
+      "pb": 1.6,
       "cg": 10.06,
-      "mcap": 129386.39294955,
+      "mcap": 133140.3501918,
       "name": "HDBank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "STB",
@@ -115,11 +115,11 @@
       "casa": 15.92,
       "roe": 10.31,
       "cir": 45.21,
-      "pb": 2.26,
+      "pb": 2.24,
       "cg": -0.24,
-      "mcap": 139128.9198408,
+      "mcap": 137997.7904112,
       "name": "Sacombank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "VPB",
@@ -128,11 +128,11 @@
       "casa": 13.09,
       "roe": 13.57,
       "cir": 21.69,
-      "pb": 1.15,
+      "pb": 1.18,
       "cg": 10.23,
-      "mcap": 214215.937227,
+      "mcap": 219769.6837477,
       "name": "VPBank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "TPB",
@@ -141,11 +141,11 @@
       "casa": 17.45,
       "roe": 14.01,
       "cir": 45.85,
-      "pb": 0.96,
+      "pb": 0.97,
       "cg": 3.26,
-      "mcap": 46049.1780918,
+      "mcap": 46465.28512275,
       "name": "TPBank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "MSB",
@@ -154,11 +154,11 @@
       "casa": 25.51,
       "roe": 13.77,
       "cir": 34.51,
-      "pb": 1.15,
+      "pb": 1.14,
       "cg": 4.64,
-      "mcap": 50544.0,
+      "mcap": 49920.0,
       "name": "MSB",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "EIB",
@@ -169,9 +169,9 @@
       "cir": 56.98,
       "pb": 1.48,
       "cg": 2.89,
-      "mcap": 39117.132747,
+      "mcap": 39210.26877735,
       "name": "Eximbank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "LPB",
@@ -180,11 +180,11 @@
       "casa": 6.49,
       "roe": 18.43,
       "cir": 30.14,
-      "pb": 3.23,
+      "pb": 3.21,
       "cg": 2.84,
-      "mcap": 159819.59235,
+      "mcap": 158624.67951,
       "name": "LienVietPostBank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "SHB",
@@ -193,11 +193,11 @@
       "casa": 6.63,
       "roe": 20.78,
       "cir": 17.17,
-      "pb": 1.01,
+      "pb": 1.02,
       "cg": 2.01,
-      "mcap": 72407.1870049,
+      "mcap": 73208.7425806,
       "name": "SHB",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "OCB",
@@ -206,11 +206,11 @@
       "casa": 10.67,
       "roe": 11.18,
       "cir": 37.09,
-      "pb": 0.97,
+      "pb": 1.0,
       "cg": 2.72,
-      "mcap": 33687.611386,
+      "mcap": 34912.6154364,
       "name": "OCB",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "BAB",
@@ -219,11 +219,11 @@
       "casa": 3.05,
       "roe": 8.82,
       "cir": 51.22,
-      "pb": 0.98,
+      "pb": 1.02,
       "cg": 2.46,
-      "mcap": 13369.5883056,
+      "mcap": 13945.8636636,
       "name": "BacABank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     },
     {
       "ticker": "NAB",
@@ -234,9 +234,9 @@
       "cir": 38.9,
       "pb": 1.15,
       "cg": 1.91,
-      "mcap": 28496.4541224,
+      "mcap": 28280.5718942,
       "name": "NamABank",
-      "date_updated": "2026-07-01"
+      "date_updated": "2026-07-02"
     }
   ]
 }

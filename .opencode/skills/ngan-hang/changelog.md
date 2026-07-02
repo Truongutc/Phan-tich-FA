@@ -1,5 +1,38 @@
 # Changelog — Skill Ngân hàng
 
+## 2026-07-02 — Dự phóng KQKD/tài sản NĂM blend với số quý ĐÃ CÓ báo cáo thực tế (dùng chung với HPG)
+
+### Bối cảnh
+User phát hiện bug tương tự ở `build_hpg_model.py` (DTTC Q1/2026 thực tế ~5.900 tỷ nhưng giả định năm
+2026 chỉ 2.500 tỷ — SAI vì bỏ qua thực tế) và yêu cầu tổng quát hóa: KHÔNG ngoại suy tuyến tính Q1×4
+(sai theo hướng khác nếu Q1 đột biến 1 lần), mà blend theo công thức: "Ước tính năm = lũy kế thực tế
+quý đã biết + giả định ban đầu × phần quý CHƯA biết/4" — áp dụng cho CẢ HPG lẫn template ngân hàng.
+
+### Thay đổi
+- Thêm `cumulative_actual_quarters()`, `blend_annual_estimate()` (chỉ tiêu KQKD lũy kế) và
+  `latest_actual_quarter_value()`, `blend_annual_estimate_stock()` (chỉ tiêu số dư cuối kỳ — dư
+  nợ/huy động/tổng tài sản, KHÔNG cộng dồn được như KQKD) vào `fetch_data.py` — dùng chung cho mọi
+  ticker builder (không riêng bank).
+- `template_banking.py`: blend 3 điểm trong "Build Forecast Model" (đầu năm dự phóng đầu tiên,
+  `years_fc[0]`):
+  1. `loans_fc[0]` (Dư nợ tín dụng, `bsb103`) — re-anchor về số dư quý gần nhất, áp phần tăng trưởng
+     giả định gốc còn lại (dùng `blend_annual_estimate_stock`, vì đây là số dư không phải dòng chảy).
+  2. `nii_fc[0]` (NII, `isb27`) — blend lũy kế thực tế + giả định gốc phần còn lại, cascades tự nhiên
+     qua `toi_fc`→`ppop_fc`.
+  3. `np_fc[0]` (LNST, `isa20`) — blend độc lập theo thực tế, rồi BACK-SOLVE `prov_fc[0]` làm biến điều
+     chỉnh để giữ nhất quán PPOP→PBT→Thuế→LNST (không ghi đè LNST rồi để lệch hẳn PBT-Thuế trong sheet).
+- Verify bằng cách chạy thật `python run_analysis.py TCB` (không chỉ đọc code) — kết quả: Dư nợ Q1/2026
+  785.613 tỷ → blend 895.658 tỷ cả năm; NII Q1 9.522 tỷ → blend 44.028 tỷ; LNST Q1 6.950 tỷ → blend
+  28.669 tỷ. Script chạy hết pipeline (Excel + win32com readback + PDF + JSON) không lỗi.
+
+### Chưa làm
+- Chỉ blend NII/LNST/Dư nợ — CHƯA blend Tổng tài sản (`bsa53`), Huy động (`bsb113`), Non-II riêng —
+  nếu cần chính xác hơn có thể áp `blend_annual_estimate`/`blend_annual_estimate_stock` tương tự.
+- Chưa test được kịch bản Q2/Q3/Q4 thực tế (n=2,3) vì hiện tại mới chỉ có Q1/2026 cho các NH — logic
+  đã viết tổng quát cho n=0..4 nhưng cần verify lại khi có đủ dữ liệu các quý sau.
+
+---
+
 ## 2026-07-01 — Sửa lỗi LDR, tăng trưởng tín dụng, P/B naming (từ báo cáo TCB)
 
 ### Bối cảnh

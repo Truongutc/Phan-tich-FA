@@ -390,6 +390,39 @@ Driver chính:
 - **Provision** = Dư nợ BQ × CoC assumption
 - **LNTT** = (NII + Non-II) × (1 - CIR) - Provision
 
+### Cập nhật KQKD & tài sản dự phóng NĂM theo diễn biến quý ĐÃ CÓ báo cáo (2026-07)
+
+**Vấn đề:** Nếu chỉ dùng giả định tăng trưởng năm cố định (không đụng tới số quý thực tế đã công bố),
+khi Q1 có yếu tố đột biến 1 lần (NH tăng/giảm trích lập dự phòng để điều tiết LN, hoàn nhập dự phòng,
+lãi bất thường từ thoái vốn/bancassurance...) thì:
+- **Bỏ qua thực tế** (giữ nguyên giả định năm cũ) → SAI theo hướng khác xa thực tế đã biết.
+- **Ngoại suy tuyến tính Q1×4** → SAI theo hướng ngược lại, thổi phồng/thổi xẹp cả năm theo đúng yếu
+  tố đột biến chỉ xảy ra 1 quý (NH rất hay có Q1/Q4 đột biến do mùa vụ trích lập/hoàn nhập).
+
+**Công thức chuẩn — `blend_annual_estimate()` / `blend_annual_estimate_stock()` (`fetch_data.py`, dùng
+chung với `build_hpg_model.py` và `template_banking.py`):**
+- **Chỉ tiêu LŨY KẾ (KQKD — NII `isb27`, LNST `isa20`, Non-II, PPOP...):**
+  `Ước tính năm = Lũy kế thực tế n quý đã biết + Giả định ban đầu cả năm × (4-n)/4`
+  — n=0: giữ nguyên giả định gốc. n=1 (có Q1): `Q1 thực tế + giả định gốc×3/4`. n=2 (có Q1+Q2): lũy
+  kế 6 tháng + giả định gốc×2/4. n=3: lũy kế 9 tháng + giả định gốc×1/4. n=4: dùng thẳng số lũy kế cả
+  năm thực tế/báo cáo năm của NH, bỏ hẳn giả định.
+- **Chỉ tiêu SỐ DƯ CUỐI KỲ (bảng cân đối — Dư nợ `bsb103`, Huy động `bsb113`, Tổng tài sản `bsa53`):
+  KHÔNG cộng dồn được như KQKD** (số dư không phải dòng chảy) — thay vào đó re-anchor về số dư quý
+  GẦN NHẤT đã biết, rồi áp DUY NHẤT phần tăng trưởng giả định gốc ứng với các quý CÒN LẠI của năm:
+  `Số dư cuối năm mới = Số dư quý gần nhất × (1 + tăng trưởng giả định gốc)^((4-n)/4)`.
+- **LNST là "chỉ tiêu chốt"**: sau khi blend NII (chảy tự nhiên qua TOI→PPOP→PBT→Thuế→LNST), NÊN blend
+  thêm LNST độc lập theo số `isa20` thực tế, rồi BACK-SOLVE Dự phòng làm "biến điều chỉnh" để giữ
+  nhất quán nội bộ chuỗi PPOP→PBT→Thuế→LNST (Dự phòng là dòng NH chủ động điều chỉnh theo quý nhiều
+  nhất — hợp lý để "hấp thụ" chênh lệch giữa PPOP theo mô hình và LNST thực tế đã biết), thay vì ghi
+  đè thẳng LNST rồi để lệch hẳn với PBT-Thuế hiển thị trong sheet.
+- **Vị trí trong `template_banking.py`**: đầu khối "Build Forecast Model" (fetch `_is_q_all`/`_bs_q_all`
+  qua `section_to_quarters`, blend `loans_fc[0]`), ngay sau vòng lặp tính `nii_fc` (blend `nii_fc[0]`,
+  cascades tự nhiên qua `toi_fc`/`ppop_fc`), và ngay sau `np_fc` được tính lần đầu (blend + back-solve
+  `prov_fc[0]`/`pbt_fc[0]`/`tax_fc[0]`/`np_fc[0]`).
+- **Áp dụng thống nhất cho MỌI ticker** đi qua `template_banking.py` (tự động, không cần sửa riêng
+  từng NH) — vì `years_fc[0]` (năm dự phóng đầu tiên) và field code (`isb27`/`isa20`/`bsb103`) là
+  chung cho toàn ngành ngân hàng theo chuẩn BCTC hiện hành.
+
 ---
 
 ## 10. Đánh giá tổng quát
