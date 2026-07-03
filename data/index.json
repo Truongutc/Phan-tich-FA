@@ -72,19 +72,19 @@
     "pdfUrl": "https://drive.google.com/file/d/1l9ETlsuWWBCjssZcE5baIR_OGR_ckiPW/view?usp=drivesdk"
   },
   {
-    "ticker": "HPG",
-    "companyName": "CTCP Tập đoàn Hòa Phát",
-    "sector": "Basic Resources",
-    "lastUpdated": "2026-07-02 23:28",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "TCB",
     "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-07-03 00:13",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1gHTy-PZ-BfTHdcnMT8VAtDhovkv0fUm5/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/10z9V3M9opDBZGriLLhL-DP59C4S7In60/view?usp=drivesdk"
+  },
+  {
+    "ticker": "HPG",
+    "companyName": "CTCP Tập đoàn Hòa Phát",
+    "sector": "Basic Resources",
+    "lastUpdated": "2026-07-03 00:41",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1Uejf8rDIfvbEZt9Qikv6bRzmJuefLUTk/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1M_P23dNYtyp3L36BrltIKzrOMCgKLLuV/view?usp=drivesdk"
   }
 ]
