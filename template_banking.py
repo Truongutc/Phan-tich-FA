@@ -614,8 +614,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # YOEA & COF base values (from last historical year) — used later for NIM_FC calculation
     yo_ea_base = yo_ea_hist[-1]
     cof_base = cof_hist_calc[-1]
-    yo_ea_fc_adj = [0.985, 0.975, 0.965]  # YOEA giảm nhẹ do áp lực lãi suất
-    cof_fc_adj = [0.97, 0.95, 0.93]       # COF giảm nhờ CASA cải thiện
+    # NIM năm N+1/N+2 giữ NGUYÊN bằng NIM năm N (2026-07, theo yêu cầu user): năm dự phóng gần nhất
+    # (years_fc[0]) vẫn dùng công thức YOEA/COF hiện tại (không có cơ sở dự báo NIM xa hơn 1 năm đáng
+    # tin cậy hơn "giữ nguyên mức gần nhất"). Giữ hệ số YOEA/COF năm 2 và 3 BẰNG ĐÚNG hệ số năm 1 —
+    # thay vì ép nim_fc[1]/[2] bằng tay — để công thức Excel SỐNG (02_Assumptions!row6, đọc trực tiếp
+    # từ các hệ số này ở params bên dưới) và mảng Python nim_fc tự nhiên ra cùng 1 kết quả, không tạo
+    # thêm 2 luồng tính độc lập dễ lệch nhau (đúng bug vừa gặp ở HPG với giá HRC/quặng/than).
+    yo_ea_fc_adj = [0.985, 0.985, 0.985]
+    cof_fc_adj = [0.97, 0.97, 0.97]
     yo_ea_fc = [round(yo_ea_base * adj, 6) for adj in yo_ea_fc_adj]
     cof_fc = [round(cof_base * adj, 6) for adj in cof_fc_adj]
     
@@ -1191,12 +1197,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     params = [
         (18, "YOEA gốc (2025A)",         f"='06_Ratios'!F10"),
         (19, "YOEA hệ số 2026F",          0.985),
-        (20, "YOEA hệ số 2027F",          0.975),
-        (21, "YOEA hệ số 2028F",          0.965),
+        (20, "YOEA hệ số 2027F",          0.985),
+        (21, "YOEA hệ số 2028F",          0.985),
         (22, "COF gốc (2025A)",          f"='06_Ratios'!F11"),
         (23, "COF hệ số 2026F",           0.97),
-        (24, "COF hệ số 2027F",           0.95),
-        (25, "COF hệ số 2028F",           0.93),
+        (24, "COF hệ số 2027F",           0.97),
+        (25, "COF hệ số 2028F",           0.97),
         (26, "IEA_end gốc (2025A)",      f"='05_Balance_Sheet'!F2"),
         (27, "DepBonds gốc (2025A)",     f"=SUM('05_Balance_Sheet'!F5:F6)"),
         (28, "--- Các tham số khác ---",  None),
