@@ -5,8 +5,8 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1-0G1Pju--RN2KLGfsW2IyGZqvvtdFMtW/view?usp=drivesdk",
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1Zuvp8DtqEd2fz3aGYfGlVlmSGls0rLNO/edit?usp=drivesdk&ouid=102152071043512158095&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1KKojSJ9oEG7KKs8j7f-J_jVEzdc4j8EN/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1pp7AN1qx1BezcoYRTaUbHHHygky3zRqh/edit?usp=drivesdk&ouid=102152071043512158095&rtpof=true&sd=true",
   "productionEstimateCache": {
     "year": 2026,
     "quarter": 2,
@@ -16,7 +16,7 @@
     "source": "ESTIMATED",
     "fetchedAt": "2026-07-03 18:20"
   },
-  "lastUpdated": "2026-07-03 11:26",
+  "lastUpdated": "2026-07-03 11:32",
   "data": {
     "years": [
       2021,
