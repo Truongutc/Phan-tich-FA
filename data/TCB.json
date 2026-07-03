@@ -292,12 +292,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1vzmiaN3yrrcqtQBhil40uhDOsdqbGw4T/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1jtkIFTDAdlKVtX0J-KhC0BXJJm2tgx_2/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1099,
     "rf": 0.04534,
-    "fetchedAt": "2026-07-03 17:34"
+    "fetchedAt": "2026-07-03 10:53"
   },
   "pe_hist": [
     11.6477870099,
@@ -1660,34 +1660,34 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 37647,
-    "upside": 11.22,
-    "bear": 32927,
-    "base": 37647,
-    "bull": 49086,
+    "weightedTarget": 37532,
+    "upside": 10.88,
+    "bear": 32713,
+    "base": 37532,
+    "bull": 48767,
     "pbAttractive": 1.11,
-    "pbAttractivePrice": 32927,
+    "pbAttractivePrice": 32714,
     "pbOver": 1.66,
-    "pbOverPrice": 49086,
-    "pbMedianPrice": 39246,
-    "peMedianPrice": 37210,
-    "COE": 14.04,
+    "pbOverPrice": 48767,
+    "pbMedianPrice": 38991,
+    "peMedianPrice": 35530,
+    "COE": 14.05,
     "peMedian": 8.78,
     "pbMedian": 1.33,
     "bvpsBase": 25331,
-    "riValue": 36047,
-    "pbValue": 39246,
-    "pvRi": 2313,
-    "pvCv": 8404,
+    "riValue": 36073,
+    "pbValue": 38991,
+    "pvRi": 2176,
+    "pvCv": 8567,
     "epsFc": [
-      4237,
-      5211,
-      6218
+      4046,
+      5207,
+      6222
     ],
     "riResults": [
-      681,
-      1060,
-      1336
+      487,
+      1080,
+      1363
     ],
     "recommend": "THEO DÕI"
   },
@@ -1733,9 +1733,9 @@
       5164.2,
       3080.1,
       3662.7,
-      4237,
-      5211,
-      6218
+      4045.7,
+      5206.7,
+      6222.0
     ],
     "equity": [
       93041.47,
@@ -1809,5 +1809,6 @@
       0.3648,
       0.3748
     ]
-  }
+  },
+  "lastUpdated": "2026-07-03 10:53"
 }
