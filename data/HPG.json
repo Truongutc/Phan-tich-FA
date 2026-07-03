@@ -5,8 +5,8 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1NVao-pEQZNpL3fWTzAUwTrPiX2o7mmrh/view?usp=drivesdk",
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1yoYPMvN5fjBtmuecZ0AXEhG53WvdzAB1/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1lH20q-7iUhfQ5i2eTKhdv7LwqYEZBxY0/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1W1Na3zGFprGwCg-_o4k6d0K5F46QMK1B/edit?usp=drivesdk&ouid=102152071043512158095&rtpof=true&sd=true",
   "productionEstimateCache": {
     "year": 2026,
     "quarter": 2,
@@ -16,7 +16,7 @@
     "source": "ESTIMATED",
     "fetchedAt": "2026-07-03 23:39"
   },
-  "lastUpdated": "2026-07-03 16:48",
+  "lastUpdated": "2026-07-03 17:38",
   "data": {
     "years": [
       2021,
@@ -116,20 +116,20 @@
     "casa": []
   },
   "valuation": {
-    "weightedTarget": 26169,
-    "upside": 10.9,
+    "weightedTarget": 28448.4887744918,
+    "upside": 20.5,
     "recommend": "MUA",
     "bear": 23626,
-    "base": 26169,
+    "base": 28448.4887744918,
     "bull": 35440,
     "COE": 12.0,
-    "evEbitdaTarget": 23174,
+    "evEbitdaTarget": 27152,
     "pbAttractive": 1.31,
     "pbAttractivePrice": 23626,
     "pbMedian": 1.64,
     "pbOver": 1.97,
     "peMedian": 10.3,
-    "peTarget": 25431,
+    "peTarget": 28402,
     "evWeight": 40,
     "pbWeight": 40,
     "peWeight": 20,
