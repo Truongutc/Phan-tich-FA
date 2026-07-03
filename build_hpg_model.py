@@ -1146,12 +1146,33 @@ for i in range(3):
     prev_equity = prev_equity + ni_fc[i] - dividend_paid
     equity_fc_val.append(round(prev_equity))
 
-# Leading indicators
+# Leading indicators — 4 dòng giá/tỷ giá (2026-07, user phát hiện bug): trước đây "Giá trị hiện tại"
+# và ngưỡng tích cực/tiêu cực là số gõ tay cứng (VD Giá HRC=1110, ngưỡng 1100/900) — sai hoàn toàn so
+# với thang giá THẬT model đang dùng (HRC_PRICE_A ~470-640 USD/tấn) vì không link tới biến live nào.
+# Sửa: dùng đúng hrc_now/iron_now/coal_now/FX_RATE (đã fetch live, dùng cho Spread ở trên) làm "Giá trị
+# hiện tại", và TÍNH trạng thái từ so sánh với ngưỡng (không còn text gõ tay) — is_higher_better=True
+# nghĩa là "Tích cực" khi giá trị hiện tại VƯỢT ngưỡng tích cực (áp dụng cho giá bán HRC — đầu ra của
+# HPG); =False nghĩa là "Tích cực" khi giá trị hiện tại THẤP HƠN ngưỡng (áp dụng cho chi phí đầu vào
+# quặng/than và tỷ giá — USD/VND tăng làm chi phí nhập khẩu quặng/than quy đổi VND tăng theo).
+def _li_status(curr, pos_thresh, neg_thresh, higher_is_better=True):
+    if higher_is_better:
+        if curr >= pos_thresh: return "Tích cực"
+        if curr <= neg_thresh: return "Tiêu cực"
+    else:
+        if curr <= pos_thresh: return "Tích cực"
+        if curr >= neg_thresh: return "Tiêu cực"
+    return "Trung tính"
+
+_li_hrc = round(hrc_now, 1)
+_li_iron = round(iron_now, 1)
+_li_coal = round(coal_now, 1)
+_li_fx = round(FX_RATE)
+
 leading_indicators = [
-    ("Giá HRC (USD/tấn)", 1100, 900, 1110, "Tích cực"),
-    ("Giá quặng sắt (USD/tấn)", 90, 120, 106, "Trung tính"),
-    ("Giá than cốc (USD/tấn)", 200, 280, 240, "Trung tính"),
-    ("Tỷ giá USD/VNĐ", 24000, 26000, 25400, "Trung tính"),
+    ("Giá HRC (USD/tấn)", 550, 420, _li_hrc, _li_status(_li_hrc, 550, 420, True)),
+    ("Giá quặng sắt (USD/tấn)", 90, 120, _li_iron, _li_status(_li_iron, 90, 120, False)),
+    ("Giá than cốc (USD/tấn)", 180, 260, _li_coal, _li_status(_li_coal, 180, 260, False)),
+    ("Tỷ giá USD/VNĐ", 25500, 27000, _li_fx, _li_status(_li_fx, 25500, 27000, False)),
     ("Sản lượng thép VN (triệu tấn/tháng)", 2.5, 1.5, 2.92, "Tích cực"),
     ("SX ngành thép 4M (triệu tấn)", 12.5, 8, 11.67, "Phục hồi (+23.5%)"),
     ("LNST QoQ HPG (tỷ)", 7000, 3000, 9056, "Tích cực"),
@@ -1496,9 +1517,12 @@ def build_excel():
         ("VCSH (tỷ)", 75000, 90000, 105000, 115000, 130000, equity_fc_val[0], equity_fc_val[1], equity_fc_val[2], "Roll-forward: VCSH(t-1) + NI(t) - Cổ tức tiền mặt(t)"),
         ("Cổ tức (VND/CP)", 0, 0, 0, 0, 0, 0, 800, 1200, "2026: 15% (10% CP + 5% TM)"),
         ("Tỷ lệ CP BH&QLDN/DT (%)", 3.4, 4.0, 4.3, 4.0, 3.8, 3.5, 3.5, 3.5, "Giảm nhờ DQ2 biên lớn"),
-        ("P/B mục tiêu (x)", 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6, 1.6, "HPG lịch sử median 1.61x (TTM 2018-2026)"),
-        ("EV/EBITDA mục tiêu (x)", 6.5, 6.5, 6.5, 6.5, 6.5, 9.0, 9.0, 8.5, "HPG lịch sử median 8.95x (TTM 2018-2026)"),
-        ("P/E mục tiêu (x)", 10.0, 10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 11.0, "Tham khảo - HPG median 11.1x (TTM)"),
+        # Ghi chú (cột cuối) lấy động từ PB_HIST_MEDIAN/EV_HIST_MEDIAN/PE_HIST_MEDIAN (2026-07, user phát
+        # hiện bug: text cũ gõ tay chết "median 1.61x/8.95x/11.1x" trong khi ô công thức thật (K30/K31/
+        # K29) đã tính median khác — gây hiểu lầm khi đọc Excel dù số công thức vẫn đúng).
+        ("P/B mục tiêu (x)", 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6, 1.6, f"HPG lịch sử median {PB_HIST_MEDIAN}x (TTM 2018-2025)"),
+        ("EV/EBITDA mục tiêu (x)", 6.5, 6.5, 6.5, 6.5, 6.5, 9.0, 9.0, 8.5, f"HPG lịch sử median {EV_HIST_MEDIAN}x (TTM 2018-2025)"),
+        ("P/E mục tiêu (x)", 10.0, 10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 11.0, f"Tham khảo - HPG median {PE_HIST_MEDIAN}x (TTM 2018-2025)"),
         # Spread-based GP margin drivers (rows 19+) — dùng chung IRON_ORE_A/COKE_A với Profit Bridge
         # (03_Revenue_Model), 14_Steel_Analysis và gp_margin_fc/ebit_fc (Python), tránh lệch nhau.
         ("Quặng sắt 62% Fe (USD/t)", *IRON_ORE_A, "Giá CFR Trung Quốc"),
