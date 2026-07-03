@@ -296,8 +296,8 @@
   "gdrivePdfUrl": null,
   "betaRfCache": {
     "beta": 1.1099,
-    "rf": 0.045,
-    "fetchedAt": "2026-07-03 16:44"
+    "rf": 0.04534,
+    "fetchedAt": "2026-07-03 17:34"
   },
   "pe_hist": [
     11.6477870099,
@@ -1660,10 +1660,10 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 37713,
-    "upside": 11.41,
+    "weightedTarget": 37647,
+    "upside": 11.22,
     "bear": 32927,
-    "base": 37713,
+    "base": 37647,
     "bull": 49086,
     "pbAttractive": 1.11,
     "pbAttractivePrice": 32927,
@@ -1671,23 +1671,23 @@
     "pbOverPrice": 49086,
     "pbMedianPrice": 39246,
     "peMedianPrice": 37210,
-    "COE": 14.01,
+    "COE": 14.04,
     "peMedian": 8.78,
     "pbMedian": 1.33,
     "bvpsBase": 25331,
-    "riValue": 36180,
+    "riValue": 36047,
     "pbValue": 39246,
-    "pvRi": 2338,
-    "pvCv": 8512,
+    "pvRi": 2313,
+    "pvCv": 8404,
     "epsFc": [
       4237,
       5211,
       6218
     ],
     "riResults": [
-      690,
-      1070,
-      1348
+      681,
+      1060,
+      1336
     ],
     "recommend": "THEO DÕI"
   },

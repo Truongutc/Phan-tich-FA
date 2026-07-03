@@ -12,6 +12,7 @@ import sys
 import math
 import json
 import datetime
+import subprocess
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter, column_index_from_string
@@ -69,8 +70,45 @@ FONT_BOLD = 'Arial-Bold' if 'Arial-Bold' in _VN_FONTS else 'Helvetica-Bold'
 
 
 # ── CAPM INPUTS: AUTO-FETCH Rf và BETA ────────────────────────────────────
+RF_UA_STR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+def _fetch_via_curl_rf(url, timeout=10, label=None):
+    """Tải HTML qua curl subprocess (KHÔNG dùng thư viện requests) — investing.com chặn vân tay TLS
+    của Python requests/urllib3 (Cloudflare 403) nhưng vẫn cho phép curl (xem giải thích chi tiết ở
+    build_hpg_model.py, hàm cùng tên)."""
+    tag = f" [{label}]" if label else ""
+    try:
+        r = subprocess.run(
+            ["curl", "-sL", "-A", RF_UA_STR, "--max-time", str(timeout), url],
+            capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=timeout + 5,
+        )
+        if r.returncode != 0 or not r.stdout.strip():
+            print(f"  [DIAG]{tag} fetch_via_curl empty/failed: curl_exit={r.returncode} len={len(r.stdout)} url={url[:80]}")
+        return r.stdout if r.returncode == 0 else ""
+    except Exception as e:
+        print(f"  [DIAG]{tag} fetch_via_curl exception: {url[:80]} -> {e}")
+        return ""
+
+
 def fetch_rf_vietnam(timeout=15):
     FALLBACK_RF = 0.045
+
+    # 2026-07: investing.com đưa lên hàng đầu — 2 nguồn cũ bên dưới đã xác nhận gãy (worldgovernment
+    # bonds.com đổi sang render bằng JavaScript nên requests không thấy số; API bond-yield của Vietcap
+    # trả 404, có thể đã đổi endpoint) — KHÔNG liên quan gì đến IP GitHub Actions, 2 trang nguồn tự đổi
+    # theo thời gian. investing.com dùng curl (bypass chặn vân tay TLS) đã verify hoạt động tốt.
+    try:
+        html = _fetch_via_curl_rf("https://www.investing.com/rates-bonds/vietnam-10-year-bond-yield", timeout=timeout, label="investing-rf")
+        if html:
+            import re
+            m = re.search(r'data-test="instrument-price-last"[^>]*>([\d.,]+)', html)
+            if m:
+                rf = float(m.group(1).replace(",", "")) / 100
+                if 0.01 <= rf <= 0.15:
+                    return rf, "investing.com"
+    except Exception as e:
+        print(f"  [WARN] investing.com Rf failed: {e}")
+
     try:
         r = requests.get(
             "https://www.worldgovernmentbonds.com/bond-yield/vietnam/10-years/",
