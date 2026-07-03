@@ -4324,23 +4324,16 @@ def build_excel():
     ws2.cell(row=R_ANN_SPR, column=10,
              value="≤2022: Spread HRC (chưa có SL tách quý để tính All); ≥2023: Spread All — link '17_Gia_Hang_Hoa'")
 
-    # ── Biên LNG dự phóng (row 6) — theo yêu cầu user (2026-07):
-    #  Năm dự phóng ĐẦU TIÊN (2026E, cột G) — n quý ĐÃ CÓ BCTC (_n_q_known):
-    #    LNG năm = LNG lũy kế n quý + (4-n)/4 x Doanh thu ước tính năm x (LNG lũy kế n quý/Doanh thu
-    #    lũy kế n quý) x (Spread All hiện tại/Spread All quý gần nhất đã biết); BLNG năm = LNG năm/DT.
-    #    n=4 (đủ cả năm): BLNG năm = LNG lũy kế 4 quý/Doanh thu lũy kế 4 quý (không cần ước tính nữa).
-    #  Các năm SAU (2027E/2028E, chưa có quý nào của năm đó) = BLNG năm TRƯỚC x (Spread All hiện tại/
-    #    Spread All NĂM TRƯỚC — dùng annual Spread All ước tính của chính năm liền trước, R17_ANN_SPREAD_ALL).
-    _rev_est_g = f"{S_R3}!G2"
-    if _n_q_known >= 4:
-        g6_formula = f"=G{R_Q1_GP}/G{R_Q1_REV}*100"
-    else:
-        _remain_frac = (4 - _n_q_known) / 4
-        g6_formula = (f"=(G{R_Q1_GP}+{_remain_frac}*{_rev_est_g}*(G{R_Q1_GP}/G{R_Q1_REV})"
-                      f"*(G{R_SPR_ALL_NOW}/G{R_Q1_SPR}))/{_rev_est_g}*100")
-    ws2.cell(row=6, column=7, value=g6_formula).number_format = '0.0'
-    ws2.cell(row=6, column=8, value=f"=G6*(G{R_SPR_ALL_NOW}/{S17}!G{R17_ANN_SPREAD_ALL})").number_format = '0.0'
-    ws2.cell(row=6, column=9, value=f"=H6*(G{R_SPR_ALL_NOW}/{S17}!H{R17_ANN_SPREAD_ALL})").number_format = '0.0'
+    # ── Biên LNG dự phóng (row 6) — 2026-07, user yêu cầu: KHÔNG duy trì 2 đường tính riêng (công thức
+    # Excel sống + biến Python gp_margin_fc dùng cho PDF/JSON) vì 2 bên tham chiếu qua nhiều ô công
+    # thức trung gian (Q1 GP/Rev, Doanh thu 03_Revenue_Model, Spread All 17_Gia_Hang_Hoa) nên dễ lệch
+    # nhau âm thầm dù cùng công thức trên giấy. Ghi THẲNG giá trị gp_margin_fc (đã tính 1 lần, dùng
+    # chung cho Excel/PDF/JSON) làm số — Q1 GP/Rev, Spread Now/Spread quý gần nhất vẫn giữ lại bên
+    # trên làm ô tham chiếu "show your work" cho người đọc, chỉ không dùng làm công thức TỰ TÍNH row 6
+    # nữa để tránh lệch.
+    ws2.cell(row=6, column=7, value=gp_margin_fc[0]).number_format = '0.0'
+    ws2.cell(row=6, column=8, value=gp_margin_fc[1]).number_format = '0.0'
+    ws2.cell(row=6, column=9, value=gp_margin_fc[2]).number_format = '0.0'
 
     # Save
     wb.save(EXCEL_FILE)
