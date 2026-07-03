@@ -1,6 +1,6 @@
 {
   "ticker": "TCB",
-  "companyName": "Ngân hàng TCB",
+  "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
   "analysis_comments": {
     "ytd_loans_growth": 3.52,
     "ytd_dep_growth": -3.09,
@@ -292,8 +292,8 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1xSzTs1p29w3qs8UyuypV9LoOJ-UYaOsd/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1rwooJL-Nwdx5h5LjCGkk2bcb2-OCJkNp/view?usp=drivesdk",
   "pe_hist": [
     11.6477870099,
     13.5226658764,
@@ -1591,7 +1591,7 @@
     ]
   },
   "thesis": [
-    "Ngân hàng TCB (TCB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế ",
+    "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụ",
     "Sức khỏe tài chính của TCB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và h",
     "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu TCB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị th"
   ],
@@ -1655,39 +1655,39 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 37711,
-    "upside": 11.41,
-    "bear": 32927,
-    "base": 37711,
-    "bull": 49086,
+    "weightedTarget": 37595,
+    "upside": 11.06,
+    "bear": 32713,
+    "base": 37594,
+    "bull": 48767,
     "pbAttractive": 1.11,
-    "pbAttractivePrice": 32927,
+    "pbAttractivePrice": 32714,
     "pbOver": 1.66,
-    "pbOverPrice": 49086,
-    "pbMedianPrice": 39246,
-    "peMedianPrice": 37210,
-    "COE": 14.01,
+    "pbOverPrice": 48767,
+    "pbMedianPrice": 38991,
+    "peMedianPrice": 35530,
+    "COE": 14.02,
     "peMedian": 8.78,
     "pbMedian": 1.33,
     "bvpsBase": 25331,
-    "riValue": 36177,
-    "pbValue": 39246,
-    "pvRi": 2337,
-    "pvCv": 8509,
+    "riValue": 36198,
+    "pbValue": 38991,
+    "pvRi": 2199,
+    "pvCv": 8668,
     "epsFc": [
-      4237,
-      5211,
-      6218
+      4046,
+      5207,
+      6222
     ],
     "riResults": [
-      690,
-      1069,
-      1347
+      495,
+      1089,
+      1374
     ],
     "recommend": "THEO DÕI"
   },
   "comments": {
-    "businessModel": "Ngân hàng TCB (TCB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
+    "businessModel": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam (TCB) duy trì mô hình kinh doanh tập trung mạnh vào phân khúc khách hàng cá nhân cao cấp và cho vay bất động sản (chiếm tỷ trọng lớn trong cơ cấu tín dụng). Chiến lược này đi kèm vị thế dẫn đầu về tỷ lệ CASA và nền tảng ngân hàng số vượt trội.",
     "financialPerformance": "Sức khỏe tài chính của TCB nhìn chung ở mức tốt với tỷ lệ nợ xấu NPL được kiểm soát thấp và tỷ lệ bao phủ nợ xấu (LLR) vượt trội hoặc tương đương mức trung bình ngành. Tốc độ tăng trưởng tín dụng và hiệu quả sinh lời (ROE, NIM) tiếp tục duy trì vị thế nhóm đầu thị trường.",
     "valuationText": "Với giá hiện tại và giá mục tiêu ước tính từ mô hình định giá hỗn hợp, cổ phiếu TCB mang lại triển vọng tăng giá hấp dẫn (upside lớn). Đây là cơ hội đầu tư đáng cân nhắc cho mục tiêu dài hạn nhờ vị thế đầu ngành vững chắc."
   },
@@ -1728,9 +1728,9 @@
       5164.2,
       3080.1,
       3662.7,
-      4237,
-      5211,
-      6218
+      4045.7,
+      5206.7,
+      6222.0
     ],
     "equity": [
       93041.47,
@@ -1805,5 +1805,5 @@
       0.3748
     ]
   },
-  "lastUpdated": "2026-07-03 10:21"
+  "lastUpdated": "2026-07-03 04:20"
 }

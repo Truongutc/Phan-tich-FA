@@ -81,10 +81,10 @@
   },
   {
     "ticker": "TCB",
-    "companyName": "Ngân hàng TCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
     "sector": "Ngân hàng",
-    "lastUpdated": "2026-07-03 10:21",
-    "excelUrl": null,
-    "pdfUrl": null
+    "lastUpdated": "2026-07-03 04:20",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1xSzTs1p29w3qs8UyuypV9LoOJ-UYaOsd/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1rwooJL-Nwdx5h5LjCGkk2bcb2-OCJkNp/view?usp=drivesdk"
   }
 ]
