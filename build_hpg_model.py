@@ -1248,6 +1248,47 @@ def data_row(ws, row, vals, bold=False, fill=None, fmt=None):
         if fmt and i <= len(fmt):
             cell.number_format = fmt[i-1]
 
+# ── Excel-computed valuation readback (so PDF/JSON khớp tuyệt đối với 07_Valuation, ──
+# thay vì tự tính lại bằng hằng số EV_MULTIPLE/PB_MULTIPLE/PE_MULTIPLE/net_debt độc lập) ──
+EXCEL_VAL = {}
+
+def read_excel_valuation():
+    """Mở lại EXCEL_FILE vừa lưu bằng Excel (win32com) để Excel tự recalculate các công thức
+    MEDIAN/net-debt sống trong 07_Valuation, rồi đọc lại giá trị đã tính — đảm bảo PDF và JSON
+    (web) dùng đúng 1 nguồn số với Excel (cover + 07_Valuation), thay vì hằng số python độc lập
+    dễ lệch theo thời gian. Nếu Excel không mở được (không có Excel/win32com), giữ nguyên
+    EXCEL_VAL rỗng để build_pdf()/save_json_summary() tự fallback về công thức python cũ."""
+    global EXCEL_VAL
+    try:
+        import win32com.client, pythoncom
+        pythoncom.CoInitialize()
+        xl = win32com.client.Dispatch('Excel.Application')
+        xl.Visible = False; xl.DisplayAlerts = False; xl.ScreenUpdating = False
+        xl_wb = xl.Workbooks.Open(EXCEL_FILE)
+        xl.CalculateFull()
+        ws7 = xl_wb.Sheets('07_Valuation')
+        EXCEL_VAL = {
+            'ev_price': ws7.Cells(2, 3).Value,
+            'pb_price': ws7.Cells(3, 3).Value,
+            'pe_price': ws7.Cells(4, 3).Value,
+            'target_price': ws7.Cells(10, 3).Value,
+            'current_price': ws7.Cells(12, 3).Value,
+            'upside': ws7.Cells(13, 3).Value,
+        }
+        xl_wb.Close(SaveChanges=False)
+        xl.Quit()
+        del xl_wb, xl
+        pythoncom.CoUninitialize()
+        if all(v is not None for v in EXCEL_VAL.values()):
+            print(f"[Excel] win32com readback OK — Target={EXCEL_VAL['target_price']:,.0f} | Upside={EXCEL_VAL['upside']*100:.1f}%")
+        else:
+            print("[Excel] win32com readback returned empty cells (using Python fallback values)")
+            EXCEL_VAL = {}
+    except Exception as e:
+        EXCEL_VAL = {}
+        print(f"[Excel] win32com readback failed (PDF/JSON dung cong thuc python doc lap): {e}")
+
+
 # ── 1. EXCEL MODEL ──────────────────────────────────────────────────────────
 
 def build_excel():
@@ -5001,6 +5042,14 @@ def build_pdf():
     # Individual valuations for display
     pb_upper_val = round(PB_MULTIPLE * 1.2 * bvps_2026e_val)
     pb_attr_val  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
+    # Ưu tiên số liệu Excel đã recalculate (07_Valuation, MEDIAN/net-debt sống) nếu đọc được,
+    # để PDF khớp tuyệt đối với Excel (cover + 07_Valuation) thay vì hằng số python độc lập.
+    if EXCEL_VAL:
+        price_ev_ebitda_val = EXCEL_VAL['ev_price']
+        price_pb_val = EXCEL_VAL['pb_price']
+        price_pe_val = EXCEL_VAL['pe_price']
+        weighted_price_val = EXCEL_VAL['target_price']
+        upside_val = EXCEL_VAL['upside'] * 100
 
     elements = []
 
@@ -5771,6 +5820,12 @@ def build_pdf():
     pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
     ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
+    # Ưu tiên số Excel đã recalculate (07_Valuation) để khớp tuyệt đối với Excel — xem read_excel_valuation()
+    if EXCEL_VAL:
+        ev_price = round(EXCEL_VAL['ev_price'])
+        pb_price = round(EXCEL_VAL['pb_price'])
+        pe_price = round(EXCEL_VAL['pe_price'])
+        target_price = round(EXCEL_VAL['target_price'])
     add_body(
         f"- <b>EV/EBITDA ({EV_MULTIPLE}x, HPG median)</b> → <b>{ev_price:,} VND</b><br/>"
         f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
@@ -6016,6 +6071,13 @@ def save_json_summary():
     upside = round((target_price / PRICE - 1) * 100, 1)
     pb_upper = round(pb_mul * 1.2 * bvps_26)
     pb_attr  = round(pb_mul * 0.8 * bvps_26)
+    # Ưu tiên số Excel đã recalculate (07_Valuation) để web khớp tuyệt đối với Excel — xem read_excel_valuation()
+    if EXCEL_VAL:
+        ev_price = EXCEL_VAL['ev_price']
+        pb_price = round(EXCEL_VAL['pb_price'])
+        pe_price = round(EXCEL_VAL['pe_price'])
+        target_price = round(EXCEL_VAL['target_price'])
+        upside = round(EXCEL_VAL['upside'] * 100, 1)
 
     # PE/PB history arrays
     pe_arr = []
@@ -6171,6 +6233,7 @@ if __name__ == "__main__":
     print("=" * 60)
 
     build_excel()
+    read_excel_valuation()
     make_charts()
     try:
         build_pdf()

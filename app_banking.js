@@ -469,16 +469,21 @@ async function loadStockDashboard(ticker) {
     generateChartCommentaries(ticker, annualYears, ttmQuarters, cfg, localJson);
 
     renderValuationScenarios(localJson?.valuation, currentPrice, details, latestRatio, cfg);
-    renderValuationSnapshot(localJson);
+    renderValuationSnapshot(localJson, currentPrice);
     renderNimCofChart(localJson, ticker);
     renderFinancialSnapshotTable(localJson, sectorKey);
     renderAssumptionsTable(localJson, sectorKey);
     renderResidualIncomeTable(localJson, sectorKey);
     renderPeerBenchmarkTable(localJson, sectorKey);
     renderNiiBreakdownChart(localJson, sectorKey);
+    renderNimNpatChart(localJson, sectorKey);
     renderNplLlrChart(localJson, sectorKey);
     renderEarningAssetsChart(localJson, sectorKey);
     renderOperationCharts(localJson, sectorKey);
+    renderDepositCasaLdrChart(localJson, sectorKey);
+    renderNplAbsChart(localJson, sectorKey);
+    renderProvisionChart(localJson, sectorKey);
+    renderNonIIStructureChart(localJson, sectorKey);
 
     const q = localJson || {};
     renderThesisAndRisks(q.thesis, q.risks);
@@ -491,12 +496,15 @@ async function loadStockDashboard(ticker) {
 // ═══════════════════════════════════════════════════════════
 // CHART RENDERERS
 // ═══════════════════════════════════════════════════════════
+if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+
 const CHART_DEFAULTS = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
         legend: { labels: { color: '#8892a4', font: { family: 'Inter', size: 11 }, boxWidth: 12 } },
-        tooltip: { backgroundColor: 'rgba(10,16,32,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#f0f2f8', bodyColor: '#8892a4', padding: 12, cornerRadius: 8 }
+        tooltip: { backgroundColor: 'rgba(10,16,32,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#f0f2f8', bodyColor: '#8892a4', padding: 12, cornerRadius: 8 },
+        datalabels: { display: false }
     },
     scales: {
         x: { ticks: { color: '#545f74', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } },
@@ -1138,6 +1146,13 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
 
     if (chartCreditFundingGrowth) chartCreditFundingGrowth.destroy();
 
+    // Tô sáng quý hiện tại (mới nhất) và quý cùng kỳ năm trước (cách 4 quý) để dễ so sánh tốt/xấu hơn cùng kỳ
+    const nQ = cg.quarters.length;
+    const highlightIdx = new Set([nQ - 1, nQ - 5]);
+    const pointRadiusFor = () => cg.quarters.map((_, i) => highlightIdx.has(i) ? 6 : 3);
+    const pointBorderWidthFor = () => cg.quarters.map((_, i) => highlightIdx.has(i) ? 2.5 : 1);
+    const pointBorderColorFor = () => cg.quarters.map((_, i) => highlightIdx.has(i) ? '#ffffff' : undefined);
+
     chartCreditFundingGrowth = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1149,7 +1164,9 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
                     borderColor: '#4472C4',
                     backgroundColor: 'rgba(68,114,196,0.1)',
                     borderWidth: 2.5,
-                    pointRadius: 4,
+                    pointRadius: pointRadiusFor(),
+                    pointBorderWidth: pointBorderWidthFor(),
+                    pointBorderColor: pointBorderColorFor(),
                     tension: 0.2
                 },
                 {
@@ -1158,7 +1175,9 @@ function renderCreditFundingGrowthChart(localJson, cfg) {
                     borderColor: '#ED7D31',
                     backgroundColor: 'rgba(237,125,49,0.1)',
                     borderWidth: 2.5,
-                    pointRadius: 4,
+                    pointRadius: pointRadiusFor(),
+                    pointBorderWidth: pointBorderWidthFor(),
+                    pointBorderColor: pointBorderColorFor(),
                     tension: 0.2
                 }
             ]
@@ -1258,12 +1277,12 @@ function renderFinancialSnapshotTable(localJson, sectorKey) {
 // ═══════════════════════════════════════════════════════════
 // VALUATION SNAPSHOT — fills the summary card at top
 // ═══════════════════════════════════════════════════════════
-function renderValuationSnapshot(localJson) {
+function renderValuationSnapshot(localJson, livePrice) {
     const val = localJson?.valuation;
-    const currPrice = localJson?.currentPrice;
+    const currPrice = livePrice || localJson?.currentPrice;
     if (!val || !currPrice) return;
     const fmt = (n) => n ? Math.round(n).toLocaleString('vi-VN') + ' d' : '-';
-    const upside = val.upside ?? 0;
+    const upside = val.weightedTarget ? ((val.weightedTarget / currPrice - 1) * 100) : (val.upside ?? 0);
     const recText  = val.recommend ?? (upside >= 15 ? 'MUA' : upside < -5 ? 'BAN' : 'THEO DOI');
     const recColor = recText === 'MUA' ? '#10b981' : recText === 'BAN' ? '#ef4444' : '#f59e0b';
     const el = (id) => document.getElementById(id);
@@ -1479,6 +1498,289 @@ function renderNiiBreakdownChart(localJson, sectorKey) {
     const lastNonii = nonii[nonii.length - 1] || 0;
     const noniiPct = (lastNonii / (lastNii + lastNonii) * 100).toFixed(1);
     analysisEl.innerHTML = `NII: <strong>${lastNii.toLocaleString('vi-VN')} ty</strong> | NonII: <strong>${lastNonii.toLocaleString('vi-VN')} ty</strong> (chiem ${noniiPct}%).`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// NIM (line) vs LNST (bar) THEO QUÝ
+// ═══════════════════════════════════════════════════════════
+let chartNimNpat = null;
+function renderNimNpatChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-nim-npat-card');
+    const analysisEl = document.getElementById('analysis-text-nim-npat');
+    if (!card || !analysisEl) return;
+    const rq = localJson?.ratios_quarterly;
+    const iq = localJson?.income_quarterly;
+    if (!rq || !iq || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+
+    const npatByQuarter = {};
+    iq.forEach(r => { npatByQuarter[r.quarter] = r.npat; });
+
+    const quarters = rq.quarters;
+    const nim = rq.nim || [];
+    const npat = quarters.map(q => npatByQuarter[q] ?? null);
+
+    const ctx = document.getElementById('nimNpatChart').getContext('2d');
+    if (chartNimNpat) chartNimNpat.destroy();
+    chartNimNpat = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: quarters,
+            datasets: [
+                { type: 'bar', label: 'LNST (tỷ)', data: npat, backgroundColor: '#3b82f6aa', yAxisID: 'y' },
+                { type: 'line', label: 'NIM (%)', data: nim, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y1' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'LNST (tỷ)' } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'NIM (%)' } }
+            }
+        }
+    });
+
+    const lastNpat = [...npat].reverse().find(v => v !== null && v !== undefined);
+    const lastNim = [...nim].reverse().find(v => v !== null && v !== undefined);
+    analysisEl.innerHTML = `NIM quý gần nhất: <strong>${lastNim != null ? lastNim.toFixed(2) + '%' : '-'}</strong> | LNST quý gần nhất: <strong>${lastNpat != null ? formatNumber(lastNpat, 0) + ' tỷ' : '-'}</strong>.<br/>
+        <span style="font-size:0.8rem;color:var(--text-dim)">NIM là chỉ báo dẫn dắt biên lợi nhuận lõi (thu nhập lãi thuần/tài sản sinh lãi); xu hướng NIM thường đi trước xu hướng LNST 1-2 quý.</span>`;
+}
+
+// Nhãn số liệu kiểu "badge" (nền màu, chữ trắng) cho line series — dùng chung cho các chart mới
+function lineBadgeDatalabels(color, suffix, decimals) {
+    return {
+        display: true,
+        color: '#fff',
+        backgroundColor: color,
+        borderRadius: 4,
+        padding: { top: 2, bottom: 2, left: 5, right: 5 },
+        font: { size: 9, weight: 'bold' },
+        anchor: 'end',
+        align: 'top',
+        offset: 4,
+        formatter: (v) => v != null ? v.toFixed(decimals ?? 1) + (suffix || '') : ''
+    };
+}
+function barValueDatalabels(color) {
+    return {
+        display: true,
+        color: color || '#cbd5e1',
+        font: { size: 9, weight: 'bold' },
+        anchor: 'end',
+        align: 'top',
+        formatter: (v) => v != null ? Math.round(v).toLocaleString('vi-VN') : ''
+    };
+}
+
+// ═══════════════════════════════════════════════════════════
+// TIỀN GỬI KH & CASA & LDR THEO QUÝ
+// ═══════════════════════════════════════════════════════════
+let chartDepositCasaLdr = null;
+function renderDepositCasaLdrChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-deposit-casa-ldr-card');
+    const analysisEl = document.getElementById('analysis-text-deposit-casa-ldr');
+    if (!card || !analysisEl) return;
+    const d = localJson?.deposit_casa_ldr_quarterly;
+    if (!d || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+
+    const ctx = document.getElementById('depositCasaLdrChart').getContext('2d');
+    if (chartDepositCasaLdr) chartDepositCasaLdr.destroy();
+    chartDepositCasaLdr = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: d.quarters,
+            datasets: [
+                { type: 'bar', label: 'Tiền gửi KH (tỷ)', data: d.deposit_total, backgroundColor: '#2563eb', yAxisID: 'y', datalabels: barValueDatalabels('#93c5fd') },
+                { type: 'line', label: 'CASA (%)', data: d.casa_pct, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y1', datalabels: lineBadgeDatalabels('#06b6d4', '%') },
+                // LDR ở đây = (Dư nợ cho vay KH + TPDN nắm giữ) / Tổng huy động — có cộng TPDN vào tử số
+                // theo chủ đích, nên số sẽ cao hơn LDR "thuần cho vay KH" các ngân hàng công bố ra ngoài.
+                { type: 'line', label: 'Tín dụng/Huy động - LDR (%)', data: d.ldr_pct, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y1', datalabels: lineBadgeDatalabels('#f59e0b', '%') }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tiền gửi KH (tỷ)' } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: '%' }, min: 0 }
+            }
+        }
+    });
+
+    const lastDep = [...d.deposit_total].reverse().find(v => v != null);
+    const lastCasa = [...d.casa_pct].reverse().find(v => v != null);
+    const lastLdr = [...d.ldr_pct].reverse().find(v => v != null);
+    analysisEl.innerHTML = `Tiền gửi KH quý gần nhất: <strong>${formatNumber(lastDep, 0)} tỷ</strong>, CASA <strong>${lastCasa != null ? lastCasa.toFixed(1) + '%' : '-'}</strong>, LDR <strong>${lastLdr != null ? lastLdr.toFixed(1) + '%' : '-'}</strong>.<br/>
+        <span style="font-size:0.8rem;color:var(--text-dim)">CASA cao giúp giảm chi phí vốn (COF), là chỉ báo quan trọng cho biên lợi nhuận (NIM) của ngân hàng. LDR ở đây tính bằng (Dư nợ cho vay KH + TPDN nắm giữ)/Tổng huy động — có cộng thêm TPDN vào tử số nên sẽ cao hơn con số LDR "thuần cho vay" mà ngân hàng công bố ra ngoài; đây là chủ đích tính toán, không phải sai số.</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// NỢ XẤU (tuyệt đối) & NỢ NHÓM 2 & TỈ LỆ NỢ XẤU THEO QUÝ
+// ═══════════════════════════════════════════════════════════
+let chartNplAbs = null;
+function renderNplAbsChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-npl-abs-card');
+    const analysisEl = document.getElementById('analysis-text-npl-abs');
+    if (!card || !analysisEl) return;
+    const ng = localJson?.npl_groups;
+    const rq = localJson?.ratios_quarterly;
+    if (!ng || !rq || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+
+    const nplAbs = ng.quarters.map((_, i) => (ng.group3[i] || 0) + (ng.group4[i] || 0) + (ng.group5[i] || 0));
+    const nplPctByQuarter = {};
+    rq.quarters.forEach((q, i) => { nplPctByQuarter[q] = rq.npl[i]; });
+    const nplPct = ng.quarters.map(q => nplPctByQuarter[q] ?? null);
+
+    const ctx = document.getElementById('nplAbsChart').getContext('2d');
+    if (chartNplAbs) chartNplAbs.destroy();
+    chartNplAbs = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ng.quarters,
+            datasets: [
+                { type: 'bar', label: 'Nợ xấu (tỷ)', data: nplAbs, backgroundColor: '#ef4444', yAxisID: 'y', datalabels: barValueDatalabels('#fca5a5') },
+                { type: 'bar', label: 'Nợ nhóm 2 (tỷ)', data: ng.group2, backgroundColor: '#84cc16', yAxisID: 'y', datalabels: barValueDatalabels('#bef264') },
+                { type: 'line', label: 'Tỉ lệ nợ xấu (%)', data: nplPct, borderColor: '#4338ca', backgroundColor: 'rgba(67,56,202,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y1', datalabels: lineBadgeDatalabels('#4338ca', '%') }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ VND' } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Tỉ lệ nợ xấu (%)' }, min: 0 }
+            }
+        }
+    });
+
+    const lastNplAbs = [...nplAbs].reverse().find(v => v != null);
+    const lastGr2 = [...ng.group2].reverse().find(v => v != null);
+    const lastPct = [...nplPct].reverse().find(v => v != null);
+    analysisEl.innerHTML = `Nợ xấu quý gần nhất: <strong>${formatNumber(lastNplAbs, 0)} tỷ</strong> (tỉ lệ <strong>${lastPct != null ? lastPct.toFixed(2) + '%' : '-'}</strong>). Nợ nhóm 2: <strong>${formatNumber(lastGr2, 0)} tỷ</strong>.<br/>
+        <span style="font-size:0.8rem;color:var(--text-dim)">Nợ nhóm 2 tăng là tín hiệu sớm — một phần có thể chuyển thành nợ xấu (nhóm 3-5) trong 1-2 quý tới nếu không được xử lý/thu hồi.</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHI PHÍ DỰ PHÒNG & DỰ PHÒNG RỦI RO CHO VAY & LLR THEO QUÝ
+// ═══════════════════════════════════════════════════════════
+let chartProvision = null;
+function renderProvisionChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-provision-card');
+    const analysisEl = document.getElementById('analysis-text-provision');
+    if (!card || !analysisEl) return;
+    const p = localJson?.provision_quarterly;
+    if (!p || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+
+    const ctx = document.getElementById('provisionChart').getContext('2d');
+    if (chartProvision) chartProvision.destroy();
+    chartProvision = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: p.quarters,
+            datasets: [
+                { type: 'bar', label: 'Chi phí dự phòng rủi ro tín dụng (tỷ)', data: p.provision_expense, backgroundColor: '#f97316', yAxisID: 'y', datalabels: barValueDatalabels('#fdba74') },
+                { type: 'bar', label: 'Dự phòng rủi ro cho vay (tỷ)', data: p.provision_balance, backgroundColor: '#3b82f6', yAxisID: 'y', datalabels: barValueDatalabels('#93c5fd') },
+                { type: 'line', label: 'Tỉ lệ bao phủ nợ xấu - LLR (%)', data: p.llr_pct, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y1', datalabels: lineBadgeDatalabels('#10b981', '%') }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ VND' } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'LLR (%)' }, min: 0 }
+            }
+        }
+    });
+
+    const lastExp = [...p.provision_expense].reverse().find(v => v != null);
+    const lastBal = [...p.provision_balance].reverse().find(v => v != null);
+    const lastLlr = [...p.llr_pct].reverse().find(v => v != null);
+    analysisEl.innerHTML = `Chi phí dự phòng quý gần nhất: <strong>${formatNumber(lastExp, 0)} tỷ</strong>. Số dư dự phòng rủi ro cho vay: <strong>${formatNumber(lastBal, 0)} tỷ</strong> (LLR <strong>${lastLlr != null ? lastLlr.toFixed(1) + '%' : '-'}</strong>).<br/>
+        <span style="font-size:0.8rem;color:var(--text-dim)">LLR &gt;100% nghĩa là bộ đệm dự phòng đủ bù đắp toàn bộ nợ xấu hiện tại; LLR giảm dần trong khi nợ xấu tăng là dấu hiệu ngân hàng đang "tiết kiệm" trích lập, cần theo dõi sát.</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// KẾT CẤU THU NHẬP NGOÀI LÃI (NonII) THEO QUÝ
+// ═══════════════════════════════════════════════════════════
+let chartNonIIStructure = null;
+function renderNonIIStructureChart(localJson, sectorKey) {
+    const card = document.getElementById('chart-nonii-structure-card');
+    const analysisEl = document.getElementById('analysis-text-nonii-structure');
+    if (!card || !analysisEl) return;
+    const n = localJson?.nonii_structure;
+    const rq = localJson?.ratios_quarterly;
+    const iq = localJson?.income_quarterly;
+    if (!n || sectorKey !== 'banks') { card.style.display = 'none'; return; }
+    card.style.display = 'flex';
+
+    const ctx = document.getElementById('nonIIStructureChart').getContext('2d');
+    if (chartNonIIStructure) chartNonIIStructure.destroy();
+    chartNonIIStructure = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: n.quarters,
+            datasets: [
+                { label: 'Dịch vụ', data: n.fee, backgroundColor: '#3b82f6' },
+                { label: 'Ngoại hối', data: n.forex, backgroundColor: '#14b8a6' },
+                { label: 'CK kinh doanh', data: n.trading_sec, backgroundColor: '#f59e0b' },
+                { label: 'CK đầu tư', data: n.invest_sec, backgroundColor: '#8b5cf6' },
+                { label: 'Khác & góp vốn', data: n.other, backgroundColor: '#64748b' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Tỷ VND' } }
+            }
+        }
+    });
+
+    // Đánh giá đột biến: NonII quý gần nhất so với quý trước & cùng kỳ, và cấu phần nào đóng góp chính
+    const nQ = n.quarters.length;
+    const compKeys = [['fee', 'Dịch vụ'], ['forex', 'Ngoại hối'], ['trading_sec', 'CK kinh doanh'], ['invest_sec', 'CK đầu tư'], ['other', 'Khác & góp vốn']];
+    const totalByIdx = (i) => compKeys.reduce((s, [k]) => s + (n[k][i] || 0), 0);
+    const lastIdx = nQ - 1;
+    const prevIdx = nQ - 2;
+    const yoyIdx = nQ - 5;
+    const lastTotal = totalByIdx(lastIdx);
+    const prevTotal = prevIdx >= 0 ? totalByIdx(prevIdx) : null;
+    const yoyTotal = yoyIdx >= 0 ? totalByIdx(yoyIdx) : null;
+    const qoqPct = prevTotal ? ((lastTotal - prevTotal) / Math.abs(prevTotal) * 100) : null;
+    const yoyPct = yoyTotal ? ((lastTotal - yoyTotal) / Math.abs(yoyTotal) * 100) : null;
+
+    // Cấu phần đóng góp lớn nhất vào thay đổi NonII kỳ này so với quý trước
+    let topDriver = null, topDriverDelta = 0;
+    if (prevIdx >= 0) {
+        compKeys.forEach(([k, label]) => {
+            const delta = (n[k][lastIdx] || 0) - (n[k][prevIdx] || 0);
+            if (Math.abs(delta) > Math.abs(topDriverDelta)) { topDriverDelta = delta; topDriver = label; }
+        });
+    }
+
+    // Kiểm tra tín hiệu "TOI tăng nhưng NIM & NII giảm" → NonII là nguồn tăng trưởng chính, cần soi kỹ cấu phần
+    let anomalyNote = '';
+    if (rq && iq && rq.nim && rq.nim.length >= 5) {
+        const nimLast = rq.nim[rq.nim.length - 1];
+        const nimPrevYear = rq.nim[rq.nim.length - 5];
+        const niiByQuarter = {}; iq.forEach(r => { niiByQuarter[r.quarter] = r.nii; });
+        const niiLast = niiByQuarter[rq.quarters[rq.quarters.length - 1]];
+        const niiPrevYear = niiByQuarter[rq.quarters[rq.quarters.length - 5]];
+        if (nimLast != null && nimPrevYear != null && niiLast != null && niiPrevYear != null
+            && nimLast < nimPrevYear && niiLast < niiPrevYear && yoyPct != null && yoyPct > 0) {
+            anomalyNote = `<br/><span style="color:#f59e0b">⚠️ NIM (${nimLast.toFixed(2)}% so ${nimPrevYear.toFixed(2)}%) và Thu nhập lãi thuần (NII) đều giảm so với cùng kỳ, nhưng Tổng thu nhập ngoài lãi vẫn tăng ${yoyPct.toFixed(1)}% — tăng trưởng lợi nhuận đang phụ thuộc nhiều vào NonII${topDriver ? `, chủ yếu từ cấu phần <b>${topDriver}</b>` : ''}. Cần kiểm tra cấu phần này có phải nguồn thu nhập lặp lại hay chỉ là khoản đột biến một lần (thanh lý CK đầu tư, hoàn nhập...).</span>`;
+        }
+    }
+
+    analysisEl.innerHTML = `Tổng thu nhập ngoài lãi (NonII) quý gần nhất: <strong>${formatNumber(lastTotal, 0)} tỷ</strong>
+        ${qoqPct != null ? ` (${qoqPct >= 0 ? '+' : ''}${qoqPct.toFixed(1)}% QoQ` : ''}${yoyPct != null ? `, ${yoyPct >= 0 ? '+' : ''}${yoyPct.toFixed(1)}% YoY)` : (qoqPct != null ? ')' : '')}.
+        ${topDriver ? `Cấu phần biến động mạnh nhất so với quý trước: <strong>${topDriver}</strong> (${topDriverDelta >= 0 ? '+' : ''}${formatNumber(topDriverDelta, 0)} tỷ).` : ''}
+        ${anomalyNote}`;
 }
 
 // ═══════════════════════════════════════════════════════════

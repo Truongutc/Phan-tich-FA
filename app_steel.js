@@ -23,9 +23,9 @@ const SECTOR_CONFIG = {
         label: 'Thép & Vật Liệu',
         labelEn: 'Basic Resources',
         icon: '\u{1F529}',
-        color: '#dc2626',
-        incomeField: 'isb27',
-        incomeField2: 'isb47',
+        color: '#f97316',
+        incomeField: 'isa3',
+        incomeField2: 'isa5',
         npat: 'isa20',
         incomeLabel: 'Doanh thu thu\u1ea7n',
         income2Label: 'LN g\u1ed9p',
@@ -285,7 +285,7 @@ function _makeStockCard(s, cfg) {
 // LOAD STOCK DASHBOARD (steel-adaptive)
 // ═══════════════════════════════════════════════════════════
 async function loadStockDashboard(ticker) {
-    document.documentElement.style.setProperty('--sector-color', '#dc2626');
+    document.documentElement.style.setProperty('--sector-color', '#f97316');
     document.getElementById('view-overview').style.display = 'none';
     document.getElementById('view-analysis').style.display = 'flex';
     document.getElementById('view-analysis').classList.add('active-view');
@@ -380,7 +380,7 @@ async function loadStockDashboard(ticker) {
         </div>
         ${details.targetPrice ? `
         <div class="metric-card">
-            <div class="metric-label">Gi\u00e1 m\u1ee5c ti\u00eau (${details.analyst || 'Vietcap'})</div>
+            <div class="metric-label">Gi\u00e1 m\u1ee5c ti\u00eau - Vietcap</div>
             <div class="metric-value" style="color:#10b981">${formatNumber(details.targetPrice)}</div>
             <div class="metric-sub">${details.rating || ''} \u00b7 Upside ${details.upsideToTargetPercent ? (details.upsideToTargetPercent * 100).toFixed(1) + '%' : ''}</div>
         </div>` : ''}
@@ -415,7 +415,30 @@ async function loadStockDashboard(ticker) {
         .filter(r => r.quarter >= 1 && r.quarter <= 4)
         .sort((a, b) => a.yearReport !== b.yearReport ? a.yearReport - b.yearReport : a.quarter - b.quarter);
 
-    const peData = ttmQuarters.map(r => ({ x: `${r.yearReport}-Q${r.quarter}`, y: r.pe && r.pe > 0 && r.pe < 500 ? parseFloat(r.pe.toFixed(1)) : null }));
+    // Quý có LNST âm → P/E TTM biến thiên bất thường (rất cao hoặc âm), làm khó nhận biết trung vị.
+    // Với các quý này, tạm lấy P/E của quý liền trước và đánh dấu "carried" để vẽ nét đứt.
+    const npatByQuarterKey = {};
+    (liveData.incomeYears?.quarters || []).forEach(q => {
+        npatByQuarterKey[`${q.yearReport}-Q${q.quarter}`] = q[cfg.npat];
+    });
+
+    let lastValidPe = null;
+    const peCarried = [];
+    const peData = ttmQuarters.map(r => {
+        const key = `${r.yearReport}-Q${r.quarter}`;
+        const rawPe = r.pe && r.pe > 0 && r.pe < 500 ? parseFloat(r.pe.toFixed(1)) : null;
+        const quarterNpat = npatByQuarterKey[key];
+        let y = rawPe;
+        let carried = false;
+        if (quarterNpat !== undefined && quarterNpat < 0) {
+            y = lastValidPe;
+            carried = true;
+        } else if (rawPe !== null) {
+            lastValidPe = rawPe;
+        }
+        peCarried.push(carried);
+        return { x: key, y };
+    });
     const pbData = ttmQuarters.map(r => ({ x: `${r.yearReport}-Q${r.quarter}`, y: r.pb && r.pb > 0 ? parseFloat(r.pb.toFixed(2)) : null }));
     const quarterLabels = ttmQuarters.map(r => `${r.yearReport}-Q${r.quarter}`);
 
@@ -432,16 +455,18 @@ async function loadStockDashboard(ticker) {
 
     renderIncomeChart(incomeLabels, incomeData, npatData, cfg.incomeLabel, cfg.npatLabel, cfg.color);
     renderChart2(incomeLabels, income2Data, npatData, cfg.income2Label, cfg.npatLabel, cfg.color);
-    renderPEChart(quarterLabels, peData.map(p => p.y), cfg.color);
+    renderPEChart(quarterLabels, peData.map(p => p.y), cfg.color, peCarried);
     renderPBChart(quarterLabels, pbData.map(p => p.y), cfg.color);
     renderCommodityPrices(localJson);
+    renderAllSpreadGpmCharts(localJson);
+    renderDaysOutstandingChart(ttmQuarters);
 
     renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg);
 
     generateChartCommentaries(ticker, annualYears, ttmQuarters, cfg, localJson);
 
     renderValuationScenarios(localJson?.valuation, currentPrice, details, latestRatio, cfg);
-    renderValuationSnapshot(localJson);
+    renderValuationSnapshot(localJson, currentPrice);
     renderFinancialSnapshotTable(localJson, sectorKey);
 
     const q = localJson || {};
@@ -563,10 +588,12 @@ function renderChart2(labels, data1, data2, label1, label2, color) {
     });
 }
 
-function renderPEChart(labels, data, color) {
+function renderPEChart(labels, data, color, carriedFlags) {
     const ctx = document.getElementById('peChart').getContext('2d');
     if (chartPE) chartPE.destroy();
-    const med = calcMedian(data);
+    const carried = carriedFlags || labels.map(() => false);
+    const realValues = data.filter((v, i) => v !== null && !carried[i]);
+    const med = calcMedian(realValues);
     const medLine = labels.map(() => med);
     chartPE = new Chart(ctx, {
         type: 'line',
@@ -579,10 +606,14 @@ function renderPEChart(labels, data, color) {
                     borderColor: color,
                     backgroundColor: color + '18',
                     borderWidth: 2,
-                    pointRadius: 3,
+                    pointRadius: (c) => carried[c.dataIndex] ? 2 : 3,
+                    pointStyle: (c) => carried[c.dataIndex] ? 'rectRot' : 'circle',
                     tension: 0.3,
                     fill: true,
-                    spanGaps: true
+                    spanGaps: true,
+                    segment: {
+                        borderDash: (c) => (carried[c.p0DataIndex] || carried[c.p1DataIndex]) ? [5, 5] : undefined
+                    }
                 },
                 {
                     label: `Trung v\u1ecb (${med ? med.toFixed(1) + 'x' : '-'})`,
@@ -595,7 +626,20 @@ function renderPEChart(labels, data, color) {
                 }
             ]
         },
-        options: { ...CHART_DEFAULTS }
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                tooltip: {
+                    ...CHART_DEFAULTS.plugins.tooltip,
+                    callbacks: {
+                        label: (c) => c.datasetIndex === 0 && carried[c.dataIndex]
+                            ? `P/E TTM: ${c.parsed.y}x (qu\u00fd LNST \u00e2m - t\u1ea1m l\u1ea5y P/E qu\u00fd tr\u01b0\u1edbc)`
+                            : `${c.dataset.label}: ${c.parsed.y}${c.datasetIndex === 0 ? 'x' : ''}`
+                    }
+                }
+            }
+        }
     });
 }
 
@@ -647,24 +691,26 @@ function renderCommodityPrices(localJson) {
     const hrc = [...cq.hrcPrice, cq.current?.hrcPrice ?? null];
     const iron = [...cq.ironOre, cq.current?.ironOre ?? null];
     const coal = [...cq.cokingCoal, cq.current?.cokingCoal ?? null];
+    const xd = cq.xdPrice ? [...cq.xdPrice, cq.current?.xdPrice ?? null] : null;
 
     const ctx = document.getElementById('commodityPriceChart').getContext('2d');
     if (chartCommodity) chartCommodity.destroy();
+    const datasets = [
+        { label: 'Giá HRC (USD/t)', data: hrc, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.08)', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
+        { label: 'Quặng sắt 62%Fe (USD/t)', data: iron, borderColor: '#2563eb', borderWidth: 1.5, pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' },
+        { label: 'Than cốc luyện kim (USD/t)', data: coal, borderColor: '#16a34a', borderWidth: 1.5, pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' }
+    ];
+    if (xd) {
+        datasets.push({ label: 'Giá thép XD (USD/t)', data: xd, borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.08)', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y' });
+    }
     chartCommodity = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels,
-            datasets: [
-                { label: 'Giá HRC (USD/t)', data: hrc, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.08)', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
-                { label: 'Quặng sắt 62%Fe (USD/t)', data: iron, borderColor: '#2563eb', borderWidth: 1.5, pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' },
-                { label: 'Than cốc luyện kim (USD/t)', data: coal, borderColor: '#16a34a', borderWidth: 1.5, pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' }
-            ]
-        },
+        data: { labels, datasets },
         options: {
             ...CHART_DEFAULTS,
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x },
-                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Giá HRC (USD/t)', color: '#dc2626', font: { size: 10 } } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'HRC / Thép XD (USD/t)', color: '#dc2626', font: { size: 10 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Quặng sắt / Than cốc (USD/t)', color: '#2563eb', font: { size: 10 } } }
             }
         }
@@ -675,13 +721,135 @@ function renderCommodityPrices(localJson) {
         ? `${spreadNow > 0 ? '+' : ''}${spreadNow.toFixed(0)} USD/t`
         : '-';
     const spreadColor = spreadNow >= 0 ? '#10b981' : '#ef4444';
+    const spreadRebarNow = cq.spreadRebarNow;
+    const spreadRebarTxt = spreadRebarNow !== undefined && spreadRebarNow !== null
+        ? `${spreadRebarNow > 0 ? '+' : ''}${spreadRebarNow.toFixed(0)} USD/t`
+        : '-';
+    const spreadRebarColor = spreadRebarNow >= 0 ? '#10b981' : '#ef4444';
     document.getElementById('analysis-text-commodity').innerHTML = `
-        Giá hiện tại (fetch tự động từ investing.com): HRC ${formatNumber(cq.current?.hrcPrice, 1)} USD/t,
+        Giá hiện tại (fetch tự động từ investing.com/SteelOnline): HRC ${formatNumber(cq.current?.hrcPrice, 1)} USD/t,
+        Thép XD ${formatNumber(cq.current?.xdPrice, 1)} USD/t,
         Quặng sắt ${formatNumber(cq.current?.ironOre, 1)} USD/t, Than cốc ${formatNumber(cq.current?.cokingCoal, 1)} USD/t.<br/><br/>
-        Spread hiện tại (TB đầu quý + hiện tại): <b style="color:${spreadColor}">${spreadTxt}</b><br/>
+        Spread HRC hiện tại (TB đầu quý + hiện tại): <b style="color:${spreadColor}">${spreadTxt}</b><br/>
+        Spread Thép XD hiện tại: <b style="color:${spreadRebarColor}">${spreadRebarTxt}</b><br/>
         <span style="font-size:0.8rem;color:var(--text-dim)">Spread chỉ phản ánh xu hướng giá benchmark quốc tế,
         không phải biên lợi nhuận thực tế của doanh nghiệp.</span>
     `;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SPREAD vs BIÊN LNG THỰC TẾ (theo quý) — HRC / Thép XD / All
+// ═══════════════════════════════════════════════════════════
+function renderSpreadGpmChart(canvasId, labels, spreadData, gpmData, spreadLabel, spreadColor, analysisElId, cardId) {
+    const card = document.getElementById(cardId);
+    const canvasEl = document.getElementById(canvasId);
+    if (!card || !canvasEl) return;
+    if (!labels || !labels.length || spreadData.every(v => v === null || v === undefined)) {
+        card.classList.add('hidden');
+        return;
+    }
+    card.classList.remove('hidden');
+
+    const chartKey = '_chart_' + canvasId;
+    if (window[chartKey]) window[chartKey].destroy();
+
+    window[chartKey] = new Chart(canvasEl.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: spreadLabel, data: spreadData, borderColor: spreadColor, backgroundColor: spreadColor + '18', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
+                { label: 'Biên LNG thực tế (%)', data: gpmData, borderColor: '#f59e0b', borderWidth: 2, borderDash: [4, 3], pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Spread (USD/t)', color: spreadColor, font: { size: 10 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Biên LNG (%)', color: '#f59e0b', font: { size: 10 } } }
+            }
+        }
+    });
+
+    const lastSpread = [...spreadData].reverse().find(v => v !== null && v !== undefined);
+    const lastGpm = [...gpmData].reverse().find(v => v !== null && v !== undefined);
+    const corr = calcCorrelation(spreadData, gpmData);
+    const analysisEl = document.getElementById(analysisElId);
+    if (analysisEl) {
+        analysisEl.innerHTML = `
+            ${spreadLabel} quý gần nhất: <strong>${formatNumber(lastSpread, 0)} USD/t</strong>, Biên LNG thực tế tương ứng: <strong>${formatNumber(lastGpm, 1)}%</strong>.<br/>
+            Tương quan spread ↔ biên LNG (13 quý gần nhất): <strong>${corr !== null ? corr.toFixed(2) : '-'}</strong>
+            ${corr !== null ? (Math.abs(corr) > 0.5 ? '(tương quan rõ nét, spread là chỉ báo dẫn dắt tốt cho biên lợi nhuận)' : '(tương quan yếu, biên LNG còn chịu chi phối bởi cơ cấu tồn kho/giá vốn tồn đọng)') : ''}
+        `;
+    }
+}
+
+function calcCorrelation(xArr, yArr) {
+    const pairs = xArr.map((x, i) => [x, yArr[i]]).filter(([x, y]) => x !== null && x !== undefined && y !== null && y !== undefined);
+    const n = pairs.length;
+    if (n < 3) return null;
+    const xs = pairs.map(p => p[0]), ys = pairs.map(p => p[1]);
+    const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const mx = mean(xs), my = mean(ys);
+    const cov = xs.reduce((s, x, i) => s + (x - mx) * (ys[i] - my), 0);
+    const sx = Math.sqrt(xs.reduce((s, x) => s + (x - mx) ** 2, 0));
+    const sy = Math.sqrt(ys.reduce((s, y) => s + (y - my) ** 2, 0));
+    return (sx && sy) ? cov / (sx * sy) : null;
+}
+
+function renderAllSpreadGpmCharts(localJson) {
+    const q = localJson?.quarterly;
+    if (!q || !q.labels || !q.labels.length) {
+        ['spread-hrc-gpm-card', 'spread-rebar-gpm-card', 'spread-all-gpm-card'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+        return;
+    }
+    renderSpreadGpmChart('spreadHrcGpmChart', q.labels, q.spreadUsd, q.gpMargin, 'Spread HRC (USD/t)', '#dc2626', 'analysis-text-spread-hrc', 'spread-hrc-gpm-card');
+    renderSpreadGpmChart('spreadRebarGpmChart', q.labels, q.spreadRebarUsd, q.gpMargin, 'Spread Thép XD (USD/t)', '#f97316', 'analysis-text-spread-rebar', 'spread-rebar-gpm-card');
+    renderSpreadGpmChart('spreadAllGpmChart', q.labels, q.spreadAllUsd, q.gpMargin, 'Spread All (USD/t)', '#8b5cf6', 'analysis-text-spread-all', 'spread-all-gpm-card');
+}
+
+// ═══════════════════════════════════════════════════════════
+// SỐ NGÀY TỒN KHO (DIO) & SỐ NGÀY PHẢI THU (DSO) — theo quý (TTM)
+// ═══════════════════════════════════════════════════════════
+let chartDaysOutstanding = null;
+function renderDaysOutstandingChart(ttmQuarters) {
+    const card = document.getElementById('days-outstanding-card');
+    if (!card) return;
+    const rows = ttmQuarters.filter(r => r.daysInventoryOutstanding != null || r.daySaleOutstanding != null);
+    if (!rows.length) { card.classList.add('hidden'); return; }
+    card.classList.remove('hidden');
+
+    const labels = rows.map(r => `${r.yearReport}-Q${r.quarter}`);
+    const dio = rows.map(r => r.daysInventoryOutstanding != null ? parseFloat(r.daysInventoryOutstanding.toFixed(0)) : null);
+    const dso = rows.map(r => r.daySaleOutstanding != null ? parseFloat(r.daySaleOutstanding.toFixed(0)) : null);
+
+    if (chartDaysOutstanding) chartDaysOutstanding.destroy();
+    chartDaysOutstanding = new Chart(document.getElementById('daysOutstandingChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Số ngày Tồn kho (DIO)', data: dio, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25 },
+                { label: 'Số ngày Phải thu (DSO)', data: dso, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25 }
+            ]
+        },
+        options: { ...CHART_DEFAULTS }
+    });
+
+    const lastDio = [...dio].reverse().find(v => v !== null);
+    const lastDso = [...dso].reverse().find(v => v !== null);
+    const analysisEl = document.getElementById('analysis-text-days');
+    if (analysisEl) {
+        analysisEl.innerHTML = `
+            Số ngày tồn kho (DIO) TTM gần nhất: <strong>${formatNumber(lastDio, 0)} ngày</strong>.<br/>
+            Số ngày phải thu (DSO) TTM gần nhất: <strong>${formatNumber(lastDso, 0)} ngày</strong>.<br/>
+            <span style="font-size:0.8rem;color:var(--text-dim)">DIO tăng cho thấy hàng tồn kho luân chuyển chậm lại (rủi ro ứ đọng vốn); DSO tăng cho thấy thời gian thu tiền khách hàng kéo dài (rủi ro chất lượng công nợ).</span>
+        `;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -764,6 +932,13 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
 
     if (yoyYtdNpat) {
         commentary += `L\u0169y k\u1ebf t\u1eeb \u0111\u1ea7u n\u0103m (YTD), LNST \u0111\u1ea1t ${formatNumber(ytdNpat/1e9, 1)} t\u1ef7 \u0111\u1ed3ng, thay \u0111\u1ed5i ${yoyYtdNpat.toFixed(1)}% so v\u1edbi c\u00f9ng k\u1ef3 n\u0103m tr\u01b0\u1edbc.`;
+    }
+
+    // C\u1ea3nh b\u00e1o thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn: LNST t\u0103ng m\u1ea1nh nh\u01b0ng doanh thu g\u1ea7n nh\u01b0 \u0111i ngang so v\u1edbi c\u00f9ng k\u1ef3
+    // \u2192 kh\u1ea3 n\u0103ng l\u1ee3i nhu\u1eadn \u0111\u1ebfn t\u1eeb ngu\u1ed3n kh\u00f4ng l\u1eb7p l\u1ea1i (t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd...)
+    // thay v\u00ec t\u0103ng tr\u01b0\u1edfng ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i.
+    if (yoyNpat !== null && yoyNpat > 20 && (yoyRev === null || yoyRev < 5)) {
+        commentary += ` <br/><span style="color:#f59e0b">\u26a0\ufe0f L\u01b0u \u00fd: LNST t\u0103ng m\u1ea1nh (${formatGrowth(yoyNpat)}) trong khi ${nameRev.toLowerCase()} g\u1ea7n nh\u01b0 \u0111i ngang${yoyRev !== null ? ` (${formatGrowth(yoyRev)})` : ''} so v\u1edbi c\u00f9ng k\u1ef3 \u2014 d\u1ea5u hi\u1ec7u cho th\u1ea5y kh\u1ea3 n\u0103ng c\u00f3 thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn, kh\u00f4ng l\u1eb7p l\u1ea1i (thu nh\u1eadp t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd t\u00e0i s\u1ea3n...) ch\u1ee9 kh\u00f4ng ho\u00e0n to\u00e0n \u0111\u1ebfn t\u1eeb ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i. N\u00ean \u0111\u1ed1i chi\u1ebfu thuy\u1ebft minh BCTC qu\u00fd ${latestQ.quarter}/${latestQ.yearReport} \u0111\u1ec3 x\u00e1c nh\u1eadn ngu\u1ed3n g\u1ed1c l\u1ee3i nhu\u1eadn tr\u01b0\u1edbc khi ngo\u1ea1i suy cho c\u00e1c qu\u00fd ti\u1ebfp theo.</span>`;
     }
 
     container.innerHTML = `
@@ -924,7 +1099,7 @@ function renderFinancialSnapshotTable(localJson, sectorKey) {
     const roe = ratios.roe || [];
     const debtEq = ratios.debt_to_equity || [];
 
-    const fmtN = (v) => v != null ? Math.round(v / 1e9).toLocaleString('vi-VN') : '-';
+    const fmtN = (v) => v != null ? Math.round(v).toLocaleString('vi-VN') : '-';
     const fmtPct = (v) => v != null ? (v * 100).toFixed(1) + '%' : '-';
     const fmtX = (v) => v != null ? v.toFixed(2) + 'x' : '-';
 
@@ -949,12 +1124,12 @@ function renderFinancialSnapshotTable(localJson, sectorKey) {
 // ═══════════════════════════════════════════════════════════
 // VALUATION SNAPSHOT
 // ═══════════════════════════════════════════════════════════
-function renderValuationSnapshot(localJson) {
+function renderValuationSnapshot(localJson, livePrice) {
     const val = localJson?.valuation;
-    const currPrice = localJson?.currentPrice;
+    const currPrice = livePrice || localJson?.currentPrice;
     if (!val || !currPrice) return;
     const fmt = (n) => n ? Math.round(n).toLocaleString('vi-VN') + ' \u0111' : '-';
-    const upside = val.upside ?? 0;
+    const upside = val.weightedTarget ? ((val.weightedTarget / currPrice - 1) * 100) : (val.upside ?? 0);
     const recText  = val.recommend ?? (upside >= 15 ? 'MUA' : upside < -5 ? 'BAN' : 'THEO D\u00d5I');
     const recColor = recText === 'MUA' ? '#10b981' : recText === 'BAN' ? '#ef4444' : '#f59e0b';
     const el = (id) => document.getElementById(id);

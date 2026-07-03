@@ -273,6 +273,62 @@
                     </div>
                 </div>
 
+                <!-- Chart 6: Spread HRC vs Biên LNG thực tế -->
+                <div class="chart-card-split margin-top-20 hidden" id="spread-hrc-gpm-card">
+                    <div class="chart-split-left">
+                        <h3>Spread HRC vs Biên LNG thực tế (theo quý)</h3>
+                        <div class="chart-container">
+                            <canvas id="spreadHrcGpmChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🔩 Nhận định Spread HRC</h4>
+                        <div id="analysis-text-spread-hrc" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 7: Spread Thép XD vs Biên LNG thực tế -->
+                <div class="chart-card-split margin-top-20 hidden" id="spread-rebar-gpm-card">
+                    <div class="chart-split-left">
+                        <h3>Spread Thép XD vs Biên LNG thực tế (theo quý)</h3>
+                        <div class="chart-container">
+                            <canvas id="spreadRebarGpmChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🏗️ Nhận định Spread Thép XD</h4>
+                        <div id="analysis-text-spread-rebar" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 8: Spread All (blend HRC/XD theo sản lượng) vs Biên LNG thực tế -->
+                <div class="chart-card-split margin-top-20 hidden" id="spread-all-gpm-card">
+                    <div class="chart-split-left">
+                        <h3>Spread All (bình quân gia quyền SL HRC/XD) vs Biên LNG thực tế (theo quý)</h3>
+                        <div class="chart-container">
+                            <canvas id="spreadAllGpmChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>⚖️ Nhận định Spread All</h4>
+                        <div id="analysis-text-spread-all" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 9: Số ngày tồn kho & Số ngày phải thu (theo quý) -->
+                <div class="chart-card-split margin-top-20 hidden" id="days-outstanding-card">
+                    <div class="chart-split-left">
+                        <h3>Số ngày Tồn kho &amp; Số ngày Phải thu (TTM, theo quý)</h3>
+                        <div class="chart-container">
+                            <canvas id="daysOutstandingChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📦 Nhận định Vòng quay Vốn lưu động</h4>
+                        <div id="analysis-text-days" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- RIGHT: Moat + Valuation -->

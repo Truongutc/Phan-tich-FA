@@ -1951,6 +1951,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # LDR quý = Tổng tín dụng (Loans+TPDN) / Tổng huy động (Deposits+Bonds+TG TCTD khác+KBNN*tỷ lệ
     # -Ký quỹ-Vốn chuyên dùng) — trước đây chỉ Loans/(Deposits+Bonds), thiếu TPDN, TG TCTD khác
     # (bsb270 — Circular 22/2019/TT-NHNN) và KBNN/ký quỹ/vốn chuyên dùng.
+    # LƯU Ý (chủ đích, không phải bug): tử số CỘNG THÊM TPDN (nob184, trái phiếu doanh nghiệp nắm giữ)
+    # vào bên cạnh dư nợ cho vay KH (bsb103). Vì vậy LDR tính ra ở đây sẽ CAO HƠN con số LDR "thuần cho
+    # vay khách hàng" mà ngân hàng công bố ra ngoài (vd. báo cáo IR/BCTC) — đây là định nghĩa tín dụng mở
+    # rộng dùng xuyên suốt model này, KHÔNG sửa lại theo yêu cầu, chỉ ghi chú để người đọc không hiểu nhầm
+    # là có lỗi khi thấy LDR vượt trần 85% theo Thông tư 22/2019 (trần đó áp cho LDR thuần cho vay).
     def _ldr_kbnn_rate(yr):
         if yr <= 2022: return 0.0
         if yr == 2023: return 0.50
@@ -1993,6 +1998,27 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         llr_q_json.append(llr)
     while len(npl_q_json) < n_q: npl_q_json.append(None)
     while len(llr_q_json)  < n_q: llr_q_json.append(None)
+
+    # Chi phí dự phòng rủi ro tín dụng (isb41, luồng quý) & Dự phòng rủi ro cho vay (bsb105, số dư quý)
+    # — dùng cho chart "Chi phí dự phòng & Dự phòng cho vay & LLR" (web + PDF). Nợ xấu/Nhóm 2 tuyệt đối
+    # dùng lại npl_grp2/3/4/5 đã có sẵn ở "npl_groups" (không tính trùng).
+    provision_expense_q_json = []
+    provision_balance_q_json = []
+    for i in range(n_q):
+        provision_expense_q_json.append(round(abs((iq_sorted[i].get("isb41") or 0))/1e9, 1))
+        provision_balance_q_json.append(round(abs((rq_sorted[i].get("bsb105") or 0))/1e9, 1))
+
+    # Tổng tiền gửi khách hàng theo quý (tỷ VND, bsb113 — không gồm GTCG/bonds) — dùng cho chart
+    # "Tiền gửi KH & CASA & LDR"
+    deposit_total_q_json = [round((rq_sorted[i].get("bsb113") or 0)/1e9, 1) for i in range(n_q)]
+
+    # Kết cấu Thu nhập ngoài lãi (NonII) theo quý — Vietcap INCOME_STATEMENT isb30/31/32/33/(34+35)/37
+    # (đã verify: isb27+isb30+isb31+isb32+isb33+isb36+isb37 = isb38 = TOI, khớp tuyệt đối với mọi ngân hàng)
+    nonii_fee_q_json = [round((iq_sorted[i].get("isb30") or 0)/1e9, 1) for i in range(n_q)]
+    nonii_forex_q_json = [round((iq_sorted[i].get("isb31") or 0)/1e9, 1) for i in range(n_q)]
+    nonii_trading_sec_q_json = [round((iq_sorted[i].get("isb32") or 0)/1e9, 1) for i in range(n_q)]
+    nonii_invest_sec_q_json = [round((iq_sorted[i].get("isb33") or 0)/1e9, 1) for i in range(n_q)]
+    nonii_other_q_json = [round(((iq_sorted[i].get("isb36") or 0) + (iq_sorted[i].get("isb37") or 0))/1e9, 1) for i in range(n_q)]
 
     # Quarterly ROE, Credit Growth, and 4 Note breakdowns
     roe_q_json = []
@@ -2516,6 +2542,168 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     plt.savefig(chart_pT, dpi=120)
     plt.close()
 
+    # Chart: Tương quan NIM (line) & LNST (bar) theo Quý
+    npat_q_json = [round((iq_sorted[i].get("isa20") or 0) / 1e9, 1) for i in range(n_q)]
+    fig, ax1 = plt.subplots(figsize=(10, 4.5))
+    ax2 = ax1.twinx()
+    x_nn = range(n_q)
+    ax1.bar(x_nn, npat_q_json, width=0.5, color='#4472C4', label='LNST (tỷ)')
+    ax2.plot(x_nn, nim_q_json, 'D-', color='#ED7D31', linewidth=2, markersize=4, label='NIM (%)')
+    tick_step_nn = max(1, n_q // 9)
+    ax1.set_xticks(range(0, n_q, tick_step_nn))
+    ax1.set_xticklabels([q_labels_json[i] for i in range(0, n_q, tick_step_nn)], rotation=30, fontsize=8)
+    ax1.set_ylabel('LNST (tỷ VND)')
+    ax2.set_ylabel('NIM (%)')
+    ax1.legend(loc='upper left', fontsize=9)
+    ax2.legend(loc='upper right', fontsize=9)
+    ax1.set_title(f'{ticker}: Tương quan NIM & LNST theo Quý', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    chart_pNN = os.path.join(chart_dir, 'chartU_nim_npat_quarterly.png')
+    plt.savefig(chart_pNN, dpi=120)
+    plt.close()
+
+    def _annotate_line_badges(ax, x_vals, y_vals, color, fmt='{:.1f}%'):
+        for xi, yi in zip(x_vals, y_vals):
+            if yi is None:
+                continue
+            ax.annotate(fmt.format(yi), (xi, yi), textcoords='offset points', xytext=(0, 8),
+                        ha='center', fontsize=7, color='white', fontweight='bold',
+                        bbox=dict(boxstyle='round,pad=0.25', fc=color, ec='none'))
+
+    # Chart: Tiền gửi KH (bar) & CASA (line) & LDR (line) theo Quý
+    # LDR ở đây = (Dư nợ cho vay KH + TPDN nắm giữ) / Tổng huy động — cộng TPDN vào tử số theo chủ đích
+    # (xem ldr_q_json), nên số sẽ cao hơn LDR "thuần cho vay" mà ngân hàng công bố ra ngoài.
+    x_dcl = np.arange(n_q)
+    fig, ax1 = plt.subplots(figsize=(11, 4.8))
+    ax2 = ax1.twinx()
+    bar_dep = ax1.bar(x_dcl, deposit_total_q_json, width=0.55, color='#2563EB', label='Tiền gửi KH (tỷ)')
+    ax1.bar_label(bar_dep, labels=[f'{v:,.0f}' for v in deposit_total_q_json], fontsize=6.5, padding=2)
+    casa_pct_arr = [round(v * 100, 1) if v is not None else None for v in casa_q_json]
+    ldr_pct_arr = [round(v * 100, 1) if v is not None else None for v in ldr_q_json]
+    ax2.plot(x_dcl, casa_pct_arr, 'o-', color='#06B6D4', linewidth=2.2, markersize=4, label='CASA (%)')
+    ax2.plot(x_dcl, ldr_pct_arr, 's-', color='#F59E0B', linewidth=2.2, markersize=4, label='Tín dụng/Huy động - LDR, gồm TPDN (%)')
+    _annotate_line_badges(ax2, x_dcl, casa_pct_arr, '#06B6D4')
+    _annotate_line_badges(ax2, x_dcl, ldr_pct_arr, '#F59E0B')
+    tick_step_dcl = max(1, n_q // 9)
+    ax1.set_xticks(range(0, n_q, tick_step_dcl))
+    ax1.set_xticklabels([q_labels_json[i] for i in range(0, n_q, tick_step_dcl)], rotation=30, fontsize=8)
+    ax1.set_ylabel('Tiền gửi KH (tỷ VND)')
+    ax2.set_ylabel('%')
+    h1, l1 = ax1.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels()
+    ax1.legend(h1 + h2, l1 + l2, loc='upper left', fontsize=8, ncol=3)
+    ax1.set_title(f'{ticker}: Tiền gửi KH & CASA & Tín dụng/Huy động (LDR, gồm TPDN) theo Quý', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    chart_pDCL = os.path.join(chart_dir, 'chartV_deposit_casa_ldr_quarterly.png')
+    plt.savefig(chart_pDCL, dpi=120)
+    plt.close()
+
+    # Chart: Nợ xấu (bar) & Nợ nhóm 2 (bar) & Tỉ lệ nợ xấu (line) theo Quý
+    npl_abs_arr = [round((npl_grp3[i] if i < len(npl_grp3) else 0) + (npl_grp4[i] if i < len(npl_grp4) else 0) + (npl_grp5[i] if i < len(npl_grp5) else 0), 1) for i in range(min_q2)]
+    npl_gr2_arr = npl_grp2[:min_q2]
+    npl_pct_arr = npl_q_json[:min_q2]
+    x_na = np.arange(min_q2)
+    fig, ax1 = plt.subplots(figsize=(11, 4.8))
+    ax2 = ax1.twinx()
+    w = 0.38
+    b1 = ax1.bar(x_na - w/2, npl_abs_arr, width=w, color='#EF4444', label='Nợ xấu (tỷ)')
+    b2 = ax1.bar(x_na + w/2, npl_gr2_arr, width=w, color='#84CC16', label='Nợ nhóm 2 (tỷ)')
+    ax1.bar_label(b1, labels=[f'{v:,.0f}' for v in npl_abs_arr], fontsize=6, padding=2)
+    ax1.bar_label(b2, labels=[f'{v:,.0f}' for v in npl_gr2_arr], fontsize=6, padding=2)
+    ax2.plot(x_na, npl_pct_arr, 'D-', color='#4338CA', linewidth=2.2, markersize=4, label='Tỉ lệ nợ xấu (%)')
+    _annotate_line_badges(ax2, x_na, npl_pct_arr, '#4338CA', fmt='{:.2f}%')
+    tick_step_na = max(1, min_q2 // 9)
+    ax1.set_xticks(range(0, min_q2, tick_step_na))
+    ax1.set_xticklabels([q_labels_json[i] for i in range(0, min_q2, tick_step_na)], rotation=30, fontsize=8)
+    ax1.set_ylabel('Tỷ VND')
+    ax2.set_ylabel('Tỉ lệ nợ xấu (%)')
+    h1, l1 = ax1.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels()
+    ax1.legend(h1 + h2, l1 + l2, loc='upper left', fontsize=8, ncol=3)
+    ax1.set_title(f'{ticker}: Nợ xấu & Nợ nhóm 2 & Tỉ lệ nợ xấu theo Quý', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    chart_pNA = os.path.join(chart_dir, 'chartW_npl_abs_quarterly.png')
+    plt.savefig(chart_pNA, dpi=120)
+    plt.close()
+
+    # Chart: Chi phí dự phòng (bar) & Dự phòng rủi ro cho vay (bar) & LLR (line) theo Quý
+    x_pr = np.arange(n_q)
+    fig, ax1 = plt.subplots(figsize=(11, 4.8))
+    ax2 = ax1.twinx()
+    b1 = ax1.bar(x_pr - w/2, provision_expense_q_json, width=w, color='#F97316', label='Chi phí dự phòng rủi ro tín dụng (tỷ)')
+    b2 = ax1.bar(x_pr + w/2, provision_balance_q_json, width=w, color='#3B82F6', label='Dự phòng rủi ro cho vay (tỷ)')
+    ax1.bar_label(b1, labels=[f'{v:,.0f}' for v in provision_expense_q_json], fontsize=6, padding=2)
+    ax1.bar_label(b2, labels=[f'{v:,.0f}' for v in provision_balance_q_json], fontsize=6, padding=2)
+    ax2.plot(x_pr, llr_q_json, 'o-', color='#10B981', linewidth=2.2, markersize=4, label='Tỉ lệ bao phủ nợ xấu - LLR (%)')
+    _annotate_line_badges(ax2, x_pr, llr_q_json, '#10B981', fmt='{:.0f}%')
+    tick_step_pr = max(1, n_q // 9)
+    ax1.set_xticks(range(0, n_q, tick_step_pr))
+    ax1.set_xticklabels([q_labels_json[i] for i in range(0, n_q, tick_step_pr)], rotation=30, fontsize=8)
+    ax1.set_ylabel('Tỷ VND')
+    ax2.set_ylabel('LLR (%)')
+    h1, l1 = ax1.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels()
+    ax1.legend(h1 + h2, l1 + l2, loc='upper left', fontsize=8, ncol=3)
+    ax1.set_title(f'{ticker}: Chi phí Dự phòng & Dự phòng Rủi ro Cho vay & LLR theo Quý', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    chart_pPR = os.path.join(chart_dir, 'chartX_provision_quarterly.png')
+    plt.savefig(chart_pPR, dpi=120)
+    plt.close()
+
+    # Chart: Kết cấu Thu nhập ngoài lãi (NonII) theo Quý — stacked bar
+    x_nn2 = np.arange(n_q)
+    fig, ax1 = plt.subplots(figsize=(11, 4.8))
+    nonii_components = [
+        (nonii_fee_q_json, 'Dịch vụ', '#3B82F6'),
+        (nonii_forex_q_json, 'Ngoại hối', '#14B8A6'),
+        (nonii_trading_sec_q_json, 'CK kinh doanh', '#F59E0B'),
+        (nonii_invest_sec_q_json, 'CK đầu tư', '#8B5CF6'),
+        (nonii_other_q_json, 'Khác & góp vốn', '#64748B'),
+    ]
+    bottom_pos = np.zeros(n_q); bottom_neg = np.zeros(n_q)
+    for vals, label, color in nonii_components:
+        vals_arr = np.array([v or 0 for v in vals])
+        pos = np.where(vals_arr > 0, vals_arr, 0)
+        neg = np.where(vals_arr < 0, vals_arr, 0)
+        ax1.bar(x_nn2, pos, bottom=bottom_pos, color=color, label=label, width=0.6)
+        ax1.bar(x_nn2, neg, bottom=bottom_neg, color=color, width=0.6)
+        bottom_pos += pos; bottom_neg += neg
+    tick_step_nn2 = max(1, n_q // 9)
+    ax1.set_xticks(range(0, n_q, tick_step_nn2))
+    ax1.set_xticklabels([q_labels_json[i] for i in range(0, n_q, tick_step_nn2)], rotation=30, fontsize=8)
+    ax1.set_ylabel('Tỷ VND')
+    ax1.axhline(0, color='#333', linewidth=0.8)
+    ax1.legend(loc='upper left', fontsize=8, ncol=3)
+    ax1.set_title(f'{ticker}: Kết cấu Thu nhập ngoài lãi (NonII) theo Quý', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    chart_pNII = os.path.join(chart_dir, 'chartY_nonii_structure_quarterly.png')
+    plt.savefig(chart_pNII, dpi=120)
+    plt.close()
+
+    # Đánh giá đột biến NonII: nếu TOI tăng nhưng NIM & NII cùng giảm so cùng kỳ → NonII là động lực
+    # tăng trưởng chính, xác định cấu phần đóng góp lớn nhất để lưu ý trong PDF.
+    nonii_comment = ""
+    try:
+        if n_q >= 5:
+            nii_last = (iq_sorted[-1].get("isb27") or 0) / 1e9
+            nii_yoy = (iq_sorted[-5].get("isb27") or 0) / 1e9
+            nim_last_v = nim_q_json[-1]; nim_yoy_v = nim_q_json[-5]
+            nonii_last = sum((c[0][-1] or 0) for c in nonii_components)
+            nonii_yoy = sum((c[0][-5] or 0) for c in nonii_components)
+            if nim_last_v is not None and nim_yoy_v is not None and nim_last_v < nim_yoy_v and nii_last < nii_yoy and nonii_yoy:
+                nonii_yoy_pct = (nonii_last - nonii_yoy) / abs(nonii_yoy) * 100
+                if nonii_yoy_pct > 0:
+                    deltas = {label: (vals[-1] or 0) - (vals[-5] or 0) for vals, label, _ in nonii_components}
+                    top_driver = max(deltas, key=lambda k: abs(deltas[k]))
+                    nonii_comment = (f"<b>Lưu ý:</b> NIM ({nim_last_v:.2f}% so {nim_yoy_v:.2f}% cùng kỳ) và Thu nhập lãi thuần (NII) đều giảm so với cùng kỳ, "
+                                      f"nhưng Thu nhập ngoài lãi (NonII) vẫn tăng {nonii_yoy_pct:.1f}% YoY — chủ yếu từ cấu phần <b>{top_driver}</b> "
+                                      f"(thay đổi {deltas[top_driver]:+,.0f} tỷ). Cần đối chiếu thuyết minh BCTC để xác nhận đây là nguồn thu nhập lặp lại "
+                                      f"hay chỉ là khoản đột biến một lần (thanh lý chứng khoán đầu tư, hoàn nhập dự phòng...).")
+    except Exception as e:
+        print(f"[WARN] Failed to build NonII anomaly comment: {e}")
+
     # ── PDF Generation ───────────────────────────────────────
     print("[PDF] Building PDF report...")
     
@@ -2797,7 +2985,29 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Spacer(1, 5))
     story.append(Paragraph("Diễn biến Tăng trưởng Tín dụng & Huy động liên quý QoQ qua các Quý:", h2_style))
     story.append(Image(chart_p14, width=175*mm, height=73*mm))
-    
+    # Add NIM vs LNST quarterly correlation chart
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("Tương quan NIM & LNST theo Quý:", h2_style))
+    story.append(Image(chart_pNN, width=175*mm, height=73*mm))
+    story.append(Paragraph("NIM là chỉ báo dẫn dắt biên lợi nhuận lõi của ngân hàng; xu hướng NIM thường phản ánh trước xu hướng LNST 1-2 quý.", bullet_style))
+
+    # Add Tiền gửi KH & CASA & LDR quarterly chart
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("Tiền gửi KH & CASA & Tín dụng/Huy động (LDR) theo Quý:", h2_style))
+    story.append(Image(chart_pDCL, width=175*mm, height=73*mm))
+    story.append(Paragraph("CASA cao giúp giảm chi phí vốn (COF); LDR gần ngưỡng trần pháp lý (thường 85%) cho thấy dư địa tăng trưởng tín dụng phụ thuộc nhiều vào huy động mới. "
+                            "Lưu ý: LDR ở đây tính bằng (Dư nợ cho vay KH + TPDN nắm giữ)/Tổng huy động — có cộng thêm TPDN vào tử số theo chủ đích, nên sẽ cao hơn con số LDR \"thuần cho vay\" mà ngân hàng công bố ra ngoài.", bullet_style))
+
+    # Add Kết cấu Thu nhập ngoài lãi (NonII) quarterly chart + đánh giá chi tiết
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("Kết cấu Thu nhập ngoài lãi (NonII) theo Quý:", h2_style))
+    story.append(Image(chart_pNII, width=175*mm, height=73*mm))
+    story.append(Paragraph("Thu nhập ngoài lãi gồm: Dịch vụ, Ngoại hối, Chứng khoán kinh doanh, Chứng khoán đầu tư, và Khác/góp vốn cổ phần. "
+                            "Khi Tổng thu nhập hoạt động (TOI) tăng nhưng NIM và Thu nhập lãi thuần (NII) đều giảm, phần tăng trưởng đến từ NonII — "
+                            "cần soi kỹ cấu phần nào đóng góp chính để phân biệt tăng trưởng thực chất (phí dịch vụ, bancassurance...) với khoản đột biến một lần.", bullet_style))
+    if nonii_comment:
+        story.append(Paragraph(f"• {nonii_comment}", bullet_style))
+
     # ------------------ PAGE 3: ASSET QUALITY & PROVISION ------------------
     story.append(PageBreak())
     story.append(Paragraph("3. Chất lượng tài sản & Bộ đệm dự phòng rủi ro", h1_style))
@@ -2830,8 +3040,17 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Spacer(1, 5))
     story.append(Paragraph("Diễn biến quy mô Nợ xấu tuyệt đối và tỷ lệ NPL theo quý:", h2_style))
     story.append(Image(chart_p7, width=150*mm, height=65*mm))
-    
-    
+
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("Nợ xấu & Nợ nhóm 2 (tuyệt đối) & Tỉ lệ nợ xấu theo Quý:", h2_style))
+    story.append(Image(chart_pNA, width=175*mm, height=73*mm))
+    story.append(Paragraph("Nợ nhóm 2 tăng là tín hiệu sớm — một phần có thể chuyển thành nợ xấu (nhóm 3-5) trong 1-2 quý tới nếu không được xử lý/thu hồi.", bullet_style))
+
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("Chi phí Dự phòng & Dự phòng Rủi ro Cho vay & LLR theo Quý:", h2_style))
+    story.append(Image(chart_pPR, width=175*mm, height=73*mm))
+    story.append(Paragraph("LLR trên 100% nghĩa là bộ đệm dự phòng đủ bù đắp toàn bộ nợ xấu hiện tại; LLR giảm dần trong khi nợ xấu tăng là dấu hiệu ngân hàng đang tiết giảm trích lập, cần theo dõi sát.", bullet_style))
+
     # ------------------ PAGE 4: QUARTERLY BREAKDOWNS (NEW) ------------------
     story.append(PageBreak())
     story.append(Paragraph("4. Phân tích Cơ cấu Hoạt động & Tiền gửi theo Quý", h1_style))
@@ -3121,6 +3340,32 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "casa": dep_casa,
             "term": dep_term,
             "others": dep_others
+        },
+        "deposit_casa_ldr_quarterly": {
+            "quarters": q_labels_json,
+            "deposit_total": deposit_total_q_json,
+            "casa_pct": [round(x * 100, 1) if x is not None else None for x in casa_q_json],
+            "ldr_pct": [round(x * 100, 1) if x is not None else None for x in ldr_q_json]
+        },
+        "provision_quarterly": {
+            "quarters": q_labels_json,
+            "provision_expense": provision_expense_q_json,
+            "provision_balance": provision_balance_q_json,
+            "llr_pct": llr_q_json
+        },
+        "nonii_structure": {
+            "quarters": q_labels_json,
+            "fee": nonii_fee_q_json,
+            "forex": nonii_forex_q_json,
+            "trading_sec": nonii_trading_sec_q_json,
+            "invest_sec": nonii_invest_sec_q_json,
+            "other": nonii_other_q_json,
+            "years": [str(y) for y in years_hist],
+            "fee_annual": [round(v, 1) for v in fee_inc_hist],
+            "forex_annual": [round(v, 1) for v in fx_hist],
+            "trading_sec_annual": [round(v, 1) for v in trade_sec_hist],
+            "invest_sec_annual": [round(v, 1) for v in inv_sec_hist],
+            "other_annual": [round(other_inc_hist[i] + div_hist[i], 1) for i in range(len(years_hist))]
         },
         "earning_assets": {
             "years": [str(y) for y in years_hist],

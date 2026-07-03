@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.2">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 <body>
 <div class="app-shell">
@@ -295,6 +296,22 @@
                     </div>
                 </div>
 
+                <!-- Chart: NIM vs LNST theo Quý (banks only) -->
+                <div class="chart-card-split margin-top-20" id="chart-nim-npat-card" style="display:none">
+                    <div class="chart-split-left">
+                        <h3>Tương quan NIM &amp; LNST theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="nimNpatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💰 Nhận định NIM &amp; Lợi nhuận</h4>
+                        <div id="analysis-text-nim-npat" class="chart-analysis-text">
+                            Đang phân tích tương quan NIM và lợi nhuận...
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Chart 6: NII Breakdown (banks only) -->
                 <div class="chart-card-split margin-top-20" id="chart-nii-card" style="display:none">
                     <div class="chart-split-left">
@@ -340,6 +357,62 @@
                         <div id="analysis-text-iea" class="chart-analysis-text">
                             Đang phân tích cơ cấu tài sản sinh lãi qua các năm...
                         </div>
+                    </div>
+                </div>
+
+                <!-- Chart: Tiền gửi KH & CASA & LDR theo Quý (banks only) -->
+                <div class="chart-card-split margin-top-20" id="chart-deposit-casa-ldr-card" style="display:none">
+                    <div class="chart-split-left">
+                        <h3>Tiền gửi KH &amp; CASA &amp; Tín dụng/Huy động (LDR, gồm TPDN) theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="depositCasaLdrChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🏦 Đánh giá Huy động &amp; Thanh khoản</h4>
+                        <div id="analysis-text-deposit-casa-ldr" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart: Nợ xấu (tuyệt đối) & Nợ nhóm 2 & Tỉ lệ nợ xấu theo Quý (banks only) -->
+                <div class="chart-card-split margin-top-20" id="chart-npl-abs-card" style="display:none">
+                    <div class="chart-split-left">
+                        <h3>Nợ xấu &amp; Nợ nhóm 2 (tỷ VND) &amp; Tỉ lệ nợ xấu theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="nplAbsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🔎 Đánh giá Quy mô Nợ xấu</h4>
+                        <div id="analysis-text-npl-abs" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart: Chi phí dự phòng & Dự phòng cho vay & LLR theo Quý (banks only) -->
+                <div class="chart-card-split margin-top-20" id="chart-provision-card" style="display:none">
+                    <div class="chart-split-left">
+                        <h3>Chi phí Dự phòng &amp; Dự phòng Rủi ro Cho vay &amp; LLR theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="provisionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🛡️ Đánh giá Bộ đệm Dự phòng</h4>
+                        <div id="analysis-text-provision" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart: Kết cấu Thu nhập ngoài lãi (NonII) theo Quý (banks only) -->
+                <div class="chart-card-split margin-top-20" id="chart-nonii-structure-card" style="display:none">
+                    <div class="chart-split-left">
+                        <h3>Kết cấu Thu nhập ngoài lãi (NonII) theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="nonIIStructureChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🧩 Đánh giá Kết cấu Thu nhập ngoài lãi</h4>
+                        <div id="analysis-text-nonii-structure" class="chart-analysis-text"></div>
                     </div>
                 </div>
 
