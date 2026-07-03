@@ -7,7 +7,7 @@
   "shares": 8444740856,
   "gdrivePdfUrl": null,
   "gdriveExcelUrl": null,
-  "lastUpdated": "2026-07-03 10:11",
+  "lastUpdated": "2026-07-03 12:14",
   "data": {
     "years": [
       2021,
@@ -25,9 +25,9 @@
       118953.0,
       138855.1,
       156116.1,
-      168875,
+      168869,
       202862,
-      221659
+      221652
     ],
     "npat": [
       34478.1,
@@ -35,9 +35,9 @@
       6835.1,
       12021.4,
       15453.2,
-      20705,
+      20704,
       19474,
-      16890
+      16889
     ],
     "eps": [
       7166,
@@ -55,9 +55,9 @@
       102836.4,
       114647.5,
       131220.0,
-      151925,
-      164643,
-      171399
+      151924,
+      164642,
+      171397
     ]
   },
   "ratios": {
@@ -107,20 +107,20 @@
     "casa": []
   },
   "valuation": {
-    "weightedTarget": 26583,
-    "upside": 12.6,
+    "weightedTarget": 25195,
+    "upside": 6.8,
     "recommend": "MUA",
-    "bear": 23027,
-    "base": 26583,
-    "bull": 34541,
+    "bear": 23603,
+    "base": 25195,
+    "bull": 35404,
     "COE": 12.0,
-    "evEbitdaTarget": 22962,
-    "pbAttractive": 1.28,
-    "pbAttractivePrice": 23027,
+    "evEbitdaTarget": 20856,
+    "pbAttractive": 1.31,
+    "pbAttractivePrice": 23603,
     "pbMedian": 1.61,
-    "pbOver": 1.92,
+    "pbOver": 1.97,
     "peMedian": 9.7,
-    "peTarget": 29424,
+    "peTarget": 25256,
     "evWeight": 40,
     "pbWeight": 40,
     "peWeight": 20,
@@ -555,7 +555,7 @@
       608.6,
       581.5,
       554.0,
-      580.1,
+      580.2,
       620,
       630
     ],
@@ -735,7 +735,7 @@
       "hrcPrice": 461.5,
       "ironOre": 100.8,
       "cokingCoal": 226.8,
-      "xdPrice": 574.8
+      "xdPrice": 574.9
     },
     "spreadHrcUsd": [
       127.8,
@@ -799,7 +799,7 @@
     ],
     "spreadNow": 139.3,
     "spreadHrcNow": 139.3,
-    "spreadRebarNow": 180.9,
+    "spreadRebarNow": 181.0,
     "spreadAllNow": 156.3,
     "adDutyEffectiveQuarter": "2025Q3",
     "adDutyMultiplier": 1.15,

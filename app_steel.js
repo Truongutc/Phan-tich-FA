@@ -415,22 +415,33 @@ async function loadStockDashboard(ticker) {
         .filter(r => r.quarter >= 1 && r.quarter <= 4)
         .sort((a, b) => a.yearReport !== b.yearReport ? a.yearReport - b.yearReport : a.quarter - b.quarter);
 
-    // Quý có LNST âm → P/E TTM biến thiên bất thường (rất cao hoặc âm), làm khó nhận biết trung vị.
-    // Với các quý này, tạm lấy P/E của quý liền trước và đánh dấu "carried" để vẽ nét đứt.
+    // Quý có LNST âm HOẶC LNST quá nhỏ khiến P/E TTM méo (tăng vọt bất thường) → làm khó nhận biết
+    // trung vị. Với các quý này, tạm lấy P/E của quý liền trước và đánh dấu "carried" để vẽ nét đứt,
+    // đồng thời loại các quý này khỏi cả trục hiển thị lẫn tính trung vị.
     const npatByQuarterKey = {};
     (liveData.incomeYears?.quarters || []).forEach(q => {
         npatByQuarterKey[`${q.yearReport}-Q${q.quarter}`] = q[cfg.npat];
     });
 
+    const rawPeArr = ttmQuarters.map(r => r.pe && r.pe > 0 && r.pe < 500 ? parseFloat(r.pe.toFixed(1)) : null);
+    const npatNegArr = ttmQuarters.map(r => {
+        const npat = npatByQuarterKey[`${r.yearReport}-Q${r.quarter}`];
+        return npat !== undefined && npat < 0;
+    });
+    // Trung vị sơ bộ (bỏ qua các quý LNST âm) để xác định ngưỡng bất thường
+    const prelimMedian = calcMedian(rawPeArr.filter((v, i) => v !== null && !npatNegArr[i]));
+    const PE_OUTLIER_MULTIPLE = 3;
+    const outlierCap = prelimMedian ? prelimMedian * PE_OUTLIER_MULTIPLE : Infinity;
+
     let lastValidPe = null;
     const peCarried = [];
-    const peData = ttmQuarters.map(r => {
+    const peData = ttmQuarters.map((r, i) => {
         const key = `${r.yearReport}-Q${r.quarter}`;
-        const rawPe = r.pe && r.pe > 0 && r.pe < 500 ? parseFloat(r.pe.toFixed(1)) : null;
-        const quarterNpat = npatByQuarterKey[key];
+        const rawPe = rawPeArr[i];
+        const isAnomalous = npatNegArr[i] || (rawPe !== null && rawPe > outlierCap);
         let y = rawPe;
         let carried = false;
-        if (quarterNpat !== undefined && quarterNpat < 0) {
+        if (isAnomalous) {
             y = lastValidPe;
             carried = true;
         } else if (rawPe !== null) {
@@ -740,7 +751,7 @@ function renderCommodityPrices(localJson) {
 // ═══════════════════════════════════════════════════════════
 // SPREAD vs BIÊN LNG THỰC TẾ (theo quý) — HRC / Thép XD / All
 // ═══════════════════════════════════════════════════════════
-function renderSpreadGpmChart(canvasId, labels, spreadData, gpmData, spreadLabel, spreadColor, analysisElId, cardId) {
+function renderSpreadGpmChart(canvasId, labels, spreadData, gpmData, spreadLabel, spreadColor, analysisElId, cardId, currentSpread) {
     const card = document.getElementById(cardId);
     const canvasEl = document.getElementById(canvasId);
     if (!card || !canvasEl) return;
@@ -750,16 +761,49 @@ function renderSpreadGpmChart(canvasId, labels, spreadData, gpmData, spreadLabel
     }
     card.classList.remove('hidden');
 
+    // Thêm điểm "Hiện tại" (spread sống fetch tự động) nếu có. BLNG cho điểm này chưa có số liệu
+    // BCTC thực tế (quý chưa chốt sổ) nên ước tính theo tỷ lệ biến động spread so với quý gần nhất
+    // đã biết — đánh dấu màu tím + nét đứt riêng để phân biệt rõ đây là BLNG DỰ BÁO, không phải thực tế.
+    const FORECAST_COLOR = '#a855f7';
+    let chartLabels = labels, chartSpread = spreadData, chartGpm = gpmData, forecastIdx = -1;
+    if (currentSpread !== undefined && currentSpread !== null) {
+        const lastActualSpread = [...spreadData].reverse().find(v => v !== null && v !== undefined);
+        const lastActualGpm = [...gpmData].reverse().find(v => v !== null && v !== undefined);
+        const forecastGpm = (lastActualSpread && lastActualGpm !== undefined && lastActualGpm !== null)
+            ? parseFloat((lastActualGpm * (currentSpread / lastActualSpread)).toFixed(1))
+            : null;
+        chartLabels = [...labels, 'Hiện tại'];
+        chartSpread = [...spreadData, currentSpread];
+        chartGpm = [...gpmData, forecastGpm];
+        forecastIdx = chartLabels.length - 1;
+    }
+
     const chartKey = '_chart_' + canvasId;
     if (window[chartKey]) window[chartKey].destroy();
 
     window[chartKey] = new Chart(canvasEl.getContext('2d'), {
         type: 'line',
         data: {
-            labels,
+            labels: chartLabels,
             datasets: [
-                { label: spreadLabel, data: spreadData, borderColor: spreadColor, backgroundColor: spreadColor + '18', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
-                { label: 'Biên LNG thực tế (%)', data: gpmData, borderColor: '#f59e0b', borderWidth: 2, borderDash: [4, 3], pointRadius: 2.5, tension: 0.25, yAxisID: 'y1' }
+                { label: spreadLabel, data: chartSpread, borderColor: spreadColor, backgroundColor: spreadColor + '18', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
+                {
+                    label: 'Biên LNG thực tế (%)',
+                    data: chartGpm,
+                    borderColor: '#f59e0b',
+                    borderWidth: 2,
+                    borderDash: [4, 3],
+                    pointRadius: (c) => c.dataIndex === forecastIdx ? 5 : 2.5,
+                    pointStyle: (c) => c.dataIndex === forecastIdx ? 'rectRot' : 'circle',
+                    pointBackgroundColor: (c) => c.dataIndex === forecastIdx ? FORECAST_COLOR : '#f59e0b',
+                    pointBorderColor: (c) => c.dataIndex === forecastIdx ? FORECAST_COLOR : '#f59e0b',
+                    tension: 0.25,
+                    yAxisID: 'y1',
+                    segment: {
+                        borderColor: (c) => (forecastIdx >= 0 && c.p1DataIndex === forecastIdx) ? FORECAST_COLOR : undefined,
+                        borderDash: (c) => (forecastIdx >= 0 && c.p1DataIndex === forecastIdx) ? [2, 2] : [4, 3]
+                    }
+                }
             ]
         },
         options: {
@@ -768,6 +812,17 @@ function renderSpreadGpmChart(canvasId, labels, spreadData, gpmData, spreadLabel
                 x: { ...CHART_DEFAULTS.scales.x },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Spread (USD/t)', color: spreadColor, font: { size: 10 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Biên LNG (%)', color: '#f59e0b', font: { size: 10 } } }
+            },
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                tooltip: {
+                    ...CHART_DEFAULTS.plugins.tooltip,
+                    callbacks: {
+                        label: (c) => c.datasetIndex === 1 && c.dataIndex === forecastIdx
+                            ? `Biên LNG dự báo (ước tính theo spread hiện tại): ${c.parsed.y}%`
+                            : `${c.dataset.label}: ${c.parsed.y}`
+                    }
+                }
             }
         }
     });
@@ -775,10 +830,12 @@ function renderSpreadGpmChart(canvasId, labels, spreadData, gpmData, spreadLabel
     const lastSpread = [...spreadData].reverse().find(v => v !== null && v !== undefined);
     const lastGpm = [...gpmData].reverse().find(v => v !== null && v !== undefined);
     const corr = calcCorrelation(spreadData, gpmData);
+    const forecastGpmVal = forecastIdx >= 0 ? chartGpm[forecastIdx] : null;
     const analysisEl = document.getElementById(analysisElId);
     if (analysisEl) {
         analysisEl.innerHTML = `
             ${spreadLabel} quý gần nhất: <strong>${formatNumber(lastSpread, 0)} USD/t</strong>, Biên LNG thực tế tương ứng: <strong>${formatNumber(lastGpm, 1)}%</strong>.<br/>
+            ${currentSpread != null ? `${spreadLabel.replace(/ \(USD\/t\)$/, '')} hiện tại (fetch tự động): <strong>${formatNumber(currentSpread, 0)} USD/t</strong>, Biên LNG <span style="color:${FORECAST_COLOR}">dự báo</span>: <strong style="color:${FORECAST_COLOR}">${forecastGpmVal != null ? formatNumber(forecastGpmVal, 1) + '%' : '-'}</strong> (ước tính theo tỷ lệ biến động spread, chưa có số liệu BCTC thực tế).<br/>` : ''}
             Tương quan spread ↔ biên LNG (13 quý gần nhất): <strong>${corr !== null ? corr.toFixed(2) : '-'}</strong>
             ${corr !== null ? (Math.abs(corr) > 0.5 ? '(tương quan rõ nét, spread là chỉ báo dẫn dắt tốt cho biên lợi nhuận)' : '(tương quan yếu, biên LNG còn chịu chi phối bởi cơ cấu tồn kho/giá vốn tồn đọng)') : ''}
         `;
@@ -807,9 +864,10 @@ function renderAllSpreadGpmCharts(localJson) {
         });
         return;
     }
-    renderSpreadGpmChart('spreadHrcGpmChart', q.labels, q.spreadUsd, q.gpMargin, 'Spread HRC (USD/t)', '#dc2626', 'analysis-text-spread-hrc', 'spread-hrc-gpm-card');
-    renderSpreadGpmChart('spreadRebarGpmChart', q.labels, q.spreadRebarUsd, q.gpMargin, 'Spread Thép XD (USD/t)', '#f97316', 'analysis-text-spread-rebar', 'spread-rebar-gpm-card');
-    renderSpreadGpmChart('spreadAllGpmChart', q.labels, q.spreadAllUsd, q.gpMargin, 'Spread All (USD/t)', '#8b5cf6', 'analysis-text-spread-all', 'spread-all-gpm-card');
+    const cq = localJson?.commodityQuarterly;
+    renderSpreadGpmChart('spreadHrcGpmChart', q.labels, q.spreadUsd, q.gpMargin, 'Spread HRC (USD/t)', '#dc2626', 'analysis-text-spread-hrc', 'spread-hrc-gpm-card', cq?.spreadHrcNow ?? cq?.spreadNow);
+    renderSpreadGpmChart('spreadRebarGpmChart', q.labels, q.spreadRebarUsd, q.gpMargin, 'Spread Thép XD (USD/t)', '#f97316', 'analysis-text-spread-rebar', 'spread-rebar-gpm-card', cq?.spreadRebarNow);
+    renderSpreadGpmChart('spreadAllGpmChart', q.labels, q.spreadAllUsd, q.gpMargin, 'Spread All (USD/t)', '#8b5cf6', 'analysis-text-spread-all', 'spread-all-gpm-card', cq?.spreadAllNow);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -833,11 +891,18 @@ function renderDaysOutstandingChart(ttmQuarters) {
         data: {
             labels,
             datasets: [
-                { label: 'Số ngày Tồn kho (DIO)', data: dio, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25 },
-                { label: 'Số ngày Phải thu (DSO)', data: dso, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25 }
+                { label: 'Số ngày Tồn kho (DIO)', data: dio, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
+                { label: 'Số ngày Phải thu (DSO)', data: dso, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', borderWidth: 2.5, pointRadius: 3, tension: 0.25, yAxisID: 'y1' }
             ]
         },
-        options: { ...CHART_DEFAULTS }
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'DIO (ngày)', color: '#2563eb', font: { size: 10 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'DSO (ngày)', color: '#16a34a', font: { size: 10 } } }
+            }
+        }
     });
 
     const lastDio = [...dio].reverse().find(v => v !== null);
@@ -934,11 +999,17 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
         commentary += `L\u0169y k\u1ebf t\u1eeb \u0111\u1ea7u n\u0103m (YTD), LNST \u0111\u1ea1t ${formatNumber(ytdNpat/1e9, 1)} t\u1ef7 \u0111\u1ed3ng, thay \u0111\u1ed5i ${yoyYtdNpat.toFixed(1)}% so v\u1edbi c\u00f9ng k\u1ef3 n\u0103m tr\u01b0\u1edbc.`;
     }
 
-    // C\u1ea3nh b\u00e1o thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn: LNST t\u0103ng m\u1ea1nh nh\u01b0ng doanh thu g\u1ea7n nh\u01b0 \u0111i ngang so v\u1edbi c\u00f9ng k\u1ef3
-    // \u2192 kh\u1ea3 n\u0103ng l\u1ee3i nhu\u1eadn \u0111\u1ebfn t\u1eeb ngu\u1ed3n kh\u00f4ng l\u1eb7p l\u1ea1i (t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd...)
-    // thay v\u00ec t\u0103ng tr\u01b0\u1edfng ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i.
-    if (yoyNpat !== null && yoyNpat > 20 && (yoyRev === null || yoyRev < 5)) {
-        commentary += ` <br/><span style="color:#f59e0b">\u26a0\ufe0f L\u01b0u \u00fd: LNST t\u0103ng m\u1ea1nh (${formatGrowth(yoyNpat)}) trong khi ${nameRev.toLowerCase()} g\u1ea7n nh\u01b0 \u0111i ngang${yoyRev !== null ? ` (${formatGrowth(yoyRev)})` : ''} so v\u1edbi c\u00f9ng k\u1ef3 \u2014 d\u1ea5u hi\u1ec7u cho th\u1ea5y kh\u1ea3 n\u0103ng c\u00f3 thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn, kh\u00f4ng l\u1eb7p l\u1ea1i (thu nh\u1eadp t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd t\u00e0i s\u1ea3n...) ch\u1ee9 kh\u00f4ng ho\u00e0n to\u00e0n \u0111\u1ebfn t\u1eeb ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i. N\u00ean \u0111\u1ed1i chi\u1ebfu thuy\u1ebft minh BCTC qu\u00fd ${latestQ.quarter}/${latestQ.yearReport} \u0111\u1ec3 x\u00e1c nh\u1eadn ngu\u1ed3n g\u1ed1c l\u1ee3i nhu\u1eadn tr\u01b0\u1edbc khi ngo\u1ea1i suy cho c\u00e1c qu\u00fd ti\u1ebfp theo.</span>`;
+    // C\u1ea3nh b\u00e1o thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn: LNST t\u0103ng m\u1ea1nh trong khi doanh thu g\u1ea7n nh\u01b0 \u0111i ngang, HO\u1eb6C LNST t\u0103ng
+    // v\u01b0\u1ee3t xa t\u1ed1c \u0111\u1ed9 t\u0103ng doanh thu (ch\u00eanh l\u1ec7ch l\u1edbn) so v\u1edbi c\u00f9ng k\u1ef3 \u2192 kh\u1ea3 n\u0103ng l\u1ee3i nhu\u1eadn \u0111\u1ebfn t\u1eeb ngu\u1ed3n
+    // kh\u00f4ng l\u1eb7p l\u1ea1i (t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd...) ho\u1eb7c bi\u00ean l\u1ee3i nhu\u1eadn gi\u00e3n n\u1edf b\u1ea5t th\u01b0\u1eddng,
+    // thay v\u00ec ho\u00e0n to\u00e0n \u0111\u1ebfn t\u1eeb t\u0103ng tr\u01b0\u1edfng ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i theo \u0111\u00fang t\u1ef7 l\u1ec7 doanh thu.
+    const npatRevGap = (yoyNpat !== null && yoyRev !== null) ? yoyNpat - yoyRev : null;
+    if (yoyNpat !== null && yoyNpat > 20 && (yoyRev === null || yoyRev < 5 || (npatRevGap !== null && npatRevGap > 40))) {
+        const flatRevenue = yoyRev === null || yoyRev < 5;
+        const gapText = flatRevenue
+            ? `trong khi ${nameRev.toLowerCase()} g\u1ea7n nh\u01b0 \u0111i ngang${yoyRev !== null ? ` (${formatGrowth(yoyRev)})` : ''} so v\u1edbi c\u00f9ng k\u1ef3`
+            : `v\u01b0\u1ee3t xa t\u1ed1c \u0111\u1ed9 t\u0103ng ${nameRev.toLowerCase()} (${formatGrowth(yoyRev)} so v\u1edbi c\u00f9ng k\u1ef3, ch\u00eanh l\u1ec7ch ${npatRevGap.toFixed(1)} \u0111i\u1ec3m %)`;
+        commentary += ` <br/><span style="color:#f59e0b">\u26a0\ufe0f L\u01b0u \u00fd: LNST t\u0103ng m\u1ea1nh (${formatGrowth(yoyNpat)}) ${gapText} \u2014 d\u1ea5u hi\u1ec7u cho th\u1ea5y kh\u1ea3 n\u0103ng c\u00f3 thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn, kh\u00f4ng l\u1eb7p l\u1ea1i (thu nh\u1eadp t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd t\u00e0i s\u1ea3n...) ho\u1eb7c bi\u00ean l\u1ee3i nhu\u1eadn gi\u00e3n n\u1edf b\u1ea5t th\u01b0\u1eddng, ch\u1ee9 kh\u00f4ng ho\u00e0n to\u00e0n \u0111\u1ebfn t\u1eeb t\u0103ng tr\u01b0\u1edfng ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i theo \u0111\u00fang t\u1ef7 l\u1ec7 doanh thu. N\u00ean \u0111\u1ed1i chi\u1ebfu thuy\u1ebft minh BCTC qu\u00fd ${latestQ.quarter}/${latestQ.yearReport} \u0111\u1ec3 x\u00e1c nh\u1eadn ngu\u1ed3n g\u1ed1c l\u1ee3i nhu\u1eadn tr\u01b0\u1edbc khi ngo\u1ea1i suy cho c\u00e1c qu\u00fd ti\u1ebfp theo.</span>`;
     }
 
     container.innerHTML = `

@@ -1248,45 +1248,69 @@ def data_row(ws, row, vals, bold=False, fill=None, fmt=None):
         if fmt and i <= len(fmt):
             cell.number_format = fmt[i-1]
 
-# ── Excel-computed valuation readback (so PDF/JSON khớp tuyệt đối với 07_Valuation, ──
-# thay vì tự tính lại bằng hằng số EV_MULTIPLE/PB_MULTIPLE/PE_MULTIPLE/net_debt độc lập) ──
-EXCEL_VAL = {}
-
-def read_excel_valuation():
-    """Mở lại EXCEL_FILE vừa lưu bằng Excel (win32com) để Excel tự recalculate các công thức
-    MEDIAN/net-debt sống trong 07_Valuation, rồi đọc lại giá trị đã tính — đảm bảo PDF và JSON
-    (web) dùng đúng 1 nguồn số với Excel (cover + 07_Valuation), thay vì hằng số python độc lập
-    dễ lệch theo thời gian. Nếu Excel không mở được (không có Excel/win32com), giữ nguyên
-    EXCEL_VAL rỗng để build_pdf()/save_json_summary() tự fallback về công thức python cũ."""
-    global EXCEL_VAL
-    try:
-        import win32com.client, pythoncom
-        pythoncom.CoInitialize()
-        xl = win32com.client.Dispatch('Excel.Application')
-        xl.Visible = False; xl.DisplayAlerts = False; xl.ScreenUpdating = False
-        xl_wb = xl.Workbooks.Open(EXCEL_FILE)
-        xl.CalculateFull()
-        ws7 = xl_wb.Sheets('07_Valuation')
-        EXCEL_VAL = {
-            'ev_price': ws7.Cells(2, 3).Value,
-            'pb_price': ws7.Cells(3, 3).Value,
-            'pe_price': ws7.Cells(4, 3).Value,
-            'target_price': ws7.Cells(10, 3).Value,
-            'current_price': ws7.Cells(12, 3).Value,
-            'upside': ws7.Cells(13, 3).Value,
-        }
-        xl_wb.Close(SaveChanges=False)
-        xl.Quit()
-        del xl_wb, xl
-        pythoncom.CoUninitialize()
-        if all(v is not None for v in EXCEL_VAL.values()):
-            print(f"[Excel] win32com readback OK — Target={EXCEL_VAL['target_price']:,.0f} | Upside={EXCEL_VAL['upside']*100:.1f}%")
+# ── Nguồn số valuation DÙNG CHUNG cho Excel/PDF/JSON (2026-07) ──────────────────────────────
+# Trước đây build_pdf()/save_json_summary() tự tính EV/PB/PE median và net-debt 2026E bằng hằng số
+# gõ tay riêng (EV_MULTIPLE=9.0/PB_MULTIPLE=1.6/PE_MULTIPLE=12.0, net_debt=78000-25000), độc lập với
+# công thức MEDIAN/Nợ vay-Tiền mặt sống mà build_excel() ghi vào 07_Valuation/02_Assumptions — gây
+# lệch số giữa Excel/PDF/web. Thay vì tính lại 2 lần hay mở Excel đọc lại (win32com — không chạy
+# được trên GitHub Actions vì runner không có Excel), hai hàm dưới đây tính THẲNG từ cùng nguồn dữ
+# liệu (HPG_RATIOS, total_debt_hist, cash_for_valuation_hist) bằng đúng công thức mà build_excel()
+# dùng để ghi công thức Excel — một nguồn số duy nhất, chạy giống hệt nhau trên mọi môi trường.
+def _compute_hist_multiple_medians():
+    """Trung vị-của-trung-vị-năm (2018-2025) cho P/E (đã điều chỉnh quý lỗ)/P/B/EV-EBITDA từ
+    HPG_RATIOS — đúng logic/dữ liệu dùng để ghi công thức MEDIAN vào sheet 08_Hist_Multiples (xem
+    build_excel(), khu vực 'Sheet 8: Lịch sử P/E, P/B, EV/EBITDA theo quý'), chỉ khác là ra số
+    python trực tiếp thay vì công thức Excel."""
+    raw_by_q = {}
+    for r in HPG_RATIOS:
+        if r.get("quarter") != 5:
+            raw_by_q[(int(r["year"]), r["quarter"])] = r
+    all_quarters = [(y, q) for y in range(2018, 2027) for q in range(1, 5)]
+    qdata = []
+    last_good_pe = None; last_good_pb = None; last_good_ev = None
+    for y, q in all_quarters:
+        rec = raw_by_q.get((y, q), {})
+        pe0 = rec.get("pe"); pb0 = rec.get("pb"); ev0 = rec.get("ev_ebitda")
+        is_normal = bool(pe0 and 0 < pe0 < 50)
+        pe_adj = round(pe0, 1) if is_normal else last_good_pe
+        if is_normal: last_good_pe = pe_adj
+        if pb0 and pb0 > 0:
+            pb = round(pb0, 2); last_good_pb = pb
         else:
-            print("[Excel] win32com readback returned empty cells (using Python fallback values)")
-            EXCEL_VAL = {}
-    except Exception as e:
-        EXCEL_VAL = {}
-        print(f"[Excel] win32com readback failed (PDF/JSON dung cong thuc python doc lap): {e}")
+            pb = last_good_pb
+        if ev0 and ev0 > 0:
+            ev = round(ev0, 1); last_good_ev = ev
+        else:
+            ev = last_good_ev
+        qdata.append((y, q, pe_adj, pb, ev))
+
+    hist_years = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    def year_median(idx):
+        yearly_medians = []
+        for y in hist_years:
+            vals = [row[idx] for row in qdata if row[0] == y and row[idx] is not None]
+            if vals:
+                yearly_medians.append(stats.median(vals))
+        return round(stats.median(yearly_medians), 2) if yearly_medians else None
+
+    return year_median(2), year_median(3), year_median(4)  # pe_k, pb_k, ev_k
+
+PE_HIST_MEDIAN, PB_HIST_MEDIAN, EV_HIST_MEDIAN = _compute_hist_multiple_medians()
+
+# Nợ vay/Tiền mặt dự phóng 2026E — đúng công thức rollforward dùng để ghi 02_Assumptions (Nợ vay
+# row 11/Tiền mặt row 12): neo gốc 2025A thật, giữ %YoY giả định cũ (giảm dần nợ vay, tăng dần tiền
+# mặt do FCF chuyển dương).
+_debt_yoy_g = [78000/80000, 75000/78000, 72000/75000]
+_cash_yoy_g = [25000/20000, 30000/25000, 35000/30000]
+_debt_fc_g = [round(total_debt_hist[-1])]
+_cash_fc_g = [round(cash_for_valuation_hist[-1])]
+for _r in _debt_yoy_g:
+    _debt_fc_g.append(round(_debt_fc_g[-1] * _r))
+for _r in _cash_yoy_g:
+    _cash_fc_g.append(round(_cash_fc_g[-1] * _r))
+DEBT_2026E = _debt_fc_g[1]
+CASH_2026E = _cash_fc_g[1]
+NET_DEBT_2026E = DEBT_2026E - CASH_2026E
 
 
 # ── 1. EXCEL MODEL ──────────────────────────────────────────────────────────
@@ -1396,15 +1420,9 @@ def build_excel():
     # gốc sai cũ). D&A/CAPEX dự phóng KHÔNG cần sửa: D&A đã là công thức sống (=D&A(t-1)*(1+tăng
     # trưởng DT)) tự động đúng khi có gốc 2025A thật; CAPEX dự phóng là giả định giảm hậu-DQ2, không
     # phụ thuộc gốc lịch sử.
-    _debt_yoy = [78000/80000, 75000/78000, 72000/75000]   # tỷ lệ %YoY giả định cũ
-    _cash_yoy = [25000/20000, 30000/25000, 35000/30000]
-    _debt_fc_r = [_debt_hist_r[-1]]
-    _cash_fc_r = [_cash_hist_r[-1]]
-    for _r in _debt_yoy:
-        _debt_fc_r.append(round(_debt_fc_r[-1] * _r))
-    for _r in _cash_yoy:
-        _cash_fc_r.append(round(_cash_fc_r[-1] * _r))
-    _debt_fc_r, _cash_fc_r = _debt_fc_r[1:], _cash_fc_r[1:]
+    # Dùng lại _debt_fc_g/_cash_fc_g đã tính sẵn ở module-level (cùng nguồn số với NET_DEBT_2026E
+    # dùng cho PDF/JSON) thay vì tính lại — đảm bảo Assumptions và giá trị valuation luôn khớp nhau.
+    _debt_fc_r, _cash_fc_r = _debt_fc_g[1:], _cash_fc_g[1:]
 
     assumptions = [
         ("Giá HPG (VND)", 23600, 23600, 23600, 23600, 23600, 23600, 23600, 23600, "Giá 24/06/2026. Broker targets: SSI 36k, VND 37k, SHS 38k, VCBS 38k, BVSC 38.65k"),
@@ -5024,13 +5042,16 @@ def build_pdf():
     )
 
     # ── Valuation calculations (matching Excel PnL derivation) ──
-    EV_MULTIPLE = 9.0    # HPG median 8.95x (TTM 2018-2026)
-    PB_MULTIPLE = 1.6    # HPG median 1.61x (TTM 2018-2026)
-    PE_MULTIPLE = 12.0   # HPG median 11.1x (reference)
+    # EV_MULTIPLE/PB_MULTIPLE/PE_MULTIPLE và net-debt 2026E dùng ĐÚNG nguồn số đã ghi vào Excel
+    # (07_Valuation/02_Assumptions) — xem PE_HIST_MEDIAN/PB_HIST_MEDIAN/EV_HIST_MEDIAN/NET_DEBT_2026E
+    # ở đầu file — không tính lại bằng hằng số riêng để tránh PDF/Excel/JSON lệch nhau.
+    EV_MULTIPLE = EV_HIST_MEDIAN
+    PB_MULTIPLE = PB_HIST_MEDIAN
+    PE_MULTIPLE = PE_HIST_MEDIAN
     # PnL-matching: EBITDA = EBIT + D&A, dùng lại ebit_fc/ni_fc/equity_fc_val bottom-up ở trên
     # (thay vì tính lại độc lập bằng số gõ tay 148000/2500/3800/0.035 dễ lệch khỏi 04_PnL).
     ebitda_2026e_val = ebit_fc[0] + da_fc[0]
-    net_debt_2026e_val = 78000 - 25000
+    net_debt_2026e_val = NET_DEBT_2026E
     eps_2026e_val = ni_fc[0] * 1e9 / SHARES
     bvps_2026e_val = equity_fc_val[0] * 1e9 / SHARES
 
@@ -5042,14 +5063,6 @@ def build_pdf():
     # Individual valuations for display
     pb_upper_val = round(PB_MULTIPLE * 1.2 * bvps_2026e_val)
     pb_attr_val  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
-    # Ưu tiên số liệu Excel đã recalculate (07_Valuation, MEDIAN/net-debt sống) nếu đọc được,
-    # để PDF khớp tuyệt đối với Excel (cover + 07_Valuation) thay vì hằng số python độc lập.
-    if EXCEL_VAL:
-        price_ev_ebitda_val = EXCEL_VAL['ev_price']
-        price_pb_val = EXCEL_VAL['pb_price']
-        price_pe_val = EXCEL_VAL['pe_price']
-        weighted_price_val = EXCEL_VAL['target_price']
-        upside_val = EXCEL_VAL['upside'] * 100
 
     elements = []
 
@@ -5820,12 +5833,6 @@ def build_pdf():
     pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
     ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
-    # Ưu tiên số Excel đã recalculate (07_Valuation) để khớp tuyệt đối với Excel — xem read_excel_valuation()
-    if EXCEL_VAL:
-        ev_price = round(EXCEL_VAL['ev_price'])
-        pb_price = round(EXCEL_VAL['pb_price'])
-        pe_price = round(EXCEL_VAL['pe_price'])
-        target_price = round(EXCEL_VAL['target_price'])
     add_body(
         f"- <b>EV/EBITDA ({EV_MULTIPLE}x, HPG median)</b> → <b>{ev_price:,} VND</b><br/>"
         f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
@@ -6058,10 +6065,12 @@ def save_json_summary():
         {"name":"Ống thép Long An","location":"Long An","product":"Ống thép","capacity":"0.4","status":"Chưa HĐ"},
     ]
 
-    # PnL-matching derivation (same as Excel 04_PnL) — dùng lại ebit_fc/ni_fc bottom-up ở trên
-    ev_mul = 9.0; pb_mul = 1.6; pe_mul = 12.0
+    # PnL-matching derivation (same as Excel 04_PnL) — dùng lại ebit_fc/ni_fc bottom-up ở trên.
+    # ev_mul/pb_mul/pe_mul và net_debt_26 dùng ĐÚNG nguồn số đã ghi vào Excel (xem PE_HIST_MEDIAN/
+    # PB_HIST_MEDIAN/EV_HIST_MEDIAN/NET_DEBT_2026E ở đầu file) — không tính lại riêng cho JSON/web.
+    ev_mul = EV_HIST_MEDIAN; pb_mul = PB_HIST_MEDIAN; pe_mul = PE_HIST_MEDIAN
     ebitda_26 = ebit_fc[0] + da_fc[0]
-    net_debt_26 = 78000 - 25000
+    net_debt_26 = NET_DEBT_2026E
     eps_26 = round(ni_fc[0] * 1e9 / SHARES)
     bvps_26 = round(equity_fc_val[0] * 1e9 / SHARES)
     ev_price = max(0, (ebitda_26 * ev_mul - net_debt_26) * 1e9 / SHARES)
@@ -6071,13 +6080,6 @@ def save_json_summary():
     upside = round((target_price / PRICE - 1) * 100, 1)
     pb_upper = round(pb_mul * 1.2 * bvps_26)
     pb_attr  = round(pb_mul * 0.8 * bvps_26)
-    # Ưu tiên số Excel đã recalculate (07_Valuation) để web khớp tuyệt đối với Excel — xem read_excel_valuation()
-    if EXCEL_VAL:
-        ev_price = EXCEL_VAL['ev_price']
-        pb_price = round(EXCEL_VAL['pb_price'])
-        pe_price = round(EXCEL_VAL['pe_price'])
-        target_price = round(EXCEL_VAL['target_price'])
-        upside = round(EXCEL_VAL['upside'] * 100, 1)
 
     # PE/PB history arrays
     pe_arr = []
@@ -6233,7 +6235,6 @@ if __name__ == "__main__":
     print("=" * 60)
 
     build_excel()
-    read_excel_valuation()
     make_charts()
     try:
         build_pdf()
