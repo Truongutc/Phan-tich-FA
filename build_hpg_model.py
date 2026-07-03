@@ -6146,10 +6146,11 @@ def save_json_summary():
         pb_arr.append(round(pb0, 2) if pb0 and pb0 > 0 else None)
         q_labels.append(f"{int(r['year'])}-Q{int(q)}")
 
-    pe_valid = [v for v in pe_arr if v is not None]
-    pb_valid = [v for v in pb_arr if v is not None]
-    pb_median = round(stats.median(pb_valid), 2) if len(pb_valid) > 0 else 1.6
-    pe_median = round(stats.median(pe_valid), 1) if len(pe_valid) > 0 else 10.0
+    # Dùng ĐÚNG PE_HIST_MEDIAN/PB_HIST_MEDIAN (nguồn số dùng chung cho Excel/PDF ở đầu file) thay vì
+    # tính median phẳng riêng ở đây — trước đây 2 cách tính khác nhau khiến "P/E Mục tiêu" trên web
+    # (9.7x) lệch với "P/E" hiển thị trong PDF/Excel (10.3x) dù cùng ý nghĩa "trung vị lịch sử".
+    pb_median = PB_HIST_MEDIAN
+    pe_median = PE_HIST_MEDIAN
 
     # Valuation scenarios
     bear_price = round(pb_mul * 0.8 * bvps_26)
