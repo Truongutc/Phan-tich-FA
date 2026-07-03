@@ -10,6 +10,7 @@ import json
 import math
 import subprocess
 import tempfile
+import threading
 from datetime import datetime, date, timedelta
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side, numbers
@@ -425,10 +426,52 @@ def fetch_investing_price(url, fallback):
         price = round(price / CNY_USD_RATE, 1)
     return price
 
-print("[Commodity] Fetching current HRC/iron ore/coking coal prices from investing.com...")
-hrc_now  = fetch_investing_price("https://www.investing.com/commodities/lme-steel-hrc-fob-china-futures", Q18_HRC[-1])
+# ── HRC/than cốc "hiện tại": ƯU TIÊN TradingView (2026-07, theo yêu cầu user) ─────────────────────
+# TradingView không có API công khai chính thức — thư viện tvDatafeed mô phỏng giao thức WebSocket
+# nội bộ của trang, có thể gãy bất cứ lúc nào nếu TradingView đổi giao thức (rủi ro đã trao đổi và
+# được user chấp nhận). Vì thư viện KHÔNG có timeout nội tại (từng treo vô hạn khi mạng chặn lúc
+# test), chạy trong thread riêng với timeout cứng — không bao giờ được để treo cả pipeline build.
+# Symbol xác nhận qua tradingview.com: HC1!/LME = "LME Steel HRC FOB China Futures" (đúng HRC);
+# ACF1!/SGX = "SGX TSI FOB Australia Premium Coking Coal Futures" (đúng than cốc luyện kim, không
+# phải than nhiệt điện). Fallback về investing.com (nguồn cũ) nếu TradingView lỗi/timeout/không có
+# symbol — giữ đúng triết lý "không bao giờ để 1 nguồn lỗi làm hỏng cả pipeline" đã áp dụng ở mọi
+# fetch khác trong file này.
+def fetch_tradingview_price(symbol, exchange, timeout=20):
+    """Trả về giá đóng cửa phiên gần nhất (USD/tấn) từ TradingView (tvDatafeed), hoặc None nếu
+    lỗi/timeout/không có dữ liệu. KHÔNG BAO GIỜ raise, KHÔNG BAO GIỜ treo quá `timeout` giây."""
+    result = {}
+    def _worker():
+        try:
+            from tvDatafeed import TvDatafeed, Interval
+            tv = TvDatafeed()
+            df = tv.get_hist(symbol=symbol, exchange=exchange, interval=Interval.in_daily, n_bars=5)
+            if df is not None and len(df):
+                result["price"] = round(float(df["close"].iloc[-1]), 1)
+        except Exception as e:
+            result["error"] = str(e)
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    t.join(timeout=timeout)
+    if t.is_alive():
+        print(f"  [WARN] TradingView fetch timeout ({timeout}s) for {exchange}:{symbol} - fallback to investing.com")
+        return None
+    if "price" in result:
+        return result["price"]
+    print(f"  [WARN] TradingView fetch failed for {exchange}:{symbol} ({result.get('error', 'no data')}) - fallback to investing.com")
+    return None
+
+print("[Commodity] Fetching current HRC/iron ore/coking coal prices (TradingView first, investing.com fallback)...")
+hrc_now = fetch_tradingview_price("HC1!", "LME")
+if hrc_now is not None:
+    print(f"  -> HRC (TradingView HC1!/LME) = {hrc_now} USD/t")
+else:
+    hrc_now = fetch_investing_price("https://www.investing.com/commodities/lme-steel-hrc-fob-china-futures", Q18_HRC[-1])
 iron_now = fetch_investing_price("https://vn.investing.com/commodities/iron-ore-62-cfr-futures", Q18_IRON[-1])
-coal_now = fetch_investing_price("https://vn.investing.com/commodities/metallurgical-coke-futures", Q18_COAL[-1])
+coal_now = fetch_tradingview_price("ACF1!", "SGX")
+if coal_now is not None:
+    print(f"  -> Coking coal (TradingView ACF1!/SGX) = {coal_now} USD/t")
+else:
+    coal_now = fetch_investing_price("https://vn.investing.com/commodities/metallurgical-coke-futures", Q18_COAL[-1])
 print(f"  -> HRC={hrc_now} USD/t | Iron ore={iron_now} USD/t | Coking coal={coal_now} USD/t (converted from CNY if applicable)")
 
 # Giá thép XD "hiện tại": ƯU TIÊN SteelOnline (nội địa THẬT, VND/kg quy đổi USD) vì phản ánh đúng
