@@ -98,7 +98,7 @@ def fetch_rf_vietnam(timeout=15):
     # trả 404, có thể đã đổi endpoint) — KHÔNG liên quan gì đến IP GitHub Actions, 2 trang nguồn tự đổi
     # theo thời gian. investing.com dùng curl (bypass chặn vân tay TLS) đã verify hoạt động tốt.
     try:
-        html = _fetch_via_curl_rf("https://www.investing.com/rates-bonds/vietnam-10-year-bond-yield", timeout=timeout, label="investing-rf")
+        html = _fetch_via_curl_rf("https://vn.investing.com/rates-bonds/vietnam-10-year-bond-yield", timeout=timeout, label="investing-rf")
         if html:
             import re
             m = re.search(r'data-test="instrument-price-last"[^>]*>([\d.,]+)', html)
