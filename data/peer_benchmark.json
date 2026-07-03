@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "updated": "2026-07-02",
+    "updated": "2026-07-03",
     "source": "Vietcap Live API Engine"
   },
   "peers": [
@@ -15,7 +15,7 @@
       "cg": 4.78,
       "mcap": 526407.530922,
       "name": "Vietcombank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "BID",
@@ -28,7 +28,7 @@
       "cg": 2.33,
       "mcap": 313406.8072905,
       "name": "BIDV",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "CTG",
@@ -41,7 +41,7 @@
       "cg": 1.87,
       "mcap": 267182.8955128,
       "name": "VietinBank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "TCB",
@@ -54,7 +54,7 @@
       "cg": 3.76,
       "mcap": 243058.0462002,
       "name": "Techcombank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "MBB",
@@ -67,7 +67,7 @@
       "cg": 3.27,
       "mcap": 207416.24765675,
       "name": "MBBank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "ACB",
@@ -80,7 +80,7 @@
       "cg": 3.25,
       "mcap": 131470.15732605,
       "name": "ACB",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "VIB",
@@ -93,7 +93,7 @@
       "cg": 1.13,
       "mcap": 56506.494786,
       "name": "VIB",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "HDB",
@@ -106,7 +106,7 @@
       "cg": 10.06,
       "mcap": 133140.3501918,
       "name": "HDBank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "STB",
@@ -119,7 +119,7 @@
       "cg": -0.24,
       "mcap": 137997.7904112,
       "name": "Sacombank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "VPB",
@@ -132,7 +132,7 @@
       "cg": 10.23,
       "mcap": 219769.6837477,
       "name": "VPBank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "TPB",
@@ -145,7 +145,7 @@
       "cg": 3.26,
       "mcap": 46465.28512275,
       "name": "TPBank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "MSB",
@@ -158,7 +158,7 @@
       "cg": 4.64,
       "mcap": 49920.0,
       "name": "MSB",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "EIB",
@@ -171,7 +171,7 @@
       "cg": 2.89,
       "mcap": 39210.26877735,
       "name": "Eximbank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "LPB",
@@ -184,7 +184,7 @@
       "cg": 2.84,
       "mcap": 158624.67951,
       "name": "LienVietPostBank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "SHB",
@@ -197,7 +197,7 @@
       "cg": 2.01,
       "mcap": 73208.7425806,
       "name": "SHB",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "OCB",
@@ -210,7 +210,7 @@
       "cg": 2.72,
       "mcap": 34912.6154364,
       "name": "OCB",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "BAB",
@@ -223,7 +223,7 @@
       "cg": 2.46,
       "mcap": 13945.8636636,
       "name": "BacABank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     },
     {
       "ticker": "NAB",
@@ -236,7 +236,7 @@
       "cg": 1.91,
       "mcap": 28280.5718942,
       "name": "NamABank",
-      "date_updated": "2026-07-02"
+      "date_updated": "2026-07-03"
     }
   ]
 }
