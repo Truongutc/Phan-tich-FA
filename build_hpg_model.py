@@ -1434,6 +1434,61 @@ CASH_2026E = _cash_fc_g[1]
 NET_DEBT_2026E = DEBT_2026E - CASH_2026E
 
 
+# ── Đọc ngược giá trị định giá THẬT từ Excel sau khi tính công thức (2026-07, theo yêu cầu user) ──
+# User yêu cầu giữ nguyên công thức SỐNG trong Excel (03_Revenue_Model!row6, 02_Assumptions!row19/20
+# link sang sheet 17_Gia_Hang_Hoa...) để bấm vào ô kiểm soát được — nhưng cũng yêu cầu PDF/JSON khớp
+# TUYỆT ĐỐI với Excel. Hai yêu cầu này chỉ đồng thời thoả mãn được nếu PDF/JSON đọc THẲNG kết quả
+# Excel đã tính (không tự tính lại bằng mảng Python riêng, vốn chỉ xấp xỉ chuỗi công thức nhiều lớp
+# thật của Excel — đã xảy ra 2 lần lệch số kiểu này, GP margin và giờ là giá HRC/quặng/than 2026E).
+# openpyxl không tự tính công thức — dùng LibreOffice headless (có trên GitHub Actions Ubuntu qua
+# `apt-get install libreoffice-calc`) để mở, tính lại, và lưu ra bản có cached value, rồi đọc ngược
+# đúng 5 ô kết quả cuối cùng ở sheet 07_Valuation (EV/EBITDA/P/B/P/E target, giá mục tiêu, upside).
+# KHÔNG BAO GIỜ raise/treo — nếu LibreOffice không có (máy dev không cài) hoặc lỗi bất kỳ, trả về
+# None và build_pdf()/save_json_summary() tự fallback về tính bằng Python như trước (kém chính xác
+# hơn nhưng không làm hỏng pipeline).
+EXCEL_RECALC = None
+
+def recalculate_excel_valuation(path, timeout=90):
+    """Mở `path` bằng LibreOffice headless để ép tính công thức thật, đọc ngược 07_Valuation!C2/C3/
+    C4/C10/C13 (EV/EBITDA target, P/B target, P/E target, giá mục tiêu, upside). Trả về dict hoặc
+    None nếu lỗi/timeout/không có LibreOffice — không bao giờ raise."""
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            r = subprocess.run(
+                ["soffice", "--headless", "--convert-to", "xlsx", "--outdir", tmpdir, path],
+                capture_output=True, timeout=timeout,
+            )
+            if r.returncode != 0:
+                print(f"  [WARN] LibreOffice recalc failed (exit {r.returncode}): {r.stderr.decode(errors='ignore')[:300]}")
+                return None
+            out_path = os.path.join(tmpdir, os.path.basename(path))
+            if not os.path.exists(out_path):
+                print("  [WARN] LibreOffice recalc: output file not found")
+                return None
+            wb_r = openpyxl.load_workbook(out_path, data_only=True)
+            ws7_r = wb_r["07_Valuation"]
+            vals = {
+                "ev_price": ws7_r["C2"].value, "pb_price": ws7_r["C3"].value,
+                "pe_price": ws7_r["C4"].value, "target_price": ws7_r["C10"].value,
+                "upside": ws7_r["C13"].value,
+            }
+            wb_r.close()
+            if any(v is None for v in vals.values()):
+                print(f"  [WARN] LibreOffice recalc: some 07_Valuation cells still empty: {vals}")
+                return None
+            print(f"  [OK] Excel recalculated via LibreOffice - 07_Valuation: {vals}")
+            return vals
+    except FileNotFoundError:
+        print("  [WARN] LibreOffice (soffice) not found - PDF/JSON will use Python-computed valuation instead")
+        return None
+    except subprocess.TimeoutExpired:
+        print(f"  [WARN] LibreOffice recalc timeout ({timeout}s)")
+        return None
+    except Exception as e:
+        print(f"  [WARN] LibreOffice recalc error: {e}")
+        return None
+
+
 # ── 1. EXCEL MODEL ──────────────────────────────────────────────────────────
 
 def build_excel():
@@ -5954,6 +6009,11 @@ def build_pdf():
     pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
     ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
+    # Ưu tiên số ĐÃ TÍNH THẬT từ Excel (LibreOffice recalc, xem recalculate_excel_valuation) thay vì
+    # số Python tự tính ở trên — Python chỉ dùng làm fallback khi LibreOffice không có/lỗi.
+    if EXCEL_RECALC:
+        ev_price, pb_price, pe_price, target_price = (
+            EXCEL_RECALC["ev_price"], EXCEL_RECALC["pb_price"], EXCEL_RECALC["pe_price"], EXCEL_RECALC["target_price"])
     add_body(
         f"- <b>EV/EBITDA ({EV_MULTIPLE}x, HPG median)</b> → <b>{ev_price:,} VND</b><br/>"
         f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
@@ -6199,6 +6259,11 @@ def save_json_summary():
     pe_price = round(pe_mul * eps_26)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     upside = round((target_price / PRICE - 1) * 100, 1)
+    # Ưu tiên số ĐÃ TÍNH THẬT từ Excel (LibreOffice recalc) — xem build_pdf() cho lý do chi tiết.
+    if EXCEL_RECALC:
+        ev_price, pb_price, pe_price, target_price = (
+            EXCEL_RECALC["ev_price"], EXCEL_RECALC["pb_price"], EXCEL_RECALC["pe_price"], EXCEL_RECALC["target_price"])
+        upside = round((target_price / PRICE - 1) * 100, 1)
     pb_upper = round(pb_mul * 1.2 * bvps_26)
     pb_attr  = round(pb_mul * 0.8 * bvps_26)
 
@@ -6358,6 +6423,8 @@ if __name__ == "__main__":
     print("=" * 60)
 
     build_excel()
+    print("[Recalc] Recalculating real Excel formulas via LibreOffice so PDF/JSON read the same numbers...")
+    EXCEL_RECALC = recalculate_excel_valuation(EXCEL_FILE)
     make_charts()
     try:
         build_pdf()
