@@ -34,7 +34,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core libreoffice-calc
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core
+          TICKER="${{ github.event.inputs.ticker }}"
+          if [ "${TICKER,,}" = "hpg" ]; then
+            echo "Ticker is HPG — installing libreoffice-calc (needed by recalculate_excel_valuation() to read back real Excel-computed valuation)"
+            sudo apt-get install -y -qq libreoffice-calc
+          fi
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
