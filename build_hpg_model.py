@@ -1064,7 +1064,15 @@ revenue_prev_fc = [revenue_hist[-1]] + revenue_fc[:-1]
 revenue_growth_fc = [round((revenue_fc[i]/revenue_prev_fc[i]-1)*100, 1) for i in range(3)]
 ebit_margin_fc = [round(ebit_fc[i]/revenue_fc[i]*100, 1) for i in range(3)]
 
-da_fc      = [7000,  8000,   9000]
+# D&A dự phóng = D&A năm trước x (1 + Tăng trưởng DT năm đó) — ĐÚNG công thức sống ghi vào
+# 02_Assumptions!row9 (xem build_excel()), neo gốc da_hist[-1] (2025A thật). Trước đây là số gõ tay
+# cứng [7000,8000,9000] không đồng bộ khi Doanh thu/Tăng trưởng DT dự phóng thay đổi — khiến EBITDA
+# (EBIT+D&A) dùng cho định giá EV/EBITDA lệch xa so với Excel (vd 27.598 vs Excel thật 32.545 tỷ).
+da_fc = []
+_da_prev_fc = da_hist[-1]
+for _i in range(3):
+    _da_prev_fc = round(_da_prev_fc * (1 + revenue_growth_fc[_i] / 100))
+    da_fc.append(_da_prev_fc)
 capex_fc   = [15000, 18000,  20000]
 
 # Tồn kho & Phải thu dự phóng (tỷ VND) — nguồn duy nhất cho 05_Balance_Sheet, 14_Steel_Analysis

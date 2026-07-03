@@ -14,9 +14,9 @@
     "hrcKt": 1866.0,
     "xdKt": 1287.0,
     "source": "ESTIMATED",
-    "fetchedAt": "2026-07-03 18:05"
+    "fetchedAt": "2026-07-03 18:20"
   },
-  "lastUpdated": "2026-07-03 18:06",
+  "lastUpdated": "2026-07-03 18:20",
   "data": {
     "years": [
       2021,
@@ -116,14 +116,14 @@
     "casa": []
   },
   "valuation": {
-    "weightedTarget": 25308,
-    "upside": 7.2,
+    "weightedTarget": 26169,
+    "upside": 10.9,
     "recommend": "MUA",
     "bear": 23626,
-    "base": 25308,
+    "base": 26169,
     "bull": 35440,
     "COE": 12.0,
-    "evEbitdaTarget": 21020,
+    "evEbitdaTarget": 23174,
     "pbAttractive": 1.31,
     "pbAttractivePrice": 23626,
     "pbMedian": 1.64,
