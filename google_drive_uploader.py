@@ -46,15 +46,25 @@ def get_drive_service():
 
 
 def get_or_create_folder(service, folder_name, parent_id):
-    """Checks if a folder with the given name exists under parent_id, otherwise creates it."""
+    """Checks if a folder with the given name exists under parent_id, otherwise creates it.
+    Nếu tìm thấy NHIỀU folder cùng tên (dấu hiệu đã từng bị tạo trùng do bug/race condition trước
+    đây), luôn chọn folder có createdTime SỚM NHẤT một cách nhất quán (thay vì phần tử đầu tiên
+    Drive API trả về, thứ tự không đảm bảo) để không tạo thêm bản sao/không nhảy lung tung giữa các
+    bản trùng qua từng lần chạy — đồng thời cảnh báo rõ để người dùng biết mà dọn thủ công trên Drive."""
     if not service:
         return parent_id
     try:
         query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder' and '{parent_id}' in parents and trashed = false"
-        results = service.files().list(q=query, fields="files(id)").execute()
+        results = service.files().list(q=query, fields="files(id, createdTime)").execute()
         files = results.get("files", [])
         if files:
-            return files[0]["id"]
+            if len(files) > 1:
+                print(f"[GDrive] CẢNH BÁO: có {len(files)} folder trùng tên '{folder_name}' trong parent {parent_id} "
+                      f"(ids: {[f['id'] for f in files]}) - đang dùng folder tạo sớm nhất, nên dọn thủ công trên Drive.")
+            files.sort(key=lambda f: f.get("createdTime", ""))
+            chosen_id = files[0]["id"]
+            print(f"[GDrive] Resolved folder '{folder_name}' (parent {parent_id}) -> {chosen_id}")
+            return chosen_id
         else:
             folder_metadata = {
                 'name': folder_name,
@@ -62,7 +72,9 @@ def get_or_create_folder(service, folder_name, parent_id):
                 'parents': [parent_id]
             }
             folder = service.files().create(body=folder_metadata, fields='id').execute()
-            return folder.get('id')
+            new_id = folder.get('id')
+            print(f"[GDrive] Created new folder '{folder_name}' (parent {parent_id}) -> {new_id}")
+            return new_id
     except Exception as e:
         print(f"[GDrive] Error getting or creating folder '{folder_name}': {e}")
         return parent_id
@@ -87,21 +99,23 @@ def upload_file(file_path, folder_id=None, sector=None, ticker=None):
             is_bank = True
             
     base_folder_id = folder_id if folder_id is not None else (BANK_FOLDER_ID if is_bank else DEFAULT_FOLDER_ID)
-    
+
     service = get_drive_service()
-    resolved_folder_id = base_folder_id
-    
-    if service:
-        if is_bank:
-            if ticker:
-                resolved_folder_id = get_or_create_folder(service, ticker.upper(), base_folder_id)
-        else:
-            if sector:
-                resolved_folder_id = get_or_create_folder(service, sector, base_folder_id)
-            if ticker:
-                resolved_folder_id = get_or_create_folder(service, ticker.upper(), resolved_folder_id)
-    else:
+
+    # Cấp "Ngành" (sector_level_folder_id): Bank -> chính BANK_FOLDER_ID (không cần thêm cấp con);
+    # ngành khác -> tạo/tìm subfolder theo tên sector bên dưới base_folder_id.
+    sector_level_folder_id = base_folder_id
+    if service and not is_bank and sector:
+        sector_level_folder_id = get_or_create_folder(service, sector, base_folder_id)
+    elif not service:
         print(f"[GDrive] No service account available to resolve subfolders. Using base folder ID: {base_folder_id}")
+
+    # Cấp "Mã" (resolved_folder_id, đủ 2 cấp Ngành/Mã — đúng cấu trúc Ngành/Mã/file mong muốn):
+    # nếu folder Mã đã tồn tại trong folder Ngành thì get_or_create_folder trả về ID có sẵn (chỉ add
+    # file vào); nếu folder Ngành chưa có thì bước ở trên đã tạo Ngành trước, rồi mới tạo Mã ở đây.
+    resolved_folder_id = sector_level_folder_id
+    if service and ticker:
+        resolved_folder_id = get_or_create_folder(service, ticker.upper(), sector_level_folder_id)
 
     # ── Try Web App Upload if URL is configured ──
     webapp_url = os.environ.get("GDRIVE_WEBAPP_URL")
@@ -126,10 +140,15 @@ def upload_file(file_path, folder_id=None, sector=None, ticker=None):
                 content = f.read()
             encoded_content = base64.b64encode(content).decode("utf-8")
             
+            # folderId ở đây đã là ID cấp "Mã" (Ngành/Mã đã resolve đủ 2 cấp ở trên) — KHÔNG gửi kèm
+            # "ticker" nữa (2026-07, phát hiện bug folder lồng "Ngành/Mã/Mã/"): nghi vấn cao là Apps
+            # Script phía Google (không nằm trong repo này) tự tạo THÊM 1 cấp folder theo ticker khi
+            # nhận field này, dù Python đã resolve folder đích chính xác rồi. Nếu Apps Script vẫn cần
+            # ticker cho mục đích khác (đặt tên file, log...), thêm lại field riêng KHÔNG dùng để tạo
+            # folder, hoặc sửa thẳng trong Apps Script để bỏ bước tự tạo folder theo ticker.
             payload = {
                 "token": "FA_PIPELINE_SECRET_2026",
                 "folderId": resolved_folder_id,
-                "ticker": actual_ticker,
                 "fileName": file_name,
                 "fileContent": encoded_content,
                 "mimeType": mime_type

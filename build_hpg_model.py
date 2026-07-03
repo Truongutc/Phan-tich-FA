@@ -37,7 +37,9 @@ import statistics as stats
 
 # ── OUTPUT ──────────────────────────────────────────────────────────────────
 OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Bao cao", "HPG")
-MONTH = "2026-06"
+# Tên file theo ngày chạy thực tế (mã_Model_năm_tháng_ngày) thay vì hằng số cố định "2026-06" —
+# trước đây tên file KHÔNG đổi dù chạy lại nhiều lần, không biết file trên Drive là cũ hay mới.
+MONTH = datetime.now().strftime("%Y_%m_%d")
 EXCEL_FILE = os.path.join(OUT_DIR, f"HPG_Model_{MONTH}.xlsx")
 PDF_FILE   = os.path.join(OUT_DIR, f"HPG_Phan_Tich_{MONTH}.pdf")
 CHART_DIR  = os.path.join(OUT_DIR, "charts")
@@ -140,17 +142,31 @@ Q18_COAL = [375, 500, 480, 330, 290, 320, 245, 250, 290, 275, 250, 220, 203, 182
 CNY_USD_RATE = 7.2  # tỷ giá quy đổi than cốc (Đại Liên, niêm yết CNY) — cập nhật định kỳ nếu lệch nhiều
 UA_STR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
-def fetch_via_curl(url, timeout=10):
+def fetch_via_curl(url, timeout=10, label=None):
     """Tải HTML qua curl subprocess (KHÔNG dùng thư viện requests) — investing.com chặn vân tay
     TLS của Python requests/urllib3 (Cloudflare 403) nhưng vẫn cho phép curl. curl có sẵn mặc định
-    trên Windows 10+/macOS/Linux nên không cần cài thêm gì để chạy 100% bằng Python thuần."""
+    trên Windows 10+/macOS/Linux nên không cần cài thêm gì để chạy 100% bằng Python thuần.
+    Tham số `label` (tuỳ chọn) chỉ dùng để in log chẩn đoán khi fetch rỗng/lỗi — giúp phân biệt
+    "mạng bị chặn/timeout" (nghi vấn khi chạy trên GitHub Actions — IP datacenter dễ bị site .vn
+    chặn hơn IP dân dụng VN) với "kết nối OK nhưng trang không có tin phù hợp"."""
+    tag = f" [{label}]" if label else ""
     try:
         r = subprocess.run(
-            ["curl", "-sL", "-A", UA_STR, "--max-time", str(timeout), url],
+            ["curl", "-sL", "-A", UA_STR, "--max-time", str(timeout), "-w", "\n__HTTP_STATUS__:%{http_code}", url],
             capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=timeout + 5,
         )
-        return r.stdout if r.returncode == 0 else ""
-    except Exception:
+        out = r.stdout
+        status = None
+        marker = "\n__HTTP_STATUS__:"
+        if marker in out:
+            out, status_str = out.rsplit(marker, 1)
+            status = status_str.strip()
+        if r.returncode != 0 or not out.strip() or status not in (None, "200"):
+            print(f"  [DIAG]{tag} fetch_via_curl weak/empty result: curl_exit={r.returncode} http_status={status} "
+                  f"len={len(out)} url={url[:90]}" + (f" stderr={r.stderr[:150].strip()}" if r.stderr else ""))
+        return out if r.returncode == 0 else ""
+    except Exception as e:
+        print(f"  [DIAG]{tag} fetch_via_curl exception: {url[:90]} -> {e}")
         return ""
 
 # ── Quặng sắt: MEDIAN THẬT theo quý từ World Bank Pink Sheet (2026-07) ────────────────────────
@@ -547,7 +563,7 @@ def fetch_hpg_production_updates(max_fetch=40):
     được (rỗng nếu lỗi/không tìm thấy) — KHÔNG BAO GIỜ crash script."""
     candidates = {}
     try:
-        seed_html = fetch_via_curl(HPG_NEWS_SEED_URL, timeout=15)
+        seed_html = fetch_via_curl(HPG_NEWS_SEED_URL, timeout=15, label="hoaphat-seed")
         for m in re.finditer(
             r'<a href="(https://www\.hoaphat\.com\.vn/tin-tuc/[^"]+\.html)">\s*<div class="image">.*?'
             r'<p class="clear time">.*?(\d{2}/\d{2}/\d{4}).*?</p>\s*<h3>([^<]+)</h3>',
@@ -557,10 +573,10 @@ def fetch_hpg_production_updates(max_fetch=40):
     except Exception as e:
         print(f"  [WARN] HPG news sidebar fetch error: {e}")
     try:
-        idx_html = fetch_via_curl("https://www.hoaphat.com.vn/sitemap.xml", timeout=15)
+        idx_html = fetch_via_curl("https://www.hoaphat.com.vn/sitemap.xml", timeout=15, label="hoaphat-sitemap-idx")
         sm_urls = re.findall(r'<loc>(https://www\.hoaphat\.com\.vn/sitemap-tintuc-page-\d+\.xml)</loc>', idx_html)
         for sm_url in sm_urls[:4]:
-            sm_html = fetch_via_curl(sm_url, timeout=15)
+            sm_html = fetch_via_curl(sm_url, timeout=15, label="hoaphat-sitemap-page")
             for loc in re.findall(r'<loc>([^<]+)</loc>', sm_html):
                 if re.search(r'san-luong|trieu-tan|nghin-tan|tan-thep', loc, re.I):
                     candidates.setdefault(loc, None)
@@ -614,7 +630,7 @@ def fetch_nguoiquansat_production_updates(days_back=70, max_fetch=25):
         today = date.today()
         for d in range(days_back):
             day_str = (today - timedelta(days=d)).isoformat()
-            sm_html = fetch_via_curl(f"https://nguoiquansat.vn/sitemap-article-{day_str}.xml", timeout=12)
+            sm_html = fetch_via_curl(f"https://nguoiquansat.vn/sitemap-article-{day_str}.xml", timeout=12, label="nguoiquansat-sitemap")
             if not sm_html:
                 continue
             for m in re.finditer(
@@ -673,7 +689,7 @@ def fetch_dautucophieu_production_updates(max_fetch=15):
     [] nếu lỗi bất kỳ bước nào."""
     candidates = {}
     try:
-        html = fetch_via_curl("https://dautucophieu.net/tag/hpg/", timeout=15)
+        html = fetch_via_curl("https://dautucophieu.net/tag/hpg/", timeout=15, label="dautucophieu-tag")
         for m in re.finditer(
             r'<a href="(https://dautucophieu\.net/[^"]+/)" itemprop="mainEntityOfPage" title="([^"]+)">', html):
             url, title = m.groups()
@@ -761,9 +777,42 @@ else:
     CUR_Q_SOURCE = "FALLBACK"
     CUR_Q_TOTAL_KT = None
     CUR_Q_HRC_KT_DIRECT = CUR_Q_XD_KT_DIRECT = None
-if CUR_Q_SOURCE != "ESTIMATED":
+    # Không fetch được tin nào cho quý đang chạy — có thể do mạng bị chặn (IP datacenter của GitHub
+    # Actions hay bị site .vn chặn/giới hạn hơn IP dân dụng VN chạy local). Trước khi rơi về giả định
+    # tĩnh cứng trong code (SL_HRC_A/SL_XD_A mặc định, có thể đã cũ nhiều tháng), thử dùng lại ước tính
+    # đã lưu từ LẦN CHẠY GẦN NHẤT (data/HPG.json) nếu đúng quý đang xét — mới hơn giả định tĩnh, dù có
+    # thể không mới bằng 1 lần fetch thành công thực sự.
+    try:
+        _cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "HPG.json")
+        with open(_cache_path, "r", encoding="utf-8") as _f:
+            _prev_cache = json.load(_f).get("productionEstimateCache")
+        if _prev_cache and _prev_cache.get("year") == CUR_Q_YEAR and _prev_cache.get("quarter") == CUR_Q_NUM and _prev_cache.get("totalKt"):
+            CUR_Q_SOURCE = "CACHED"
+            CUR_Q_TOTAL_KT = _prev_cache["totalKt"]
+            CUR_Q_HRC_KT_DIRECT = _prev_cache.get("hrcKt")
+            CUR_Q_XD_KT_DIRECT = _prev_cache.get("xdKt")
+            print(f"  [DIAG] Không fetch được tin sản lượng {CUR_Q_LABEL} lần này — dùng lại ước tính đã lưu "
+                  f"lần chạy trước (lúc {_prev_cache.get('fetchedAt', '?')}, nguồn gốc {_prev_cache.get('source', '?')}): "
+                  f"{CUR_Q_TOTAL_KT:.0f} kt")
+    except Exception as _e:
+        print(f"  [DIAG] Không đọc được cache ước tính sản lượng từ lần chạy trước: {_e}")
+if CUR_Q_SOURCE not in ("ESTIMATED", "CACHED"):
     CUR_Q_HRC_KT_DIRECT = CUR_Q_XD_KT_DIRECT = None
-    print(f"  -> No production news found yet for {CUR_Q_LABEL} - using existing assumption")
+if CUR_Q_SOURCE == "FALLBACK":
+    print(f"  -> No production news found yet for {CUR_Q_LABEL} - using existing assumption (giả định tĩnh trong code)")
+
+# Lưu lại ước tính vừa dùng để lần chạy SAU (kể cả trên GitHub Actions, nếu mạng bị chặn) có thể dùng
+# lại làm fallback thay vì rơi thẳng về giả định tĩnh trong code — xem save_json_summary().
+if CUR_Q_SOURCE in ("OFFICIAL", "ESTIMATED"):
+    PRODUCTION_CACHE_ENTRY = {
+        "year": CUR_Q_YEAR, "quarter": CUR_Q_NUM, "totalKt": CUR_Q_TOTAL_KT,
+        "hrcKt": CUR_Q_HRC_KT_DIRECT, "xdKt": CUR_Q_XD_KT_DIRECT,
+        "source": CUR_Q_SOURCE, "fetchedAt": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    }
+elif CUR_Q_SOURCE == "CACHED":
+    PRODUCTION_CACHE_ENTRY = _prev_cache
+else:
+    PRODUCTION_CACHE_ENTRY = None
 
 years_fc    = [2026, 2027, 2028]
 SL_HRC_A    = [2.0, 2.2, 2.5, 2.8, 3.2, 6.0, 6.8, 7.5]      # Sản lượng HRC (triệu tấn), 2021..2028
@@ -3581,7 +3630,11 @@ def build_excel():
     ws15.merge_cells(start_row=qv_start, start_column=1, end_row=qv_start, end_column=qv_ncol)
     qv_start += 1
     if CUR_Q_TOTAL_KT is not None:
-        _src_note = {"OFFICIAL": "số liệu CHÍNH THỨC", "ESTIMATED": "ƯỚC TÍNH từ số liệu tháng đã công bố (xem mục E bên dưới)"}[CUR_Q_SOURCE]
+        _src_note = {
+            "OFFICIAL": "số liệu CHÍNH THỨC",
+            "ESTIMATED": "ƯỚC TÍNH từ số liệu tháng đã công bố (xem mục E bên dưới)",
+            "CACHED": "ƯỚC TÍNH LẤY LẠI từ lần chạy trước (không fetch được tin mới lần này)",
+        }[CUR_Q_SOURCE]
         _split_note = ("tách HRC/XD trực tiếp từ nguồn (nguoiquansat.vn/Vietcap Research)"
                        if CUR_Q_HRC_KT_DIRECT is not None else "tách HRC/XD theo tỷ lệ Q1/2026 thực tế")
         ws15.cell(row=qv_start, column=1, value=f"(*) {CUR_Q_NUM}/{CUR_Q_YEAR} = {_src_note}, {_split_note} — tự động dò tin khi chạy script").font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
@@ -6112,6 +6165,7 @@ def save_json_summary():
         "shares": SHARES,
         "gdrivePdfUrl": None,
         "gdriveExcelUrl": None,
+        "productionEstimateCache": PRODUCTION_CACHE_ENTRY,
         "lastUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "data": {
             "years": all_years,
