@@ -231,24 +231,24 @@
       12906.7,
       13371.2,
       15817.1,
-      20683.0,
-      25410.9
+      20671.4,
+      25445.4
     ],
     "toi": [
       16236.8,
       18038.3,
       18994.8,
       22284.2,
-      28120.2,
-      33889.3
+      28108.6,
+      33923.8
     ],
     "npat": [
       4463.3,
       6071.6,
       7402.0,
       8482.2,
-      12117.0,
-      14916.5
+      12110.7,
+      14935.2
     ],
     "nim": [
       3.93,
@@ -263,8 +263,8 @@
       17.3,
       17.7,
       17.3,
-      21.55,
-      22.71
+      21.54,
+      22.74
     ],
     "ldr": [
       71.7,
@@ -292,12 +292,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1KgHNButUKhexsf4qpX7bgKIDfMXHSaJ2/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1-hs-q5iFKhDSY04_WR6LLaZXE2It99iO/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1IFXIHzXuCbirxGMm8fBFr9admjEoQs8A/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1Ir57yytivQTlsN1-WMvH3dJAfpCCKbyR/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.0789,
     "rf": 0.04534,
-    "fetchedAt": "2026-07-03 15:48"
+    "fetchedAt": "2026-07-03 17:33"
   },
   "pe_hist": [
     6.274213445,
@@ -1660,10 +1660,10 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 29107,
-    "upside": 76.4,
+    "weightedTarget": 29131,
+    "upside": 76.55,
     "bear": 22727,
-    "base": 29106,
+    "base": 29130,
     "bull": 33018,
     "pbAttractive": 1.16,
     "pbAttractivePrice": 22728,
@@ -1675,19 +1675,19 @@
     "peMedian": 7.9,
     "pbMedian": 1.29,
     "bvpsBase": 16600,
-    "riValue": 32913,
+    "riValue": 32962,
     "pbValue": 25300,
-    "pvRi": 3296,
-    "pvCv": 13017,
+    "pvRi": 3299,
+    "pvCv": 13062,
     "epsFc": [
       3058,
-      4368,
-      5377
+      4366,
+      5384
     ],
     "riResults": [
       750,
-      1635,
-      2037
+      1632,
+      2044
     ],
     "recommend": "MUA"
   },
@@ -1714,8 +1714,8 @@
       12906.66,
       13371.16,
       15817.1,
-      20683.0,
-      25410.9
+      20671.4,
+      25445.4
     ],
     "npat": [
       4829.18,
@@ -1724,8 +1724,8 @@
       6071.63,
       7402.0,
       8482.2,
-      12117.01,
-      14916.47
+      12110.7,
+      14935.24
     ],
     "eps": [
       3053.1,
@@ -1734,8 +1734,8 @@
       2298.2,
       2668.3,
       3057.7,
-      4368.0,
-      5377.2
+      4365.7,
+      5383.9
     ],
     "equity": [
       25987.07,
@@ -1744,8 +1744,8 @@
       37594.47,
       46048.76,
       51986.3,
-      60468.21,
-      70909.73
+      60463.79,
+      70918.46
     ]
   },
   "ratios": {
@@ -1810,5 +1810,5 @@
       0.2292
     ]
   },
-  "lastUpdated": "2026-07-03 15:49"
+  "lastUpdated": "2026-07-03 17:34"
 }
