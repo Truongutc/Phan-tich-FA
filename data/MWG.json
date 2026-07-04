@@ -24,7 +24,7 @@
       118279.8,
       134341.2,
       155928.1,
-      195510.1,
+      193094.5,
       221613.2,
       242275.6
     ],
@@ -34,7 +34,7 @@
       167.7,
       3721.9,
       7033.7,
-      11193.5,
+      11109.6,
       13777.6,
       16253.2
     ],
@@ -44,7 +44,7 @@
       115.0,
       2546.0,
       4785.0,
-      7615.0,
+      7558.0,
       9373.0,
       11057.0
     ],
@@ -54,9 +54,9 @@
       23359.6,
       28121.6,
       33176.1,
-      41045.4,
-      50731.3,
-      62157.7
+      41015.6,
+      50701.6,
+      62128.0
     ]
   },
   "segments": {
@@ -168,22 +168,22 @@
     }
   ],
   "valuation": {
-    "bear": 58696.0,
-    "base": 93051.0,
-    "bull": 179025.0,
+    "bear": 69707.0,
+    "base": 95527.0,
+    "bull": 128324.0,
     "methods": {
-      "pe": 170500.0,
-      "pb": 92980.0,
-      "ri": 77458.0,
-      "ps_pe": 65218.0
+      "pe": 122213.0,
+      "pb": 105749.0,
+      "ri": 77452.0,
+      "ps_pe": 84379.0
     },
     "recommendation": "MUA",
-    "upsidePct": 17.9
+    "upsidePct": 21.1
   },
   "comments": {
     "businessModel": "MWG vận hành 3 chuỗi bán lẻ chính: TGDĐ+ĐMX (3,016 cửa hàng, ICT/điện máy, đã bão hòa) và BHX (3,051 cửa hàng, FMCG, tăng trưởng nhanh nhất, có lãi từ 2023). Mô hình dựa trên quy mô mạng lưới để tối ưu chi phí vận hành/mua hàng.",
-    "financialPerformance": "Doanh thu 2026E dự phóng 195,510 tỷ (+25.4% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,194 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
-    "valuationText": "Giá mục tiêu 93,051 VND (upside +17.9%) theo mô hình 4 phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo từng mảng 50%). Khuyến nghị MUA."
+    "financialPerformance": "Doanh thu 2026E dự phóng 193,094 tỷ (+23.8% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,110 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
+    "valuationText": "Giá mục tiêu 95,527 VND (upside +21.1%) theo mô hình 4 phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo từng mảng 50%). Khuyến nghị MUA."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -316,9 +316,9 @@
       0.0072,
       0.1324,
       0.212,
-      0.2727,
-      0.2716,
-      0.2615
+      0.2709,
+      0.2717,
+      0.2616
     ],
     "net_margin": [
       0.0398,
@@ -326,7 +326,7 @@
       0.0014,
       0.0277,
       0.0451,
-      0.0573,
+      0.0575,
       0.0622,
       0.0671
     ]
