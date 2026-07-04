@@ -123,20 +123,21 @@ CCC = DIO + DSO - DPO
 
 Ưu tiên **định giá theo từng mảng kinh doanh** thay vì định giá cả công ty gộp chung — đặc thù bán lẻ có nhiều mảng ở giai đoạn trưởng thành khác nhau (VD MWG: TGDD/ĐMX đã bão hòa, BHX/An Khang đang scale).
 
-> Lưu ý trước đây skill này ghi "KHÔNG dùng P/B" (theo `Ban le.docx` — tài sản chủ yếu đi thuê, giá trị sổ sách thấp không ý nghĩa). User đã xác nhận vẫn dùng P/B với trọng số nhỏ (20%) trong bộ 4 phương pháp dưới đây, kết hợp cùng các phương pháp khác để cân bằng lại nhược điểm của P/B.
+> Lưu ý trước đây skill này ghi "KHÔNG dùng P/B" (theo `Ban le.docx` — tài sản chủ yếu đi thuê, giá trị sổ sách thấp không ý nghĩa). User đã xác nhận vẫn dùng P/B với trọng số nhỏ (20%) trong bộ 5 phương pháp dưới đây, kết hợp cùng các phương pháp khác để cân bằng lại nhược điểm của P/B.
 
-### 4 phương pháp định giá tổng hợp
+### 5 phương pháp định giá tổng hợp (trọng số đã chốt với user, 2026-07)
 
 | # | Phương pháp | Trọng số | Ghi chú |
 |---|---|---|---|
 | 1 | P/E Median | 20% | Median lịch sử TTM của chính cổ phiếu (giống cách tính ở skill `thep`/`ngan-hang`) |
 | 2 | P/B Median | 20% | Đã xác nhận dùng dù tài sản chủ yếu đi thuê — trọng số nhỏ để cân bằng |
-| 3 | Residual Income (RI) | 15% | Cho phần công ty đã trưởng thành |
-| 4 | Định giá theo từng mảng (P/S + RI, hoặc P/S + P/E) | **còn lại (~45%, CẦN XÁC NHẬN LẠI VỚI USER)** | Xem nguyên tắc chọn P/S/RI/P/E theo mảng bên dưới — tổng 4 phương pháp = 100% |
+| 3 | Residual Income (RI), cả công ty | 10% | Cho toàn công ty (khác với RI theo mảng — hiện KHÔNG dùng RI ở cấp mảng nữa, xem bên dưới) |
+| 4 | Định giá theo từng mảng — P/S + P/E | 35% | Áp dụng cho mảng đã trưởng thành, có P/E tham chiếu đáng tin cậy (xem quy tắc bên dưới) |
+| 5 | Định giá theo từng mảng — P/S + P/B | 15% | Áp dụng cho mảng đã trưởng thành nhưng KHÔNG có P/E tham chiếu phù hợp/đủ tin cậy — dùng P/B thay thế |
 
-**⚠️ Trọng số #4 chưa chốt**: user liệt kê 20+20+15+20=75%, chưa đủ 100%. Cách hiểu tạm thời: phương pháp #4 (định giá theo mảng) chiếm phần còn lại (~45%) vì đây là bước định giá CHI TIẾT NHẤT theo đặc thù bán lẻ (mỗi mảng dùng đúng P/S/RI/P/E theo giai đoạn trưởng thành) — **phải hỏi lại user để chốt số chính xác trước khi áp dụng vào build_mwg_model.py**.
+Tổng = 20+20+10+35+15 = **100%**.
 
-### Nguyên tắc chọn phương pháp cho TỪNG MẢNG (bước #4)
+### Nguyên tắc chọn phương pháp cho TỪNG MẢNG (bước #4, #5)
 
 **Dùng P/S khi mảng có:**
 - Biên lợi nhuận rất thấp hoặc đang lỗ
@@ -146,15 +147,15 @@ CCC = DIO + DSO - DPO
 - Doanh nghiệp chưa chiếm thị phần quá lớn, thị trường chưa bão hòa
 - Mẹo: tra P/S retail cùng ngành ở Đông Nam Á (Thái Lan, Indonesia) làm mốc tham chiếu
 
-**Dùng RI (Residual Income) khi mảng:**
-- Đã trưởng thành
-- Hiệu quả DT/cửa hàng đi ngang hoặc tăng rất chậm
-- Quy mô thị trường tăng trưởng thấp, đã dần bão hòa
+**Với mảng đã trưởng thành** (hiệu quả DT/cửa hàng đi ngang hoặc tăng rất chậm, quy mô thị trường tăng trưởng thấp, đã dần bão hòa) — chọn 1 trong 2:
 
-**Biến thể: dùng P/E thay RI cho mảng trưởng thành** (phương pháp "P/S + P/E", tương tự P/S+RI nhưng khác ở phần mảng trưởng thành):
+**P/S + P/E** (trọng số 35%, ưu tiên khi có đủ dữ liệu tham chiếu):
 - P/E tham chiếu = P/E doanh nghiệp cùng ngành ở nước ngoài, hoặc DN tương đồng trong nước
 - Hoặc P/E = 0.9 × Growth (tốc độ tăng trưởng %/năm của mảng đó)
 - **BẮT BUỘC lấy giá trị NHỎ HƠN** giữa (P/E tham chiếu) và (0.9 × Growth) — tránh trường hợp mảng tăng trưởng đột biến 1 năm (VD +30%) bị máy móc suy ra P/E=27, định giá quá cao không bền vững.
 
-### Vì sao KHÔNG chỉ dùng EV/EBITDA đơn thuần (bổ sung, không mâu thuẫn 4 phương pháp trên)
-Bán lẻ thuê mặt bằng rất nhiều, chịu ảnh hưởng hạch toán thuê tài sản (IFRS 16) — EV/EBITDA giúp loại bỏ khấu hao/cấu trúc nợ khi so sánh chuỗi khác nhau, có thể dùng làm cross-check bổ sung ngoài 4 phương pháp chính.
+**P/S + P/B** (trọng số 15%, dùng khi KHÔNG có P/E tham chiếu phù hợp/đủ tin cậy cho mảng đó):
+- P/B tham chiếu theo median lịch sử của chính mảng/công ty tương đồng, tương tự cách tính P/B Median ở phương pháp #2.
+
+### Vì sao KHÔNG chỉ dùng EV/EBITDA đơn thuần (bổ sung, không mâu thuẫn 5 phương pháp trên)
+Bán lẻ thuê mặt bằng rất nhiều, chịu ảnh hưởng hạch toán thuê tài sản (IFRS 16) — EV/EBITDA giúp loại bỏ khấu hao/cấu trúc nợ khi so sánh chuỗi khác nhau, có thể dùng làm cross-check bổ sung ngoài 5 phương pháp chính.
