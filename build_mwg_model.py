@@ -473,12 +473,31 @@ def parse_mwg_segment_revenue(text, total_revenue=None):
     result["BHX"] = _rev_narrative(r"BHX") or _rev_direct(r"BHX")
     return result
 
-def parse_mwg_total_revenue_cum(text):
-    """Trích DOANH THU THUẦN LŨY KẾ TOÀN CÔNG TY (tỷ VND). Ưu tiên số ngay sau header biểu đồ cột
-    "DOANH THU THUẦN...(tỷđồng)" (LUÔN có ở mọi báo cáo, số kỳ HIỆN TẠI đứng TRƯỚC số kỳ trước — VD
-    "108.546\\n102.174" = 2020 rồi mới tới 2019) — đáng tin cậy hơn câu văn tường thuật vì không phải
-    báo cáo nào cũng dùng đúng cụm "doanh thu thuần...là X tỷ đồng". Fallback về câu tường thuật khi
-    không tìm thấy header (hiếm)."""
+def parse_mwg_total_revenue_cum(text, target_year=None):
+    """Trích DOANH THU THUẦN LŨY KẾ TOÀN CÔNG TY (tỷ VND) từ header biểu đồ cột "DOANH THU THUẦN...
+    (tỷđồng)" — LUÔN có 2 số (kỳ hiện tại + kỳ trước) kèm 2 nhãn kỳ (VD "5T25 5T26" hoặc "6T2020
+    6T2021"). QUAN TRỌNG (bug phát hiện 2026-07): THỨ TỰ số kỳ hiện tại/kỳ trước KHÔNG NHẤT QUÁN giữa
+    các báo cáo — có báo cáo hiện tại đứng trước (VD 6T2021: "62.487" rồi mới "55.639"), có báo cáo
+    hiện tại đứng SAU (VD 5T2026: "61.229 79.159" — 61.229 là 5T25 CŨ, 79.159 mới là 5T26 THẬT). Nếu
+    chỉ lấy số ĐẦU TIÊN sẽ có lúc lấy NHẦM số NĂM TRƯỚC — gây sai lệch nghiêm trọng cho toàn bộ chuỗi
+    doanh thu tháng năm đó. Cách khắc phục: nếu biết target_year (năm báo cáo thật, lấy từ post["year"]
+    context), tìm CẶP nhãn kỳ (VD "5T25 5T26") đứng sau 2 số, đối chiếu năm nào khớp target_year rồi
+    chọn ĐÚNG số tương ứng theo vị trí — không đoán mò theo thứ tự xuất hiện."""
+    if target_year is not None:
+        m = re.search(r"(\d{2,3}\.\d{3})\s+(\d{2,3}\.\d{3}).{0,400}?(\d{1,2})T(\d{2,4})\s+(\d{1,2})T(\d{2,4})",
+                      text, re.DOTALL)
+        if m:
+            num1, num2 = m.group(1), m.group(2)
+            def _norm_year(y):
+                y = int(y)
+                return y if y > 100 else (2000 + y)
+            y1, y2 = _norm_year(m.group(4)), _norm_year(m.group(6))
+            if y1 == target_year and y2 != target_year:
+                return float(num1.replace(".", ""))
+            if y2 == target_year and y1 != target_year:
+                return float(num2.replace(".", ""))
+    # Fallback (không xác định được target_year hoặc không tìm thấy cặp nhãn rõ ràng): lấy số ĐẦU
+    # TIÊN sau header — CHỈ dùng khi không có cách nào tốt hơn, có thể sai như bug đã nêu ở trên.
     m = re.search(r"DOANH\s*THU\s*THUẦN.{0,200}?([\d]{2,3}\.[\d]{3})", text, re.IGNORECASE | re.DOTALL)
     if m:
         return float(m.group(1).replace(".", ""))
@@ -514,9 +533,11 @@ def parse_mwg_table_row(text):
         }
     return result
 
-def parse_mwg_report(pdf_url, era_hint=None):
+def parse_mwg_report(pdf_url, era_hint=None, target_year=None):
     """Tải + parse 1 báo cáo tháng MWG, trả về dict {"stores":, "revenue":, "table_row":,
-    "revenue_total_cum":} — field nào không trích được để None/rỗng. KHÔNG BAO GIỜ raise."""
+    "revenue_total_cum":} — field nào không trích được để None/rỗng. KHÔNG BAO GIỜ raise.
+    target_year: năm THẬT của báo cáo (post["year"]) — dùng để chọn đúng số lũy kế khi báo cáo có 2
+    số (kỳ hiện tại + kỳ trước) mà thứ tự xuất hiện không cố định (xem parse_mwg_total_revenue_cum)."""
     text = _download_pdf_text(pdf_url, max_pages=3)
     if not text:
         return {"stores": {}, "revenue": {}, "table_row": {}, "revenue_total_cum": None}
@@ -526,7 +547,7 @@ def parse_mwg_report(pdf_url, era_hint=None):
         if stores.get(k) is None:
             stores[k] = v["stores"]
     return {"stores": stores, "revenue": parse_mwg_segment_revenue(text), "table_row": table_row,
-            "revenue_total_cum": parse_mwg_total_revenue_cum(text)}
+            "revenue_total_cum": parse_mwg_total_revenue_cum(text, target_year=target_year)}
 
 def fetch_mwg_latest_store_counts():
     """Tự động fetch báo cáo tháng mới nhất từ IR MWG, trích số cửa hàng từng chuỗi bằng regex.
@@ -612,7 +633,7 @@ def fetch_mwg_full_history(start_year=2019, max_years=8):
             if post_id in cache:
                 continue  # đã có trong cache từ lần chạy trước, khỏi tải lại
             try:
-                parsed = parse_mwg_report(p["fileLink"])
+                parsed = parse_mwg_report(p["fileLink"], target_year=yr)
                 cache[post_id] = {
                     "year": yr, "title": p.get("title"), "publishDate": p.get("publishDate"),
                     "stores": parsed["stores"], "revenue": parsed["revenue"],
@@ -673,21 +694,25 @@ def derive_monthly_from_cumulative(history_cache):
             rep = reports[n]
             cum_rev = rep.get("revenue_total_cum")
             stores = rep.get("stores") or {}
+            # rev_pct lấy TRỰC TIẾP từ table_row của CHÍNH báo cáo tháng N (cơ cấu DT lũy kế tới thời
+            # điểm đó) — dùng làm xấp xỉ cơ cấu DT CỦA THÁNG ĐÓ (chấp nhận được vì tỷ trọng mảng đổi
+            # rất chậm theo tháng, không phải xấp xỉ hoàn hảo nhưng là nguồn tốt nhất hiện có).
+            rev_pct = {k: v.get("rev_pct") for k, v in (rep.get("table_row") or {}).items()}
             if n == 1:
                 if cum_rev is not None:
-                    monthly[(yr, 1)] = {"revenue": cum_rev, "stores": stores, "is_estimated_split": False}
+                    monthly[(yr, 1)] = {"revenue": cum_rev, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": False}
                 prev_n, prev_cum_rev = 1, cum_rev
             elif n == prev_n + 1:
                 if cum_rev is not None and prev_cum_rev is not None:
-                    monthly[(yr, n)] = {"revenue": cum_rev - prev_cum_rev, "stores": stores, "is_estimated_split": False}
+                    monthly[(yr, n)] = {"revenue": cum_rev - prev_cum_rev, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": False}
                 prev_n, prev_cum_rev = n, (cum_rev if cum_rev is not None else prev_cum_rev)
             elif n == 2 and prev_n == 0:
                 # Khong co bao cao thang 1 rieng, chi co luy ke 2 thang -> chia doi doanh thu, dung
                 # chung so cua hang cuoi T2 cho ca thang 1 va thang 2.
                 if cum_rev is not None:
                     half = cum_rev / 2
-                    monthly[(yr, 1)] = {"revenue": half, "stores": stores, "is_estimated_split": True}
-                    monthly[(yr, 2)] = {"revenue": half, "stores": stores, "is_estimated_split": True}
+                    monthly[(yr, 1)] = {"revenue": half, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": True}
+                    monthly[(yr, 2)] = {"revenue": half, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": True}
                 prev_n, prev_cum_rev = 2, cum_rev
             else:
                 # co khoang trong lien tiep (VD thieu bao cao 1 thang giua chung) -> khong noi suy,
@@ -767,19 +792,87 @@ for _yi in range(len(years_fc)):
 
 print(f"  -> GPM du phong (TB 2 quy gan nhat): {GPM_FC_PCT}% | SG&A/DT du phong theo nam {years_fc}: {SGA_FC_PCT}%")
 
+# ── DATABASE THEO THÁNG — hợp nhất mọi nguồn (MWG_MONTHLY_STANDALONE + QUARTERLY_SNAPSHOTS_MANUAL)
+# thành 1 ma trận tháng đơn lẻ. Dùng để (1) dựng sheet Excel 03a_Monthly_Data VÀ (2) tính dự phóng
+# doanh thu Python NGAY BÊN DƯỚI — CÙNG 1 CÔNG THỨC, CÙNG 1 NGUỒN DỮ LIỆU, để tránh lặp lại bug "2
+# luồng tính độc lập lệch nhau" đã gặp ở HPG (xem ghi chú build_hpg_model.py: thay vì đọc ngược Excel
+# bằng win32com/LibreOffice — không portable qua GitHub Actions Linux runner — Python mirror THẲNG
+# công thức Excel dùng, một nguồn số duy nhất chạy giống hệt trên mọi môi trường).
+def build_monthly_matrix():
+    """Trả về list các dict theo THỨ TỰ THỜI GIAN, mỗi dict = 1 tháng: {year, month, label, revenue,
+    pct: {seg: % hoặc None}, stores: {seg: số hoặc None}}. % mảng ưu tiên lấy từ table_row CHÍNH tháng
+    đó (Era D 2020-6/2022); nếu thiếu, lấy % gần nhất trong QUARTERLY_SNAPSHOTS_MANUAL (trong vòng 6
+    tháng — coi là proxy hợp lý vì cơ cấu DT đổi chậm theo tháng); nếu không có điểm nào đủ gần, để
+    None (KHÔNG đoán bừa)."""
+    manual_pct_points = []
+    for key, snap in QUARTERLY_SNAPSHOTS_MANUAL.items():
+        if "store_pct" in snap:
+            y, m = key.split("-")
+            manual_pct_points.append((int(y), int(m), snap["store_pct"]))
+    manual_pct_points.sort()
+
+    def nearest_pct(yr, mo):
+        best, best_dist = None, 999
+        for (py, pm, pct) in manual_pct_points:
+            dist = abs((py - yr) * 12 + (pm - mo))
+            if dist < best_dist:
+                best, best_dist = pct, dist
+        return best if best_dist <= 6 else None
+
+    matrix = []
+    for (yr, mo) in sorted(MWG_MONTHLY_STANDALONE.keys()):
+        v = MWG_MONTHLY_STANDALONE[(yr, mo)]
+        rev_pct_src = v.get("rev_pct") or {}
+        near = nearest_pct(yr, mo)
+        pct = {}
+        for seg in SEGMENTS:
+            if rev_pct_src.get(seg) is not None:
+                pct[seg] = rev_pct_src[seg]
+            elif near and near.get(seg) is not None:
+                pct[seg] = near[seg]
+            else:
+                pct[seg] = None
+        stores = v.get("stores") or {}
+        khac_count = None
+        if stores.get("AnKhang") is not None and stores.get("AvaKids") is not None:
+            khac_count = stores["AnKhang"] + stores["AvaKids"] + (stores.get("EraBlue") or 0)
+        matrix.append({
+            "year": yr, "month": mo, "label": f"T{mo}-{str(yr)[2:]}",
+            "revenue": v["revenue"],
+            "pct": pct,
+            "stores": {"TGDD": stores.get("TGDD"), "DMX": stores.get("DMX"), "BHX": stores.get("BHX"), "Khac": khac_count},
+        })
+    return matrix
+
+MONTHLY_MATRIX = build_monthly_matrix()
+_n_pct_ok = sum(1 for m in MONTHLY_MATRIX if all(m["pct"].get(s) is not None for s in SEGMENTS))
+print(f"  -> Monthly matrix: {len(MONTHLY_MATRIX)} thang, {_n_pct_ok} thang co du % ca 4 mang")
+
 # ── 4. DỰ PHÓNG DOANH THU 3-YẾU-TỐ THEO MẢNG (skill ban-le mục 2+3) ─────────────────────────────
-# Doanh thu mảng = Số cửa hàng dự phóng × Hiệu quả DT/cửa hàng dự phóng (đã điều chỉnh tăng
-# trưởng/SSSG). Hiệu quả HIỆN TẠI tính từ DT 5 tháng 2026 thật (REV_5T_2026_TOTAL/PCT) chia số cửa
-# hàng CÁCH 3 THÁNG (đúng công thức lag ramp-up, skill mục 2) — dùng STORE_COUNT_HIST[2025] làm proxy
-# cho số cửa hàng ~cuối T2/2026 (gần đúng, vì không có snapshot đúng T2/2026 riêng cho mọi mảng).
+# Doanh thu mảng = Số cửa hàng dự phóng × Hiệu quả DT/cửa hàng dự phóng. Hiệu quả HIỆN TẠI = TRUNG
+# BÌNH 3 THÁNG THẬT GẦN NHẤT trong MONTHLY_MATRIX (đúng công thức lag ramp-up thực tế theo skill mục
+# 2 — dùng dữ liệu THÁNG thật thay vì suy từ tổng 5 tháng/số CH cuối năm trước như bản cũ) — Y HỆT
+# công thức AVERAGE() ghi vào sheet Excel 03a_Monthly_Data, đảm bảo Excel và Python luôn ra cùng 1 số.
 print("[Model] Du phong doanh thu 3-yeu-to theo mang (TGDD/DMX/BHX/Khac)...")
 
-_store_lag3 = STORE_COUNT_HIST[2025]  # proxy cho ~cuối T2/2026 (gần với mốc lag 3 tháng của 5T2026)
-EFFICIENCY_NOW = {  # tỷ VND / cửa hàng / tháng, tính từ DT bình quân tháng 5T2026 / số CH lag 3 tháng
-    "TGDD": (REV_5T_2026_TOTAL * REV_5T_2026_PCT["TGDD"] / 5) / _store_lag3["TGDD"],
-    "DMX":  (REV_5T_2026_TOTAL * REV_5T_2026_PCT["DMX"] / 5) / _store_lag3["DMX"],
-    "BHX":  (REV_5T_2026_TOTAL * REV_5T_2026_PCT["BHX"] / 5) / _store_lag3["BHX"],
-    "Khac": (REV_5T_2026_TOTAL * REV_5T_2026_PCT["Khac"] / 5) / (_store_lag3["AnKhang"] + _store_lag3["AvaKids"] + _store_lag3.get("EraBlue", 0)),
+CURRENT_YEAR_REAL = MONTHLY_MATRIX[-1]["year"]
+_months_current_year_idx = [i for i, m in enumerate(MONTHLY_MATRIX) if m["year"] == CURRENT_YEAR_REAL]
+_n_known_months_current_year = len(_months_current_year_idx)
+
+def _seg_month_revenue(m, seg):
+    """Doanh thu mảng CỦA 1 THÁNG = Tổng tháng đó × %mảng (None nếu thiếu %, KHÔNG đoán)."""
+    pct = m["pct"].get(seg)
+    return m["revenue"] * pct if pct is not None else None
+
+def _seg_month_efficiency(m, seg):
+    rev = _seg_month_revenue(m, seg)
+    sl = m["stores"].get(seg)
+    return rev / sl if (rev is not None and sl) else None
+
+_last3_idx = _months_current_year_idx[-3:]
+EFFICIENCY_NOW = {  # tỷ VND/CH/tháng — TB 3 tháng thật gần nhất của năm hiện tại (khớp Excel AVERAGE())
+    seg: stats.mean([e for e in (_seg_month_efficiency(MONTHLY_MATRIX[i], seg) for i in _last3_idx) if e is not None])
+    for seg in SEGMENTS
 }
 
 # Tăng trưởng hiệu quả/cửa hàng NĂM (giả định, có căn cứ — ghi rõ nguồn để dễ chỉnh sửa):
@@ -813,36 +906,32 @@ STORE_COUNT_FC = {
     ],
 }
 
+# Doanh thu mảng dự phóng — Y HỆT công thức Excel sheet 03a_Monthly_Data:
+#   Năm HIỆN TẠI (CURRENT_YEAR_REAL, đã có dữ liệu thật 1 phần): SL ước tính × hiệu quả/CH ước tính ×
+#     SỐ THÁNG CÒN LẠI + DOANH THU LŨY KẾ ĐÃ CÓ (tổng các tháng thật trong năm, chỉ tính tháng có %).
+#   Các năm SAU (không có dữ liệu thật): SL ước tính × hiệu quả/CH ước tính × 12 tháng trọn năm; hiệu
+#     quả/CH mỗi năm sau = hiệu quả năm trước × (1 + tăng trưởng giả định) — compound liên tiếp.
 REVENUE_FC_SEGMENT = {}  # {segment: [rev_2026E, rev_2027F, rev_2028F]} tỷ VND/năm
+EFFICIENCY_FC_SEGMENT = {}  # {segment: [eff_2026E, eff_2027F, eff_2028F]} tỷ VND/CH/tháng
 for seg in SEGMENTS:
-    eff = EFFICIENCY_NOW[seg]
-    seg_rev = []
+    seg_rev, seg_eff = [], []
     for i, yr in enumerate(years_fc):
-        # Nam dau tien (i=0) DUNG NGUYEN hieu qua hien tai (da phan anh dung toc do tang truong CUA
-        # NAM DO roi qua run-rate 5T2026) — chi COMPOUND THEM tang truong tu nam thu 2 tro di, tranh
-        # dem 2 lan tang truong cho cung 1 nam (hieu qua da "nong" san co, khong can nhan them).
-        eff_yr = eff * (1 + EFFICIENCY_GROWTH[seg]) ** i
-        stores_yr = STORE_COUNT_FC[seg][i]
-        seg_rev.append(round(eff_yr * stores_yr * 12, 1))
+        if yr == CURRENT_YEAR_REAL:
+            eff_yr = EFFICIENCY_NOW[seg]
+            remaining_months = 12 - _n_known_months_current_year
+            cum_known = sum(v for v in (_seg_month_revenue(MONTHLY_MATRIX[j], seg) for j in _months_current_year_idx) if v is not None)
+            rev_yr = STORE_COUNT_FC[seg][i] * eff_yr * remaining_months + cum_known
+        else:
+            eff_yr = seg_eff[i - 1] * (1 + EFFICIENCY_GROWTH[seg])
+            rev_yr = STORE_COUNT_FC[seg][i] * eff_yr * 12
+        seg_eff.append(eff_yr)
+        seg_rev.append(round(rev_yr, 1))
     REVENUE_FC_SEGMENT[seg] = seg_rev
+    EFFICIENCY_FC_SEGMENT[seg] = seg_eff
 
-revenue_fc_raw = [sum(REVENUE_FC_SEGMENT[seg][i] for seg in SEGMENTS) for i in range(len(years_fc))]
+revenue_fc = [sum(REVENUE_FC_SEGMENT[seg][i] for seg in SEGMENTS) for i in range(len(years_fc))]
 
-# Neo năm đầu tiên (2026E) theo dữ liệu THỰC TẾ đã biết (5 tháng 2026 = 79,159 tỷ) bằng
-# blend_annual_estimate — tránh sai số cộng dồn từ giả định hiệu quả/cửa hàng cho 5 tháng ĐÃ CÓ báo
-# cáo thật, chỉ áp giả định cho 7 tháng CÒN LẠI của năm 2026 (nhất quán cách làm ở build_hpg_model.py/
-# template_banking.py — "Công thức: Ước tính năm = Lũy kế thực tế n quý đã biết + giả định x (4-n)/4").
-_known_months_2026 = 5
-_frac_known = _known_months_2026 / 12
-revenue_2026E_blended = REV_5T_2026_TOTAL + revenue_fc_raw[0] * (1 - _frac_known)
-revenue_fc = [round(revenue_2026E_blended, 1)] + revenue_fc_raw[1:]
-
-# Điều chỉnh lại doanh thu từng mảng năm đầu theo cùng tỷ lệ blend (giữ tỷ trọng mảng nhất quán)
-_scale_2026 = revenue_fc[0] / revenue_fc_raw[0] if revenue_fc_raw[0] else 1.0
-for seg in SEGMENTS:
-    REVENUE_FC_SEGMENT[seg][0] = round(REVENUE_FC_SEGMENT[seg][0] * _scale_2026, 1)
-
-print(f"  -> Hieu qua/CH/thang HIEN TAI (ty VND): {({k: round(v,2) for k,v in EFFICIENCY_NOW.items()})}")
+print(f"  -> Hieu qua/CH/thang HIEN TAI (TB 3 thang gan nhat, ty VND): {({k: round(v,2) for k,v in EFFICIENCY_NOW.items()})}")
 print(f"  -> Doanh thu du phong {years_fc}: {revenue_fc}")
 
 # ── 5. DỰ PHÓNG P&L (GPM/SG&A đã tính ở mục 3) ──────────────────────────────────────────────────
@@ -877,7 +966,8 @@ print(f"  -> GPM {gp_margin_fc}% | SG&A/DT {SGA_FC_PCT}% | Thue hieu dung {EFFEC
 print(f"  -> EBIT du phong: {ebit_fc}")
 print(f"  -> NI (co dong cong ty me) du phong: {ni_fc}")
 
-# ── 6. ĐỊNH GIÁ — 5 phương pháp theo skill ban-le (P/E 20%, P/B 20%, RI 10%, P/S+P/E 35%, P/S+P/B 15%) ─
+# ── 6. ĐỊNH GIÁ — 4 phương pháp theo skill ban-le (P/E 20%, P/B 20%, RI 10%, P/S+P/E cả 4 mảng 50%) ──
+# (2026-07: đã bỏ P/S+P/B — không tách bạch được VCSH riêng mảng, dồn 15% cũ vào P/S+P/E)
 # Hàm fetch Rf/Beta (CAPM cho RI) — copy nguyên logic đã verify hoạt động tốt từ template_banking.py
 # (dùng cho định giá RI ngân hàng), chỉ đổi risk premium đặc thù (2% "bank-specific" -> 1.5% "retail
 # frontier-market" chung, không có yếu tố ngân hàng cụ thể) — xem ghi chú tại chỗ dùng bên dưới.
@@ -1016,7 +1106,7 @@ def fetch_and_calc_beta(ticker, days=720, timeout=20, fallback=1.0):
     return calculated_beta, web_beta, is_enough_sessions, beta_src, latest_price, aligned_data
 
 rf_val, rf_src = fetch_rf_vietnam()
-beta_calc, beta_web, is_enough_sessions, beta_src, _, _ = fetch_and_calc_beta(TICKER)
+beta_calc, beta_web, is_enough_sessions, beta_src, _latest_px, BETA_ALIGNED_DATA = fetch_and_calc_beta(TICKER)
 beta_val = beta_calc if is_enough_sessions else beta_web
 beta_raw = beta_val
 beta_val = round(0.67 * beta_raw + 0.33, 4)  # Blume adjusted beta (mean reversion về 1)
@@ -1113,17 +1203,14 @@ RI_TARGET_PRICE = round(BVPS_HIST_LAST + pv_ri + pv_cv, 0)
 print(f"  -> EPS_FC {EPS_FC} | BVPS_FC {BVPS_FC}")
 print(f"  -> P/E target: {PE_TARGET_PRICE:,.0f} | P/B target: {PB_TARGET_PRICE:,.0f} | RI target: {RI_TARGET_PRICE:,.0f}")
 
-# 4)+5) Định giá theo TỪNG MẢNG — P/S+P/E (35%) cho mảng trưởng thành có P/E tham chiếu, P/S+P/B (15%)
-# cho mảng KHÔNG có P/E tham chiếu đủ tin cậy (skill ban-le mục "Định giá", nguyên tắc chọn phương pháp).
-# Phân loại mảng (2026-07, có căn cứ — xem comment EFFICIENCY_GROWTH ở trên cho cùng logic trưởng
-# thành/tăng trưởng của từng mảng):
-#   TGDD, ĐMX: ĐàBÃO HÒA, có P/E tham chiếu tốt (ngành ICT/điện máy bán lẻ khu vực ASEAN, hoặc dùng
-#     0.9×growth vì tăng trưởng đã chậm lại) -> P/S + P/E.
-#   BHX: tăng trưởng nhanh nhưng ĐÃ có lãi + so sánh được với ngành bán lẻ FMCG khu vực -> P/S + P/E
-#     (không dùng P/S-only vì đã đủ trưởng thành để tham chiếu P/E, nhưng vẫn giới hạn bởi 0.9×growth).
-#   Khac (An Khang/AvaKids/EraBlue): mảng nhỏ, non trẻ, biên LN mỏng/mới hoà vốn, KHÔNG có P/E tham
-#     chiếu đủ tin cậy -> P/S + P/B (dùng PB_HIST_MEDIAN của chính MWG làm proxy).
-SEGMENT_METHOD = {"TGDD": "PE", "DMX": "PE", "BHX": "PE", "Khac": "PB"}
+# 4) P/S + P/E theo mảng (trọng số 50% = 35%+15% gộp lại) — ÁP DỤNG CHO CẢ 4 MẢNG.
+# (2026-07, chốt lại theo yêu cầu user): BỎ HẲN phương pháp P/S+P/B — không có cách tách bạch VCSH/
+# BV riêng cho từng mảng (ĐMX, TGDĐ...) từ BCTC hợp nhất, nên "BV ngụ ý ~ NI/COE" trước đây chỉ là
+# proxy 2 lớp (ước tính chồng ước tính), kém tin cậy hơn hẳn so với việc dùng P/E tham chiếu trực
+# tiếp. Dồn toàn bộ trọng số 15% của P/S+P/B cũ sang P/S+P/E (35%+15%=50%), áp dụng P/E cho TẤT CẢ
+# 4 mảng (kể cả BHX/Khác) — vẫn giữ quy tắc "P/E = min(P/E tham chiếu, 0.9×growth)" để chặn định giá
+# quá cao khi tăng trưởng đột biến.
+SEGMENT_METHOD = {"TGDD": "PE", "DMX": "PE", "BHX": "PE", "Khac": "PE"}
 
 # Biên LNST ước tính mỗi mảng (tỷ trọng LN so với DT, năm dự phóng đầu) — MWG không công bố NI tách
 # mảng, ước tính có căn cứ dựa trên đặc thù ngành + margin công ty mẹ (bình quân 2 năm gần nhất
@@ -1140,41 +1227,32 @@ SEGMENT_NET_MARGIN = {"TGDD": 0.045, "DMX": 0.040, "BHX": 0.020, "Khac": 0.010}
 # căn cứ dựa trên tốc độ mở mới cửa hàng thực tế (BHX +19% số lượng CH chỉ trong 5 tháng 2026).
 SEGMENT_GROWTH_PCT = {"TGDD": 25.0, "DMX": 28.0, "BHX": 35.0, "Khac": 20.0}
 
-# P/E tham chiếu ngành bán lẻ ICT/FMCG khu vực ASEAN (proxy, có thể cập nhật khi có dữ liệu peer cụ
-# thể hơn) — dùng chung cho TGDD/DMX/BHX vì đều đã đạt quy mô đủ lớn để so sánh ngành.
-SEGMENT_PE_REF = {"TGDD": 14.0, "DMX": 14.0, "BHX": 16.0}  # BHX ref cao hơn (ngành FMCG tăng trưởng tốt hơn ICT bão hòa)
+# P/E tham chiếu ngành bán lẻ ICT/FMCG/dược phẩm khu vực ASEAN (proxy, có thể cập nhật khi có dữ liệu
+# peer cụ thể hơn) — dùng cho cả 4 mảng vì tất cả đều dùng chung phương pháp P/S+P/E sau khi bỏ P/B.
+SEGMENT_PE_REF = {"TGDD": 14.0, "DMX": 14.0, "BHX": 16.0, "Khac": 12.0}  # BHX ref cao hơn (FMCG tăng trưởng tốt hơn ICT bão hòa); Khac (dược/mẹ&bé/quốc tế) ref thận trọng hơn do quy mô nhỏ
 
 segment_value_ps_pe = {}
-segment_value_ps_pb = {}
 for seg in SEGMENTS:
     rev_seg_fc0 = REVENUE_FC_SEGMENT[seg][0]
-    if SEGMENT_METHOD[seg] == "PE":
-        pe_growth_based = 0.9 * SEGMENT_GROWTH_PCT[seg]
-        pe_used = min(SEGMENT_PE_REF[seg], pe_growth_based) if pe_growth_based > 0 else SEGMENT_PE_REF[seg]
-        pe_used = max(pe_used, 5.0)  # sàn hợp lý, tránh P/E âm/quá thấp khi tăng trưởng âm
-        ni_seg = rev_seg_fc0 * SEGMENT_NET_MARGIN[seg]
-        segment_value_ps_pe[seg] = pe_used * ni_seg  # tỷ VND vốn hoá ngụ ý cho mảng này
-    else:
-        bv_seg = rev_seg_fc0 * SEGMENT_NET_MARGIN[seg] / max(0.08, COE)  # BV ngụ ý ~ NI/COE (proxy đơn giản khi thiếu BS tách mảng)
-        segment_value_ps_pb[seg] = PB_HIST_MEDIAN * bv_seg
+    pe_growth_based = 0.9 * SEGMENT_GROWTH_PCT[seg]
+    pe_used = min(SEGMENT_PE_REF[seg], pe_growth_based) if pe_growth_based > 0 else SEGMENT_PE_REF[seg]
+    pe_used = max(pe_used, 5.0)  # sàn hợp lý, tránh P/E âm/quá thấp khi tăng trưởng âm
+    ni_seg = rev_seg_fc0 * SEGMENT_NET_MARGIN[seg]
+    segment_value_ps_pe[seg] = pe_used * ni_seg  # tỷ VND vốn hoá ngụ ý cho mảng này
 
 TOTAL_VALUE_PS_PE = sum(segment_value_ps_pe.values())  # tỷ VND
-TOTAL_VALUE_PS_PB = sum(segment_value_ps_pb.values())  # tỷ VND
 PS_PE_TARGET_PRICE = round(TOTAL_VALUE_PS_PE * 1e9 / (SHARES * 1e6), 0) if TOTAL_VALUE_PS_PE else PE_TARGET_PRICE
-PS_PB_TARGET_PRICE = round(TOTAL_VALUE_PS_PB * 1e9 / (SHARES * 1e6), 0) if TOTAL_VALUE_PS_PB else PB_TARGET_PRICE
 
-print(f"  -> P/S+P/E target (mang {[s for s in SEGMENTS if SEGMENT_METHOD[s]=='PE']}): {PS_PE_TARGET_PRICE:,.0f}")
-print(f"  -> P/S+P/B target (mang {[s for s in SEGMENTS if SEGMENT_METHOD[s]=='PB']}): {PS_PB_TARGET_PRICE:,.0f}")
+print(f"  -> P/S+P/E target (ca 4 mang {SEGMENTS}): {PS_PE_TARGET_PRICE:,.0f}")
 
-# ── Tổng hợp trọng số 5 phương pháp (chốt với user 2026-07): PE 20% + PB 20% + RI 10% + PS-PE 35% + PS-PB 15% ──
-VALUATION_WEIGHTS = {"PE": 0.20, "PB": 0.20, "RI": 0.10, "PS_PE": 0.35, "PS_PB": 0.15}
+# ── Tổng hợp trọng số 4 phương pháp (chốt với user 2026-07, đã bỏ P/S+P/B): PE 20% + PB 20% + RI 10% + PS-PE 50% ──
+VALUATION_WEIGHTS = {"PE": 0.20, "PB": 0.20, "RI": 0.10, "PS_PE": 0.50}
 WEIGHTED_TARGET_PRICE = round(
     VALUATION_WEIGHTS["PE"] * PE_TARGET_PRICE + VALUATION_WEIGHTS["PB"] * PB_TARGET_PRICE +
-    VALUATION_WEIGHTS["RI"] * RI_TARGET_PRICE + VALUATION_WEIGHTS["PS_PE"] * PS_PE_TARGET_PRICE +
-    VALUATION_WEIGHTS["PS_PB"] * PS_PB_TARGET_PRICE, 0)
+    VALUATION_WEIGHTS["RI"] * RI_TARGET_PRICE + VALUATION_WEIGHTS["PS_PE"] * PS_PE_TARGET_PRICE, 0)
 UPSIDE_PCT = round((WEIGHTED_TARGET_PRICE / PRICE - 1) * 100, 1) if PRICE else None
 
-print(f"  -> GIA MUC TIEU (trong so 20/20/10/35/15): {WEIGHTED_TARGET_PRICE:,.0f} VND (gia hien tai {PRICE:,.0f}, upside {UPSIDE_PCT}%)")
+print(f"  -> GIA MUC TIEU (trong so 20/20/10/50): {WEIGHTED_TARGET_PRICE:,.0f} VND (gia hien tai {PRICE:,.0f}, upside {UPSIDE_PCT}%)")
 
 # ── 7. DỰ PHÓNG D&A/CAPEX/BẢNG CÂN ĐỐI (cho sheet 05/06) ────────────────────────────────────────
 # D&A dự phóng — giữ tỷ lệ D&A/DT bình quân 2 năm gần nhất (mở rộng chuỗi cửa hàng mới kéo theo D&A
@@ -1200,6 +1278,28 @@ cogs_fc = [round(revenue_fc[i] * (1 - GPM_FC_PCT / 100), 1) for i in range(len(y
 inventory_fc = [round(cogs_fc[i] * DIO_FC / 365, 1) for i in range(len(years_fc))]
 receivables_fc = [round(revenue_fc[i] * DSO_FC / 365, 1) for i in range(len(years_fc))]
 payables_fc = [round(cogs_fc[i] * DPO_FC / 365, 1) for i in range(len(years_fc))]
+
+# ── DIO/DSO/DPO THEO QUÝ (lịch sử thật, dùng để vẽ biểu đồ xu hướng vòng quay vốn lưu động) ──────
+# Công thức "quý-hoá thường niên": DIO_quý = Tồn kho cuối quý / (Giá vốn quý / 91,25 ngày) — cách
+# tính chuẩn của giới phân tích khi chỉ có 1 quý dữ liệu (KHÔNG dùng COGS lũy kế 4 quý vì sẽ làm mượt
+# quá mức, mất tính thời điểm của từng quý riêng lẻ).
+bs_q = section_to_quarters(RAW, "BALANCE_SHEET")
+_dio_q_keys = sorted({(r["yearReport"], r["lengthReport"]) for r in bs_q
+                      if r.get("yearReport") and r.get("lengthReport") in (1, 2, 3, 4)})
+DIO_QUARTERLY, DSO_QUARTERLY, DPO_QUARTERLY, DIO_Q_LABELS = [], [], [], []
+for _y, _q in _dio_q_keys:
+    _inv = qv(bs_q, _y, _q, "bsa15")
+    _pay = qv(bs_q, _y, _q, "bsa57")
+    _rec = qv(bs_q, _y, _q, "bsa8")
+    _cogs_q = qv(is_q, _y, _q, "isa4")
+    _rev_q = qv(is_q, _y, _q, "isa3")
+    if _inv is None or _cogs_q is None:
+        continue
+    DIO_Q_LABELS.append(f"{_y}Q{_q}")
+    DIO_QUARTERLY.append(round(_inv / (abs(_cogs_q) / 91.25), 1))
+    DPO_QUARTERLY.append(round(_pay / (abs(_cogs_q) / 91.25), 1) if _pay else None)
+    DSO_QUARTERLY.append(round(_rec / (_rev_q / 91.25), 1) if _rec and _rev_q else None)
+print(f"  -> DIO/DSO/DPO theo quy: {len(DIO_Q_LABELS)} quy ({DIO_Q_LABELS[0]} - {DIO_Q_LABELS[-1]})")
 
 # Nợ vay/Tiền mặt dự phóng — neo gốc 2025A thật, giữ %YoY bình quân 2 năm gần nhất (MWG đang giảm dần
 # đòn bẩy nhờ FCF chuyển dương từ khi BHX có lãi, xu hướng nợ giảm/tiền mặt tăng dần).
@@ -1275,9 +1375,9 @@ def build_excel():
         ("BVPS (VND)", bvps_hist[-1], '#,##0', right_al),
         ("Kế hoạch DT 2026 (tỷ)", FY2026_TARGET_REVENUE, '#,##0', right_al),
         ("Kế hoạch LNST 2026 (tỷ)", FY2026_TARGET_NPAT, '#,##0', right_al),
-        ("Khuyến nghị", "=IF('07_Valuation'!C14>0.15,\"MUA\",IF('07_Valuation'!C14<-0.05,\"BÁN\",\"THEO DÕI\"))", None, Alignment(horizontal='center')),
-        ("Giá mục tiêu (VND)", "='07_Valuation'!C12", '#,##0', right_al),
-        ("Upside/Downside", "='07_Valuation'!C14", '0.0%', right_al),
+        ("Khuyến nghị", "=IF('07_Valuation'!C13>0.15,\"MUA\",IF('07_Valuation'!C13<-0.05,\"BÁN\",\"THEO DÕI\"))", None, Alignment(horizontal='center')),
+        ("Giá mục tiêu (VND)", "='07_Valuation'!C11", '#,##0', right_al),
+        ("Upside/Downside", "='07_Valuation'!C13", '0.0%', right_al),
         ("Ngày phân tích", datetime.now().strftime("%d/%m/%Y %H:%M"), None, left_al),
     ]
     for i, (k, v, nf, al) in enumerate(cover_rows, 2):
@@ -1291,14 +1391,13 @@ def build_excel():
     ws.column_dimensions['B'].width = 46
 
     ws.merge_cells('A19:F19')
-    ws['A19'] = "5 PHƯƠNG PHÁP ĐỊNH GIÁ (trọng số theo skill ban-le)"
+    ws['A19'] = "4 PHƯƠNG PHÁP ĐỊNH GIÁ (trọng số theo skill ban-le, đã bỏ P/S+P/B)"
     ws['A19'].font = bold_font
     val_summary = [
         ("P/E Median (20%)", "='07_Valuation'!C6", '#,##0'),
         ("P/B Median (20%)", "='07_Valuation'!C7", '#,##0'),
         ("Residual Income (10%)", "='07_Valuation'!C8", '#,##0'),
-        ("P/S + P/E theo mảng (35%)", "='07_Valuation'!C9", '#,##0'),
-        ("P/S + P/B theo mảng (15%)", "='07_Valuation'!C10", '#,##0'),
+        ("P/S + P/E theo mảng, cả 4 mảng (50%)", "='07_Valuation'!C9", '#,##0'),
     ]
     for i, (k, v, nf) in enumerate(val_summary, 20):
         ws.cell(row=i, column=1, value=k).font = data_font
@@ -1307,6 +1406,80 @@ def build_excel():
         c.number_format = nf; c.alignment = right_al
 
     print("[Excel] Sheet 01_Cover done.")
+
+    # ─── 00_Beta + 00_COE — bảng tính Beta lịch sử & CAPM (giống template_banking.py) ─────────────
+    # Chèn TRƯỚC 01_Cover (index 0/1) để đúng thứ tự audit trail: Beta thô -> COE -> mọi định giá RI
+    # tham chiếu về đây, KHÔNG hardcode COE rời rạc ở 02_Assumptions nữa.
+    ws_beta = wb.create_sheet(title="00_Beta", index=0)
+    ws_beta.column_dimensions['A'].width = 15
+    ws_beta.column_dimensions['B'].width = 16
+    ws_beta.column_dimensions['C'].width = 22
+    ws_beta.column_dimensions['D'].width = 16
+    ws_beta.column_dimensions['E'].width = 22
+    ws_beta.cell(row=1, column=1, value="BẢNG TÍNH HỆ SỐ BETA LỊCH SỬ").font = bold_font
+    ws_beta.cell(row=1, column=2, value="Beta thô (raw):").font = bold_font
+    ws_beta.cell(row=1, column=3).number_format = '0.0000'
+    ws_beta.cell(row=1, column=3).fill = assump_fill
+    ws_beta.cell(row=1, column=4, value="Beta Blume (đã điều chỉnh):").font = bold_font
+    ws_beta.cell(row=1, column=5).number_format = '0.0000'
+    ws_beta.cell(row=1, column=5).fill = assump_fill
+    ws_beta.cell(row=2, column=2, value="Số phiên giao dịch:").font = Font(name=FONT_NAME, italic=True, size=9)
+    ws_beta.cell(row=4, column=1, value="Ngày").font = header_font
+    ws_beta.cell(row=4, column=2, value=f"Giá {TICKER}").font = header_font
+    ws_beta.cell(row=4, column=3, value=f"Tỷ suất sinh lời {TICKER}").font = header_font
+    ws_beta.cell(row=4, column=4, value="Giá VNINDEX").font = header_font
+    ws_beta.cell(row=4, column=5, value="Tỷ suất sinh lời VNINDEX").font = header_font
+    for c in range(1, 6):
+        ws_beta.cell(row=4, column=c).fill = header_fill
+    if BETA_ALIGNED_DATA:
+        date0, p_s0, p_m0 = BETA_ALIGNED_DATA[0]
+        ws_beta.cell(row=5, column=1, value=date0)
+        ws_beta.cell(row=5, column=2, value=p_s0)
+        ws_beta.cell(row=5, column=4, value=p_m0)
+        for ridx, (dstr, p_s, p_m) in enumerate(BETA_ALIGNED_DATA[1:], start=6):
+            ws_beta.cell(row=ridx, column=1, value=dstr)
+            ws_beta.cell(row=ridx, column=2, value=p_s)
+            ws_beta.cell(row=ridx, column=3, value=f"=(B{ridx}-B{ridx-1})/B{ridx-1}").number_format = '0.00%'
+            ws_beta.cell(row=ridx, column=4, value=p_m)
+            ws_beta.cell(row=ridx, column=5, value=f"=(D{ridx}-D{ridx-1})/D{ridx-1}").number_format = '0.00%'
+        last_row = 4 + len(BETA_ALIGNED_DATA)
+        ws_beta.cell(row=1, column=3, value=f"=COVAR(C6:C{last_row},E6:E{last_row})/VAR(E6:E{last_row})")
+        ws_beta.cell(row=1, column=5, value="=0.67*C1+0.33")
+        ws_beta.cell(row=2, column=3, value=f"=COUNT(C6:C{last_row})")
+    else:
+        ws_beta.cell(row=1, column=3, value=beta_raw)
+        ws_beta.cell(row=1, column=5, value=beta_val)
+        ws_beta.cell(row=2, column=3, value=0)
+    print(f"[Excel] Sheet 00_Beta done ({len(BETA_ALIGNED_DATA)} phien).")
+
+    ws_coe = wb.create_sheet(title="00_COE", index=1)
+    ws_coe.column_dimensions['A'].width = 42
+    ws_coe.column_dimensions['B'].width = 16
+    ws_coe.column_dimensions['C'].width = 50
+    ws_coe.cell(row=1, column=1, value="CHI PHÍ VỐN CSH (COE) — MÔ HÌNH CAPM").font = title_font
+    ws_coe.cell(row=3, column=1, value="Tham số").font = header_font
+    ws_coe.cell(row=3, column=2, value="Giá trị").font = header_font
+    ws_coe.cell(row=3, column=3, value="Ghi chú / Nguồn").font = header_font
+    for c in range(1, 4):
+        ws_coe.cell(row=3, column=c).fill = header_fill
+    ws_coe.cell(row=4, column=1, value="Rf — Lãi suất phi rủi ro (TPCP 10 năm)")
+    ws_coe.cell(row=4, column=2, value=rf_val).number_format = '0.00%'
+    ws_coe.cell(row=4, column=3, value=rf_src)
+    ws_coe.cell(row=5, column=1, value="β — Hệ số Beta (Blume-adjusted)")
+    ws_coe.cell(row=5, column=2, value="='00_Beta'!E1").number_format = '0.0000'
+    ws_coe.cell(row=5, column=3, value=beta_src)
+    ws_coe.cell(row=6, column=1, value="ERP — Phần bù rủi ro vốn (Damodaran)")
+    ws_coe.cell(row=6, column=2, value=ERP).number_format = '0.00%'
+    ws_coe.cell(row=7, column=1, value="α — Phần bù rủi ro đặc thù (Frontier-market retail)")
+    ws_coe.cell(row=7, column=2, value=SPECIFIC_RISK_PREMIUM).number_format = '0.00%'
+    ws_coe.cell(row=9, column=1, value="COE = Rf + β×ERP + α").font = bold_font
+    ws_coe.cell(row=9, column=2, value="=B4+B5*B6+B7").font = bold_font
+    ws_coe.cell(row=9, column=2).number_format = '0.00%'
+    ws_coe.cell(row=9, column=2).fill = p_fill
+    for r in range(4, 10):
+        for c in range(1, 4):
+            ws_coe.cell(row=r, column=c).border = thin_border
+    print("[Excel] Sheet 00_COE done.")
 
     # ─── 02_Assumptions ─────────────────────────────────────────────────────────────────────────
     # Nơi DUY NHẤT chứa số hardcode (input) — mọi sheet khác chỉ dùng công thức tham chiếu về đây.
@@ -1385,15 +1558,107 @@ def build_excel():
     RA["rf"] = r; r = arow(wsA, r, "Lãi suất phi rủi ro Rf (%)", rf_val, FMT_PCT, f"Nguồn: {rf_src}", single=True)
     RA["erp"] = r; r = arow(wsA, r, "Equity Risk Premium (%)", ERP, FMT_PCT, "Damodaran ERP", single=True)
     RA["specific_prem"] = r; r = arow(wsA, r, "Premium rủi ro đặc thù (%)", SPECIFIC_RISK_PREMIUM, FMT_PCT, "Frontier-market retail risk premium", single=True)
-    RA["coe"] = r; r = arow(wsA, r, "Chi phí vốn CSH COE (%)", COE, FMT_PCT, "=Rf+Beta×ERP+Premium", single=True, fill=assump_fill)
+    RA["coe"] = r; r = arow(wsA, r, "Chi phí vốn CSH COE (%)", "='00_COE'!B9", FMT_PCT, "Xem chi tiết CAPM tại sheet 00_COE/00_Beta", single=True, fill=assump_fill)
     RA["terminal_g"] = r; r = arow(wsA, r, "Tăng trưởng dài hạn g (%)", TERMINAL_GROWTH, FMT_PCT, "Giả định terminal growth RI", single=True, fill=assump_fill)
     RA["w_pe"] = r; r = arow(wsA, r, "Trọng số P/E Median (%)", VALUATION_WEIGHTS["PE"], FMT_PCT, "Chốt với user 2026-07 (skill ban-le)", single=True, fill=assump_fill)
     RA["w_pb"] = r; r = arow(wsA, r, "Trọng số P/B Median (%)", VALUATION_WEIGHTS["PB"], FMT_PCT, "", single=True, fill=assump_fill)
     RA["w_ri"] = r; r = arow(wsA, r, "Trọng số RI cả công ty (%)", VALUATION_WEIGHTS["RI"], FMT_PCT, "", single=True, fill=assump_fill)
-    RA["w_pspe"] = r; r = arow(wsA, r, "Trọng số P/S+P/E theo mảng (%)", VALUATION_WEIGHTS["PS_PE"], FMT_PCT, "", single=True, fill=assump_fill)
-    RA["w_pspb"] = r; r = arow(wsA, r, "Trọng số P/S+P/B theo mảng (%)", VALUATION_WEIGHTS["PS_PB"], FMT_PCT, "", single=True, fill=assump_fill)
+    RA["w_pspe"] = r; r = arow(wsA, r, "Trọng số P/S+P/E theo mảng (cả 4 mảng) (%)", VALUATION_WEIGHTS["PS_PE"], FMT_PCT, "Đã gộp 35%+15% cũ (bỏ P/S+P/B)", single=True, fill=assump_fill)
     wsA.column_dimensions['A'].width = 40
     print(f"[Excel] Sheet 02_Assumptions done ({r} dong).")
+
+    # ─── 03a_Monthly_Data — Database THÁNG chi tiết từng mảng (theo yêu cầu user 2026-07) ─────────
+    # Doanh thu tổng, % cơ cấu, doanh thu mảng (=%×tổng), số cửa hàng, hiệu quả/CH/tháng — TẤT CẢ có
+    # công thức sống để kiểm soát tính toán. Cột "Ước tính 20XX" dùng đúng công thức user yêu cầu:
+    # DT ước tính = SL ước tính × hiệu quả/CH × số tháng CÒN LẠI + DT LŨY KẾ đã có (năm hiện tại);
+    # các năm sau (không có dữ liệu thật) = SL ước tính × hiệu quả/CH × 12 tháng.
+    wsM = wb.create_sheet("03a_Monthly_Data")
+    n_months = len(MONTHLY_MATRIX)
+    col_month_start = 2  # cột B
+    col_est = {yr: col_month_start + n_months + i for i, yr in enumerate(years_fc)}  # cột "Ước tính 20XX"
+
+    month_headers = ["Chỉ tiêu"] + [m["label"] for m in MONTHLY_MATRIX] + [f"Ước tính {y}" for y in years_fc] + ["Ghi chú"]
+    header_row(wsM, 1, month_headers, [26] + [9]*n_months + [13]*len(years_fc) + [40])
+
+    def mcell(r, c, v, fmt=None, bold=False, fill=None):
+        cell = wsM.cell(row=r, column=c, value=v)
+        cell.font = bold_font if bold else data_font
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        if fmt: cell.number_format = fmt
+        if fill: cell.fill = fill
+        return cell
+
+    ROW_TOTAL = 2
+    ROW_PCT = {"TGDD": 3, "DMX": 4, "BHX": 5, "Khac": 6}
+    ROW_REV = {"TGDD": 8, "DMX": 9, "BHX": 10, "Khac": 11}
+    ROW_SL = {"TGDD": 13, "DMX": 14, "BHX": 15, "Khac": 16}
+    ROW_EFF = {"TGDD": 18, "DMX": 19, "BHX": 20, "Khac": 21}
+
+    wsM.cell(row=ROW_TOTAL, column=1, value="Doanh thu tổng (tỷ VND)").font = bold_font
+    for seg in SEGMENTS:
+        wsM.cell(row=ROW_PCT[seg], column=1, value=f"%Dthu {seg}").font = data_font
+        wsM.cell(row=ROW_REV[seg], column=1, value=f"Doanh thu {seg}").font = data_font
+        wsM.cell(row=ROW_SL[seg], column=1, value=f"SL {seg}").font = data_font
+        wsM.cell(row=ROW_EFF[seg], column=1, value=f"DT/CH/th {seg}").font = data_font
+    for rr in (ROW_TOTAL,) + tuple(ROW_PCT.values()) + tuple(ROW_REV.values()) + tuple(ROW_SL.values()) + tuple(ROW_EFF.values()):
+        wsM.cell(row=rr, column=1).border = thin_border
+
+    # Cột THÁNG THẬT — Doanh thu tổng/%/SL là INPUT CỨNG (dữ liệu IR thật, có thể thiếu — để trống nếu
+    # không có nguồn tin cậy), Doanh thu mảng và Hiệu quả/CH LÀ CÔNG THỨC (không hardcode).
+    for i, m in enumerate(MONTHLY_MATRIX):
+        col = col_month_start + i
+        mcell(ROW_TOTAL, col, round(m["revenue"], 1), '#,##0')
+        col_l = get_column_letter(col)
+        for seg in SEGMENTS:
+            pct_val = m["pct"].get(seg)
+            mcell(ROW_PCT[seg], col, round(pct_val, 4) if pct_val is not None else None, '0.00%')
+            mcell(ROW_REV[seg], col, f"={col_l}${ROW_TOTAL}*{col_l}${ROW_PCT[seg]}" if pct_val is not None else None, '#,##0', fill=p_fill)
+            sl_val = m["stores"].get(seg)
+            mcell(ROW_SL[seg], col, sl_val, '#,##0')
+            mcell(ROW_EFF[seg], col, f"={col_l}${ROW_REV[seg]}/{col_l}${ROW_SL[seg]}" if (pct_val is not None and sl_val) else None, '0.00', fill=p_fill)
+
+    # Cột "Ước tính 20XX" — công thức đúng yêu cầu user: SL_ước tính × hiệu quả/CH × số tháng còn lại
+    # + doanh thu lũy kế đã có (chỉ áp dụng năm HIỆN TẠI, đang có dữ liệu thật 1 phần trong năm); các
+    # năm sau (không có dữ liệu thật) = SL_ước tính × hiệu quả/CH × 12 tháng trọn năm.
+    seg_store_row_m = {"TGDD": RA["store_tgdd"], "DMX": RA["store_dmx"], "BHX": RA["store_bhx"], "Khac": RA["store_khac"]}
+    # CURRENT_YEAR_REAL/_months_current_year_idx/_n_known_months_current_year đã tính SẴN ở phần dự
+    # phóng Python (dùng chung 1 nguồn — xem ghi chú "DATABASE THEO THÁNG" phía trên).
+    known_months_current_year = _months_current_year_idx
+    n_known_months = _n_known_months_current_year
+
+    for yi, yr in enumerate(years_fc):
+        col = col_est[yr]
+        col_l = get_column_letter(col)
+        assump_col_l = get_column_letter(2 + N_HIST + yi)  # cột năm dự phóng tương ứng ở 02_Assumptions
+        for seg in SEGMENTS:
+            # SL ước tính — tham chiếu thẳng dự phóng đã có ở 02_Assumptions (đồng bộ 1 nguồn duy nhất)
+            mcell(ROW_SL[seg], col, f"='02_Assumptions'!{assump_col_l}{seg_store_row_m[seg]}", '#,##0')
+            # Hiệu quả/CH ước tính — năm hiện tại: TB 3 tháng thật gần nhất; các năm sau: hiệu quả năm
+            # trước đó × (1 + tăng trưởng giả định) — tự tham chiếu ước tính năm trước, không lặp lại
+            # hằng số Python để nếu user sửa giả định tăng trưởng ở Assumptions thì lan truyền đúng.
+            if yr == CURRENT_YEAR_REAL:
+                last3_cols = [get_column_letter(col_month_start + i) for i in known_months_current_year[-3:]]
+                eff_formula = f"=AVERAGE({','.join(f'{c}{ROW_EFF[seg]}' for c in last3_cols)})"
+            else:
+                prev_col_l = get_column_letter(col_est[years_fc[yi - 1]])
+                eff_formula = f"={prev_col_l}{ROW_EFF[seg]}*(1+'02_Assumptions'!$B${RA['eff_growth'][seg]})"
+            mcell(ROW_EFF[seg], col, eff_formula, '0.00')
+            # Doanh thu mảng ước tính
+            if yr == CURRENT_YEAR_REAL:
+                known_cols = [get_column_letter(col_month_start + i) for i in known_months_current_year]
+                cum_known = "+".join(f"{c}{ROW_REV[seg]}" for c in known_cols)
+                remaining_months = 12 - n_known_months
+                rev_formula = f"={col_l}{ROW_SL[seg]}*{col_l}{ROW_EFF[seg]}*{remaining_months}+({cum_known})"
+            else:
+                rev_formula = f"={col_l}{ROW_SL[seg]}*{col_l}{ROW_EFF[seg]}*12"
+            mcell(ROW_REV[seg], col, rev_formula, '#,##0', bold=True, fill=p_fill)
+        # Doanh thu tổng ước tính = tổng 4 mảng
+        mcell(ROW_TOTAL, col, "=" + "+".join(f"{col_l}{ROW_REV[seg]}" for seg in SEGMENTS), '#,##0', bold=True, fill=header_fill)
+
+    wsM.column_dimensions['A'].width = 26
+    wsM.freeze_panes = "B2"
+    print(f"[Excel] Sheet 03a_Monthly_Data done ({n_months} thang + {len(years_fc)} cot uoc tinh).")
 
     # ─── 03_Revenue_Model — Driver-based theo từng mảng (skill ban-le mục 3) ──────────────────────
     wsR = wb.create_sheet("03_Revenue_Model")
@@ -1417,7 +1682,10 @@ def build_excel():
         wsR.cell(row=r, column=1, value="  Số cửa hàng cuối kỳ").font = data_font
         r += 1
         RR.setdefault("eff", {})[seg] = r
-        eff_row = [None]*N_HIST + [f"='02_Assumptions'!$B${RA['eff_now'][seg]}*(1+'02_Assumptions'!$B${RA['eff_growth'][seg]})^{i}" for i in range(len(years_fc))]
+        # Hiệu quả DT/CH dự phóng — LẤY TỪ sheet 03a_Monthly_Data (cột "Ước tính 20XX"), KHÔNG tính
+        # độc lập ở đây nữa (theo yêu cầu user: 1 nguồn database tháng duy nhất, có công thức kiểm
+        # soát được, thay vì Python tính sẵn hằng số rồi rải ra nhiều nơi).
+        eff_row = [None]*N_HIST + [f"='03a_Monthly_Data'!{get_column_letter(col_est[years_fc[i]])}{ROW_EFF[seg]}" for i in range(len(years_fc))]
         for j, v in enumerate(eff_row):
             c = wsR.cell(row=r, column=2+j, value=v); c.font = data_font; c.border = thin_border
             c.number_format = '0.000'; c.alignment = Alignment(horizontal='right')
@@ -1428,11 +1696,9 @@ def build_excel():
         for i, y in enumerate(years_hist):
             if y in REV_SEGMENT_HIST:
                 rev_hist_seg[i] = REV_SEGMENT_HIST[y].get(seg)
-        store_col0 = get_column_letter(2)
-        rev_row = rev_hist_seg[:]
-        for i in range(len(years_fc)):
-            col = get_column_letter(2 + N_HIST + i)
-            rev_row.append(f"={col}{RR['store'][seg]}*{col}{RR['eff'][seg]}*12")
+        # Doanh thu mảng dự phóng — LẤY TỪ sheet 03a_Monthly_Data (cột "Ước tính 20XX", đã tính đúng
+        # công thức "SL ước tính × hiệu quả/CH × số tháng còn lại + lũy kế đã có").
+        rev_row = rev_hist_seg[:] + [f"='03a_Monthly_Data'!{get_column_letter(col_est[years_fc[i]])}{ROW_REV[seg]}" for i in range(len(years_fc))]
         for j, v in enumerate(rev_row):
             c = wsR.cell(row=r, column=2+j, value=v); c.font = bold_font; c.border = thin_border
             c.number_format = '#,##0'; c.alignment = Alignment(horizontal='right')
@@ -1732,12 +1998,12 @@ def build_excel():
     r += 2
 
     # 4) P/S + P/E theo mảng
-    vcell(r, 1, "4) P/S + P/E theo mảng (trọng số 35%) — TGDĐ, ĐMX, BHX", bold=True); r += 1
+    pe_segs = [s for s in SEGMENTS if SEGMENT_METHOD[s] == "PE"]
+    vcell(r, 1, f"4) P/S + P/E theo mảng (trọng số 35%) — {', '.join(pe_segs)}", bold=True); r += 1
     row_pspe_hdr = r
     vcell(r, 1, "Mảng"); vcell(r, 2, "DT 2026E (tỷ)"); vcell(r, 3, "Biên LNST (%)"); vcell(r, 4, "P/E áp dụng (x)")
     for c in range(1, 5): wsV.cell(row=r, column=c).font = header_font; wsV.cell(row=r, column=c).fill = header_fill
     r += 1
-    pe_segs = [s for s in SEGMENTS if SEGMENT_METHOD[s] == "PE"]
     row_pspe_seg = {}
     for seg in pe_segs:
         row_pspe_seg[seg] = r
@@ -1751,32 +2017,10 @@ def build_excel():
     _terms = "+".join(f"B{row_pspe_seg[s]}*C{row_pspe_seg[s]}*D{row_pspe_seg[s]}" for s in pe_segs)
     vcell(r, 2, f"=({_terms})*1e9/('02_Assumptions'!$B${RA['shares']}*1e6)", '#,##0', bold=True, fill=p_fill)
     row_pspe_target = r
-    r += 2
 
-    # 5) P/S + P/B theo mảng
-    vcell(r, 1, "5) P/S + P/B theo mảng (trọng số 15%) — Khác (An Khang/AvaKids/EraBlue)", bold=True); r += 1
-    row_pspb_hdr = r
-    vcell(r, 1, "Mảng"); vcell(r, 2, "DT 2026E (tỷ)"); vcell(r, 3, "Biên LNST (%)"); vcell(r, 4, "P/B áp dụng (x)")
-    for c in range(1, 5): wsV.cell(row=r, column=c).font = header_font; wsV.cell(row=r, column=c).fill = header_fill
-    r += 1
-    pb_segs = [s for s in SEGMENTS if SEGMENT_METHOD[s] == "PB"]
-    row_pspb_seg = {}
-    for seg in pb_segs:
-        row_pspb_seg[seg] = r
-        vcell(r, 1, seg)
-        vcell(r, 2, f"='03_Revenue_Model'!{get_column_letter(2+N_HIST)}{RR['rev'][seg]}", '#,##0')
-        vcell(r, 3, round(SEGMENT_NET_MARGIN[seg], 4), '0.00%')
-        vcell(r, 4, f"='02_Assumptions'!$B${RA['pb_median']}", '0.00"x"')
-        r += 1
-    row_pspb_total = r
-    vcell(r, 1, "→ P/S+P/B Target Price (tổng giá trị mảng / SL CP)", bold=True)
-    _terms2 = "+".join(f"B{row_pspb_seg[s]}*C{row_pspb_seg[s]}/{max(0.08, COE):.4f}*D{row_pspb_seg[s]}" for s in pb_segs)
-    vcell(r, 2, f"=({_terms2})*1e9/('02_Assumptions'!$B${RA['shares']}*1e6)", '#,##0', bold=True, fill=p_fill)
-    row_pspb_target = r
-
-    # ── SUMMARY (rows 1-14, viết SAU khi đã biết vị trí các dòng detail) ──
+    # ── SUMMARY (rows 1-13, viết SAU khi đã biết vị trí các dòng detail) — 4 phương pháp (đã bỏ P/S+P/B) ──
     wsV.merge_cells('A1:E1')
-    vcell(1, 1, "ĐỊNH GIÁ MWG — 5 PHƯƠNG PHÁP TỔNG HỢP (skill ban-le)", bold=True, align='center')
+    vcell(1, 1, "ĐỊNH GIÁ MWG — 4 PHƯƠNG PHÁP TỔNG HỢP (skill ban-le)", bold=True, align='center')
     wsV['A1'].font = title_font
     vcell(2, 1, "Chi phí vốn CSH (COE)"); vcell(2, 2, f"=B{row_coe}", '0.00%')
     vcell(3, 1, "Tăng trưởng dài hạn (g)"); vcell(3, 2, f"=B{row_g}", '0.00%')
@@ -1785,13 +2029,12 @@ def build_excel():
     vcell(6, 1, "P/E Median"); vcell(6, 2, f"='02_Assumptions'!$B${RA['w_pe']}", '0.0%'); vcell(6, 3, f"=B{row_pe_target}", '#,##0')
     vcell(7, 1, "P/B Median"); vcell(7, 2, f"='02_Assumptions'!$B${RA['w_pb']}", '0.0%'); vcell(7, 3, f"=B{row_pb_target}", '#,##0')
     vcell(8, 1, "Residual Income (cả công ty)"); vcell(8, 2, f"='02_Assumptions'!$B${RA['w_ri']}", '0.0%'); vcell(8, 3, f"=B{row_ri_target}", '#,##0')
-    vcell(9, 1, "P/S+P/E theo mảng"); vcell(9, 2, f"='02_Assumptions'!$B${RA['w_pspe']}", '0.0%'); vcell(9, 3, f"=B{row_pspe_target}", '#,##0')
-    vcell(10, 1, "P/S+P/B theo mảng"); vcell(10, 2, f"='02_Assumptions'!$B${RA['w_pspb']}", '0.0%'); vcell(10, 3, f"=B{row_pspb_target}", '#,##0')
-    vcell(12, 1, "GIÁ MỤC TIÊU (bình quân trọng số)", bold=True)
-    vcell(12, 3, "=SUMPRODUCT(B6:B10,C6:C10)", '#,##0', bold=True, fill=header_fill)
-    vcell(13, 1, "Giá hiện tại"); vcell(13, 3, "='02_Assumptions'!$B$2", '#,##0')
-    vcell(14, 1, "Upside/Downside", bold=True); vcell(14, 3, "=C12/C13-1", '0.0%', bold=True, fill=p_fill)
-    print(f"[Excel] Sheet 07_Valuation done ({row_pspb_target} dong).")
+    vcell(9, 1, "P/S+P/E theo mảng (cả 4 mảng)"); vcell(9, 2, f"='02_Assumptions'!$B${RA['w_pspe']}", '0.0%'); vcell(9, 3, f"=B{row_pspe_target}", '#,##0')
+    vcell(11, 1, "GIÁ MỤC TIÊU (bình quân trọng số)", bold=True)
+    vcell(11, 3, "=SUMPRODUCT(B6:B9,C6:C9)", '#,##0', bold=True, fill=header_fill)
+    vcell(12, 1, "Giá hiện tại"); vcell(12, 3, "='02_Assumptions'!$B$2", '#,##0')
+    vcell(13, 1, "Upside/Downside", bold=True); vcell(13, 3, "=C11/C12-1", '0.0%', bold=True, fill=p_fill)
+    print(f"[Excel] Sheet 07_Valuation done ({row_pspe_target} dong).")
 
     # ─── 08_Sensitivity — ma trận nhạy cảm 2 biến (P/E×EPS, P/B×BVPS), 5×5, tô màu theo giá ─────
     from openpyxl.formatting.rule import CellIsRule
@@ -1968,6 +2211,44 @@ def build_excel():
     wsSS.column_dimensions['A'].width = 30
     print(f"[Excel] Sheet 12_Summary_Snapshot done ({r} dong).")
 
+    # ─── 13_PE_PB_History — P/E, P/B theo quý (Vietcap), MEDIAN cuối bảng ──────────────────────────
+    wsPH = wb.create_sheet("13_PE_PB_History")
+    header_row(wsPH, 1, ["Quý", "P/E (x)", "P/B (x)", "EV/EBITDA (x)"], [14, 14, 14, 16])
+    _ph_quarters = sorted({(r_["year"], r_["quarter"]) for r_ in MWG_RATIOS if r_.get("quarter") in (1, 2, 3, 4)})
+    r = 2
+    row_pe_start = r
+    for y_, q_ in _ph_quarters:
+        rec = next((r_ for r_ in MWG_RATIOS if r_.get("year") == y_ and r_.get("quarter") == q_), {})
+        pe0, pb0, ev0 = rec.get("pe"), rec.get("pb"), rec.get("ev_ebitda")
+        data_row(wsPH, r, [f"{y_}Q{q_}",
+                            round(pe0, 2) if pe0 and 0 < pe0 < 50 else None,
+                            round(pb0, 2) if pb0 and pb0 > 0 else None,
+                            round(ev0, 2) if ev0 and ev0 > 0 else None])
+        r += 1
+    row_pe_end = r - 1
+    r += 1
+    wsPH.cell(row=r, column=1, value="MEDIAN (loại quý bất thường P/E>50x hoặc ≤0)").font = bold_font
+    wsPH.cell(row=r, column=2, value=f"=MEDIAN(B{row_pe_start}:B{row_pe_end})").number_format = '0.00"x"'
+    wsPH.cell(row=r, column=3, value=f"=MEDIAN(C{row_pe_start}:C{row_pe_end})").number_format = '0.00"x"'
+    wsPH.cell(row=r, column=4, value=f"=MEDIAN(D{row_pe_start}:D{row_pe_end})").number_format = '0.00"x"'
+    for c in range(1, 5):
+        wsPH.cell(row=r, column=c).font = bold_font
+        wsPH.cell(row=r, column=c).fill = header_fill
+        wsPH.cell(row=r, column=c).border = thin_border
+    r += 2
+    wsPH.cell(row=r, column=1, value=(
+        "Ghi chú: MEDIAN ở đây tính đơn giản trên TOÀN BỘ quý có dữ liệu (bảng tham khảo, theo đúng "
+        "yêu cầu skill xuất báo cáo). P/E Median/P/B Median DÙNG ĐỂ ĐỊNH GIÁ ở 02_Assumptions tính theo "
+        "phương pháp khác — trung vị-của-trung-vị-năm (median mỗi năm rồi lấy median của các năm) — ổn "
+        "định hơn, không bị lệch bởi 1 năm có nhiều quý dữ liệu hơn năm khác. Có thể khác số với MEDIAN "
+        "ở trên, đây là chủ đích, không phải lỗi."))
+    wsPH.cell(row=r, column=1).font = Font(name=FONT_NAME, size=9, italic=True, color="666666")
+    wsPH.merge_cells(f'A{r}:D{r}')
+    wsPH.cell(row=r, column=1).alignment = Alignment(wrap_text=True, vertical='top')
+    wsPH.row_dimensions[r].height = 45
+    wsPH.column_dimensions['A'].width = 14
+    print(f"[Excel] Sheet 13_PE_PB_History done ({row_pe_end - row_pe_start + 1} quy).")
+
     # ─── Biểu đồ Excel (tối thiểu 3, skill xuat-bao-cao) ────────────────────────────────────────
     # Chart 1: Doanh thu & LNST theo năm (04_PnL)
     chart1 = BarChart(); chart1.type = "col"; chart1.title = "Doanh thu & LNST theo năm"
@@ -2020,7 +2301,7 @@ def build_excel():
     return {
         "RA": RA, "RR": RR, "RP": RP, "RBS": RBS, "RCF": RCF,
         "row_pe_target": row_pe_target, "row_pb_target": row_pb_target, "row_ri_target": row_ri_target,
-        "row_pspe_target": row_pspe_target, "row_pspb_target": row_pspb_target,
+        "row_pspe_target": row_pspe_target,
     }
 
 # ══════════════════════════════════════════════════════════════════════════════════════════════
@@ -2109,18 +2390,34 @@ def make_store_count_chart():
 
 def make_valuation_chart():
     fig, ax = plt.subplots(figsize=(10, 5.5))
-    methods = ["P/E\nMedian", "P/B\nMedian", "RI\n(cả CT)", "P/S+P/E\ntheo mảng", "P/S+P/B\ntheo mảng", "GIÁ\nMỤC TIÊU"]
-    values = [PE_TARGET_PRICE, PB_TARGET_PRICE, RI_TARGET_PRICE, PS_PE_TARGET_PRICE, PS_PB_TARGET_PRICE, WEIGHTED_TARGET_PRICE]
-    colors = ["#3498DB"] * 5 + ["#27AE60"]
+    methods = ["P/E\nMedian", "P/B\nMedian", "RI\n(cả CT)", "P/S+P/E\ncả 4 mảng", "GIÁ\nMỤC TIÊU"]
+    values = [PE_TARGET_PRICE, PB_TARGET_PRICE, RI_TARGET_PRICE, PS_PE_TARGET_PRICE, WEIGHTED_TARGET_PRICE]
+    colors = ["#3498DB"] * 4 + ["#27AE60"]
     bars = ax.bar(methods, values, color=colors)
     ax.axhline(PRICE, color="#E74C3C", linestyle='--', linewidth=2, label=f"Giá hiện tại: {PRICE:,.0f}")
     for b, v in zip(bars, values):
         ax.text(b.get_x() + b.get_width()/2, v, f"{v:,.0f}", ha='center', va='bottom', fontsize=9)
     ax.set_ylabel("VND/CP", fontsize=11)
-    ax.set_title(f"{TICKER} — So sánh 5 phương pháp định giá", fontsize=13, fontweight='bold')
+    ax.set_title(f"{TICKER} — So sánh 4 phương pháp định giá", fontsize=13, fontweight='bold')
     ax.legend(fontsize=10); ax.grid(alpha=0.3, axis='y')
     fig.tight_layout()
     path = os.path.join(CHART_DIR, "valuation_compare.png")
+    fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
+    return path
+
+def make_dio_dpo_chart():
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    x = list(range(len(DIO_Q_LABELS)))
+    ax.plot(x, DIO_QUARTERLY, marker='o', linewidth=2, label="DIO - Số ngày tồn kho", color="#2980B9")
+    ax.plot(x, DPO_QUARTERLY, marker='s', linewidth=2, label="DPO - Số ngày phải trả", color="#E67E22")
+    ax.plot(x, DSO_QUARTERLY, marker='^', linewidth=2, label="DSO - Số ngày phải thu", color="#27AE60")
+    step = max(1, len(x) // 16)
+    ax.set_xticks(x[::step]); ax.set_xticklabels([DIO_Q_LABELS[i] for i in x[::step]], rotation=45, ha='right', fontsize=8)
+    ax.set_ylabel("Số ngày", fontsize=11)
+    ax.set_title(f"{TICKER} — DIO/DSO/DPO theo quý ({DIO_Q_LABELS[0]}-{DIO_Q_LABELS[-1]})", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=10); ax.grid(alpha=0.3)
+    fig.tight_layout()
+    path = os.path.join(CHART_DIR, "dio_dso_dpo_quarterly.png")
     fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
     return path
 
@@ -2221,8 +2518,8 @@ def build_pdf():
     story.append(Paragraph(
         f"<b>Khuyến nghị: {RECOMMEND}</b> — Giá mục tiêu <b>{WEIGHTED_TARGET_PRICE:,.0f} VND</b> "
         f"(upside {UPSIDE_PCT:+.1f}% so với giá hiện tại {PRICE:,.0f} VND), theo mô hình định giá tổng hợp "
-        f"5 phương pháp (P/E Median 20%, P/B Median 20%, Residual Income 10%, P/S+P/E theo mảng 35%, "
-        f"P/S+P/B theo mảng 15%).", style_body))
+        f"4 phương pháp (P/E Median 20%, P/B Median 20%, Residual Income 10%, P/S+P/E theo từng mảng — "
+        f"TGDĐ/ĐMX/BHX/Khác — 50%).", style_body))
     story.append(Paragraph("3 luận điểm đầu tư chính:", style_h2))
     thesis_pdf = [
         f"MWG là nhà bán lẻ đa ngành lớn nhất Việt Nam với mạng lưới hơn {sum(STORE_COUNT_NOW.values()):,} cửa hàng "
@@ -2397,6 +2694,16 @@ def build_pdf():
     story.append(Image(make_margin_chart(), width=165*mm, height=82*mm))
     story.append(PageBreak())
 
+    story.append(Paragraph("CHU KỲ TIỀN MẶT (CCC) — DIO/DSO/DPO THEO QUÝ", style_h1))
+    story.append(Paragraph(
+        f"DIO (Số ngày tồn kho) = Tồn kho cuối quý / (Giá vốn quý / 91,25 ngày). DPO (Số ngày phải trả) = Phải trả "
+        f"người bán / (Giá vốn quý / 91,25 ngày). DSO (Số ngày phải thu) = Phải thu KH / (Doanh thu quý / 91,25 "
+        f"ngày). Quý gần nhất ({DIO_Q_LABELS[-1]}): DIO {DIO_QUARTERLY[-1]:.0f} ngày, DPO "
+        f"{DPO_QUARTERLY[-1]:.0f} ngày, DSO {DSO_QUARTERLY[-1]:.0f} ngày — CCC = "
+        f"{DIO_QUARTERLY[-1] + (DSO_QUARTERLY[-1] or 0) - (DPO_QUARTERLY[-1] or 0):.0f} ngày.", style_body))
+    story.append(Image(make_dio_dpo_chart(), width=170*mm, height=85*mm))
+    story.append(PageBreak())
+
     story.append(Paragraph("BẢNG SỐ LIỆU TÀI CHÍNH CHI TIẾT (5 năm lịch sử + 3 năm dự phóng)", style_h1))
     fin_tbl_data = [["Chỉ tiêu (tỷ VND)"] + YEAR_HEADERS]
     fin_rows = [
@@ -2430,15 +2737,15 @@ def build_pdf():
     # ── Trang 12-14: Định giá ───────────────────────────────────────────────────────────────────
     story.append(Paragraph("ĐỊNH GIÁ", style_h1))
     story.append(Paragraph(
-        "Áp dụng khung định giá 5 phương pháp theo skill phân tích bán lẻ, ưu tiên định giá theo TỪNG MẢNG kinh "
-        "doanh (thay vì gộp chung công ty) vì các mảng đang ở giai đoạn vòng đời khác nhau.", style_body))
+        "Áp dụng khung định giá 4 phương pháp theo skill phân tích bán lẻ, ưu tiên định giá theo TỪNG MẢNG kinh "
+        "doanh bằng P/E (thay vì gộp chung công ty hoặc dùng P/B mảng — không có cách tách bạch VCSH riêng cho "
+        "từng mảng từ BCTC hợp nhất nên bỏ hẳn phương pháp P/S+P/B).", style_body))
     val_tbl = Table([
         ["Phương pháp", "Trọng số", "Giá mục tiêu (VND)"],
         ["P/E Median", "20%", f"{PE_TARGET_PRICE:,.0f}"],
         ["P/B Median", "20%", f"{PB_TARGET_PRICE:,.0f}"],
         ["Residual Income (cả công ty)", "10%", f"{RI_TARGET_PRICE:,.0f}"],
-        ["P/S + P/E theo mảng (TGDĐ/ĐMX/BHX)", "35%", f"{PS_PE_TARGET_PRICE:,.0f}"],
-        ["P/S + P/B theo mảng (Khác)", "15%", f"{PS_PB_TARGET_PRICE:,.0f}"],
+        ["P/S + P/E theo mảng (TGDĐ/ĐMX/BHX/Khác)", "50%", f"{PS_PE_TARGET_PRICE:,.0f}"],
         ["GIÁ MỤC TIÊU (bình quân trọng số)", "100%", f"{WEIGHTED_TARGET_PRICE:,.0f}"],
     ], colWidths=[80*mm, 25*mm, 45*mm])
     val_tbl.setStyle(TableStyle([
@@ -2584,8 +2891,8 @@ def save_json_summary():
         "financialPerformance": f"Doanh thu {years_fc[0]}E dự phóng {revenue_fc[0]:,.0f} tỷ (+{(revenue_fc[0]/revenue_hist[-1]-1)*100:.1f}% "
             f"YoY), biên LNG duy trì {GPM_FC_PCT:.1f}%, LNST Cổ đông mẹ {ni_fc[0]:,.0f} tỷ. Đòn bẩy thấp, Net Debt "
             "âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
-        "valuationText": f"Giá mục tiêu {WEIGHTED_TARGET_PRICE:,.0f} VND (upside {UPSIDE_PCT:+.1f}%) theo mô hình 5 "
-            "phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo mảng 35%, P/S+P/B theo mảng 15%). Khuyến nghị "
+        "valuationText": f"Giá mục tiêu {WEIGHTED_TARGET_PRICE:,.0f} VND (upside {UPSIDE_PCT:+.1f}%) theo mô hình 4 "
+            "phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo từng mảng 50%). Khuyến nghị "
             f"{RECOMMEND}.",
     }
     ratios = {
@@ -2627,7 +2934,7 @@ def save_json_summary():
             "bull": round(max(PE_TARGET_PRICE, PB_TARGET_PRICE, RI_TARGET_PRICE) * 1.05, 0),
             "methods": {
                 "pe": PE_TARGET_PRICE, "pb": PB_TARGET_PRICE, "ri": RI_TARGET_PRICE,
-                "ps_pe": PS_PE_TARGET_PRICE, "ps_pb": PS_PB_TARGET_PRICE,
+                "ps_pe": PS_PE_TARGET_PRICE,
             },
             "recommendation": RECOMMEND,
             "upsidePct": UPSIDE_PCT,

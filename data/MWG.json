@@ -24,9 +24,9 @@
       118279.8,
       134341.2,
       155928.1,
-      202844.8,
-      237661.0,
-      261500.8
+      195510.1,
+      221613.2,
+      242275.6
     ],
     "npat": [
       4898.9,
@@ -34,9 +34,9 @@
       167.7,
       3721.9,
       7033.7,
-      11613.3,
-      14775.2,
-      17542.9
+      11193.5,
+      13777.6,
+      16253.2
     ],
     "eps": [
       6871.0,
@@ -44,9 +44,9 @@
       115.0,
       2546.0,
       4785.0,
-      7900.0,
-      10051.0,
-      11934.0
+      7615.0,
+      9373.0,
+      11057.0
     ],
     "equity": [
       20378.2,
@@ -54,9 +54,9 @@
       23359.6,
       28121.6,
       33176.1,
-      41340.5,
-      51727.8,
-      64060.9
+      41045.4,
+      50731.3,
+      62157.7
     ]
   },
   "segments": {
@@ -76,31 +76,31 @@
     },
     "revenueForecast": {
       "TGDD": [
-        40489.5,
-        41901.1,
-        41478.7
+        42862.4,
+        41874.1,
+        41452.0
       ],
       "DMX": [
-        83982.3,
-        90419.8,
-        93132.4
+        87100.3,
+        89651.8,
+        92341.3
       ],
       "BHX": [
-        73809.6,
-        99713.9,
-        120333.7
+        61127.5,
+        84449.3,
+        101912.6
       ],
       "Khac": [
-        4563.4,
-        5626.2,
-        6556.0
+        4419.9,
+        5638.0,
+        6569.7
       ]
     },
     "efficiencyNow": {
-      "TGDD": 3.52,
-      "DMX": 3.65,
-      "BHX": 1.807,
-      "Khac": 0.49
+      "TGDD": 3.518,
+      "DMX": 3.619,
+      "BHX": 1.53,
+      "Khac": 0.491
     }
   },
   "thesis": [
@@ -168,23 +168,22 @@
     }
   ],
   "valuation": {
-    "bear": 58872.0,
-    "base": 85510.0,
-    "bull": 185725.0,
+    "bear": 58696.0,
+    "base": 93051.0,
+    "bull": 179025.0,
     "methods": {
-      "pe": 176881.0,
-      "pb": 93650.0,
-      "ri": 83954.0,
-      "ps_pe": 65413.0,
-      "ps_pb": 760.0
+      "pe": 170500.0,
+      "pb": 92980.0,
+      "ri": 77458.0,
+      "ps_pe": 65218.0
     },
-    "recommendation": "THEO DÕI",
-    "upsidePct": 8.4
+    "recommendation": "MUA",
+    "upsidePct": 17.9
   },
   "comments": {
     "businessModel": "MWG vận hành 3 chuỗi bán lẻ chính: TGDĐ+ĐMX (3,016 cửa hàng, ICT/điện máy, đã bão hòa) và BHX (3,051 cửa hàng, FMCG, tăng trưởng nhanh nhất, có lãi từ 2023). Mô hình dựa trên quy mô mạng lưới để tối ưu chi phí vận hành/mua hàng.",
-    "financialPerformance": "Doanh thu 2026E dự phóng 202,845 tỷ (+30.1% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,613 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
-    "valuationText": "Giá mục tiêu 85,510 VND (upside +8.4%) theo mô hình 5 phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo mảng 35%, P/S+P/B theo mảng 15%). Khuyến nghị THEO DÕI."
+    "financialPerformance": "Doanh thu 2026E dự phóng 195,510 tỷ (+25.4% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,194 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
+    "valuationText": "Giá mục tiêu 93,051 VND (upside +17.9%) theo mô hình 4 phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo từng mảng 50%). Khuyến nghị MUA."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -317,9 +316,9 @@
       0.0072,
       0.1324,
       0.212,
-      0.2809,
-      0.2856,
-      0.2738
+      0.2727,
+      0.2716,
+      0.2615
     ],
     "net_margin": [
       0.0398,
