@@ -29,16 +29,61 @@ description: Use ONLY when analyzing Vietnamese retail stocks. Front-loaded keyw
 
 ---
 
-## Chỉ số quan trọng nhất
+## Quy trình phân tích & dự phóng (áp dụng MWG trước, cùng cấu trúc cho FRT/PNJ)
 
-### 1. SSSG (Same-Store Sales Growth)
+### 1. Phân tích cơ cấu doanh thu
+
+Phân chia kết cấu doanh thu theo từng mảng kinh doanh (VD MWG: TGDD, ĐMX, BHX, An Khang, EraBlue campuchia/indo...).
+
+**Nguồn dữ liệu**: Thuyết minh BCTC, báo cáo IR doanh nghiệp, báo cáo thường niên, báo chí/nguồn uy tín (xem mục "Dữ liệu & Nguồn" bên dưới).
+
+Sau khi có kết cấu doanh thu từng mảng, đánh giá cho MỖI mảng:
+- Quy mô thị trường tiêu thụ còn rộng hay đã bão hòa
+- Ngành còn tăng trưởng hay đã chững lại
+- Thị phần hiện tại của doanh nghiệp trong mảng đó
+- Lợi thế cạnh tranh là gì, có đủ mạnh để duy trì dài hạn không
+
+### 2. Đánh giá hiệu quả từng cửa hàng (quan trọng nhất)
+
+Cửa hàng mới mở ~3 tháng đầu thường CHƯA ổn định (ramp-up) → phải lấy số lượng cửa hàng LÙI 3 THÁNG so với kỳ doanh thu đang tính, không dùng số cửa hàng cuối kỳ hiện tại.
+
+**TH1 — có dữ liệu doanh thu & số cửa hàng theo THÁNG:**
+```
+Hiệu quả CH/tháng = Doanh thu tháng hiện tại / Số cửa hàng của mảng đó CÁCH thời điểm hiện tại 3 THÁNG
+```
+
+**TH2 — chỉ có dữ liệu theo QUÝ:**
+```
+Hiệu quả CH/tháng = Doanh thu quý của mảng / Số cửa hàng của mảng CÁCH thời điểm hiện tại 3 THÁNG / 3
+```
+
+Sau đó: vẽ biểu đồ hiệu quả/cửa hàng theo thời gian → đánh giá xu hướng (tăng/chững/giảm) → xác định mảng đã bão hòa hay chưa. Đây chính là cách tính SSSG-tương-đương của skill này (xem thêm mục SSSG bên dưới — 2 công thức bổ trợ nhau, công thức lag-3-tháng chính xác hơn khi chuỗi đang mở nhanh).
+
+### 3. Dự báo doanh thu
+
+Dự phóng doanh thu từng mảng dựa trên 3 yếu tố kết hợp:
+1. Tăng trưởng cơ học của từng mảng (ngành, thị phần)
+2. Số lượng cửa hàng dự kiến (kế hoạch mở mới/đóng của doanh nghiệp, IR)
+3. Hiệu quả doanh thu/cửa hàng (xu hướng từ mục 2 ở trên)
+
+`Doanh thu mảng = Số cửa hàng dự phóng × Hiệu quả DT/cửa hàng dự phóng` (điều chỉnh theo tăng trưởng cơ học/SSSG).
+
+### 4. Dự báo lợi nhuận
+
+- **Biên lợi nhuận gộp**: ước tính từ biên LNG của **2 quý gần nhất** (không dùng trung bình dài hạn — biên LNG bán lẻ đổi nhanh theo cơ cấu sản phẩm/rebate).
+- **Chi phí bán hàng & QLDN (SG&A)**: dự phóng theo xu hướng tỷ lệ % trên doanh thu của **4 quý gần nhất**.
+- Nội suy ra LNST từ Doanh thu → GP (biên LNG) → trừ SG&A → LNST.
+
+### 5. Chỉ số quan trọng nhất
+
+#### SSSG (Same-Store Sales Growth)
 
 SSSG dương > lạm phát → thương hiệu mạnh, giữ chân KH cũ.
 DT tổng tăng 20% nhưng SSSG âm → các CH cũ ế ẩm, đang đốt tiền mở CH mới lấy tăng trưởng ảo.
 
-Tính: Doanh thu 1 CH/tháng = DT mảng trong quý / Số CH BQ trong kỳ / 3
+Tính: Doanh thu 1 CH/tháng = DT mảng trong quý / Số CH BQ trong kỳ / 3 (bản đơn giản — xem mục 2 ở trên cho công thức lag-3-tháng chính xác hơn).
 
-### 2. Chu kỳ tiền mặt (CCC)
+#### Chu kỳ tiền mặt (CCC)
 
 Bán lẻ đỉnh cao: bán thu tiền ngay, ngâm tiền NCC vài tháng mới trả.
 
@@ -74,12 +119,42 @@ CCC = DIO + DSO - DPO
 
 ---
 
-## Định giá
+## Định giá (2026-07 — cập nhật theo quy trình chi tiết user cung cấp)
 
-**KHÔNG dùng P/B** (tài sản chủ yếu đi thuê, giá trị sổ sách thấp).
+Ưu tiên **định giá theo từng mảng kinh doanh** thay vì định giá cả công ty gộp chung — đặc thù bán lẻ có nhiều mảng ở giai đoạn trưởng thành khác nhau (VD MWG: TGDD/ĐMX đã bão hòa, BHX/An Khang đang scale).
 
-| Phương pháp | Khi nào dùng | Ghi chú |
-|---|---|---|
-| **P/S** | Chuỗi đang scale-up, đang lỗ hoặc mới có lãi | So sánh với retail Đông Nam Á. Tính P/S theo đúng chuỗi, đặc điểm KD |
-| **P/E** | Mảng ổn định, quy mô lớn, thị phần cao, tốc độ mở rộng không mạnh | — |
-| **EV/EBITDA** | Loại bỏ IFRS 16 (thuê MB vốn hóa) và cấu trúc nợ | Bán lẻ thuê MB nhiều → EV/EBITDA phản ánh đúng hơn |
+> Lưu ý trước đây skill này ghi "KHÔNG dùng P/B" (theo `Ban le.docx` — tài sản chủ yếu đi thuê, giá trị sổ sách thấp không ý nghĩa). User đã xác nhận vẫn dùng P/B với trọng số nhỏ (20%) trong bộ 4 phương pháp dưới đây, kết hợp cùng các phương pháp khác để cân bằng lại nhược điểm của P/B.
+
+### 4 phương pháp định giá tổng hợp
+
+| # | Phương pháp | Trọng số | Ghi chú |
+|---|---|---|---|
+| 1 | P/E Median | 20% | Median lịch sử TTM của chính cổ phiếu (giống cách tính ở skill `thep`/`ngan-hang`) |
+| 2 | P/B Median | 20% | Đã xác nhận dùng dù tài sản chủ yếu đi thuê — trọng số nhỏ để cân bằng |
+| 3 | Residual Income (RI) | 15% | Cho phần công ty đã trưởng thành |
+| 4 | Định giá theo từng mảng (P/S + RI, hoặc P/S + P/E) | **còn lại (~45%, CẦN XÁC NHẬN LẠI VỚI USER)** | Xem nguyên tắc chọn P/S/RI/P/E theo mảng bên dưới — tổng 4 phương pháp = 100% |
+
+**⚠️ Trọng số #4 chưa chốt**: user liệt kê 20+20+15+20=75%, chưa đủ 100%. Cách hiểu tạm thời: phương pháp #4 (định giá theo mảng) chiếm phần còn lại (~45%) vì đây là bước định giá CHI TIẾT NHẤT theo đặc thù bán lẻ (mỗi mảng dùng đúng P/S/RI/P/E theo giai đoạn trưởng thành) — **phải hỏi lại user để chốt số chính xác trước khi áp dụng vào build_mwg_model.py**.
+
+### Nguyên tắc chọn phương pháp cho TỪNG MẢNG (bước #4)
+
+**Dùng P/S khi mảng có:**
+- Biên lợi nhuận rất thấp hoặc đang lỗ
+- Ngành có quy mô thị trường lớn
+- Đang giảm lỗ hoặc mới chớm có lãi
+- Ngành còn tốc độ tăng trưởng cao
+- Doanh nghiệp chưa chiếm thị phần quá lớn, thị trường chưa bão hòa
+- Mẹo: tra P/S retail cùng ngành ở Đông Nam Á (Thái Lan, Indonesia) làm mốc tham chiếu
+
+**Dùng RI (Residual Income) khi mảng:**
+- Đã trưởng thành
+- Hiệu quả DT/cửa hàng đi ngang hoặc tăng rất chậm
+- Quy mô thị trường tăng trưởng thấp, đã dần bão hòa
+
+**Biến thể: dùng P/E thay RI cho mảng trưởng thành** (phương pháp "P/S + P/E", tương tự P/S+RI nhưng khác ở phần mảng trưởng thành):
+- P/E tham chiếu = P/E doanh nghiệp cùng ngành ở nước ngoài, hoặc DN tương đồng trong nước
+- Hoặc P/E = 0.9 × Growth (tốc độ tăng trưởng %/năm của mảng đó)
+- **BẮT BUỘC lấy giá trị NHỎ HƠN** giữa (P/E tham chiếu) và (0.9 × Growth) — tránh trường hợp mảng tăng trưởng đột biến 1 năm (VD +30%) bị máy móc suy ra P/E=27, định giá quá cao không bền vững.
+
+### Vì sao KHÔNG chỉ dùng EV/EBITDA đơn thuần (bổ sung, không mâu thuẫn 4 phương pháp trên)
+Bán lẻ thuê mặt bằng rất nhiều, chịu ảnh hưởng hạch toán thuê tài sản (IFRS 16) — EV/EBITDA giúp loại bỏ khấu hao/cấu trúc nợ khi so sánh chuỗi khác nhau, có thể dùng làm cross-check bổ sung ngoài 4 phương pháp chính.
