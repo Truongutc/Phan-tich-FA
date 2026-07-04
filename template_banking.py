@@ -701,6 +701,16 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         nim_fc[0] = round(nii_fc[0] / iea_avg_fc[0], 4)
         print(f"  [Blend] {_cur_fc_year}F NII: {_n_nii_q}/4 quy da biet (luy ke {_nii_cum:,.0f} ty) "
               f"-> blend = {nii_fc[0]:,.0f} ty")
+
+    # Giữ NIM năm 2/3 (years_fc[1]/[2]) bằng ĐÚNG NIM năm 1 sau blend (2026-07, theo yêu cầu user, áp
+    # dụng mọi ngân hàng) — không giả định NIM mở rộng trong tương lai, giúp định giá an toàn hơn. Trước
+    # đây yo_ea_fc_adj/cof_fc_adj bằng nhau across 3 năm NHƯNG nim_fc[0] còn được blend riêng với số quý
+    # thực tế đã biết (bước trên) nên nim_fc[1]/[2] (không blend) có thể lệch khỏi nim_fc[0] (đã blend)
+    # dù cùng hệ số gốc — ép lại bằng tay để chắc chắn phẳng tuyệt đối theo đúng ý định.
+    nim_fc[1] = nim_fc[0]
+    nim_fc[2] = nim_fc[0]
+    nii_fc[1] = round(nim_fc[1] * iea_avg_fc[1], 1)
+    nii_fc[2] = round(nim_fc[2] * iea_avg_fc[2], 1)
     non_int_fc = []
     for i in range(3):
         base_non_int = toi_hist[-1] - nii_hist[-1]
@@ -906,7 +916,8 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     bvps_forward = bvps_base + eps_fc_calc[0]
     pb_value = pb_all_median * bvps_forward
     
-    weighted_target = 0.5 * ri_value + 0.5 * pb_value
+    # Trọng số RI 40% / P/B 60% (2026-07, theo yêu cầu user, áp dụng mọi ngân hàng)
+    weighted_target = 0.4 * ri_value + 0.6 * pb_value
     upside = (weighted_target / current_price - 1) * 100
     bear_target = pb_attractive * (bvps_base + eps_fc_calc[0])
     bull_target = pb_over * (bvps_base + eps_fc_calc[0])
@@ -1169,16 +1180,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             if i < 5:  # historical B-F: link to 06_Ratios
                 cell.value = f"='06_Ratios'!{col}{rat_row}"
             else:
-                if ass_row == 6:  # NIM forecast = (IEA_avg*YOEA - DepBonds_avg*COF)/IEA_avg
+                if ass_row == 6:  # NIM forecast — GHI THẲNG nim_fc (2026-07, theo yêu cầu user: NIM năm
+                    # 2/3 giữ NGUYÊN bằng NIM năm 1 - không giả định NIM mở rộng - để định giá an toàn
+                    # hơn, áp dụng mọi ngân hàng). Trước đây là công thức Excel sống (IEA_avg*YOEA-
+                    # DepBonds_avg*COF)/IEA_avg tính ĐỘC LẬP với nim_fc Python (vốn còn được blend với
+                    # NII thực tế quý đã biết cho năm 1) — 2 đường tính dễ lệch nhau (đúng bug đã gặp ở
+                    # HPG với Biên LNG/D&A). Ghi thẳng 1 số duy nhất, dùng chung cho Excel/PDF/JSON.
                     p = i - 5  # 0,1,2 for Y1,Y2,Y3
-                    # IEA_avg for forecast year from 03_Income_Model
-                    iea_avg_cell = f"'03_Income_Model'!{col}2"
-                    # DepBonds_avg = (prev_end + curr_end)/2; use BS rows 5+6
-                    prev_col = 'F' if p == 0 else cols_all[5 + p - 1]
-                    db_avg_cell = f"(('05_Balance_Sheet'!{prev_col}5+'05_Balance_Sheet'!{prev_col}6+'05_Balance_Sheet'!{col}5+'05_Balance_Sheet'!{col}6)/2)"
-                    yo_ea_val = f"$B$18*$B${19+p}"
-                    cof_val = f"$B$22*$B${23+p}"
-                    cell.value = f"=({iea_avg_cell}*{yo_ea_val}-{db_avg_cell}*{cof_val})/{iea_avg_cell}"
+                    cell.value = nim_fc[p]
                 elif ass_row == 7:  # CIR forecast = direct input (hardcode)
                     cell.value = cir_fc[i-5]
                 elif ass_row == 8:  # CoC forecast = CoC_goc * reduction
@@ -1619,9 +1628,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_val.cell(row=17, column=2).number_format = FMT_NUM
 
     ws_val.cell(row=19, column=1, value="WEIGHTED TARGET PRICE").font = FMT_BOLD
-    ws_val.cell(row=20, column=1, value="Trong số: 50% RI + 50% P/B")
+    ws_val.cell(row=20, column=1, value="Trong số: 40% RI + 60% P/B")
     ws_val.cell(row=21, column=1, value="Target Price (VND)").font = FMT_BOLD
-    ws_val.cell(row=21, column=2, value="=B9*0.5+B17*0.5").font = FMT_BOLD
+    ws_val.cell(row=21, column=2, value="=B9*0.4+B17*0.6").font = FMT_BOLD
     ws_val.cell(row=21, column=2).number_format = FMT_NUM
     ws_val.cell(row=22, column=1, value="Giá hiện tại (VND)")
     ws_val.cell(row=22, column=2, value="='02_Assumptions'!B2").number_format = FMT_NUM  # Price is row 2 in Assumptions
@@ -3235,7 +3244,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # ------------------ PAGE 7: FORECAST ASSUMPTIONS & DETAILED RI MODEL ------------------
     story.append(PageBreak())
     story.append(Paragraph("7. Giả định dự báo & Mô hình định giá Residual Income", h1_style))
-    story.append(Paragraph(f"Kết hợp phương pháp định giá Residual Income (trọng số 50%) và P/B median all-time lịch sử (trọng số 50%), giá trị hợp lý của cổ phiếu {ticker} được xác định là <b>{weighted_target:,.0f} VND/CP</b>.", body_style))
+    story.append(Paragraph(f"Kết hợp phương pháp định giá Residual Income (trọng số 40%) và P/B median all-time lịch sử (trọng số 60%), giá trị hợp lý của cổ phiếu {ticker} được xác định là <b>{weighted_target:,.0f} VND/CP</b>.", body_style))
     
     # Inject dynamic forecast assumptions explanation
     loans_g_26 = loans_growth_fc[0] * 100
