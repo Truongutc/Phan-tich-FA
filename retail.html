@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIC FA — Bán Lẻ</title>
+    <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa — Bán Lẻ">
+
+    <!-- Favicon & Mobile Icons -->
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="shortcut icon" type="image/png" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+
+    <!-- ══════════════════════════════════════════
+         TOP NAVBAR
+    ══════════════════════════════════════════ -->
+    <header class="top-navbar">
+        <button class="logo-btn" id="home-btn" onclick="location.href='index.html'" title="Quay lại Tổng quan">
+            <img src="logoaic.png" alt="AIC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">AIC FA SYSTEM</span>
+                <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
+            </div>
+        </button>
+
+        <div class="nav-breadcrumb" id="nav-breadcrumb">
+            <span class="breadcrumb-home">Tổng quan</span>
+        </div>
+
+        <div class="sector-badge-nav" id="sector-badge-nav" style="display:none">
+            <span class="sector-icon-nav" id="sector-icon-nav">🛒</span>
+            <span class="sector-label-nav" id="sector-label-nav">Bán Lẻ</span>
+        </div>
+
+        <button class="home-text-btn" id="back-btn" onclick="location.href='index.html'" style="display:none">
+            ← Chọn cổ phiếu khác
+        </button>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 1: OVERVIEW (default)
+    ══════════════════════════════════════════ -->
+    <main id="view-overview" class="view view-overview" style="display:flex">
+
+        <div class="overview-hero card">
+            <div class="hero-content">
+                <div class="hero-icon">🛒</div>
+                <h2>AIC FA — Phân Tích Bán Lẻ</h2>
+                <p>Chọn mã cổ phiếu để xem dashboard chuyên sâu với các chỉ số đặc thù ngành bán lẻ đa ngành (ICT, điện máy, FMCG, dược phẩm...).</p>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+                    <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing"
+                       target="_blank" class="btn btn-secondary">📁 Google Drive ↗</a>
+                    <a href="index.html" class="btn btn-secondary">📊 Tất cả ngành</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-bar-wrap">
+            <div class="search-bar card">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="stock-search-input" placeholder="Tìm kiếm mã cổ phiếu hoặc tên công ty..." autocomplete="off">
+                <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
+            </div>
+        </div>
+
+        <div id="sector-groups-container">
+            <div class="loading-state card">
+                <span>Đang tải danh sách cổ phiếu...</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 2: ANALYSIS (retail-adaptive)
+    ══════════════════════════════════════════ -->
+    <main id="view-analysis" class="view view-analysis" style="display:none">
+
+        <!-- Header Info Card -->
+        <div class="card header-card">
+            <div class="sector-ribbon" id="sector-ribbon">BÁN LẺ</div>
+            <div class="header-main">
+                <div class="header-info">
+                    <span id="ticker-badge" class="badge">MWG</span>
+                    <h2 id="company-name">CTCP Đầu tư Thế Giới Di Động</h2>
+                    <p id="company-sector" class="subtitle">Bán lẻ</p>
+                    <p id="report-date" class="subtitle" style="margin-top: 4px; font-size: 0.85em; color: var(--text-muted); display: none;"></p>
+                </div>
+                <div class="actions">
+                    <a id="download-pdf" href="#" target="_blank" class="btn btn-primary hidden">
+                        📥 Báo Cáo PDF
+                    </a>
+                    <a id="download-excel" href="#" target="_blank" class="btn btn-excel hidden">
+                        🟢 Excel Model
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valuation Snapshot -->
+        <div class="card val-snapshot-card margin-top-20">
+            <h3 class="border-blue">💎 Tóm tắt Khuyến nghị &amp; Snapshot Định giá</h3>
+            <div class="val-snapshot-grid">
+                <div class="val-snap-box">
+                    <span class="lbl">Giá hiện tại</span>
+                    <span class="val" id="snap-curr-price">- VND</span>
+                </div>
+                <div class="val-snap-box highlight">
+                    <span class="lbl">Giá mục tiêu cơ bản (Weighted)</span>
+                    <span class="val text-blue" id="snap-target-price">- VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Tiềm năng tăng giá</span>
+                    <span class="val text-green" id="snap-upside">- %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Khuyến nghị đầu tư</span>
+                    <span class="val badge-rec" id="snap-recommend">-</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Giá theo P/E mảng (P/S+P/E)</span>
+                    <span class="val" id="snap-pe-median">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Giá theo P/B</span>
+                    <span class="val" id="snap-pb-median">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Giá theo Residual Income</span>
+                    <span class="val" id="snap-pb-attractive">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Bear Case</span>
+                    <span class="val" id="snap-bear">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Bull Case</span>
+                    <span class="val" id="snap-pb-target">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Chi phí vốn CSH (COE)</span>
+                    <span class="val" id="snap-coe">- %</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Metrics Grid -->
+        <div class="metrics-grid" id="dynamic-metrics-grid"></div>
+
+        <!-- Earning Release & YTD Evaluation Card -->
+        <div class="card quarterly-ytd-card margin-top-20">
+            <h3 class="border-blue">🚀 Đánh giá Quý gần nhất &amp; Lũy kế YTD</h3>
+            <div id="quarterly-ytd-evaluation-container">
+                <div class="loading-state">Đang tính toán số liệu tăng trưởng quý...</div>
+            </div>
+        </div>
+
+        <!-- Asset Quality Card (retail-specific) -->
+        <div class="card margin-top-20 hidden" id="asset-quality-card">
+            <h3 class="border-blue">🔎 Chất lượng Tài sản &amp; Dấu hiệu Rủi ro</h3>
+            <div class="table-container">
+                <table class="web-table" id="asset-quality-table">
+                    <thead><tr><th>Chỉ tiêu kiểm tra</th><th>Số liệu</th><th>Đánh giá</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Financial Snapshot Table (Hist + Forecast) -->
+        <div class="card margin-top-20" id="web-financial-snapshot-card" style="display:none">
+            <h3 class="border-blue">📋 Bảng tài chính tóm tắt (Lịch sử &amp; Dự báo)</h3>
+            <div class="table-container">
+                <table class="web-table" id="web-financial-snapshot-table">
+                    <thead>
+                        <tr>
+                            <th>Chỉ tiêu (tỷ VND)</th>
+                            <th id="fs-th-0">-</th>
+                            <th id="fs-th-1">-</th>
+                            <th id="fs-th-2">-</th>
+                            <th id="fs-th-3" style="color:#60a5fa">-</th>
+                            <th id="fs-th-4" style="color:#60a5fa">-</th>
+                            <th id="fs-th-5" style="color:#60a5fa">-</th>
+                        </tr>
+                    </thead>
+                    <tbody id="web-financial-snapshot-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Two-column: Charts Left | Moat+Valuation Right -->
+        <div class="dashboard-grid-two margin-top-20">
+
+            <!-- LEFT: Charts -->
+            <div class="col-left">
+
+                <!-- Chart 1: Revenue & NPAT -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3 id="chart1-title">Doanh thu thuần &amp; Lợi nhuận sau thuế</h3>
+                        <div class="chart-container">
+                            <canvas id="revNpatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💡 Phân tích Xu hướng KQKD</h4>
+                        <div id="analysis-text-rev-npat" class="chart-analysis-text">
+                            Đang phân tích xu hướng tăng trưởng...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Gross Profit & NPAT -->
+                <div class="chart-card-split margin-top-20" id="chart2-card">
+                    <div class="chart-split-left">
+                        <h3 id="chart2-title">LN gộp &amp; LNST</h3>
+                        <div class="chart-container">
+                            <canvas id="epsEquityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📈 Đánh giá Hiệu quả Vốn (ROE) &amp; EPS</h4>
+                        <div id="analysis-text-eps-equity" class="chart-analysis-text">
+                            Đang phân tích hiệu suất sử dụng vốn...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 3: P/E TTM -->
+                <div class="chart-card-split margin-top-20" id="chart-pe-card">
+                    <div class="chart-split-left">
+                        <h3 id="chart-pe-title">Định giá Lịch sử P/E - TTM</h3>
+                        <div class="chart-container">
+                            <canvas id="peChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🔍 Nhận định Hệ số P/E</h4>
+                        <div id="analysis-text-pe" class="chart-analysis-text">
+                            Đang so sánh P/E với trung vị lịch sử...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 4: P/B TTM -->
+                <div class="chart-card-split margin-top-20">
+                    <div class="chart-split-left">
+                        <h3>Định giá Lịch sử P/B - TTM</h3>
+                        <div class="chart-container">
+                            <canvas id="pbChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📊 Nhận định Hệ số P/B</h4>
+                        <div id="analysis-text-pb" class="chart-analysis-text">
+                            Đang so sánh P/B với trung vị lịch sử...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 5: Cơ cấu doanh thu theo mảng -->
+                <div class="chart-card-split margin-top-20 hidden" id="segment-revenue-card">
+                    <div class="chart-split-left">
+                        <h3>Cơ cấu Doanh thu theo Mảng kinh doanh (dự phóng)</h3>
+                        <div class="chart-container">
+                            <canvas id="segmentRevenueChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🧩 Nhận định Cơ cấu Mảng</h4>
+                        <div id="analysis-text-segment" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 6: Số lượng cửa hàng theo tháng -->
+                <div class="chart-card-split margin-top-20 hidden" id="store-count-card">
+                    <div class="chart-split-left">
+                        <h3>Số lượng Cửa hàng theo Tháng (lịch sử &amp; dự phóng)</h3>
+                        <div class="chart-container">
+                            <canvas id="storeCountChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🏬 Nhận định Tốc độ Mở rộng</h4>
+                        <div id="analysis-text-store" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 7: Hiệu quả DT/CH/tháng -->
+                <div class="chart-card-split margin-top-20 hidden" id="efficiency-card">
+                    <div class="chart-split-left">
+                        <h3>Hiệu quả Doanh thu/Cửa hàng/Tháng (5 năm gần nhất)</h3>
+                        <div class="chart-container">
+                            <canvas id="efficiencyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>⚙️ Nhận định Hiệu quả Vận hành</h4>
+                        <div id="analysis-text-efficiency" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 8: LNST theo quý & Tăng trưởng YoY -->
+                <div class="chart-card-split margin-top-20 hidden" id="quarterly-growth-card">
+                    <div class="chart-split-left">
+                        <h3>LNST theo Quý &amp; Tăng trưởng YoY</h3>
+                        <div class="chart-container">
+                            <canvas id="quarterlyGrowthChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📈 Nhận định Xu hướng Lợi nhuận</h4>
+                        <div id="analysis-text-quarterly-growth" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart 9: Biên LNG/LNST & ROE theo quý -->
+                <div class="chart-card-split margin-top-20 hidden" id="quarterly-margin-roe-card">
+                    <div class="chart-split-left">
+                        <h3>Biên LNG/LNST &amp; ROE theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="quarterlyMarginRoeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💹 Nhận định Biên Lợi nhuận</h4>
+                        <div id="analysis-text-quarterly-margin" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Moat + Valuation -->
+            <div class="col-right">
+                <div class="card moat-card">
+                    <h3>Lợi thế cạnh tranh (Moat Scorecard)</h3>
+                    <div class="moat-list" id="moat-scorecard-list"></div>
+                </div>
+
+                <div class="card valuation-card margin-top-20">
+                    <h3>Định giá &amp; Kịch bản đầu tư</h3>
+                    <div class="scenarios-grid">
+                        <div class="scenario-box bear">
+                            <div class="scenario-title">Bear Case</div>
+                            <div class="scenario-price" id="val-bear">- VND</div>
+                        </div>
+                        <div class="scenario-box base">
+                            <div class="scenario-title">Base Case</div>
+                            <div class="scenario-price" id="val-base">- VND</div>
+                        </div>
+                        <div class="scenario-box bull">
+                            <div class="scenario-title">Bull Case</div>
+                            <div class="scenario-price" id="val-bull">- VND</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Financial KPIs card -->
+                <div class="card bank-kpi-card margin-top-20 hidden" id="bank-kpi-card">
+                    <h3>Chỉ số Tài chính then chốt</h3>
+                    <div class="bank-kpi-grid" id="bank-kpi-grid"></div>
+                </div>
+
+                <!-- Store count snapshot (retail-specific) -->
+                <div class="card margin-top-20 hidden" id="segment-store-card">
+                    <h3>Số lượng Cửa hàng hiện tại theo Mảng</h3>
+                    <div class="bank-kpi-grid" id="segment-store-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Thesis + Risks -->
+        <div class="dashboard-grid-two margin-top-20">
+            <div class="card thesis-card">
+                <h3 class="border-blue">Luận điểm đầu tư (Thesis)</h3>
+                <ul id="thesis-list" class="thesis-ul"></ul>
+            </div>
+            <div class="card risks-card">
+                <h3 class="border-red">Rủi ro chính (Investment Risks)</h3>
+                <ul id="risks-list" class="risks-ul"></ul>
+            </div>
+        </div>
+
+        <!-- PESTLE -->
+        <div class="card pestle-card margin-top-20">
+            <h3>Bối cảnh vĩ mô (PESTLE Matrix)</h3>
+            <div class="pestle-grid" id="pestle-grid-container"></div>
+        </div>
+
+        <!-- Commentary -->
+        <div class="card commentary-card margin-top-20">
+            <h3>Đánh giá chi tiết của Chuyên gia</h3>
+            <div class="commentary-sections">
+                <div class="commentary-box">
+                    <h4>Mô hình Kinh doanh</h4>
+                    <p id="comment-business">-</p>
+                </div>
+                <div class="commentary-box">
+                    <h4>Sức khỏe Tài chính</h4>
+                    <p id="comment-financial">-</p>
+                </div>
+                <div class="commentary-box">
+                    <h4>Triển vọng Định giá</h4>
+                    <p id="comment-valuation">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Data Table -->
+        <div class="card table-card margin-top-20">
+            <h3 id="table-title">Bảng dữ liệu tài chính chi tiết</h3>
+            <div class="table-wrapper">
+                <table id="financial-table">
+                    <thead><tr><th>Chỉ tiêu</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+    </footer>
+
+</div>
+<script src="app_retail.js"></script>
+</body>
+</html>

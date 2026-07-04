@@ -71,6 +71,7 @@
 const SECTOR_PAGES = {
     banks: 'banking.html',
     materials: 'steel.html',
+    retail: 'retail.html',
     other: 'index.html',
 };
 
@@ -88,12 +89,14 @@ function getSectorKey(s) {
     const v = (s || '').toLowerCase();
     if (v.includes('bank') || v.includes('financial') || v.includes('ngân hàng') || v.includes('ngan hang')) return 'banks';
     if (v.includes('basic resource') || v.includes('material') || v.includes('steel') || v.includes('thép') || v.includes('th\u00e9p')) return 'materials';
+    if (v.includes('bán lẻ') || v.includes('ban le') || v.includes('retail') || v.includes('consumer discretionary')) return 'retail';
     return 'other';
 }
 
 const SECTOR_CFG = {
     banks:  { label: 'Ngân Hàng',           icon: '🏦', color: '#3b82f6' },
     materials: { label: 'Thép & Vật Liệu',   icon: '🔩', color: '#f97316' },
+    retail: { label: 'Bán Lẻ',              icon: '🛒', color: '#8b5cf6' },
     other:  { label: 'Ngành Khác',          icon: '📁', color: '#a0aec0' },
 };
 

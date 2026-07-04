@@ -699,6 +699,12 @@ def _parse_report_month_count(title):
         return 12
     if re.search(r"tháng\s*1\s*\+\s*2", t):  # "mùa Tết (tháng 1+2)" — báo cáo gộp 2 tháng đầu năm
         return 2
+    # "12 tháng năm 2022" — biến thể tiêu đề KHÔNG có "đầu" trước "năm" (khác "12 tháng đầu năm 2022"),
+    # xuất hiện ở 1 số báo cáo "cả năm" dùng cách đặt tên khác — PHẢI khớp TRƯỚC pattern "đầu năm" bên
+    # dưới, nếu không báo cáo này bị bỏ sót hoàn toàn khỏi chuỗi tháng (bug phát hiện 2026-07).
+    m = re.search(r"(\d{1,2})\s*tháng\s*năm\s*20\d\d", t)
+    if m:
+        return int(m.group(1))
     m = re.search(r"(\d{1,2})\s*tháng\s*(?:đầu\s*năm|20\d\d)", t)
     if m:
         return int(m.group(1))
@@ -714,6 +720,15 @@ def derive_monthly_from_cumulative(history_cache):
     kế 2 tháng cho tháng 1 và tháng 2 (giả định đều nhau — không có cách tách chính xác hơn khi thiếu
     dữ liệu riêng tháng 1); số cửa hàng lấy NGUYÊN số cuối kỳ báo cáo 2 tháng cho CẢ tháng 1 lẫn tháng
     2 (theo yêu cầu user 2026-07-04 — store count là snapshot 1 thời điểm, không suy ngược được).
+
+    % tỷ trọng mảng (rev_pct) trong MỖI báo cáo là % của DOANH THU LŨY KẾ tới tháng đó (KHÔNG phải %
+    của riêng tháng đó) — theo đúng hướng dẫn user 2026-07: doanh thu lũy kế mảng = DT lũy kế tổng × %
+    báo cáo; doanh thu THÁNG của mảng = DT lũy kế mảng tháng này − DT lũy kế mảng tháng trước. Hàm này
+    tự tính lại "rev_pct" trả về thành % ĐÚNG của DOANH THU THÁNG (không phải % lũy kế nữa) bằng cách
+    trừ lũy kế mảng giữa 2 kỳ liên tiếp, để code downstream (build_monthly_matrix) dùng thẳng mà không
+    cần biết sự khác biệt này. Nếu thiếu lũy kế mảng kỳ trước (báo cáo trước không có %, hoặc có
+    khoảng trống giữa 2 kỳ) thì fallback về % lũy kế của chính kỳ đó (xấp xỉ cũ, chấp nhận được).
+
     Trả về dict {(year, month): {"revenue": tỷ VND tháng đó, "stores": {...}, "is_estimated_split": bool}}."""
     by_year = {}
     for p in history_cache.values():
@@ -726,40 +741,356 @@ def derive_monthly_from_cumulative(history_cache):
     for yr, reports in by_year.items():
         months_present = sorted(reports.keys())
         prev_n, prev_cum_rev = 0, None
+        prev_seg_cum = {}  # {segment: doanh thu LŨY KẾ tính tới cuối kỳ báo cáo trước (tỷ VND)}
+
+        last_good_pct = {}  # {segment: % tháng gần nhất được chấp nhận (không bất thường)}
+
+        def _month_seg_pct(cum_rev, rev_pct, total_standalone):
+            """Tính % ĐÚNG của doanh thu THÁNG (không phải % lũy kế) bằng cách trừ lũy kế mảng giữa 2
+            kỳ liên tiếp, cập nhật prev_seg_cum cho vòng lặp kế tiếp. Nếu kết quả suy ra ÂM hoặc lệch
+            bất thường (ngoài khoảng 0-70%, ngưỡng rộng rãi vì 1 mảng hiếm khi chiếm hơn 70% DT MWG) —
+            fallback về % tháng liền trước (theo yêu cầu user 2026-07), tránh 1 sai số nhỏ trong %lũy
+            kế báo cáo (làm tròn 1 chữ số thập phân) bị khuếch đại thành số âm/vô lý khi trừ 2 số lớn
+            gần bằng nhau."""
+            result = {}
+            for seg, pct in rev_pct.items():
+                if pct is None:
+                    result[seg] = None
+                    continue
+                seg_cum_now = cum_rev * pct
+                if seg in prev_seg_cum and total_standalone:
+                    diffed = (seg_cum_now - prev_seg_cum[seg]) / total_standalone
+                    if 0 <= diffed <= 0.7:
+                        result[seg] = round(diffed, 4)
+                    elif seg in last_good_pct:
+                        result[seg] = last_good_pct[seg]
+                    else:
+                        result[seg] = pct  # không có gì để fallback -> đành dùng %lũy kế hiện tại
+                else:
+                    result[seg] = pct  # không có lũy kế mảng kỳ trước -> xấp xỉ bằng %lũy kế hiện tại
+                prev_seg_cum[seg] = seg_cum_now
+                last_good_pct[seg] = result[seg]
+            return result
+
         for n in months_present:
             rep = reports[n]
             cum_rev = rep.get("revenue_total_cum")
             stores = rep.get("stores") or {}
-            # rev_pct lấy TRỰC TIẾP từ table_row của CHÍNH báo cáo tháng N (cơ cấu DT lũy kế tới thời
-            # điểm đó) — dùng làm xấp xỉ cơ cấu DT CỦA THÁNG ĐÓ (chấp nhận được vì tỷ trọng mảng đổi
-            # rất chậm theo tháng, không phải xấp xỉ hoàn hảo nhưng là nguồn tốt nhất hiện có).
             rev_pct = {k: v.get("rev_pct") for k, v in (rep.get("table_row") or {}).items()}
             if n == 1:
                 if cum_rev is not None:
-                    monthly[(yr, 1)] = {"revenue": cum_rev, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": False}
+                    eff_pct = _month_seg_pct(cum_rev, rev_pct, cum_rev)
+                    monthly[(yr, 1)] = {"revenue": cum_rev, "stores": stores, "rev_pct": eff_pct, "is_estimated_split": False}
                 prev_n, prev_cum_rev = 1, cum_rev
             elif n == prev_n + 1:
                 if cum_rev is not None and prev_cum_rev is not None:
-                    monthly[(yr, n)] = {"revenue": cum_rev - prev_cum_rev, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": False}
+                    total_standalone = cum_rev - prev_cum_rev
+                    if not rev_pct:
+                        # Bao cao thang nay KHONG co % theo mang (chi co tong DT) -> van tao entry DT
+                        # tong thang nay (rev_pct rong), nhung XOA prev_seg_cum de thang KE TIEP KHONG
+                        # vo tinh differencing xuyen qua khoang trong nay (se lam sai lech do so sanh
+                        # nhieu-thang voi mau so 1-thang, gay tang vot bat thuong - phat hien 2026-07).
+                        monthly[(yr, n)] = {"revenue": total_standalone, "stores": stores, "rev_pct": {}, "is_estimated_split": False}
+                        prev_seg_cum.clear()
+                    else:
+                        eff_pct = _month_seg_pct(cum_rev, rev_pct, total_standalone)
+                        monthly[(yr, n)] = {"revenue": total_standalone, "stores": stores, "rev_pct": eff_pct, "is_estimated_split": False}
+                elif cum_rev is not None:
+                    _month_seg_pct(cum_rev, rev_pct, None)  # vẫn cập nhật prev_seg_cum dù ko tính duoc thang nay
                 prev_n, prev_cum_rev = n, (cum_rev if cum_rev is not None else prev_cum_rev)
             elif n == 2 and prev_n == 0:
                 # Khong co bao cao thang 1 rieng, chi co luy ke 2 thang -> chia doi doanh thu, dung
                 # chung so cua hang cuoi T2 cho ca thang 1 va thang 2.
                 if cum_rev is not None:
                     half = cum_rev / 2
-                    monthly[(yr, 1)] = {"revenue": half, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": True}
-                    monthly[(yr, 2)] = {"revenue": half, "stores": stores, "rev_pct": rev_pct, "is_estimated_split": True}
+                    eff_pct = _month_seg_pct(cum_rev, rev_pct, cum_rev)  # % xấp xỉ cho cả 2 tháng gộp
+                    monthly[(yr, 1)] = {"revenue": half, "stores": stores, "rev_pct": eff_pct, "is_estimated_split": True}
+                    monthly[(yr, 2)] = {"revenue": half, "stores": stores, "rev_pct": eff_pct, "is_estimated_split": True}
                 prev_n, prev_cum_rev = 2, cum_rev
             else:
                 # co khoang trong lien tiep (VD thieu bao cao 1 thang giua chung) -> khong noi suy,
                 # chi cap nhat moc luy ke gan nhat de tinh hieu so tu day tro di
+                if cum_rev is not None:
+                    for seg, pct in rev_pct.items():
+                        if pct is not None:
+                            prev_seg_cum[seg] = cum_rev * pct
                 prev_n, prev_cum_rev = n, (cum_rev if cum_rev is not None else prev_cum_rev)
     return monthly
 
+# ── Ghi đè thủ công các báo cáo IR mà auto-parser đọc SAI hoặc THẤT BẠI hoàn toàn (2026-07) ──────
+# .cache/MWG_monthly_history.json bị .gitignore (chỉ là cache tăng tốc chạy lại, không phải nguồn dữ
+# liệu chính thức) — nếu không ghi đè NGAY TRONG CODE thì mọi lần checkout mới/xoá cache sẽ tự fetch
+# lại và DẪM PHẢI ĐÚNG các lỗi parse dưới đây (đã xác nhận thủ công qua ảnh chụp/PDF gốc user cung
+# cấp hoặc tự tải+render trực tiếp từ mwg.vn/bao-cao — xem lịch sử trao đổi 2026-07):
+#   - 2117 (8T2021), 2142 (9T2021), 2241 (3T2022): parser lấy NHẦM số liệu NĂM TRƯỚC (cột so sánh
+#     trong biểu đồ cột 2 cột) thay vì đúng số năm hiện tại.
+#   - 2309 (4T2022): parser LẶP LẠI y hệt số liệu 4T2021 (bug tương tự).
+#   - Hàng loạt báo cáo 2022-2024 (era infographic donut/box màu): PDF dùng font nhúng lỗi bảng mã,
+#     pdfplumber/PyMuPDF CHỈ trích được vài ký tự bullet (•❑➢), mất toàn bộ số liệu — không thư viện
+#     text-extract nào khắc phục được. Giải pháp: tải PDF, RENDER từng trang ra ảnh (pdfplumber
+#     .to_image()), đọc trực tiếp bằng thị giác (như đọc ảnh chụp màn hình user gửi).
+MWG_MONTHLY_HISTORY_OVERRIDES = {
+    "2117": {  # Báo cáo tóm tắt KQKD 8 tháng đầu năm 2021
+        "year": 2021, "title": 'Báo cáo tóm tắt KQKD 8 tháng đầu năm 2021',
+        "revenue_total_cum": 78495.0,
+        "stores": {'TGDD': 949, 'DMX': 1768, 'BHX': 1928, 'Bluetronics': 55},
+        "table_row": {'BHX': {'stores': 1928, 'rev_pct': 0.263, 'rev_yoy': 0.56}, 'Bluetronics': {'stores': 55, 'rev_pct': 0.004, 'rev_yoy': 2.86}, 'TGDD': {'stores': 949, 'rev_pct': 0.233, 'rev_yoy': -0.06}, 'DMX': {'stores': 1768, 'rev_pct': 0.501, 'rev_yoy': -0.02}},
+    },
+    "2142": {  # Báo cáo tóm tắt KQKD 9 tháng đầu năm 2021
+        "year": 2021, "title": 'Báo cáo tóm tắt KQKD 9 tháng đầu năm 2021',
+        "revenue_total_cum": 86820.0,
+        "stores": {'TGDD': 950, 'DMX': 1781, 'BHX': 1934, 'Bluetronics': 50},
+        "table_row": {'BHX': {'stores': 1934, 'rev_pct': 0.26, 'rev_yoy': 0.5}, 'Bluetronics': {'stores': 50, 'rev_pct': 0.004, 'rev_yoy': 2.63}, 'TGDD': {'stores': 950, 'rev_pct': 0.236, 'rev_yoy': -0.07}, 'DMX': {'stores': 1781, 'rev_pct': 0.5, 'rev_yoy': -0.02}},
+    },
+    "2162": {  # Báo cáo tóm tắt KQKD 10 tháng đầu năm 2021
+        "year": 2021, "title": 'Báo cáo tóm tắt KQKD 10 tháng đầu năm 2021',
+        "revenue_total_cum": 99006.0,
+        "stores": {'TGDD': 958, 'DMX': 1802, 'BHX': 1976},
+        "table_row": {'TGDD': {'stores': 958, 'rev_pct': 0.24}, 'DMX': {'stores': 1802, 'rev_pct': 0.509}, 'BHX': {'stores': 1976, 'rev_pct': 0.248}},
+    },
+    "2184": {  # Báo cáo tóm tắt KQKD 11 tháng đầu năm 2021
+        "year": 2021, "title": 'Báo cáo tóm tắt KQKD 11 tháng đầu năm 2021',
+        "revenue_total_cum": 110530.0,
+        "stores": {'TGDD': 966, 'DMX': 1863, 'BHX': 2026, 'AnKhang': 156},
+        "table_row": {'TGDD': {'stores': 966, 'rev_pct': 0.243}, 'DMX': {'stores': 1863, 'rev_pct': 0.515}, 'BHX': {'stores': 2026, 'rev_pct': 0.238}},
+    },
+    "2219": {  # Báo cáo tóm tắt KQKD mùa Tết (tháng 1+2) năm 2022
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD mùa Tết (tháng 1+2) năm 2022',
+        "revenue_total_cum": 25383.0,
+        "stores": {'TGDD': 976, 'DMX': 2038, 'BHX': 2122, 'AnKhang': 205, 'AvaKids': 50},
+        "table_row": {'TGDD': {'stores': 976, 'rev_pct': 0.2689}, 'DMX': {'stores': 2038, 'rev_pct': 0.5703}, 'BHX': {'stores': 2122, 'rev_pct': 0.1536}},
+    },
+    "2241": {  # Báo cáo tóm tắt KQKD 3 tháng đầu năm 2022 (Q1-2022)
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 3 tháng đầu năm 2022',
+        "revenue_total_cum": 36467.0,
+        "stores": {'TGDD': 985, 'DMX': 2077, 'BHX': 2127, 'AnKhang': 211, 'AvaKids': 50},
+        "table_row": {'TGDD': {'stores': 985, 'rev_pct': 0.274}, 'DMX': {'stores': 2077, 'rev_pct': 0.549}, 'BHX': {'stores': 2127, 'rev_pct': 0.166}},
+    },
+    "2309": {  # Báo cáo tóm tắt KQKD 4 tháng đầu năm 2022
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 4 tháng đầu năm 2022',
+        "revenue_total_cum": 47908.0,
+        "stores": {'TGDD': 1012, 'DMX': 2095, 'BHX': 2140, 'AnKhang': 500, 'AvaKids': 50},
+        "table_row": {'TGDD': {'stores': 1012, 'rev_pct': 0.2717}, 'DMX': {'stores': 2095, 'rev_pct': 0.5444}, 'BHX': {'stores': 2140, 'rev_pct': 0.1712}},
+    },
+    "2349": {  # Báo cáo tóm tắt KQKD 5 tháng đầu năm 2022 — không có % cơ cấu mảng trong báo cáo gốc,
+              # dùng tạm % lũy kế tháng 4/2022 (báo cáo liền trước) theo yêu cầu user 2026-07.
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 5 tháng đầu năm 2022',
+        "revenue_total_cum": 59324.0,
+        "stores": {'TGDD': 1040, 'DMX': 2113, 'BHX': 2014},
+        "table_row": {'TGDD': {'stores': 1040, 'rev_pct': 0.2717}, 'DMX': {'stores': 2113, 'rev_pct': 0.5444}, 'BHX': {'stores': 2014, 'rev_pct': 0.1712}},
+    },
+    "2350": {  # Báo cáo tóm tắt KQKD 6 tháng đầu năm 2022 — % đọc chính xác từ biểu đồ donut lồng
+              # (vòng ngoài = 6T-2022, vòng trong = 6T-2021, theo ảnh IR gốc user cung cấp 2026-07)
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 6 tháng đầu năm',
+        "revenue_total_cum": 70804.0,
+        "stores": {'TGDD': 1067, 'DMX': 2131, 'BHX': 1889, 'AnKhang': 365, 'AvaKids': 53},
+        "table_row": {'TGDD': {'stores': 1067, 'rev_pct': 0.267}, 'DMX': {'stores': 2131, 'rev_pct': 0.538}, 'BHX': {'stores': 1889, 'rev_pct': 0.181}},
+    },
+    "2379": {  # Báo cáo tóm tắt KQKD 7 tháng đầu năm 2022
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 7 tháng đầu năm',
+        "revenue_total_cum": 81870.0,
+        "stores": {'TGDD': 1070, 'DMX': 2185, 'BHX': 1735, 'AnKhang': 510},
+        "table_row": {'TGDD': {'stores': 1070, 'rev_pct': 0.2626}, 'DMX': {'stores': 2185, 'rev_pct': 0.5374}, 'BHX': {'stores': 1735, 'rev_pct': 0.1857}},
+    },
+    "2417": {  # Báo cáo tóm tắt KQKD 8 tháng đầu năm 2022
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 8 tháng đầu năm 2022',
+        "revenue_total_cum": 92283.0,
+        "stores": {'TGDD': 1086, 'DMX': 2222, 'BHX': 1726, 'AnKhang': 509, 'AvaKids': 80},
+        "table_row": {'TGDD': {'stores': 1086, 'rev_pct': 0.2655}, 'DMX': {'stores': 2222, 'rev_pct': 0.5288}, 'BHX': {'stores': 1726, 'rev_pct': 0.1907}},
+    },
+    "2428": {  # Báo cáo tóm tắt KQKD 9 tháng đầu năm 2022 — rev_pct PHẢI là % LŨY KẾ (khớp quy ước
+              # chung của mọi entry khác), KHÔNG phải % riêng tháng 9 (bug đã sửa 2026-07: trước đó
+              # lưu nhầm % suy ngược từ hiệu quả/CH riêng tháng 9, làm sai toàn bộ chuỗi differencing
+              # từ tháng 10 trở đi). % lũy kế đúng = DT lũy kế mảng / DT lũy kế tổng.
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 9 tháng đầu năm 2022',
+        "revenue_total_cum": 102816.0,
+        "stores": {'TGDD': 1116, 'DMX': 2246, 'BHX': 1727, 'AnKhang': 529, 'AvaKids': 71},
+        "table_row": {'TGDD': {'stores': 1116, 'rev_pct': 0.2626}, 'DMX': {'stores': 2246, 'rev_pct': 0.5252}, 'BHX': {'stores': 1727, 'rev_pct': 0.1945}},
+    },
+    "2454": {  # Báo cáo tóm tắt KQKD 10 tháng đầu năm 2022 — cùng lỗi như 2428, đã sửa về % lũy kế
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 10 tháng đầu năm 2022',
+        "revenue_total_cum": 113712.0,
+        "stores": {'TGDD': 1163, 'DMX': 2269, 'BHX': 1729, 'AnKhang': 529, 'AvaKids': 71},
+        "table_row": {'TGDD': {'stores': 1163, 'rev_pct': 0.2665}, 'DMX': {'stores': 2269, 'rev_pct': 0.5215}, 'BHX': {'stores': 1729, 'rev_pct': 0.1961}},
+    },
+    "2495": {  # Báo cáo tóm tắt KQKD 11 tháng đầu năm 2022 — rev_pct PHẢI là % LŨY KẾ (đã sửa cùng
+              # lỗi như 2428/2454: trước đó lưu nhầm % suy từ hiệu số standalone thay vì % lũy kế).
+              # TGDD(+Topzone)=32.400, DMX=64.300, BHX=24.600 (đều lũy kế 11T, xác nhận trực tiếp qua
+              # ảnh IR gốc + khớp chính xác 11T22=123.683 tổng công ty).
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 11 tháng đầu năm 2022',
+        "revenue_total_cum": 123683.0,
+        "stores": {'TGDD': 1169, 'DMX': 2277, 'BHX': 1729, 'AnKhang': 509, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1169, 'rev_pct': 0.262}, 'DMX': {'stores': 2277, 'rev_pct': 0.52}, 'BHX': {'stores': 1729, 'rev_pct': 0.199}},
+    },
+    "2568": {  # Báo cáo tóm tắt KQKD 12 tháng năm 2022 (cả năm - tiêu đề không khớp regex cũ, đã sửa)
+        "year": 2022, "title": 'Báo cáo tóm tắt KQKD 12 tháng năm 2022',
+        "revenue_total_cum": 133045.0,
+        "stores": {'TGDD': 1190, 'DMX': 2284, 'BHX': 1728, 'AnKhang': 500, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1190, 'rev_pct': 0.26}, 'DMX': {'stores': 2284, 'rev_pct': 0.517}, 'BHX': {'stores': 1728, 'rev_pct': 0.203}},
+    },
+    "2586": {  # Cập nhật tình hình kinh doanh 2 tháng đầu năm 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 2 tháng đầu năm',
+        "revenue_total_cum": 19010.0,
+        "stores": {'TGDD': 1189, 'DMX': 2287, 'BHX': 1729, 'AnKhang': 504, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1189, 'rev_pct': 0.255}, 'DMX': {'stores': 2287, 'rev_pct': 0.51}, 'BHX': {'stores': 1729, 'rev_pct': 0.217}},
+    },
+    "2617": {  # Cập nhật tình hình kinh doanh 3 tháng đầu năm 2023 (Q1-2023)
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 3 tháng đầu năm',
+        "revenue_total_cum": 26990.0,
+        "stores": {'TGDD': 1188, 'DMX': 2291, 'BHX': 1710, 'AnKhang': 510, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1188, 'rev_pct': 0.246}, 'DMX': {'stores': 2291, 'rev_pct': 0.493}, 'BHX': {'stores': 1710, 'rev_pct': 0.236}},
+    },
+    "2639": {  # Cập nhật tình hình kinh doanh 4 tháng đầu năm 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 4 tháng đầu năm',
+        "revenue_total_cum": 36847.0,
+        "stores": {'TGDD': 1188, 'DMX': 2292, 'BHX': 1708, 'AnKhang': 523, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1188, 'rev_pct': 0.24}, 'DMX': {'stores': 2292, 'rev_pct': 0.501}, 'BHX': {'stores': 1708, 'rev_pct': 0.235}},
+    },
+    "2669": {  # Cập nhật tình hình kinh doanh 5 tháng đầu năm 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 5 tháng đầu năm',
+        "revenue_total_cum": 47144.0,
+        "stores": {'TGDD': 1185, 'DMX': 2290, 'BHX': 1704, 'AnKhang': 535, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1185, 'rev_pct': 0.235}, 'DMX': {'stores': 2290, 'rev_pct': 0.506}, 'BHX': {'stores': 1704, 'rev_pct': 0.236}},
+    },
+    "2681": {  # Cập nhật tình hình kinh doanh 6 tháng đầu năm 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 6 tháng đầu năm',
+        "revenue_total_cum": 56570.0,
+        "stores": {'TGDD': 1180, 'DMX': 2289, 'BHX': 1706, 'AnKhang': 537, 'AvaKids': 66},
+        "table_row": {'TGDD': {'stores': 1180, 'rev_pct': 0.236}, 'DMX': {'stores': 2289, 'rev_pct': 0.499}, 'BHX': {'stores': 1706, 'rev_pct': 0.242}},
+    },
+    "2701": {  # Cập nhật tình hình kinh doanh 7 tháng 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 7 tháng 2023',
+        "revenue_total_cum": 66490.0,
+        "stores": {'TGDD': 1172, 'DMX': 2287, 'BHX': 1706, 'AnKhang': 537, 'AvaKids': 67},
+        "table_row": {'TGDD': {'stores': 1172, 'rev_pct': 0.236}, 'DMX': {'stores': 2287, 'rev_pct': 0.491}, 'BHX': {'stores': 1706, 'rev_pct': 0.248}},
+    },
+    "2721": {  # Cập nhật tình hình kinh doanh 8 tháng 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 8 tháng 2023',
+        "revenue_total_cum": 76455.0,
+        "stores": {'TGDD': 1171, 'DMX': 2286, 'BHX': 1706, 'AnKhang': 540, 'AvaKids': 67},
+        "table_row": {'TGDD': {'stores': 1171, 'rev_pct': 0.236}, 'DMX': {'stores': 2286, 'rev_pct': 0.486}, 'BHX': {'stores': 1706, 'rev_pct': 0.254}},
+    },
+    "2741": {  # Cập nhật tình hình kinh doanh 9 tháng 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 9 tháng 2023',
+        "revenue_total_cum": 86858.0,
+        "stores": {'TGDD': 1165, 'DMX': 2286, 'BHX': 1706, 'AnKhang': 540, 'AvaKids': 67},
+        "table_row": {'TGDD': {'stores': 1165, 'rev_pct': 0.238}, 'DMX': {'stores': 2286, 'rev_pct': 0.48}, 'BHX': {'stores': 1706, 'rev_pct': 0.257}},
+    },
+    "2750": {  # Cập nhật tình hình kinh doanh 10 tháng 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 10 tháng 2023',
+        "revenue_total_cum": 98046.0,
+        "stores": {'TGDD': 1158, 'DMX': 2281, 'BHX': 1706, 'AnKhang': 540, 'AvaKids': 66},
+        "table_row": {'TGDD': {'stores': 1158, 'rev_pct': 0.243}, 'DMX': {'stores': 2281, 'rev_pct': 0.473}, 'BHX': {'stores': 1706, 'rev_pct': 0.259}},
+    },
+    "2773": {  # Cập nhật tình hình kinh doanh 11 tháng 2023
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 11 tháng 2023',
+        "revenue_total_cum": 107954.0,
+        "stores": {'TGDD': 1100, 'DMX': 2210, 'BHX': 1697, 'AnKhang': 527, 'AvaKids': 64},
+        "table_row": {'TGDD': {'stores': 1100, 'rev_pct': 0.242}, 'DMX': {'stores': 2210, 'rev_pct': 0.469}, 'BHX': {'stores': 1697, 'rev_pct': 0.263}},
+    },
+    "2785": {  # Cập nhật tình hình kinh doanh 12 tháng 2023 (cả năm 2023)
+        "year": 2023, "title": 'Cập nhật tình hình kinh doanh 12 tháng 2023',
+        "revenue_total_cum": 118280.0,
+        "stores": {'TGDD': 1078, 'DMX': 2190, 'BHX': 1698, 'AnKhang': 527, 'AvaKids': 64, 'EraBlue': 38},
+        "table_row": {'TGDD': {'stores': 1078, 'rev_pct': 0.239}, 'DMX': {'stores': 2190, 'rev_pct': 0.467}, 'BHX': {'stores': 1698, 'rev_pct': 0.267}},
+    },
+    "2795": {  # Cập nhật tình hình kinh doanh 2 tháng đầu năm 2024
+        "year": 2024, "title": 'Cập nhật tình hình kinh doanh 2 tháng đầu năm',
+        "revenue_total_cum": 21613.0,
+        "stores": {'TGDD': 1077, 'DMX': 2189, 'BHX': 1698, 'AnKhang': 526, 'AvaKids': 64, 'EraBlue': 53},
+        "table_row": {'TGDD': {'stores': 1077, 'rev_pct': 0.212}, 'DMX': {'stores': 2189, 'rev_pct': 0.477}, 'BHX': {'stores': 1698, 'rev_pct': 0.282}},
+    },
+    "2851": {  # Cập nhật tình hình kinh doanh 3 tháng đầu năm 2024 (Q1-2024)
+        "year": 2024, "title": 'Cập nhật tình hình kinh doanh 3 tháng đầu năm',
+        "revenue_total_cum": 31441.0,
+        "stores": {'TGDD': 1071, 'DMX': 2184, 'BHX': 1696, 'AnKhang': 526, 'AvaKids': 64, 'EraBlue': 55},
+        "table_row": {'TGDD': {'stores': 1071, 'rev_pct': 0.216}, 'DMX': {'stores': 2184, 'rev_pct': 0.462}, 'BHX': {'stores': 1696, 'rev_pct': 0.291}},
+    },
+    "2885": {  # Cập nhật tình hình kinh doanh 4 tháng đầu năm 2024
+        "year": 2024, "title": 'Cập nhật tình hình kinh doanh 4 tháng đầu năm',
+        "revenue_total_cum": 43039.0,
+        "stores": {'TGDD': 1071, 'DMX': 2184, 'BHX': 1696, 'AnKhang': 526, 'AvaKids': 64, 'EraBlue': 56},
+        "table_row": {'TGDD': {'stores': 1071, 'rev_pct': 0.207}, 'DMX': {'stores': 2184, 'rev_pct': 0.476}, 'BHX': {'stores': 1696, 'rev_pct': 0.288}},
+    },
+    "2921": {  # Cập nhật tình hình kinh doanh 5 tháng đầu năm 2024
+        "year": 2024, "title": 'Cập nhật tình hình kinh doanh 5 tháng đầu năm',
+        "revenue_total_cum": 54240.0,
+        "stores": {'TGDD': 1070, 'DMX': 2180, 'BHX': 1698, 'AnKhang': 526, 'AvaKids': 64, 'EraBlue': 59},
+        "table_row": {'TGDD': {'stores': 1070, 'rev_pct': 0.205}, 'DMX': {'stores': 2180, 'rev_pct': 0.474}, 'BHX': {'stores': 1698, 'rev_pct': 0.292}},
+    },
+}
+
+def _apply_monthly_history_overrides(cache):
+    """Ghi đè cache fetch được bằng dữ liệu đã xác nhận thủ công. Dùng setdefault với "year"/"title"
+    lấy từ chính override để đảm bảo hoạt động ĐÚNG cả khi cache rỗng/fetch thất bại hoàn toàn (VD
+    checkout mới, API IR đổi/gãy) — không phụ thuộc vào việc fetch_mwg_full_history() có trả về đúng
+    entry gốc hay không."""
+    for post_id, override in MWG_MONTHLY_HISTORY_OVERRIDES.items():
+        entry = cache.setdefault(post_id, {"year": override["year"], "title": override["title"], "stores": {}, "table_row": {}})
+        entry.setdefault("stores", {}).update(override.get("stores", {}))
+        entry.setdefault("table_row", {}).update(override.get("table_row", {}))
+        if "revenue_total_cum" in override:
+            entry["revenue_total_cum"] = override["revenue_total_cum"]
+    return cache
+
 print("[IR] Fetching full monthly history 2019-now (cached - only new reports downloaded each run)...")
-MWG_MONTHLY_HISTORY = fetch_mwg_full_history(start_year=2019)
+MWG_MONTHLY_HISTORY = _apply_monthly_history_overrides(fetch_mwg_full_history(start_year=2019))
 MWG_MONTHLY_STANDALONE = derive_monthly_from_cumulative(MWG_MONTHLY_HISTORY)
 print(f"  -> Derived {len(MWG_MONTHLY_STANDALONE)} thang don le tu du lieu luy ke")
+
+# ── Ghi đè thủ công THÁNG 2019 — báo cáo IR 2019 là ảnh infographic không tự parse được (xem ghi chú
+# era A ở trên), user cung cấp trực tiếp ảnh chụp báo cáo lũy kế "N tháng đầu năm 2019" (T1,2,3,4,5,6,
+# 7,8,9,10,11,cả năm). Số cửa hàng lấy NGUYÊN từ ảnh (snapshot chính xác từng tháng). Doanh thu theo
+# mảng: T1/T2 tách được chính xác từ 2 báo cáo lũy kế liên tiếp (T1 = báo cáo tháng 1; T2 = lũy kế 2
+# tháng - T1). T3 = tổng Quý 1 (sheet "Diễn biến", file mau/MWG 2025.xlsx) - T1 - T2 (chính xác hơn
+# chia đều vì đã biết T1/T2 thật). T4-T12: KHÔNG có báo cáo lũy kế tách riêng từng tháng nên chia đều
+# tổng doanh thu quý (sheet "Diễn biến") cho 3 tháng trong quý, theo đúng yêu cầu user 2026-07.
+_mwg_2019_q_seg_rev = {  # tỷ VND, nguồn: mau/MWG 2025.xlsx sheet "Diễn biến" hàng TGDD/DMX/BHX theo quý
+    "Q2": {"TGDD": 8520.868, "DMX": 15853.889, "BHX": 2335.243},
+    "Q3": {"TGDD": 8285.261, "DMX": 13698.213, "BHX": 3052.526},
+    "Q4": {"TGDD": 7644.471, "DMX": 14177.218, "BHX": 3589.311},
+}
+_mwg_2019_q1_seg_rev = {"TGDD": 8755.95, "DMX": 14509.86, "BHX": 1751.19}  # Q1-2019, sheet "Diễn biến"
+_mwg_2019_jan_rev = {"TGDD": 3215.0, "DMX": 6507.0, "BHX": 628.0}  # "Tháng 1/2019" (ảnh IR)
+_mwg_2019_cum2_rev = {"TGDD": 5900.0, "DMX": 10461.0, "BHX": 1015.0}  # "2 tháng đầu năm 2019" (ảnh IR)
+_mwg_2019_feb_rev = {k: _mwg_2019_cum2_rev[k] - _mwg_2019_jan_rev[k] for k in _mwg_2019_jan_rev}
+_mwg_2019_mar_rev = {k: round(_mwg_2019_q1_seg_rev[k] - _mwg_2019_jan_rev[k] - _mwg_2019_feb_rev[k], 2)
+                     for k in _mwg_2019_jan_rev}
+
+_mwg_2019_stores = {  # số cửa hàng CUỐI mỗi tháng, đọc trực tiếp từ ảnh IR "N tháng đầu năm 2019"
+    1: {"TGDD": 1029, "DMX": 764, "BHX": 421},
+    2: {"TGDD": 1027, "DMX": 766, "BHX": 423},
+    3: {"TGDD": 1023, "DMX": 774, "BHX": 469},
+    4: {"TGDD": 1021, "DMX": 791, "BHX": 512},
+    5: {"TGDD": 1017, "DMX": 809, "BHX": 545},
+    6: {"TGDD": 1011, "DMX": 838, "BHX": 600},
+    7: {"TGDD": 1006, "DMX": 865, "BHX": 659},
+    8: {"TGDD": 1000, "DMX": 886, "BHX": 725},
+    9: {"TGDD": 1011, "DMX": 907, "BHX": 788},
+    10: {"TGDD": 1009, "DMX": 937, "BHX": 866},   # suy ngược từ text "30/11 có 2.929 CH, +117 so T10"
+    11: {"TGDD": 1008, "DMX": 983, "BHX": 938},   # "MWG có 2.929 cửa hàng...ĐMX 983...BHX lên 938" (ảnh IR)
+    12: {"TGDD": 996, "DMX": 1018, "BHX": 1008},  # "Tóm tắt tình hình kinh doanh năm 2019" (ảnh IR)
+}
+_mwg_2019_rev_by_month = {1: _mwg_2019_jan_rev, 2: _mwg_2019_feb_rev, 3: _mwg_2019_mar_rev}
+for _mo in (4, 5, 6):
+    _mwg_2019_rev_by_month[_mo] = {k: v / 3 for k, v in _mwg_2019_q_seg_rev["Q2"].items()}
+for _mo in (7, 8, 9):
+    _mwg_2019_rev_by_month[_mo] = {k: v / 3 for k, v in _mwg_2019_q_seg_rev["Q3"].items()}
+for _mo in (10, 11, 12):
+    _mwg_2019_rev_by_month[_mo] = {k: v / 3 for k, v in _mwg_2019_q_seg_rev["Q4"].items()}
+
+MWG_MONTHLY_MANUAL_2019 = {}
+for _mo in range(1, 13):
+    _seg_rev = _mwg_2019_rev_by_month[_mo]
+    _total_rev = sum(_seg_rev.values())
+    MWG_MONTHLY_MANUAL_2019[(2019, _mo)] = {
+        "revenue": round(_total_rev, 1),
+        "stores": dict(_mwg_2019_stores[_mo]),
+        "rev_pct": {k: round(v / _total_rev, 4) for k, v in _seg_rev.items()},
+        "is_estimated_split": _mo not in (1, 2, 3),
+    }
+MWG_MONTHLY_STANDALONE.update(MWG_MONTHLY_MANUAL_2019)
+print(f"  -> Ghi de {len(MWG_MONTHLY_MANUAL_2019)} thang 2019 tu anh IR user cung cap + Quy 'Dien bien' (mau/MWG 2025.xlsx)")
 
 print("[IR] Fetching latest MWG monthly business update for store counts...")
 _ir_result = fetch_mwg_latest_store_counts()
@@ -878,6 +1209,18 @@ def build_monthly_matrix():
             "pct": pct,
             "stores": {"TGDD": stores.get("TGDD"), "DMX": stores.get("DMX"), "BHX": stores.get("BHX"), "Khac": khac_count},
         })
+
+    # Loại bỏ đột biến số CH do lỗi parse IR (VD 1 tháng bất kỳ đọc nhầm ra số CH < 50% trung bình 2
+    # tháng liền kề trong khi CH thực tế không thể giảm/tăng đột ngột như vậy) — set None thay vì đoán.
+    for seg in SEGMENTS:
+        for i in range(1, len(matrix) - 1):
+            cur = matrix[i]["stores"].get(seg)
+            prev = matrix[i - 1]["stores"].get(seg)
+            nxt = matrix[i + 1]["stores"].get(seg)
+            if cur is not None and prev is not None and nxt is not None:
+                neighbor_avg = (prev + nxt) / 2
+                if neighbor_avg > 0 and cur < 0.5 * neighbor_avg:
+                    matrix[i]["stores"][seg] = None
     return matrix
 
 MONTHLY_MATRIX = build_monthly_matrix()
@@ -1049,7 +1392,7 @@ print(f"  -> Blend {CURRENT_YEAR_REAL} voi {_n_q} quy thuc te (DT luy ke {_actua
 print(f"  -> EBIT du phong (da blend): {ebit_fc}")
 print(f"  -> NI (co dong cong ty me) du phong (da blend): {ni_fc}")
 
-# ── 6. ĐỊNH GIÁ — 4 phương pháp theo skill ban-le (P/E 20%, P/B 20%, RI 10%, P/S+P/E cả 4 mảng 50%) ──
+# ── 6. ĐỊNH GIÁ — 4 phương pháp theo skill ban-le (P/E 25%, P/B 30%, RI 10%, P/S+P/E cả 4 mảng 35%) ──
 # (2026-07: đã bỏ P/S+P/B — không tách bạch được VCSH riêng mảng, dồn 15% cũ vào P/S+P/E)
 # Hàm fetch Rf/Beta (CAPM cho RI) — copy nguyên logic đã verify hoạt động tốt từ template_banking.py
 # (dùng cho định giá RI ngân hàng), chỉ đổi risk premium đặc thù (2% "bank-specific" -> 1.5% "retail
@@ -1226,8 +1569,8 @@ _hist_years_ratio = list(range(max(2018, years_hist[0] if years_hist else 2018),
 _ph_quarters_count = len({(r_["year"], r_["quarter"]) for r_ in MWG_RATIOS if r_.get("quarter") in (1, 2, 3, 4)})
 PE_PB_MEDIAN_ROW = _ph_quarters_count + 3  # layout 13_PE_PB_History: dữ liệu chiếm dòng 2..N+1, dòng
 # N+2 để trống, MEDIAN tại dòng N+3 (r bắt đầu=2, sau vòng lặp N dòng r=N+2, r+=1 -> N+3)
-_pe_all = [round(r_["pe"], 2) for r_ in MWG_RATIOS if r_.get("pe") and 0 < r_["pe"] < 50]
-_pb_all = [round(r_["pb"], 2) for r_ in MWG_RATIOS if r_.get("pb") and r_["pb"] > 0]
+_pe_all = [round(r_["pe"], 2) for r_ in MWG_RATIOS if r_.get("quarter") in (1, 2, 3, 4) and r_.get("pe") and 0 < r_["pe"] < 50]
+_pb_all = [round(r_["pb"], 2) for r_ in MWG_RATIOS if r_.get("quarter") in (1, 2, 3, 4) and r_.get("pb") and r_["pb"] > 0]
 PE_HIST_MEDIAN = round(stats.median(_pe_all), 2) if _pe_all else 15.0
 PB_HIST_MEDIAN = round(stats.median(_pb_all), 2) if _pb_all else 3.0
 print(f"  -> PE_HIST_MEDIAN={PE_HIST_MEDIAN}x | PB_HIST_MEDIAN={PB_HIST_MEDIAN}x (MEDIAN toan bo {_ph_quarters_count} quy co du lieu, xem sheet 13_PE_PB_History)")
@@ -1267,7 +1610,7 @@ RI_TARGET_PRICE = round(BVPS_HIST_LAST + pv_ri + pv_cv, 0)
 print(f"  -> EPS_FC {EPS_FC} | BVPS_FC {BVPS_FC}")
 print(f"  -> P/E target: {PE_TARGET_PRICE:,.0f} | P/B target: {PB_TARGET_PRICE:,.0f} | RI target: {RI_TARGET_PRICE:,.0f}")
 
-# 4) P/S + P/E theo mảng (trọng số 50% = 35%+15% gộp lại) — TGDD/ĐMX/Khác dùng P/E, BHX dùng P/S.
+# 4) P/S + P/E theo mảng (trọng số 35%) — TGDD/ĐMX/Khác dùng P/E, BHX dùng P/S.
 # (2026-07, chốt lại theo yêu cầu user + nghiên cứu thị trường): BHX chuyển hẳn sang P/S (không dùng
 # P/E) — đúng thông lệ định giá chuỗi bán lẻ FMCG/thực phẩm tươi sống biên lợi nhuận mỏng (skill
 # ban-le: "P/S khi... đang giảm lỗ hoặc mới chớm có lãi"), và khớp tiền lệ CTCK định giá MWG thực tế
@@ -1322,14 +1665,14 @@ PS_PE_TARGET_PRICE = round(TOTAL_VALUE_PS_PE * 1e9 / (SHARES * 1e6), 0) if TOTAL
 
 print(f"  -> P/S+P/E target (TGDD/DMX/Khac=P/E, BHX=P/S {BHX_PS_REF}x): {PS_PE_TARGET_PRICE:,.0f}")
 
-# ── Tổng hợp trọng số 4 phương pháp (chốt với user 2026-07, đã bỏ P/S+P/B): PE 20% + PB 20% + RI 10% + PS-PE 50% ──
-VALUATION_WEIGHTS = {"PE": 0.20, "PB": 0.20, "RI": 0.10, "PS_PE": 0.50}
+# ── Tổng hợp trọng số 4 phương pháp (chốt với user 2026-07, đã bỏ P/S+P/B): PE 25% + PB 30% + RI 10% + PS-PE 35% ──
+VALUATION_WEIGHTS = {"PE": 0.25, "PB": 0.30, "RI": 0.10, "PS_PE": 0.35}  # chốt lại với user 2026-07
 WEIGHTED_TARGET_PRICE = round(
     VALUATION_WEIGHTS["PE"] * PE_TARGET_PRICE + VALUATION_WEIGHTS["PB"] * PB_TARGET_PRICE +
     VALUATION_WEIGHTS["RI"] * RI_TARGET_PRICE + VALUATION_WEIGHTS["PS_PE"] * PS_PE_TARGET_PRICE, 0)
 UPSIDE_PCT = round((WEIGHTED_TARGET_PRICE / PRICE - 1) * 100, 1) if PRICE else None
 
-print(f"  -> GIA MUC TIEU (trong so 20/20/10/50): {WEIGHTED_TARGET_PRICE:,.0f} VND (gia hien tai {PRICE:,.0f}, upside {UPSIDE_PCT}%)")
+print(f"  -> GIA MUC TIEU (trong so 25/30/10/35): {WEIGHTED_TARGET_PRICE:,.0f} VND (gia hien tai {PRICE:,.0f}, upside {UPSIDE_PCT}%)")
 
 # ── 7. DỰ PHÓNG D&A/CAPEX/BẢNG CÂN ĐỐI (cho sheet 05/06) ────────────────────────────────────────
 # D&A dự phóng — giữ tỷ lệ D&A/DT bình quân 2 năm gần nhất (mở rộng chuỗi cửa hàng mới kéo theo D&A
@@ -1453,7 +1796,7 @@ ASSET_QUALITY_FLAGS.append({
     "value": f"{NET_DEBT_HIST[-1]:,.0f} tỷ ({'net cash dương' if NET_DEBT_HIST[-1] < 0 else 'net debt dương'})",
     "flag": "Bình thường" if NET_DEBT_HIST[-1] < 0 else "Theo dõi",
 })
-print(f"  -> Danh gia chat luong tai san: {sum(1 for f in ASSET_QUALITY_FLAGS if f['flag']!='Binh thuong')} canh bao / {len(ASSET_QUALITY_FLAGS)} chi tieu")
+print(f"  -> Danh gia chat luong tai san: {sum(1 for f in ASSET_QUALITY_FLAGS if f['flag']!='Bình thường')} canh bao / {len(ASSET_QUALITY_FLAGS)} chi tieu")
 
 # Tài sản khác (phần dư để cân đối TS = NV — không tách chi tiết từng khoản mục nhỏ, gộp vào 1 dòng
 # "Tài sản khác" để bảng cân đối vẫn cân mà không cần dự phóng từng khoản mục phụ không trọng yếu)
@@ -1536,7 +1879,7 @@ def build_excel():
         ("P/E Median (20%)", "='07_Valuation'!C6", '#,##0'),
         ("P/B Median (20%)", "='07_Valuation'!C7", '#,##0'),
         ("Residual Income (10%)", "='07_Valuation'!C8", '#,##0'),
-        ("P/S + P/E theo mảng, cả 4 mảng (50%)", "='07_Valuation'!C9", '#,##0'),
+        ("P/S + P/E theo mảng, cả 4 mảng (35%)", "='07_Valuation'!C9", '#,##0'),
     ]
     for i, (k, v, nf) in enumerate(val_summary, 20):
         ws.cell(row=i, column=1, value=k).font = data_font
@@ -1582,9 +1925,13 @@ def build_excel():
             ws_beta.cell(row=ridx, column=4, value=p_m)
             ws_beta.cell(row=ridx, column=5, value=f"=(D{ridx}-D{ridx-1})/D{ridx-1}").number_format = '0.00%'
         last_row = 4 + len(BETA_ALIGNED_DATA)
-        ws_beta.cell(row=1, column=3, value=f"=COVAR(C6:C{last_row},E6:E{last_row})/VAR(E6:E{last_row})")
+        # Beta thô Excel PHẢI dùng ĐÚNG cửa sổ dữ liệu mà Python đã dùng để tính beta_raw (tránh lệch
+        # COE/RI giữa Excel và Python): fetch_and_calc_beta() chỉ lấy 501 phiên giá gần nhất (500 lợi
+        # suất) khi lịch sử >500 phiên, KHÔNG dùng toàn bộ lịch sử như công thức COVAR/VAR cũ ở đây.
+        _beta_window_start = max(6, last_row - 499) if len(BETA_ALIGNED_DATA) > 500 else 6
+        ws_beta.cell(row=1, column=3, value=f"=COVAR(C{_beta_window_start}:C{last_row},E{_beta_window_start}:E{last_row})/VAR(E{_beta_window_start}:E{last_row})")
         ws_beta.cell(row=1, column=5, value="=0.67*C1+0.33")
-        ws_beta.cell(row=2, column=3, value=f"=COUNT(C6:C{last_row})")
+        ws_beta.cell(row=2, column=3, value=f"=COUNT(C{_beta_window_start}:C{last_row})")
     else:
         ws_beta.cell(row=1, column=3, value=beta_raw)
         ws_beta.cell(row=1, column=5, value=beta_val)
@@ -1715,7 +2062,7 @@ def build_excel():
     RA["actual_sga"] = r; r = arow(wsA, r, "CP bán hàng+QLDN lũy kế thực tế", round(-abs(_actual_sga), 1), FMT_NUM, "BCTC quý (âm, khớp quy ước dòng CP bán hàng)", single=True)
     RA["actual_netfin"] = r; r = arow(wsA, r, "DT/CP tài chính ròng lũy kế thực tế", round(_actual_net_fin, 1), FMT_NUM, "BCTC quý", single=True)
     RA["actual_ebt"] = r; r = arow(wsA, r, "LNTT lũy kế thực tế", round(_actual_ebt or 0, 1), FMT_NUM, "BCTC quý", single=True)
-    RA["actual_tax"] = r; r = arow(wsA, r, "Thuế TNDN lũy kế thực tế", round(_actual_tax, 1), FMT_NUM, "= LNTT - LNST hợp nhất thực tế", single=True)
+    RA["actual_tax"] = r; r = arow(wsA, r, "Thuế TNDN lũy kế thực tế", round(_actual_tax, 1), FMT_NUM, "LNTT trừ LNST hợp nhất thực tế", single=True)
     RA["actual_ni_consol"] = r; r = arow(wsA, r, "LNST hợp nhất lũy kế thực tế", round(_actual_ni_consol or 0, 1), FMT_NUM, "BCTC quý", single=True)
     RA["actual_ni_parent"] = r; r = arow(wsA, r, "LNST Cổ đông mẹ lũy kế thực tế", round(_actual_ni_parent or 0, 1), FMT_NUM, "BCTC quý", single=True)
     wsA.column_dimensions['A'].width = 40
@@ -1873,7 +2220,7 @@ def build_excel():
     wsR.cell(row=r, column=1, value="Tăng trưởng DT YoY (%)").font = data_font
     for j in range(1, N_ALL):
         col, prev_col = get_column_letter(2+j), get_column_letter(1+j)
-        c = wsR.cell(row=r, column=2+j, value=f"={col}{RR['total']}/{prev_col}{RR['total']}-1")
+        c = wsR.cell(row=r, column=2+j, value=f'=IFERROR({col}{RR["total"]}/{prev_col}{RR["total"]}-1,"")')
         c.font = data_font; c.border = thin_border; c.number_format = '0.0%'; c.alignment = Alignment(horizontal='right')
     wsR.column_dimensions['A'].width = 30
     print(f"[Excel] Sheet 03_Revenue_Model done ({r} dong).")
@@ -2580,20 +2927,36 @@ def make_margin_chart():
     return path
 
 def make_segment_revenue_chart():
-    fig, ax = plt.subplots(figsize=(10, 5.5))
-    x = list(range(N_ALL))
-    bottom = [0] * N_ALL
+    # Chỉ vẽ năm CÓ DỮ LIỆU THẬT theo mảng (REV_SEGMENT_HIST chỉ có 2023-2025) + 3 năm dự phóng — bỏ
+    # 2021A/2022A (không có số liệu tách mảng, cột trống gây rối theo phản hồi user 2026-07).
+    _years_with_data = [y for y in years_hist if y in REV_SEGMENT_HIST] + years_fc
+    _labels = [f"{y}A" for y in years_hist if y in REV_SEGMENT_HIST] + \
+              [f"{y}E" if i == 0 else f"{y}F" for i, y in enumerate(years_fc)]
+    n = len(_years_with_data)
+    n_hist_shown = sum(1 for y in years_hist if y in REV_SEGMENT_HIST)
+    fig, ax = plt.subplots(figsize=(10.5, 6))
+    x = list(range(n))
+    bottom = [0] * n
+    all_vals = {seg: [] for seg in SEGMENTS}
     for seg in SEGMENTS:
-        vals = []
-        for i, y in enumerate(years_hist):
-            vals.append(REV_SEGMENT_HIST.get(y, {}).get(seg, 0) or 0)
+        vals = [REV_SEGMENT_HIST.get(y, {}).get(seg, 0) or 0 for y in years_hist if y in REV_SEGMENT_HIST]
         vals += REVENUE_FC_SEGMENT[seg]
+        all_vals[seg] = vals
         ax.bar(x, vals, bottom=bottom, label=seg, color=COLOR_SEG[seg])
-        bottom = [bottom[i] + vals[i] for i in range(N_ALL)]
-    ax.set_xticks(x); ax.set_xticklabels(YEAR_HEADERS, fontsize=10)
-    ax.axvline(N_HIST - 0.5, color='gray', linestyle='--', alpha=0.6)
+        bottom = [bottom[i] + vals[i] for i in range(n)]
+    # Nhãn % cơ cấu ngay giữa mỗi đoạn cột (chỉ hiện nếu đoạn đủ lớn để đọc được, tránh chữ chồng nhau)
+    totals = [sum(all_vals[seg][i] for seg in SEGMENTS) for i in range(n)]
+    cum = [0] * n
+    for seg in SEGMENTS:
+        for i in range(n):
+            v = all_vals[seg][i]
+            if totals[i] > 0 and v / totals[i] > 0.06:
+                ax.text(i, cum[i] + v / 2, f"{v/totals[i]*100:.0f}%", ha='center', va='center', fontsize=8, color='white', fontweight='bold')
+            cum[i] += v
+    ax.set_xticks(x); ax.set_xticklabels(_labels, fontsize=10)
+    ax.axvline(n_hist_shown - 0.5, color='gray', linestyle='--', alpha=0.6)
     ax.set_ylabel("Tỷ VND", fontsize=11)
-    ax.set_title(f"{TICKER} — Cơ cấu doanh thu theo mảng", fontsize=13, fontweight='bold')
+    ax.set_title(f"{TICKER} — Cơ cấu doanh thu theo mảng (% = tỷ trọng)", fontsize=13, fontweight='bold')
     ax.legend(fontsize=10); ax.grid(alpha=0.3, axis='y')
     fig.tight_layout()
     path = os.path.join(CHART_DIR, "segment_revenue.png")
@@ -2601,17 +2964,63 @@ def make_segment_revenue_chart():
     return path
 
 def make_store_count_chart():
-    fig, ax = plt.subplots(figsize=(10, 5))
+    # Dùng dữ liệu THÁNG THẬT (MONTHLY_MATRIX) làm phần lịch sử + 3 điểm dự phóng năm nối tiếp — thay
+    # vì chỉ vẽ 3 điểm dự phóng rời rạc như trước (theo phản hồi user 2026-07). 2 trục đơn vị: BHX
+    # (tăng trưởng nhanh, biên độ lớn) dùng trục phải riêng để không "đè" các mảng còn lại.
+    hist_labels = [m["label"] for m in MONTHLY_MATRIX]
+    n_hist = len(hist_labels)
     fc_labels = [f"{y}E" if i == 0 else f"{y}F" for i, y in enumerate(years_fc)]
-    x = list(range(len(years_fc)))
-    for seg in SEGMENTS:
-        ax.plot(x, STORE_COUNT_FC[seg], marker='o', linewidth=2.2, label=seg, color=COLOR_SEG[seg])
-    ax.set_xticks(x); ax.set_xticklabels(fc_labels, fontsize=10)
-    ax.set_ylabel("Số cửa hàng", fontsize=11)
-    ax.set_title(f"{TICKER} — Số cửa hàng dự phóng theo mảng", fontsize=13, fontweight='bold')
-    ax.legend(fontsize=10); ax.grid(alpha=0.3)
+    all_labels = hist_labels + fc_labels
+    x_hist = list(range(n_hist))
+    x_fc = list(range(n_hist, n_hist + len(years_fc)))
+
+    fig, ax1 = plt.subplots(figsize=(13, 6))
+    ax2 = ax1.twinx()
+    for seg in ("TGDD", "DMX", "Khac"):
+        y_hist = [m["stores"].get(seg) for m in MONTHLY_MATRIX]
+        y_fc = STORE_COUNT_FC[seg]
+        ax1.plot(x_hist, y_hist, marker='o', markersize=3, linewidth=1.4, color=COLOR_SEG[seg], label=seg, alpha=0.85)
+        ax1.plot(x_fc, y_fc, marker='s', markersize=5, linewidth=2, linestyle='--', color=COLOR_SEG[seg])
+    y_bhx_hist = [m["stores"].get("BHX") for m in MONTHLY_MATRIX]
+    ax2.plot(x_hist, y_bhx_hist, marker='o', markersize=3, linewidth=1.4, color=COLOR_SEG["BHX"], label="BHX", alpha=0.85)
+    ax2.plot(x_fc, STORE_COUNT_FC["BHX"], marker='s', markersize=5, linewidth=2, linestyle='--', color=COLOR_SEG["BHX"])
+    ax1.axvline(n_hist - 0.5, color='gray', linestyle=':', alpha=0.6)
+    ax1.set_ylabel("Số cửa hàng — TGDĐ/ĐMX/Khác (trục trái)", fontsize=10.5)
+    ax2.set_ylabel("Số cửa hàng — BHX (trục phải)", fontsize=10.5, color=COLOR_SEG["BHX"])
+    step = max(1, len(all_labels) // 18)
+    ax1.set_xticks(list(range(0, len(all_labels), step)))
+    ax1.set_xticklabels([all_labels[i] for i in range(0, len(all_labels), step)], rotation=45, ha='right', fontsize=7.5)
+    ax1.set_title(f"{TICKER} — Số cửa hàng theo tháng (thật) & dự phóng theo năm", fontsize=13, fontweight='bold')
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, fontsize=9, loc='upper left')
+    ax1.grid(alpha=0.3)
     fig.tight_layout()
     path = os.path.join(CHART_DIR, "store_count.png")
+    fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
+    return path
+
+def make_efficiency_chart():
+    # Hiệu quả DT/CH/tháng theo THÁNG cho TGDĐ/ĐMX/BHX, 5 năm gần nhất — theo yêu cầu user 2026-07.
+    cutoff_year = CURRENT_YEAR_REAL - 5
+    recent = [m for m in MONTHLY_MATRIX if m["year"] >= cutoff_year]
+    labels = [m["label"] for m in recent]
+    fig, ax = plt.subplots(figsize=(13, 5.5))
+    x = list(range(len(recent)))
+    for seg in ("TGDD", "DMX", "BHX"):
+        vals = []
+        for m in recent:
+            pct = m["pct"].get(seg)
+            sl = m["stores"].get(seg)
+            vals.append(m["revenue"] * pct / sl if (pct is not None and sl) else None)
+        ax.plot(x, vals, marker='o', markersize=3.5, linewidth=1.6, label=seg, color=COLOR_SEG[seg])
+    step = max(1, len(x) // 20)
+    ax.set_xticks(x[::step]); ax.set_xticklabels([labels[i] for i in x[::step]], rotation=45, ha='right', fontsize=7.5)
+    ax.set_ylabel("Tỷ VND / cửa hàng / tháng", fontsize=11)
+    ax.set_title(f"{TICKER} — Hiệu quả DT/CH/tháng theo tháng ({labels[0] if labels else ''}-{labels[-1] if labels else ''})", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=10); ax.grid(alpha=0.3)
+    fig.tight_layout()
+    path = os.path.join(CHART_DIR, "efficiency_monthly.png")
     fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
     return path
 
@@ -2667,20 +3076,75 @@ def make_quarterly_margin_roe_chart():
     return path
 
 def make_quarterly_growth_chart():
-    fig, ax = plt.subplots(figsize=(11, 5.5))
-    _valid = [q for q in QUARTERLY_RATIOS if q["gp_yoy"] is not None]
-    x = list(range(len(_valid)))
-    labels = [q["label"] for q in _valid]
-    ax.bar([i-0.2 for i in x], [q["gp_yoy"]*100 for q in _valid], width=0.4, label="Tăng trưởng LNG YoY (%)", color="#2980B9")
-    ax.bar([i+0.2 for i in x], [q["ni_yoy"]*100 if q["ni_yoy"] is not None else 0 for q in _valid], width=0.4, label="Tăng trưởng LNST YoY (%)", color="#E74C3C")
-    ax.axhline(0, color='black', linewidth=0.8)
+    # Cột = LNST theo quý (giá trị tuyệt đối, tỷ VND) tới quý hiện tại; đường = tăng trưởng YoY (%) —
+    # ẨN điểm nào tăng trưởng >50% (theo yêu cầu user 2026-07: quý so sánh cùng kỳ lỗ/quá kém khiến
+    # %YoY bị vống lên hàng nghìn %, làm mất khả năng đọc biểu đồ — vẫn giữ CỘT LNST đầy đủ, chỉ ẩn
+    # ĐIỂM TRÊN ĐƯỜNG growth khi vượt ngưỡng, không xóa cả quý đó khỏi biểu đồ).
+    fig, ax1 = plt.subplots(figsize=(11, 5.5))
+    x = list(range(len(QUARTERLY_RATIOS)))
+    labels = [q["label"] for q in QUARTERLY_RATIOS]
+    ax1.bar(x, [q["ni"] for q in QUARTERLY_RATIOS], color="#2980B9", label="LNST theo quý (tỷ VND)", alpha=0.85)
+    ax1.axhline(0, color='black', linewidth=0.8)
+    ax1.set_ylabel("LNST (tỷ VND)", fontsize=11)
     step = max(1, len(x) // 16)
-    ax.set_xticks(x[::step]); ax.set_xticklabels([labels[i] for i in x[::step]], rotation=45, ha='right', fontsize=8)
-    ax.set_ylabel("%", fontsize=11)
-    ax.set_title(f"{TICKER} — Tăng trưởng LNG/LNST theo quý (YoY)", fontsize=13, fontweight='bold')
-    ax.legend(fontsize=10); ax.grid(alpha=0.3, axis='y')
+    ax1.set_xticks(x[::step]); ax1.set_xticklabels([labels[i] for i in x[::step]], rotation=45, ha='right', fontsize=8)
+    ax1.set_title(f"{TICKER} — LNST theo quý & Tăng trưởng YoY (ẩn điểm >70% hoặc <-30% do nền so sánh quá thấp/quá cao)", fontsize=12.5, fontweight='bold')
+
+    ax2 = ax1.twinx()
+    growth_pct = [q["ni_yoy"]*100 if (q["ni_yoy"] is not None and -0.3 <= q["ni_yoy"] <= 0.7) else None for q in QUARTERLY_RATIOS]
+    ax2.plot(x, growth_pct, marker='o', markersize=4, linewidth=1.8, color="#E74C3C", label="Tăng trưởng LNST YoY (%, -30%~70%)")
+    ax2.set_ylabel("Tăng trưởng YoY (%)", fontsize=11)
+
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=9)
+    ax1.grid(alpha=0.3, axis='y')
     fig.tight_layout()
     path = os.path.join(CHART_DIR, "quarterly_growth.png")
+    fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
+    return path
+
+def make_pe_history_chart():
+    _q = sorted({(r["year"], r["quarter"]) for r in MWG_RATIOS if r.get("quarter") in (1,2,3,4)})
+    labels = [f"{y}Q{q}" for y, q in _q]
+    vals = []
+    for y, q in _q:
+        rec = next((r for r in MWG_RATIOS if r.get("year")==y and r.get("quarter")==q), {})
+        pe0 = rec.get("pe")
+        vals.append(round(pe0, 2) if pe0 and 0 < pe0 < 50 else None)
+    fig, ax = plt.subplots(figsize=(12, 5))
+    x = list(range(len(labels)))
+    ax.plot(x, vals, marker='o', markersize=3, linewidth=1.6, color="#2980B9", label="P/E theo quý (x)")
+    ax.axhline(PE_HIST_MEDIAN, color="#E74C3C", linestyle='--', linewidth=1.8, label=f"Median: {PE_HIST_MEDIAN:.2f}x")
+    step = max(1, len(x) // 20)
+    ax.set_xticks(x[::step]); ax.set_xticklabels([labels[i] for i in x[::step]], rotation=45, ha='right', fontsize=8)
+    ax.set_ylabel("P/E (x)", fontsize=11)
+    ax.set_title(f"{TICKER} — P/E lịch sử theo quý ({labels[0]}-{labels[-1]})", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=10); ax.grid(alpha=0.3)
+    fig.tight_layout()
+    path = os.path.join(CHART_DIR, "pe_history.png")
+    fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
+    return path
+
+def make_pb_history_chart():
+    _q = sorted({(r["year"], r["quarter"]) for r in MWG_RATIOS if r.get("quarter") in (1,2,3,4)})
+    labels = [f"{y}Q{q}" for y, q in _q]
+    vals = []
+    for y, q in _q:
+        rec = next((r for r in MWG_RATIOS if r.get("year")==y and r.get("quarter")==q), {})
+        pb0 = rec.get("pb")
+        vals.append(round(pb0, 2) if pb0 and pb0 > 0 else None)
+    fig, ax = plt.subplots(figsize=(12, 5))
+    x = list(range(len(labels)))
+    ax.plot(x, vals, marker='o', markersize=3, linewidth=1.6, color="#27AE60", label="P/B theo quý (x)")
+    ax.axhline(PB_HIST_MEDIAN, color="#E74C3C", linestyle='--', linewidth=1.8, label=f"Median: {PB_HIST_MEDIAN:.2f}x")
+    step = max(1, len(x) // 20)
+    ax.set_xticks(x[::step]); ax.set_xticklabels([labels[i] for i in x[::step]], rotation=45, ha='right', fontsize=8)
+    ax.set_ylabel("P/B (x)", fontsize=11)
+    ax.set_title(f"{TICKER} — P/B lịch sử theo quý ({labels[0]}-{labels[-1]})", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=10); ax.grid(alpha=0.3)
+    fig.tight_layout()
+    path = os.path.join(CHART_DIR, "pb_history.png")
     fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
     return path
 
@@ -2864,7 +3328,9 @@ def build_pdf():
     ]))
     story.append(eff_tbl)
     story.append(Spacer(1, 8))
-    story.append(Image(make_store_count_chart(), width=165*mm, height=95*mm))
+    story.append(Image(make_store_count_chart(), width=170*mm, height=80*mm))
+    story.append(PageBreak())
+    story.append(Image(make_efficiency_chart(), width=170*mm, height=72*mm))
     story.append(PageBreak())
 
     # ── Trang phụ: Phân tích chi tiết từng mảng (dữ liệu IR thật, thu thập trực tiếp) ───────────
@@ -3092,6 +3558,15 @@ def build_pdf():
         f"Tăng trưởng dài hạn giả định {TERMINAL_GROWTH*100:.1f}%.", style_body))
     story.append(PageBreak())
 
+    story.append(Paragraph("P/E & P/B LỊCH SỬ THEO QUÝ", style_h1))
+    story.append(Paragraph(
+        f"P/E Median lịch sử {PE_HIST_MEDIAN:.2f}x, P/B Median lịch sử {PB_HIST_MEDIAN:.2f}x (median toàn bộ quý có "
+        f"dữ liệu, xem đầy đủ tại sheet 13_PE_PB_History trong file Excel).", style_body))
+    story.append(Image(make_pe_history_chart(), width=170*mm, height=72*mm))
+    story.append(Spacer(1, 6))
+    story.append(Image(make_pb_history_chart(), width=170*mm, height=72*mm))
+    story.append(PageBreak())
+
     # ── Trang 15-16: Rủi ro & Catalysts ─────────────────────────────────────────────────────────
     story.append(Paragraph("RỦI RO & CATALYST", style_h1))
     story.append(Paragraph("Ma trận rủi ro:", style_h2))
@@ -3203,7 +3678,7 @@ def save_json_summary():
             f"YoY), biên LNG duy trì {GPM_FC_PCT:.1f}%, LNST Cổ đông mẹ {ni_fc[0]:,.0f} tỷ. Đòn bẩy thấp, Net Debt "
             "âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
         "valuationText": f"Giá mục tiêu {WEIGHTED_TARGET_PRICE:,.0f} VND (upside {UPSIDE_PCT:+.1f}%) theo mô hình 4 "
-            "phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo từng mảng 50%). Khuyến nghị "
+            "phương pháp (P/E 25%, P/B 30%, RI 10%, P/S+P/E theo từng mảng 35%). Khuyến nghị "
             f"{RECOMMEND}.",
     }
     ratios = {
@@ -3234,7 +3709,33 @@ def save_json_summary():
             "storeCountNow": STORE_COUNT_NOW,
             "revenueForecast": {seg: REVENUE_FC_SEGMENT[seg] for seg in SEGMENTS},
             "efficiencyNow": {seg: round(EFFICIENCY_NOW[seg], 3) for seg in SEGMENTS},
+            "storeCountForecast": {seg: STORE_COUNT_FC[seg] for seg in SEGMENTS},
+            "monthly": {
+                "labels": [m["label"] for m in MONTHLY_MATRIX],
+                "storeCount": {
+                    seg: [m["stores"].get(seg) for m in MONTHLY_MATRIX] for seg in SEGMENTS
+                },
+                "efficiency": {
+                    seg: [
+                        round(m["revenue"] * m["pct"][seg] / m["stores"][seg], 3)
+                        if (m["pct"].get(seg) is not None and m["stores"].get(seg)) else None
+                        for m in MONTHLY_MATRIX
+                    ] for seg in SEGMENTS
+                },
+            },
         },
+        "quarterlyRatios": {
+            "labels": [q["label"] for q in QUARTERLY_RATIOS],
+            "revenue": [q["rev"] for q in QUARTERLY_RATIOS],
+            "gp": [q["gp"] for q in QUARTERLY_RATIOS],
+            "ni": [q["ni"] for q in QUARTERLY_RATIOS],
+            "gpm": [q["gpm"] for q in QUARTERLY_RATIOS],
+            "npm": [q["npm"] for q in QUARTERLY_RATIOS],
+            "roe": [q["roe_annualized"] for q in QUARTERLY_RATIOS],
+            "gp_yoy": [q["gp_yoy"] for q in QUARTERLY_RATIOS],
+            "ni_yoy": [q["ni_yoy"] for q in QUARTERLY_RATIOS],
+        },
+        "assetQuality": ASSET_QUALITY_FLAGS,
         "thesis": thesis,
         "risks": risks,
         "moats": moats,
@@ -3247,8 +3748,12 @@ def save_json_summary():
                 "pe": PE_TARGET_PRICE, "pb": PB_TARGET_PRICE, "ri": RI_TARGET_PRICE,
                 "ps_pe": PS_PE_TARGET_PRICE,
             },
+            "weights": VALUATION_WEIGHTS,
             "recommendation": RECOMMEND,
             "upsidePct": UPSIDE_PCT,
+            "coe": round(COE * 100, 2),
+            "peMedian": PE_HIST_MEDIAN,
+            "pbMedian": PB_HIST_MEDIAN,
         },
         "comments": comments,
         "pe_hist": [round(stats.median([r["pe"] for r in MWG_RATIOS if r.get("year") == y and r.get("pe")]), 2)
