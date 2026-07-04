@@ -1464,6 +1464,17 @@ def build_excel():
 
     left_align = Alignment(horizontal='left', vertical='center')
     right_align = Alignment(horizontal='right', vertical='center')
+    # EPS/BVPS TTM (2026-07, user phát hiện bug: Cover sheet P/E TTM/P/B/EV-EBITDA từng trỏ vào
+    # '02_Assumptions'!J22/J23/J24 — các ô này thực ra là cột ghi chú của "Doanh thu TC/Chi phí TC/
+    # Thu nhập khác", không liên quan, do dịch chuyển hàng ở 02_Assumptions qua nhiều lần sửa mà
+    # Cover sheet không cập nhật theo). Tính trực tiếp từ PRICE/EPS/BVPS/EBITDA TTM tại đây.
+    eps_val = round(sum(eps_hist[y_idx] for y_idx in [3, 4]) / 2) if len(eps_hist) >= 5 else eps_hist[-1]
+    bvps_val = round(equity_hist[4] * 1e9 / SHARES)
+    ebitda_ttm = ebit_hist[4] + da_hist[4]
+    net_debt_ttm = total_debt_hist[4] - cash_for_valuation_hist[4]
+    pe_ttm_now = round(PRICE / eps_val, 1) if eps_val else 0
+    pb_now = round(PRICE / bvps_val, 2) if bvps_val else 0
+    ev_ebitda_now = round((MARKET_CAP / 1e9 + net_debt_ttm) / ebitda_ttm, 1) if ebitda_ttm else 0
     info = [
         ("Ticker", TICKER, None, left_align),
         ("Sàn", EXCHANGE, None, left_align),
@@ -1471,9 +1482,9 @@ def build_excel():
         ("Giá hiện tại (VND)", PRICE, '#,##0', right_align),
         ("Số CP lưu hành", SHARES, '#,##0', right_align),
         ("Vốn hóa (tỷ)", MARKET_CAP / 1e9, '#,##0', right_align),
-        ("P/E TTM", "='02_Assumptions'!J22", '0.0"x"', right_align),
-        ("P/B", "='02_Assumptions'!J23", '0.00"x"', right_align),
-        ("EV/EBITDA", "='02_Assumptions'!J24", '0.0"x"', right_align),
+        ("P/E TTM", pe_ttm_now, '0.0"x"', right_align),
+        ("P/B", pb_now, '0.00"x"', right_align),
+        ("EV/EBITDA", ev_ebitda_now, '0.0"x"', right_align),
         ("52W Cao/Thấp", "28,045 / 19,789", None, right_align),
         ("Room ngoại", "20.6%", None, right_align),
         ("Khuyến nghị", "MUA", None, Alignment(horizontal='center', vertical='center')),
@@ -1494,8 +1505,6 @@ def build_excel():
         cell.border = thin_border
         cell.alignment = al
     # Add EPS, BVPS, KLGD, shareholder, price perf
-    eps_val = round(sum(eps_hist[y_idx] for y_idx in [3,4])/2) if len(eps_hist) >=5 else eps_hist[-1]
-    bvps_val = round(equity_hist[4] * 1e9 / SHARES)
     extra_rows = [
         ("EPS TTM (VND)", eps_val, '#,##0', right_align),
         ("BVPS (VND)", bvps_val, '#,##0', right_align),
