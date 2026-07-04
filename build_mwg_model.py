@@ -747,11 +747,13 @@ def derive_monthly_from_cumulative(history_cache):
 
         def _month_seg_pct(cum_rev, rev_pct, total_standalone):
             """Tính % ĐÚNG của doanh thu THÁNG (không phải % lũy kế) bằng cách trừ lũy kế mảng giữa 2
-            kỳ liên tiếp, cập nhật prev_seg_cum cho vòng lặp kế tiếp. Nếu kết quả suy ra ÂM hoặc lệch
-            bất thường (ngoài khoảng 0-70%, ngưỡng rộng rãi vì 1 mảng hiếm khi chiếm hơn 70% DT MWG) —
-            fallback về % tháng liền trước (theo yêu cầu user 2026-07), tránh 1 sai số nhỏ trong %lũy
-            kế báo cáo (làm tròn 1 chữ số thập phân) bị khuếch đại thành số âm/vô lý khi trừ 2 số lớn
-            gần bằng nhau."""
+            kỳ liên tiếp, cập nhật prev_seg_cum cho vòng lặp kế tiếp. % lũy kế mỗi báo cáo IR chỉ làm
+            tròn 1 chữ số thập phân — khi DT lũy kế đã lớn (hàng chục-trăm ngàn tỷ), sai số làm tròn
+            RẤT NHỎ trong % có thể bị KHUẾCH ĐẠI thành chênh lệch lớn/âm/vô lý sau khi trừ 2 số lớn gần
+            bằng nhau để ra DT riêng 1 tháng (mẫu số nhỏ). Do đó: nếu kết quả suy ra ÂM, ngoài khoảng
+            0-70%, HOẶC lệch quá xa so với % tháng liền trước (>10 điểm % — 1 mảng hiếm khi đổi tỷ
+            trọng nhanh như vậy trong 1 tháng) — fallback về % tháng liền trước, theo đúng yêu cầu user
+            2026-07 ("nếu số liệu lệch quá nhiều thì lấy theo % của tháng trước")."""
             result = {}
             for seg, pct in rev_pct.items():
                 if pct is None:
@@ -760,7 +762,8 @@ def derive_monthly_from_cumulative(history_cache):
                 seg_cum_now = cum_rev * pct
                 if seg in prev_seg_cum and total_standalone:
                     diffed = (seg_cum_now - prev_seg_cum[seg]) / total_standalone
-                    if 0 <= diffed <= 0.7:
+                    too_far = seg in last_good_pct and abs(diffed - last_good_pct[seg]) > 0.10
+                    if 0 <= diffed <= 0.7 and not too_far:
                         result[seg] = round(diffed, 4)
                     elif seg in last_good_pct:
                         result[seg] = last_good_pct[seg]
@@ -830,6 +833,14 @@ def derive_monthly_from_cumulative(history_cache):
 #     text-extract nào khắc phục được. Giải pháp: tải PDF, RENDER từng trang ra ảnh (pdfplumber
 #     .to_image()), đọc trực tiếp bằng thị giác (như đọc ảnh chụp màn hình user gửi).
 MWG_MONTHLY_HISTORY_OVERRIDES = {
+    "2192": {  # Báo cáo KQKD cả năm 2021 — chỉ có DT lũy kế (122958), thiếu cửa hàng/cơ cấu mảng
+              # (báo cáo "cả năm" dùng layout tóm tắt khác, không có bảng chi tiết) — bổ sung donut
+              # "Theo chuỗi" user cung cấp: TGDD 25.7%, DMX 51.0%, BHX 22.9%, Bluetronics 0.4%.
+        "year": 2021, "title": 'Báo cáo KQKD cả năm 2021',
+        "revenue_total_cum": 122958.0,
+        "stores": {},
+        "table_row": {'TGDD': {'rev_pct': 0.257}, 'DMX': {'rev_pct': 0.51}, 'BHX': {'rev_pct': 0.229}, 'Bluetronics': {'rev_pct': 0.004}},
+    },
     "2117": {  # Báo cáo tóm tắt KQKD 8 tháng đầu năm 2021
         "year": 2021, "title": 'Báo cáo tóm tắt KQKD 8 tháng đầu năm 2021',
         "revenue_total_cum": 78495.0,
@@ -842,16 +853,18 @@ MWG_MONTHLY_HISTORY_OVERRIDES = {
         "stores": {'TGDD': 950, 'DMX': 1781, 'BHX': 1934, 'Bluetronics': 50},
         "table_row": {'BHX': {'stores': 1934, 'rev_pct': 0.26, 'rev_yoy': 0.5}, 'Bluetronics': {'stores': 50, 'rev_pct': 0.004, 'rev_yoy': 2.63}, 'TGDD': {'stores': 950, 'rev_pct': 0.236, 'rev_yoy': -0.07}, 'DMX': {'stores': 1781, 'rev_pct': 0.5, 'rev_yoy': -0.02}},
     },
-    "2162": {  # Báo cáo tóm tắt KQKD 10 tháng đầu năm 2021
+    "2162": {  # Báo cáo tóm tắt KQKD 10 tháng đầu năm 2021 — "Trong đó: 958 TGDĐ, 1.802 ĐMX, 1.976
+              # BHX, 50 Bluetronics, 4 Topzone và 131 nhà thuốc An Khang" (ảnh IR gốc, xác nhận lại)
         "year": 2021, "title": 'Báo cáo tóm tắt KQKD 10 tháng đầu năm 2021',
         "revenue_total_cum": 99006.0,
-        "stores": {'TGDD': 958, 'DMX': 1802, 'BHX': 1976},
+        "stores": {'TGDD': 958, 'DMX': 1802, 'BHX': 1976, 'AnKhang': 131, 'Bluetronics': 50},
         "table_row": {'TGDD': {'stores': 958, 'rev_pct': 0.24}, 'DMX': {'stores': 1802, 'rev_pct': 0.509}, 'BHX': {'stores': 1976, 'rev_pct': 0.248}},
     },
-    "2184": {  # Báo cáo tóm tắt KQKD 11 tháng đầu năm 2021
+    "2184": {  # Báo cáo tóm tắt KQKD 11 tháng đầu năm 2021 — "Trong đó: 966 TGDĐ, 1.863 ĐMX, 2.026
+              # BHX, 50 Bluetronics, 4 Topzone và 156 nhà thuốc An Khang" (ảnh IR gốc, xác nhận lại)
         "year": 2021, "title": 'Báo cáo tóm tắt KQKD 11 tháng đầu năm 2021',
         "revenue_total_cum": 110530.0,
-        "stores": {'TGDD': 966, 'DMX': 1863, 'BHX': 2026, 'AnKhang': 156},
+        "stores": {'TGDD': 966, 'DMX': 1863, 'BHX': 2026, 'AnKhang': 156, 'Bluetronics': 50},
         "table_row": {'TGDD': {'stores': 966, 'rev_pct': 0.243}, 'DMX': {'stores': 1863, 'rev_pct': 0.515}, 'BHX': {'stores': 2026, 'rev_pct': 0.238}},
     },
     "2219": {  # Báo cáo tóm tắt KQKD mùa Tết (tháng 1+2) năm 2022
