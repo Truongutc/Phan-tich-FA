@@ -695,12 +695,56 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         nii_val = interest_income - interest_expense
         nii_fc.append(round(nii_val, 1))
         nim_fc.append(round(nii_val / iea_avg_fc[i], 4))
+    # NIM năm 1 (2026-07, theo yêu cầu user, áp dụng mọi ngân hàng): nếu CHƯA có quý nào của năm dự
+    # phóng được công bố (_n_nii_q == 0), giữ NGUYÊN giá trị cơ học (YOEA/COF) như cũ — không có gì để
+    # blend. Nếu ĐÃ có ít nhất 1 quý (Q1/Q2/Q3...), NIM năm 1 = 50% giá trị cơ học (YOEA/COF, "giá trị
+    # tính toán cũ") + 50% NIM THỰC TẾ của QUÝ GẦN NHẤT đã công bố (không phải NIM lũy kế cả năm) — cách
+    # này khác blend_annual_estimate() (vốn tăng dần trọng số theo SỐ QUÝ đã biết); ở đây LUÔN cố định
+    # 50/50 miễn là có ít nhất 1 quý thực tế.
     _nii_cum, _n_nii_q = cumulative_actual_quarters(_is_q_all, _cur_fc_year, "isb27")
+    nim_mechanical_0 = nim_fc[0]
+    _nim_latest_q_actual = None
+    _latest_q_num = None
+
+    def _get_quarter_field(records, yr, q, field):
+        for r in records:
+            if r.get("yearReport") == yr and r.get("lengthReport") == q:
+                return r.get(field)
+        return None
+
+    def _get_quarter_iea_bank(bs_records, yr, q):
+        r = None
+        for rec in bs_records:
+            if rec.get("yearReport") == yr and rec.get("lengthReport") == q:
+                r = rec
+                break
+        if r is None:
+            return None
+        return ((r.get("bsa2") or 0) + (r.get("bsb97") or 0) + (r.get("bsb98") or 0)
+                + (r.get("bsb103") or 0) + (r.get("bsb106") or 0)) / 1e9
+
     if _n_nii_q > 0:
-        nii_fc[0] = round(blend_annual_estimate(_nii_cum, _n_nii_q, nii_fc[0]), 1)
-        nim_fc[0] = round(nii_fc[0] / iea_avg_fc[0], 4)
-        print(f"  [Blend] {_cur_fc_year}F NII: {_n_nii_q}/4 quy da biet (luy ke {_nii_cum:,.0f} ty) "
-              f"-> blend = {nii_fc[0]:,.0f} ty")
+        _latest_q_num, _latest_q_year = _n_nii_q, _cur_fc_year
+        if _latest_q_num == 1:
+            _prev_q_num, _prev_q_year = 4, _cur_fc_year - 1
+        else:
+            _prev_q_num, _prev_q_year = _latest_q_num - 1, _cur_fc_year
+
+        _nii_latest_q = _get_quarter_field(_is_q_all, _latest_q_year, _latest_q_num, "isb27")
+        _iea_latest_q = _get_quarter_iea_bank(_bs_q_all, _latest_q_year, _latest_q_num)
+        _iea_prev_q = _get_quarter_iea_bank(_bs_q_all, _prev_q_year, _prev_q_num)
+
+        if _nii_latest_q is not None and _iea_latest_q and _iea_prev_q:
+            _nii_latest_q_ty = _nii_latest_q / 1e9
+            _avg_iea_latest_q = (_iea_latest_q + _iea_prev_q) / 2
+            _nim_latest_q_actual = (_nii_latest_q_ty * 4) / _avg_iea_latest_q
+            nim_fc[0] = round(0.5 * nim_mechanical_0 + 0.5 * _nim_latest_q_actual, 4)
+            nii_fc[0] = round(nim_fc[0] * iea_avg_fc[0], 1)
+            print(f"  [Blend] {_cur_fc_year}F NIM: Q{_latest_q_num} thuc te = {_nim_latest_q_actual*100:.2f}%, "
+                  f"co hoc (YOEA/COF) = {nim_mechanical_0*100:.2f}% -> 50/50 blend = {nim_fc[0]*100:.2f}%")
+        else:
+            print(f"  [WARN] Khong du du lieu quy {_latest_q_num}/{_latest_q_year} de tinh NIM thuc te "
+                  f"- giu nguyen NIM co hoc (YOEA/COF).")
 
     # Giữ NIM năm 2/3 (years_fc[1]/[2]) bằng ĐÚNG NIM năm 1 sau blend (2026-07, theo yêu cầu user, áp
     # dụng mọi ngân hàng) — không giả định NIM mở rộng trong tương lai, giúp định giá an toàn hơn. Trước
@@ -1200,6 +1244,19 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
                     inc_row = 38 + (i - 5)
                     cell.value = f"=B37+B{inc_row}"
             cell.number_format = FMT_PCT
+
+    # Ghi chú cách tính NIM (row 6) — vì G6/H6/I6 giờ là SỐ CỐ ĐỊNH (không phải công thức bấm-vào-xem,
+    # do có bước blend với số quý thực tế chỉ Python mới làm được), thêm chú thích liệt kê rõ các số
+    # đầu vào để người đọc kiểm chứng được cách tính ngay trong Excel (2026-07, theo yêu cầu user).
+    _nim_note = (
+        f"Năm 1 ({years_fc[0]}E) cơ học (YOEA/COF): YOEA={yo_ea_fc[0]*100:.2f}% (gốc {yo_ea_base*100:.2f}% x hệ số {yo_ea_fc_adj[0]}), "
+        f"COF={cof_fc[0]*100:.2f}% (gốc {cof_base*100:.2f}% x hệ số {cof_fc_adj[0]}) → NIM cơ học={nim_mechanical_0*100:.2f}%. "
+        + (f"Đã có Q{_latest_q_num} thực tế = {_nim_latest_q_actual*100:.2f}% → NIM năm 1 = 50% cơ học + 50% Q{_latest_q_num} thực tế = {nim_fc[0]*100:.2f}%."
+           if _nim_latest_q_actual is not None else "Chưa có quý thực tế nào trong năm này nên giữ nguyên NIM cơ học.")
+        + " Năm 2/3 GIỮ NGUYÊN bằng năm 1 (không giả định NIM tăng, để định giá an toàn hơn)."
+    )
+    ws_ass.cell(row=6, column=10, value=_nim_note).font = Font(name="Calibri", size=8, italic=True, color="888888")
+    ws_ass.column_dimensions['J'].width = 60
 
     # Parameter rows — YOEA & COF là input chính, NIM được tính từ chúng
     ws_ass.cell(row=17, column=1, value="——— THAM SỐ TÍNH TOÁN (có thể sửa trực tiếp) ———").font = FMT_BOLD
