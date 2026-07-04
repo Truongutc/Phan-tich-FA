@@ -905,9 +905,15 @@ if CUR_Q_YEAR == 2026 and CUR_Q_TOTAL_KT is not None:
         _cur_q_xd_kt = CUR_Q_TOTAL_KT - _cur_q_hrc_kt
     _cum_hrc_kt = HRC_SALES_HIST_KT[-1] + _cur_q_hrc_kt
     _cum_xd_kt = XD_SALES_HIST_KT[-1] + _cur_q_xd_kt
-    SL_HRC_A[5] = round(blend_annual_estimate(_cum_hrc_kt, 2, _orig_hrc_assumption_kt) / 1000, 2)
-    SL_XD_A[5] = round(blend_annual_estimate(_cum_xd_kt, 2, _orig_xd_assumption_kt) / 1000, 2)
-    print(f"  -> Updated 2026E annual volume (blend, n=2/4 quy da biet): HRC={SL_HRC_A[5]}Mt, XD={SL_XD_A[5]}Mt")
+    # KHÔNG dùng blend_annual_estimate() ở đây (2026-07, user phát hiện bug): công thức đó cộng lũy kế
+    # thực tế với (giả định gốc CẢ NĂM) x (4-n)/4 — khi giả định gốc cũ (VD XD 3.0 triệu tấn/năm) đã lỗi
+    # thời, thấp hơn nhiều tốc độ thực tế (2 quý đã đạt 2.717 triệu tấn XD), phần "nửa năm còn lại" bị
+    # tính theo giả định lạc hậu thay vì theo đà thực tế đang chạy (Dung Quất 2 tăng công suất thật, không
+    # phải đột biến 1 quý) -> ra số annual thấp bất hợp lý (4.22 triệu tấn dù nửa năm đã 2.717 triệu tấn).
+    # Ngoại suy thẳng theo run-rate 2 quý đã biết mới đúng bản chất tăng trưởng công suất thực.
+    SL_HRC_A[5] = round((_cum_hrc_kt / 2 * 4) / 1000, 2)
+    SL_XD_A[5] = round((_cum_xd_kt / 2 * 4) / 1000, 2)
+    print(f"  -> Updated 2026E annual volume (run-rate extrapolation, n=2/4 quy da biet): HRC={SL_HRC_A[5]}Mt, XD={SL_XD_A[5]}Mt")
 
 # ── SL_HRC_A/SL_XD_A năm SAU năm dự phóng đầu tiên (2027E - index 6) khi CHƯA có quý nào của năm đó
 # (2026-07, theo yêu cầu user) — ước tính = SL 2 quý GẦN NHẤT đã biết (nửa năm) x2 (năm hóa) x1.05
@@ -1186,7 +1192,9 @@ equity_fc_val = []
 prev_equity = equity_hist[-1]
 for i in range(3):
     dividend_paid = DIV_PER_SHARE_FC[i] * shares_fc[i] / 1000  # VND/CP * triệu CP / 1000 = tỷ VND
-    prev_equity = prev_equity + ni_fc[i] - dividend_paid
+    # x0.9666: phần NI giữ lại sau khi trích quỹ khen thưởng phúc lợi (KTPL) ~3.34% NPAT,
+    # khớp cách Excel đang trừ quỹ KTPL trước khi cộng vào vốn chủ sở hữu (tránh lệch VCSH Excel vs Python)
+    prev_equity = prev_equity + ni_fc[i] * 0.9666 - dividend_paid
     equity_fc_val.append(round(prev_equity))
 
 # Leading indicators — 4 dòng giá/tỷ giá (2026-07, user phát hiện bug): trước đây "Giá trị hiện tại"
@@ -1432,61 +1440,6 @@ for _r in _cash_yoy_g:
 DEBT_2026E = _debt_fc_g[1]
 CASH_2026E = _cash_fc_g[1]
 NET_DEBT_2026E = DEBT_2026E - CASH_2026E
-
-
-# ── Đọc ngược giá trị định giá THẬT từ Excel sau khi tính công thức (2026-07, theo yêu cầu user) ──
-# User yêu cầu giữ nguyên công thức SỐNG trong Excel (03_Revenue_Model!row6, 02_Assumptions!row19/20
-# link sang sheet 17_Gia_Hang_Hoa...) để bấm vào ô kiểm soát được — nhưng cũng yêu cầu PDF/JSON khớp
-# TUYỆT ĐỐI với Excel. Hai yêu cầu này chỉ đồng thời thoả mãn được nếu PDF/JSON đọc THẲNG kết quả
-# Excel đã tính (không tự tính lại bằng mảng Python riêng, vốn chỉ xấp xỉ chuỗi công thức nhiều lớp
-# thật của Excel — đã xảy ra 2 lần lệch số kiểu này, GP margin và giờ là giá HRC/quặng/than 2026E).
-# openpyxl không tự tính công thức — dùng LibreOffice headless (có trên GitHub Actions Ubuntu qua
-# `apt-get install libreoffice-calc`) để mở, tính lại, và lưu ra bản có cached value, rồi đọc ngược
-# đúng 5 ô kết quả cuối cùng ở sheet 07_Valuation (EV/EBITDA/P/B/P/E target, giá mục tiêu, upside).
-# KHÔNG BAO GIỜ raise/treo — nếu LibreOffice không có (máy dev không cài) hoặc lỗi bất kỳ, trả về
-# None và build_pdf()/save_json_summary() tự fallback về tính bằng Python như trước (kém chính xác
-# hơn nhưng không làm hỏng pipeline).
-EXCEL_RECALC = None
-
-def recalculate_excel_valuation(path, timeout=90):
-    """Mở `path` bằng LibreOffice headless để ép tính công thức thật, đọc ngược 07_Valuation!C2/C3/
-    C4/C10/C13 (EV/EBITDA target, P/B target, P/E target, giá mục tiêu, upside). Trả về dict hoặc
-    None nếu lỗi/timeout/không có LibreOffice — không bao giờ raise."""
-    try:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            r = subprocess.run(
-                ["soffice", "--headless", "--convert-to", "xlsx", "--outdir", tmpdir, path],
-                capture_output=True, timeout=timeout,
-            )
-            if r.returncode != 0:
-                print(f"  [WARN] LibreOffice recalc failed (exit {r.returncode}): {r.stderr.decode(errors='ignore')[:300]}")
-                return None
-            out_path = os.path.join(tmpdir, os.path.basename(path))
-            if not os.path.exists(out_path):
-                print("  [WARN] LibreOffice recalc: output file not found")
-                return None
-            wb_r = openpyxl.load_workbook(out_path, data_only=True)
-            ws7_r = wb_r["07_Valuation"]
-            vals = {
-                "ev_price": ws7_r["C2"].value, "pb_price": ws7_r["C3"].value,
-                "pe_price": ws7_r["C4"].value, "target_price": ws7_r["C10"].value,
-                "upside": ws7_r["C13"].value,
-            }
-            wb_r.close()
-            if any(v is None for v in vals.values()):
-                print(f"  [WARN] LibreOffice recalc: some 07_Valuation cells still empty: {vals}")
-                return None
-            print(f"  [OK] Excel recalculated via LibreOffice - 07_Valuation: {vals}")
-            return vals
-    except FileNotFoundError:
-        print("  [WARN] LibreOffice (soffice) not found - PDF/JSON will use Python-computed valuation instead")
-        return None
-    except subprocess.TimeoutExpired:
-        print(f"  [WARN] LibreOffice recalc timeout ({timeout}s)")
-        return None
-    except Exception as e:
-        print(f"  [WARN] LibreOffice recalc error: {e}")
-        return None
 
 
 # ── 1. EXCEL MODEL ──────────────────────────────────────────────────────────
@@ -2443,8 +2396,11 @@ def build_excel():
         ws7.cell(row=i, column=1, value=name).border = thin_border
         ws7.cell(row=i, column=2, value=weight).border = thin_border
         ws7.cell(row=i, column=2).number_format = '0%'
-        ws7.cell(row=i, column=3, value=f"={formula}").border = thin_border
+
+        c_val = f"={formula}"
+        ws7.cell(row=i, column=3, value=c_val).border = thin_border
         ws7.cell(row=i, column=3).alignment = Alignment(horizontal='center')
+        ws7.cell(row=i, column=3).number_format = '#,##0'
         ws7.cell(row=i, column=4, value=note).border = thin_border
 
     # P/B buy/sell zone reference
@@ -2464,8 +2420,9 @@ def build_excel():
     ws7.cell(row=V_W7, column=1).fill = assump_fill
     ws7.cell(row=V_W7, column=2, value=1.0).border = thin_border
     ws7.cell(row=V_W7, column=2).number_format = '0%'
-    ws7.cell(row=V_W7, column=3,
-             value=f"=C{V_EV7}*B{V_EV7}+C{V_PB7}*B{V_PB7}+C4*B4").border = thin_border
+    
+    w_val = f"=C{V_EV7}*B{V_EV7}+C{V_PB7}*B{V_PB7}+C4*B4"
+    ws7.cell(row=V_W7, column=3, value=w_val).border = thin_border
     ws7.cell(row=V_W7, column=3).fill = assump_fill
     ws7.cell(row=V_W7, column=3).alignment = Alignment(horizontal='center')
     ws7.cell(row=V_W7, column=3).number_format = '#,##0'
@@ -2477,10 +2434,10 @@ def build_excel():
     ws7.cell(row=V_PRICE7, column=3).number_format = '#,##0'
 
     # Upside
+    up_val = f"=C{V_W7}/C{V_PRICE7}-1"
     ws7.cell(row=V_UP7, column=1, value="Upside (%)").border = thin_border
     ws7.cell(row=V_UP7, column=1).fill = p_fill
-    ws7.cell(row=V_UP7, column=3,
-             value=f"=C{V_W7}/C{V_PRICE7}-1").border = thin_border
+    ws7.cell(row=V_UP7, column=3, value=up_val).border = thin_border
     ws7.cell(row=V_UP7, column=3).fill = p_fill
     ws7.cell(row=V_UP7, column=3).alignment = Alignment(horizontal='center')
     ws7.cell(row=V_UP7, column=3).number_format = '0.0%'
@@ -3860,38 +3817,39 @@ def build_excel():
         "= TB(các tháng đã có tin, cột tương ứng) × 3 — công thức sống, tự cập nhật khi điền thêm tháng mới ở trên"
     )).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
 
-    # ── Mục F: Dự phóng sản lượng NĂM 2026E (run-rate 2 quý đã biết) — Excel formula sống, link về
-    # từ 03_Revenue_Model để ra doanh thu/LNST dự phóng, theo đúng yêu cầu user "link công thức tính
-    # toán để dự báo LNST năm và quý này" ──
+    # ── Mục F: Dự phóng sản lượng NĂM 2026E — SỐ TÍNH SẴN từ SL_HRC_A/SL_XD_A (Python, ngoại suy
+    # thẳng theo run-rate 2 quý đã biết: lũy kế/2×4). KHÔNG dùng blend_annual_estimate() (2026-07, user
+    # phát hiện bug: hàm đó cộng lũy kế thực tế với (giả định gốc CẢ NĂM)×(4-n)/4 — khi giả định gốc cũ
+    # đã lỗi thời/thấp hơn tốc độ thực tế đang chạy do tăng công suất thật (Dung Quất 2), ra số annual
+    # thấp bất hợp lý, VD XD: nửa năm đã 2.717 triệu tấn mà blend ra cả năm chỉ 4.22 triệu tấn). Ghi số
+    # tính sẵn ở đây để 03_Revenue_Model!G4/G5 (Excel) và PDF/JSON dùng ĐÚNG 1 số, không lệch nhau.
     r_f = r_qe_est + 3
     ws15.cell(row=r_f, column=1, value="F. DỰ PHÓNG SẢN LƯỢNG NĂM 2026E (run-rate 2 quý đã biết)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
     ws15.merge_cells(start_row=r_f, start_column=1, end_row=r_f, end_column=5)
     r_f += 1
     ws15.cell(row=r_f, column=1, value=(
-        f"Sản lượng năm 2026E = (SL Q1/2026 + SL {CUR_Q_LABEL}) / 2 × 4 — annualize theo run-rate 2 quý đã biết. "
-        "03_Revenue_Model!G4/G5 (Sản lượng HRC/XD 2026E) LINK trực tiếp về đây."
+        f"Sản lượng năm 2026E = (SL Q1/2026 + SL {CUR_Q_LABEL}) / 2 × 4 — ngoại suy thẳng theo run-rate 2 quý "
+        "đã biết. Số tính sẵn (không phải công thức sống) để khớp tuyệt đối với 03_Revenue_Model!G4/G5 "
+        "(Sản lượng HRC/XD 2026E) và PDF/JSON."
     )).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
     ws15.merge_cells(start_row=r_f, start_column=1, end_row=r_f, end_column=8)
     ws15.row_dimensions[r_f].height = 26
     r_f += 1
     q1_cl, curq_cl = get_column_letter(COL_Q1_2026), (get_column_letter(COL_CUR_Q) if COL_CUR_Q else None)
     R_F_HRC, R_F_XD = r_f, r_f + 1
-    for row_i, label, src_row, fallback in ((R_F_HRC, "SL HRC năm 2026E (triệu tấn)", R_QV_HRC, SL_HRC_A[5]),
-                                              (R_F_XD, "SL XD năm 2026E (triệu tấn)", R_QV_XD, SL_XD_A[5])):
+    for row_i, label, src_row, val in ((R_F_HRC, "SL HRC năm 2026E (triệu tấn)", R_QV_HRC, SL_HRC_A[5]),
+                                         (R_F_XD, "SL XD năm 2026E (triệu tấn)", R_QV_XD, SL_XD_A[5])):
         ws15.cell(row=row_i, column=1, value=label).font = bold_font
         ws15.cell(row=row_i, column=1).border = thin_border
-        c = ws15.cell(row=row_i, column=2)
-        if curq_cl:
-            c.value = f"=({q1_cl}{src_row}+{curq_cl}{src_row})/2*4/1000"
-        else:
-            c.value = fallback  # chưa có dữ liệu quý đang chạy -> giữ giả định cũ
+        c = ws15.cell(row=row_i, column=2, value=val)
         c.number_format = '0.00'
         c.font = Font(name=FONT_NAME, bold=True, color="C0392B")
         c.border = thin_border; c.alignment = Alignment(horizontal='center')
-        ws15.cell(row=row_i, column=4, value=(
-            f"={q1_cl}{src_row}/1000 & \" (Q1) + \" & {curq_cl}{src_row}/1000 & \" ({CUR_Q_LABEL}), triệu tấn\""
-            if curq_cl else f"Chưa có dữ liệu {CUR_Q_LABEL} — giữ giả định {fallback} triệu tấn"
-        )).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
+        note = (
+            f"= ({q1_cl}{src_row}/1000 (Q1) + {curq_cl}{src_row}/1000 ({CUR_Q_LABEL})) / 2 × 4, triệu tấn"
+            if curq_cl else f"Chưa có dữ liệu {CUR_Q_LABEL} — giữ giả định {val} triệu tấn"
+        )
+        ws15.cell(row=row_i, column=4, value=note).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
 
     # ── Openpyxl LineChart: Sản lượng HRC & XD theo quý ──
     chart_qv = LineChart()
@@ -6009,11 +5967,6 @@ def build_pdf():
     pb_attr  = round(PB_MULTIPLE * 0.8 * bvps_2026e_val)
     ev_price = round((ebitda_2026e_val * EV_MULTIPLE - net_debt_2026e_val) * 1e9 / SHARES)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
-    # Ưu tiên số ĐÃ TÍNH THẬT từ Excel (LibreOffice recalc, xem recalculate_excel_valuation) thay vì
-    # số Python tự tính ở trên — Python chỉ dùng làm fallback khi LibreOffice không có/lỗi.
-    if EXCEL_RECALC:
-        ev_price, pb_price, pe_price, target_price = (
-            EXCEL_RECALC["ev_price"], EXCEL_RECALC["pb_price"], EXCEL_RECALC["pe_price"], EXCEL_RECALC["target_price"])
     add_body(
         f"- <b>EV/EBITDA ({EV_MULTIPLE}x, HPG median)</b> → <b>{ev_price:,} VND</b><br/>"
         f"- <b>P/B ({PB_MULTIPLE}x, HPG median)</b> → <b>{pb_price:,} VND</b>  |  "
@@ -6259,11 +6212,6 @@ def save_json_summary():
     pe_price = round(pe_mul * eps_26)
     target_price = round(ev_price * 0.4 + pb_price * 0.4 + pe_price * 0.2)
     upside = round((target_price / PRICE - 1) * 100, 1)
-    # Ưu tiên số ĐÃ TÍNH THẬT từ Excel (LibreOffice recalc) — xem build_pdf() cho lý do chi tiết.
-    if EXCEL_RECALC:
-        ev_price, pb_price, pe_price, target_price = (
-            EXCEL_RECALC["ev_price"], EXCEL_RECALC["pb_price"], EXCEL_RECALC["pe_price"], EXCEL_RECALC["target_price"])
-        upside = round((target_price / PRICE - 1) * 100, 1)
     pb_upper = round(pb_mul * 1.2 * bvps_26)
     pb_attr  = round(pb_mul * 0.8 * bvps_26)
 
@@ -6422,9 +6370,9 @@ if __name__ == "__main__":
     print(f"   Date: {MONTH}")
     print("=" * 60)
 
+    # Tạo 1 file Excel Formula chuẩn duy nhất (chứa công thức sống tự động tính toán)
     build_excel()
-    print("[Recalc] Recalculating real Excel formulas via LibreOffice so PDF/JSON read the same numbers...")
-    EXCEL_RECALC = recalculate_excel_valuation(EXCEL_FILE)
+
     make_charts()
     try:
         build_pdf()
@@ -6433,6 +6381,6 @@ if __name__ == "__main__":
     save_json_summary()
 
     print(f"\n  COMPLETE")
-    print(f"  Excel: {EXCEL_FILE}")
-    print(f"  PDF:   {PDF_FILE}")
+    print(f"  Excel:  {EXCEL_FILE}")
+    print(f"  PDF:    {PDF_FILE}")
     print(f"  Charts: {CHART_DIR}\\")
