@@ -1,5 +1,6 @@
 requests
 tvdatafeed-enhanced
+pdfplumber
 openpyxl
 reportlab
 matplotlib

@@ -1,0 +1,335 @@
+{
+  "ticker": "MWG",
+  "companyName": "CTCP Đầu tư Thế Giới Di Động",
+  "sector": "Bán lẻ",
+  "currentPrice": 78900.0,
+  "marketCap": 115983000000000.0,
+  "shares": 1470000000.0,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      122958.1,
+      133404.8,
+      118279.8,
+      134341.2,
+      155928.1,
+      202844.8,
+      237661.0,
+      261500.8
+    ],
+    "npat": [
+      4898.9,
+      4099.8,
+      167.7,
+      3721.9,
+      7033.7,
+      11613.3,
+      14775.2,
+      17542.9
+    ],
+    "eps": [
+      6871.0,
+      2800.0,
+      115.0,
+      2546.0,
+      4785.0,
+      7900.0,
+      10051.0,
+      11934.0
+    ],
+    "equity": [
+      20378.2,
+      23932.6,
+      23359.6,
+      28121.6,
+      33176.1,
+      41340.5,
+      51727.8,
+      64060.9
+    ]
+  },
+  "segments": {
+    "names": [
+      "TGDD",
+      "DMX",
+      "BHX",
+      "Khac"
+    ],
+    "storeCountNow": {
+      "TGDD": 1012,
+      "DMX": 2004,
+      "BHX": 3051,
+      "AnKhang": 416,
+      "AvaKids": 95,
+      "EraBlue": 245
+    },
+    "revenueForecast": {
+      "TGDD": [
+        40489.5,
+        41901.1,
+        41478.7
+      ],
+      "DMX": [
+        83982.3,
+        90419.8,
+        93132.4
+      ],
+      "BHX": [
+        73809.6,
+        99713.9,
+        120333.7
+      ],
+      "Khac": [
+        4563.4,
+        5626.2,
+        6556.0
+      ]
+    },
+    "efficiencyNow": {
+      "TGDD": 3.52,
+      "DMX": 3.65,
+      "BHX": 1.807,
+      "Khac": 0.49
+    }
+  },
+  "thesis": [
+    "MWG dẫn đầu bán lẻ đa ngành VN với 6,823 cửa hàng (TGDĐ/ĐMX dẫn đầu ICT, BHX dẫn đầu FMCG hiện đại), tận dụng quy mô đàm phán giá tốt với NCC.",
+    "BHX có lãi từ 2023, đang tăng tốc mở rộng (+492 CH trong 5T2026), SSSG cao nhất công ty — dư địa tăng trưởng dài hạn lớn.",
+    "Doanh thu 5T2026 đạt 79,159 tỷ (+29,3% svck), SSSG TGDĐ/ĐMX ~33% nhờ chu kỳ phục hồi sức mua và nâng cấp thiết bị ICT."
+  ],
+  "risks": [
+    "TGDĐ/ĐMX đã bão hòa số lượng cửa hàng, tăng trưởng phụ thuộc chu kỳ sản phẩm và SSSG.",
+    "BHX mở rộng nhanh (+1.000 CH kế hoạch 2026) cần 3 tháng ramp-up — rủi ro pha loãng biên LN ngắn hạn.",
+    "P/E median lịch sử bao gồm giai đoạn tăng trưởng nóng 2021, có thể không bền vững nếu thị trường re-rate."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 2,
+      "desc": "Hạn chế — bán lẻ truyền thống không có hiệu ứng mạng lưới mạnh."
+    },
+    "Cost Advantage": {
+      "score": 4,
+      "desc": "Quy mô >6.700 CH giúp đàm phán giá tốt với NCC ICT/FMCG."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Thấp với ICT (khách dễ chuyển kênh), trung bình với BHX (tiện lợi vị trí)."
+    },
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thương hiệu TGDĐ/ĐMX/BHX nhận diện rộng nhưng ICT ít trung thành thương hiệu."
+    },
+    "Efficient Scale": {
+      "score": 4,
+      "desc": "Mạng lưới cửa hàng lớn nhất ngành, tối ưu logistics/quảng cáo theo quy mô."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Kiểm soát chặt giá thuốc (An Khang) và an toàn thực phẩm (BHX); thuế VAT ICT ổn định.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Economic",
+      "content": "Sức mua phục hồi, CPI ổn định 3-4%/năm hỗ trợ tiêu dùng không thiết yếu tăng trở lại.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Xu hướng hiện đại hoá kênh mua sắm hỗ trợ BHX thay thế kênh truyền thống.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Chu kỳ nâng cấp iPhone/AI on-device thúc đẩy nhu cầu thay máy; đầu tư Super App/trả chậm.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Yêu cầu hoá đơn điện tử/truy xuất nguồn gốc ngày càng chặt — chi phí tuân thủ tăng nhẹ.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "Áp lực giảm rác thải nhựa, chuỗi lạnh tiêu tốn năng lượng cho hàng tươi sống.",
+      "impact": "Negative"
+    }
+  ],
+  "valuation": {
+    "bear": 58872.0,
+    "base": 85510.0,
+    "bull": 185725.0,
+    "methods": {
+      "pe": 176881.0,
+      "pb": 93650.0,
+      "ri": 83954.0,
+      "ps_pe": 65413.0,
+      "ps_pb": 760.0
+    },
+    "recommendation": "THEO DÕI",
+    "upsidePct": 8.4
+  },
+  "comments": {
+    "businessModel": "MWG vận hành 3 chuỗi bán lẻ chính: TGDĐ+ĐMX (3,016 cửa hàng, ICT/điện máy, đã bão hòa) và BHX (3,051 cửa hàng, FMCG, tăng trưởng nhanh nhất, có lãi từ 2023). Mô hình dựa trên quy mô mạng lưới để tối ưu chi phí vận hành/mua hàng.",
+    "financialPerformance": "Doanh thu 2026E dự phóng 202,845 tỷ (+30.1% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,613 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
+    "valuationText": "Giá mục tiêu 85,510 VND (upside +8.4%) theo mô hình 5 phương pháp (P/E 20%, P/B 20%, RI 10%, P/S+P/E theo mảng 35%, P/S+P/B theo mảng 15%). Khuyến nghị THEO DÕI."
+  },
+  "pe_hist": [],
+  "pb_hist": [],
+  "pe_quarters": [
+    14.72,
+    12.62,
+    12.97,
+    13.08,
+    14.45,
+    16.04,
+    14.32,
+    9.36,
+    8.43,
+    12.24,
+    15.6,
+    16.3,
+    19.62,
+    21.43,
+    21.7,
+    18.43,
+    16.96,
+    12.13,
+    14.24,
+    26.88,
+    45.28,
+    88.03,
+    453.76,
+    90.39,
+    42.21,
+    28.21,
+    22.44,
+    23.18,
+    25.48,
+    21.6,
+    16.75,
+    14.21
+  ],
+  "pb_quarters": [
+    5.16,
+    4.6,
+    4.54,
+    4.19,
+    4.59,
+    5.39,
+    4.75,
+    3.02,
+    2.52,
+    3.25,
+    4.03,
+    4.3,
+    4.93,
+    4.93,
+    5.36,
+    4.23,
+    3.76,
+    2.64,
+    2.45,
+    3.0,
+    3.05,
+    2.63,
+    3.26,
+    3.75,
+    3.56,
+    3.11,
+    3.01,
+    3.46,
+    4.2,
+    4.02,
+    3.6,
+    3.28
+  ],
+  "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
+  ],
+  "ratios": {
+    "gpm": [
+      0.2247,
+      0.2313,
+      0.1904,
+      0.2047,
+      0.1988,
+      0.2079,
+      0.2079,
+      0.2079
+    ],
+    "sga_pct": [
+      0.1768,
+      0.1815,
+      0.1867,
+      0.1743,
+      0.1534,
+      0.1451,
+      0.1389,
+      0.1327
+    ],
+    "roe": [
+      0.2404,
+      0.1713,
+      0.0072,
+      0.1324,
+      0.212,
+      0.2809,
+      0.2856,
+      0.2738
+    ],
+    "net_margin": [
+      0.0398,
+      0.0307,
+      0.0014,
+      0.0277,
+      0.0451,
+      0.0573,
+      0.0622,
+      0.0671
+    ]
+  }
+}

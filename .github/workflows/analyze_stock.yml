@@ -44,7 +44,7 @@ jobs:
           TICKER="${{ github.event.inputs.ticker }}"
           BUILDER="build_${TICKER,,}_model.py"
           # Danh sách ticker có custom builder thủ công — tuyệt đối không xoá
-          CUSTOM_TICKERS="HPG MBB VCB BID ACB CTG"
+          CUSTOM_TICKERS="HPG MBB VCB BID ACB CTG MWG"
           IS_CUSTOM=false
           for t in $CUSTOM_TICKERS; do
             if [ "${TICKER,,}" = "${t,,}" ]; then IS_CUSTOM=true; break; fi
