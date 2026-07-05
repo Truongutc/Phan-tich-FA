@@ -13,6 +13,7 @@ let chartRevNpat = null;
 let chartQuarterlyNpatRoe = null;
 let chartRoePbCorrelation = null;
 let chartMarginLeverage = null;
+let chartMarketShare = null;
 let chartPE = null;
 let chartPB = null;
 
@@ -213,15 +214,16 @@ async function loadStockDashboard(ticker) {
     renderQuarterlyNpatRoeChart(localJson);
     renderRoePbCorrelationChart(localJson);
     renderMarginLeverageChart(localJson);
+    renderMarketShareChart(ticker);
     renderPEChart(localJson);
     renderPBChart(localJson);
 }
 
 function destroyCharts() {
     [chartSegmentRevenue, chartSegmentMix, chartRevNpat, chartQuarterlyNpatRoe,
-     chartRoePbCorrelation, chartMarginLeverage, chartPE, chartPB].forEach(c => { if (c) c.destroy(); });
+     chartRoePbCorrelation, chartMarginLeverage, chartMarketShare, chartPE, chartPB].forEach(c => { if (c) c.destroy(); });
     chartSegmentRevenue = chartSegmentMix = chartRevNpat = chartQuarterlyNpatRoe =
-    chartRoePbCorrelation = chartMarginLeverage = chartPE = chartPB = null;
+    chartRoePbCorrelation = chartMarginLeverage = chartMarketShare = chartPE = chartPB = null;
 }
 
 function calcMedian(arr) {
@@ -795,4 +797,106 @@ function renderPBChart(localJson) {
     document.getElementById('analysis-text-pb').textContent = med
         ? `P/B trung vị lịch sử: ${med.toFixed(2)}x — neo chính cho định giá (trọng số 90%).`
         : 'Đang tính P/B trung vị lịch sử.';
+}
+
+async function renderMarketShareChart(currentTicker) {
+    const canvas = document.getElementById('marketShareChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    try {
+        const resp = await fetch('data/market_share_history.json');
+        if (!resp.ok) throw new Error();
+        const res = await resp.json();
+        
+        const quarters = res.quarters || [];
+        const top5 = res.top_5 || [];
+        const shareData = res.data || {};
+        
+        if (!quarters.length || !top5.length) return;
+        
+        // Bảng màu cho Top 5
+        const colorPalette = {
+            'SSI': '#3b82f6',
+            'HCM': '#f59e0b',
+            'VCI': '#ec4899',
+            'VND': '#10b981',
+            'MBS': '#8b5cf6',
+            'default': '#a855f7'
+        };
+        
+        const datasets = top5.map(ticker => {
+            const isCurrent = ticker === currentTicker;
+            const baseColor = colorPalette[ticker] || colorPalette['default'];
+            
+            return {
+                label: ticker + (isCurrent ? ' (Mã đang xem)' : ''),
+                data: (shareData[ticker] || []).map(v => v * 100),
+                borderColor: baseColor,
+                backgroundColor: isCurrent ? baseColor + '15' : 'transparent',
+                borderWidth: isCurrent ? 3.5 : 1.8,
+                pointRadius: isCurrent ? 5 : 2,
+                pointHoverRadius: 7,
+                tension: 0.25,
+                fill: isCurrent,
+                spanGaps: true
+            };
+        });
+        
+        chartMarketShare = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: quarters,
+                datasets: datasets
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    tooltip: {
+                        ...CHART_DEFAULTS.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.dataset.label}: ${context.raw.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    ...CHART_DEFAULTS.scales,
+                    y: {
+                        ...CHART_DEFAULTS.scales.y,
+                        ticks: {
+                            ...CHART_DEFAULTS.scales.y.ticks,
+                            callback: function(value) {
+                                return value.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        const shareCurrent = shareData[currentTicker] ? shareData[currentTicker][shareData[currentTicker].length - 1] * 100 : null;
+        let analysisText = `Tính đến quý gần nhất (${quarters[quarters.length - 1]}), `;
+        if (shareCurrent) {
+            analysisText += `Thị phần ngụ ý của ${currentTicker} đạt khoảng <strong>${shareCurrent.toFixed(2)}%</strong>. `;
+            const firstShare = shareData[currentTicker][0] * 100;
+            const diff = shareCurrent - firstShare;
+            if (diff > 0.5) {
+                analysisText += `Đang có xu hướng <strong>tăng trưởng tích cực</strong> (+${diff.toFixed(1)}% so với giai đoạn ${quarters[0]}).`;
+            } else if (diff < -0.5) {
+                analysisText += `Đang có xu hướng <strong>sụt giảm thị phần</strong> (${diff.toFixed(1)}% so với giai đoạn ${quarters[0]}).`;
+            } else {
+                analysisText += `Đang đi ngang ổn định so với giai đoạn trước.`;
+            }
+        } else {
+            analysisText += `Mã ${currentTicker} nằm ngoài Top-5 CTCK có thị phần môi giới lớn nhất nên không xuất hiện trong danh sách so sánh.`;
+        }
+        document.getElementById('analysis-text-market-share').innerHTML = analysisText;
+        
+    } catch (e) {
+        console.warn('Không thể tải hoặc vẽ biểu đồ thị phần:', e);
+        document.getElementById('analysis-text-market-share').textContent = 'Chưa có dữ liệu thị phần so sánh.';
+    }
 }
