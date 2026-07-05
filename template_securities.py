@@ -815,7 +815,7 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                                   fvtpl_mix_fc, fvtpl_r_fc, fvtpl_expected_yield_fc, fvtpl_portfolio_growth_fc,
                                   ib_pipeline_fc, ib_fee_pct_fc, custody_growth_fc, qlq_fee_rate_fc, qlq_aum_fc0,
                                   qlq_aum_growth_fc, sga_pct_fc, cost_pct_fc, tax_rate_fc, PE_HIST_MEDIAN, PB_HIST_MEDIAN,
-                                  PE_PB_MEDIAN_ROW)
+                                  PE_PB_MEDIAN_ROW, pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER)
     RR = build_revenue_model_sheet(wb, ticker, years_hist, years_fc, RA,
                                     brokerage_rev_hist, margin_rev_hist, fvtpl_net_hist, ib_custody_rev_hist, qlq_rev_hist,
                                     margin_loans_hist, fvtpl_portfolio_hist, qlq_aum_fc0,
@@ -841,7 +841,8 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     build_thesis_sheet(wb, ticker, company_name, seg_pct_fc0, upside_pct, recommend)
     build_summary_snapshot(wb, ticker, years_hist, years_fc, total_rev_hist, total_rev_fc, npat_parent_hist, npat_parent_fc,
                             eps_hist, eps_fc, bvps_hist, bvps_fc, equity_hist, equity_fc, current_price, shares)
-    build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarters, PE_PB_MEDIAN_ROW)
+    build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarters, PE_PB_MEDIAN_ROW,
+                              pb_lower_val=PB_HIST_MEDIAN_LOWER, pb_upper_val=PB_HIST_MEDIAN_UPPER)
     build_segment_quarterly_sheet(wb, ticker, is_q)
     build_peer_benchmark_sheet(wb, ticker)
 
@@ -1220,7 +1221,7 @@ def build_assumptions_sheet(wb, ticker, years_hist, years_fc, price, shares, coe
                              fvtpl_mix_fc, fvtpl_r_fc, fvtpl_yield_fc, fvtpl_portfolio_growth_fc,
                              ib_pipeline_fc, ib_fee_pct_fc, custody_growth_fc, qlq_fee_rate_fc, qlq_aum0,
                              qlq_aum_growth_fc, sga_pct_fc, cost_pct_fc, tax_rate_fc, pe_median, pb_median,
-                             pe_pb_median_row):
+                             pe_pb_median_row, pb_lower_median=None, pb_upper_median=None):
     ws = wb.create_sheet("02_Assumptions")
     N_HIST, N_FC = len(years_hist), len(years_fc)
     all_years = years_hist + years_fc
@@ -1269,6 +1270,10 @@ def build_assumptions_sheet(wb, ticker, years_hist, years_fc, price, shares, coe
                             "Link sống tới MEDIAN sheet 13_PE_PB_History", single=True)
     RA["pb_median"] = arow("P/B Trung vị lịch sử (x)", f"='13_PE_PB_History'!C{pe_pb_median_row}", FMT_MUL,
                             "Link sống tới MEDIAN sheet 13_PE_PB_History", single=True)
+    RA["pb_lower_median"] = arow("P/B Trung vị Nửa Dưới (Hấp dẫn) (x)", f"='13_PE_PB_History'!D{pe_pb_median_row}", FMT_MUL,
+                                  "Link sống tới MEDIAN sheet 13_PE_PB_History (nửa dưới)", single=True)
+    RA["pb_upper_median"] = arow("P/B Trung vị Nửa Trên (Đắt) (x)", f"='13_PE_PB_History'!E{pe_pb_median_row}", FMT_MUL,
+                                  "Link sống tới MEDIAN sheet 13_PE_PB_History (nửa trên)", single=True)
 
     ws.cell(row=r, column=1, value="── (1) MÔI GIỚI: DT = GTGD/phiên × Số phiên × Thị phần × Phí(bps)/10,000 ──").font = Font(bold=True, italic=True, color="1F4E78")
     r += 1
@@ -1849,20 +1854,47 @@ def build_valuation_sheet(wb, ticker, RA, RP, RBS, N_HIST, pe_median, pb_median,
 
     ws.cell(row=r, column=1, value="1) PHƯƠNG PHÁP P/B (ưu tiên số 1)").font = Font(bold=True, color="1F4E78")
     r += 1
+    
     r_pb_median = r
     ws.cell(row=r, column=1, value="P/B trung vị lịch sử (x)")
     ws.cell(row=r, column=2, value=f"='02_Assumptions'!B{RA['pb_median']}").number_format = FMT_MUL
     r += 1
+    
+    r_pb_lower = r
+    ws.cell(row=r, column=1, value="P/B Median Nửa Dưới (Hấp dẫn) (x)")
+    ws.cell(row=r, column=2, value=f"='02_Assumptions'!B{RA['pb_lower_median']}").number_format = FMT_MUL
+    r += 1
+    
+    r_pb_upper = r
+    ws.cell(row=r, column=1, value="P/B Median Nửa Trên (Đắt) (x)")
+    ws.cell(row=r, column=2, value=f"='02_Assumptions'!B{RA['pb_upper_median']}").number_format = FMT_MUL
+    r += 1
+    
     r_bvps = r
     ws.cell(row=r, column=1, value="BVPS dự phóng năm 1 (VND/CP)")
     ws.cell(row=r, column=2, value=f"='05_Balance_Sheet'!{fc0_col}{RBS['equity']}*1e9/'02_Assumptions'!$B${RA['shares']}").number_format = FMT_PRICE
+    
     r_pb_target = r + 1
     ws.cell(row=r + 1, column=1, value="→ P/B Target Price (VND)").font = BOLD_FONT
     c = ws.cell(row=r + 1, column=2, value=f"=B{r_pb_median}*B{r_bvps}")
     c.number_format = FMT_PRICE
     c.font = BOLD_FONT
     c.fill = P_FILL
-    r += 3
+    r += 2
+    
+    r_pb_lower_target = r
+    ws.cell(row=r, column=1, value="→ P/B Target Price Nửa Dưới (Hấp dẫn)").font = ITALIC_FONT
+    c = ws.cell(row=r, column=2, value=f"=B{r_pb_lower}*B{r_bvps}")
+    c.number_format = FMT_PRICE
+    c.font = ITALIC_FONT
+    r += 1
+    
+    r_pb_upper_target = r
+    ws.cell(row=r, column=1, value="→ P/B Target Price Nửa Trên (Đắt)").font = ITALIC_FONT
+    c = ws.cell(row=r, column=2, value=f"=B{r_pb_upper}*B{r_bvps}")
+    c.number_format = FMT_PRICE
+    c.font = ITALIC_FONT
+    r += 2
 
     ws.cell(row=r, column=1, value="2) PHƯƠNG PHÁP P/E").font = Font(bold=True, color="1F4E78")
     r += 1
@@ -1874,6 +1906,7 @@ def build_valuation_sheet(wb, ticker, RA, RP, RBS, N_HIST, pe_median, pb_median,
     ws.cell(row=r, column=1, value="EPS dự phóng năm 1 (VND/CP)")
     ws.cell(row=r, column=2, value=f"='04_PnL'!{fc0_col}{RP['eps']}").number_format = FMT_PRICE
     r += 1
+    r_pe_target = r
     ws.cell(row=r, column=1, value="→ P/E Target Price (VND)").font = BOLD_FONT
     c = ws.cell(row=r, column=2, value=f"=B{r_pe_median}*B{r_eps_fc}")
     c.number_format = FMT_PRICE
@@ -1883,35 +1916,57 @@ def build_valuation_sheet(wb, ticker, RA, RP, RBS, N_HIST, pe_median, pb_median,
 
     ws.cell(row=r, column=1, value=f"3) GIÁ MỤC TIÊU (P/B {int(weights['PB']*100)}% + P/E {int(weights['PE']*100)}%)").font = Font(bold=True, color="1F4E78")
     r += 1
+    
     r_target = r
     ws.cell(row=r, column=1, value="GIÁ MỤC TIÊU (VND)").font = Font(bold=True, size=12)
-    c = ws.cell(row=r, column=2, value=weighted_target)
+    c = ws.cell(row=r, column=2, value=f"=0.90*B{r_pb_target}+0.10*B{r_pe_target}")
     c.number_format = FMT_PRICE
     c.font = Font(bold=True, size=12, color="006100")
     c.fill = P_FILL
     r += 1
+    
+    r_lower_target = r
+    ws.cell(row=r, column=1, value="Định giá hấp dẫn (P/B Nửa Dưới) (VND)").font = Font(italic=True, color="10b981")
+    c = ws.cell(row=r, column=2, value=f"=0.90*B{r_pb_lower_target}+0.10*B{r_pe_target}")
+    c.number_format = FMT_PRICE
+    c.font = Font(italic=True, color="10b981")
+    r += 1
+    
+    r_upper_target = r
+    ws.cell(row=r, column=1, value="Định giá đắt (P/B Nửa Trên) (VND)").font = Font(italic=True, color="ef4444")
+    c = ws.cell(row=r, column=2, value=f"=0.90*B{r_pb_upper_target}+0.10*B{r_pe_target}")
+    c.number_format = FMT_PRICE
+    c.font = Font(italic=True, color="ef4444")
+    r += 1
+
+    r_current = r
     ws.cell(row=r, column=1, value="Giá hiện tại (VND)")
     ws.cell(row=r, column=2, value=price).number_format = FMT_PRICE
     r += 1
+    
+    r_upside = r
     ws.cell(row=r, column=1, value="Upside/Downside (%)").font = BOLD_FONT
-    c = ws.cell(row=r, column=2, value=upside_pct / 100)
+    c = ws.cell(row=r, column=2, value=f"=B{r_target}/B{r_current}-1")
     c.number_format = FMT_PCT
     c.font = BOLD_FONT
     r += 1
+    
+    r_div_yield = r
     ws.cell(row=r, column=1, value="Tỷ suất cổ tức dự kiến (%)")
     ws.cell(row=r, column=2, value=dividend_yield_pct / 100).number_format = FMT_PCT
     r += 1
+    
     ws.cell(row=r, column=1, value="TỔNG TỶ SUẤT SINH LỜI (Upside + Cổ tức)").font = Font(bold=True, color="006100")
-    c = ws.cell(row=r, column=2, value=total_return_pct / 100)
+    c = ws.cell(row=r, column=2, value=f"=B{r_upside}+B{r_div_yield}")
     c.number_format = FMT_PCT
     c.font = Font(bold=True, color="006100")
     r += 2
 
     ws.cell(row=r, column=1, value="Bear Case (VND)")
-    ws.cell(row=r, column=2, value=bear_target).number_format = FMT_PRICE
+    ws.cell(row=r, column=2, value=f"=B{r_lower_target}").number_format = FMT_PRICE
     r += 1
     ws.cell(row=r, column=1, value="Bull Case (VND)")
-    ws.cell(row=r, column=2, value=bull_target).number_format = FMT_PRICE
+    ws.cell(row=r, column=2, value=f"=B{r_upper_target}").number_format = FMT_PRICE
     r += 2
 
     ws.cell(row=r, column=1, value=("Lưu ý phương pháp: P/B là phương pháp CHÍNH (90%) cho CTCK vì tài sản có tính thanh khoản cao "
@@ -2246,9 +2301,9 @@ def build_summary_snapshot(wb, ticker, years_hist, years_fc, rev_hist, rev_fc, n
     print(f"[Excel] Sheet 12_Summary_Snapshot done ({r} dòng).")
 
 
-def build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarters, median_row):
+def build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarters, median_row, pb_lower_val=1.1, pb_upper_val=1.5):
     ws = wb.create_sheet("13_PE_PB_History")
-    header_row(ws, 1, ["Quý", "P/E (x)", "P/B (x)"], [14, 14, 14])
+    header_row(ws, 1, ["Quý", "P/E (x)", "P/B (x)", "P/B Nửa Dưới (x)", "P/B Nửa Trên (x)"], [14, 14, 14, 20, 20])
     r = 2
     row_start = r
     for i, label in enumerate(quarter_labels):
@@ -2259,7 +2314,7 @@ def build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarte
             ws.cell(row=r, column=2, value=pe_v).number_format = FMT_MUL
         if pb_v and pb_v > 0:
             ws.cell(row=r, column=3, value=pb_v).number_format = FMT_MUL
-        for c in range(1, 4):
+        for c in range(1, 6):
             ws.cell(row=r, column=c).border = THIN_BORDER
         r += 1
     row_end = r - 1
@@ -2268,7 +2323,10 @@ def build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarte
     ws.cell(row=r, column=1, value="MEDIAN (loại quý P/E>60x hoặc ≤0)").font = BOLD_FONT
     ws.cell(row=r, column=2, value=f"=MEDIAN(B{row_start}:B{row_end})").number_format = FMT_MUL
     ws.cell(row=r, column=3, value=f"=MEDIAN(C{row_start}:C{row_end})").number_format = FMT_MUL
-    for c in range(1, 4):
+    # Ghi giá trị PB Median nửa dưới/trên làm gốc tham chiếu cho Assumptions
+    ws.cell(row=r, column=4, value=pb_lower_val).number_format = FMT_MUL
+    ws.cell(row=r, column=5, value=pb_upper_val).number_format = FMT_MUL
+    for c in range(1, 6):
         ws.cell(row=r, column=c).font = BOLD_FONT
         ws.cell(row=r, column=c).fill = HEADER_FILL
         ws.cell(row=r, column=c).border = THIN_BORDER
