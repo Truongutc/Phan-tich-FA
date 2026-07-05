@@ -1,0 +1,647 @@
+{
+  "ticker": "VCI",
+  "companyName": "Công ty Cổ phần Chứng khoán Vietcap",
+  "sector": "Chứng khoán",
+  "currentPrice": 25100.0,
+  "marketCap": 28921021317500.0,
+  "shares": 1152231925,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      3707.1,
+      3156.2,
+      2472.5,
+      3695.5,
+      4980.2,
+      3582.6,
+      3175.8,
+      3404.8
+    ],
+    "npat": [
+      1498.7,
+      869.0,
+      491.9,
+      910.7,
+      1342.0,
+      1442.0,
+      1301.6,
+      1395.5
+    ],
+    "eps": [
+      1301,
+      754,
+      427,
+      790,
+      1165,
+      1251,
+      1130,
+      1211
+    ],
+    "equity": [
+      6541.9,
+      6495.5,
+      7371.2,
+      12944.3,
+      18009.9,
+      19163.5,
+      20204.8,
+      21321.2
+    ]
+  },
+  "segments": {
+    "names": [
+      "MoiGioi",
+      "Margin",
+      "TuDoanh",
+      "IB_LuuKy",
+      "QLQ"
+    ],
+    "labels": {
+      "MoiGioi": "Môi giới",
+      "Margin": "Cho vay Margin",
+      "TuDoanh": "Tự doanh (FVTPL)",
+      "IB_LuuKy": "IB + Lưu ký",
+      "QLQ": "Quản lý quỹ"
+    },
+    "revenueHist": {
+      "MoiGioi": [
+        857.3,
+        1011.2,
+        535.4,
+        729.6,
+        1000.2
+      ],
+      "Margin": [
+        576.9,
+        708.2,
+        689.0,
+        872.9,
+        1204.8
+      ],
+      "TuDoanh": [
+        1214.2,
+        301.3,
+        446.7,
+        786.9,
+        820.0
+      ],
+      "IB_LuuKy": [
+        295.1,
+        63.1,
+        51.4,
+        64.9,
+        96.2
+      ],
+      "QLQ": [
+        6.2,
+        0.1,
+        0.5,
+        0.5,
+        0.6
+      ]
+    },
+    "revenueForecast": {
+      "MoiGioi": [
+        1088.5,
+        1153.8,
+        1211.4
+      ],
+      "Margin": [
+        1555.5,
+        1747.2,
+        1903.6
+      ],
+      "TuDoanh": [
+        175.1,
+        190.7,
+        204.0
+      ],
+      "IB_LuuKy": [
+        81.7,
+        83.3,
+        85.0
+      ],
+      "QLQ": [
+        0.7,
+        0.8,
+        0.8
+      ]
+    },
+    "pctNow": {
+      "MoiGioi": 0.3038,
+      "Margin": 0.4342,
+      "TuDoanh": 0.0489,
+      "IB_LuuKy": 0.0228,
+      "QLQ": 0.0002
+    }
+  },
+  "quarterly": {
+    "labels": [
+      "2023Q2",
+      "2023Q3",
+      "2023Q4",
+      "2024Q1",
+      "2024Q2",
+      "2024Q3",
+      "2024Q4",
+      "2025Q1",
+      "2025Q2",
+      "2025Q3",
+      "2025Q4",
+      "2026Q1"
+    ],
+    "revenue": [
+      500.9,
+      666.7,
+      805.7,
+      806.3,
+      915.9,
+      974.4,
+      999.0,
+      850.9,
+      1159.7,
+      1443.3,
+      1526.3,
+      1406.5
+    ],
+    "npat": [
+      116.9,
+      179.0,
+      123.0,
+      197.8,
+      279.2,
+      215.4,
+      218.4,
+      294.9,
+      183.9,
+      420.3,
+      442.9,
+      340.7
+    ],
+    "roe": [
+      6.34,
+      9.82,
+      6.67,
+      9.68,
+      12.61,
+      9.97,
+      6.75,
+      9.38,
+      5.91,
+      13.27,
+      9.84,
+      7.87
+    ],
+    "marginLeverage": [
+      0.73,
+      0.79,
+      1.08,
+      1.05,
+      0.9,
+      1.17,
+      0.87,
+      0.8,
+      0.91,
+      1.1,
+      0.9,
+      0.96
+    ]
+  },
+  "roePbCorrelation": [
+    {
+      "quarter": "2018-Q1",
+      "roe": 37.01,
+      "pb": 1.8
+    },
+    {
+      "quarter": "2018-Q2",
+      "roe": 22.06,
+      "pb": 2.63
+    },
+    {
+      "quarter": "2018-Q3",
+      "roe": 17.02,
+      "pb": 1.7
+    },
+    {
+      "quarter": "2018-Q4",
+      "roe": 14.42,
+      "pb": 1.6
+    },
+    {
+      "quarter": "2019-Q1",
+      "roe": 22.41,
+      "pb": 1.53
+    },
+    {
+      "quarter": "2019-Q2",
+      "roe": 15.97,
+      "pb": 1.62
+    },
+    {
+      "quarter": "2019-Q3",
+      "roe": 15.87,
+      "pb": 1.25
+    },
+    {
+      "quarter": "2019-Q4",
+      "roe": 19.8,
+      "pb": 0.74
+    },
+    {
+      "quarter": "2020-Q1",
+      "roe": 13.13,
+      "pb": 1.05
+    },
+    {
+      "quarter": "2020-Q2",
+      "roe": 21.98,
+      "pb": 1.78
+    },
+    {
+      "quarter": "2020-Q3",
+      "roe": 9.55,
+      "pb": 2.46
+    },
+    {
+      "quarter": "2020-Q4",
+      "roe": 30.95,
+      "pb": 2.28
+    },
+    {
+      "quarter": "2021-Q1",
+      "roe": 23.77,
+      "pb": 3.48
+    },
+    {
+      "quarter": "2021-Q3",
+      "roe": 20.78,
+      "pb": 2.83
+    },
+    {
+      "quarter": "2021-Q4",
+      "roe": 28.57,
+      "pb": 2.55
+    },
+    {
+      "quarter": "2022-Q1",
+      "roe": 23.34,
+      "pb": 1.7
+    },
+    {
+      "quarter": "2022-Q2",
+      "roe": 16.84,
+      "pb": 1.63
+    },
+    {
+      "quarter": "2022-Q3",
+      "roe": 7.45,
+      "pb": 1.83
+    },
+    {
+      "quarter": "2022-Q4",
+      "roe": 1.75,
+      "pb": 2.07
+    },
+    {
+      "quarter": "2023-Q1",
+      "roe": 4.25,
+      "pb": 2.63
+    },
+    {
+      "quarter": "2023-Q2",
+      "roe": 6.34,
+      "pb": 2.52
+    },
+    {
+      "quarter": "2023-Q3",
+      "roe": 9.82,
+      "pb": 2.52
+    },
+    {
+      "quarter": "2023-Q4",
+      "roe": 6.67,
+      "pb": 3.09
+    },
+    {
+      "quarter": "2024-Q1",
+      "roe": 9.67,
+      "pb": 2.57
+    },
+    {
+      "quarter": "2024-Q2",
+      "roe": 12.61,
+      "pb": 2.38
+    },
+    {
+      "quarter": "2024-Q3",
+      "roe": 9.97,
+      "pb": 1.81
+    },
+    {
+      "quarter": "2024-Q4",
+      "roe": 6.75,
+      "pb": 2.02
+    },
+    {
+      "quarter": "2025-Q1",
+      "roe": 9.38,
+      "pb": 2.38
+    },
+    {
+      "quarter": "2025-Q2",
+      "roe": 5.91,
+      "pb": 2.49
+    },
+    {
+      "quarter": "2025-Q3",
+      "roe": 13.27,
+      "pb": 1.82
+    },
+    {
+      "quarter": "2025-Q4",
+      "roe": 9.84,
+      "pb": 1.77
+    },
+    {
+      "quarter": "2026-Q1",
+      "roe": 7.87,
+      "pb": 1.66
+    }
+  ],
+  "marginLeverage": {
+    "latest": 0.96,
+    "latestLabel": "2026Q1",
+    "legalCap": 2.0,
+    "warningThreshold": 1.8
+  },
+  "quarterlyUpdate": {
+    "quarter_label": "2026Q1",
+    "rev": 1406.482341875,
+    "npat": 340.729881088,
+    "yoy_rev_pct": 65.3,
+    "yoy_npat_pct": 15.6,
+    "n_known_q": 1,
+    "cum_rev": 1406.482341875,
+    "cum_npat": 340.729881088,
+    "pct_of_annual_est_rev": 39.3,
+    "pct_of_annual_est_npat": 23.6,
+    "cur_fc_year": 2026
+  },
+  "thesis": [
+    "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (43.4% DT).",
+    "Định giá theo P/B (trung vị lịch sử 1.93x) kết hợp P/E (trung vị 14.41x) cho giá mục tiêu 30,693 VND, tiềm năng +22.3%.",
+    "Cần theo dõi tỷ trọng mảng Tự doanh (FVTPL) — nguồn biến động LNST lớn nhất, nhạy cảm trực tiếp với VN-Index."
+  ],
+  "risks": [
+    "Rủi ro thị trường: thanh khoản GTGD và VN-Index sụt giảm tác động đồng thời Môi giới/Margin/Tự doanh.",
+    "Rủi ro cạnh tranh: cuộc đua phí môi giới 0% gây áp lực biên lợi nhuận mảng môi giới truyền thống.",
+    "Rủi ro lãi suất: chi phí vốn tài trợ margin/tự doanh tăng khi lãi suất huy động tăng, thu hẹp NIM."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 2,
+      "desc": "Hạn chế — dịch vụ môi giới dễ thay thế giữa các CTCK."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Quy mô vốn lớn giúp chi phí vốn tài trợ margin/tự doanh thấp hơn CTCK nhỏ."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Thấp — nhà đầu tư dễ chuyển tài khoản giữa các CTCK."
+    },
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thương hiệu, đội ngũ phân tích/tư vấn uy tín thu hút khách hàng tổ chức."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Vốn điều lệ lớn cho phép mở rộng room margin và danh mục tự doanh."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Chính sách UBCKNN, lộ trình nâng hạng thị trường mới nổi (FTSE/MSCI).",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "Lãi suất, tăng trưởng GDP và thanh khoản thị trường là driver trực tiếp doanh thu.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Số tài khoản chứng khoán mở mới tăng nhanh, phổ cập đầu tư cá nhân.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Hệ thống KRX mới, giao dịch T+0, sản phẩm phái sinh mở rộng.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Quy định tỷ lệ margin, phân loại nhà đầu tư chuyên nghiệp siết chặt hơn.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "Xu hướng ESG trong lựa chọn danh mục của quỹ ngoại.",
+      "impact": "Neutral"
+    }
+  ],
+  "valuation": {
+    "bear": 15323,
+    "base": 30693,
+    "bull": 36915,
+    "methods": {
+      "pb": 32100,
+      "pe": 18027
+    },
+    "weights": {
+      "PB": 0.9,
+      "PE": 0.1
+    },
+    "recommendation": "MUA",
+    "upsidePct": 22.3,
+    "coe": 14.33,
+    "peMedian": 14.41,
+    "pbMedian": 1.93
+  },
+  "comments": {
+    "businessModel": "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (43.4% doanh thu dự phóng).",
+    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 3,583 tỷ VND, LNST cổ đông mẹ 1,442 tỷ VND, EPS 1,251 VND/CP.",
+    "valuationText": "Giá mục tiêu 30,693 VND (upside +22.3%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị MUA."
+  },
+  "pe_hist": [],
+  "pb_hist": [],
+  "pe_quarters": [
+    9.78,
+    10.3,
+    7.33,
+    7.07,
+    7.96,
+    8.87,
+    7.53,
+    4.34,
+    6.23,
+    9.74,
+    15.79,
+    13.4,
+    18.13,
+    12.95,
+    11.1,
+    7.46,
+    7.67,
+    9.21,
+    15.41,
+    34.34,
+    54.21,
+    46.09,
+    46.24,
+    33.97,
+    26.87,
+    23.3,
+    23.73,
+    25.98,
+    31.41,
+    22.65,
+    21.12,
+    19.09
+  ],
+  "pb_quarters": [
+    1.8,
+    2.63,
+    1.7,
+    1.6,
+    1.53,
+    1.62,
+    1.25,
+    0.74,
+    1.05,
+    1.78,
+    2.46,
+    2.28,
+    3.48,
+    2.83,
+    2.55,
+    1.7,
+    1.63,
+    1.83,
+    2.07,
+    2.63,
+    2.52,
+    2.52,
+    3.09,
+    2.57,
+    2.38,
+    1.81,
+    2.02,
+    2.38,
+    2.49,
+    1.82,
+    1.77,
+    1.66
+  ],
+  "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
+  ],
+  "ratios": {
+    "roe": [
+      0.2291,
+      0.1338,
+      0.0667,
+      0.0704,
+      0.0745,
+      0.0752,
+      0.0644,
+      0.0655
+    ],
+    "net_margin": [
+      0.4043,
+      0.2753,
+      0.199,
+      0.2464,
+      0.2695,
+      0.4025,
+      0.4098,
+      0.4099
+    ]
+  },
+  "macro_liquidity": {
+    "adtv_hist": {
+      "2021": 23500.0,
+      "2022": 16800.0,
+      "2023": 14800.0,
+      "2024": 20500.0,
+      "2025": 28500.0
+    },
+    "adtv_fc": {
+      "2026": 30780.0,
+      "2027": 32627.0,
+      "2028": 34258.0
+    },
+    "adtv_growth_taper": [
+      0.08,
+      0.06,
+      0.05
+    ],
+    "fvtpl_mix": {
+      "CDs": 0.5,
+      "TP": 0.35,
+      "CP": 0.15
+    },
+    "fvtpl_rates": {
+      "R_CDs": 0.07,
+      "R_TP": 0.07,
+      "R_VNI": 0.1
+    },
+    "fvtpl_expected_yield": 0.0745,
+    "market_share": 0.0943,
+    "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat."
+  }
+}

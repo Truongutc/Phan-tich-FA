@@ -1,0 +1,647 @@
+{
+  "ticker": "SSI",
+  "companyName": "Công ty Cổ phần Chứng khoán SSI",
+  "sector": "Chứng khoán",
+  "currentPrice": 27350.0,
+  "marketCap": 68405023517199.99,
+  "shares": 2501097752,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      7443.2,
+      6335.8,
+      7157.7,
+      8529.3,
+      12930.7,
+      11373.4,
+      11996.2,
+      12893.5
+    ],
+    "npat": [
+      2695.9,
+      1699.3,
+      2292.8,
+      2704.2,
+      4106.1,
+      5271.4,
+      5616.2,
+      6036.3
+    ],
+    "eps": [
+      1078,
+      679,
+      917,
+      1081,
+      1642,
+      2108,
+      2245,
+      2413
+    ],
+    "equity": [
+      14220.1,
+      22383.9,
+      23240.9,
+      26826.7,
+      32066.3,
+      36283.4,
+      40776.4,
+      45605.4
+    ]
+  },
+  "segments": {
+    "names": [
+      "MoiGioi",
+      "Margin",
+      "TuDoanh",
+      "IB_LuuKy",
+      "QLQ"
+    ],
+    "labels": {
+      "MoiGioi": "Môi giới",
+      "Margin": "Cho vay Margin",
+      "TuDoanh": "Tự doanh (FVTPL)",
+      "IB_LuuKy": "IB + Lưu ký",
+      "QLQ": "Quản lý quỹ"
+    },
+    "revenueHist": {
+      "MoiGioi": [
+        2519.0,
+        1706.7,
+        1502.2,
+        1667.4,
+        2344.7
+      ],
+      "Margin": [
+        1570.7,
+        1800.9,
+        1568.4,
+        2079.4,
+        3562.0
+      ],
+      "TuDoanh": [
+        983.1,
+        1058.7,
+        2510.6,
+        2563.1,
+        3079.5
+      ],
+      "IB_LuuKy": [
+        143.2,
+        144.3,
+        132.1,
+        109.3,
+        149.3
+      ],
+      "QLQ": [
+        65.5,
+        97.5,
+        123.4,
+        127.1,
+        97.0
+      ]
+    },
+    "revenueForecast": {
+      "MoiGioi": [
+        2518.6,
+        2669.7,
+        2803.2
+      ],
+      "Margin": [
+        4788.9,
+        5379.1,
+        5860.7
+      ],
+      "TuDoanh": [
+        3354.2,
+        3654.5,
+        3908.9
+      ],
+      "IB_LuuKy": [
+        148.9,
+        159.1,
+        170.8
+      ],
+      "QLQ": [
+        116.4,
+        133.8,
+        149.9
+      ]
+    },
+    "pctNow": {
+      "MoiGioi": 0.2214,
+      "Margin": 0.4211,
+      "TuDoanh": 0.2949,
+      "IB_LuuKy": 0.0131,
+      "QLQ": 0.0102
+    }
+  },
+  "quarterly": {
+    "labels": [
+      "2023Q2",
+      "2023Q3",
+      "2023Q4",
+      "2024Q1",
+      "2024Q2",
+      "2024Q3",
+      "2024Q4",
+      "2025Q1",
+      "2025Q2",
+      "2025Q3",
+      "2025Q4",
+      "2026Q1"
+    ],
+    "revenue": [
+      1680.0,
+      1941.2,
+      2047.1,
+      1972.8,
+      2307.0,
+      2028.1,
+      2221.3,
+      2159.3,
+      2993.0,
+      4176.7,
+      3601.8,
+      3178.1
+    ],
+    "npat": [
+      563.0,
+      711.1,
+      515.5,
+      764.3,
+      848.5,
+      794.5,
+      296.9,
+      844.0,
+      969.5,
+      1475.1,
+      817.5,
+      1277.9
+    ],
+    "roe": [
+      10.24,
+      12.53,
+      8.87,
+      12.73,
+      13.66,
+      13.18,
+      4.43,
+      12.19,
+      13.56,
+      18.88,
+      10.2,
+      12.89
+    ],
+    "marginLeverage": [
+      0.61,
+      0.67,
+      0.65,
+      0.73,
+      0.82,
+      0.81,
+      0.82,
+      0.98,
+      1.16,
+      1.26,
+      1.21,
+      0.93
+    ]
+  },
+  "roePbCorrelation": [
+    {
+      "quarter": "2018-Q1",
+      "roe": 18.47,
+      "pb": 1.64
+    },
+    {
+      "quarter": "2018-Q2",
+      "roe": 13.2,
+      "pb": 1.51
+    },
+    {
+      "quarter": "2018-Q3",
+      "roe": 15.92,
+      "pb": 1.41
+    },
+    {
+      "quarter": "2018-Q4",
+      "roe": 9.11,
+      "pb": 1.45
+    },
+    {
+      "quarter": "2019-Q1",
+      "roe": 8.49,
+      "pb": 1.28
+    },
+    {
+      "quarter": "2019-Q2",
+      "roe": 8.04,
+      "pb": 1.15
+    },
+    {
+      "quarter": "2019-Q3",
+      "roe": 11.08,
+      "pb": 1.02
+    },
+    {
+      "quarter": "2019-Q4",
+      "roe": 9.4,
+      "pb": 0.84
+    },
+    {
+      "quarter": "2020-Q1",
+      "roe": 0.41,
+      "pb": 0.9
+    },
+    {
+      "quarter": "2020-Q2",
+      "roe": 21.33,
+      "pb": 1.03
+    },
+    {
+      "quarter": "2020-Q3",
+      "roe": 14.49,
+      "pb": 1.83
+    },
+    {
+      "quarter": "2020-Q4",
+      "roe": 15.43,
+      "pb": 2.15
+    },
+    {
+      "quarter": "2021-Q1",
+      "roe": 14.82,
+      "pb": 2.83
+    },
+    {
+      "quarter": "2021-Q3",
+      "roe": 22.62,
+      "pb": 3.17
+    },
+    {
+      "quarter": "2021-Q4",
+      "roe": 28.06,
+      "pb": 2.79
+    },
+    {
+      "quarter": "2022-Q1",
+      "roe": 18.76,
+      "pb": 1.38
+    },
+    {
+      "quarter": "2022-Q2",
+      "roe": 9.55,
+      "pb": 1.2
+    },
+    {
+      "quarter": "2022-Q3",
+      "roe": 6.07,
+      "pb": 1.3
+    },
+    {
+      "quarter": "2022-Q4",
+      "roe": 4.19,
+      "pb": 1.42
+    },
+    {
+      "quarter": "2023-Q1",
+      "roe": 8.76,
+      "pb": 1.83
+    },
+    {
+      "quarter": "2023-Q2",
+      "roe": 10.24,
+      "pb": 2.31
+    },
+    {
+      "quarter": "2023-Q3",
+      "roe": 12.53,
+      "pb": 2.25
+    },
+    {
+      "quarter": "2023-Q4",
+      "roe": 8.87,
+      "pb": 2.44
+    },
+    {
+      "quarter": "2024-Q1",
+      "roe": 12.73,
+      "pb": 2.17
+    },
+    {
+      "quarter": "2024-Q2",
+      "roe": 13.66,
+      "pb": 2.01
+    },
+    {
+      "quarter": "2024-Q3",
+      "roe": 13.18,
+      "pb": 1.79
+    },
+    {
+      "quarter": "2024-Q4",
+      "roe": 4.43,
+      "pb": 1.71
+    },
+    {
+      "quarter": "2025-Q1",
+      "roe": 12.19,
+      "pb": 2.12
+    },
+    {
+      "quarter": "2025-Q2",
+      "roe": 13.56,
+      "pb": 2.68
+    },
+    {
+      "quarter": "2025-Q3",
+      "roe": 18.88,
+      "pb": 2.22
+    },
+    {
+      "quarter": "2025-Q4",
+      "roe": 10.2,
+      "pb": 1.87
+    },
+    {
+      "quarter": "2026-Q1",
+      "roe": 12.89,
+      "pb": 1.73
+    }
+  ],
+  "marginLeverage": {
+    "latest": 0.93,
+    "latestLabel": "2026Q1",
+    "legalCap": 2.0,
+    "warningThreshold": 1.8
+  },
+  "quarterlyUpdate": {
+    "quarter_label": "2026Q1",
+    "rev": 3178.135157313,
+    "npat": 1277.909840913,
+    "yoy_rev_pct": 47.2,
+    "yoy_npat_pct": 51.4,
+    "n_known_q": 1,
+    "cum_rev": 3178.135157313,
+    "cum_npat": 1277.909840913,
+    "pct_of_annual_est_rev": 27.9,
+    "pct_of_annual_est_npat": 24.2,
+    "cur_fc_year": 2026
+  },
+  "thesis": [
+    "Công ty Cổ phần Chứng khoán SSI vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (42.1% DT).",
+    "Định giá theo P/B (trung vị lịch sử 1.76x) kết hợp P/E (trung vị 14.90x) cho giá mục tiêu 26,120 VND, tiềm năng -4.5%.",
+    "Cần theo dõi tỷ trọng mảng Tự doanh (FVTPL) — nguồn biến động LNST lớn nhất, nhạy cảm trực tiếp với VN-Index."
+  ],
+  "risks": [
+    "Rủi ro thị trường: thanh khoản GTGD và VN-Index sụt giảm tác động đồng thời Môi giới/Margin/Tự doanh.",
+    "Rủi ro cạnh tranh: cuộc đua phí môi giới 0% gây áp lực biên lợi nhuận mảng môi giới truyền thống.",
+    "Rủi ro lãi suất: chi phí vốn tài trợ margin/tự doanh tăng khi lãi suất huy động tăng, thu hẹp NIM."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 2,
+      "desc": "Hạn chế — dịch vụ môi giới dễ thay thế giữa các CTCK."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Quy mô vốn lớn giúp chi phí vốn tài trợ margin/tự doanh thấp hơn CTCK nhỏ."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Thấp — nhà đầu tư dễ chuyển tài khoản giữa các CTCK."
+    },
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thương hiệu, đội ngũ phân tích/tư vấn uy tín thu hút khách hàng tổ chức."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Vốn điều lệ lớn cho phép mở rộng room margin và danh mục tự doanh."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Chính sách UBCKNN, lộ trình nâng hạng thị trường mới nổi (FTSE/MSCI).",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "Lãi suất, tăng trưởng GDP và thanh khoản thị trường là driver trực tiếp doanh thu.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Số tài khoản chứng khoán mở mới tăng nhanh, phổ cập đầu tư cá nhân.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Hệ thống KRX mới, giao dịch T+0, sản phẩm phái sinh mở rộng.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Quy định tỷ lệ margin, phân loại nhà đầu tư chuyên nghiệp siết chặt hơn.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "Xu hướng ESG trong lựa chọn danh mục của quỹ ngoại.",
+      "impact": "Neutral"
+    }
+  ],
+  "valuation": {
+    "bear": 21702,
+    "base": 26120,
+    "bull": 36120,
+    "methods": {
+      "pb": 25532,
+      "pe": 31409
+    },
+    "weights": {
+      "PB": 0.9,
+      "PE": 0.1
+    },
+    "recommendation": "THEO DÕI",
+    "upsidePct": -4.5,
+    "coe": 14.62,
+    "peMedian": 14.9,
+    "pbMedian": 1.76
+  },
+  "comments": {
+    "businessModel": "Công ty Cổ phần Chứng khoán SSI vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (42.1% doanh thu dự phóng).",
+    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 11,373 tỷ VND, LNST cổ đông mẹ 5,271 tỷ VND, EPS 2,108 VND/CP.",
+    "valuationText": "Giá mục tiêu 26,120 VND (upside -4.5%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị THEO DÕI."
+  },
+  "pe_hist": [],
+  "pb_hist": [],
+  "pe_quarters": [
+    11.26,
+    10.61,
+    9.02,
+    10.08,
+    10.77,
+    11.0,
+    11.27,
+    7.29,
+    11.81,
+    9.72,
+    15.63,
+    15.63,
+    17.85,
+    17.82,
+    13.15,
+    6.62,
+    7.05,
+    8.96,
+    15.53,
+    27.02,
+    30.74,
+    25.16,
+    24.53,
+    20.25,
+    17.64,
+    15.15,
+    15.17,
+    19.25,
+    26.16,
+    18.09,
+    14.65,
+    12.7
+  ],
+  "pb_quarters": [
+    1.64,
+    1.51,
+    1.41,
+    1.45,
+    1.28,
+    1.15,
+    1.02,
+    0.84,
+    0.9,
+    1.03,
+    1.83,
+    2.15,
+    2.83,
+    3.17,
+    2.79,
+    1.38,
+    1.2,
+    1.3,
+    1.42,
+    1.83,
+    2.31,
+    2.25,
+    2.44,
+    2.17,
+    2.01,
+    1.79,
+    1.71,
+    2.12,
+    2.68,
+    2.22,
+    1.87,
+    1.73
+  ],
+  "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
+  ],
+  "ratios": {
+    "roe": [
+      0.1896,
+      0.0759,
+      0.0987,
+      0.1008,
+      0.128,
+      0.1453,
+      0.1377,
+      0.1324
+    ],
+    "net_margin": [
+      0.3622,
+      0.2682,
+      0.3203,
+      0.3171,
+      0.3175,
+      0.4635,
+      0.4682,
+      0.4682
+    ]
+  },
+  "macro_liquidity": {
+    "adtv_hist": {
+      "2021": 23500.0,
+      "2022": 16800.0,
+      "2023": 14800.0,
+      "2024": 20500.0,
+      "2025": 28500.0
+    },
+    "adtv_fc": {
+      "2026": 30780.0,
+      "2027": 32627.0,
+      "2028": 34258.0
+    },
+    "adtv_growth_taper": [
+      0.08,
+      0.06,
+      0.05
+    ],
+    "fvtpl_mix": {
+      "CDs": 0.3,
+      "TP": 0.25,
+      "CP": 0.45
+    },
+    "fvtpl_rates": {
+      "R_CDs": 0.07,
+      "R_TP": 0.07,
+      "R_VNI": 0.1
+    },
+    "fvtpl_expected_yield": 0.0835,
+    "market_share": 0.2182,
+    "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat."
+  }
+}

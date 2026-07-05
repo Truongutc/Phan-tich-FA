@@ -966,4 +966,105 @@ tr:hover td { background: rgba(255,255,255,0.018); }
     font-weight: 600;
 }
 
+/* ════════════════════════════════════════════════════
+   MACRO & THANH KHOẢN SECTION
+   ════════════════════════════════════════════════════ */
+.macro-liq-section {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.macro-liq-section:last-child { border-bottom: none; margin-bottom: 0; }
 
+.macro-liq-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+}
+
+/* ADTV grid */
+.macro-adtv-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.macro-adtv-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-width: 90px;
+    text-align: center;
+    transition: background 0.2s;
+}
+.macro-adtv-item:hover { background: rgba(255, 255, 255, 0.07); }
+.macro-adtv-item.forecast {
+    border-color: rgba(96, 165, 250, 0.25);
+    background: rgba(96, 165, 250, 0.05);
+}
+.macro-adtv-year {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+.macro-adtv-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.macro-adtv-item.forecast .macro-adtv-val { color: #60a5fa; }
+
+/* FVTPL grid */
+.macro-fvtpl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.macro-fvtpl-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: background 0.2s;
+}
+.macro-fvtpl-item:hover { background: rgba(255, 255, 255, 0.07); }
+.macro-fvtpl-item.highlight {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+.macro-fvtpl-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.macro-fvtpl-val {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.macro-fvtpl-rate {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+}
+
+/* Note styling */
+.macro-liq-note {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    background: rgba(245, 158, 11, 0.07);
+    border-left: 3px solid rgba(245, 158, 11, 0.5);
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    margin-top: 8px;
+}
