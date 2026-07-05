@@ -775,13 +775,13 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     VALUATION_WEIGHTS = {"PB": 0.90, "PE": 0.10}
     weighted_target = round(VALUATION_WEIGHTS["PB"] * pb_target_price + VALUATION_WEIGHTS["PE"] * pe_target_price)
     
-    # Định giá có trọng số tương ứng
-    weighted_lower_target = round(VALUATION_WEIGHTS["PB"] * pb_lower_target_price + VALUATION_WEIGHTS["PE"] * pe_target_price)
-    weighted_upper_target = round(VALUATION_WEIGHTS["PB"] * pb_upper_target_price + VALUATION_WEIGHTS["PE"] * pe_target_price)
+    # Định giá hấp dẫn và đắt chỉ tính theo P/B (VCSH * P/B / Số CP), không tính P/E
+    weighted_lower_target = pb_lower_target_price
+    weighted_upper_target = pb_upper_target_price
     
     upside_pct = round((weighted_target / current_price - 1) * 100, 1) if current_price else 0
-    bear_target = round(min(pb_target_price, pe_target_price) * 0.85)
-    bull_target = round(max(pb_target_price, pe_target_price) * 1.15)
+    bear_target = pb_lower_target_price
+    bull_target = pb_upper_target_price
     recommend = "MUA" if upside_pct > 15 else ("BÁN" if upside_pct < -5 else "THEO DÕI")
     print(f"  -> P/B target: {pb_target_price:,.0f} | P/E target: {pe_target_price:,.0f}")
     print(f"  -> Trọng số P/B {VALUATION_WEIGHTS['PB']*100:.0f}%/P/E {VALUATION_WEIGHTS['PE']*100:.0f}% (cố định cho mọi CTCK)")
@@ -1927,14 +1927,14 @@ def build_valuation_sheet(wb, ticker, RA, RP, RBS, N_HIST, pe_median, pb_median,
     
     r_lower_target = r
     ws.cell(row=r, column=1, value="Định giá hấp dẫn (P/B Nửa Dưới) (VND)").font = Font(italic=True, color="10b981")
-    c = ws.cell(row=r, column=2, value=f"=0.90*B{r_pb_lower_target}+0.10*B{r_pe_target}")
+    c = ws.cell(row=r, column=2, value=f"=B{r_pb_lower_target}")
     c.number_format = FMT_PRICE
     c.font = Font(italic=True, color="10b981")
     r += 1
     
     r_upper_target = r
     ws.cell(row=r, column=1, value="Định giá đắt (P/B Nửa Trên) (VND)").font = Font(italic=True, color="ef4444")
-    c = ws.cell(row=r, column=2, value=f"=0.90*B{r_pb_upper_target}+0.10*B{r_pe_target}")
+    c = ws.cell(row=r, column=2, value=f"=B{r_pb_upper_target}")
     c.number_format = FMT_PRICE
     c.font = Font(italic=True, color="ef4444")
     r += 1
