@@ -1,0 +1,18 @@
+{
+  "ticker": "HCM",
+  "companyName": "HCM",
+  "sector": "Unknown",
+  "currentPrice": 0,
+  "marketCap": 0,
+  "shares": 0,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "lastUpdated": "2026-07-05 08:28",
+  "data": {
+    "years": [],
+    "revenue": [],
+    "npat": [],
+    "eps": [],
+    "equity": []
+  }
+}
