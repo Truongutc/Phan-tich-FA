@@ -103,6 +103,10 @@ def run_analysis(ticker: str):
                        "LPB", "ABB", "SHB", "VAB", "VIB", "BAB", "KLB", "NAB", "NVB",
                        "SGB", "OCB", "EIB", "MSB"}
 
+    # Danh sách mã công ty chứng khoán (CTCK)
+    SECURITIES_TICKERS = {"SSI", "VND", "HCM", "VCI", "FTS", "SHS", "BSI", "VIX", "MBS",
+                          "CTS", "AGR", "BVS", "APG", "ORS", "TVS", "VDS", "TCX", "VCK", "VPX"}
+
     # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
     import fetch_data
     print(f"[Step 1] Fetching raw financial data for {ticker}...")
@@ -115,15 +119,20 @@ def run_analysis(ticker: str):
     # Tự động nhận diện Ngân hàng dựa trên cấu trúc tài khoản BCTC thực tế
     bs_recs = raw_data["sections"]["BALANCE_SHEET"].get("years", [])
     has_bank_accounts = False
+    has_securities_accounts = False
     if bs_recs:
         # Kiểm tra xem có tài khoản Cho vay khách hàng (bsb103) hoặc Tiền gửi (bsb113) không
         latest_bs = bs_recs[-1]
         if latest_bs.get("bsb103") or latest_bs.get("bsb113") or latest_bs.get("bsb116"):
             has_bank_accounts = True
+        # Tự động nhận diện CTCK: có tài khoản dư nợ cho vay Margin (bss215, riêng của mẫu BCTC CTCK)
+        if latest_bs.get("bss215") is not None:
+            has_securities_accounts = True
 
     # ── STEP 2: Run specialized builder (AI-generated) or template engines ─────────
     builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
     is_bank = ticker in BANKING_TICKERS or has_bank_accounts
+    is_securities = not is_bank and (ticker in SECURITIES_TICKERS or has_securities_accounts)
     
     if is_bank:
         print(f"\n[Step 2] Ticker {ticker} classified as Bank. Directly running upgraded template_banking.py...")
@@ -136,6 +145,17 @@ def run_analysis(ticker: str):
             
         import template_banking
         success = template_banking.run_banking_analysis(ticker, raw_data)
+    elif is_securities:
+        print(f"\n[Step 2] Ticker {ticker} classified as Securities (CTCK). Directly running template_securities.py...")
+        try:
+            print("[Runner] Updating peer benchmark (CTCK) data from Live API...")
+            import update_peer_benchmark_securities
+            update_peer_benchmark_securities.main()
+        except Exception as e:
+            print(f"[WARN] Failed to update securities peer benchmark dynamically: {e}")
+
+        import template_securities
+        success = template_securities.run_securities_analysis(ticker, raw_data)
     else:
         # 1. Try to generate specialized builder via Gemini if key is present and builder doesn't exist yet
         if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):

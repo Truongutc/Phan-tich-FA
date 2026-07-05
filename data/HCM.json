@@ -1,18 +1,660 @@
 {
   "ticker": "HCM",
-  "companyName": "HCM",
-  "sector": "Unknown",
-  "currentPrice": 0,
-  "marketCap": 0,
-  "shares": 0,
+  "companyName": "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh",
+  "sector": "Chứng khoán",
+  "currentPrice": 28550.0,
+  "marketCap": 30832762957050.0,
+  "shares": 1079956671,
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-07-05 08:28",
   "data": {
-    "years": [],
-    "revenue": [],
-    "npat": [],
-    "eps": [],
-    "equity": []
-  }
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028
+    ],
+    "revenue": [
+      4460.1,
+      3901.4,
+      2903.2,
+      4276.2,
+      5136.2,
+      5688.6,
+      6190.6,
+      6661.4
+    ],
+    "npat": [
+      1147.1,
+      852.5,
+      674.4,
+      1039.7,
+      1178.6,
+      1296.3,
+      1459.2,
+      1570.1
+    ],
+    "eps": [
+      1062,
+      789,
+      624,
+      963,
+      1091,
+      1200,
+      1351,
+      1454
+    ],
+    "equity": [
+      7325.3,
+      7891.8,
+      8312.1,
+      10443.9,
+      14543.1,
+      15580.2,
+      16747.5,
+      18003.6
+    ]
+  },
+  "segments": {
+    "names": [
+      "MoiGioi",
+      "Margin",
+      "TuDoanh",
+      "IB_LuuKy",
+      "QLQ"
+    ],
+    "labels": {
+      "MoiGioi": "Môi giới",
+      "Margin": "Cho vay Margin",
+      "TuDoanh": "Tự doanh (FVTPL)",
+      "IB_LuuKy": "IB + Lưu ký",
+      "QLQ": "Quản lý quỹ"
+    },
+    "revenueHist": {
+      "MoiGioi": [
+        1390.5,
+        881.7,
+        672.1,
+        848.4,
+        1189.1
+      ],
+      "Margin": [
+        1178.7,
+        1273.4,
+        1066.7,
+        1714.0,
+        2395.0
+      ],
+      "TuDoanh": [
+        722.0,
+        623.2,
+        472.9,
+        665.5,
+        660.1
+      ],
+      "IB_LuuKy": [
+        55.1,
+        63.1,
+        32.1,
+        71.5,
+        88.4
+      ],
+      "QLQ": [
+        7.8,
+        3.8,
+        3.9,
+        3.6,
+        12.2
+      ]
+    },
+    "revenueForecast": {
+      "MoiGioi": [
+        1284.4,
+        1356.9,
+        1424.7
+      ],
+      "Margin": [
+        3083.6,
+        3463.7,
+        3773.8
+      ],
+      "TuDoanh": [
+        1163.6,
+        1267.7,
+        1356.0
+      ],
+      "IB_LuuKy": [
+        83.3,
+        85.5,
+        88.0
+      ],
+      "QLQ": [
+        14.7,
+        16.8,
+        18.9
+      ]
+    },
+    "pctNow": {
+      "MoiGioi": 0.2258,
+      "Margin": 0.5421,
+      "TuDoanh": 0.2045,
+      "IB_LuuKy": 0.0146,
+      "QLQ": 0.0026
+    }
+  },
+  "quarterly": {
+    "labels": [
+      "2023Q2",
+      "2023Q3",
+      "2023Q4",
+      "2024Q1",
+      "2024Q2",
+      "2024Q3",
+      "2024Q4",
+      "2025Q1",
+      "2025Q2",
+      "2025Q3",
+      "2025Q4",
+      "2026Q1"
+    ],
+    "revenue": [
+      587.5,
+      823.7,
+      861.5,
+      863.1,
+      1093.9,
+      1137.7,
+      1181.5,
+      999.6,
+      1073.5,
+      1664.9,
+      1398.2,
+      1466.4
+    ],
+    "npat": [
+      157.2,
+      214.1,
+      179.3,
+      276.9,
+      313.4,
+      222.4,
+      227.0,
+      226.7,
+      192.4,
+      440.5,
+      319.0,
+      290.7
+    ],
+    "roe": [
+      7.94,
+      10.53,
+      8.63,
+      12.9,
+      11.76,
+      8.85,
+      8.69,
+      8.79,
+      7.56,
+      16.58,
+      8.77,
+      8.07
+    ],
+    "marginLeverage": [
+      1.12,
+      1.39,
+      1.46,
+      1.65,
+      1.74,
+      1.92,
+      1.96,
+      1.98,
+      1.95,
+      1.9,
+      1.94,
+      1.95
+    ]
+  },
+  "roePbCorrelation": [
+    {
+      "quarter": "2018-Q1",
+      "roe": 42.79,
+      "pb": 2.29
+    },
+    {
+      "quarter": "2018-Q2",
+      "roe": 20.07,
+      "pb": 2.69
+    },
+    {
+      "quarter": "2018-Q3",
+      "roe": 17.15,
+      "pb": 1.91
+    },
+    {
+      "quarter": "2018-Q4",
+      "roe": 9.43,
+      "pb": 2.4
+    },
+    {
+      "quarter": "2019-Q1",
+      "roe": 10.57,
+      "pb": 2.27
+    },
+    {
+      "quarter": "2019-Q2",
+      "roe": 10.49,
+      "pb": 1.63
+    },
+    {
+      "quarter": "2019-Q3",
+      "roe": 10.41,
+      "pb": 1.36
+    },
+    {
+      "quarter": "2019-Q4",
+      "roe": 11.83,
+      "pb": 1.17
+    },
+    {
+      "quarter": "2020-Q1",
+      "roe": 9.17,
+      "pb": 1.3
+    },
+    {
+      "quarter": "2020-Q2",
+      "roe": 13.92,
+      "pb": 1.63
+    },
+    {
+      "quarter": "2020-Q3",
+      "roe": 12.75,
+      "pb": 2.11
+    },
+    {
+      "quarter": "2020-Q4",
+      "roe": 12.37,
+      "pb": 2.2
+    },
+    {
+      "quarter": "2021-Q1",
+      "roe": 27.03,
+      "pb": 2.87
+    },
+    {
+      "quarter": "2021-Q3",
+      "roe": 24.86,
+      "pb": 2.33
+    },
+    {
+      "quarter": "2021-Q4",
+      "roe": 12.21,
+      "pb": 1.9
+    },
+    {
+      "quarter": "2022-Q1",
+      "roe": 14.87,
+      "pb": 1.39
+    },
+    {
+      "quarter": "2022-Q2",
+      "roe": 14.27,
+      "pb": 1.14
+    },
+    {
+      "quarter": "2022-Q3",
+      "roe": 8.26,
+      "pb": 1.31
+    },
+    {
+      "quarter": "2022-Q4",
+      "roe": 6.35,
+      "pb": 1.46
+    },
+    {
+      "quarter": "2023-Q1",
+      "roe": 6.18,
+      "pb": 1.7
+    },
+    {
+      "quarter": "2023-Q2",
+      "roe": 7.94,
+      "pb": 1.82
+    },
+    {
+      "quarter": "2023-Q3",
+      "roe": 10.53,
+      "pb": 1.78
+    },
+    {
+      "quarter": "2023-Q4",
+      "roe": 8.63,
+      "pb": 2.06
+    },
+    {
+      "quarter": "2024-Q1",
+      "roe": 12.89,
+      "pb": 1.89
+    },
+    {
+      "quarter": "2024-Q2",
+      "roe": 11.75,
+      "pb": 2.06
+    },
+    {
+      "quarter": "2024-Q3",
+      "roe": 8.85,
+      "pb": 1.94
+    },
+    {
+      "quarter": "2024-Q4",
+      "roe": 8.7,
+      "pb": 1.83
+    },
+    {
+      "quarter": "2025-Q1",
+      "roe": 8.8,
+      "pb": 1.94
+    },
+    {
+      "quarter": "2025-Q2",
+      "roe": 7.56,
+      "pb": 2.11
+    },
+    {
+      "quarter": "2025-Q3",
+      "roe": 16.59,
+      "pb": 2.01
+    },
+    {
+      "quarter": "2025-Q4",
+      "roe": 8.77,
+      "pb": 1.99
+    },
+    {
+      "quarter": "2026-Q1",
+      "roe": 8.07,
+      "pb": 2.14
+    }
+  ],
+  "marginLeverage": {
+    "latest": 1.95,
+    "latestLabel": "2026Q1",
+    "legalCap": 2.0,
+    "warningThreshold": 1.8
+  },
+  "quarterlyUpdate": {
+    "quarter_label": "2026Q1",
+    "rev": 1466.40324373,
+    "npat": 290.720447794,
+    "yoy_rev_pct": 46.7,
+    "yoy_npat_pct": 28.2,
+    "n_known_q": 1,
+    "cum_rev": 1466.40324373,
+    "cum_npat": 290.720447794,
+    "pct_of_annual_est_rev": 25.8,
+    "pct_of_annual_est_npat": 22.4,
+    "cur_fc_year": 2026
+  },
+  "thesis": [
+    "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (54.2% DT).",
+    "Định giá theo P/B (trung vị lịch sử 1.92x) kết hợp P/E (trung vị 15.62x) cho giá mục tiêu 26,804 VND, tiềm năng -6.1%.",
+    "Cần theo dõi tỷ trọng mảng Tự doanh (FVTPL) — nguồn biến động LNST lớn nhất, nhạy cảm trực tiếp với VN-Index."
+  ],
+  "risks": [
+    "Rủi ro thị trường: thanh khoản GTGD và VN-Index sụt giảm tác động đồng thời Môi giới/Margin/Tự doanh.",
+    "Rủi ro cạnh tranh: cuộc đua phí môi giới 0% gây áp lực biên lợi nhuận mảng môi giới truyền thống.",
+    "Rủi ro lãi suất: chi phí vốn tài trợ margin/tự doanh tăng khi lãi suất huy động tăng, thu hẹp NIM."
+  ],
+  "moats": {
+    "Network Effect": {
+      "score": 2,
+      "desc": "Hạn chế — dịch vụ môi giới dễ thay thế giữa các CTCK."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Quy mô vốn lớn giúp chi phí vốn tài trợ margin/tự doanh thấp hơn CTCK nhỏ."
+    },
+    "Switching Cost": {
+      "score": 2,
+      "desc": "Thấp — nhà đầu tư dễ chuyển tài khoản giữa các CTCK."
+    },
+    "Intangible Assets": {
+      "score": 3,
+      "desc": "Thương hiệu, đội ngũ phân tích/tư vấn uy tín thu hút khách hàng tổ chức."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Vốn điều lệ lớn cho phép mở rộng room margin và danh mục tự doanh."
+    }
+  },
+  "pestle": [
+    {
+      "factor": "Political",
+      "content": "Chính sách UBCKNN, lộ trình nâng hạng thị trường mới nổi (FTSE/MSCI).",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Economic",
+      "content": "Lãi suất, tăng trưởng GDP và thanh khoản thị trường là driver trực tiếp doanh thu.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Social",
+      "content": "Số tài khoản chứng khoán mở mới tăng nhanh, phổ cập đầu tư cá nhân.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Technological",
+      "content": "Hệ thống KRX mới, giao dịch T+0, sản phẩm phái sinh mở rộng.",
+      "impact": "Positive"
+    },
+    {
+      "factor": "Legal",
+      "content": "Quy định tỷ lệ margin, phân loại nhà đầu tư chuyên nghiệp siết chặt hơn.",
+      "impact": "Neutral"
+    },
+    {
+      "factor": "Environmental",
+      "content": "Xu hướng ESG trong lựa chọn danh mục của quỹ ngoại.",
+      "impact": "Neutral"
+    }
+  ],
+  "valuation": {
+    "bear": 23516,
+    "base": 26804,
+    "bull": 30585,
+    "methods": {
+      "pb": 27700,
+      "pe": 18744
+    },
+    "weights": {
+      "PB": 0.9,
+      "PE": 0.1
+    },
+    "recommendation": "BÁN",
+    "upsidePct": -6.1,
+    "coe": 14.52,
+    "peMedian": 15.62,
+    "pbMedian": 1.92,
+    "pbLowerMedian": 1.63,
+    "pbUpperMedian": 2.12,
+    "lowerTarget": 23516,
+    "upperTarget": 30585
+  },
+  "comments": {
+    "businessModel": "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (54.2% doanh thu dự phóng).",
+    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 5,689 tỷ VND, LNST cổ đông mẹ 1,296 tỷ VND, EPS 1,200 VND/CP.",
+    "valuationText": "Giá mục tiêu 26,804 VND (upside -6.1%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị BÁN."
+  },
+  "pe_hist": [],
+  "pb_hist": [],
+  "pe_quarters": [
+    8.85,
+    9.95,
+    7.44,
+    4.67,
+    12.93,
+    13.5,
+    13.3,
+    11.63,
+    12.7,
+    14.3,
+    18.07,
+    18.45,
+    18.17,
+    12.07,
+    9.02,
+    7.88,
+    7.38,
+    10.93,
+    13.54,
+    19.65,
+    25.21,
+    21.05,
+    23.17,
+    19.29,
+    17.92,
+    17.15,
+    16.93,
+    18.43,
+    22.63,
+    20.07,
+    18.45,
+    20.64
+  ],
+  "pb_quarters": [
+    2.29,
+    2.69,
+    1.91,
+    2.4,
+    2.27,
+    1.63,
+    1.36,
+    1.17,
+    1.3,
+    1.63,
+    2.11,
+    2.2,
+    2.87,
+    2.33,
+    1.9,
+    1.39,
+    1.14,
+    1.31,
+    1.46,
+    1.7,
+    1.82,
+    1.78,
+    2.06,
+    1.89,
+    2.06,
+    1.94,
+    1.83,
+    1.94,
+    2.11,
+    2.01,
+    1.99,
+    2.14
+  ],
+  "quarter_labels": [
+    "2018-Q1",
+    "2018-Q2",
+    "2018-Q3",
+    "2018-Q4",
+    "2019-Q1",
+    "2019-Q2",
+    "2019-Q3",
+    "2019-Q4",
+    "2020-Q1",
+    "2020-Q2",
+    "2020-Q3",
+    "2020-Q4",
+    "2021-Q1",
+    "2021-Q3",
+    "2021-Q4",
+    "2022-Q1",
+    "2022-Q2",
+    "2022-Q3",
+    "2022-Q4",
+    "2023-Q1",
+    "2023-Q2",
+    "2023-Q3",
+    "2023-Q4",
+    "2024-Q1",
+    "2024-Q2",
+    "2024-Q3",
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q2",
+    "2025-Q3",
+    "2025-Q4",
+    "2026-Q1"
+  ],
+  "ratios": {
+    "roe": [
+      0.1566,
+      0.108,
+      0.0811,
+      0.0995,
+      0.081,
+      0.0832,
+      0.0871,
+      0.0872
+    ],
+    "net_margin": [
+      0.2572,
+      0.2185,
+      0.2323,
+      0.2431,
+      0.2295,
+      0.2279,
+      0.2357,
+      0.2357
+    ]
+  },
+  "macro_liquidity": {
+    "adtv_hist": {
+      "2021": 23500.0,
+      "2022": 16800.0,
+      "2023": 14800.0,
+      "2024": 20500.0,
+      "2025": 28500.0
+    },
+    "adtv_fc": {
+      "2026": 30780.0,
+      "2027": 32627.0,
+      "2028": 34258.0
+    },
+    "adtv_growth_taper": [
+      0.08,
+      0.06,
+      0.05
+    ],
+    "fvtpl_mix": {
+      "CDs": 0.35,
+      "TP": 0.3,
+      "CP": 0.35
+    },
+    "fvtpl_rates": {
+      "R_CDs": 0.07,
+      "R_TP": 0.07,
+      "R_VNI": 0.1
+    },
+    "fvtpl_expected_yield": 0.0805,
+    "market_share": 0.1109,
+    "brokerage_model": "Market share 11.09%",
+    "brokerage_share_hist": {
+      "2021": 0.1578,
+      "2022": 0.14,
+      "2023": 0.1211,
+      "2024": 0.1104,
+      "2025": 0.1113
+    },
+    "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat. brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
+  },
+  "lastUpdated": "2026-07-05 15:41"
 }
