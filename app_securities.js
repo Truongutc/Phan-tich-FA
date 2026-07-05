@@ -261,6 +261,8 @@ function renderValuationSnapshot(localJson, currPrice) {
     if (el('snap-pe-target')) el('snap-pe-target').textContent = val.methods?.pe ? fmt(val.methods.pe) : '-';
     if (el('snap-bear')) el('snap-bear').textContent = val.bear ? fmt(val.bear) : '-';
     if (el('snap-bull')) el('snap-bull').textContent = val.bull ? fmt(val.bull) : '-';
+    if (el('snap-pb-lower')) el('snap-pb-lower').textContent = val.lowerTarget ? fmt(val.lowerTarget) : '-';
+    if (el('snap-pb-upper')) el('snap-pb-upper').textContent = val.upperTarget ? fmt(val.upperTarget) : '-';
     const lev = localJson.marginLeverage || {};
     if (el('snap-margin-lev')) {
         el('snap-margin-lev').textContent = (lev.latest != null ? lev.latest.toFixed(2) : '-') + 'x';
@@ -823,9 +825,10 @@ async function renderMarketShareChart(currentTicker) {
             'VND': '#10b981',
             'MBS': '#8b5cf6',
             'TCBS': '#e02424', // Đỏ Techcombank
+            'VPS': '#ea580c', // Cam đậm VPS
             'BVS': '#06b6d4', // Cyan
             'BSI': '#f43f5e', // Rose
-            'SHS': '#10b981',
+            'SHS': '#14b8a6', // Teal
             'default': '#a855f7'
         };
         

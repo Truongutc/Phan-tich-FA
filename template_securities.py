@@ -507,8 +507,20 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     _pb_valid = [v for v in pb_quarters if v and v > 0]
     PE_HIST_MEDIAN = round(stats.median(_pe_valid), 2) if _pe_valid else 12.0
     PB_HIST_MEDIAN = round(stats.median(_pb_valid), 2) if _pb_valid else 1.3
+    
+    # Tính P/B Median Nửa Dưới (Hấp dẫn/Under) và Nửa Trên (Đắt/Over)
+    _pb_sorted = sorted(_pb_valid) if _pb_valid else [1.3]
+    _n_pb = len(_pb_sorted)
+    if _n_pb >= 2:
+        PB_HIST_MEDIAN_LOWER = round(stats.median(_pb_sorted[:_n_pb//2]), 2)
+        PB_HIST_MEDIAN_UPPER = round(stats.median(_pb_sorted[_n_pb//2:]), 2)
+    else:
+        PB_HIST_MEDIAN_LOWER = round(PB_HIST_MEDIAN * 0.85, 2)
+        PB_HIST_MEDIAN_UPPER = round(PB_HIST_MEDIAN * 1.15, 2)
+        
     PE_PB_MEDIAN_ROW = len(quarter_labels) + 3
     print(f"  -> PE_HIST_MEDIAN={PE_HIST_MEDIAN}x | PB_HIST_MEDIAN={PB_HIST_MEDIAN}x (median {len(_pe_valid)}/{len(_pb_valid)} quý)")
+    print(f"  -> PB_HIST_MEDIAN_LOWER (Hấp dẫn)={PB_HIST_MEDIAN_LOWER}x | PB_HIST_MEDIAN_UPPER (Over)={PB_HIST_MEDIAN_UPPER}x")
 
     # ══════════════════════════════════════════════════════════════════
     # 4. GIẢ ĐỊNH DỰ PHÓNG — 5 MẢNG (Bottom-up, theo đúng công thức tài liệu)
@@ -757,9 +769,16 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     # tính thanh khoản cao, BVPS đáng tin cậy hơn LNST vốn dễ biến động vì Tự doanh/IB).
     # ══════════════════════════════════════════════════════════════════
     pb_target_price = round(PB_HIST_MEDIAN * bvps_fc[0])
+    pb_lower_target_price = round(PB_HIST_MEDIAN_LOWER * bvps_fc[0])
+    pb_upper_target_price = round(PB_HIST_MEDIAN_UPPER * bvps_fc[0])
     pe_target_price = round(PE_HIST_MEDIAN * eps_fc[0])
     VALUATION_WEIGHTS = {"PB": 0.90, "PE": 0.10}
     weighted_target = round(VALUATION_WEIGHTS["PB"] * pb_target_price + VALUATION_WEIGHTS["PE"] * pe_target_price)
+    
+    # Định giá có trọng số tương ứng
+    weighted_lower_target = round(VALUATION_WEIGHTS["PB"] * pb_lower_target_price + VALUATION_WEIGHTS["PE"] * pe_target_price)
+    weighted_upper_target = round(VALUATION_WEIGHTS["PB"] * pb_upper_target_price + VALUATION_WEIGHTS["PE"] * pe_target_price)
+    
     upside_pct = round((weighted_target / current_price - 1) * 100, 1) if current_price else 0
     bear_target = round(min(pb_target_price, pe_target_price) * 0.85)
     bull_target = round(max(pb_target_price, pe_target_price) * 1.15)
@@ -897,7 +916,9 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                       COE, years_hist, years_fc, total_rev_hist, total_rev_fc, npat_parent_hist, npat_parent_fc,
                       eps_hist, eps_fc, bvps_hist, bvps_fc, seg_pct_fc0, concentration_warning, concentration_flag,
                       chart_paths, fvtpl_sens_npat_impact_pct, vnindex_sens_range,
-                      latest_margin_leverage, latest_leverage_label, VALUATION_WEIGHTS, quarterly_update)
+                      latest_margin_leverage, latest_leverage_label, VALUATION_WEIGHTS, quarterly_update,
+                      pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER,
+                      weighted_lower_target=weighted_lower_target, weighted_upper_target=weighted_upper_target)
     print(f"[PDF] Saved: {pdf_path}")
 
     # ══════════════════════════════════════════════════════════════════
@@ -928,7 +949,9 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                        pb_target_price, pe_target_price, PE_HIST_MEDIAN, PB_HIST_MEDIAN, COE,
                        seg_hist_data, seg_fc_data, seg_pct_fc0, concentration_warning, concentration_flag,
                        is_q, bs_q, latest_margin_leverage, latest_leverage_label, VALUATION_WEIGHTS, quarterly_update,
-                       macro_liquidity=_macro_liq)
+                       macro_liquidity=_macro_liq,
+                       pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER,
+                       weighted_lower_target=weighted_lower_target, weighted_upper_target=weighted_upper_target)
 
     print(f"\n--- Securities Analysis Complete for {ticker} ---")
     return True
@@ -2631,7 +2654,8 @@ def build_pdf_report(pdf_path, ticker, company_name, price, mcap, shares, target
                       bvps_hist, bvps_fc, seg_pct_fc0, concentration_seg, concentration_flag,
                       chart_paths, fvtpl_sens_pct, vnindex_range,
                       latest_margin_leverage=0.0, latest_leverage_label="", weights=None,
-                      quarterly_update=None):
+                      quarterly_update=None, pb_lower_median=None, pb_upper_median=None,
+                      weighted_lower_target=None, weighted_upper_target=None):
     styles = getSampleStyleSheet()
     style_title = ParagraphStyle('TitleVN', fontName=FONT_BOLD, fontSize=20, textColor=HexColor("#1F4E78"),
                                   alignment=TA_CENTER, spaceAfter=10)
@@ -2643,26 +2667,33 @@ def build_pdf_report(pdf_path, ticker, company_name, price, mcap, shares, target
     story = []
 
     # ── Trang 1: Cover ──
-    story.append(Spacer(1, 30*mm))
+    story.append(Spacer(1, 20*mm))
     story.append(Paragraph(f"{ticker} — {company_name}", style_title))
     story.append(Paragraph("BÁO CÁO PHÂN TÍCH CƠ BẢN CHUYÊN SÂU — NGÀNH CHỨNG KHOÁN (CTCK)", style_h2))
-    story.append(Spacer(1, 10*mm))
+    story.append(Spacer(1, 6*mm))
     rec_color = HexColor("#16a34a") if recommend == "MUA" else (HexColor("#dc2626") if recommend == "BÁN" else HexColor("#f59e0b"))
+    
+    pb_l = pb_lower_median or (pb_median * 0.85)
+    pb_u = pb_upper_median or (pb_median * 1.15)
+    t_l = weighted_lower_target or (target * 0.85)
+    t_u = weighted_upper_target or (target * 1.15)
+    
     cover_data = [
         ["Giá hiện tại", f"{price:,.0f} VND"],
-        ["Giá mục tiêu", f"{target:,.0f} VND"],
-        ["Tiềm năng tăng giá", f"{upside_pct:+.1f}%"],
+        ["Giá mục tiêu (Base Case - P/B Median)", f"{target:,.0f} VND ({upside_pct:+.1f}%)"],
+        ["Định giá hấp dẫn (P/B Median Nửa Dưới)", f"{t_l:,.0f} VND (P/B {pb_l:.2f}x)"],
+        ["Định giá đắt (P/B Median Nửa Trên)", f"{t_u:,.0f} VND (P/B {pb_u:.2f}x)"],
         ["Khuyến nghị", recommend],
     ]
-    t = Table(cover_data, colWidths=[80*mm, 60*mm])
+    t = Table(cover_data, colWidths=[90*mm, 60*mm])
     t.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (-1, -1), FONT_REG), ('FONTSIZE', (0, 0), (-1, -1), 12),
-        ('FONTNAME', (0, 3), (-1, 3), FONT_BOLD), ('TEXTCOLOR', (1, 3), (1, 3), rec_color),
+        ('FONTNAME', (0, 0), (-1, -1), FONT_REG), ('FONTSIZE', (0, 0), (-1, -1), 10.5),
+        ('FONTNAME', (0, 4), (-1, 4), FONT_BOLD), ('TEXTCOLOR', (1, 4), (1, 4), rec_color),
         ('GRID', (0, 0), (-1, -1), 0.5, grey), ('BACKGROUND', (0, 0), (0, -1), HexColor("#F2F2F2")),
-        ('ALIGN', (1, 0), (1, -1), 'CENTER'), ('TOPPADDING', (0, 0), (-1, -1), 8), ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('ALIGN', (1, 0), (1, -1), 'CENTER'), ('TOPPADDING', (0, 0), (-1, -1), 6), ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
     ]))
     story.append(t)
-    story.append(Spacer(1, 15*mm))
+    story.append(Spacer(1, 10*mm))
     story.append(Paragraph(f"Ngày lập báo cáo: {datetime.datetime.now().strftime('%d/%m/%Y')}", style_small))
     story.append(PageBreak())
 
@@ -2921,7 +2952,8 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
                        bear_target, bull_target, pb_target, pe_target, pe_median, pb_median, coe,
                        seg_hist, seg_fc, seg_pct_fc0, concentration_seg, concentration_flag,
                        is_q=None, bs_q=None, latest_margin_leverage=0.0, latest_leverage_label="",
-                       weights=None, quarterly_update=None, macro_liquidity=None):
+                       weights=None, quarterly_update=None, macro_liquidity=None,
+                       pb_lower_median=None, pb_upper_median=None, weighted_lower_target=None, weighted_upper_target=None):
     out_dir = os.path.join(PROJECT_ROOT, "data")
     os.makedirs(out_dir, exist_ok=True)
     all_years = years_hist + years_fc
@@ -3051,6 +3083,10 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
             "coe": round(coe * 100, 2),
             "peMedian": pe_median,
             "pbMedian": pb_median,
+            "pbLowerMedian": pb_lower_median,
+            "pbUpperMedian": pb_upper_median,
+            "lowerTarget": weighted_lower_target,
+            "upperTarget": weighted_upper_target,
         },
         "comments": comments,
         "pe_hist": [],
