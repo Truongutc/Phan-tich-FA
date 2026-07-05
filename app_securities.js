@@ -17,7 +17,7 @@ let chartMarketShare = null;
 let chartPE = null;
 let chartPB = null;
 
-Chart.register(ChartDataLabels);
+if (typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
 
 const SEGMENT_COLORS = {
     MoiGioi: '#3b82f6', Margin: '#f59e0b', TuDoanh: '#10b981', IB_LuuKy: '#8b5cf6', QLQ: '#ec4899',
