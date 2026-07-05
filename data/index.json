@@ -104,19 +104,19 @@
     "pdfUrl": "https://drive.google.com/file/d/1jYTgiohFccQX5gBrC1K4_jeNTPVtgBp8/view?usp=drivesdk"
   },
   {
-    "ticker": "HCM",
-    "companyName": "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh",
-    "sector": "Chứng khoán",
-    "lastUpdated": "2026-07-05 15:41",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "VCI",
     "companyName": "Công ty Cổ phần Chứng khoán Vietcap",
     "sector": "Chứng khoán",
     "lastUpdated": "2026-07-05 08:43",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1CiPfIy78NE_LpGzVcQ7DI4_Wmb5-EiTy/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1WPf3ldKSQB9E9kjeUHYDhzo3IYDyj0An/view?usp=drivesdk"
+  },
+  {
+    "ticker": "HCM",
+    "companyName": "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh",
+    "sector": "Chứng khoán",
+    "lastUpdated": "2026-07-05 09:12",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1De3u3jETtAu_wiHrAi0sjPRh3tIu7YUX/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1dkSxSsXkFioRkwyhWRRG7XUxpsUmWTW0/view?usp=drivesdk"
   }
 ]
