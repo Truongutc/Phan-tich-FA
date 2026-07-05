@@ -556,6 +556,29 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     brokerage_share_hist = [round(brokerage_rev_hist[i] / (MARKET_ADTV_HIST[years_hist[i]] * TRADING_DAYS * ASSUMED_FEE_BPS / 10000), 4)
                              if MARKET_ADTV_HIST[years_hist[i]] > 0 else 0 for i in range(N_HIST)]
     market_share_fc = round(stats.mean(brokerage_share_hist[-2:]), 4) if len(brokerage_share_hist) >= 2 else brokerage_share_hist[-1]
+
+    # ── FALLBACK OLS cho CTCK nhỏ ──
+    # Khi thị phần ngụ ý < 0.5%: CTCK quá nhỏ, độ biến động của market_share lớn và khó nhất quán.
+    # Thay bằng hồi quy OLS qua gốc toạ độ: brokerage_rev = β × ADTV  (nội suy tỷ lệ thanh khoản).
+    # β = Σ(brok_i × adtv_i) / Σ(adtv_i²)  — OLS qua gốc, tả nhiên hơn khi brok ~ const × ADTV.
+    MIN_RELIABLE_SHARE = 0.005   # ngưỡng 0.5% thị phần → dưới mức này dùng OLS
+    _brok_adtv_pairs = [(brokerage_rev_hist[i], MARKET_ADTV_HIST[years_hist[i]])
+                        for i in range(N_HIST)
+                        if MARKET_ADTV_HIST[years_hist[i]] > 0 and brokerage_rev_hist[i] > 0]
+    _use_ols = (market_share_fc < MIN_RELIABLE_SHARE) and (len(_brok_adtv_pairs) >= 2)
+    if _use_ols:
+        _num = sum(b * a for b, a in _brok_adtv_pairs)
+        _den = sum(a * a for _, a in _brok_adtv_pairs)
+        _beta_ols = _num / _den if _den > 0 else 0.0
+        _brok_model = f'OLS β={_beta_ols:.6f}'
+        _ms_ols_equiv = round(_beta_ols * TRADING_DAYS * ASSUMED_FEE_BPS / 10000, 4)
+        print(f"  [Brokerage] {ticker}: OLS fallback (β={_beta_ols:.6f}) — thị phần ngụ ý {market_share_fc:.2%} < {MIN_RELIABLE_SHARE:.1%} ngưỡng")
+        print(f"    Implied share tương đương OLS: {_ms_ols_equiv:.2%}")
+    else:
+        _beta_ols = None
+        _brok_model = f'Market share {market_share_fc:.2%}'
+        print(f"  [Brokerage] {ticker}: Market share {market_share_fc:.2%} — đủ tin cậy (≥ {MIN_RELIABLE_SHARE:.1%})")
+
     # Tăng trưởng GTGD toàn TT GIẢM DẦN qua các năm dự phóng (8%→6%→5%) — tránh dự phóng quá lạc quan/
     # "quá đà" cho các năm xa, đúng nguyên tắc thận trọng hóa dần theo thời gian.
     # ⚠ Điều chỉnh taper nếu quan điểm vĩ mô thay đổi (xem sheet 09_PESTLE/khung đánh giá vĩ mô).
@@ -638,8 +661,13 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     _fvtpl_prev = fvtpl_portfolio_hist[-1]
     _qlq_aum_prev = qlq_aum_fc0
     for i in range(3):
-        # (1) Môi giới
-        brokerage_rev_fc.append(round(market_adtv_fc[i] * TRADING_DAYS * market_share_fc * ASSUMED_FEE_BPS / 10000, 1))
+        # (1) Môi giới — 2 phương pháp tùy độ tin cậy thị phần:
+        if _use_ols:
+            # OLS: DT môi giới = β × ADTV_fc (nội suy tuyến tính tỷ lệ thanh khoản)
+            brokerage_rev_fc.append(round(_beta_ols * market_adtv_fc[i], 1))
+        else:
+            # Market share: ADTV × số_phiên × thị_phần × phí_bps / 10000
+            brokerage_rev_fc.append(round(market_adtv_fc[i] * TRADING_DAYS * market_share_fc * ASSUMED_FEE_BPS / 10000, 1))
         # (2) Margin
         margin_loans_fc.append(round(_margin_prev * (1 + margin_loan_growth_fc[i]), 1))
         margin_avg_fc_i = (_margin_prev + margin_loans_fc[i]) / 2
@@ -658,6 +686,19 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
         qlq_aum_fc.append(round(_qlq_aum_prev * (1 + qlq_aum_growth_fc[i]), 1))
         qlq_rev_fc.append(round(qlq_aum_fc[i] * qlq_fee_rate_fc, 1))
         _qlq_aum_prev = qlq_aum_fc[i]
+
+    # ── Blend mảng Môi giới năm hiện tại với dữ liệu lũy kế thực tế (segment-level blend) ──
+    # Trước đây chỉ blend tổng DT và LNST. Giờ blend thêm mảng Môi giới riêng để capture xu hướng
+    # thanh khoản thực tế quý gần nhất (thị trường có thể khác ADTV bảng cứng).
+    # n=0 → blend no-op (giữ giá trị gốc), nhất quán với hàm blend_annual_estimate.
+    _cur_fc_year = years_fc[0]
+    _brok_cum, _n_brok_q = cumulative_actual_quarters(is_q, _cur_fc_year, SEG["brokerage_rev"])
+    _brok_base0 = brokerage_rev_fc[0]
+    brokerage_rev_fc[0] = round(blend_annual_estimate(_brok_cum, _n_brok_q, _brok_base0), 1)
+    if _n_brok_q > 0:
+        _brok_annual = _brok_cum * (4 / _n_brok_q)
+        print(f"  [Blend-Môi giới] {_cur_fc_year}F: {_n_brok_q}/4 quý thực (lũy kế {_brok_cum:,.1f} tỷ, annualized {_brok_annual:,.1f}) "
+              f"+ mô hình {_brok_base0:,.1f} → blend = {brokerage_rev_fc[0]:,.1f} tỷ (độ lệch mô hình: {(_brok_annual/_brok_base0-1)*100:+.1f}%)")
 
     total_rev_fc = [brokerage_rev_fc[i] + margin_rev_fc[i] + fvtpl_rev_fc[i] + ib_custody_rev_fc[i] + qlq_rev_fc[i] for i in range(3)]
 
@@ -787,7 +828,7 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
 
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", ticker)
     os.makedirs(out_dir, exist_ok=True)
-    month_str = datetime.datetime.now().strftime("%Y-%m")
+    month_str = datetime.datetime.now().strftime("%Y-%m-%d")
     excel_path = os.path.join(out_dir, f"{ticker}_Model_{month_str}.xlsx")
     wb.save(excel_path)
     print(f"[Excel] Saved: {excel_path}")
@@ -870,11 +911,14 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
         "fvtpl_rates": fvtpl_r_fc,
         "fvtpl_expected_yield": round(fvtpl_expected_yield_fc, 4),
         "market_share": round(market_share_fc, 4),
+        "brokerage_model": _brok_model,
+        "brokerage_share_hist": {str(years_hist[i]): brokerage_share_hist[i] for i in range(len(years_hist))},
         "note": (
             "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. "
             "adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. "
             "fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — "
-            "BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat."
+            "BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat. "
+            "brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
         ),
     }
     save_json_summary(ticker, company_name, current_price, market_cap, shares, years_hist, years_fc,
