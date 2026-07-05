@@ -17,6 +17,8 @@ let chartMarketShare = null;
 let chartPE = null;
 let chartPB = null;
 
+Chart.register(ChartDataLabels);
+
 const SEGMENT_COLORS = {
     MoiGioi: '#3b82f6', Margin: '#f59e0b', TuDoanh: '#10b981', IB_LuuKy: '#8b5cf6', QLQ: '#ec4899',
 };
@@ -30,7 +32,8 @@ const CHART_DEFAULTS = {
     maintainAspectRatio: false,
     plugins: {
         legend: { labels: { color: '#8892a4', font: { family: 'Inter', size: 11 }, boxWidth: 12 } },
-        tooltip: { backgroundColor: 'rgba(10,16,32,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#f0f2f8', bodyColor: '#8892a4', padding: 12, cornerRadius: 8 }
+        tooltip: { backgroundColor: 'rgba(10,16,32,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#f0f2f8', bodyColor: '#8892a4', padding: 12, cornerRadius: 8 },
+        datalabels: { display: false } // Mặc định tắt để tránh rối các line chart
     },
     scales: {
         x: { ticks: { color: '#545f74', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } },
@@ -586,7 +589,21 @@ function renderSegmentRevenueChart(localJson) {
                 stack: 'seg',
             })),
         },
-        options: { ...CHART_DEFAULTS, scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true } } },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                datalabels: {
+                    display: (context) => {
+                        return context.dataset.data[context.dataIndex] > 80;
+                    },
+                    color: '#ffffff',
+                    font: { family: 'Inter', weight: '600', size: 9.5 },
+                    formatter: (val) => val.toLocaleString('vi-VN')
+                }
+            },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true } }
+        },
     });
 
     const dominant = names.reduce((a, b) => (seg.pctNow[a] || 0) > (seg.pctNow[b] || 0) ? a : b);
@@ -627,6 +644,17 @@ function renderSegmentMixChart(localJson) {
         },
         options: {
             ...CHART_DEFAULTS,
+            plugins: {
+                ...CHART_DEFAULTS.plugins,
+                datalabels: {
+                    display: (context) => {
+                        return context.dataset.data[context.dataIndex] > 6;
+                    },
+                    color: '#ffffff',
+                    font: { family: 'Inter', weight: '600', size: 9.5 },
+                    formatter: (val) => val.toFixed(0) + '%'
+                }
+            },
             scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true, max: 100 } },
         },
     });
