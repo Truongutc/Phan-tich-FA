@@ -19,8 +19,21 @@ TCBS_HIST_SHARE = {
     2022: 0.058,
     2023: 0.063,
     2024: 0.068,
-    2025: 0.072,
-    2026: 0.075
+    2025: 0.0799, # 7.99% thực tế HOSE
+    2026: 0.0810
+}
+
+# Thị phần môi giới thực tế công bố của VPS theo từng năm (HOSE)
+VPS_HIST_SHARE = {
+    2018: 0.032,
+    2019: 0.064,
+    2020: 0.082,
+    2021: 0.161,
+    2022: 0.173,
+    2023: 0.190,
+    2024: 0.181,
+    2025: 0.1595, # 15.95% thực tế HOSE
+    2026: 0.1550
 }
 
 VIETCAP_BASE = "https://iq.vietcap.com.vn/api/iq-insight-service/v1"
@@ -115,8 +128,6 @@ def main():
         # Thêm TCBS vào danh sách thị phần
         tcbs_share = TCBS_HIST_SHARE.get(year, 0.06)
         market_shares[label]['TCBS'] = tcbs_share
-        
-        # Tạo thêm bản ghi doanh thu môi giới cho TCBS trong raw_data để các thuật toán so sánh tổng doanh thu hoạt động
         if 'TCBS' not in raw_data:
             raw_data['TCBS'] = []
         raw_data['TCBS'].append({
@@ -124,6 +135,18 @@ def main():
             "quarter": int(label[-1]),
             "label": label,
             "brok_rev": tcbs_share * total_market_brok_capacity
+        })
+
+        # Thêm VPS vào danh sách thị phần
+        vps_share = VPS_HIST_SHARE.get(year, 0.18)
+        market_shares[label]['VPS'] = vps_share
+        if 'VPS' not in raw_data:
+            raw_data['VPS'] = []
+        raw_data['VPS'].append({
+            "year": year,
+            "quarter": int(label[-1]),
+            "label": label,
+            "brok_rev": vps_share * total_market_brok_capacity
         })
 
     # Tìm Top 8 CTCK có doanh thu môi giới lớn nhất trong 4 quý gần nhất
