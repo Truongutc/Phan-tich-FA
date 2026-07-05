@@ -815,13 +815,17 @@ async function renderMarketShareChart(currentTicker) {
         
         if (!quarters.length || !top5.length) return;
         
-        // Bảng màu cho Top 5
+        // Bảng màu cho Top 8
         const colorPalette = {
             'SSI': '#3b82f6',
             'HCM': '#f59e0b',
             'VCI': '#ec4899',
             'VND': '#10b981',
             'MBS': '#8b5cf6',
+            'TCBS': '#e02424', // Đỏ Techcombank
+            'BVS': '#06b6d4', // Cyan
+            'BSI': '#f43f5e', // Rose
+            'SHS': '#10b981',
             'default': '#a855f7'
         };
         
