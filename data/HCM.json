@@ -5,8 +5,8 @@
   "currentPrice": 28550.0,
   "marketCap": 30832762957050.0,
   "shares": 1079956671,
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1De3u3jETtAu_wiHrAi0sjPRh3tIu7YUX/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1dkSxSsXkFioRkwyhWRRG7XUxpsUmWTW0/view?usp=drivesdk",
   "data": {
     "years": [
       2021,
@@ -656,5 +656,5 @@
     },
     "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat. brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
   },
-  "lastUpdated": "2026-07-05 15:41"
+  "lastUpdated": "2026-07-05 09:12"
 }
