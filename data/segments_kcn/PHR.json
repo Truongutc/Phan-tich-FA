@@ -1,0 +1,51 @@
+{
+  "ticker": "PHR",
+  "companyName": "Công ty Cổ phần Cao su Phước Hòa",
+  "unit": "ty_vnd",
+  "lastUpdated": "2026-07-07",
+  "segments": {
+    "CaoSu":          {"label": "Bán thành phẩm (cao su)",          "order": 1, "color": "#f59e0b", "driver": "rubber"},
+    "HangHoa":        {"label": "Bán hàng hóa",                     "order": 2, "color": "#64748b", "driver": "goods"},
+    "ChoThueDatKCN":  {"label": "Cho thuê đất & phí hạ tầng KCN",   "order": 3, "color": "#10b981", "driver": "leasing"},
+    "XuLyNuocThai":   {"label": "Xử lý nước thải KCN",              "order": 4, "color": "#3b82f6", "driver": "wastewater"},
+    "Khac":           {"label": "Khác",                             "order": 5, "color": "#9ca3af", "driver": "other"}
+  },
+  "yearly": {
+    "2025": {
+      "CaoSu":         {"revenue": 1636.9, "cogs": 1204.8, "source": "BCTC hợp nhất năm 2025 (đã kiểm toán) PHR, TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "HangHoa":       {"revenue": 50.1,   "cogs": 49.1,   "source": "BCTC hợp nhất năm 2025 (đã kiểm toán) PHR, TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "ChoThueDatKCN": {"revenue": 81.5,   "cogs": 19.7,   "source": "BCTC hợp nhất năm 2025 (đã kiểm toán) PHR, TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "XuLyNuocThai":  {"revenue": 15.5,   "cogs": 7.4,    "source": "BCTC hợp nhất năm 2025 (đã kiểm toán) PHR, TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "Khac":          {"revenue": 11.2,   "cogs": 10.3,   "source": "BCTC hợp nhất năm 2025 (đã kiểm toán) PHR, TM 25 + TM 26 (gộp giá vốn khác + dự phòng giảm giá HTK)", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false}
+    },
+    "2024": {
+      "CaoSu":         {"revenue": 1513.6, "cogs": 1171.0, "source": "BCTC hợp nhất năm 2025 (cột đối chiếu 2024), TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "HangHoa":       {"revenue": 8.4,    "cogs": 8.5,    "source": "BCTC hợp nhất năm 2025 (cột đối chiếu 2024), TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "ChoThueDatKCN": {"revenue": 86.7,   "cogs": 18.9,   "source": "BCTC hợp nhất năm 2025 (cột đối chiếu 2024), TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "XuLyNuocThai":  {"revenue": 18.8,   "cogs": 6.0,    "source": "BCTC hợp nhất năm 2025 (cột đối chiếu 2024), TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false},
+      "Khac":          {"revenue": 7.3,    "cogs": 6.2,    "source": "BCTC hợp nhất năm 2025 (cột đối chiếu 2024), TM 25 + TM 26", "sourceType": "bctc_pdf_user", "asOf": "2026-04-21", "derived": false}
+    }
+  },
+  "quarterly": {
+    "2025Q1": {
+      "CaoSu":         {"revenue": 275.7, "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR, TM 26 (giá vốn theo mảng chưa trích xuất — cần bctc_pdf_tool.py render note kế tiếp)", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "HangHoa":       {"revenue": 0.0,   "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR — 'Doanh thu dịch vụ đã cung cấp' 0.77 tỷ gộp tạm vào Khác", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "ChoThueDatKCN": {"revenue": 30.9,  "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR, TM 26", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "XuLyNuocThai":  {"revenue": 4.0,   "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR, TM 26", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "Khac":          {"revenue": 0.9,   "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR — DV đã cung cấp (0.77) + Khác (0.16)", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false}
+    },
+    "2024Q1": {
+      "CaoSu":         {"revenue": 303.5, "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR (cột đối chiếu Q1/2024), TM 26", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "HangHoa":       {"revenue": 0.0,   "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR (cột đối chiếu Q1/2024)", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "ChoThueDatKCN": {"revenue": 15.2,  "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR (cột đối chiếu Q1/2024), TM 26", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "XuLyNuocThai":  {"revenue": 2.6,   "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR (cột đối chiếu Q1/2024), TM 26", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false},
+      "Khac":          {"revenue": 1.9,   "cogs": null, "source": "BCTC hợp nhất Q1/2025 PHR (cột đối chiếu Q1/2024) — DV đã cung cấp (1.91) + Khác (0.14)", "sourceType": "bctc_pdf_user", "asOf": "2025-05-05", "derived": false}
+    }
+  },
+  "notes": [
+    "PHR ghi nhận doanh thu cho thuê đất KCN một (01) lần khi bàn giao đất — TM năm 2025 có bảng đối chiếu phương pháp ghi nhận một lần vs phân bổ dần: chênh lệch lũy kế đến 2025 là 1,041 tỷ đồng doanh thu (711 tỷ LN gộp) đã ghi nhận sớm hơn so với phân bổ dần — CẢNH BÁO chất lượng lợi nhuận, đưa vào phần rủi ro/PESTLE.",
+    "Giá vốn theo mảng của các quý (2025Q1, 2024Q1) CHƯA trích xuất đầy đủ — cần chạy bctc_pdf_tool.py render thêm 1-2 trang kế tiếp trong các PDF quý tương ứng trên Desktop user hoặc tải qua CafeF API.",
+    "Cần bổ sung dữ liệu năm 2021-2023 (đã có sẵn 3 PDF MD/PDF cũ trên Desktop user: FY2023 kiểm toán, Q2/2023, Q3/2023) và Q4/2025+Q1/2026 (đã có PDF trên Desktop, cần trích) qua bctc_pdf_tool.py.",
+    "sourceType 'bctc_pdf_user' = trích từ PDF do user cung cấp tại C:\\Users\\admin\\Desktop\\bctc\\PHR\\ (không phải BCTC MD text, mà đọc trực tiếp ảnh scan qua PyMuPDF)."
+  ]
+}

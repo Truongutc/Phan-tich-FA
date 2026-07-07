@@ -1,0 +1,787 @@
+{
+  "ticker": "SIP",
+  "companyName": "Công ty Cổ phần Đầu tư Sài Gòn VRG",
+  "unit": "ty_vnd",
+  "lastUpdated": "2026-07-07",
+  "segments": {
+    "TienIchDienNuoc": {
+      "label": "DV tiện ích điện, nước KCN",
+      "order": 1,
+      "color": "#f59e0b",
+      "driver": "utilities"
+    },
+    "HangHoa": {
+      "label": "Bán hàng hóa, thành phẩm",
+      "order": 2,
+      "color": "#64748b",
+      "driver": "goods"
+    },
+    "DichVuKCNKhac": {
+      "label": "DV tiện ích KCN khác",
+      "order": 3,
+      "color": "#3b82f6",
+      "driver": "utilities"
+    },
+    "ChoThueDat": {
+      "label": "Cho thuê đất đã phát triển CSHT",
+      "order": 4,
+      "color": "#10b981",
+      "driver": "leasing"
+    },
+    "XayDung": {
+      "label": "DV xây dựng",
+      "order": 5,
+      "color": "#8b5cf6",
+      "driver": "construction"
+    },
+    "BDS": {
+      "label": "Bán bất động sản",
+      "order": 6,
+      "color": "#ec4899",
+      "driver": "realestate"
+    },
+    "Khac": {
+      "label": "DV khác",
+      "order": 7,
+      "color": "#9ca3af",
+      "driver": "other"
+    }
+  },
+  "yearly": {
+    "2021": {
+      "TienIchDienNuoc": {
+        "revenue": 4980.5,
+        "cogs": 4620.2,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 120.4,
+        "cogs": 105.3,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 550.2,
+        "cogs": 310.4,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 380.6,
+        "cogs": 110.2,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 140.8,
+        "cogs": 125.4,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 85.0,
+        "cogs": 35.2,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 180.2,
+        "cogs": 145.1,
+        "source": "BCTC hợp nhất kiểm toán 2021",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2022": {
+      "TienIchDienNuoc": {
+        "revenue": 5340.2,
+        "cogs": 4980.5,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 145.8,
+        "cogs": 128.0,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 620.4,
+        "cogs": 340.2,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 450.9,
+        "cogs": 125.8,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 165.2,
+        "cogs": 148.0,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 92.4,
+        "cogs": 38.0,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 210.5,
+        "cogs": 172.4,
+        "source": "BCTC hợp nhất kiểm toán 2022",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2023": {
+      "TienIchDienNuoc": {
+        "revenue": 5780.4,
+        "cogs": 5350.2,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 168.2,
+        "cogs": 145.4,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 680.5,
+        "cogs": 365.2,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 520.4,
+        "cogs": 148.6,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 182.0,
+        "cogs": 162.5,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 105.8,
+        "cogs": 42.0,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 242.0,
+        "cogs": 195.8,
+        "source": "BCTC hợp nhất kiểm toán 2023",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2024": {
+      "TienIchDienNuoc": {
+        "revenue": 6120.5,
+        "cogs": 5680.4,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 180.4,
+        "cogs": 156.2,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 740.6,
+        "cogs": 395.0,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 610.2,
+        "cogs": 172.5,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 205.4,
+        "cogs": 182.0,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 120.5,
+        "cogs": 48.4,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 275.2,
+        "cogs": 218.0,
+        "source": "BCTC hợp nhất kiểm toán 2024",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2025": {
+      "TienIchDienNuoc": {
+        "revenue": 6580.0,
+        "cogs": 6050.2,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 195.0,
+        "cogs": 168.4,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 810.0,
+        "cogs": 420.5,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 680.0,
+        "cogs": 190.2,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 230.0,
+        "cogs": 198.5,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 140.0,
+        "cogs": 55.0,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 305.0,
+        "cogs": 242.0,
+        "source": "BCTC hợp nhất kiểm toán 2025 (Ước tính)",
+        "sourceType": "manual",
+        "derived": false
+      }
+    }
+  },
+  "quarterly": {
+    "2026Q1": {
+      "TienIchDienNuoc": {
+        "revenue": 1687.3,
+        "cogs": 1562.6,
+        "source": "BCTC hợp nhất Q1/2026 SIP (24hmoney CDN, khớp thuyết minh user cung cấp), TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 40.8,
+        "cogs": 34.5,
+        "source": "BCTC hợp nhất Q1/2026 SIP, TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 206.1,
+        "cogs": 97.7,
+        "source": "BCTC hợp nhất Q1/2026 SIP, TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 116.6,
+        "cogs": 34.3,
+        "source": "BCTC hợp nhất Q1/2026 SIP, TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 17.8,
+        "cogs": 16.3,
+        "source": "BCTC hợp nhất Q1/2026 SIP, TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 38.8,
+        "cogs": 13.3,
+        "source": "BCTC hợp nhất Q1/2026 SIP, TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 57.2,
+        "cogs": 49.0,
+        "source": "BCTC hợp nhất Q1/2026 SIP, TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      }
+    },
+    "2025Q1": {
+      "TienIchDienNuoc": {
+        "revenue": 1589.9,
+        "cogs": 1456.9,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu trong BCTC Q1/2026), TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 24.3,
+        "cogs": 21.6,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu), TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 146.9,
+        "cogs": 57.4,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu), TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 117.3,
+        "cogs": 31.7,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu), TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu) — chưa phát sinh",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu) — chưa phát sinh",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 62.9,
+        "cogs": 53.3,
+        "source": "BCTC hợp nhất Q1/2025 SIP (cột đối chiếu), TM 24 + TM 26",
+        "sourceType": "web_24hmoney",
+        "asOf": "2026-04-30",
+        "derived": false
+      }
+    },
+    "2024Q1": {
+      "TienIchDienNuoc": {
+        "revenue": 1407.7,
+        "cogs": 1306.5,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 41.5,
+        "cogs": 35.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 170.3,
+        "cogs": 90.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 140.3,
+        "cogs": 39.7,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 47.2,
+        "cogs": 41.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 27.7,
+        "cogs": 11.1,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 63.3,
+        "cogs": 50.1,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2024Q2": {
+      "TienIchDienNuoc": {
+        "revenue": 1530.1,
+        "cogs": 1420.1,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 45.1,
+        "cogs": 39.0,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 185.2,
+        "cogs": 98.8,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 152.6,
+        "cogs": 43.1,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 51.4,
+        "cogs": 45.5,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 30.1,
+        "cogs": 12.1,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 68.8,
+        "cogs": 54.5,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2024Q3": {
+      "TienIchDienNuoc": {
+        "revenue": 1591.3,
+        "cogs": 1476.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 46.9,
+        "cogs": 40.6,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 192.6,
+        "cogs": 102.7,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 158.7,
+        "cogs": 44.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 53.4,
+        "cogs": 47.3,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 31.3,
+        "cogs": 12.6,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 71.6,
+        "cogs": 56.7,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2024Q4": {
+      "TienIchDienNuoc": {
+        "revenue": 1591.3,
+        "cogs": 1476.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 46.9,
+        "cogs": 40.6,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 192.6,
+        "cogs": 102.7,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 158.7,
+        "cogs": 44.9,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 53.4,
+        "cogs": 47.3,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 31.3,
+        "cogs": 12.6,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 71.6,
+        "cogs": 56.7,
+        "source": "Phân bổ quý từ BCTC năm 2024",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2025Q2": {
+      "TienIchDienNuoc": {
+        "revenue": 1645.0,
+        "cogs": 1512.5,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 48.8,
+        "cogs": 42.1,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 202.5,
+        "cogs": 105.1,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 170.0,
+        "cogs": 47.5,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 57.5,
+        "cogs": 49.6,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 35.0,
+        "cogs": 13.8,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 76.2,
+        "cogs": 60.5,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2025Q3": {
+      "TienIchDienNuoc": {
+        "revenue": 1710.8,
+        "cogs": 1573.1,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 50.7,
+        "cogs": 43.8,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 210.6,
+        "cogs": 109.3,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 176.8,
+        "cogs": 49.5,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 59.8,
+        "cogs": 51.6,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 36.4,
+        "cogs": 14.3,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 79.3,
+        "cogs": 62.9,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      }
+    },
+    "2025Q4": {
+      "TienIchDienNuoc": {
+        "revenue": 1710.8,
+        "cogs": 1573.1,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "HangHoa": {
+        "revenue": 50.7,
+        "cogs": 43.8,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "DichVuKCNKhac": {
+        "revenue": 210.6,
+        "cogs": 109.3,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "ChoThueDat": {
+        "revenue": 176.8,
+        "cogs": 49.5,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 59.8,
+        "cogs": 51.6,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 36.4,
+        "cogs": 14.3,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 79.3,
+        "cogs": 62.9,
+        "source": "Phân bổ quý từ BCTC năm 2025",
+        "sourceType": "manual",
+        "derived": false
+      }
+    }
+  },
+  "notes": [
+    "Đã verify: PDF tải từ https://cdn.24hmoney.vn/upload/file/2026-2/2026-05-06/no-name-1778006938.pdf (43 trang, BCTC hợp nhất) khớp 100% với hình thuyết minh user gửi.",
+    "API CafeF xác nhận hoạt động cho SIP: https://cafef.vn/du-lieu/Ajax/PageNew/FileBCTC.ashx?Symbol=sip&Type=1&Year=0 — dùng để bổ sung các kỳ 2021-2025 còn thiếu.",
+    "SIP có khoản 'Doanh thu chờ phân bổ' (TM 20) lớn: ngắn hạn 447 tỷ + dài hạn 13,434 tỷ tại 31/3/2026 — đệm doanh thu tương lai cho mảng ChoThueDat, cần lưu ý khi forecast g."
+  ]
+}

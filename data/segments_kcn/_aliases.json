@@ -1,0 +1,56 @@
+{
+  "_comment": "Alias map: normalized (NFD-stripped, lowercase) segment label from BCTC -> canonical segment key per ticker. Dùng bởi segments_kcn_tool.py khi merge patch thủ công.",
+  "IDC": {
+    "doanh thu kinh doanh dien": "DienNang",
+    "gia von kinh doanh dien": "DienNang",
+    "doanh thu cho thue dat va ha tang khu cong nghiep": "HaTangKCN",
+    "doanh thu cho thue lai dat va ha tang tai cac khu cong nghiep ghi nhan mot lan": "HaTangKCN",
+    "doanh thu cho thue lai dat va ha tang tai cac khu cong nghiep ghi nhan phan bo": "HaTangKCN",
+    "gia von cho thue dat va ha tang khu cong nghiep": "HaTangKCN",
+    "gia von ha tang khu cong nghiep": "HaTangKCN",
+    "doanh thu dich vu khu cong nghiep": "DichVuKCN",
+    "gia von dich vu khu cong nghiep": "DichVuKCN",
+    "doanh thu thu phi duong bo": "BOT",
+    "gia von thu phi duong bo": "BOT",
+    "doanh thu hoat dong xay dung": "XayDung",
+    "gia von hoat dong xay dung": "XayDung",
+    "doanh thu kinh doanh bat dong san": "BDS",
+    "gia von kinh doanh bat dong san": "BDS",
+    "doanh thu san pham va dich vu khac": "Khac",
+    "gia von san pham va dich vu khac": "Khac"
+  },
+  "SIP": {
+    "doanh thu cung cap dich vu tien ich dien nuoc kcn": "TienIchDienNuoc",
+    "gia von cung cap dich vu tien ich dien nuoc kcn": "TienIchDienNuoc",
+    "doanh thu ban hang hoa thanh pham": "HangHoa",
+    "gia von hang hoa thanh pham da ban": "HangHoa",
+    "doanh thu cung cap dich vu tien ich kcn khac": "DichVuKCNKhac",
+    "gia von dich vu tien ich kcn khac": "DichVuKCNKhac",
+    "doanh thu cho thue dat da phat trien co so ha tang": "ChoThueDat",
+    "gia von thue dat da phat trien co so ha tang": "ChoThueDat",
+    "doanh thu cung cap dich vu xay dung": "XayDung",
+    "gia von cung cap dich vu xay dung": "XayDung",
+    "doanh thu ban bat dong san": "BDS",
+    "gia von ban bat dong san": "BDS",
+    "doanh thu cung cap dich vu khac": "Khac",
+    "gia von dich vu khac": "Khac"
+  },
+  "PHR": {
+    "doanh thu ban thanh pham": "CaoSu",
+    "gia von thanh pham da ban": "CaoSu",
+    "doanh thu ban hang hoa": "HangHoa",
+    "gia von cua hang hoa da ban": "HangHoa",
+    "doanh thu cho thue dat va phi su dung ha tang khu cong nghiep": "ChoThueDatKCN",
+    "gia von cho thue dat va phi su dung ha tang khu cong nghiep": "ChoThueDatKCN",
+    "doanh thu xu ly nuoc thai khu cong nghiep": "XuLyNuocThai",
+    "gia von dich vu xu ly nuoc thai khu cong nghiep": "XuLyNuocThai",
+    "doanh thu khac": "Khac",
+    "gia von khac": "Khac",
+    "du phong giam gia hang ton kho": "Khac"
+  },
+  "_global": {
+    "khac": "Khac",
+    "doanh thu khac": "Khac",
+    "gia von khac": "Khac"
+  }
+}

@@ -107,6 +107,9 @@ def run_analysis(ticker: str):
     SECURITIES_TICKERS = {"SSI", "VND", "HCM", "VCI", "FTS", "SHS", "BSI", "VIX", "MBS",
                           "CTS", "AGR", "BVS", "APG", "ORS", "TVS", "VDS", "TCX", "VCK", "VPX"}
 
+    # Danh sách mã BĐS Khu Công Nghiệp
+    KCN_TICKERS = {"IDC", "SIP", "PHR", "SZC", "KBC", "BCM", "NTC", "DPR"}
+
     # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
     import fetch_data
     print(f"[Step 1] Fetching raw financial data for {ticker}...")
@@ -131,10 +134,15 @@ def run_analysis(ticker: str):
 
     # ── STEP 2: Run specialized builder (AI-generated) or template engines ─────────
     builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
-    is_bank = ticker in BANKING_TICKERS or has_bank_accounts
-    is_securities = not is_bank and (ticker in SECURITIES_TICKERS or has_securities_accounts)
+    is_kcn = ticker in KCN_TICKERS
+    is_bank = not is_kcn and (ticker in BANKING_TICKERS or has_bank_accounts)
+    is_securities = not is_kcn and not is_bank and (ticker in SECURITIES_TICKERS or has_securities_accounts)
     
-    if is_bank:
+    if is_kcn:
+        print(f"\n[Step 2] Ticker {ticker} classified as Industrial Park (KCN). Directly running template_kcn.py...")
+        import template_kcn
+        success = template_kcn.run_kcn_analysis(ticker, use_cache=True)
+    elif is_bank:
         print(f"\n[Step 2] Ticker {ticker} classified as Bank. Directly running upgraded template_banking.py...")
         try:
             print("[Runner] Updating all peer benchmark data from Live API...")

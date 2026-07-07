@@ -1,0 +1,790 @@
+{
+  "ticker": "SIP",
+  "companyName": "Công ty Cổ phần Đầu tư Sài Gòn VRG",
+  "sector": "Bất động sản khu công nghiệp",
+  "currentPrice": 49750.0,
+  "marketCap": 3435147701250.0,
+  "shares": 69048195,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "revenue": [
+      5577.56,
+      6034.52,
+      6676.52,
+      7801.16,
+      8596.23
+    ],
+    "grossProfit": [
+      772.86,
+      901.14,
+      930.45,
+      1095.14,
+      1343.44
+    ],
+    "npat": [
+      908.54,
+      1009.9,
+      1003.66,
+      1278.83,
+      1467.09
+    ]
+  },
+  "valuation": {
+    "fair_pe": 58818,
+    "fair_pb": 77890,
+    "fair_ri": 61044,
+    "fair_blend": 66892,
+    "upside": 0.3446,
+    "target_pe": 10.6,
+    "target_pb": 1.0,
+    "coe": 0.0949,
+    "rf": 0.045,
+    "beta": 0.907,
+    "eps_last": 4972.0,
+    "bvps_last": 74624.0,
+    "avg_payout": 0.3431
+  },
+  "segments_yearly": {
+    "TienIchDienNuoc": {
+      "label": "DV tiện ích điện, nước KCN",
+      "color": "#f59e0b",
+      "data": {
+        "2021": {
+          "revenue": 4980.5,
+          "cogs": 4620.2,
+          "grossProfit": 360.3000000000002,
+          "grossMargin": 0.0723421343238631
+        },
+        "2022": {
+          "revenue": 5340.2,
+          "cogs": 4980.5,
+          "grossProfit": 359.6999999999998,
+          "grossMargin": 0.06735702782667313
+        },
+        "2023": {
+          "revenue": 5780.4,
+          "cogs": 5350.2,
+          "grossProfit": 430.1999999999998,
+          "grossMargin": 0.07442391529997922
+        },
+        "2024": {
+          "revenue": 6120.5,
+          "cogs": 5680.4,
+          "grossProfit": 440.10000000000036,
+          "grossMargin": 0.07190589004166333
+        },
+        "2025": {
+          "revenue": 6580.0,
+          "cogs": 6050.2,
+          "grossProfit": 529.8000000000002,
+          "grossMargin": 0.08051671732522798
+        }
+      }
+    },
+    "HangHoa": {
+      "label": "Bán hàng hóa, thành phẩm",
+      "color": "#64748b",
+      "data": {
+        "2021": {
+          "revenue": 120.4,
+          "cogs": 105.3,
+          "grossProfit": 15.100000000000009,
+          "grossMargin": 0.12541528239202665
+        },
+        "2022": {
+          "revenue": 145.8,
+          "cogs": 128.0,
+          "grossProfit": 17.80000000000001,
+          "grossMargin": 0.122085048010974
+        },
+        "2023": {
+          "revenue": 168.2,
+          "cogs": 145.4,
+          "grossProfit": 22.799999999999983,
+          "grossMargin": 0.13555291319857304
+        },
+        "2024": {
+          "revenue": 180.4,
+          "cogs": 156.2,
+          "grossProfit": 24.200000000000017,
+          "grossMargin": 0.13414634146341473
+        },
+        "2025": {
+          "revenue": 195.0,
+          "cogs": 168.4,
+          "grossProfit": 26.599999999999994,
+          "grossMargin": 0.1364102564102564
+        }
+      }
+    },
+    "DichVuKCNKhac": {
+      "label": "DV tiện ích KCN khác",
+      "color": "#3b82f6",
+      "data": {
+        "2021": {
+          "revenue": 550.2,
+          "cogs": 310.4,
+          "grossProfit": 239.80000000000007,
+          "grossMargin": 0.43584151217739014
+        },
+        "2022": {
+          "revenue": 620.4,
+          "cogs": 340.2,
+          "grossProfit": 280.2,
+          "grossMargin": 0.45164410058027077
+        },
+        "2023": {
+          "revenue": 680.5,
+          "cogs": 365.2,
+          "grossProfit": 315.3,
+          "grossMargin": 0.46333578251285823
+        },
+        "2024": {
+          "revenue": 740.6,
+          "cogs": 395.0,
+          "grossProfit": 345.6,
+          "grossMargin": 0.4666486632460168
+        },
+        "2025": {
+          "revenue": 810.0,
+          "cogs": 420.5,
+          "grossProfit": 389.5,
+          "grossMargin": 0.4808641975308642
+        }
+      }
+    },
+    "ChoThueDat": {
+      "label": "Cho thuê đất đã phát triển CSHT",
+      "color": "#10b981",
+      "data": {
+        "2021": {
+          "revenue": 380.6,
+          "cogs": 110.2,
+          "grossProfit": 270.40000000000003,
+          "grossMargin": 0.7104571728849186
+        },
+        "2022": {
+          "revenue": 450.9,
+          "cogs": 125.8,
+          "grossProfit": 325.09999999999997,
+          "grossMargin": 0.7210024395653137
+        },
+        "2023": {
+          "revenue": 520.4,
+          "cogs": 148.6,
+          "grossProfit": 371.79999999999995,
+          "grossMargin": 0.7144504227517294
+        },
+        "2024": {
+          "revenue": 610.2,
+          "cogs": 172.5,
+          "grossProfit": 437.70000000000005,
+          "grossMargin": 0.7173058013765978
+        },
+        "2025": {
+          "revenue": 680.0,
+          "cogs": 190.2,
+          "grossProfit": 489.8,
+          "grossMargin": 0.7202941176470589
+        }
+      }
+    },
+    "XayDung": {
+      "label": "DV xây dựng",
+      "color": "#8b5cf6",
+      "data": {
+        "2021": {
+          "revenue": 140.8,
+          "cogs": 125.4,
+          "grossProfit": 15.400000000000006,
+          "grossMargin": 0.10937500000000003
+        },
+        "2022": {
+          "revenue": 165.2,
+          "cogs": 148.0,
+          "grossProfit": 17.19999999999999,
+          "grossMargin": 0.10411622276029049
+        },
+        "2023": {
+          "revenue": 182.0,
+          "cogs": 162.5,
+          "grossProfit": 19.5,
+          "grossMargin": 0.10714285714285714
+        },
+        "2024": {
+          "revenue": 205.4,
+          "cogs": 182.0,
+          "grossProfit": 23.400000000000006,
+          "grossMargin": 0.11392405063291142
+        },
+        "2025": {
+          "revenue": 230.0,
+          "cogs": 198.5,
+          "grossProfit": 31.5,
+          "grossMargin": 0.13695652173913042
+        }
+      }
+    },
+    "BDS": {
+      "label": "Bán bất động sản",
+      "color": "#ec4899",
+      "data": {
+        "2021": {
+          "revenue": 85.0,
+          "cogs": 35.2,
+          "grossProfit": 49.8,
+          "grossMargin": 0.5858823529411764
+        },
+        "2022": {
+          "revenue": 92.4,
+          "cogs": 38.0,
+          "grossProfit": 54.400000000000006,
+          "grossMargin": 0.5887445887445888
+        },
+        "2023": {
+          "revenue": 105.8,
+          "cogs": 42.0,
+          "grossProfit": 63.8,
+          "grossMargin": 0.6030245746691871
+        },
+        "2024": {
+          "revenue": 120.5,
+          "cogs": 48.4,
+          "grossProfit": 72.1,
+          "grossMargin": 0.5983402489626556
+        },
+        "2025": {
+          "revenue": 140.0,
+          "cogs": 55.0,
+          "grossProfit": 85.0,
+          "grossMargin": 0.6071428571428571
+        }
+      }
+    },
+    "Khac": {
+      "label": "DV khác",
+      "color": "#9ca3af",
+      "data": {
+        "2021": {
+          "revenue": 180.2,
+          "cogs": 145.1,
+          "grossProfit": 35.099999999999994,
+          "grossMargin": 0.19478357380688122
+        },
+        "2022": {
+          "revenue": 210.5,
+          "cogs": 172.4,
+          "grossProfit": 38.099999999999994,
+          "grossMargin": 0.18099762470308786
+        },
+        "2023": {
+          "revenue": 242.0,
+          "cogs": 195.8,
+          "grossProfit": 46.19999999999999,
+          "grossMargin": 0.19090909090909086
+        },
+        "2024": {
+          "revenue": 275.2,
+          "cogs": 218.0,
+          "grossProfit": 57.19999999999999,
+          "grossMargin": 0.2078488372093023
+        },
+        "2025": {
+          "revenue": 305.0,
+          "cogs": 242.0,
+          "grossProfit": 63.0,
+          "grossMargin": 0.20655737704918034
+        }
+      }
+    }
+  },
+  "segments_quarterly": {
+    "TienIchDienNuoc": {
+      "label": "DV tiện ích điện, nước KCN",
+      "color": "#f59e0b",
+      "data": {
+        "2024Q1": {
+          "revenue": 1407.7,
+          "cogs": 1306.5,
+          "grossProfit": 101.20000000000005,
+          "grossMargin": 0.07189031753924845
+        },
+        "2024Q2": {
+          "revenue": 1530.1,
+          "cogs": 1420.1,
+          "grossProfit": 110.0,
+          "grossMargin": 0.07189072609633358
+        },
+        "2024Q3": {
+          "revenue": 1591.3,
+          "cogs": 1476.9,
+          "grossProfit": 114.39999999999986,
+          "grossMargin": 0.07189090680575622
+        },
+        "2024Q4": {
+          "revenue": 1591.3,
+          "cogs": 1476.9,
+          "grossProfit": 114.39999999999986,
+          "grossMargin": 0.07189090680575622
+        },
+        "2025Q1": {
+          "revenue": 1589.9,
+          "cogs": 1456.9,
+          "grossProfit": 133.0,
+          "grossMargin": 0.08365305994087678
+        },
+        "2025Q2": {
+          "revenue": 1645.0,
+          "cogs": 1512.5,
+          "grossProfit": 132.5,
+          "grossMargin": 0.08054711246200608
+        },
+        "2025Q3": {
+          "revenue": 1710.8,
+          "cogs": 1573.1,
+          "grossProfit": 137.70000000000005,
+          "grossMargin": 0.08048866027589435
+        },
+        "2025Q4": {
+          "revenue": 1710.8,
+          "cogs": 1573.1,
+          "grossProfit": 137.70000000000005,
+          "grossMargin": 0.08048866027589435
+        },
+        "2026Q1": {
+          "revenue": 1687.3,
+          "cogs": 1562.6,
+          "grossProfit": 124.70000000000005,
+          "grossMargin": 0.07390505541397502
+        }
+      }
+    },
+    "HangHoa": {
+      "label": "Bán hàng hóa, thành phẩm",
+      "color": "#64748b",
+      "data": {
+        "2024Q1": {
+          "revenue": 41.5,
+          "cogs": 35.9,
+          "grossProfit": 5.600000000000001,
+          "grossMargin": 0.1349397590361446
+        },
+        "2024Q2": {
+          "revenue": 45.1,
+          "cogs": 39.0,
+          "grossProfit": 6.100000000000001,
+          "grossMargin": 0.13525498891352553
+        },
+        "2024Q3": {
+          "revenue": 46.9,
+          "cogs": 40.6,
+          "grossProfit": 6.299999999999997,
+          "grossMargin": 0.13432835820895517
+        },
+        "2024Q4": {
+          "revenue": 46.9,
+          "cogs": 40.6,
+          "grossProfit": 6.299999999999997,
+          "grossMargin": 0.13432835820895517
+        },
+        "2025Q1": {
+          "revenue": 24.3,
+          "cogs": 21.6,
+          "grossProfit": 2.6999999999999993,
+          "grossMargin": 0.11111111111111108
+        },
+        "2025Q2": {
+          "revenue": 48.8,
+          "cogs": 42.1,
+          "grossProfit": 6.699999999999996,
+          "grossMargin": 0.13729508196721305
+        },
+        "2025Q3": {
+          "revenue": 50.7,
+          "cogs": 43.8,
+          "grossProfit": 6.900000000000006,
+          "grossMargin": 0.13609467455621313
+        },
+        "2025Q4": {
+          "revenue": 50.7,
+          "cogs": 43.8,
+          "grossProfit": 6.900000000000006,
+          "grossMargin": 0.13609467455621313
+        },
+        "2026Q1": {
+          "revenue": 40.8,
+          "cogs": 34.5,
+          "grossProfit": 6.299999999999997,
+          "grossMargin": 0.1544117647058823
+        }
+      }
+    },
+    "DichVuKCNKhac": {
+      "label": "DV tiện ích KCN khác",
+      "color": "#3b82f6",
+      "data": {
+        "2024Q1": {
+          "revenue": 170.3,
+          "cogs": 90.9,
+          "grossProfit": 79.4,
+          "grossMargin": 0.46623605402231355
+        },
+        "2024Q2": {
+          "revenue": 185.2,
+          "cogs": 98.8,
+          "grossProfit": 86.39999999999999,
+          "grossMargin": 0.4665226781857451
+        },
+        "2024Q3": {
+          "revenue": 192.6,
+          "cogs": 102.7,
+          "grossProfit": 89.89999999999999,
+          "grossMargin": 0.46677050882658355
+        },
+        "2024Q4": {
+          "revenue": 192.6,
+          "cogs": 102.7,
+          "grossProfit": 89.89999999999999,
+          "grossMargin": 0.46677050882658355
+        },
+        "2025Q1": {
+          "revenue": 146.9,
+          "cogs": 57.4,
+          "grossProfit": 89.5,
+          "grossMargin": 0.6092579986385296
+        },
+        "2025Q2": {
+          "revenue": 202.5,
+          "cogs": 105.1,
+          "grossProfit": 97.4,
+          "grossMargin": 0.48098765432098767
+        },
+        "2025Q3": {
+          "revenue": 210.6,
+          "cogs": 109.3,
+          "grossProfit": 101.3,
+          "grossMargin": 0.48100664767331436
+        },
+        "2025Q4": {
+          "revenue": 210.6,
+          "cogs": 109.3,
+          "grossProfit": 101.3,
+          "grossMargin": 0.48100664767331436
+        },
+        "2026Q1": {
+          "revenue": 206.1,
+          "cogs": 97.7,
+          "grossProfit": 108.39999999999999,
+          "grossMargin": 0.5259582726831635
+        }
+      }
+    },
+    "ChoThueDat": {
+      "label": "Cho thuê đất đã phát triển CSHT",
+      "color": "#10b981",
+      "data": {
+        "2024Q1": {
+          "revenue": 140.3,
+          "cogs": 39.7,
+          "grossProfit": 100.60000000000001,
+          "grossMargin": 0.7170349251603706
+        },
+        "2024Q2": {
+          "revenue": 152.6,
+          "cogs": 43.1,
+          "grossProfit": 109.5,
+          "grossMargin": 0.717562254259502
+        },
+        "2024Q3": {
+          "revenue": 158.7,
+          "cogs": 44.9,
+          "grossProfit": 113.79999999999998,
+          "grossMargin": 0.7170762444864524
+        },
+        "2024Q4": {
+          "revenue": 158.7,
+          "cogs": 44.9,
+          "grossProfit": 113.79999999999998,
+          "grossMargin": 0.7170762444864524
+        },
+        "2025Q1": {
+          "revenue": 117.3,
+          "cogs": 31.7,
+          "grossProfit": 85.6,
+          "grossMargin": 0.7297527706734868
+        },
+        "2025Q2": {
+          "revenue": 170.0,
+          "cogs": 47.5,
+          "grossProfit": 122.5,
+          "grossMargin": 0.7205882352941176
+        },
+        "2025Q3": {
+          "revenue": 176.8,
+          "cogs": 49.5,
+          "grossProfit": 127.30000000000001,
+          "grossMargin": 0.7200226244343891
+        },
+        "2025Q4": {
+          "revenue": 176.8,
+          "cogs": 49.5,
+          "grossProfit": 127.30000000000001,
+          "grossMargin": 0.7200226244343891
+        },
+        "2026Q1": {
+          "revenue": 116.6,
+          "cogs": 34.3,
+          "grossProfit": 82.3,
+          "grossMargin": 0.7058319039451115
+        }
+      }
+    },
+    "XayDung": {
+      "label": "DV xây dựng",
+      "color": "#8b5cf6",
+      "data": {
+        "2024Q1": {
+          "revenue": 47.2,
+          "cogs": 41.9,
+          "grossProfit": 5.300000000000004,
+          "grossMargin": 0.11228813559322043
+        },
+        "2024Q2": {
+          "revenue": 51.4,
+          "cogs": 45.5,
+          "grossProfit": 5.899999999999999,
+          "grossMargin": 0.11478599221789881
+        },
+        "2024Q3": {
+          "revenue": 53.4,
+          "cogs": 47.3,
+          "grossProfit": 6.100000000000001,
+          "grossMargin": 0.11423220973782774
+        },
+        "2024Q4": {
+          "revenue": 53.4,
+          "cogs": 47.3,
+          "grossProfit": 6.100000000000001,
+          "grossMargin": 0.11423220973782774
+        },
+        "2025Q1": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2025Q2": {
+          "revenue": 57.5,
+          "cogs": 49.6,
+          "grossProfit": 7.899999999999999,
+          "grossMargin": 0.13739130434782607
+        },
+        "2025Q3": {
+          "revenue": 59.8,
+          "cogs": 51.6,
+          "grossProfit": 8.199999999999996,
+          "grossMargin": 0.13712374581939793
+        },
+        "2025Q4": {
+          "revenue": 59.8,
+          "cogs": 51.6,
+          "grossProfit": 8.199999999999996,
+          "grossMargin": 0.13712374581939793
+        },
+        "2026Q1": {
+          "revenue": 17.8,
+          "cogs": 16.3,
+          "grossProfit": 1.5,
+          "grossMargin": 0.08426966292134831
+        }
+      }
+    },
+    "BDS": {
+      "label": "Bán bất động sản",
+      "color": "#ec4899",
+      "data": {
+        "2024Q1": {
+          "revenue": 27.7,
+          "cogs": 11.1,
+          "grossProfit": 16.6,
+          "grossMargin": 0.5992779783393503
+        },
+        "2024Q2": {
+          "revenue": 30.1,
+          "cogs": 12.1,
+          "grossProfit": 18.0,
+          "grossMargin": 0.5980066445182723
+        },
+        "2024Q3": {
+          "revenue": 31.3,
+          "cogs": 12.6,
+          "grossProfit": 18.700000000000003,
+          "grossMargin": 0.5974440894568691
+        },
+        "2024Q4": {
+          "revenue": 31.3,
+          "cogs": 12.6,
+          "grossProfit": 18.700000000000003,
+          "grossMargin": 0.5974440894568691
+        },
+        "2025Q1": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2025Q2": {
+          "revenue": 35.0,
+          "cogs": 13.8,
+          "grossProfit": 21.2,
+          "grossMargin": 0.6057142857142856
+        },
+        "2025Q3": {
+          "revenue": 36.4,
+          "cogs": 14.3,
+          "grossProfit": 22.099999999999998,
+          "grossMargin": 0.6071428571428571
+        },
+        "2025Q4": {
+          "revenue": 36.4,
+          "cogs": 14.3,
+          "grossProfit": 22.099999999999998,
+          "grossMargin": 0.6071428571428571
+        },
+        "2026Q1": {
+          "revenue": 38.8,
+          "cogs": 13.3,
+          "grossProfit": 25.499999999999996,
+          "grossMargin": 0.6572164948453608
+        }
+      }
+    },
+    "Khac": {
+      "label": "DV khác",
+      "color": "#9ca3af",
+      "data": {
+        "2024Q1": {
+          "revenue": 63.3,
+          "cogs": 50.1,
+          "grossProfit": 13.199999999999996,
+          "grossMargin": 0.20853080568720372
+        },
+        "2024Q2": {
+          "revenue": 68.8,
+          "cogs": 54.5,
+          "grossProfit": 14.299999999999997,
+          "grossMargin": 0.2078488372093023
+        },
+        "2024Q3": {
+          "revenue": 71.6,
+          "cogs": 56.7,
+          "grossProfit": 14.899999999999991,
+          "grossMargin": 0.20810055865921778
+        },
+        "2024Q4": {
+          "revenue": 71.6,
+          "cogs": 56.7,
+          "grossProfit": 14.899999999999991,
+          "grossMargin": 0.20810055865921778
+        },
+        "2025Q1": {
+          "revenue": 62.9,
+          "cogs": 53.3,
+          "grossProfit": 9.600000000000001,
+          "grossMargin": 0.15262321144674088
+        },
+        "2025Q2": {
+          "revenue": 76.2,
+          "cogs": 60.5,
+          "grossProfit": 15.700000000000003,
+          "grossMargin": 0.20603674540682418
+        },
+        "2025Q3": {
+          "revenue": 79.3,
+          "cogs": 62.9,
+          "grossProfit": 16.4,
+          "grossMargin": 0.2068095838587642
+        },
+        "2025Q4": {
+          "revenue": 79.3,
+          "cogs": 62.9,
+          "grossProfit": 16.4,
+          "grossMargin": 0.2068095838587642
+        },
+        "2026Q1": {
+          "revenue": 57.2,
+          "cogs": 49.0,
+          "grossProfit": 8.200000000000003,
+          "grossMargin": 0.1433566433566434
+        }
+      }
+    }
+  },
+  "yearly_keys": [
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+  ],
+  "quarterly_keys": [
+    "2024Q1",
+    "2024Q2",
+    "2024Q3",
+    "2024Q4",
+    "2025Q1",
+    "2025Q2",
+    "2025Q3",
+    "2025Q4",
+    "2026Q1"
+  ],
+  "comments": {
+    "overall": "Công ty Cổ phần Đầu tư Sài Gòn VRG (SIP) là doanh nghiệp bất động sản khu công nghiệp với mô hình đa mảng (cho thuê đất, tiện ích, điện, BOT…). Doanh thu mảng hạ tầng KCN mang tính chu kỳ nhưng ổn định nhờ hợp đồng thuê dài hạn; mảng điện và tiện ích tạo dòng tiền đều đặn hàng quý.",
+    "financial": "Doanh thu và lợi nhuận gộp phân hóa rõ giữa các mảng: hạ tầng KCN và dịch vụ tiện ích thường có biên cao nhất, trong khi xây dựng và hàng hóa có biên thấp. Payout ratio cổ tức tiền mặt lịch sử lớn đòi hỏi kiểm soát chặt dòng tiền tự do và vay nợ.",
+    "valuation": "Định giá theo tổ hợp 40% P/E + 40% P/B + 20% RI phù hợp với đặc thù nhóm KCN: biên lợi nhuận tương đối ổn định, tài sản cố định lớn và cổ tức tiền mặt đều đặn. Rủi ro chính: lấp đầy KCN chậm hơn kỳ vọng, lãi suất tăng ảnh hưởng COE và giá trị RI."
+  },
+  "thesis": [
+    "Doanh nghiệp BĐS KCN với mô hình đa mảng và dòng tiền ổn định.",
+    "Công ty Cổ phần Đầu tư Sài Gòn VRG (SIP) là doanh nghiệp bất động sản khu công nghiệp với mô hình đa mảng (cho thuê đất, tiện ích, điện, BOT…). Doanh thu mảng h"
+  ],
+  "risks": [
+    "Tỷ lệ lấp đầy KCN chậm hơn kỳ vọng ảnh hưởng ghi nhận doanh thu cho thuê đất.",
+    "Lãi suất tăng làm tăng COE và giảm giá trị RI model.",
+    "Rủi ro NCI lớn: LNST cổ đông thiểu số có thể ảnh hưởng EPS mẹ."
+  ],
+  "moats": {
+    "Switching Cost": {
+      "score": 4,
+      "desc": "Hợp đồng thuê đất KCN thường 30-50 năm, rào cản rời bỏ cao."
+    },
+    "Efficient Scale": {
+      "score": 4,
+      "desc": "Hạ tầng KCN lớn — barrier to entry về vốn rất cao."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Tiện ích điện/nước/xử lý nước thải tự vận hành → tiết kiệm chi phí."
+    },
+    "Network Effect": {
+      "score": 2,
+      "desc": "Cụm KCN mạnh thu hút thêm khách thuê, hiệu ứng tích cực nhẹ."
+    }
+  },
+  "pestle": {
+    "Political": "Chính sách thu hút FDI và phát triển KCN tiếp tục được ưu tiên.",
+    "Economic": "Làn sóng dịch chuyển chuỗi cung ứng từ Trung Quốc sang VN thúc đẩy nhu cầu KCN.",
+    "Social": "Yêu cầu nhà ở công nhân, hạ tầng xã hội trong KCN ngày càng được coi trọng.",
+    "Technological": "Xu hướng KCN thông minh (smart industrial park) đòi hỏi đầu tư số hóa.",
+    "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
+    "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
+  },
+  "lastUpdated": "2026-07-08 00:27"
+}

@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIC FA — BĐS Khu Công Nghiệp</title>
+    <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa — BĐS Khu Công Nghiệp">
+
+    <!-- Favicon & Mobile Icons -->
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="shortcut icon" type="image/png" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #0b0f19;
+            --bg-card: #111827;
+            --bg-card-hover: #1f2937;
+            --border: #1f2937;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.15);
+            --kcn-green: #10b981;
+            --kcn-blue: #3b82f6;
+            --kcn-purple: #8b5cf6;
+            --kcn-pink: #ec4899;
+            --kcn-amber: #f59e0b;
+            --kcn-red: #ef4444;
+            --kcn-slate: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            padding-bottom: 40px;
+        }
+
+        .app-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .logo-btn {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .logo-img {
+            height: 36px;
+            margin-right: 12px;
+        }
+
+        .logo-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1em;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
+        .logo-sub {
+            display: block;
+            font-size: 0.72em;
+            color: var(--text-muted);
+        }
+
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            font-size: 0.88em;
+            color: var(--text-muted);
+            gap: 6px;
+        }
+
+        .breadcrumb-sep {
+            color: var(--border);
+        }
+
+        .sector-badge-nav {
+            display: flex;
+            align-items: center;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--kcn-green);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .sector-icon-nav {
+            margin-right: 6px;
+        }
+
+        .home-text-btn {
+            background: none;
+            border: none;
+            color: var(--kcn-green);
+            font-size: 0.88em;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Hero */
+        .overview-hero {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #111827 0%, #0b0f19 100%);
+            border-color: var(--border);
+        }
+
+        .hero-icon {
+            font-size: 3em;
+            margin-bottom: 12px;
+        }
+
+        .overview-hero h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .overview-hero p {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 16px;
+            font-size: 0.95em;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #1f2937;
+            color: #fff;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #374151;
+        }
+
+        .btn-primary {
+            background: var(--kcn-green);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-excel {
+            background: #15803d;
+            color: #fff;
+            border: none;
+        }
+
+        .search-bar-wrap {
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-radius: 12px;
+        }
+
+        .search-icon {
+            margin-right: 12px;
+            color: var(--text-muted);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: #fff;
+            width: 100%;
+            outline: none;
+            font-size: 0.95em;
+        }
+
+        .search-clear {
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 2px 6px;
+        }
+
+        /* Sector Groups */
+        .sector-group-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sector-group-icon {
+            font-size: 1.4em;
+            margin-right: 8px;
+        }
+
+        .sector-group-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: #fff;
+        }
+
+        .sector-group-count {
+            margin-left: 10px;
+            font-size: 0.8em;
+            color: var(--text-muted);
+            background: #1f2937;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .stock-card {
+            background: #1f2937;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .stock-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--kcn-green);
+            background: #273549;
+        }
+
+        .stock-ticker {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.3em;
+            color: var(--kcn-green);
+            margin-bottom: 4px;
+        }
+
+        .stock-name {
+            font-size: 0.82em;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stock-price {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* ANALYSIS VIEW */
+        .header-card {
+            border-top: 4px solid var(--kcn-green);
+        }
+
+        .sector-ribbon {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 0.72em;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--kcn-green);
+            padding: 3px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-info h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #fff;
+            margin: 6px 0 2px;
+        }
+
+        .badge {
+            background: var(--kcn-green);
+            color: #fff;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.85em;
+        }
+
+        .subtitle {
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .margin-top-20 {
+            margin-top: 20px;
+        }
+
+        /* Snapshot Grid */
+        .val-snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .val-snap-box {
+            background: #182030;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .val-snap-box.highlight {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #182030 0%, #1e293b 100%);
+        }
+
+        .val-snap-box.attractive-box {
+            border-color: #10b981;
+        }
+
+        .val-snap-box.expensive-box {
+            border-color: #ef4444;
+        }
+
+        .val-snap-box .lbl {
+            font-size: 0.76em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .val-snap-box .val {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .text-blue { color: #3b82f6 !important; }
+        .text-green { color: #10b981 !important; }
+        .text-red { color: #ef4444 !important; }
+
+        .badge-rec {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* 3 Segments overview cards */
+        .three-segments-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .seg-overview-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .seg-overview-card .title {
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .seg-overview-card .percent {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8em;
+            font-weight: 800;
+            color: var(--kcn-blue);
+        }
+
+        .seg-overview-card.kcn-leasing .percent { color: var(--kcn-green); }
+        .seg-overview-card.utilities .percent { color: var(--kcn-blue); }
+        .seg-overview-card.other-seg .percent { color: var(--kcn-pink); }
+
+        .seg-overview-card .desc {
+            font-size: 0.78em;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Automatic signals card */
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .signal-box {
+            background: #182030;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .signal-label {
+            font-size: 0.82em;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .signal-value {
+            font-size: 0.9em;
+            font-weight: 700;
+        }
+
+        /* Dashboard structures */
+        .dashboard-grid-two {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .col-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Split charts card */
+        .chart-card-split {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-split-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-split-left h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        .chart-split-right {
+            border-left: 1px solid var(--border);
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-split-right h4 {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-analysis-text {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .chart-analysis-text p {
+            margin-bottom: 8px;
+        }
+
+        .chart-analysis-text b {
+            color: #fff;
+        }
+
+        /* Moat & Scenarios */
+        .moat-item {
+            border-bottom: 1px solid var(--border);
+            padding: 10px 0;
+        }
+
+        .moat-item:last-child {
+            border-bottom: none;
+        }
+
+        .moat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .moat-name {
+            font-size: 0.88em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .moat-stars {
+            color: var(--kcn-amber);
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+
+        .moat-desc {
+            font-size: 0.78em;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .scenario-box {
+            background: #182030;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .scenario-title {
+            font-size: 0.72em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .scenario-price {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Thesis & Risks */
+        .thesis-ul, .risks-ul {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .thesis-ul li, .risks-ul li {
+            position: relative;
+            padding-left: 16px;
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .thesis-ul li::before {
+            content: "•";
+            color: var(--kcn-blue);
+            font-weight: bold;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .risks-ul li::before {
+            content: "•";
+            color: var(--kcn-red);
+            font-weight: bold;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        /* Peer Benchmark table */
+        .peer-table-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .peer-subtitle {
+            font-size: 0.82em;
+            color: var(--text-muted);
+            margin-top: 4px;
+            margin-bottom: 14px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .peer-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82em;
+        }
+
+        .peer-table th {
+            background: #1f2937;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 8px 12px;
+            text-align: right;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .peer-table th:first-child {
+            text-align: left;
+        }
+
+        .peer-table td {
+            padding: 8px 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .peer-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .peer-table tr.highlight-row td {
+            background: rgba(16, 185, 129, 0.08) !important;
+            font-weight: 700;
+            color: var(--kcn-green);
+        }
+
+        /* PESTLE */
+        .pestle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .pestle-item {
+            background: #182030;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .pestle-label {
+            font-size: 0.82em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .pestle-text {
+            font-size: 0.78em;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Commentary */
+        .commentary-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .commentary-box {
+            background: #182030;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .commentary-box h4 {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .commentary-box p {
+            font-size: 0.8em;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Titles and headers */
+        h3.border-blue, h3.border-red {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        h3.border-blue::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--kcn-blue);
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        h3.border-red::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--kcn-red);
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.78em;
+            color: var(--text-muted);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <!-- ══════════════════════════════════════════
+         TOP NAVBAR
+    ══════════════════════════════════════════ -->
+    <header class="top-navbar">
+        <button class="logo-btn" id="home-btn" onclick="location.href='index.html'" title="Quay lại Tổng quan">
+            <img src="logoaic.png" alt="AIC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">AIC FA SYSTEM</span>
+                <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
+            </div>
+        </button>
+
+        <div class="nav-breadcrumb" id="nav-breadcrumb">
+            <span class="breadcrumb-home">Tổng quan</span>
+        </div>
+
+        <div class="sector-badge-nav" id="sector-badge-nav" style="display:none">
+            <span class="sector-icon-nav" id="sector-icon-nav">🏭</span>
+            <span class="sector-label-nav" id="sector-label-nav">BĐS KCN</span>
+        </div>
+
+        <button class="home-text-btn" id="back-btn" onclick="showOverview()" style="display:none">
+            ← Chọn cổ phiếu khác
+        </button>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 1: OVERVIEW (default)
+    ══════════════════════════════════════════ -->
+    <main id="view-overview" class="view view-overview" style="display:flex; flex-direction: column;">
+
+        <div class="overview-hero card">
+            <div class="hero-content">
+                <div class="hero-icon">🏭</div>
+                <h2>AIC FA — Phân Tích BĐS Khu Công Nghiệp</h2>
+                <p>Định giá chuyên biệt Price-to-Book (P/B) kết hợp Price-to-Earnings (P/E) và Residual Income (RI). Phân tích cấu trúc quỹ đất, người mua trả tiền trước, và doanh thu chưa thực hiện.</p>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+                    <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing"
+                       target="_blank" class="btn btn-secondary">📁 Google Drive ↗</a>
+                    <a href="index.html" class="btn btn-secondary">📊 Tất cả ngành</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-bar-wrap">
+            <div class="search-bar card">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="stock-search-input" placeholder="Tìm kiếm mã KCN (IDC, SIP, PHR...)" autocomplete="off">
+                <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
+            </div>
+        </div>
+
+        <div id="sector-groups-container">
+            <div class="loading-state card">
+                <span>Đang tải danh sách cổ phiếu...</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 2: ANALYSIS
+    ══════════════════════════════════════════ -->
+    <main id="view-analysis" class="view view-analysis" style="display:none; flex-direction: column; gap: 20px;">
+
+        <!-- Header Info Card -->
+        <div class="card header-card">
+            <div class="sector-ribbon" id="sector-ribbon">BĐS KCN</div>
+            <div class="header-main">
+                <div class="header-info">
+                    <span id="ticker-badge" class="badge">SIP</span>
+                    <h2 id="company-name">Công ty Cổ phần Đầu tư Sài Gòn VRG</h2>
+                    <p id="company-sector" class="subtitle">BĐS KCN</p>
+                </div>
+                <div class="actions">
+                    <a id="download-pdf" href="#" target="_blank" class="btn btn-primary hidden">📥 Báo Cáo PDF</a>
+                    <a id="download-excel" href="#" target="_blank" class="btn btn-excel hidden">🟢 Excel Model</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valuation Snapshot -->
+        <div class="card val-snapshot-card">
+            <h3 class="border-blue">💎 Tóm tắt Khuyến nghị &amp; Snapshot Định giá</h3>
+            <div class="val-snapshot-grid">
+                <div class="val-snap-box">
+                    <span class="lbl">Giá hiện tại</span>
+                    <span class="val" id="snap-curr-price">— VND</span>
+                </div>
+                <div class="val-snap-box highlight">
+                    <span class="lbl">Giá mục tiêu (P/B 70% + P/E 30%)</span>
+                    <span class="val text-blue" id="snap-target-price">— VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Tiềm năng tăng giá</span>
+                    <span class="val text-green" id="snap-upside">— %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Khuyến nghị đầu tư</span>
+                    <span class="val badge-rec" id="snap-recommend">—</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Giá theo P/B</span>
+                    <span class="val" id="snap-price-pb">— VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Giá theo P/E</span>
+                    <span class="val" id="snap-price-pe">— VND</span>
+                </div>
+                <div class="val-snap-box attractive-box">
+                    <span class="lbl">Giá hấp dẫn (P/B Nửa Dưới)</span>
+                    <span class="val text-green" id="snap-price-attractive">— VND</span>
+                </div>
+                <div class="val-snap-box expensive-box">
+                    <span class="lbl">Giá đắt (P/B Nửa Trên)</span>
+                    <span class="val text-red" id="snap-price-expensive">— VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">RNAV floor (sàn giá trị)</span>
+                    <span class="val" id="snap-rnav">— VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Chi phí vốn CSH (COE)</span>
+                    <span class="val" id="snap-coe">— %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Backlog coverage (của để dành)</span>
+                    <span class="val text-blue" id="snap-backlog">— năm DT</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Mô hình hạch toán</span>
+                    <span class="val" id="snap-accounting" style="font-size: 0.85em; font-weight: 600; line-height: 1.2;">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 Segments Overview Boxes -->
+        <div class="three-segments-grid">
+            <div class="seg-overview-card kcn-leasing">
+                <div class="title">Cho thuê KCN</div>
+                <div class="percent" id="seg-kcn-pct">—%</div>
+                <div class="desc">% doanh thu (giả định thuyết minh)</div>
+            </div>
+            <div class="seg-overview-card utilities">
+                <div class="title">Dịch vụ Tiện ích</div>
+                <div class="percent" id="seg-utilities-pct">—%</div>
+                <div class="desc">% doanh thu (giả định thuyết minh)</div>
+            </div>
+            <div class="seg-overview-card other-seg">
+                <div class="title">BĐS Dân cư &amp; Khác</div>
+                <div class="percent" id="seg-other-pct">—%</div>
+                <div class="desc">% doanh thu (giả định thuyết minh)</div>
+            </div>
+        </div>
+
+        <!-- Automatic Signals check card -->
+        <div class="card">
+            <h3 class="border-blue">📡 Tín hiệu Tăng trưởng "Hái Quả Ngọt" (kiểm tra tự động)</h3>
+            <div class="signal-grid">
+                <div class="signal-box">
+                    <span class="signal-label">DTCTH TĂNG YOY</span>
+                    <span class="signal-value" id="sig-dtcth-yoy">—</span>
+                </div>
+                <div class="signal-box">
+                    <span class="signal-label">NGƯỜI MUA TRẢ TRƯỚC ĐỘT BIẾN</span>
+                    <span class="signal-value" id="sig-prepay-spike">—</span>
+                </div>
+                <div class="signal-box">
+                    <span class="signal-label">XDCB DỞ DANG TĂNG &gt;30%</span>
+                    <span class="signal-value" id="sig-xdcb-up">—</span>
+                </div>
+                <div class="signal-box">
+                    <span class="signal-label">PHA "HÁI QUẢ NGỌT"</span>
+                    <span class="signal-value" id="sig-harvest-phase">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two-column main structures -->
+        <div class="dashboard-grid-two">
+            <!-- Left charts -->
+            <div class="col-left">
+
+                <!-- 1. Doanh thu theo mảng kinh doanh (stacked bar, year) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Doanh thu theo Mảng Kinh doanh (Thực tế & Dự phóng)</h3>
+                        <div class="chart-container">
+                            <canvas id="segRevChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🧩 Nhận định Cơ cấu Mảng</h4>
+                        <div id="analysis-seg-rev" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 1.1 Cơ cấu Lợi nhuận gộp theo Mảng (Thực tế & Dự phóng) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Lợi nhuận gộp theo Mảng Kinh doanh (Thực tế & Dự phóng)</h3>
+                        <div class="chart-container">
+                            <canvas id="segGpChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💰 Nhận định Lợi nhuận gộp mảng</h4>
+                        <div id="analysis-seg-gp" class="chart-analysis-text">Mảng đóng góp lợi nhuận gộp lớn nhất: Cho thuê đất KCN và Dịch vụ tiện ích nhờ tỷ lệ sinh lời vượt trội.</div>
+                    </div>
+                </div>
+
+                <!-- 1.2 Biên Lợi nhuận gộp theo Mảng qua các năm -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Biên Lợi nhuận gộp theo Mảng (%)</h3>
+                        <div class="chart-container">
+                            <canvas id="segMarginChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📈 Biên Lợi nhuận gộp mảng</h4>
+                        <div id="analysis-seg-margin" class="chart-analysis-text">Biên LNG mảng Cho thuê đất duy trì ổn định mức rất cao (>70%), mảng tiện ích ổn định quanh 7-8%.</div>
+                    </div>
+                </div>
+
+                <!-- 1.3 Doanh thu theo Mảng theo Quý (Thực tế) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Doanh thu theo Mảng Kinh doanh theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="segRevQtrChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📊 Doanh thu mảng theo quý</h4>
+                        <div id="analysis-seg-rev-qtr" class="chart-analysis-text">Phân tích biến động doanh thu từng mảng theo chu kỳ quý kinh doanh.</div>
+                    </div>
+                </div>
+
+                <!-- 1.4 Lợi nhuận gộp theo Mảng theo Quý (Thực tế) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Lợi nhuận gộp theo Mảng Kinh doanh theo Quý</h3>
+                        <div class="chart-container">
+                            <canvas id="segGpQtrChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📉 LNG mảng theo quý</h4>
+                        <div id="analysis-seg-gp-qtr" class="chart-analysis-text">Theo dõi đóng góp LNG thực tế của từng mảng kinh doanh cốt lõi qua các quý gần nhất.</div>
+                    </div>
+                </div>
+
+                <!-- 2. Doanh thu & LNST (Lịch sử & Dự phóng) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Doanh thu &amp; LNST (Lịch sử &amp; Dự phóng)</h3>
+                        <div class="chart-container">
+                            <canvas id="revNpatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💡 Phân tích Xu hướng KQKD</h4>
+                        <div id="analysis-rev-npat" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 3. Doanh thu chưa thực hiện — "Của để dành" theo Quý (tỷ VND) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Doanh thu chưa thực hiện — "Của để dành" theo Quý (tỷ VND)</h3>
+                        <div class="chart-container">
+                            <canvas id="unearnedRevChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🔑 Nhận định Backlog</h4>
+                        <div id="analysis-backlog" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 4. Quỹ đất & Tài sản KCN theo Quý (tỷ VND) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Quỹ đất &amp; Tài sản KCN theo Quý (tỷ VND)</h3>
+                        <div class="chart-container">
+                            <canvas id="landAssetChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🗺️ Nhận định Chu kỳ Quỹ đất</h4>
+                        <div id="analysis-land-assets" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 5. Người mua trả tiền trước theo Quý (tỷ VND) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Người mua trả tiền trước theo Quý (tỷ VND)</h3>
+                        <div class="chart-container">
+                            <canvas id="prepaymentsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>✍️ Tín hiệu Ký mới</h4>
+                        <div id="analysis-prepayments" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 6. Tổng Nợ vay & Lãi suất Vay theo Quý (tỷ VND) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Tổng Nợ vay &amp; Lãi suất Vay theo Quý (tỷ VND)</h3>
+                        <div class="chart-container">
+                            <canvas id="debtInterestChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💸 Chi phí Vốn vay</h4>
+                        <div id="analysis-debt-interest" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 7. LNST & ROE theo Quý (annualized) -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>LNST &amp; ROE theo Quý (annualized)</h3>
+                        <div class="chart-container">
+                            <canvas id="npatRoeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📈 Nhận định Hiệu quả Sinh lời</h4>
+                        <div id="analysis-npat-roe" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 8. Định giá Lịch sử P/E - TTM -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Định giá Lịch sử P/E - TTM</h3>
+                        <div class="chart-container">
+                            <canvas id="peChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>🔍 Nhận định Hệ số P/E</h4>
+                        <div id="analysis-pe" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+                <!-- 9. Định giá Lịch sử P/B - TTM -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Định giá Lịch sử P/B - TTM</h3>
+                        <div class="chart-container">
+                            <canvas id="pbChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📊 Nhận định Hệ số P/B</h4>
+                        <div id="analysis-pb" class="chart-analysis-text">Đang phân tích...</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Moat & Scenario summary -->
+            <div class="col-right">
+                <div class="card moat-card">
+                    <h3>Lợi thế cạnh tranh (Moat Scorecard)</h3>
+                    <div class="moat-list" id="moat-scorecard-list"></div>
+                </div>
+
+                <div class="card valuation-card margin-top-20">
+                    <h3>Định giá &amp; Kịch bản đầu tư</h3>
+                    <div class="scenarios-grid">
+                        <div class="scenario-box bear">
+                            <div class="scenario-title">Bear Case</div>
+                            <div class="scenario-price" id="val-bear">— VND</div>
+                        </div>
+                        <div class="scenario-box base">
+                            <div class="scenario-title">Base Case</div>
+                            <div class="scenario-price" id="val-base">— VND</div>
+                        </div>
+                        <div class="scenario-box bull">
+                            <div class="scenario-title">Bull Case</div>
+                            <div class="scenario-price" id="val-bull">— VND</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Segments weights display (for model calibration visualization) -->
+                <div class="card margin-top-20">
+                    <h3>Tỷ trọng Doanh thu theo Mảng (giả định)</h3>
+                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.82em;">
+                            <span>Cho thuê KCN</span>
+                            <span id="weight-kcn-val">0%</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.82em;">
+                            <span>Dịch vụ tiện ích</span>
+                            <span id="weight-util-val">0%</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.82em;">
+                            <span>BĐS dân cư &amp; Khác</span>
+                            <span id="weight-other-val">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Peer Benchmark Table Card -->
+        <div class="card peer-table-card">
+            <h3>Bảng So sánh Doanh nghiệp BĐS KCN Cùng ngành (Peer Benchmark)</h3>
+            <p class="peer-subtitle">Số liệu thống kê thuần túy diễn giải/so sánh — KHÔNG dùng làm input định giá. Cập nhật: 2026-07-07</p>
+            <div class="table-wrapper">
+                <table class="peer-table" id="peer-benchmark-table">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Vốn hóa (tỷ)</th>
+                            <th>P/B (x)</th>
+                            <th>P/E (x)</th>
+                            <th>ROE (%)</th>
+                            <th>DTCTH (tỷ)</th>
+                            <th>DTCTH/Vốn hóa</th>
+                            <th>Nợ vay/VCSH (x)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="peer-benchmark-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Investment Thesis + Risks -->
+        <div class="dashboard-grid-two">
+            <div class="card thesis-card">
+                <h3 class="border-blue">Luận điểm đầu tư (Thesis)</h3>
+                <ul id="thesis-list" class="thesis-ul"></ul>
+            </div>
+            <div class="card risks-card">
+                <h3 class="border-red">Rủi ro chính (Investment Risks)</h3>
+                <ul id="risks-list" class="risks-ul"></ul>
+            </div>
+        </div>
+
+        <!-- PESTLE Matrix -->
+        <div class="card pestle-card">
+            <h3>Bối cảnh vĩ mô (PESTLE Matrix)</h3>
+            <div class="pestle-grid" id="pestle-grid-container"></div>
+        </div>
+
+        <!-- Segment assumptions box -->
+        <div class="card">
+            <h3>Giả định Mô hình — Cơ cấu mảng &amp; Tăng trưởng</h3>
+            <p style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">Tỷ trọng mảng là GIẢ ĐỊNH từ thuyết minh BCTC (Vietcap không tách mảng) — cần đối chiếu cập nhật mỗi kỳ. Driver chính của ngành: FDI đăng ký/giải ngân, PMI sản xuất, giá thuê thị trường (CBRE/Savills/JLL).</p>
+            <div class="three-segments-grid" style="margin-top:14px;">
+                <div class="seg-overview-card kcn-leasing">
+                    <div class="title" style="font-size:0.75em;">Cho thuê KCN</div>
+                    <div class="percent" id="weight-kcn-pct" style="font-size:1.4em;">0%</div>
+                    <div class="desc" id="growth-kcn-lbl">Growth: —</div>
+                </div>
+                <div class="seg-overview-card utilities">
+                    <div class="title" style="font-size:0.75em;">Dịch vụ tiện ích</div>
+                    <div class="percent" id="weight-util-pct" style="font-size:1.4em;">0%</div>
+                    <div class="desc" id="growth-util-lbl">Growth: —</div>
+                </div>
+                <div class="seg-overview-card other-seg">
+                    <div class="title" style="font-size:0.75em;">BĐS dân cư &amp; Khác</div>
+                    <div class="percent" id="weight-other-pct" style="font-size:1.4em;">0%</div>
+                    <div class="desc" id="growth-other-lbl">Growth: —</div>
+                </div>
+            </div>
+            <p style="font-size:0.75em; color:var(--kcn-amber); margin-top:10px;" id="assumptions-footnote">⚠️ Tỷ trọng mảng là GIẢ ĐỊNH từ thuyết minh BCTC — cập nhật mỗi kỳ. GPM dự phóng: —, Thuế hiệu dụng: —</p>
+        </div>
+
+        <!-- Commentary -->
+        <div class="card commentary-card">
+            <h3>Đánh giá chi tiết của Chuyên gia</h3>
+            <div class="commentary-sections">
+                <div class="commentary-box">
+                    <h4>Mô hình Kinh doanh</h4>
+                    <p id="comment-business">—</p>
+                </div>
+                <div class="commentary-box">
+                    <h4>Sức khỏe Tài chính</h4>
+                    <p id="comment-financial">—</p>
+                </div>
+                <div class="commentary-box">
+                    <h4>Triển vọng Định giá</h4>
+                    <p id="comment-valuation">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed financial data table -->
+        <div class="card table-card">
+            <h3>Bảng dữ liệu tài chính chi tiết (tỷ VND)</h3>
+            <div class="table-wrapper">
+                <table id="financial-table">
+                    <thead><tr><th>Chỉ tiêu</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+    </footer>
+
+</div>
+
+<script src="app_kcn.js"></script>
+</body>
+</html>

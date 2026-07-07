@@ -34,9 +34,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core tesseract-ocr
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install "opendataloader-pdf[hybrid]"
 
       - name: Check Build Status
         id: check_build
@@ -71,12 +72,15 @@ jobs:
           echo "Deleting $BUILDER for regeneration..."
           rm -f "$BUILDER"
 
-      - name: Run Financial Analysis
+      - name: Start Hybrid PDF Server & Run Financial Analysis
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
         run: |
+          # Khởi động hybrid server ngầm và đợi 5s cho server sẵn sàng
+          opendataloader-pdf-hybrid --port 5002 &
+          sleep 5
           python run_analysis.py "${{ github.event.inputs.ticker }}"
 
       - name: Commit Generated Files Back to Repository
