@@ -47,26 +47,7 @@
       "driver": "other"
     }
   },
-  "yearly": {
-    "2024(CN)": {
-      "Khac": {
-        "revenue": 34.1,
-        "cogs": 27.28,
-        "source": "Trích xuất tự động từ BCTC md (2024(CN))",
-        "sourceType": "auto",
-        "derived": false
-      }
-    },
-    "2023(CN)": {
-      "Khac": {
-        "revenue": 34.1,
-        "cogs": 27.28,
-        "source": "Trích xuất cột so sánh từ BCTC md (2024(CN))",
-        "sourceType": "auto",
-        "derived": false
-      }
-    }
-  },
+  "yearly": {},
   "quarterly": {
     "2026Q1": {
       "DienNang": {
@@ -181,52 +162,6 @@
         "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
         "sourceType": "bctc_pdf_user",
         "asOf": "2026-04-30",
-        "derived": false
-      }
-    },
-    "2025Q3": {
-      "BOT": {
-        "revenue": 989.99,
-        "cogs": 791.99,
-        "source": "Trích xuất tự động từ BCTC md (2025Q3)",
-        "sourceType": "auto",
-        "derived": false
-      },
-      "XayDung": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất tự động từ BCTC md (2025Q3)",
-        "sourceType": "auto",
-        "derived": false
-      },
-      "Khac": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất tự động từ BCTC md (2025Q3)",
-        "sourceType": "auto",
-        "derived": false
-      }
-    },
-    "2024Q3": {
-      "BOT": {
-        "revenue": 1320.0,
-        "cogs": 1056.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2025Q3)",
-        "sourceType": "auto",
-        "derived": false
-      },
-      "XayDung": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2025Q3)",
-        "sourceType": "auto",
-        "derived": false
-      },
-      "Khac": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2025Q3)",
-        "sourceType": "auto",
         "derived": false
       }
     }
