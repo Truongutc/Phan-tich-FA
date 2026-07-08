@@ -339,8 +339,15 @@ def run_parse_and_merge(ticker, period_key):
         print(f"[Parser] Không tìm thấy tệp .md nào trong {ticker_md_dir}")
         return False
         
-    # Đọc tệp md mới nhất
-    md_file_path = os.path.join(ticker_md_dir, md_files[-1])
+    # Tìm tệp md có chứa tên kỳ period_key (ví dụ: "2024_CN" hoặc "2025Q3") để parse chính xác
+    normalized_period = period_key.replace("(", "_").replace(")", "")
+    matching_files = [f for f in md_files if normalized_period in f]
+    if matching_files:
+        md_file_path = os.path.join(ticker_md_dir, matching_files[0])
+    else:
+        # Fallback lấy file md mới nhất
+        md_file_path = os.path.join(ticker_md_dir, md_files[-1])
+        
     print(f"[Parser] Đang phân tích tệp Markdown: {md_file_path}")
     
     with open(md_file_path, "r", encoding="utf-8") as f:

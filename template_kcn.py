@@ -1667,17 +1667,18 @@ def run_kcn_analysis(ticker, use_cache=True):
             pass
 
     # ── 14. Cleanup BCTC PDF/Markdown files to keep repository light ──
-    try:
-        print("  [INFO] Cleaning up BCTC PDF/Markdown temporary files...")
-        import subprocess
-        # Run clean command dynamically
-        subprocess.run(
-            [sys.executable, "bctc_pdf_tool.py", "clean", ticker],
-            cwd=os.path.dirname(os.path.abspath(__file__)),
-            capture_output=True
-        )
-    except Exception as e:
-        print(f"  [WARN] Failed to clean up BCTC PDF/Markdown files: {e}")
+    # Tạm thời comment để giữ lại Markdown kiểm tra lỗi
+    # try:
+    #     print("  [INFO] Cleaning up BCTC PDF/Markdown temporary files...")
+    #     import subprocess
+    #     # Run clean command dynamically
+    #     subprocess.run(
+    #         [sys.executable, "bctc_pdf_tool.py", "clean", ticker],
+    #         cwd=os.path.dirname(os.path.abspath(__file__)),
+    #         capture_output=True
+    #     )
+    # except Exception as e:
+    #     print(f"  [WARN] Failed to clean up BCTC PDF/Markdown files: {e}")
 
     print(f"\n{'='*60}")
     print(f"  HOÀN THÀNH — {ticker}")
