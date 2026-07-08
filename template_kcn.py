@@ -349,8 +349,15 @@ def check_segment_consistency(store, is_recs_years, is_recs_quarters):
     """Đối chiếu Σ doanh thu/giá vốn các mảng với tổng DT thuần/GVHB Vietcap (isa3/isa4).
     Trả về dict {period_key: {"gapRevPct":..., "gapCogsPct":..., "status": OK/WARN/FAIL}}."""
     result = {}
+    result = {}
     for year_str, seg_data in store.get("yearly", {}).items():
-        year = int(year_str)
+        # Trích xuất số năm từ định dạng YYYY hoặc YYYY(CN)
+        clean_yr_str = year_str.split("(")[0]
+        try:
+            year = int(clean_yr_str)
+        except ValueError:
+            print(f"  [WARN] Không thể parse năm {year_str} thành int, bỏ qua đối chiếu.")
+            continue
         rev_sum = sum((v.get("revenue") or 0) for v in seg_data.values())
         cogs_sum = sum((v.get("cogs") or 0) for v in seg_data.values() if v.get("cogs") is not None)
         vc_rev = _get_yr(is_recs_years, year, IS_GEN["revenue"])
