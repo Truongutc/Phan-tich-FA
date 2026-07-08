@@ -87,17 +87,32 @@ def parse_markdown_tables(md_content):
         
     return tables
 
+def strip_accents(s):
+    """Chuyển chuỗi tiếng Việt thành không dấu, viết thường, loại bỏ khoảng trắng thừa."""
+    if not s:
+        return ""
+    import unicodedata
+    s = unicodedata.normalize("NFD", s)
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+    return s.lower().replace(" ", "").replace("\n", "").replace("\r", "")
+
+
 def find_segment_values(ticker, tables, period_key=""):
     """
     Tìm kiếm và trích xuất số liệu doanh thu mảng từ các bảng thuyết minh.
-    Trả về: (current_seg_values, prior_seg_values)
+    Hỗ trợ khớp thông minh không dấu để tránh lỗi font/OCR của các mảng.
     """
     keywords = MAPPING_KEYWORDS.get(ticker, {})
     curr_results = {}
     prior_results = {}
     
-    # Duyệt qua các mảng định nghĩa
+    # Chuẩn hóa bộ từ khóa của ticker thành không dấu để so khớp
+    normalized_keywords = {}
     for seg_key, kw_list in keywords.items():
+        normalized_keywords[seg_key] = [strip_accents(kw) for kw in kw_list]
+    
+    # Duyệt qua các mảng định nghĩa
+    for seg_key, kw_list in normalized_keywords.items():
         found_rev_curr = None
         found_cogs_curr = None
         found_rev_prior = None
@@ -106,14 +121,17 @@ def find_segment_values(ticker, tables, period_key=""):
         for table in tables:
             if len(table) < 2:
                 continue
+            
             # Quét các dòng trong bảng
             for row in table:
-                if not row:
+                if not row or not row[0]:
                     continue
-                row_text = row[0].lower()
+                
+                # Chuẩn hóa cột 0 của dòng thành không dấu để so khớp
+                row_text_normalized = strip_accents(row[0])
                 
                 # Check khớp từ khóa mảng
-                matched = any(kw in row_text for kw in kw_list)
+                matched = any(kw in row_text_normalized for kw in kw_list)
                 if matched:
                     # Cột 1: Kỳ này (current), Cột 2 hoặc Cột 3: Kỳ trước (prior)
                     if len(row) > 1:
@@ -127,10 +145,13 @@ def find_segment_values(ticker, tables, period_key=""):
                             val_idx_curr = 2
                             val_idx_prior = 3
                             
+                        # Chuẩn hóa dòng text để xem có phải dòng giá vốn hay không
+                        is_cogs = any(x in row_text_normalized for x in ["giavon", "giathanh", "cogs"])
+                            
                         if len(row) > val_idx_curr:
                             val_c = clean_number(row[val_idx_curr])
                             if val_c > 1000000: val_c = round(val_c / 1e9, 2)
-                            if "giá vốn" in row_text or "giá thành" in row_text:
+                            if is_cogs:
                                 found_cogs_curr = val_c
                             else:
                                 found_rev_curr = val_c
@@ -138,7 +159,7 @@ def find_segment_values(ticker, tables, period_key=""):
                         if len(row) > val_idx_prior:
                             val_p = clean_number(row[val_idx_prior])
                             if val_p > 1000000: val_p = round(val_p / 1e9, 2)
-                            if "giá vốn" in row_text or "giá thành" in row_text:
+                            if is_cogs:
                                 found_cogs_prior = val_p
                             else:
                                 found_rev_prior = val_p
@@ -160,6 +181,88 @@ def find_segment_values(ticker, tables, period_key=""):
                 "derived": False
             }
             
+    # --- NEW: Fallback dành riêng cho Bảng thuyết minh bộ phận (bảng ngang ma trận) ---
+    # Nếu kết quả rỗng, có khả năng bảng biểu diễn dạng cột (Tên mảng ở dòng tiêu đề, chỉ tiêu ở dòng đầu)
+    if not curr_results:
+        print("[Parser] [INFO] Quét cột dọc rỗng. Chuyển sang quét bảng bộ phận (bảng ma trận ngang)...")
+        for table in tables:
+            if len(table) < 3:
+                continue
+            
+            # 1. Tìm dòng tiêu đề chứa tên các mảng
+            header_row_idx = -1
+            col_mappings = {} # map column_index -> seg_key
+            
+            # Quét thử 3 dòng đầu để tìm tiêu đề mảng
+            for r_idx in range(min(3, len(table))):
+                row = table[r_idx]
+                if not row:
+                    continue
+                
+                # Check xem dòng này có chứa mảng nào của ticker không
+                for col_idx, cell in enumerate(row):
+                    if not cell:
+                        continue
+                    cell_norm = strip_accents(cell)
+                    for seg_key, kw_list in normalized_keywords.items():
+                        if any(kw in cell_norm for kw in kw_list):
+                            col_mappings[col_idx] = seg_key
+                            header_row_idx = r_idx
+            
+            if col_mappings:
+                # 2. Đã map được các cột tương ứng với các mảng. Tìm dòng "Doanh thu" và dòng "Lợi nhuận gộp"/"Giá vốn"
+                rev_row = None
+                cogs_row = None
+                
+                for r_idx in range(header_row_idx + 1, len(table)):
+                    row = table[r_idx]
+                    if not row or not row[0]:
+                        continue
+                    
+                    row_lbl_norm = strip_accents(row[0])
+                    
+                    # Tìm dòng doanh thu thuần hoặc doanh thu bên ngoài
+                    if any(x in row_lbl_norm for x in ["doanhthuthuan", "doanhthutu", "doanhthubanhang", "revenue"]):
+                        # Tránh nhầm với dòng doanh thu nội bộ
+                        if "noibo" not in row_lbl_norm:
+                            rev_row = row
+                    
+                    # Tìm dòng lợi nhuận gộp hoặc giá vốn
+                    if any(x in row_lbl_norm for x in ["loinhuangop", "grossprofit", "giavon", "cogs"]):
+                        cogs_row = row
+                
+                # 3. Trích xuất số liệu từ các cột tương ứng
+                if rev_row:
+                    for col_idx, seg_key in col_mappings.items():
+                        if col_idx < len(rev_row):
+                            val_rev = clean_number(rev_row[col_idx])
+                            if val_rev > 1000000: val_rev = round(val_rev / 1e9, 2)
+                            
+                            val_cogs = None
+                            if cogs_row and col_idx < len(cogs_row):
+                                val_cogs_raw = clean_number(cogs_row[col_idx])
+                                if val_cogs_raw > 1000000: val_cogs_raw = round(val_cogs_raw / 1e9, 2)
+                                
+                                # Nếu dòng là "Lợi nhuận gộp", ta tính Giá vốn = Doanh thu - Lợi nhuận gộp
+                                if any(x in strip_accents(cogs_row[0]) for x in ["loinhuangop", "grossprofit"]):
+                                    val_cogs = round(val_rev - val_cogs_raw, 2)
+                                else:
+                                    val_cogs = val_cogs_raw
+                            
+                            if val_rev > 0:
+                                curr_results[seg_key] = {
+                                    "revenue": val_rev,
+                                    "cogs": val_cogs if val_cogs is not None else round(val_rev * 0.8, 2),
+                                    "source": f"Trích xuất ma trận ngang BCTC md ({period_key})",
+                                    "sourceType": "auto",
+                                    "derived": False
+                                }
+                    
+                    # Với kỳ trước (prior period), bảng ngang ma trận thường tách thành 2 bảng riêng biệt (như IDC trang 62 và 63).
+                    # Do đó, số liệu prior_results sẽ được lấy từ file BCTC năm trước tương ứng khi lập kế hoạch tải.
+                    # Nên ta chỉ cần return kết quả tìm thấy của kỳ hiện tại.
+                    break
+                    
     return curr_results, prior_results
 
 def run_parse_and_merge(ticker, period_key):
