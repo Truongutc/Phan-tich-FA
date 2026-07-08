@@ -107,7 +107,7 @@ def run_analysis(ticker: str):
     SECURITIES_TICKERS = {"SSI", "VND", "HCM", "VCI", "FTS", "SHS", "BSI", "VIX", "MBS",
                           "CTS", "AGR", "BVS", "APG", "ORS", "TVS", "VDS", "TCX", "VCK", "VPX"}
 
-    KCN_TICKERS = {"SIP", "IDC", "SZC", "SZL", "KBC", "NTC", "LHG", "VGC", "D2D", "TIP"}
+    KCN_TICKERS = {"SIP", "IDC", "SZC", "SZL", "KBC", "NTC", "LHG", "VGC", "D2D", "TIP", "BCM", "DTD"}
 
     # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
     import fetch_data
