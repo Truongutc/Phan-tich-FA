@@ -912,14 +912,13 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     ws1["B4"].font = ITALIC_FONT
 
     meta = [
-        ("Giá thị trường (VND)", current_price, FMT_PRICE),
-        ("Giá lịch sử cuối (VND)", latest_price_hist or current_price, FMT_PRICE),
-        ("Số CP lưu hành", shares, "#,##0"),
-        ("Vốn hóa (tỷ VND)", f"=B6*B7/1e9", "#,##0.0"),
-        ("Beta (CAPM)", "='02_Assumptions'!B3", "0.000"),
-        ("Rf (%/năm)", "='02_Assumptions'!B2", FMT_PCT),
-        ("COE (%/năm)", "='02_Assumptions'!B6", FMT_PCT),
-        ("Nguồn Beta", beta_src, None),
+        ("Giá thị trường (VND)",   current_price,           FMT_PRICE),
+        ("Số CP lưu hành",         shares,                  "#,##0"),
+        ("Vốn hóa (tỷ VND)",       "=B6*B7/1000000000",     "#,##0.0"),
+        ("Beta (CAPM)",            "='00_COE'!B5",          "0.000"),
+        ("Rf (%/năm)",             "='00_COE'!B4",          FMT_PCT),
+        ("COE (%/năm)",            "='00_COE'!B9",          FMT_PCT),
+        ("Nguồn Beta",             beta_src,                None),
     ]
     for i, (label, value, fmt) in enumerate(meta, start=6):
         ws1.cell(row=i, column=2, value=label).font = DATA_FONT
@@ -928,22 +927,22 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
             c.number_format = fmt
         c.font = DATA_FONT
 
-    # Định giá tóm tắt
+    # Định giá tóm tắt — link công thức sang 08_Valuation
     ws1["B15"] = "─── ĐỊNH GIÁ TỔNG HỢP ───"
     ws1["B15"].font = BOLD_FONT
-    val_rows = [
-        ("Giá hợp lý P/E (40%)",  val["fair_pe"]),
-        ("Giá hợp lý P/B (40%)",  val["fair_pb"]),
-        ("Giá hợp lý RI (20%)",   val["fair_ri"]),
-        ("Giá mục tiêu blend",     val["fair_blend"]),
-        ("Upside/Downside",        val["upside"]),
+    val_rows_cover = [
+        ("Giá hợp lý P/E (40%)",  "='08_Valuation'!B11",  FMT_PRICE),
+        ("Giá hợp lý P/B (40%)",  "='08_Valuation'!B15",  FMT_PRICE),
+        ("Giá hợp lý RI (20%)",   "='08_Valuation'!B23",  FMT_PRICE),
+        ("Giá mục tiêu blend",    "='08_Valuation'!B26",  FMT_PRICE),
+        ("Upside/Downside",       "='08_Valuation'!B27",  FMT_PCT),
     ]
-    for i, (lbl, v) in enumerate(val_rows, start=16):
+    for i, (lbl, formula, fmt) in enumerate(val_rows_cover, start=16):
         ws1.cell(row=i, column=2, value=lbl).font = DATA_FONT
-        c = ws1.cell(row=i, column=3, value=v)
-        c.font = BOLD_FONT if lbl.startswith("Giá mục tiêu") else DATA_FONT
-        c.number_format = FMT_PCT if lbl.startswith("Upside") else FMT_PRICE
-        if lbl.startswith("Giá mục tiêu"):
+        c = ws1.cell(row=i, column=3, value=formula)
+        c.number_format = fmt
+        c.font = BOLD_FONT if "blend" in lbl else DATA_FONT
+        if "blend" in lbl:
             c.fill = P_FILL
 
     ws1["B22"] = "Nhận định AI:"
@@ -961,39 +960,47 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     # Tạo sheet PE/PB History trước tiên
     build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarters)
 
+    # EPS/BVPS year index for linking to A4_EPS_Bridge
+    # A4_EPS_Bridge: row 1=header, row 2=NPAT, row 3=Shares, row 4=EPS, row 5=BVPS_đầu, row 6=ROE
+    # Columns: B=oldest, last_hist_col = B + n_hist - 1
+    _last_hist_col = get_column_letter(1 + n_hist)  # e.g. 'F' for 5 hist years
+
     ass_rows = [
-        ("Rf (lãi TPCP 10Y, %/năm)",     "='00_COE'!B4",    "TPCP 10Y VN"),
-        ("Beta (CAPM)",                   "='00_COE'!B5",    beta_src),
-        ("ERP (phần bù rủi ro thị trường)", "='00_COE'!B6",    "Damodaran ERP cho VN"),
-        ("Phần bù rủi ro đặc thù",        "='00_COE'!B7",    "Phần bù rủi ro quốc gia/ngành đặc thù"),
+        ("Rf (lãi TPCP 10Y, %/năm)",      "='00_COE'!B4",    "TPCP 10Y VN"),
+        ("Beta (CAPM)",                    "='00_COE'!B5",    beta_src),
+        ("ERP (phần bù rủi ro thị trường)","='00_COE'!B6",    "Damodaran ERP cho VN (7%)"),
+        ("Phần bù rủi ro đặc thù KCN",    "='00_COE'!B7",    "Thanh khoản thấp, phụ thuộc FDI (+2%)"),
         ("COE = Rf + β × ERP + PBĐT",     "='00_COE'!B9",    "Cost of Equity (CAPM điều chỉnh)"),
-        ("EPS lịch sử gần nhất (VND)",    val["eps_last"],  "Từ isa23 Vietcap"),
-        ("BVPS mẹ lịch sử gần nhất (VND)", val["bvps_last"], "(bsa78 − bsa210) / shares"),
-        ("Payout ratio trung bình",        val["avg_payout"], "Trung bình lịch sử cfa32/isa22"),
-        ("CAGR EPS dự phóng",             val["eps_cagr"],  "CAGR 3 năm lịch sử, kẹp [-10%, +20%]"),
-        ("ROE ước tính",                  "=B7/B8",         "EPS_last / BVPS_last"),
+        ("EPS lịch sử gần nhất (VND)",    f"='A4_EPS_Bridge'!{_last_hist_col}4", "isa22 / CP lưu hành năm tương ứng"),
+        ("BVPS mẹ lịch sử gần nhất (VND)",f"='A4_EPS_Bridge'!{_last_hist_col}5","(bsa78 − bsa210) / CP lưu hành"),
+        ("Payout ratio trung bình",        val["avg_payout"], "Trung bình lịch sử |cfa32| / isa22"),
+        ("CAGR EPS dự phóng",             f"='A1_CAGR_Analysis'!{get_column_letter(n_hist+2)}8", "CAGR EPS 3Y — từ A1_CAGR_Analysis"),
+        ("ROE ước tính (EPS/BVPS đầu kỳ)","=B7/B8",          "= EPS_last / BVPS_đầu kỳ cuối"),
         ("P/E mục tiêu",                  f"=MAX(8, MIN(25, '03_PE_PB_History'!B{len(quarter_labels)+2}))", "Median P/E lịch sử, kẹp [8, 25]"),
         ("P/B mục tiêu",                  f"=MAX(0.6, MIN(4, '03_PE_PB_History'!C{len(quarter_labels)+2}))", "Median P/B lịch sử, kẹp [0.6, 4]"),
-        ("Số năm RI dự phóng (n)",        3,                "PV RI 3 năm + terminal value"),
-        ("g terminal RI",                 "=MAX(0, MIN(0.04, B10 * 0.5))", "Formula: min(CAGR_EPS × 0.5, 4%)"),
-        ("Số CP lưu hành",                shares,           ""),
-        ("Giá thị trường (VND)",          current_price,    "Giá cuối phiên gần nhất"),
+        ("Số năm RI dự phóng (n)",         3,                "PV RI 3 năm + terminal value"),
+        ("g terminal RI",                 "=MAX(0, MIN(0.04, B10*0.5))", "min(CAGR_EPS × 0.5, 4%)"),
+        ("Số CP lưu hành",                shares,            "VĐL / 10,000 (mệnh giá 10k) — năm mới nhất"),
+        ("Giá thị trường (VND)",          current_price,     "Giá cuối phiên gần nhất"),
     ]
     for i, (lbl, v, note) in enumerate(ass_rows, start=2):
         ws2.cell(row=i, column=1, value=lbl).font = DATA_FONT
         c = ws2.cell(row=i, column=2, value=v)
         c.fill = ASSUMP_FILL
         c.font = DATA_FONT
-        if isinstance(v, float) and 0 < v < 1 and "Beta" not in lbl:
+        if isinstance(v, float) and 0 < v < 1 and "Beta" not in lbl and "P/E" not in lbl and "P/B" not in lbl:
             c.number_format = FMT_PCT
+        elif isinstance(v, (int, float)) and v > 100:
+            c.number_format = "#,##0"
         elif isinstance(v, float):
             c.number_format = "0.00"
         elif str(v).startswith("="):
-            # Formula string
-            if "%" in lbl or "COE" in lbl or "Rf" in lbl or "ERP" in lbl or "g terminal" in lbl:
+            if "%" in lbl or "COE" in lbl or "Rf" in lbl or "ERP" in lbl or "g " in lbl or "ROE" in lbl or "Payout" in lbl:
                 c.number_format = FMT_PCT
-            elif "Beta" in lbl or "P/E" in lbl or "P/B" in lbl:
+            elif "P/E" in lbl or "P/B" in lbl or "Beta" in lbl:
                 c.number_format = "0.00"
+            else:
+                c.number_format = "#,##0"
         else:
             c.number_format = "#,##0"
         ws2.cell(row=i, column=3, value=note).font = ITALIC_FONT
@@ -1394,7 +1401,283 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         avg_c.fill = LINK_FILL
     _ws_freeze(ws11, "B2")
 
+    # ── Sheet A4: EPS Bridge — EPS/BVPS/ROE từng năm ─────────────────────
+    ws_a4 = wb.create_sheet("A4_EPS_Bridge")
+    ws_a4.column_dimensions["A"].width = 36
+    for ci, y in enumerate(list(hist_years) + list(fc_years), start=2):
+        ws_a4.column_dimensions[get_column_letter(ci)].width = 12
+
+    # Header
+    hdr_a4 = ["Chỉ tiêu (VND/cp hoặc tỷ VND)"] + \
+              [f"{y}A" for y in hist_years] + [f"{y}E" for y in fc_years]
+    header_row(ws_a4, 1, hdr_a4, [36] + [12] * (n_hist + n_fc))
+
+    # Tính EPS, BVPS từng năm lịch sử
+    def _eps_by_year(y):
+        for r in is_recs_y:
+            if r.get("yearReport") == y:
+                # Ưu tiên isa23 (EPS đã tính), fallback isa22/shares
+                eps = r.get("isa23")
+                if eps and abs(eps) > 0:
+                    return round(float(eps), 0)
+                npat = r.get(IS_GEN["npat_parent"])
+                if npat and shares > 0:
+                    return round(npat / shares, 0)
+        return None
+
+    def _bvps_by_year(y):
+        for r in bs_recs_y:
+            if r.get("yearReport") == y:
+                eq = r.get(BS_GEN["equity_total"], 0) or 0
+                nci = r.get(BS_GEN["nci"], 0) or 0
+                vcsh_me = eq - nci
+                # Lấy shares của năm đó (theo bsa80)
+                cap = r.get(BS_GEN["charter_capital"], 0) or 0
+                sh_y = int(cap / 10_000) if cap > 0 else shares
+                if vcsh_me > 0 and sh_y > 0:
+                    return round(vcsh_me / sh_y, 0)
+        return None
+
+    def _npat_by_year(y):
+        for r in is_recs_y:
+            if r.get("yearReport") == y:
+                v = r.get(IS_GEN["npat_parent"])
+                return round(v / 1e9, 2) if v else None
+        return None
+
+    eps_hist  = [_eps_by_year(y)  for y in hist_years]
+    bvps_hist = [_bvps_by_year(y) for y in hist_years]
+    npat_hist = [_npat_by_year(y) for y in hist_years]
+
+    # ROE = EPS[Y] / BVPS[Y-1]  (dùng BVPS đầu kỳ)
+    roe_hist  = []
+    for i, y in enumerate(hist_years):
+        if i > 0 and eps_hist[i] and bvps_hist[i-1] and bvps_hist[i-1] > 0:
+            roe_hist.append(round(eps_hist[i] / bvps_hist[i-1], 4))
+        else:
+            roe_hist.append(None)
+
+    # EPS CAGR (3 năm gần nhất)
+    eps_valid = [(y, v) for y, v in zip(hist_years, eps_hist) if v and v > 0]
+    if len(eps_valid) >= 2:
+        n_eps = len(eps_valid[-3:]) - 1
+        eps_cagr_calc = (eps_valid[-1][1] / eps_valid[-4 if len(eps_valid) >= 4 else 0][1]) ** (1/max(n_eps, 1)) - 1 \
+            if len(eps_valid) >= 3 else (eps_valid[-1][1] / eps_valid[-2][1]) - 1
+        eps_cagr_calc = max(-0.15, min(0.30, eps_cagr_calc))
+    else:
+        eps_cagr_calc = 0.08
+
+    # Dự phóng EPS/BVPS (roll-forward)
+    eps_fc, bvps_fc, roe_fc = [], [], []
+    bvps_t = bvps_hist[-1] or 10000
+    eps_t  = eps_hist[-1]  or 1000
+    avg_payout_fc = val.get("avg_payout", 0.40)
+    for i in range(n_fc):
+        eps_t_new = round(eps_t * (1 + eps_cagr_calc), 0)
+        roe_t     = round(eps_t_new / bvps_t, 4) if bvps_t > 0 else 0.12
+        bvps_next = round(bvps_t + eps_t_new * (1 - avg_payout_fc), 0)
+        eps_fc.append(eps_t_new)
+        bvps_fc.append(bvps_next)
+        roe_fc.append(roe_t)
+        eps_t  = eps_t_new
+        bvps_t = bvps_next
+
+    a4_rows = [
+        ("LNST cổ đông mẹ (tỷ VND)", npat_hist,  [round(v * nm_avg * npat_p_ratio, 2) if v else None for v in rev_fc_list]),
+        ("Số CP lưu hành (cp)",       [shares] * n_hist, [shares] * n_fc),
+        ("EPS (VND/cp)",              eps_hist,   eps_fc),
+        ("BVPS đầu kỳ (VND/cp)",     bvps_hist,  bvps_fc),
+        ("ROE (EPS/BVPS đầu kỳ)",    roe_hist,   roe_fc),
+        ("EPS CAGR 3 năm",           [None] * (n_hist - 1) + [round(eps_cagr_calc, 4)], [round(eps_cagr_calc, 4)] * n_fc),
+    ]
+
+    for ri_a4, (lbl, hist_v, fc_v) in enumerate(a4_rows, start=2):
+        ws_a4.cell(row=ri_a4, column=1, value=lbl).font = DATA_FONT
+        all_v = list(hist_v) + list(fc_v)
+        for ci, v in enumerate(all_v, start=2):
+            c = ws_a4.cell(row=ri_a4, column=ci, value=v)
+            c.font = DATA_FONT
+            if "CP" in lbl and "LNST" not in lbl:
+                c.number_format = "#,##0"
+            elif "ROE" in lbl or "CAGR" in lbl:
+                c.number_format = FMT_PCT
+                c.fill = ASSUMP_FILL
+            elif v and isinstance(v, float) and 0 < v < 1:
+                c.number_format = FMT_PCT
+            else:
+                c.number_format = "#,##0"
+            if ci > n_hist + 1:
+                c.fill = ASSUMP_FILL
+    ws_a4["A1"].font = BOLD_FONT
+    _ws_freeze(ws_a4, "B2")
+    ws_a4["A9"] = f"Căn cứ: EPS CAGR 3 năm = {eps_cagr_calc*100:.1f}%; Payout = {avg_payout_fc*100:.0f}%"
+    ws_a4["A9"].font = ITALIC_FONT
+
+    # ── Sheet A1: CAGR Analysis — Tăng trưởng EPS, DT ────────────────────
+    ws_a1 = wb.create_sheet("A1_CAGR_Analysis")
+    ws_a1.column_dimensions["A"].width = 36
+    for ci in range(2, n_hist + 4):
+        ws_a1.column_dimensions[get_column_letter(ci)].width = 13
+
+    ws_a1["A1"] = "BẢNG PHÂN TÍCH TĂNG TRƯỞNG — CĂN CỨ GIẢ ĐỊNH DỰ PHÓNG"
+    ws_a1["A1"].font = Font(name=FONT_NAME, size=12, bold=True, color="1F4E78")
+
+    a1_hdrs = ["Chỉ tiêu"] + [str(y) for y in hist_years] + ["CAGR 3Y", "Ghi chú"]
+    header_row(ws_a1, 2, a1_hdrs, [36] + [12] * n_hist + [12, 30])
+
+    # Block 1: Doanh thu tổng (tỷ)
+    ws_a1.cell(row=3, column=1, value="── DOANH THU TỔNG CÔNG TY (tỷ VND) ──").font = BOLD_FONT
+    ws_a1.append(["Doanh thu thuần"] + [round(v, 1) for v in rev_h])
+    rev_row = ws_a1.max_row
+    # CAGR DT
+    rev_valid = [v for v in rev_h if v and v > 0]
+    if len(rev_valid) >= 2:
+        rev_cagr = (rev_valid[-1] / rev_valid[0]) ** (1 / (len(rev_valid) - 1)) - 1
+    else:
+        rev_cagr = 0.07
+    ws_a1.cell(row=rev_row, column=n_hist + 2, value=round(rev_cagr, 4)).number_format = FMT_PCT
+    ws_a1.cell(row=rev_row, column=n_hist + 3, value=f"CAGR {n_hist}Y lịch sử").font = ITALIC_FONT
+    # YoY DT
+    yoy_dt = ["YoY DT (%)"]
+    for i in range(len(rev_h)):
+        if i > 0 and rev_h[i-1] and rev_h[i-1] > 0:
+            yoy_dt.append(round((rev_h[i] - rev_h[i-1]) / rev_h[i-1], 4))
+        else:
+            yoy_dt.append(None)
+    ws_a1.append(yoy_dt)
+    yoy_row = ws_a1.max_row
+    for ci in range(2, n_hist + 2):
+        c = ws_a1.cell(row=yoy_row, column=ci)
+        c.number_format = FMT_PCT
+        c.font = ITALIC_FONT
+
+    # Block 2: EPS
+    ws_a1.cell(row=ws_a1.max_row + 1, column=1, value="── EPS (VND/cp) ──").font = BOLD_FONT
+    ws_a1.append(["EPS lịch sử"] + [v or 0 for v in eps_hist])
+    eps_row = ws_a1.max_row
+    ws_a1.cell(row=eps_row, column=n_hist + 2, value=round(eps_cagr_calc, 4)).number_format = FMT_PCT
+    ws_a1.cell(row=eps_row, column=n_hist + 3, value="CAGR EPS dự phóng — dùng cho 02_Assumptions B9").font = ITALIC_FONT
+    for ci in range(2, n_hist + 2):
+        ws_a1.cell(row=eps_row, column=ci).number_format = "#,##0"
+
+    yoy_eps = ["YoY EPS (%)"]
+    for i in range(len(eps_hist)):
+        if i > 0 and eps_hist[i-1] and eps_hist[i-1] > 0 and eps_hist[i]:
+            yoy_eps.append(round((eps_hist[i] - eps_hist[i-1]) / eps_hist[i-1], 4))
+        else:
+            yoy_eps.append(None)
+    ws_a1.append(yoy_eps)
+    yoy_eps_row = ws_a1.max_row
+    for ci in range(2, n_hist + 2):
+        ws_a1.cell(row=yoy_eps_row, column=ci).number_format = FMT_PCT
+
+    # Block 3: Biên lợi nhuận gộp
+    ws_a1.cell(row=ws_a1.max_row + 1, column=1, value="── BIÊN LỢI NHUẬN GỘP (%) ──").font = BOLD_FONT
+    gm_hist = [round(gp_h[i] / rev_h[i], 4) if rev_h[i] else 0 for i in range(n_hist)]
+    ws_a1.append(["GM lịch sử"] + gm_hist)
+    gm_row_a1 = ws_a1.max_row
+    gm_avg2 = stats.mean([v for v in gm_hist if v > 0][-2:]) if gm_hist else 0.25
+    ws_a1.cell(row=gm_row_a1, column=n_hist + 2, value=round(gm_avg2, 4)).number_format = FMT_PCT
+    ws_a1.cell(row=gm_row_a1, column=n_hist + 3, value="Mean 2Y — giả định cho dự phóng COGS").font = ITALIC_FONT
+    for ci in range(2, n_hist + 2):
+        ws_a1.cell(row=gm_row_a1, column=ci).number_format = FMT_PCT
+
+    _ws_freeze(ws_a1, "B2")
+
+    # ── Sheet A3: KCN Drivers — Deferred Revenue Analysis ─────────────────
+    try:
+        from fetch_kcn_drivers import fetch_kcn_drivers as _fetch_drivers
+        kcn_drv = _fetch_drivers(ticker, bs_recs_y, is_recs_y, hist_years, verbose=False)
+        kcn_s   = kcn_drv.get("summary", {})
+        kcn_bs  = kcn_drv.get("bs", {})
+    except Exception:
+        kcn_s  = {}
+        kcn_bs = {}
+
+    ws_a3 = wb.create_sheet("A3_KCN_Drivers")
+    ws_a3.column_dimensions["A"].width = 38
+    for ci in range(2, n_hist + 5):
+        ws_a3.column_dimensions[get_column_letter(ci)].width = 13
+
+    ws_a3["A1"] = "BẢNG TƯ DUY ĐẶC THÙ KCN — QUỸ ĐẤT & DOANH THU CHƯA THỰC HIỆN"
+    ws_a3["A1"].font = Font(name=FONT_NAME, size=12, bold=True, color="1F4E78")
+    ws_a3["A2"] = "Căn cứ: T1=PDF CTCK (nếu có) | T2=BCTC thuyết minh | T3=Balance Sheet (bsa58, bsa170, bsa76)"
+    ws_a3["A2"].font = ITALIC_FONT
+
+    a3_hdr = ["Chỉ tiêu"] + [str(y) for y in hist_years] + \
+             [f"{fc_years[0]}E", f"{fc_years[1]}E", f"{fc_years[2]}E", "Nguồn/Ghi chú"]
+    header_row(ws_a3, 3, a3_hdr, [38] + [13] * (n_hist + n_fc) + [30])
+
+    # Block 1: Physical KCN data
+    ws_a3.cell(row=4, column=1, value="── QUỸ ĐẤT (từ PDF nếu có) ──").font = BOLD_FONT
+
+    total_ha  = kcn_s.get("total_area_ha")
+    occ_pct   = kcn_s.get("occupancy_pct")
+    price_usd = kcn_s.get("lease_price_usd", 200.0)
+    new_ha    = kcn_s.get("new_ha_recent")
+    src_phys  = kcn_s.get("sources", {}).get("physical", "N/A")
+    src_occ   = kcn_s.get("sources", {}).get("occupancy", "N/A")
+
+    pha_rows = [
+        ("Tổng diện tích KCN (ha)", [total_ha]*n_hist, [total_ha]*n_fc, f"Nguồn: {src_phys}"),
+        ("Tỷ lệ lấp đầy bình quân (%)", [occ_pct]*n_hist, [occ_pct]*n_fc, f"Nguồn: {src_occ}"),
+        ("Giá cho thuê bình quân (USD/m²)", [price_usd]*n_hist, [price_usd]*n_fc, "T2-BCTC / default 200"),
+        ("Diện tích cho thuê mới (ha/năm)", [new_ha]*n_hist, [new_ha]*n_fc, "T2-BCTC markdown"),
+    ]
+    for ri_a3, (lbl, h_v, fc_v, note) in enumerate(pha_rows, start=5):
+        ws_a3.cell(row=ri_a3, column=1, value=lbl).font = DATA_FONT
+        for ci, v in enumerate(list(h_v) + list(fc_v), start=2):
+            c = ws_a3.cell(row=ri_a3, column=ci, value=v)
+            c.font = DATA_FONT
+            c.number_format = FMT_PCT if "Tỷ lệ" in lbl else "#,##0.0"
+            if ci > n_hist + 1:
+                c.fill = ASSUMP_FILL
+        ws_a3.cell(row=ri_a3, column=n_hist + n_fc + 2, value=note).font = ITALIC_FONT
+
+    # Block 2: BS Deferred Revenue Analysis
+    ws_a3.cell(row=ri_a3 + 2, column=1, value="── PHÂN TÍCH DOANH THU CHƯA THỰC HIỆN & TIỀN NHẬN TRƯỚC ──").font = BOLD_FONT
+    adv_st    = kcn_bs.get("advance_st", {})
+    adv_lt    = kcn_bs.get("advance_lt", {})
+    defer_rev = kcn_bs.get("deferred_rev", {})
+    revenue   = kcn_bs.get("revenue", {})
+    adv_yoy   = kcn_bs.get("adv_yoy", {})
+    adv_to_rev = kcn_bs.get("adv_to_rev", {})
+    g_blend   = kcn_bs.get("g_leasing_blend", 0.07)
+    implied   = kcn_bs.get("implied_annual", 0)
+
+    bs_rows = [
+        ("Người mua trả tiền trước - ngắn hạn (tỷ)", [round(adv_st.get(y, 0), 1) for y in hist_years], "bsa58 — advance_st"),
+        ("Người mua trả tiền trước - dài hạn (tỷ)",  [round(adv_lt.get(y, 0), 1) for y in hist_years], "bsa170 — advance_lt"),
+        ("Doanh thu chưa thực hiện (tỷ)",            [round(defer_rev.get(y, 0), 1) for y in hist_years], "bsa76 — deferred_rev"),
+        ("Tổng doanh thu (tỷ) — tham chiếu",          [round(revenue.get(y, 0), 1) for y in hist_years], "isa1"),
+        ("Tỷ lệ advance_st / DT (%)",                [adv_to_rev.get(y) for y in hist_years], "Tỷ lệ đặt cọc so với DT"),
+        ("YoY growth advance_st (%)",                [adv_yoy.get(y) for y in hist_years], "Leading indicator DT năm sau"),
+    ]
+    for ri_bs, (lbl, vals, note) in enumerate(bs_rows, start=ri_a3 + 3):
+        ws_a3.cell(row=ri_bs, column=1, value=lbl).font = DATA_FONT
+        for ci, v in enumerate(vals, start=2):
+            c = ws_a3.cell(row=ri_bs, column=ci, value=v)
+            c.font = DATA_FONT
+            if "%" in lbl or "Tỷ lệ" in lbl or "YoY" in lbl:
+                c.number_format = FMT_PCT
+            else:
+                c.number_format = FMT_NUM
+        ws_a3.cell(row=ri_bs, column=n_hist + 2, value=note).font = ITALIC_FONT
+
+    # Kết luận g% dự phóng
+    ri_concl = ws_a3.max_row + 2
+    ws_a3.cell(row=ri_concl, column=1,
+               value=f"→ g% dự phóng DT cho thuê đất: {g_blend*100:.1f}% (CAGR advance_st blend)").font = BOLD_FONT
+    ws_a3.cell(row=ri_concl, column=2, value=round(g_blend, 4)).number_format = FMT_PCT
+    ws_a3.cell(row=ri_concl + 1, column=1,
+               value=f"→ Doanh thu ghi nhận từ DTCTH hàng năm ≈ {implied:.0f} tỷ").font = ITALIC_FONT
+    ws_a3.cell(row=ri_concl + 2, column=1,
+               value=f"→ Nguồn tăng trưởng chính: Tiện ích (~80% DT) + Cho thuê đất mới").font = ITALIC_FONT
+
+    _ws_freeze(ws_a3, "B2")
+
     return wb
+
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -1850,21 +2133,27 @@ def run_kcn_analysis(ticker, use_cache=True):
     hist_years = sorted({r["yearReport"] for r in is_recs_y if r.get("yearReport")})[-5:]
     fc_years   = [hist_years[-1] + 1, hist_years[-1] + 2, hist_years[-1] + 3]
 
-    # ── 2. Shares — từ charter_capital / BVPS ────────────────────
+    # ── 2. Shares — ưu tiên: VĐL năm MỚI NHẤT → numberOfSharesMktCap API → fallback ──
     shares = 0
-    for r in bs_recs_y:
+    # Ưu tiên 1: Lấy bsa80 từ năm có báo cáo mới nhất (sorted giảm dần)
+    bs_sorted_desc = sorted(bs_recs_y, key=lambda r: r.get("yearReport", 0), reverse=True)
+    for r in bs_sorted_desc:
         cap = r.get(BS_GEN["charter_capital"])
         if cap and cap > 0:
-            # Vốn điều lệ đơn vị VND — chia 10,000 = số cp (mệnh giá 10k)
             shares = int(cap / 10_000)
             break
+    # Ưu tiên 2: numberOfSharesMktCap từ Vietcap company details (đã lưu vào cache)
     if shares <= 0:
-        # Fallback: estimate from market cap
+        shares_api = raw.get("numberOfSharesMktCap", 0)
+        if shares_api > 0:
+            shares = int(shares_api)
+    # Fallback: ước lượng từ market cap
+    if shares <= 0:
         mcap = raw.get("info", {}).get("marketCap") or 0
         if mcap > 0 and current_price > 0:
             shares = int(mcap / current_price)
         else:
-            shares = 100_000_000  # 100 triệu cp mặc định
+            shares = 100_000_000
 
     print(f"  Company : {company_name}")
     print(f"  Price   : {current_price:,.0f} VND")

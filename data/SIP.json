@@ -3,8 +3,8 @@
   "companyName": "Công ty Cổ phần Đầu tư Sài Gòn VRG",
   "sector": "Bất động sản khu công nghiệp",
   "currentPrice": 49750.0,
-  "marketCap": 3435147701250.0,
-  "shares": 69048195,
+  "marketCap": 12045118914250.0,
+  "shares": 242112943,
   "gdriveExcelUrl": null,
   "gdrivePdfUrl": null,
   "data": {
@@ -39,17 +39,17 @@
   },
   "valuation": {
     "fair_pe": 65365,
-    "fair_pb": 262201,
-    "fair_ri": 42119,
-    "fair_blend": 139451,
-    "upside": 1.803,
+    "fair_pb": 83506,
+    "fair_ri": 46815,
+    "fair_blend": 68911,
+    "upside": 0.3852,
     "target_pe": 11.78,
     "target_pb": 3.35,
     "coe": 0.1307,
     "rf": 0.045,
     "beta": 0.938,
     "eps_last": 4972.0,
-    "bvps_last": 74624.0,
+    "bvps_last": 21282.0,
     "avg_payout": 0.3431
   },
   "segments_yearly": {
@@ -785,6 +785,5 @@
     "Technological": "Xu hướng KCN thông minh (smart industrial park) đòi hỏi đầu tư số hóa.",
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
-  },
-  "lastUpdated": "2026-07-08 23:11"
+  }
 }

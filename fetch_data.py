@@ -133,6 +133,10 @@ def fetch_all(ticker, use_cache=True):
         if details:
             data["companyName"] = details.get("viOrganName") or details.get("enOrganName") or ticker
             data["currentPrice"] = details.get("currentPrice") or 0
+            # Lưu số CP lưu hành từ API (ưu tiên hơn charter_capital / par_value)
+            shares_mkt = details.get("numberOfSharesMktCap") or details.get("shares") or 0
+            if shares_mkt > 0:
+                data["numberOfSharesMktCap"] = int(shares_mkt)
     except Exception as e:
         print(f"  [WARN] Could not fetch company details: {e}")
 
