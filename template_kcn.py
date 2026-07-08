@@ -857,7 +857,8 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         for yk in all_yearly_keys:
             row.append(round(yearly_seg[seg].get(yk, {}).get("revenue") or 0, 2))
         # FC: dùng seg_fc
-        last_rev_seg = max([yearly_seg[seg][y].get("revenue") or 0 for y in all_yearly_keys] or [0])
+        # Sử dụng phương thức .get() an toàn tránh KeyError khi một mảng nào đó bị thiếu dữ liệu năm lịch sử
+        last_rev_seg = max([yearly_seg[seg].get(y, {}).get("revenue") or 0 for y in all_yearly_keys] or [0])
         for step, fy in enumerate(fc_years, start=1):
             g = seg_fc[seg].get("g") or 0.05
             cap = seg_fc[seg].get("cap")
