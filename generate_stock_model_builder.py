@@ -284,7 +284,7 @@ Sector: {sector}
 Current Price: {price:,} VND
 Market Cap: {market_cap/1e9:,.0f} tỷ VND
 Shares Outstanding: {shares:,}
-Analysis Month: {datetime.now().strftime('%Y-%m')}
+Analysis Month: {datetime.now().strftime('%Y-%m-%d')}
 {special_notes}
 
 === FINANCIAL DATA TO USE ===
@@ -308,7 +308,7 @@ Write a complete Python script `build_{ticker.lower()}_model.py` that:
    - Import: os, sys, json, math, datetime, openpyxl (with styles, charts), reportlab (SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, PageBreak), matplotlib (Agg backend), requests, statistics
    - Set OUT_DIR = `os.path.join(os.path.dirname(__file__), "Bao cao", "{ticker}")`
    - Set TICKER = "{ticker}", COMPANY = "{company}", PRICE = {price}, SHARES = {shares}
-   - MONTH = datetime.now().strftime("%Y-%m")
+   - MONTH = datetime.now().strftime("%Y-%m-%d")
 
 2. **Data Fetching** (MANDATORY):
    - Call `fetch_all("{ticker}")` from fetch_data.py (already exists in project)

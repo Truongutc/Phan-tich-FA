@@ -1,0 +1,46 @@
+{
+  "ticker": "DTD",
+  "companyName": "Công ty Cổ phần Đầu tư Phát triển Thành Đạt",
+  "unit": "ty_vnd",
+  "lastUpdated": "2026-07-08",
+  "segments": {
+    "BanBeTong": {
+      "label": "Doanh thu bán bê tông",
+      "order": 1,
+      "color": "#8b5cf6",
+      "driver": "goods"
+    },
+    "XayLap": {
+      "label": "Doanh thu xây lắp",
+      "order": 2,
+      "color": "#ec4899",
+      "driver": "construction"
+    },
+    "ChoThueHaTang": {
+      "label": "Cho thuê hạ tầng & quản lý KCN",
+      "order": 3,
+      "color": "#10b981",
+      "driver": "leasing"
+    },
+    "ChoThueMatBangNhaXuong": {
+      "label": "Cho thuê mặt bằng, nhà xưởng",
+      "order": 4,
+      "color": "#3b82f6",
+      "driver": "leasing"
+    },
+    "BanXangDau": {
+      "label": "Bán hàng hóa xăng dầu",
+      "order": 5,
+      "color": "#f59e0b",
+      "driver": "goods"
+    },
+    "Khac": {
+      "label": "Doanh thu khác",
+      "order": 6,
+      "color": "#9ca3af",
+      "driver": "other"
+    }
+  },
+  "yearly": {},
+  "quarterly": {}
+}

@@ -17,6 +17,12 @@ import sys
 import json
 import argparse
 
+# Fix Windows console encoding (cp1252 không hỗ trợ tiếng Việt)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STORE_DIR = os.path.join(PROJECT_ROOT, "data", "segments_kcn")
 CACHE_DIR = os.path.join(PROJECT_ROOT, ".cache")

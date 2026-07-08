@@ -1555,6 +1555,18 @@ def run_kcn_analysis(ticker, use_cache=True):
         if download_tasks:
             print(f"  [INFO] Phát hiện {len(download_tasks)} kỳ BCTC thiếu dữ liệu mảng. Tiến hành tải & trích xuất...")
             for url, out_path, period_key in download_tasks:
+                # Kiểm tra xem kỳ này đã được cập nhật dữ liệu đầy đủ chưa (tránh tải trùng do trích xuất chéo)
+                try:
+                    curr_store = load_segments_kcn(ticker)
+                    p_data = curr_store.get("yearly", {}).get(period_key) or curr_store.get("quarterly", {}).get(period_key)
+                    if p_data:
+                        non_khac = [s for s in p_data if s != "Khac" and (p_data[s].get("revenue", 0) > 0 or p_data[s].get("cogs", 0) > 0)]
+                        if non_khac:
+                            print(f"    -> [SKIP] {period_key} đã được cập nhật đầy đủ (trích xuất chéo từ kỳ khác).")
+                            continue
+                except Exception:
+                    pass
+
                 print(f"    -> Đang tải & parse {period_key}: {os.path.basename(out_path)}...")
                 # Gọi lệnh download của bctc_pdf_tool.py (lệnh này tự convert và gọi parser)
                 subprocess.run(
@@ -1567,6 +1579,17 @@ def run_kcn_analysis(ticker, use_cache=True):
             
     except Exception as e:
         print(f"  [WARN] Lỗi khi tự động tải & parse dữ liệu mảng: {e}")
+
+    # Tự động suy ra Q4 từ Yearly và Q1, Q2, Q3 cho các năm lịch sử nếu có đủ số liệu
+    try:
+        for y in range(2021, 2027):
+            subprocess.run(
+                [sys.executable, "segments_kcn_tool.py", "derive-q4", ticker, str(y), "--force"],
+                cwd=PROJECT_ROOT,
+                capture_output=True
+            )
+    except Exception:
+        pass
 
     store = load_segments_kcn(ticker)
     seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store)
@@ -1614,7 +1637,7 @@ def run_kcn_analysis(ticker, use_cache=True):
     # ── 8. Output paths ──────────────────────────────────────────
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", ticker)
     os.makedirs(out_dir, exist_ok=True)
-    month_str  = datetime.datetime.now().strftime("%Y-%m")
+    month_str  = datetime.datetime.now().strftime("%Y-%m-%d")
     excel_path = os.path.join(out_dir, f"{ticker}_KCN_Model_{month_str}.xlsx")
     pdf_path   = os.path.join(out_dir, f"{ticker}_KCN_Report_{month_str}.pdf")
 

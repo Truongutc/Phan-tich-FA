@@ -35,18 +35,57 @@
     "doanh thu cung cap dich vu khac": "Khac",
     "gia von dich vu khac": "Khac"
   },
-  "PHR": {
-    "doanh thu ban thanh pham": "CaoSu",
-    "gia von thanh pham da ban": "CaoSu",
-    "doanh thu ban hang hoa": "HangHoa",
-    "gia von cua hang hoa da ban": "HangHoa",
-    "doanh thu cho thue dat va phi su dung ha tang khu cong nghiep": "ChoThueDatKCN",
-    "gia von cho thue dat va phi su dung ha tang khu cong nghiep": "ChoThueDatKCN",
-    "doanh thu xu ly nuoc thai khu cong nghiep": "XuLyNuocThai",
-    "gia von dich vu xu ly nuoc thai khu cong nghiep": "XuLyNuocThai",
+  "SZC": {
+    "doanh thu cho thue dat va phi quan ly": "ChoThueDatPhiQuanLy",
+    "gia von cho thue dat va phi quan ly": "ChoThueDatPhiQuanLy",
+    "doanh thu kinh doanh thu phi duong bo": "ThuPhiDuongBo",
+    "gia von kinh doanh thu phi duong bo": "ThuPhiDuongBo",
+    "doanh thu hoat dong the thao golf va nha hang": "GolfNhaHang",
+    "gia von hoat dong the thao golf va nha hang": "GolfNhaHang",
+    "doanh thu cung cap nuoc": "CungCapNuoc",
+    "gia von cung cap nuoc": "CungCapNuoc",
+    "doanh thu ban nha lien ke tuyen pho thuong mai khu dan cu sonadezi huu phuoc": "BanNhaHuuPhuoc",
+    "gia von ban nha lien ke tuyen pho thuong mai khu dan cu sonadezi huu phuoc": "BanNhaHuuPhuoc",
+    "doanh thu xu ly nuoc thai": "XuLyNuocThai",
+    "gia von xu ly nuoc thai": "XuLyNuocThai",
+    "doanh thu cho thue xuong va phi quan ly xuong": "ChoThueXuong",
+    "gia von cho thue xuong va phi quan ly xuong": "ChoThueXuong",
     "doanh thu khac": "Khac",
-    "gia von khac": "Khac",
-    "du phong giam gia hang ton kho": "Khac"
+    "gia von khac": "Khac"
+  },
+  "NTC": {
+    "doanh thu kinh doanh bat dong san dau tu": "KinhDoanhBDS",
+    "gia von kinh doanh bat dong san dau tu": "KinhDoanhBDS",
+    "doanh thu cung cap dich vu": "CungCapDichVu",
+    "gia von cua dich vu da cung cap": "CungCapDichVu",
+    "doanh thu khac": "Khac",
+    "gia von hoat dong khac": "Khac"
+  },
+  "DTD": {
+    "doanh thu ban be tong": "BanBeTong",
+    "gia von ban be tong": "BanBeTong",
+    "doanh thu xay lap": "XayLap",
+    "gia von xay lap": "XayLap",
+    "doanh thu cho thue co so ha tang va quan ly": "ChoThueHaTang",
+    "gia von thue co so ha tang va quan ly": "ChoThueHaTang",
+    "doanh thu cho thue mat bang trung tam thuong mai, phong o luu tru va nha xuong": "ChoThueMatBangNhaXuong",
+    "gia von cho thue mat bang trung tam thuong mai, phong o luu tru va nha xuong": "ChoThueMatBangNhaXuong",
+    "doanh thu ban hang hoa xang dau": "BanXangDau",
+    "gia von ban hang hoa xang dau": "BanXangDau",
+    "doanh thu khac": "Khac",
+    "gia von hoat dong khac": "Khac"
+  },
+  "BCM": {
+    "doanh thu xay dung": "XayDung",
+    "gia von thi cong, xay dung cong trinh": "XayDung",
+    "doanh thu kinh doanh bat dong san": "KinhDoanhBDS",
+    "gia von kinh doanh bat dong san": "KinhDoanhBDS",
+    "doanh thu ban hang hoa, cung cap dich vu": "DichVuHangHoa",
+    "gia von cung cap dich vu, hang hoa": "DichVuHangHoa",
+    "doanh thu ban thanh pham": "BanThanhPham",
+    "gia von cua thanh pham": "BanThanhPham",
+    "doanh thu hoat dong khac": "Khac",
+    "gia von hoat dong khac": "Khac"
   },
   "_global": {
     "khac": "Khac",

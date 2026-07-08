@@ -47,17 +47,63 @@ MAPPING_KEYWORDS = {
         "KCN":         ["cho thuê đất", "hạ tầng kcn", "cho thuê hạ tầng"],
         "Go":          ["gỗ", "thanh lý cây cao su", "wood"],
         "Khac":        ["dịch vụ khác", "khác"]
+    },
+    "SZC": {
+        "ChoThueDatPhiQuanLy": ["cho thue dat", "phi quan ly", "dat va phi quan ly"],
+        "ThuPhiDuongBo":       ["thu phi duong bo", "duong bo", "bot"],
+        "GolfNhaHang":         ["golf", "nha hang", "the thao golf"],
+        "CungCapNuoc":         ["cung cap nuoc", "nuoc sach"],
+        "BanNhaHuuPhuoc":      ["sonadezi huu phuoc", "huu phuoc", "lien ke"],
+        "XuLyNuocThai":        ["xu ly nuoc thai", "nuoc thai"],
+        "ChoThueXuong":        ["cho thue xuong", "thue xuong", "quan ly xuong"],
+        "Khac":                ["dich vu khac", "khac"]
     }
 }
 
 def clean_number(val_str):
-    """Làm sạch chuỗi số từ bảng markdown."""
+    """Làm sạch chuỗi số từ bảng markdown, hỗ trợ định dạng số Việt Nam (dấu chấm phân cách nghìn, dấu phẩy thập phân)."""
     if not val_str:
         return 0.0
-    val_str = val_str.strip().replace(" ", "").replace(",", "").replace(".", "") # Loại bỏ dấu phân cách hàng nghìn
-    # Chuyển đổi chuỗi thành số thực, nếu có lỗi thì trả về 0.0
+    val_str = val_str.strip()
+    if val_str in ("-", "_", "–", "—", ""):
+        return 0.0
+    
+    # Xác định số âm nếu nằm trong ngoặc đơn hoặc bắt đầu bằng dấu trừ
+    is_negative = False
+    if (val_str.startswith("(") and val_str.endswith(")")) or val_str.startswith("-"):
+        is_negative = True
+        val_str = val_str.replace("(", "").replace(")", "").replace("-", "")
+        
+    val_str = val_str.strip()
+    
+    # Phân tích chuỗi số có chứa dấu chấm hoặc phẩy không
+    if "." in val_str and "," in val_str:
+        if val_str.find(".") < val_str.find(","):
+            val_str = val_str.replace(".", "").replace(",", ".")
+        else:
+            val_str = val_str.replace(",", "").replace(".", ".")
+    elif "," in val_str:
+        if val_str.count(",") >= 2:
+            val_str = val_str.replace(",", "")
+        else:
+            parts = val_str.split(",")
+            if len(parts[1]) == 3 and len(parts[0]) <= 3:
+                val_str = val_str.replace(",", "")
+            else:
+                val_str = val_str.replace(",", ".")
+    elif "." in val_str:
+        if val_str.count(".") >= 2:
+            val_str = val_str.replace(".", "")
+        else:
+            parts = val_str.split(".")
+            if len(parts[1]) == 3 and len(parts[0]) <= 3:
+                val_str = val_str.replace(".", "")
+            else:
+                pass
+
     try:
-        return float(val_str)
+        val = float(val_str)
+        return -val if is_negative else val
     except ValueError:
         return 0.0
 
@@ -323,6 +369,207 @@ def find_segment_values(ticker, tables, period_key=""):
     return final_curr, final_prior
 
 
+def find_segment_values_from_text(ticker, md_content, period_key=""):
+    """
+    Fallback: quét qua nội dung văn bản thô để tìm doanh thu/giá vốn mảng.
+    Thích hợp cho cả bảng dọc (line-by-line) và bảng ngang ma trận (matrix).
+    """
+    import re
+    keywords = MAPPING_KEYWORDS.get(ticker, {})
+    curr_results = {}
+    prior_results = {}
+    
+    # ── 1. THỬ MATRIX PARSER CHO BẢNG NGANG MA TRẬN ─────────────────────────
+    static_cols = {
+        "IDC": ["HaTangKCN", "DienNang", "BDS", "XayDung", "BOT", "Khac"],
+        "SZC": ["ChoThueDatPhiQuanLy", "ThuPhiDuongBo", "GolfNhaHang", "CungCapNuoc", "BanNhaHuuPhuoc", "XuLyNuocThai", "ChoThueXuong", "Khac"],
+        "DTD": ["XayLap", "BanBeTong", "BanXangDau", "ChoThueHaTang", "Khac"]
+    }.get(ticker)
+    
+    if static_cols:
+        # Tách các khối thuyết minh bộ phận
+        blocks = re.split(r'THONG TIN THEO BO PHAN|THONG TIN BO PHAN', md_content, flags=re.IGNORECASE)
+        if len(blocks) > 1:
+            print(f"[Parser] [Matrix] Tìm thấy {len(blocks)-1} khối thuyết minh bộ phận.")
+            for b_idx, block in enumerate(blocks[1:], start=1):
+                lines = block.split("\n")
+                
+                # Xác định năm của khối này
+                block_year = None
+                for line in lines[:40]:
+                    m_yr = re.search(r'nam\s+(202\d)', line, re.IGNORECASE)
+                    if m_yr:
+                        block_year = int(m_yr.group(1))
+                        break
+                
+                # Tìm dòng Doanh thu và Lợi nhuận gộp / Giá vốn
+                rev_vals = []
+                gp_vals = []
+                cogs_vals = []
+                
+                for i, line in enumerate(lines[:60]):
+                    # Tìm các cụm số
+                    nums = re.findall(r'\(?\b\d{1,3}(?:[.,]\d{3})+\b\)?|\b\d{9,13}\b', line)
+                    if len(nums) >= len(static_cols) - 1:
+                        # Xác định ngữ cảnh
+                        context = ""
+                        for j in range(max(0, i-5), i+1):
+                            prev_line_norm = strip_accents(lines[j])
+                            if any(x in prev_line_norm for x in ["doanhthuthuan", "doanhthu", "revenue"]):
+                                context = "revenue"
+                            elif any(x in prev_line_norm for x in ["loinhuangop", "grossprofit"]):
+                                context = "gp"
+                            elif any(x in prev_line_norm for x in ["giavon", "cogs"]):
+                                context = "cogs"
+                                
+                        parsed_nums = []
+                        for n in nums:
+                            neg = False
+                            if n.startswith("(") and n.endswith(")"):
+                                neg = True
+                                n = n[1:-1]
+                            n_clean = n.replace(".", "").replace(",", "")
+                            try:
+                                val = float(n_clean)
+                                if val > 1000000: val = round(val / 1e9, 2)
+                                parsed_nums.append(-val if neg else val)
+                            except ValueError:
+                                pass
+                            
+                        if context == "revenue":
+                            rev_vals = parsed_nums
+                        elif context == "gp":
+                            gp_vals = parsed_nums
+                        elif context == "cogs":
+                            cogs_vals = parsed_nums
+                
+                # Nếu tìm thấy doanh thu, map vào kết quả
+                if rev_vals:
+                    # Xác định xem block này là kỳ hiện tại hay kỳ trước
+                    is_prior = False
+                    block_text_norm = strip_accents(block)
+                    prior_keywords = ["namtruoc", "kytruoc", "sodaunam", "namngoai", "tripeye", "kyso-sanh", "prior"]
+                    if any(pw in block_text_norm for pw in prior_keywords):
+                        is_prior = True
+                    elif block_year and "Q" in period_key:
+                        report_yr = int(period_key[:4])
+                        if block_year < report_yr:
+                            is_prior = True
+                    elif block_year and "(" in period_key:
+                        report_yr = int(period_key.split("(")[0])
+                        if block_year < report_yr:
+                            is_prior = True
+                            
+                    target_dict = prior_results if is_prior else curr_results
+                    src_label = f"Trích xuất ma trận ngang ({period_key})"
+                    
+                    for idx, seg_key in enumerate(static_cols):
+                        if idx < len(rev_vals):
+                            rev_v = abs(rev_vals[idx])
+                            gp_v = abs(gp_vals[idx]) if (gp_vals and idx < len(gp_vals)) else None
+                            cogs_v = abs(cogs_vals[idx]) if (cogs_vals and idx < len(cogs_vals)) else None
+                            
+                            if cogs_v is None and gp_v is not None:
+                                cogs_v = round(rev_v - gp_v, 2)
+                            if cogs_v is None:
+                                cogs_v = round(rev_v * 0.8, 2)
+                                
+                            target_dict[seg_key] = {
+                                "revenue": rev_v,
+                                "cogs": cogs_v,
+                                "source": src_label,
+                                "sourceType": "auto",
+                                "derived": False
+                            }
+            
+            if curr_results:
+                print(f"[Parser] [Matrix] Trích xuất ma trận ngang thành công: {list(curr_results.keys())}")
+                return curr_results, prior_results
+
+    # ── 2. VERTICAL SCAN FALLBACK (Nếu ma trận ngang không chạy) ──────────────────
+    normalized_keywords = {}
+    for seg_key, kw_list in keywords.items():
+        normalized_keywords[seg_key] = [strip_accents(kw) for kw in kw_list]
+
+    lines = md_content.split("\n")
+    for i, line in enumerate(lines):
+        line_norm = strip_accents(line)
+        if not line_norm or len(line_norm) < 4:
+            continue
+        if any(x in line_norm for x in ["tongcong", "cong", "doanhthuthuan", "giavonhangban", "loinhuangop"]):
+            continue
+
+        matched_seg_key = None
+        for seg_key, kw_list in normalized_keywords.items():
+            if any(kw in line_norm for kw in kw_list):
+                matched_seg_key = seg_key
+                break
+                
+        if matched_seg_key:
+            text_to_scan = line
+            if i + 1 < len(lines) and not re.search(r'\d', line):
+                text_to_scan += " " + lines[i+1]
+            if i + 2 < len(lines) and not re.search(r'\d', text_to_scan):
+                text_to_scan += " " + lines[i+2]
+                
+            numbers_found = []
+            matches = re.finditer(r'\(?\b\d{1,3}(?:[.,]\d{3})+\b\)?|\(?\b\d{1,3}(?:[.,]\d{1,2})\b\)?|\b\d{5,15}\b', text_to_scan)
+            for m in matches:
+                num_str = m.group(0)
+                val = clean_number(num_str)
+                if val != 0:
+                    numbers_found.append(val)
+                    
+            if numbers_found:
+                is_cogs = any(x in line_norm for x in ["giavon", "giathanh", "cogs"])
+                val_c = numbers_found[0]
+                val_p = numbers_found[1] if len(numbers_found) > 1 else 0.0
+                
+                if abs(val_c) > 1000000: val_c = round(val_c / 1e9, 2)
+                if abs(val_p) > 1000000: val_p = round(val_p / 1e9, 2)
+                
+                target_dict_curr = curr_results.setdefault(matched_seg_key, {
+                    "revenue": 0.0, "cogs": 0.0,
+                    "source": f"Trích xuất văn bản thô ({period_key})",
+                    "sourceType": "auto", "derived": False
+                })
+                target_dict_prior = prior_results.setdefault(matched_seg_key, {
+                    "revenue": 0.0, "cogs": 0.0,
+                    "source": f"Trích xuất văn bản thô kỳ so sánh ({period_key})",
+                    "sourceType": "auto", "derived": False
+                })
+                
+                if is_cogs:
+                    if val_c != 0: target_dict_curr["cogs"] = abs(val_c)
+                    if val_p != 0: target_dict_prior["cogs"] = abs(val_p)
+                else:
+                    if val_c != 0: target_dict_curr["revenue"] = abs(val_c)
+                    if val_p != 0: target_dict_prior["revenue"] = abs(val_p)
+
+    # Chuẩn hóa về mảng chuẩn
+    final_curr = {}
+    final_prior = {}
+    for raw_key, data in curr_results.items():
+        std_key = raw_key
+        dest = final_curr.setdefault(std_key, {
+            "revenue": 0.0, "cogs": 0.0,
+            "source": data["source"], "sourceType": data["sourceType"], "derived": data["derived"]
+        })
+        dest["revenue"] = round(dest["revenue"] + data["revenue"], 2)
+        dest["cogs"] = round(dest["cogs"] + data["cogs"], 2)
+
+    for raw_key, data in prior_results.items():
+        std_key = raw_key
+        dest = final_prior.setdefault(std_key, {
+            "revenue": 0.0, "cogs": 0.0,
+            "source": data["source"], "sourceType": data["sourceType"], "derived": data["derived"]
+        })
+        dest["revenue"] = round(dest["revenue"] + data["revenue"], 2)
+        dest["cogs"] = round(dest["cogs"] + data["cogs"], 2)
+
+    return final_curr, final_prior
+
+
 def run_parse_and_merge(ticker, period_key):
     """
     Đoạn chạy chính: đọc file md -> parse -> tạo file patch -> merge.
@@ -359,6 +606,10 @@ def run_parse_and_merge(ticker, period_key):
     is_q = "Q" in period_key
     curr_vals, prior_vals = find_segment_values(ticker, tables, period_key=period_key)
     
+    if not curr_vals:
+        print("[Parser] [INFO] Không trích xuất được từ bảng markdown. Thử quét dòng văn bản thô line-by-line fallback...")
+        curr_vals, prior_vals = find_segment_values_from_text(ticker, md_content, period_key=period_key)
+        
     # Xác định năm của kỳ báo cáo này
     try:
         if is_q:

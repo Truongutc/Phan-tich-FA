@@ -1,0 +1,40 @@
+{
+  "ticker": "BCM",
+  "companyName": "Tổng công ty Đầu tư và Phát triển Công nghiệp - CTCP",
+  "unit": "ty_vnd",
+  "lastUpdated": "2026-07-08",
+  "segments": {
+    "XayDung": {
+      "label": "Doanh thu xây dựng",
+      "order": 1,
+      "color": "#ec4899",
+      "driver": "construction"
+    },
+    "KinhDoanhBDS": {
+      "label": "Kinh doanh bất động sản",
+      "order": 2,
+      "color": "#10b981",
+      "driver": "realestate"
+    },
+    "DichVuHangHoa": {
+      "label": "Bán hàng hóa, cung cấp dịch vụ",
+      "order": 3,
+      "color": "#3b82f6",
+      "driver": "services"
+    },
+    "BanThanhPham": {
+      "label": "Bán thành phẩm",
+      "order": 4,
+      "color": "#f59e0b",
+      "driver": "goods"
+    },
+    "Khac": {
+      "label": "Hoạt động khác",
+      "order": 5,
+      "color": "#9ca3af",
+      "driver": "other"
+    }
+  },
+  "yearly": {},
+  "quarterly": {}
+}

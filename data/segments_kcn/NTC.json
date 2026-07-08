@@ -1,0 +1,28 @@
+{
+  "ticker": "NTC",
+  "companyName": "Công ty Cổ phần Khu công nghiệp Nam Tân Uyên",
+  "unit": "ty_vnd",
+  "lastUpdated": "2026-07-08",
+  "segments": {
+    "KinhDoanhBDS": {
+      "label": "Kinh doanh bất động sản đầu tư",
+      "order": 1,
+      "color": "#10b981",
+      "driver": "leasing"
+    },
+    "CungCapDichVu": {
+      "label": "Cung cấp dịch vụ",
+      "order": 2,
+      "color": "#3b82f6",
+      "driver": "services"
+    },
+    "Khac": {
+      "label": "Hoạt động khác",
+      "order": 3,
+      "color": "#9ca3af",
+      "driver": "other"
+    }
+  },
+  "yearly": {},
+  "quarterly": {}
+}

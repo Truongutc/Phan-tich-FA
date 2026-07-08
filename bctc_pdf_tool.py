@@ -59,13 +59,47 @@ def fetch_cafef_list(ticker):
     return data.get("Data", [])
 
 
+def select_best_reports(items):
+    # Nhóm tài liệu theo (Year, Quarter) và chọn tài liệu tối ưu nhất
+    grouped = {}
+    for x in items:
+        y = x.get("Year")
+        q = x.get("Quarter")
+        if y is None or q is None:
+            continue
+        key = (y, q)
+        if key not in grouped:
+            grouped[key] = []
+        grouped[key].append(x)
+        
+    consolidated = []
+    for key, cands in grouped.items():
+        valid_cands = [x for x in cands if "cong ty me" not in _strip_diacritics(x.get("Name", "")).lower() 
+                       and "cty me" not in _strip_diacritics(x.get("Name", "")).lower()
+                       and "c.ty me" not in _strip_diacritics(x.get("Name", "")).lower()]
+        if not valid_cands:
+            continue
+            
+        def get_priority(x):
+            name_norm = _strip_diacritics(x.get("Name", "")).lower()
+            p = 0
+            if "hop nhat" in name_norm:
+                p += 10
+            if "kiem toan" in name_norm or "soat xet" in name_norm:
+                p += 5
+            return p
+        best = max(valid_cands, key=get_priority)
+        consolidated.append(best)
+    return consolidated
+
+
 def cmd_list(args):
     ticker = args.ticker.upper()
     items = fetch_cafef_list(ticker)
-    consolidated = [x for x in items if is_consolidated(x.get("Name", ""))]
-    print(f"[INFO] Tổng {len(items)} tài liệu, {len(consolidated)} bản hợp nhất cho {ticker}:")
+    consolidated = select_best_reports(items)
+    print(f"[INFO] Tổng {len(items)} tài liệu, đã chọn {len(consolidated)} bản tối ưu cho {ticker}:")
     for x in sorted(consolidated, key=lambda x: (x.get("Year", 0), x.get("Quarter", 0)), reverse=True):
-        label = f"Q{x['Quarter']}/{x['Year']}" if x.get("Quarter") in (1, 2, 3, 4) else f"CN/{x['Year']}"
+        label = f"Q{x['Quarter']}/{x['Year']}" if x.get("Quarter") in (1, 2, 3, 4, 6) else f"CN/{x['Year']}"
         print(f"  {label:10s} | {x['Name']} | {x['Link']}")
 
 
@@ -78,35 +112,57 @@ def _period_key(quarter, year):
 def cmd_plan_downloads(args):
     ticker = args.ticker.upper()
     items = fetch_cafef_list(ticker)
-    consolidated = [x for x in items if is_consolidated(x.get("Name", ""))]
+    consolidated = select_best_reports(items)
 
     store_file = os.path.join(STORE_DIR, f"{ticker}.json")
+    store = {}
     have_yearly, have_quarterly = set(), set()
     if os.path.exists(store_file):
         with open(store_file, "r", encoding="utf-8") as f:
             store = json.load(f)
-        have_yearly = set(store.get("yearly", {}).keys())
-        have_quarterly = set(store.get("quarterly", {}).keys())
+        
+        # Chỉ coi là đã có nếu dữ liệu không chỉ chứa mảng "Khac" (hoặc nếu mảng Khac là hợp lệ duy nhất)
+        # Đối với các công ty đã được thiết lập mảng chuẩn (như IDC, SIP, PHR, SZC),
+        # nếu chỉ có mảng Khac thì coi như dữ liệu chưa đầy đủ.
+        for pkey, seg_data in store.get("yearly", {}).items():
+            non_khac = [s for s in seg_data if s != "Khac" and (seg_data[s].get("revenue", 0) > 0 or seg_data[s].get("cogs", 0) > 0)]
+            if non_khac or ticker not in ("IDC", "SIP", "PHR", "SZC"):
+                have_yearly.add(pkey)
+                
+        for pkey, seg_data in store.get("quarterly", {}).items():
+            non_khac = [s for s in seg_data if s != "Khac" and (seg_data[s].get("revenue", 0) > 0 or seg_data[s].get("cogs", 0) > 0)]
+            if non_khac or ticker not in ("IDC", "SIP", "PHR", "SZC"):
+                have_quarterly.add(pkey)
 
+    # Lấy năm cao nhất từ danh sách tài liệu CafeF
     current_year = max((x["Year"] for x in consolidated), default=2026)
     
-    # 1. Yearly: Tải cách nhau 2 năm (ví dụ: 2025, 2023)
-    years_wanted = [current_year, current_year - 2]
+    # 1. Yearly: Tải 5 năm gần nhất để phân tích lịch sử đầy đủ
+    years_wanted = [current_year, current_year - 1, current_year - 2, current_year - 3, current_year - 4]
     
     # 2. Quarterly: Tải các quý của năm nay và năm ngoái
     quarters_wanted_years = [current_year, current_year - 1]
 
     to_fetch = []
     # Lập kế hoạch Yearly
+    to_fetch_yearly = []
     for y in years_wanted:
         pkey = f"{y}(CN)"
+        next_pkey = f"{y+1}(CN)"
+        if next_pkey in have_yearly or next_pkey in [item[0] for item in to_fetch_yearly]:
+            print(f"  [INFO] Bỏ qua lập lịch tải {pkey} vì dữ liệu năm này sẽ có trong thuyết minh của năm {y+1}")
+            continue
+            
         if pkey in have_yearly:
             continue
+            
         cands = [x for x in consolidated if x.get("Quarter") == 5 and x.get("Year") == y]
         if cands:
-            to_fetch.append((pkey, cands[0]))
+            to_fetch_yearly.append((pkey, cands[0]))
         else:
             print(f"[MISS] Không tìm thấy BCTC năm kiểm toán {y} (hợp nhất) cho {ticker}")
+            
+    to_fetch.extend(to_fetch_yearly)
 
     # Lập kế hoạch Quarterly
     for y in quarters_wanted_years:
@@ -114,7 +170,10 @@ def cmd_plan_downloads(args):
             pkey = f"{y}Q{q}"
             if pkey in have_quarterly:
                 continue
-            cands = [x for x in consolidated if x.get("Quarter") == q and x.get("Year") == y]
+            if q == 2:
+                cands = [x for x in consolidated if x.get("Quarter") in (2, 6) and x.get("Year") == y]
+            else:
+                cands = [x for x in consolidated if x.get("Quarter") == q and x.get("Year") == y]
             if cands:
                 to_fetch.append((pkey, cands[0]))
             else:
@@ -156,8 +215,41 @@ def slice_pdf_tail(input_path: str, output_path: str) -> int:
 
 def cmd_download(args):
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    r = requests.get(args.url, headers=HEADERS, timeout=60)
-    r.raise_for_status()
+    url = args.url.strip()
+    # Chuẩn hóa khoảng trắng
+    url = url.replace(" ", "%20")
+    
+    r = None
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=60)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"[ERROR] Không thể tải URL {url}: {e}")
+        # Thử fallback với URL rút gọn khoảng trắng kép
+        cleaned_url = url.replace("%20%20", "%20").replace("  ", " ")
+        if cleaned_url != url:
+            try:
+                print(f"  -> Thử tải lại với URL rút gọn: {cleaned_url}...")
+                r = requests.get(cleaned_url, headers=HEADERS, timeout=60)
+                r.raise_for_status()
+            except Exception as e2:
+                print(f"[ERROR] Tải lại với URL rút gọn thất bại: {e2}")
+        
+        if not r and not url.lower().endswith(".pdf"):
+            pdf_url = url + ".pdf"
+            try:
+                print(f"  -> Thử tải lại với đuôi .pdf: {pdf_url}...")
+                r = requests.get(pdf_url, headers=HEADERS, timeout=60)
+                r.raise_for_status()
+            except Exception as e3:
+                print(f"[ERROR] Tải với đuôi .pdf thất bại: {e3}")
+                return
+        if not r:
+            return
+
+    if not r:
+        return
+
     with open(args.out, "wb") as f:
         f.write(r.content)
     print(f"[OK] Đã tải {len(r.content)} bytes -> {args.out}")

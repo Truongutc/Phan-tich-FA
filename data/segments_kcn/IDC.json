@@ -48,20 +48,134 @@
     }
   },
   "yearly": {
-    "2024(CN)": {
+    "2025(CN)": {
+      "HaTangKCN": {
+        "revenue": 3578.99,
+        "cogs": 2863.19,
+        "source": "Trích xuất ma trận ngang (2025(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "DienNang": {
+        "revenue": 3879.27,
+        "cogs": 3103.42,
+        "source": "Trích xuất ma trận ngang (2025(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 329.19,
+        "cogs": 263.35,
+        "source": "Trích xuất ma trận ngang (2025(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 480.44,
+        "cogs": 384.35,
+        "source": "Trích xuất ma trận ngang (2025(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 357.08,
+        "cogs": 285.66,
+        "source": "Trích xuất ma trận ngang (2025(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
       "Khac": {
-        "revenue": 6764.29,
-        "cogs": 0.0,
-        "source": "Trích xuất tự động từ BCTC md (2024(CN))",
+        "revenue": 238.95,
+        "cogs": 191.16,
+        "source": "Trích xuất ma trận ngang (2025(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2024(CN)": {
+      "HaTangKCN": {
+        "revenue": 4114.55,
+        "cogs": 3291.64,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "DienNang": {
+        "revenue": 3392.48,
+        "cogs": 2713.98,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 333.29,
+        "cogs": 266.63,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 463.84,
+        "cogs": 371.07,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 532.63,
+        "cogs": 426.1,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 255591.0,
+        "cogs": 204472.8,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
         "sourceType": "auto",
         "derived": false
       }
     },
     "2023(CN)": {
+      "HaTangKCN": {
+        "revenue": 1724.63,
+        "cogs": 1379.7,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "DienNang": {
+        "revenue": 357.1,
+        "cogs": 285.68,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 10.93,
+        "cogs": 8.74,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 189.45,
+        "cogs": 151.56,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 73.69,
+        "cogs": 58.95,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
       "Khac": {
-        "revenue": 655.63,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2024(CN))",
+        "revenue": 0.07,
+        "cogs": 0.06,
+        "source": "Trích xuất ma trận ngang (2024(CN))",
         "sourceType": "auto",
         "derived": false
       }
@@ -181,6 +295,50 @@
         "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
         "sourceType": "bctc_pdf_user",
         "asOf": "2026-04-30",
+        "derived": false
+      }
+    },
+    "2025Q3": {
+      "HaTangKCN": {
+        "revenue": 95.51,
+        "cogs": 76.41,
+        "source": "Trích xuất ma trận ngang (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "DienNang": {
+        "revenue": 13.05,
+        "cogs": 10.44,
+        "source": "Trích xuất ma trận ngang (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 72.33,
+        "cogs": 57.86,
+        "source": "Trích xuất ma trận ngang (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 0.72,
+        "cogs": 0.58,
+        "source": "Trích xuất ma trận ngang (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 19.18,
+        "cogs": 15.34,
+        "source": "Trích xuất ma trận ngang (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 2619.9,
+        "cogs": 2095.92,
+        "source": "Trích xuất ma trận ngang (2025Q3)",
+        "sourceType": "auto",
         "derived": false
       }
     }

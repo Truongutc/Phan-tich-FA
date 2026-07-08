@@ -1,0 +1,396 @@
+{
+  "ticker": "SZC",
+  "companyName": "Công ty Cổ phần Sonadezi Châu Đức",
+  "sector": "Bất động sản khu công nghiệp",
+  "currentPrice": 21200.0,
+  "marketCap": 2120000000000.0,
+  "shares": 100000000,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "revenue": [
+      713.22,
+      858.89,
+      817.95,
+      870.68,
+      1097.95
+    ],
+    "grossProfit": [
+      451.02,
+      309.64,
+      350.32,
+      430.83,
+      560.5
+    ],
+    "npat": [
+      323.63,
+      197.37,
+      218.87,
+      298.6,
+      344.8
+    ]
+  },
+  "valuation": {
+    "fair_pe": 23922,
+    "fair_pb": 39765,
+    "fair_ri": 16958,
+    "fair_blend": 28867,
+    "upside": 0.3616,
+    "target_pe": 13.0,
+    "target_pb": 1.2,
+    "coe": 0.1015,
+    "rf": 0.045,
+    "beta": 1.027,
+    "eps_last": 1764.0,
+    "bvps_last": 32029.0,
+    "avg_payout": 0.3714
+  },
+  "segments_yearly": {
+    "ChoThueDatPhiQuanLy": {
+      "label": "Cho thuê đất & phí quản lý KCN",
+      "color": "#10b981",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "ThuPhiDuongBo": {
+      "label": "Kinh doanh thu phí đường bộ (BOT)",
+      "color": "#8b5cf6",
+      "data": {
+        "2022(CN)": {
+          "revenue": 7.0,
+          "cogs": 0.0,
+          "grossProfit": 7.0,
+          "grossMargin": 1.0
+        },
+        "2023(CN)": {
+          "revenue": 38.2,
+          "cogs": 0.0,
+          "grossProfit": 38.2,
+          "grossMargin": 1.0
+        }
+      }
+    },
+    "GolfNhaHang": {
+      "label": "Hoạt động thể thao Golf & nhà hàng",
+      "color": "#f59e0b",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "CungCapNuoc": {
+      "label": "Cung cấp nước",
+      "color": "#3b82f6",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "BanNhaHuuPhuoc": {
+      "label": "Bán nhà liên kế KDC Hữu Phước",
+      "color": "#ec4899",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "XuLyNuocThai": {
+      "label": "Xử lý nước thải KCN",
+      "color": "#06b6d4",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "ChoThueXuong": {
+      "label": "Cho thuê xưởng & phí quản lý",
+      "color": "#64748b",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "Khac": {
+      "label": "Sản phẩm & dịch vụ khác",
+      "color": "#9ca3af",
+      "data": {
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2023(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    }
+  },
+  "segments_quarterly": {
+    "ChoThueDatPhiQuanLy": {
+      "label": "Cho thuê đất & phí quản lý KCN",
+      "color": "#10b981",
+      "data": {
+        "2024Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "ThuPhiDuongBo": {
+      "label": "Kinh doanh thu phí đường bộ (BOT)",
+      "color": "#8b5cf6",
+      "data": {
+        "2024Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "GolfNhaHang": {
+      "label": "Hoạt động thể thao Golf & nhà hàng",
+      "color": "#f59e0b",
+      "data": {
+        "2024Q3": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": 4.8,
+          "cogs": 0.0,
+          "grossProfit": 4.8,
+          "grossMargin": 1.0
+        }
+      }
+    },
+    "CungCapNuoc": {
+      "label": "Cung cấp nước",
+      "color": "#3b82f6",
+      "data": {
+        "2024Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "BanNhaHuuPhuoc": {
+      "label": "Bán nhà liên kế KDC Hữu Phước",
+      "color": "#ec4899",
+      "data": {
+        "2024Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "XuLyNuocThai": {
+      "label": "Xử lý nước thải KCN",
+      "color": "#06b6d4",
+      "data": {
+        "2024Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "ChoThueXuong": {
+      "label": "Cho thuê xưởng & phí quản lý",
+      "color": "#64748b",
+      "data": {
+        "2024Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2025Q3": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        }
+      }
+    },
+    "Khac": {
+      "label": "Sản phẩm & dịch vụ khác",
+      "color": "#9ca3af",
+      "data": {
+        "2024Q3": {
+          "revenue": 0.17,
+          "cogs": 0.0,
+          "grossProfit": 0.17,
+          "grossMargin": 1.0
+        },
+        "2025Q3": {
+          "revenue": 0.17,
+          "cogs": 0.0,
+          "grossProfit": 0.17,
+          "grossMargin": 1.0
+        }
+      }
+    }
+  },
+  "yearly_keys": [
+    "2022(CN)",
+    "2023(CN)"
+  ],
+  "quarterly_keys": [
+    "2024Q3",
+    "2025Q3"
+  ],
+  "comments": {
+    "overall": "Công ty Cổ phần Sonadezi Châu Đức (SZC) là doanh nghiệp bất động sản khu công nghiệp với mô hình đa mảng (cho thuê đất, tiện ích, điện, BOT…). Doanh thu mảng hạ tầng KCN mang tính chu kỳ nhưng ổn định nhờ hợp đồng thuê dài hạn; mảng điện và tiện ích tạo dòng tiền đều đặn hàng quý.",
+    "financial": "Doanh thu và lợi nhuận gộp phân hóa rõ giữa các mảng: hạ tầng KCN và dịch vụ tiện ích thường có biên cao nhất, trong khi xây dựng và hàng hóa có biên thấp. Payout ratio cổ tức tiền mặt lịch sử lớn đòi hỏi kiểm soát chặt dòng tiền tự do và vay nợ.",
+    "valuation": "Định giá theo tổ hợp 40% P/E + 40% P/B + 20% RI phù hợp với đặc thù nhóm KCN: biên lợi nhuận tương đối ổn định, tài sản cố định lớn và cổ tức tiền mặt đều đặn. Rủi ro chính: lấp đầy KCN chậm hơn kỳ vọng, lãi suất tăng ảnh hưởng COE và giá trị RI."
+  },
+  "thesis": [
+    "Doanh nghiệp BĐS KCN với mô hình đa mảng và dòng tiền ổn định.",
+    "Công ty Cổ phần Sonadezi Châu Đức (SZC) là doanh nghiệp bất động sản khu công nghiệp với mô hình đa mảng (cho thuê đất, tiện ích, điện, BOT…). Doanh thu mảng hạ"
+  ],
+  "risks": [
+    "Tỷ lệ lấp đầy KCN chậm hơn kỳ vọng ảnh hưởng ghi nhận doanh thu cho thuê đất.",
+    "Lãi suất tăng làm tăng COE và giảm giá trị RI model.",
+    "Rủi ro NCI lớn: LNST cổ đông thiểu số có thể ảnh hưởng EPS mẹ."
+  ],
+  "moats": {
+    "Switching Cost": {
+      "score": 4,
+      "desc": "Hợp đồng thuê đất KCN thường 30-50 năm, rào cản rời bỏ cao."
+    },
+    "Efficient Scale": {
+      "score": 4,
+      "desc": "Hạ tầng KCN lớn — barrier to entry về vốn rất cao."
+    },
+    "Cost Advantage": {
+      "score": 3,
+      "desc": "Tiện ích điện/nước/xử lý nước thải tự vận hành → tiết kiệm chi phí."
+    },
+    "Network Effect": {
+      "score": 2,
+      "desc": "Cụm KCN mạnh thu hút thêm khách thuê, hiệu ứng tích cực nhẹ."
+    }
+  },
+  "pestle": {
+    "Political": "Chính sách thu hút FDI và phát triển KCN tiếp tục được ưu tiên.",
+    "Economic": "Làn sóng dịch chuyển chuỗi cung ứng từ Trung Quốc sang VN thúc đẩy nhu cầu KCN.",
+    "Social": "Yêu cầu nhà ở công nhân, hạ tầng xã hội trong KCN ngày càng được coi trọng.",
+    "Technological": "Xu hướng KCN thông minh (smart industrial park) đòi hỏi đầu tư số hóa.",
+    "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
+    "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
+  },
+  "lastUpdated": "2026-07-08 22:10"
+}

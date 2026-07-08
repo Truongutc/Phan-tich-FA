@@ -107,10 +107,7 @@ def run_analysis(ticker: str):
     SECURITIES_TICKERS = {"SSI", "VND", "HCM", "VCI", "FTS", "SHS", "BSI", "VIX", "MBS",
                           "CTS", "AGR", "BVS", "APG", "ORS", "TVS", "VDS", "TCX", "VCK", "VPX"}
 
-    # Danh sách mã BĐS Khu Công nghiệp (KCN) — dùng BCTC doanh nghiệp thường (isa/bsa),
-    # KHÔNG có field đặc thù để tự nhận diện như bank/CTCK nên phân loại theo danh sách tĩnh
-    KCN_TICKERS = {"SIP", "IDC", "SZC", "SZL", "KBC", "NTC", "DPR", "BCM", "PHR",
-                   "LHG", "VGC", "D2D", "TIP"}
+    KCN_TICKERS = {"SIP", "IDC", "SZC", "SZL", "KBC", "NTC", "LHG", "VGC", "D2D", "TIP"}
 
     # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
     import fetch_data

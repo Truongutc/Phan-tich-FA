@@ -272,7 +272,7 @@ def run_generic_analysis(ticker, raw_data):
     # 3. Create Directories
     out_dir = os.path.join(os.path.dirname(__file__), "Bao cao", ticker)
     os.makedirs(out_dir, exist_ok=True)
-    month_str = datetime.datetime.now().strftime("%Y-%m")
+    month_str = datetime.datetime.now().strftime("%Y-%m-%d")
     
     excel_path = os.path.join(out_dir, f"{ticker}_Model_{month_str}.xlsx")
     pdf_path = os.path.join(out_dir, f"{ticker}_Phan_Tich_{month_str}.pdf")

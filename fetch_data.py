@@ -15,6 +15,12 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# Fix Windows console encoding (cp1252 không hỗ trợ tiếng Việt)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 VIETCAP_BASE = "https://iq.vietcap.com.vn/api/iq-insight-service/v1"
 CACHE_DIR = os.path.join(os.path.dirname(__file__), ".cache")
 

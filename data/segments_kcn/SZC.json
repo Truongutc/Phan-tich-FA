@@ -1,0 +1,113 @@
+{
+  "ticker": "SZC",
+  "companyName": "Công ty Cổ phần Sonadezi Châu Đức",
+  "unit": "ty_vnd",
+  "lastUpdated": "2026-07-08",
+  "segments": {
+    "ChoThueDatPhiQuanLy": {
+      "label": "Cho thuê đất & phí quản lý KCN",
+      "order": 1,
+      "color": "#10b981",
+      "driver": "leasing"
+    },
+    "ThuPhiDuongBo": {
+      "label": "Kinh doanh thu phí đường bộ (BOT)",
+      "order": 2,
+      "color": "#8b5cf6",
+      "driver": "bot"
+    },
+    "GolfNhaHang": {
+      "label": "Hoạt động thể thao Golf & nhà hàng",
+      "order": 3,
+      "color": "#f59e0b",
+      "driver": "goods"
+    },
+    "CungCapNuoc": {
+      "label": "Cung cấp nước",
+      "order": 4,
+      "color": "#3b82f6",
+      "driver": "utilities"
+    },
+    "BanNhaHuuPhuoc": {
+      "label": "Bán nhà liên kế KDC Hữu Phước",
+      "order": 5,
+      "color": "#ec4899",
+      "driver": "realestate"
+    },
+    "XuLyNuocThai": {
+      "label": "Xử lý nước thải KCN",
+      "order": 6,
+      "color": "#06b6d4",
+      "driver": "wastewater"
+    },
+    "ChoThueXuong": {
+      "label": "Cho thuê xưởng & phí quản lý",
+      "order": 7,
+      "color": "#64748b",
+      "driver": "leasing"
+    },
+    "Khac": {
+      "label": "Sản phẩm & dịch vụ khác",
+      "order": 8,
+      "color": "#9ca3af",
+      "driver": "other"
+    }
+  },
+  "yearly": {
+    "2023(CN)": {
+      "ThuPhiDuongBo": {
+        "revenue": 38.2,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô (2023(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2022(CN)": {
+      "ThuPhiDuongBo": {
+        "revenue": 7.0,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    }
+  },
+  "quarterly": {
+    "2025Q3": {
+      "GolfNhaHang": {
+        "revenue": 4.8,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 0.17,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2024Q3": {
+      "GolfNhaHang": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô kỳ so sánh (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 0.17,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô kỳ so sánh (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      }
+    }
+  },
+  "notes": [
+    "Dữ liệu được trích xuất tự động từ thuyết minh doanh thu và giá vốn bộ phận của BCTC kiểm toán năm."
+  ]
+}
