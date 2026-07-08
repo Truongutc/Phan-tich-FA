@@ -138,12 +138,12 @@ def slice_pdf_tail(input_path: str, output_path: str) -> int:
     total = len(doc)
 
     start_page = int(total * 2 / 3)   # bắt đầu từ 2/3 chiều dài
-    end_page   = max(start_page + 1, total - 5)  # bỏ 5 trang cuối
+    end_page   = max(start_page + 1, total - 1)  # chỉ bỏ đúng 1 trang chữ ký cuối cùng
 
     # Đảm bảo không slice ra tập rỗng hoặc không hợp lệ
     if start_page >= end_page or start_page < 0:
         start_page = max(0, total - 30)  # fallback: lấy tối đa 30 trang cuối
-        end_page = total
+        end_page = total - 1
 
     new_doc = pdfium.PdfDocument.new()
     new_doc.import_pages(doc, list(range(start_page, end_page)))
