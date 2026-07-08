@@ -128,19 +128,19 @@
     "pdfUrl": null
   },
   {
-    "ticker": "IDC",
-    "companyName": "Tổng Công ty IDICO - CTCP",
-    "sector": "Bất động sản khu công nghiệp",
-    "lastUpdated": "2026-07-08 23:09",
-    "excelUrl": null,
-    "pdfUrl": null
-  },
-  {
     "ticker": "SIP",
     "companyName": "Công ty Cổ phần Đầu tư Sài Gòn VRG",
     "sector": "Bất động sản khu công nghiệp",
     "lastUpdated": "2026-07-08 23:11",
     "excelUrl": null,
     "pdfUrl": null
+  },
+  {
+    "ticker": "IDC",
+    "companyName": "Tổng Công ty IDICO - CTCP",
+    "sector": "Bất động sản khu công nghiệp",
+    "lastUpdated": "2026-07-08 18:09",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1xkiVP5HKd-FhrEJG29hTkWcpKJbGyOkB/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1iQKsYeZWe0ZDLqB2J5-jhIkzm64qzYlN/view?usp=drivesdk"
   }
 ]
