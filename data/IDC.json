@@ -2,11 +2,11 @@
   "ticker": "IDC",
   "companyName": "Tổng Công ty IDICO - CTCP",
   "sector": "Bất động sản khu công nghiệp",
-  "currentPrice": 40000.0,
-  "marketCap": 12000000000000.0,
+  "currentPrice": 40700.0,
+  "marketCap": 12210000000000.0,
   "shares": 300000000,
-  "gdriveExcelUrl": null,
-  "gdrivePdfUrl": null,
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1juGw0XbdPHawebp89nV1MrENg_4XRyI7/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/16JIMsckSlST_TdpycNJz93cz7AVjbE6w/view?usp=drivesdk",
   "data": {
     "years": [
       2021,
@@ -39,12 +39,12 @@
   },
   "valuation": {
     "fair_pe": 45075,
-    "fair_pb": 54092,
-    "fair_ri": 68557,
-    "fair_blend": 53378,
-    "upside": 0.3345,
+    "fair_pb": 56346,
+    "fair_ri": 68568,
+    "fair_blend": 54282,
+    "upside": 0.3337,
     "target_pe": 8.0,
-    "target_pb": 2.4,
+    "target_pb": 2.5,
     "coe": 0.1083,
     "rf": 0.045,
     "beta": 1.151,
@@ -261,5 +261,6 @@
     "Technological": "Xu hướng KCN thông minh (smart industrial park) đòi hỏi đầu tư số hóa.",
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
-  }
+  },
+  "lastUpdated": "2026-07-08 05:13"
 }
