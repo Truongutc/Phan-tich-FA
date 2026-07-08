@@ -89,21 +89,26 @@ def cmd_plan_downloads(args):
         have_quarterly = set(store.get("quarterly", {}).keys())
 
     current_year = max((x["Year"] for x in consolidated), default=2026)
-    years_wanted = list(range(current_year, current_year - 5, -1))  # 5 năm gần nhất liên tục
-    quarters_wanted_years = list(range(current_year, current_year - 3, -1))  # 3 năm gần nhất liên tục
+    
+    # 1. Yearly: Tải cách nhau 2 năm (ví dụ: 2025, 2023)
+    years_wanted = [current_year, current_year - 2]
+    
+    # 2. Quarterly: Tải các quý của năm nay và năm ngoái
+    quarters_wanted_years = [current_year, current_year - 1]
 
     to_fetch = []
-    # Năm kiểm toán (Quarter == 5)
+    # Lập kế hoạch Yearly
     for y in years_wanted:
-        if str(y) in have_yearly:
+        pkey = f"{y}(CN)"
+        if pkey in have_yearly:
             continue
         cands = [x for x in consolidated if x.get("Quarter") == 5 and x.get("Year") == y]
         if cands:
-            to_fetch.append((f"{y}(CN)", cands[0]))
+            to_fetch.append((pkey, cands[0]))
         else:
             print(f"[MISS] Không tìm thấy BCTC năm kiểm toán {y} (hợp nhất) cho {ticker}")
 
-    # Quý Q1/Q2/Q3 (Q4 luôn suy, không tải riêng)
+    # Lập kế hoạch Quarterly
     for y in quarters_wanted_years:
         for q in (1, 2, 3):
             pkey = f"{y}Q{q}"
@@ -115,10 +120,38 @@ def cmd_plan_downloads(args):
             else:
                 print(f"[MISS] Không tìm thấy BCTC {pkey} (hợp nhất) cho {ticker}")
 
-    print(f"\n[PLAN] Cần tải {len(to_fetch)} file PDF cho {ticker} (đã loại các kỳ có sẵn trong kho + áp dụng quy tắc cách-2-năm):")
+    print(f"\n[PLAN] Cần tải {len(to_fetch)} file PDF cho {ticker} (Yearly: {years_wanted}, Quarterly: {quarters_wanted_years}):")
     for pkey, item in to_fetch:
         print(f"  {pkey:10s} | {item['Name']} | {item['Link']}")
     return to_fetch
+
+
+def slice_pdf_tail(input_path: str, output_path: str) -> int:
+    """
+    Cắt lấy 1/3 cuối PDF (bỏ 5 trang cuối cùng) và lưu thành file tạm.
+    Trả về số trang của file sliced.
+    Dùng pypdfium2 (đã cài sẵn qua pdfplumber dependency).
+    """
+    import pypdfium2 as pdfium
+
+    doc = pdfium.PdfDocument(input_path)
+    total = len(doc)
+
+    start_page = int(total * 2 / 3)   # bắt đầu từ 2/3 chiều dài
+    end_page   = max(start_page + 1, total - 5)  # bỏ 5 trang cuối
+
+    # Đảm bảo không slice ra tập rỗng hoặc không hợp lệ
+    if start_page >= end_page or start_page < 0:
+        start_page = max(0, total - 30)  # fallback: lấy tối đa 30 trang cuối
+        end_page = total
+
+    new_doc = pdfium.PdfDocument.new()
+    new_doc.import_pages(doc, list(range(start_page, end_page)))
+    new_doc.save(output_path)
+
+    sliced_count = end_page - start_page
+    print(f"[SlicePDF] {total} trang -> cắt trang {start_page+1} đến {end_page} ({sliced_count} trang) -> {os.path.basename(output_path)}")
+    return sliced_count
 
 
 def cmd_download(args):
@@ -129,14 +162,24 @@ def cmd_download(args):
         f.write(r.content)
     print(f"[OK] Đã tải {len(r.content)} bytes -> {args.out}")
     
+    # Slice PDF lấy phần sau trước khi convert sang Markdown
+    sliced_pdf = args.out.replace(".pdf", "_sliced.pdf")
+    try:
+        slice_pdf_tail(args.out, sliced_pdf)
+        convert_target = sliced_pdf
+    except Exception as e:
+        print(f"[SlicePDF] [WARN] Không thể slice PDF: {e} - tiến hành convert toàn bộ file gốc")
+        convert_target = args.out
+        sliced_pdf = args.out
+
     # Tự động convert PDF sang Markdown (.md) offline bằng opendataloader-pdf
     md_out_dir = os.path.join(os.path.dirname(args.out), "extracted_md")
     try:
         import opendataloader_pdf
         os.makedirs(md_out_dir, exist_ok=True)
-        print(f"[Opendataloader] Đang convert {args.out} sang Markdown...")
+        print(f"[Opendataloader] Đang convert {os.path.basename(convert_target)} sang Markdown...")
         opendataloader_pdf.convert(
-            input_path=args.out,
+            input_path=convert_target,
             output_dir=md_out_dir,
             format="markdown",
             hybrid="docling-fast",
@@ -146,6 +189,13 @@ def cmd_download(args):
     except Exception as e:
         print(f"[Opendataloader] [WARN] Không thể convert sang Markdown: {e}")
         return
+    finally:
+        # Xóa file sliced tạm
+        if os.path.exists(sliced_pdf) and sliced_pdf != args.out:
+            try:
+                os.remove(sliced_pdf)
+            except Exception:
+                pass
 
     # Tự động gọi segments_kcn_parser.py để trích xuất số liệu mảng và nạp vào kho JSON
     if hasattr(args, "ticker") and args.ticker and hasattr(args, "period") and args.period:

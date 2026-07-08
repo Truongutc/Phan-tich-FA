@@ -107,8 +107,10 @@ def run_analysis(ticker: str):
     SECURITIES_TICKERS = {"SSI", "VND", "HCM", "VCI", "FTS", "SHS", "BSI", "VIX", "MBS",
                           "CTS", "AGR", "BVS", "APG", "ORS", "TVS", "VDS", "TCX", "VCK", "VPX"}
 
-    # Danh sách mã BĐS Khu Công Nghiệp
-    KCN_TICKERS = {"IDC", "SIP", "PHR", "SZC", "KBC", "BCM", "NTC", "DPR"}
+    # Danh sách mã BĐS Khu Công nghiệp (KCN) — dùng BCTC doanh nghiệp thường (isa/bsa),
+    # KHÔNG có field đặc thù để tự nhận diện như bank/CTCK nên phân loại theo danh sách tĩnh
+    KCN_TICKERS = {"SIP", "IDC", "SZC", "SZL", "KBC", "NTC", "DPR", "BCM", "PHR",
+                   "LHG", "VGC", "D2D", "TIP"}
 
     # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
     import fetch_data
@@ -128,21 +130,18 @@ def run_analysis(ticker: str):
         latest_bs = bs_recs[-1]
         if latest_bs.get("bsb103") or latest_bs.get("bsb113") or latest_bs.get("bsb116"):
             has_bank_accounts = True
-        # Tự động nhận diện CTCK: có tài khoản dư nợ cho vay Margin (bss215, riêng của mẫu BCTC CTCK)
-        if latest_bs.get("bss215") is not None:
+        # Tự động nhận diện CTCK: có tài khoản dư nợ cho vay Margin (bss215, riêng của mẫu BCTC CTCK).
+        if latest_bs.get("bss215"):
             has_securities_accounts = True
 
     # ── STEP 2: Run specialized builder (AI-generated) or template engines ─────────
     builder_path = os.path.join(PROJECT_ROOT, f"build_{ticker.lower()}_model.py")
-    is_kcn = ticker in KCN_TICKERS
-    is_bank = not is_kcn and (ticker in BANKING_TICKERS or has_bank_accounts)
-    is_securities = not is_kcn and not is_bank and (ticker in SECURITIES_TICKERS or has_securities_accounts)
-    
-    if is_kcn:
-        print(f"\n[Step 2] Ticker {ticker} classified as Industrial Park (KCN). Directly running template_kcn.py...")
-        import template_kcn
-        success = template_kcn.run_kcn_analysis(ticker, use_cache=True)
-    elif is_bank:
+    is_bank = ticker in BANKING_TICKERS or has_bank_accounts
+    # Ticker nằm trong danh sách KCN tĩnh được ƯU TIÊN hơn auto-detect CTCK
+    is_kcn = not is_bank and ticker in KCN_TICKERS
+    is_securities = not is_bank and not is_kcn and (ticker in SECURITIES_TICKERS or has_securities_accounts)
+
+    if is_bank:
         print(f"\n[Step 2] Ticker {ticker} classified as Bank. Directly running upgraded template_banking.py...")
         try:
             print("[Runner] Updating all peer benchmark data from Live API...")
@@ -164,6 +163,17 @@ def run_analysis(ticker: str):
 
         import template_securities
         success = template_securities.run_securities_analysis(ticker, raw_data)
+    elif is_kcn:
+        print(f"\n[Step 2] Ticker {ticker} classified as KCN (BĐS Khu Công nghiệp). Directly running template_kcn.py...")
+        try:
+            print("[Runner] Updating peer benchmark (KCN) data from Live API...")
+            import update_peer_benchmark_kcn
+            update_peer_benchmark_kcn.main()
+        except Exception as e:
+            print(f"[WARN] Failed to update KCN peer benchmark dynamically: {e}")
+
+        import template_kcn
+        success = template_kcn.run_kcn_analysis(ticker, raw_data)
     else:
         # 1. Try to generate specialized builder via Gemini if key is present and builder doesn't exist yet
         if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):

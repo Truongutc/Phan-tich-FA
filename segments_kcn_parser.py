@@ -191,6 +191,23 @@ def run_parse_and_merge(ticker, period_key):
     is_q = "Q" in period_key
     curr_vals, prior_vals = find_segment_values(ticker, tables, period_key=period_key)
     
+    # Xác định năm của kỳ báo cáo này
+    try:
+        if is_q:
+            report_year = int(period_key[:4])
+        else:
+            report_year = int(period_key.split("(")[0])
+    except Exception:
+        report_year = 2026
+
+    # Nếu là năm nay (report_year >= 2026), chỉ giữ lại dữ liệu năm nay (curr_vals), bỏ qua kỳ so sánh để tránh trùng lặp chéo
+    from datetime import datetime
+    current_active_year = datetime.now().year # 2026
+    
+    if report_year >= current_active_year:
+        print(f"[Parser] Phát hiện BCTC {period_key} thuộc năm hiện tại ({report_year}). Bỏ qua trích xuất cột so sánh (prior period).")
+        prior_vals = {}
+
     if not curr_vals:
         print(f"[Parser] [WARN] Không trích xuất được mảng nào cho {period_key}.")
         return False
