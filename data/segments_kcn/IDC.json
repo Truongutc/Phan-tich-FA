@@ -47,7 +47,26 @@
       "driver": "other"
     }
   },
-  "yearly": {},
+  "yearly": {
+    "2024(CN)": {
+      "Khac": {
+        "revenue": 6764.29,
+        "cogs": 0.0,
+        "source": "Trích xuất tự động từ BCTC md (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2023(CN)": {
+      "Khac": {
+        "revenue": 655.63,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    }
+  },
   "quarterly": {
     "2026Q1": {
       "DienNang": {
