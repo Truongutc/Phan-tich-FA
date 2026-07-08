@@ -79,16 +79,21 @@ def load_ticker_json(ticker: str) -> dict:
 
 
 def find_latest_output_files(ticker: str):
-    """Scan Bao cao/<TICKER>/ for the latest Excel and PDF files."""
+    """Scan Bao cao/<TICKER>/ for the latest Excel and PDF files based on mtime."""
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", ticker)
     if not os.path.isdir(out_dir):
         return None, None
 
-    xlsx_files = sorted([f for f in os.listdir(out_dir) if f.endswith(".xlsx")])
-    pdf_files  = sorted([f for f in os.listdir(out_dir) if f.endswith(".pdf")])
+    xlsx_files = [os.path.join(out_dir, f) for f in os.listdir(out_dir) if f.endswith(".xlsx")]
+    pdf_files  = [os.path.join(out_dir, f) for f in os.listdir(out_dir) if f.endswith(".pdf")]
 
-    excel_path = os.path.join(out_dir, xlsx_files[-1]) if xlsx_files else None
-    pdf_path   = os.path.join(out_dir, pdf_files[-1])  if pdf_files  else None
+    if xlsx_files:
+        xlsx_files.sort(key=os.path.getmtime)
+    if pdf_files:
+        pdf_files.sort(key=os.path.getmtime)
+
+    excel_path = xlsx_files[-1] if xlsx_files else None
+    pdf_path   = pdf_files[-1]  if pdf_files else None
     return excel_path, pdf_path
 
 

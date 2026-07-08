@@ -399,26 +399,62 @@ def check_segment_consistency(store, is_recs_years, is_recs_quarters):
     return result, max_gap
 
 
-def build_segment_history(store):
+def build_segment_history(store, is_recs_y, is_recs_q):
     """Trả về (seg_names theo order, seg_labels, seg_colors, yearly{seg:{year:{rev,cogs,gp,gm}}},
-    quarterly{seg:{qkey:{...}}}) từ kho dữ liệu mảng."""
+    quarterly{seg:{qkey:{...}}}) từ kho dữ liệu mảng, có tự động sửa tỷ lệ đơn vị nếu vượt quá tổng DT."""
     seg_defs = store.get("segments", {})
     seg_names = sorted(seg_defs.keys(), key=lambda s: seg_defs[s].get("order", 99))
     seg_labels = {s: seg_defs[s].get("label", s) for s in seg_names}
     seg_colors = {s: seg_defs[s].get("color", "#94a3b8") for s in seg_names}
 
+    # Xây dựng bản đồ tổng doanh thu từ Vietcap để đối chiếu đơn vị
+    rev_map = {}
+    for r in is_recs_y:
+        y = r.get("yearReport")
+        val = r.get("isa3")  # Doanh thu thuần (tỷ VND)
+        if y and val:
+            rev_map[f"{y}(CN)"] = val
+    for r in is_recs_q:
+        y = r.get("yearReport")
+        q = r.get("lengthReport")
+        val = r.get("isa3")  # Doanh thu thuần (tỷ VND)
+        if y and q and val:
+            rev_map[f"{y}Q{q}"] = val
+
     yearly = {s: {} for s in seg_names}
     for year_str, seg_data in store.get("yearly", {}).items():
+        total_ref = rev_map.get(year_str)
         for seg, v in seg_data.items():
             rev, cogs = v.get("revenue"), v.get("cogs")
+            if rev is not None and total_ref is not None and rev > total_ref * 1.05:
+                # Tự động sửa lỗi đơn vị (chia 1000)
+                while rev > total_ref * 1.05:
+                    rev /= 1000.0
+                    if cogs is not None:
+                        cogs /= 1000.0
+                rev = round(rev, 2)
+                if cogs is not None:
+                    cogs = round(cogs, 2)
+
             gp = (rev - cogs) if (rev is not None and cogs is not None) else None
             gm = (gp / rev) if (gp is not None and rev) else None
             yearly.setdefault(seg, {})[year_str] = {"revenue": rev, "cogs": cogs, "grossProfit": gp, "grossMargin": gm}
 
     quarterly = {s: {} for s in seg_names}
     for qkey, seg_data in store.get("quarterly", {}).items():
+        total_ref = rev_map.get(qkey)
         for seg, v in seg_data.items():
             rev, cogs = v.get("revenue"), v.get("cogs")
+            if rev is not None and total_ref is not None and rev > total_ref * 1.05:
+                # Tự động sửa lỗi đơn vị (chia 1000)
+                while rev > total_ref * 1.05:
+                    rev /= 1000.0
+                    if cogs is not None:
+                        cogs /= 1000.0
+                rev = round(rev, 2)
+                if cogs is not None:
+                    cogs = round(cogs, 2)
+
             gp = (rev - cogs) if (rev is not None and cogs is not None) else None
             gm = (gp / rev) if (gp is not None and rev) else None
             quarterly.setdefault(seg, {})[qkey] = {"revenue": rev, "cogs": cogs, "grossProfit": gp, "grossMargin": gm}
@@ -727,6 +763,32 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     # ── Sheet 2: Assumptions ─────────────────────────────────────────
     ws2 = wb.create_sheet("02_Assumptions")
     header_row(ws2, 1, ["Tham số giả định", "Giá trị", "Ghi chú"], [32, 14, 35])
+    
+    # Ghi bảng lịch sử P/E & P/B vào các cột E, F, G để làm nguồn dữ liệu cho công thức
+    ws2.cell(row=1, column=5, value="Năm").font = HEADER_FONT
+    ws2.cell(row=1, column=6, value="P/E lịch sử").font = HEADER_FONT
+    ws2.cell(row=1, column=7, value="P/B lịch sử").font = HEADER_FONT
+    
+    eps_vals = val.get("eps_vals", [])
+    bvps_vals = val.get("bvps_vals", [])
+    pe_hist_map = {y: current_price / eps for y, eps in zip(hist_years, eps_vals) if eps and eps > 0}
+    pb_hist_map = {y: current_price / bvps for y, bvps in zip(hist_years, bvps_vals) if bvps and bvps > 0}
+    
+    for idx, y in enumerate(hist_years, start=2):
+        ws2.cell(row=idx, column=5, value=f"{y}A").font = DATA_FONT
+        
+        pe_v = pe_hist_map.get(y)
+        c_pe = ws2.cell(row=idx, column=6, value=pe_v)
+        c_pe.font = DATA_FONT
+        if pe_v is not None:
+            c_pe.number_format = "0.00"
+            
+        pb_v = pb_hist_map.get(y)
+        c_pb = ws2.cell(row=idx, column=7, value=pb_v)
+        c_pb.font = DATA_FONT
+        if pb_v is not None:
+            c_pb.number_format = "0.00"
+
     ass_rows = [
         ("Rf (lãi TPCP 10Y, %/năm)",     val["rf"],        "Tự động fetch từ investing.com/WGB"),
         ("Beta (CAPM)",                   val["beta"],      beta_src),
@@ -737,10 +799,10 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         ("Payout ratio trung bình",        val["avg_payout"], "Trung bình lịch sử cfa32/isa22"),
         ("CAGR EPS dự phóng",             val["eps_cagr"],  "CAGR 3 năm lịch sử, kẹp [-10%, +20%]"),
         ("ROE ước tính",                  val["roe_est"],   "EPS_last / BVPS_last"),
-        ("P/E mục tiêu",                  val["target_pe"], "Median P/E lịch sử, kẹp [8, 25]"),
-        ("P/B mục tiêu",                  val["target_pb"], "Median P/B lịch sử, kẹp [0.6, 4]"),
+        ("P/E mục tiêu",                  f"=MAX(8, MIN(25, MEDIAN(F2:F{len(hist_years)+1})))", "Median P/E lịch sử, kẹp [8, 25]"),
+        ("P/B mục tiêu",                  f"=MAX(0.6, MIN(4, MEDIAN(G2:G{len(hist_years)+1})))", "Median P/B lịch sử, kẹp [0.6, 4]"),
         ("Số năm RI dự phóng (n)",        3,                "PV RI 3 năm + terminal value"),
-        ("g terminal RI",                 max(0.0, min(0.04, val["eps_cagr"]*0.5)), "= min(CAGR_EPS × 0.5, 4%)"),
+        ("g terminal RI",                 max(0.0, min(0.04, val["eps_cagr"]*0.5)), "Formula: min(CAGR_EPS × 0.5, 4%)"),
         ("Số CP lưu hành",                shares,           ""),
         ("Giá thị trường (VND)",          current_price,    "Giá cuối phiên gần nhất"),
     ]
@@ -749,10 +811,13 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         c = ws2.cell(row=i, column=2, value=v)
         c.fill = ASSUMP_FILL
         c.font = DATA_FONT
-        if isinstance(v, float) and 0 < v < 1:
+        if isinstance(v, float) and 0 < v < 1 and "Beta" not in lbl:
             c.number_format = FMT_PCT
         elif isinstance(v, float):
             c.number_format = "0.00"
+        elif str(v).startswith("="):
+            # Formula string
+            pass
         else:
             c.number_format = "#,##0"
         ws2.cell(row=i, column=3, value=note).font = ITALIC_FONT
@@ -804,14 +869,20 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     cogs_fc_list  = [round(r * (1 - gm_avg), 2) for r in rev_fc_list]
     gp_fc_list    = [round(r * gm_avg, 2) for r in rev_fc_list]
     npat_fc_list  = [round(r * nm_avg, 2) for r in rev_fc_list]
+    
+    # Dự phóng LNTT và LNST cổ đông mẹ
+    pbt_ratio = stats.mean([pbt_h[i] / gp_h[i] for i in range(len(gp_h)) if gp_h[i] > 0][-2:]) if (gp_h and len(gp_h) >= 2) else 0.20
+    pbt_fc_list = [round(gp * pbt_ratio, 2) for gp in gp_fc_list]
+    npat_p_ratio = stats.mean([npat_p_h[i] / npat_h[i] for i in range(len(npat_h)) if npat_h[i] > 0][-2:]) if (npat_h and len(npat_h) >= 2) else 0.85
+    npat_p_fc_list = [round(npat * npat_p_ratio, 2) for npat in npat_fc_list]
 
     pnl_rows = [
         ("Doanh thu thuần",          rev_h,    rev_fc_list,  True),
         ("Giá vốn hàng bán",         cogs_h,   cogs_fc_list, False),
         ("Lợi nhuận gộp",            gp_h,     gp_fc_list,   True),
-        ("Lợi nhuận trước thuế",     pbt_h,    [None]*n_fc,  False),
+        ("Lợi nhuận trước thuế",     pbt_h,    pbt_fc_list,  False),
         ("LNST (hợp nhất)",          npat_h,   npat_fc_list, False),
-        ("LNST cổ đông mẹ",          npat_p_h, [None]*n_fc,  True),
+        ("LNST cổ đông mẹ",          npat_p_h, npat_p_fc_list,  True),
     ]
     for ri, (label, hist_vals, fc_vals, bold) in enumerate(pnl_rows, start=2):
         row = [label] + [round(v, 2) if v else 0 for v in hist_vals] + [(round(v, 2) if v else 0) for v in fc_vals]
@@ -848,70 +919,107 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     # Lấy tất cả kỳ có dữ liệu (năm + quý, sắp xếp)
     all_yearly_keys  = sorted(set().union(*[yearly_seg[s].keys() for s in seg_names]))
     all_q_keys       = sorted(set().union(*[quarterly_seg[s].keys() for s in seg_names]))
-    seg_col_keys     = all_yearly_keys + [f"FC{y}" for y in fc_years]
 
     header_row(ws4, 1, ["Mảng kinh doanh"] + [f"{k}A" for k in all_yearly_keys] + [f"{y}E" for y in fc_years],
                [30] + [11] * (len(all_yearly_keys) + n_fc))
     for ri_s, seg in enumerate(seg_names, start=2):
-        row = [seg_labels.get(seg, seg)]
-        for yk in all_yearly_keys:
-            row.append(round(yearly_seg[seg].get(yk, {}).get("revenue") or 0, 2))
-        # FC: dùng seg_fc
-        # Sử dụng phương thức .get() an toàn tránh KeyError khi một mảng nào đó bị thiếu dữ liệu năm lịch sử
-        last_rev_seg = max([yearly_seg[seg].get(y, {}).get("revenue") or 0 for y in all_yearly_keys] or [0])
-        for step, fy in enumerate(fc_years, start=1):
-            g = seg_fc[seg].get("g") or 0.05
-            cap = seg_fc[seg].get("cap")
-            if cap is not None:
-                g = min(g, cap)
-            row.append(round(last_rev_seg * ((1 + g) ** step), 2))
-        ws4.append(row)
-        ws4.cell(row=ri_s, column=1).font = DATA_FONT
-        for ci in range(2, len(row) + 1):
-            c = ws4.cell(row=ri_s, column=ci)
+        ws4.cell(row=ri_s, column=1, value=seg_labels.get(seg, seg)).font = DATA_FONT
+        
+        # Historical
+        for ci, yk in enumerate(all_yearly_keys, start=2):
+            rev_val = round(yearly_seg[seg].get(yk, {}).get("revenue") or 0, 2)
+            c = ws4.cell(row=ri_s, column=ci, value=rev_val)
             c.number_format = FMT_NUM
-            if ci > len(all_yearly_keys) + 1:
-                c.fill = ASSUMP_FILL
+            c.font = DATA_FONT
 
-    # Tổng
-    ws4.append(["TỔNG DOANH THU"] + [
-        f"=SUM({get_column_letter(ci)}2:{get_column_letter(ci)}{len(seg_names)+1})"
-        for ci in range(2, len(all_yearly_keys) + n_fc + 2)
-    ])
-    total_row = ws4.max_row
-    for ci in range(1, len(all_yearly_keys) + n_fc + 2):
-        ws4.cell(row=total_row, column=ci).font = BOLD_FONT
-        ws4.cell(row=total_row, column=ci).fill = LINK_FILL
-        if ci > 1:
-            ws4.cell(row=total_row, column=ci).number_format = FMT_NUM
+        # Forecast formulas
+        hist_last_ci = 1 + len(all_yearly_keys)
+        g = seg_fc[seg].get("g") or 0.05
+        cap = seg_fc[seg].get("cap")
+        if cap is not None:
+            g = min(g, cap)
+            
+        for step, fy in enumerate(fc_years, start=1):
+            target_ci = hist_last_ci + step
+            prev_col = get_column_letter(target_ci - 1)
+            c = ws4.cell(row=ri_s, column=target_ci, value=f"={prev_col}{ri_s} * (1 + {g:.4f})")
+            c.number_format = FMT_NUM
+            c.font = DATA_FONT
+            c.fill = ASSUMP_FILL
+
+    # Tổng DT
+    ws4.cell(row=len(seg_names)+2, column=1, value="TỔNG DOANH THU").font = BOLD_FONT
+    ws4.cell(row=len(seg_names)+2, column=1).fill = LINK_FILL
+    for ci in range(2, len(all_yearly_keys) + n_fc + 2):
+        col = get_column_letter(ci)
+        c = ws4.cell(row=len(seg_names)+2, column=ci, value=f"=SUM({col}2:{col}{len(seg_names)+1})")
+        c.font = BOLD_FONT
+        c.fill = LINK_FILL
+        c.number_format = FMT_NUM
     _ws_freeze(ws4, "B2")
 
-    # ── Sheet 5: Segments — Biên lợi nhuận gộp ───────────────────────
-    ws5 = wb.create_sheet("05_Segments_GM")
-    header_row(ws5, 1, ["Mảng kinh doanh (Biên LNG %)"] + [f"{k}A" for k in all_yearly_keys] + [f"{y}E" for y in fc_years],
+    # ── Sheet 5: Segments — Giá vốn theo mảng ────────────────────────
+    ws5 = wb.create_sheet("05_Segments_GV")
+    header_row(ws5, 1, ["Mảng kinh doanh (Giá vốn)"] + [f"{k}A" for k in all_yearly_keys] + [f"{y}E" for y in fc_years],
                [30] + [11] * (len(all_yearly_keys) + n_fc))
     for ri_s, seg in enumerate(seg_names, start=2):
-        row = [seg_labels.get(seg, seg)]
-        for yk in all_yearly_keys:
-            gm = yearly_seg[seg].get(yk, {}).get("grossMargin")
-            row.append(round(gm, 4) if gm is not None else "")
-        for _ in fc_years:
-            gm_fc = seg_fc[seg].get("gm_fc")
-            row.append(round(gm_fc, 4) if gm_fc is not None else "")
-        ws5.append(row)
-        ws5.cell(row=ri_s, column=1).font = DATA_FONT
-        for ci in range(2, len(row) + 1):
-            c = ws5.cell(row=ri_s, column=ci)
-            if isinstance(c.value, float):
-                c.number_format = FMT_PCT
-            if ci > len(all_yearly_keys) + 1:
-                c.fill = ASSUMP_FILL
+        ws5.cell(row=ri_s, column=1, value=seg_labels.get(seg, seg)).font = DATA_FONT
+        
+        # Historical
+        for ci, yk in enumerate(all_yearly_keys, start=2):
+            cogs_val = round(yearly_seg[seg].get(yk, {}).get("cogs") or 0, 2)
+            c = ws5.cell(row=ri_s, column=ci, value=cogs_val)
+            c.number_format = FMT_NUM
+            c.font = DATA_FONT
+            
+        # Forecast formula
+        for step, fy in enumerate(fc_years, start=1):
+            target_ci = hist_last_ci + step
+            col = get_column_letter(target_ci)
+            c = ws5.cell(row=ri_s, column=target_ci, value=f"='04_Segments_DT'!{col}{ri_s} * (1 - '06_Segments_GM'!{col}{ri_s})")
+            c.number_format = FMT_NUM
+            c.font = DATA_FONT
+            c.fill = ASSUMP_FILL
+            
+    # Tổng GV
+    ws5.cell(row=len(seg_names)+2, column=1, value="TỔNG GIÁ VỐN").font = BOLD_FONT
+    ws5.cell(row=len(seg_names)+2, column=1).fill = LINK_FILL
+    for ci in range(2, len(all_yearly_keys) + n_fc + 2):
+        col = get_column_letter(ci)
+        c = ws5.cell(row=len(seg_names)+2, column=ci, value=f"=SUM({col}2:{col}{len(seg_names)+1})")
+        c.font = BOLD_FONT
+        c.fill = LINK_FILL
+        c.number_format = FMT_NUM
     _ws_freeze(ws5, "B2")
 
-    # ── Sheet 6: Balance Sheet ────────────────────────────────────────
-    ws6 = wb.create_sheet("06_BalanceSheet")
+    # ── Sheet 6: Segments — Biên lợi nhuận gộp ───────────────────────
+    ws6 = wb.create_sheet("06_Segments_GM")
+    header_row(ws6, 1, ["Mảng kinh doanh (Biên LNG %)"] + [f"{k}A" for k in all_yearly_keys] + [f"{y}E" for y in fc_years],
+               [30] + [11] * (len(all_yearly_keys) + n_fc))
+    for ri_s, seg in enumerate(seg_names, start=2):
+        ws6.cell(row=ri_s, column=1, value=seg_labels.get(seg, seg)).font = DATA_FONT
+        
+        # Historical formula
+        for ci, yk in enumerate(all_yearly_keys, start=2):
+            col = get_column_letter(ci)
+            c = ws6.cell(row=ri_s, column=ci, value=f"=IF('04_Segments_DT'!{col}{ri_s}=0, 0, ('04_Segments_DT'!{col}{ri_s} - '05_Segments_GV'!{col}{ri_s}) / '04_Segments_DT'!{col}{ri_s})")
+            c.number_format = FMT_PCT
+            c.font = DATA_FONT
+            
+        # Forecast target GM
+        for step, fy in enumerate(fc_years, start=1):
+            target_ci = hist_last_ci + step
+            gm_fc = seg_fc[seg].get("gm_fc") or 0.20
+            c = ws6.cell(row=ri_s, column=target_ci, value=round(gm_fc, 4))
+            c.number_format = FMT_PCT
+            c.font = DATA_FONT
+            c.fill = ASSUMP_FILL
+    _ws_freeze(ws6, "B2")
+
+    # ── Sheet 7: Balance Sheet ────────────────────────────────────────
+    ws7 = wb.create_sheet("07_BalanceSheet")
     bs_col_labels = ["Chỉ tiêu BS (tỷ VND)"] + [f"{y}A" for y in hist_years]
-    header_row(ws6, 1, bs_col_labels, [32] + [12] * n_hist)
+    header_row(ws7, 1, bs_col_labels, [32] + [12] * n_hist)
     bs_items = [
         ("Tiền & tương đương", "cash"),
         ("Tổng tài sản", "total_assets"),
@@ -924,10 +1032,10 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     ]
     for ri_b, (label, fkey) in enumerate(bs_items, start=2):
         row = [label] + [round(_get_yr(bs_recs_y, y, BS_GEN[fkey]), 2) for y in hist_years]
-        ws6.append(row)
-        ws6.cell(row=ri_b, column=1).font = DATA_FONT
+        ws7.append(row)
+        ws7.cell(row=ri_b, column=1).font = DATA_FONT
         for ci in range(2, n_hist + 2):
-            ws6.cell(row=ri_b, column=ci).number_format = FMT_NUM
+            ws7.cell(row=ri_b, column=ci).number_format = FMT_NUM
 
     # VCSH mẹ = bsa78 - bsa210 (cho BVPS/RI)
     vcsh_parent_row = ["VCSH cổ đông mẹ (= VCSH − NCI)"]
@@ -935,17 +1043,17 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         eq_total = _get_yr(bs_recs_y, y, BS_GEN["equity_total"])
         nci_val  = _get_yr(bs_recs_y, y, BS_GEN["nci"])
         vcsh_parent_row.append(round(eq_total - nci_val, 2))
-    ws6.append(vcsh_parent_row)
-    last_r = ws6.max_row
-    ws6.cell(last_r, 1).font = BOLD_FONT
-    ws6.cell(last_r, 1).fill = P_FILL
+    ws7.append(vcsh_parent_row)
+    last_r = ws7.max_row
+    ws7.cell(last_r, 1).font = BOLD_FONT
+    ws7.cell(last_r, 1).fill = P_FILL
     for ci in range(2, n_hist + 2):
-        ws6.cell(last_r, ci).number_format = FMT_NUM
-        ws6.cell(last_r, ci).font = BOLD_FONT
-        ws6.cell(last_r, ci).fill = P_FILL
+        ws7.cell(last_r, ci).number_format = FMT_NUM
+        ws7.cell(last_r, ci).font = BOLD_FONT
+        ws7.cell(last_r, ci).fill = P_FILL
 
     # BVPS, EPS theo năm
-    ws6.append([])
+    ws7.append([])
     bvps_row = ["BVPS mẹ (VND/cp)"]
     eps_row  = ["EPS cơ bản (VND/cp)"]
     payout_row = ["Payout ratio lịch sử"]
@@ -954,17 +1062,17 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         eps_row.append(round(_eps_parent(is_recs_y, y) or 0, 0))
         payout_row.append(round(_payout_ratio(cf_recs_y, is_recs_y, y), 4))
     for row_data, fmt in [(bvps_row, FMT_PRICE), (eps_row, FMT_PRICE), (payout_row, FMT_PCT)]:
-        ws6.append(row_data)
-        r = ws6.max_row
-        ws6.cell(r, 1).font = DATA_FONT
+        ws7.append(row_data)
+        r = ws7.max_row
+        ws7.cell(r, 1).font = DATA_FONT
         for ci in range(2, n_hist + 2):
-            ws6.cell(r, ci).number_format = fmt
-    _ws_freeze(ws6, "B2")
-    _set_col_widths(ws6, [32] + [12] * n_hist)
+            ws7.cell(r, ci).number_format = fmt
+    _ws_freeze(ws7, "B2")
+    _set_col_widths(ws7, [32] + [12] * n_hist)
 
-    # ── Sheet 7: Định giá ─────────────────────────────────────────────
-    ws7 = wb.create_sheet("07_Valuation")
-    header_row(ws7, 1, ["Định giá KCN (40%P/E + 40%P/B + 20%RI)", "Giá trị", "Ghi chú"], [38, 16, 40])
+    # ── Sheet 8: Định giá ─────────────────────────────────────────────
+    ws8 = wb.create_sheet("08_Valuation")
+    header_row(ws8, 1, ["Định giá KCN (40%P/E + 40%P/B + 20%RI)", "Giá trị", "Ghi chú"], [38, 16, 40])
     val_items = [
         ("─ COE & CAPM ─",          "",     ""),
         ("Rf (lãi suất phi rủi ro)", f"{val['rf']*100:.2f}%", "TPCP 10Y VN"),
@@ -972,21 +1080,21 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         ("ERP",                      "5.50%",                  "Phần bù rủi ro TTCK VN"),
         ("COE = Rf + β × ERP",       f"{val['coe']*100:.2f}%", "Chi phí vốn chủ sở hữu"),
         ("─ P/E ─",                  "",     ""),
-        ("EPS forward 1Y (VND)",     round(val["eps_fc1"]),    f"= EPS_last × (1 + CAGR EPS)"),
-        ("P/E mục tiêu",             val["target_pe"],         "Median P/E lịch sử, kẹp [8,25]"),
-        ("Giá hợp lý P/E",           val["fair_pe"],           "= P/E × EPS_fc1"),
+        ("EPS forward 1Y (VND)",     round(val["eps_fc1"]),    "Formula: EPS_last × (1 + CAGR EPS)"),
+        ("P/E mục tiêu",             "=02_Assumptions!B11",    "Median P/E lịch sử, kẹp [8,25]"),
+        ("Giá hợp lý P/E",           val["fair_pe"],           "Formula: P/E × EPS_fc1"),
         ("─ P/B ─",                  "",     ""),
         ("BVPS forward 1Y (VND)",    round(val["bvps_fc1"]),   "Roll-forward trừ cổ tức"),
-        ("P/B mục tiêu",             val["target_pb"],         "Median P/B lịch sử, kẹp [0.6,4]"),
-        ("Giá hợp lý P/B",           val["fair_pb"],           "= P/B × BVPS_fc1"),
+        ("P/B mục tiêu",             "=02_Assumptions!B12",    "Median P/B lịch sử, kẹp [0.6,4]"),
+        ("Giá hợp lý P/B",           val["fair_pb"],           "Formula: P/B × BVPS_fc1"),
         ("─ Residual Income ─",      "",     ""),
         ("BVPS hiện tại (VND)",      round(val["bvps_last"]),  "bsa78 − bsa210 / shares"),
         ("CAGR EPS",                 val["eps_cagr"],          "Kẹp [−10%, +20%]"),
         ("RI Năm 1 (VND)",           val["ri_list"][0] if val["ri_list"] else 0, "PV EPS1 − COE×BVPS0"),
         ("RI Năm 2 (VND)",           val["ri_list"][1] if len(val["ri_list"]) > 1 else 0, "PV EPS2 − COE×BVPS1"),
         ("RI Năm 3 (VND)",           val["ri_list"][2] if len(val["ri_list"]) > 2 else 0, "PV EPS3 − COE×BVPS2"),
-        ("RI Terminal (PV, VND)",    val["ri_terminal_pv"],    "TV/(COE−g)"),
-        ("Giá hợp lý RI (VND)",      val["fair_ri"],           "BVPS + ΣRI_PV + Terminal_PV"),
+        ("RI Terminal (PV, VND)",    val["ri_terminal_pv"],    "Formula: TV/(COE-g)"),
+        ("Giá hợp lý RI (VND)",      val["fair_ri"],           "Formula: BVPS + ΣRI_PV + Terminal_PV"),
         ("─ KẾT QUẢ ─",             "",     ""),
         ("Giá thị trường (VND)",     current_price,            ""),
         ("Giá mục tiêu (40+40+20)",  val["fair_blend"],        "Tổng hợp 3 phương pháp"),
@@ -994,16 +1102,16 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     ]
     for ri_v, (label, value, note) in enumerate(val_items, start=2):
         bold = label.startswith("─") or label in ("Giá mục tiêu (40+40+20)", "Upside / Downside")
-        ws7.cell(row=ri_v, column=1, value=label).font = BOLD_FONT if bold else DATA_FONT
-        c = ws7.cell(row=ri_v, column=2, value=value)
+        ws8.cell(row=ri_v, column=1, value=label).font = BOLD_FONT if bold else DATA_FONT
+        c = ws8.cell(row=ri_v, column=2, value=value)
         c.font = BOLD_FONT if bold else DATA_FONT
         if label.startswith("─"):
             c.fill = HEADER_FILL
-            ws7.cell(ri_v, 1).fill = HEADER_FILL
-            ws7.cell(ri_v, 1).font = Font(name=FONT_NAME, size=10, bold=True, color="FFFFFF")
+            ws8.cell(ri_v, 1).fill = HEADER_FILL
+            ws8.cell(ri_v, 1).font = Font(name=FONT_NAME, size=10, bold=True, color="FFFFFF")
         elif label in ("Giá mục tiêu (40+40+20)", "Upside / Downside"):
             c.fill = P_FILL
-            ws7.cell(ri_v, 1).fill = P_FILL
+            ws8.cell(ri_v, 1).fill = P_FILL
         if isinstance(value, (int, float)):
             if "%" in label or label in ("COE = Rf + β × ERP", "CAGR EPS"):
                 c.number_format = FMT_PCT
@@ -1011,37 +1119,69 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
                 c.number_format = "0.00"
             else:
                 c.number_format = FMT_PRICE
-        ws7.cell(row=ri_v, column=3, value=note).font = ITALIC_FONT
-    _set_col_widths(ws7, [38, 16, 45])
+        elif str(value).startswith("="):
+            # Formula string
+            pass
+        ws8.cell(row=ri_v, column=3, value=note).font = ITALIC_FONT
+    _set_col_widths(ws8, [38, 16, 45])
 
-    # ── Sheet 8: Quarterly ───────────────────────────────────────────
-    ws8 = wb.create_sheet("08_Quarterly_Segments")
+    # ── Sheet 9: Quarterly — Doanh thu ──────────────────────────────
+    ws9 = wb.create_sheet("09_Quarterly_DT")
     all_qkeys = sorted(set().union(*[quarterly_seg[s].keys() for s in seg_names]))
-    header_row(ws8, 1, ["Mảng / Quý"] + all_qkeys + ["DT", "GV", "LNG", "Biên LNG"],
-               [28] + [12] * len(all_qkeys) + [11, 11, 11, 11])
+    header_row(ws9, 1, ["Mảng / Quý"] + all_qkeys + ["Trung bình"],
+               [28] + [12] * len(all_qkeys) + [14])
     for ri_q, seg in enumerate(seg_names, start=2):
-        row = [seg_labels.get(seg, seg)]
-        for qk in all_qkeys:
+        ws9.cell(row=ri_q, column=1, value=seg_labels.get(seg, seg)).font = DATA_FONT
+        for ci, qk in enumerate(all_qkeys, start=2):
             rev_q = quarterly_seg[seg].get(qk, {}).get("revenue")
-            row.append(round(rev_q, 2) if rev_q is not None else "")
-        # Summary cols — averages
-        rev_all = [quarterly_seg[seg][qk].get("revenue") or 0 for qk in all_qkeys if quarterly_seg[seg].get(qk)]
-        cogs_all = [quarterly_seg[seg][qk].get("cogs") or 0 for qk in all_qkeys if quarterly_seg[seg].get(qk) and quarterly_seg[seg][qk].get("cogs") is not None]
-        gp_all   = [r - c for r, c in zip(rev_all, cogs_all)]
-        avg_rev  = round(stats.mean(rev_all), 2) if rev_all else 0
-        avg_cogs = round(stats.mean(cogs_all), 2) if cogs_all else 0
-        avg_gp   = round(stats.mean(gp_all), 2) if gp_all else 0
-        avg_gm   = round(avg_gp / avg_rev, 4) if avg_rev else 0
-        row += [avg_rev, avg_cogs, avg_gp, avg_gm]
-        ws8.append(row)
-        ws8.cell(ri_q, 1).font = DATA_FONT
-        for ci in range(2, len(all_qkeys) + 2):
-            ws8.cell(ri_q, ci).number_format = FMT_NUM
-        # Summary cols
-        for ci_off, fmt in enumerate([FMT_NUM, FMT_NUM, FMT_NUM, FMT_PCT], start=len(all_qkeys) + 2):
-            ws8.cell(ri_q, ci_off).number_format = fmt
-            ws8.cell(ri_q, ci_off).fill = LINK_FILL
-    _ws_freeze(ws8, "B2")
+            c = ws9.cell(row=ri_q, column=ci, value=round(rev_q, 2) if rev_q is not None else "")
+            c.number_format = FMT_NUM
+            c.font = DATA_FONT
+        # average formula
+        last_col = get_column_letter(len(all_qkeys) + 1)
+        avg_c = ws9.cell(row=ri_q, column=len(all_qkeys) + 2, value=f"=AVERAGE(B{ri_q}:{last_col}{ri_q})")
+        avg_c.number_format = FMT_NUM
+        avg_c.font = BOLD_FONT
+        avg_c.fill = LINK_FILL
+    _ws_freeze(ws9, "B2")
+
+    # ── Sheet 10: Quarterly — Giá vốn ───────────────────────────────
+    ws10 = wb.create_sheet("10_Quarterly_GV")
+    header_row(ws10, 1, ["Mảng / Quý"] + all_qkeys + ["Trung bình"],
+               [28] + [12] * len(all_qkeys) + [14])
+    for ri_q, seg in enumerate(seg_names, start=2):
+        ws10.cell(row=ri_q, column=1, value=seg_labels.get(seg, seg)).font = DATA_FONT
+        for ci, qk in enumerate(all_qkeys, start=2):
+            cogs_q = quarterly_seg[seg].get(qk, {}).get("cogs")
+            c = ws10.cell(row=ri_q, column=ci, value=round(cogs_q, 2) if cogs_q is not None else "")
+            c.number_format = FMT_NUM
+            c.font = DATA_FONT
+        # average formula
+        last_col = get_column_letter(len(all_qkeys) + 1)
+        avg_c = ws10.cell(row=ri_q, column=len(all_qkeys) + 2, value=f"=AVERAGE(B{ri_q}:{last_col}{ri_q})")
+        avg_c.number_format = FMT_NUM
+        avg_c.font = BOLD_FONT
+        avg_c.fill = LINK_FILL
+    _ws_freeze(ws10, "B2")
+
+    # ── Sheet 11: Quarterly — Biên lợi nhuận gộp ─────────────────────
+    ws11 = wb.create_sheet("11_Quarterly_GM")
+    header_row(ws11, 1, ["Mảng / Quý (Biên LNG %)"] + all_qkeys + ["Trung bình"],
+               [28] + [12] * len(all_qkeys) + [14])
+    for ri_q, seg in enumerate(seg_names, start=2):
+        ws11.cell(row=ri_q, column=1, value=seg_labels.get(seg, seg)).font = DATA_FONT
+        for ci, qk in enumerate(all_qkeys, start=2):
+            col = get_column_letter(ci)
+            c = ws11.cell(row=ri_q, column=ci, value=f"=IF('09_Quarterly_DT'!{col}{ri_q}=0, 0, ('09_Quarterly_DT'!{col}{ri_q} - '10_Quarterly_GV'!{col}{ri_q}) / '09_Quarterly_DT'!{col}{ri_q})")
+            c.number_format = FMT_PCT
+            c.font = DATA_FONT
+        # average formula
+        last_col = get_column_letter(len(all_qkeys) + 1)
+        avg_c = ws11.cell(row=ri_q, column=len(all_qkeys) + 2, value=f"=AVERAGE(B{ri_q}:{last_col}{ri_q})")
+        avg_c.number_format = FMT_PCT
+        avg_c.font = BOLD_FONT
+        avg_c.fill = LINK_FILL
+    _ws_freeze(ws11, "B2")
 
     return wb
 
@@ -1592,7 +1732,7 @@ def run_kcn_analysis(ticker, use_cache=True):
         pass
 
     store = load_segments_kcn(ticker)
-    seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store)
+    seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store, is_recs_y, is_recs_q)
 
     # Check consistency (log only, không block)
     check_segment_consistency(store, is_recs_y, is_recs_q)

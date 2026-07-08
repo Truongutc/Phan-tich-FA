@@ -576,53 +576,53 @@
     },
     "2024Q4": {
       "TienIchDienNuoc": {
-        "revenue": 1591.3,
+        "revenue": 1591.4,
         "cogs": 1476.9,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "HangHoa": {
         "revenue": 46.9,
-        "cogs": 40.6,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "cogs": 40.7,
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "DichVuKCNKhac": {
-        "revenue": 192.6,
-        "cogs": 102.7,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 192.5,
+        "cogs": 102.6,
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "ChoThueDat": {
-        "revenue": 158.7,
-        "cogs": 44.9,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 158.6,
+        "cogs": 44.8,
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "XayDung": {
         "revenue": 53.4,
         "cogs": 47.3,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "BDS": {
-        "revenue": 31.3,
+        "revenue": 31.4,
         "cogs": 12.6,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "Khac": {
-        "revenue": 71.6,
+        "revenue": 71.5,
         "cogs": 56.7,
-        "source": "Phân bổ quý từ BCTC năm 2024",
-        "sourceType": "manual",
-        "derived": false
+        "source": "Suy từ BCTC năm 2024 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       }
     },
     "2025Q2": {
@@ -729,53 +729,53 @@
     },
     "2025Q4": {
       "TienIchDienNuoc": {
-        "revenue": 1710.8,
-        "cogs": 1573.1,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 1634.3,
+        "cogs": 1507.7,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "HangHoa": {
-        "revenue": 50.7,
-        "cogs": 43.8,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 71.2,
+        "cogs": 60.9,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "DichVuKCNKhac": {
-        "revenue": 210.6,
-        "cogs": 109.3,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 250.0,
+        "cogs": 148.7,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "ChoThueDat": {
-        "revenue": 176.8,
-        "cogs": 49.5,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 215.9,
+        "cogs": 61.5,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "XayDung": {
-        "revenue": 59.8,
-        "cogs": 51.6,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 112.7,
+        "cogs": 97.3,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "BDS": {
-        "revenue": 36.4,
-        "cogs": 14.3,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 68.6,
+        "cogs": 26.9,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       },
       "Khac": {
-        "revenue": 79.3,
-        "cogs": 62.9,
-        "source": "Phân bổ quý từ BCTC năm 2025",
-        "sourceType": "manual",
-        "derived": false
+        "revenue": 86.6,
+        "cogs": 65.3,
+        "source": "Suy từ BCTC năm 2025 kiểm toán trừ Q1+Q2+Q3 (derive-q4)",
+        "sourceType": "derived",
+        "derived": true
       }
     }
   },
