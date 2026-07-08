@@ -4,33 +4,231 @@
   "unit": "ty_vnd",
   "lastUpdated": "2026-07-07",
   "segments": {
-    "DienNang":  {"label": "Kinh doanh điện",              "order": 1, "color": "#f59e0b", "driver": "power"},
-    "HaTangKCN": {"label": "Cho thuê đất & hạ tầng KCN",   "order": 2, "color": "#10b981", "driver": "leasing"},
-    "DichVuKCN": {"label": "Dịch vụ khu công nghiệp",       "order": 3, "color": "#3b82f6", "driver": "utilities"},
-    "BOT":       {"label": "Thu phí đường bộ (BOT)",       "order": 4, "color": "#8b5cf6", "driver": "bot"},
-    "XayDung":   {"label": "Hoạt động xây dựng",          "order": 5, "color": "#64748b", "driver": "construction"},
-    "BDS":       {"label": "Kinh doanh BĐS",              "order": 6, "color": "#ec4899", "driver": "realestate"},
-    "Khac":      {"label": "Sản phẩm & dịch vụ khác",      "order": 7, "color": "#9ca3af", "driver": "other"}
+    "DienNang": {
+      "label": "Kinh doanh điện",
+      "order": 1,
+      "color": "#f59e0b",
+      "driver": "power"
+    },
+    "HaTangKCN": {
+      "label": "Cho thuê đất & hạ tầng KCN",
+      "order": 2,
+      "color": "#10b981",
+      "driver": "leasing"
+    },
+    "DichVuKCN": {
+      "label": "Dịch vụ khu công nghiệp",
+      "order": 3,
+      "color": "#3b82f6",
+      "driver": "utilities"
+    },
+    "BOT": {
+      "label": "Thu phí đường bộ (BOT)",
+      "order": 4,
+      "color": "#8b5cf6",
+      "driver": "bot"
+    },
+    "XayDung": {
+      "label": "Hoạt động xây dựng",
+      "order": 5,
+      "color": "#64748b",
+      "driver": "construction"
+    },
+    "BDS": {
+      "label": "Kinh doanh BĐS",
+      "order": 6,
+      "color": "#ec4899",
+      "driver": "realestate"
+    },
+    "Khac": {
+      "label": "Sản phẩm & dịch vụ khác",
+      "order": 7,
+      "color": "#9ca3af",
+      "driver": "other"
+    }
   },
-  "yearly": {},
+  "yearly": {
+    "2024(CN)": {
+      "Khac": {
+        "revenue": 34.1,
+        "cogs": 27.28,
+        "source": "Trích xuất tự động từ BCTC md (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2023(CN)": {
+      "Khac": {
+        "revenue": 34.1,
+        "cogs": 27.28,
+        "source": "Trích xuất cột so sánh từ BCTC md (2024(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    }
+  },
   "quarterly": {
     "2026Q1": {
-      "DienNang":  {"revenue": 883.8, "cogs": 802.2, "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "HaTangKCN": {"revenue": 268.9, "cogs": 93.7,  "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33 (gộp ghi nhận một lần + phân bổ)", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "DichVuKCN": {"revenue": 136.9, "cogs": 73.6,  "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "BOT":       {"revenue": 120.3, "cogs": 68.2,  "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "XayDung":   {"revenue": 31.0,  "cogs": 9.0,   "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "BDS":       {"revenue": 17.7,  "cogs": 26.8,  "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "Khac":      {"revenue": 27.1,  "cogs": 23.3,  "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false}
+      "DienNang": {
+        "revenue": 883.8,
+        "cogs": 802.2,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "HaTangKCN": {
+        "revenue": 268.9,
+        "cogs": 93.7,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33 (gộp ghi nhận một lần + phân bổ)",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "DichVuKCN": {
+        "revenue": 136.9,
+        "cogs": 73.6,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 120.3,
+        "cogs": 68.2,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 31.0,
+        "cogs": 9.0,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 17.7,
+        "cogs": 26.8,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 27.1,
+        "cogs": 23.3,
+        "source": "BCTC hợp nhất Q1/2026 IDC, TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      }
     },
     "2025Q1": {
-      "DienNang":  {"revenue": 815.7, "cogs": 745.2, "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "HaTangKCN": {"revenue": 467.5, "cogs": 200.7, "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "DichVuKCN": {"revenue": 121.2, "cogs": 61.7,  "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "BOT":       {"revenue": 112.7, "cogs": 67.0,  "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "XayDung":   {"revenue": 37.8,  "cogs": 83.5,  "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "BDS":       {"revenue": 182.2, "cogs": 33.8,  "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false},
-      "Khac":      {"revenue": 56.5,  "cogs": 50.2,  "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33", "sourceType": "bctc_pdf_user", "asOf": "2026-04-30", "derived": false}
+      "DienNang": {
+        "revenue": 815.7,
+        "cogs": 745.2,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "HaTangKCN": {
+        "revenue": 467.5,
+        "cogs": 200.7,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "DichVuKCN": {
+        "revenue": 121.2,
+        "cogs": 61.7,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 112.7,
+        "cogs": 67.0,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 37.8,
+        "cogs": 83.5,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 182.2,
+        "cogs": 33.8,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 56.5,
+        "cogs": 50.2,
+        "source": "BCTC hợp nhất Q1/2025 IDC (cột đối chiếu trong BCTC Q1/2026), TM 31.1 + TM 33",
+        "sourceType": "bctc_pdf_user",
+        "asOf": "2026-04-30",
+        "derived": false
+      }
+    },
+    "2025Q3": {
+      "BOT": {
+        "revenue": 989.99,
+        "cogs": 791.99,
+        "source": "Trích xuất tự động từ BCTC md (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất tự động từ BCTC md (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất tự động từ BCTC md (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2024Q3": {
+      "BOT": {
+        "revenue": 1320.0,
+        "cogs": 1056.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "Khac": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2025Q3)",
+        "sourceType": "auto",
+        "derived": false
+      }
     }
   },
   "notes": [
