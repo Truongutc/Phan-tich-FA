@@ -38,16 +38,16 @@
     ]
   },
   "valuation": {
-    "fair_pe": 58818,
-    "fair_pb": 77890,
-    "fair_ri": 61044,
-    "fair_blend": 66892,
-    "upside": 0.3446,
-    "target_pe": 10.6,
-    "target_pb": 1.0,
-    "coe": 0.0949,
+    "fair_pe": 65365,
+    "fair_pb": 262201,
+    "fair_ri": 42119,
+    "fair_blend": 139451,
+    "upside": 1.803,
+    "target_pe": 11.78,
+    "target_pb": 3.35,
+    "coe": 0.1307,
     "rf": 0.045,
-    "beta": 0.907,
+    "beta": 0.938,
     "eps_last": 4972.0,
     "bvps_last": 74624.0,
     "avg_payout": 0.3431
@@ -330,10 +330,10 @@
           "grossMargin": 0.07189090680575622
         },
         "2024Q4": {
-          "revenue": 1591.3,
+          "revenue": 1591.4,
           "cogs": 1476.9,
-          "grossProfit": 114.39999999999986,
-          "grossMargin": 0.07189090680575622
+          "grossProfit": 114.5,
+          "grossMargin": 0.07194922709563906
         },
         "2025Q1": {
           "revenue": 1589.9,
@@ -354,10 +354,10 @@
           "grossMargin": 0.08048866027589435
         },
         "2025Q4": {
-          "revenue": 1710.8,
-          "cogs": 1573.1,
-          "grossProfit": 137.70000000000005,
-          "grossMargin": 0.08048866027589435
+          "revenue": 1634.3,
+          "cogs": 1507.7,
+          "grossProfit": 126.59999999999991,
+          "grossMargin": 0.0774643578290399
         },
         "2026Q1": {
           "revenue": 1687.3,
@@ -391,9 +391,9 @@
         },
         "2024Q4": {
           "revenue": 46.9,
-          "cogs": 40.6,
-          "grossProfit": 6.299999999999997,
-          "grossMargin": 0.13432835820895517
+          "cogs": 40.7,
+          "grossProfit": 6.199999999999996,
+          "grossMargin": 0.13219616204690823
         },
         "2025Q1": {
           "revenue": 24.3,
@@ -414,10 +414,10 @@
           "grossMargin": 0.13609467455621313
         },
         "2025Q4": {
-          "revenue": 50.7,
-          "cogs": 43.8,
-          "grossProfit": 6.900000000000006,
-          "grossMargin": 0.13609467455621313
+          "revenue": 71.2,
+          "cogs": 60.9,
+          "grossProfit": 10.300000000000004,
+          "grossMargin": 0.14466292134831465
         },
         "2026Q1": {
           "revenue": 40.8,
@@ -450,10 +450,10 @@
           "grossMargin": 0.46677050882658355
         },
         "2024Q4": {
-          "revenue": 192.6,
-          "cogs": 102.7,
-          "grossProfit": 89.89999999999999,
-          "grossMargin": 0.46677050882658355
+          "revenue": 192.5,
+          "cogs": 102.6,
+          "grossProfit": 89.9,
+          "grossMargin": 0.46701298701298705
         },
         "2025Q1": {
           "revenue": 146.9,
@@ -474,10 +474,10 @@
           "grossMargin": 0.48100664767331436
         },
         "2025Q4": {
-          "revenue": 210.6,
-          "cogs": 109.3,
-          "grossProfit": 101.3,
-          "grossMargin": 0.48100664767331436
+          "revenue": 250.0,
+          "cogs": 148.7,
+          "grossProfit": 101.30000000000001,
+          "grossMargin": 0.40520000000000006
         },
         "2026Q1": {
           "revenue": 206.1,
@@ -510,10 +510,10 @@
           "grossMargin": 0.7170762444864524
         },
         "2024Q4": {
-          "revenue": 158.7,
-          "cogs": 44.9,
-          "grossProfit": 113.79999999999998,
-          "grossMargin": 0.7170762444864524
+          "revenue": 158.6,
+          "cogs": 44.8,
+          "grossProfit": 113.8,
+          "grossMargin": 0.7175283732660782
         },
         "2025Q1": {
           "revenue": 117.3,
@@ -534,10 +534,10 @@
           "grossMargin": 0.7200226244343891
         },
         "2025Q4": {
-          "revenue": 176.8,
-          "cogs": 49.5,
-          "grossProfit": 127.30000000000001,
-          "grossMargin": 0.7200226244343891
+          "revenue": 215.9,
+          "cogs": 61.5,
+          "grossProfit": 154.4,
+          "grossMargin": 0.715145900880037
         },
         "2026Q1": {
           "revenue": 116.6,
@@ -594,10 +594,10 @@
           "grossMargin": 0.13712374581939793
         },
         "2025Q4": {
-          "revenue": 59.8,
-          "cogs": 51.6,
-          "grossProfit": 8.199999999999996,
-          "grossMargin": 0.13712374581939793
+          "revenue": 112.7,
+          "cogs": 97.3,
+          "grossProfit": 15.400000000000006,
+          "grossMargin": 0.1366459627329193
         },
         "2026Q1": {
           "revenue": 17.8,
@@ -630,10 +630,10 @@
           "grossMargin": 0.5974440894568691
         },
         "2024Q4": {
-          "revenue": 31.3,
+          "revenue": 31.4,
           "cogs": 12.6,
-          "grossProfit": 18.700000000000003,
-          "grossMargin": 0.5974440894568691
+          "grossProfit": 18.799999999999997,
+          "grossMargin": 0.5987261146496815
         },
         "2025Q1": {
           "revenue": 0.0,
@@ -654,10 +654,10 @@
           "grossMargin": 0.6071428571428571
         },
         "2025Q4": {
-          "revenue": 36.4,
-          "cogs": 14.3,
-          "grossProfit": 22.099999999999998,
-          "grossMargin": 0.6071428571428571
+          "revenue": 68.6,
+          "cogs": 26.9,
+          "grossProfit": 41.699999999999996,
+          "grossMargin": 0.607871720116618
         },
         "2026Q1": {
           "revenue": 38.8,
@@ -690,10 +690,10 @@
           "grossMargin": 0.20810055865921778
         },
         "2024Q4": {
-          "revenue": 71.6,
+          "revenue": 71.5,
           "cogs": 56.7,
-          "grossProfit": 14.899999999999991,
-          "grossMargin": 0.20810055865921778
+          "grossProfit": 14.799999999999997,
+          "grossMargin": 0.20699300699300696
         },
         "2025Q1": {
           "revenue": 62.9,
@@ -714,10 +714,10 @@
           "grossMargin": 0.2068095838587642
         },
         "2025Q4": {
-          "revenue": 79.3,
-          "cogs": 62.9,
-          "grossProfit": 16.4,
-          "grossMargin": 0.2068095838587642
+          "revenue": 86.6,
+          "cogs": 65.3,
+          "grossProfit": 21.299999999999997,
+          "grossMargin": 0.2459584295612009
         },
         "2026Q1": {
           "revenue": 57.2,
@@ -786,5 +786,5 @@
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
   },
-  "lastUpdated": "2026-07-08 00:27"
+  "lastUpdated": "2026-07-08 23:11"
 }

@@ -38,16 +38,16 @@
     ]
   },
   "valuation": {
-    "fair_pe": 45075,
-    "fair_pb": 56346,
-    "fair_ri": 68585,
-    "fair_blend": 54285,
-    "upside": 0.3338,
-    "target_pe": 8.0,
-    "target_pb": 2.5,
-    "coe": 0.1083,
+    "fair_pe": 77923,
+    "fair_pb": 63409,
+    "fair_ri": 46166,
+    "fair_blend": 65766,
+    "upside": 0.6159,
+    "target_pe": 13.83,
+    "target_pb": 2.8,
+    "coe": 0.1421,
     "rf": 0.045,
-    "beta": 1.151,
+    "beta": 1.101,
     "eps_last": 5090.0,
     "bvps_last": 21531.0,
     "avg_payout": 0.8021
@@ -442,5 +442,5 @@
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
   },
-  "lastUpdated": "2026-07-08 22:08"
+  "lastUpdated": "2026-07-08 23:09"
 }
