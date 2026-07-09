@@ -5,8 +5,8 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1AyzLt9A_QjhzIAz64fT5LWnGU-2N5TI2/view?usp=drivesdk",
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/11tDsJuCdw3OGoiReVLzD4a9TY7laM3dY/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1yRVzAnKwzsjwiahvcez6kpBngjENOqD_/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1ZDnmZ5s3pZiegsXcnHoJvdpCVgLyUzgo/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
   "productionEstimateCache": {
     "year": 2026,
     "quarter": 2,
@@ -16,7 +16,7 @@
     "source": "ESTIMATED",
     "fetchedAt": "2026-07-04 15:38"
   },
-  "lastUpdated": "2026-07-04 10:04",
+  "lastUpdated": "2026-07-09 00:30",
   "data": {
     "years": [
       2021,
@@ -34,9 +34,9 @@
       118953.0,
       138855.1,
       156116.1,
-      191446,
-      202816,
-      221603
+      191998,
+      203335,
+      222166
     ],
     "npat": [
       34478.1,
@@ -44,9 +44,9 @@
       6835.1,
       12021.4,
       15453.2,
-      22266,
-      18220,
-      15715
+      22829,
+      19164,
+      16735
     ],
     "eps": [
       7166,
@@ -54,9 +54,9 @@
       1117,
       1751,
       1973,
-      2637,
-      2157,
-      1861
+      2703,
+      2269,
+      1982
     ],
     "equity": [
       90780.6,
@@ -64,9 +64,9 @@
       102836.4,
       114647.5,
       131220.0,
-      152742,
-      163598,
-      168654
+      153287,
+      165054,
+      171096
     ]
   },
   "ratios": {
@@ -76,9 +76,9 @@
       0.1088,
       0.1332,
       0.1569,
-      0.151,
-      0.143,
-      0.121
+      0.154,
+      0.148,
+      0.126
     ],
     "roe": [
       0.3798,
@@ -86,9 +86,9 @@
       0.0665,
       0.1049,
       0.1178,
-      0.1458,
-      0.1114,
-      0.0932
+      0.1489,
+      0.1161,
+      0.0978
     ],
     "debt_to_equity": [
       0.6302,
@@ -96,9 +96,9 @@
       0.6358,
       0.7236,
       0.7024,
-      0.5107,
-      0.4584,
-      0.4269
+      0.5088,
+      0.4544,
+      0.4208
     ],
     "ebitMargin": [
       0.2473,
@@ -106,9 +106,9 @@
       0.0643,
       0.0955,
       0.1147,
-      0.116,
-      0.108,
-      0.086
+      0.119,
+      0.113,
+      0.091
     ],
     "nim": [],
     "npl": [],
@@ -116,32 +116,32 @@
     "casa": []
   },
   "valuation": {
-    "weightedTarget": 27700,
-    "upside": 17.4,
+    "weightedTarget": 28148,
+    "upside": 19.3,
     "recommend": "MUA",
-    "bear": 23730,
-    "base": 27700,
-    "bull": 35595,
+    "bear": 23815,
+    "base": 28148,
+    "bull": 35723,
     "COE": 12.0,
-    "evEbitdaTarget": 26006,
+    "evEbitdaTarget": 26679,
     "pbAttractive": 1.31,
-    "pbAttractivePrice": 23730,
+    "pbAttractivePrice": 23815,
     "pbMedian": 1.64,
     "pbOver": 1.97,
     "peMedian": 10.3,
-    "peTarget": 27161,
+    "peTarget": 27841,
     "evWeight": 40,
     "pbWeight": 40,
     "peWeight": 20,
-    "bvpsBase": 18087
+    "bvpsBase": 18152
   },
   "thesis": [
     "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
-    "Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ 15.69% (2025) lên 15.1% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
+    "Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ 15.69% (2025) lên 15.4% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
     "Định giá hấp dẫn: P/B 1.56x (dưới median 1.61x), EV/EBITDA 2026E ~7.0x (dưới median 8.95x). Giá mục tiêu 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%."
   ],
   "risks": [
-    "Giá HRC (462 USD/tấn hiện tại) chịu áp lực dư cung toàn cầu ~640 triệu tấn, kéo spread thu hẹp (spread 2026E ước ~146 USD/tấn theo giá hàng hóa hiện tại).",
+    "Giá HRC (475 USD/tấn hiện tại) chịu áp lực dư cung toàn cầu ~640 triệu tấn, kéo spread thu hẹp (spread 2026E ước ~150 USD/tấn theo giá hàng hóa hiện tại).",
     "Chi phí quặng sắt/than cốc tăng làm giảm spread. Mỗi 10 USD tăng quặng = ~16 USD/tấn giảm spread.",
     "Tỷ giá USD/VNĐ biến động mạnh — dư nợ vay USD ~$3 tỷ, ảnh hưởng đến chi phí tài chính."
   ],
@@ -434,7 +434,7 @@
       231,
       234,
       226,
-      193
+      195
     ],
     "spreadAllUsd": [
       191,
@@ -449,7 +449,7 @@
       169,
       202,
       187,
-      173
+      174
     ],
     "xdPrice": [
       600.0,
@@ -464,7 +464,7 @@
       600.0,
       600.0,
       600.0,
-      585.6
+      587.8
     ],
     "hrcSales": [
       482,
@@ -514,9 +514,9 @@
       617.5,
       555.0,
       470.0,
-      468.2,
-      477.6,
-      484.8
+      475.0,
+      484.5,
+      491.8
     ],
     "ironOre": [
       117.0,
@@ -534,9 +534,9 @@
       270.0,
       235.0,
       187.0,
-      223.4,
-      227.9,
-      232.5
+      220.0,
+      224.4,
+      228.9
     ],
     "spreadUsd": [
       127.8,
@@ -544,9 +544,9 @@
       181.7,
       114.7,
       128.1,
-      146.4,
-      150.8,
-      151.5
+      150.2,
+      160.9,
+      161.7
     ],
     "spreadPct": [
       20.0,
@@ -554,9 +554,9 @@
       29.0,
       21.0,
       27.0,
-      31.0,
       32.0,
-      31.0
+      33.0,
+      33.0
     ],
     "xdPrice": [
       600.0,
@@ -564,7 +564,7 @@
       600.0,
       600.0,
       600.0,
-      580.3,
+      582.5,
       620,
       630
     ],
@@ -574,9 +574,9 @@
       169.2,
       152.8,
       228.6,
-      186.9,
-      221.6,
-      224.0
+      189.1,
+      223.7,
+      226.1
     ],
     "spreadAllUsd": [
       104.5,
@@ -584,9 +584,9 @@
       174.5,
       137.2,
       177.3,
-      164.8,
-      184.5,
-      186.0
+      167.9,
+      190.8,
+      192.4
     ],
     "hrcVol": [
       2.0,
@@ -738,13 +738,13 @@
       600.0,
       600.0,
       600.0,
-      585.6
+      587.8
     ],
     "current": {
-      "hrcPrice": 461.5,
+      "hrcPrice": 475,
       "ironOre": 100.8,
-      "cokingCoal": 226.8,
-      "xdPrice": 575.0
+      "cokingCoal": 220,
+      "xdPrice": 577.1
     },
     "spreadHrcUsd": [
       127.8,
@@ -784,7 +784,7 @@
       230.6,
       234.4,
       226.5,
-      192.8
+      195.0
     ],
     "spreadAllUsd": [
       null,
@@ -804,12 +804,12 @@
       168.7,
       201.7,
       187.3,
-      173.3
+      174.4
     ],
-    "spreadNow": 139.3,
-    "spreadHrcNow": 139.3,
-    "spreadRebarNow": 181.1,
-    "spreadAllNow": 156.4,
+    "spreadNow": 147.0,
+    "spreadHrcNow": 147.0,
+    "spreadRebarNow": 183.2,
+    "spreadAllNow": 161.8,
     "adDutyEffectiveQuarter": "2025Q3",
     "adDutyMultiplier": 1.15,
     "note": "Gia quy = TB dau/giua/cuoi quy. Gia hien tai fetch tu dong tu investing.com/SteelOnline khi chay script. Spread HRC da nhan thue CBPG AD20 tu quy hieu luc."
@@ -939,7 +939,7 @@
     16.2,
     14.5,
     13.9,
-    9.3
+    9.2
   ],
   "pb_quarters": [
     1.64,
@@ -973,7 +973,7 @@
     1.79,
     1.67,
     1.67,
-    1.41
+    1.4
   ],
   "quarter_labels": [
     "2018-Q1",

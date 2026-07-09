@@ -88,14 +88,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "HPG",
-    "companyName": "CTCP Tập đoàn Hòa Phát",
-    "sector": "Basic Resources",
-    "lastUpdated": "2026-07-04 10:04",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/11tDsJuCdw3OGoiReVLzD4a9TY7laM3dY/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1AyzLt9A_QjhzIAz64fT5LWnGU-2N5TI2/view?usp=drivesdk"
-  },
-  {
     "ticker": "MWG",
     "companyName": "CTCP Đầu tư Thế Giới Di Động",
     "sector": "Bán lẻ",
@@ -142,5 +134,13 @@
     "lastUpdated": "2026-07-08 18:09",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1xkiVP5HKd-FhrEJG29hTkWcpKJbGyOkB/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1iQKsYeZWe0ZDLqB2J5-jhIkzm64qzYlN/view?usp=drivesdk"
+  },
+  {
+    "ticker": "HPG",
+    "companyName": "CTCP Tập đoàn Hòa Phát",
+    "sector": "Basic Resources",
+    "lastUpdated": "2026-07-09 00:30",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1ZDnmZ5s3pZiegsXcnHoJvdpCVgLyUzgo/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1yRVzAnKwzsjwiahvcez6kpBngjENOqD_/view?usp=drivesdk"
   }
 ]
