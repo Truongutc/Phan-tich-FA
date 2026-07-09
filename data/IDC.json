@@ -2,11 +2,11 @@
   "ticker": "IDC",
   "companyName": "Tổng Công ty IDICO - CTCP",
   "sector": "Bất động sản khu công nghiệp",
-  "currentPrice": 40700.0,
-  "marketCap": 15445602096100.0,
+  "currentPrice": 40000.0,
+  "marketCap": 15179952920000.0,
   "shares": 379498823,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1xkiVP5HKd-FhrEJG29hTkWcpKJbGyOkB/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1iQKsYeZWe0ZDLqB2J5-jhIkzm64qzYlN/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1uKn3SlWT0FxxAx_Gh32kBT1vv7yUJSXY/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1G_BC_13rIJyod7spyixF7r46TnqatQyT/view?usp=drivesdk",
   "data": {
     "years": [
       2021,
@@ -40,14 +40,14 @@
   "valuation": {
     "fair_pe": 77923,
     "fair_pb": 50780,
-    "fair_ri": 46370,
-    "fair_blend": 60755,
-    "upside": 0.4928,
+    "fair_ri": 46348,
+    "fair_blend": 60751,
+    "upside": 0.5188,
     "target_pe": 13.83,
     "target_pb": 2.8,
     "coe": 0.1421,
     "rf": 0.045,
-    "beta": 1.101,
+    "beta": 1.102,
     "eps_last": 5090.0,
     "bvps_last": 17021.0,
     "avg_payout": 0.8021
@@ -442,5 +442,5 @@
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
   },
-  "lastUpdated": "2026-07-08 18:09"
+  "lastUpdated": "2026-07-09 13:30"
 }
