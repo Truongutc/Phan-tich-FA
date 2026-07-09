@@ -896,38 +896,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     beta_calc, beta_web, is_enough_sessions, beta_src, _, aligned_data = fetch_and_calc_beta(ticker)
     beta_val = beta_calc if is_enough_sessions else beta_web
 
-    # Đọc lại Beta/Rf đã tính thành công ở lần chạy gần nhất (data/{ticker}.json) — dùng làm phao cứu
-    # sinh khi TẤT CẢ nguồn fetch trực tiếp đều thất bại (vd. IP datacenter của GitHub Actions bị các
-    # nguồn dữ liệu VN chặn/hạn chế khác với máy chạy local — xem vụ tương tự đã sửa cho sản lượng
-    # thép HPG), thay vì rơi thẳng về hằng số fallback cứng (Beta=1.0, Rf=4.5%) làm sai lệch COE và
-    # kéo theo toàn bộ định giá RI.
-    _beta_rf_cache_path = os.path.join(PROJECT_ROOT, "data", f"{ticker}.json")
-    _prev_beta_rf = None
-    try:
-        with open(_beta_rf_cache_path, "r", encoding="utf-8") as _f:
-            _prev_beta_rf = json.load(_f).get("betaRfCache")
-    except Exception:
-        pass
-
-    rf_is_fresh = rf_src != "Fallback (manual)"
-    beta_is_fresh = is_enough_sessions or beta_web != 1.0
-    if not rf_is_fresh and _prev_beta_rf and _prev_beta_rf.get("rf") is not None:
-        print(f"  [DIAG] Rf {ticker}: fetch trực tiếp thất bại (rơi về fallback cứng) - dùng lại Rf lần chạy "
-              f"trước (lúc {_prev_beta_rf.get('fetchedAt', '?')}): {_prev_beta_rf['rf']*100:.2f}%")
-        rf_val = _prev_beta_rf["rf"]
-        rf_src = f"Cache lần chạy trước ({_prev_beta_rf.get('fetchedAt', '?')})"
-    if not beta_is_fresh and _prev_beta_rf and _prev_beta_rf.get("beta") is not None:
-        print(f"  [DIAG] Beta {ticker}: fetch/scrape trực tiếp đều thất bại - dùng lại Beta lần chạy trước "
-              f"(lúc {_prev_beta_rf.get('fetchedAt', '?')}): {_prev_beta_rf['beta']}")
-        beta_val = _prev_beta_rf["beta"]
-        beta_src = f"Cache lần chạy trước ({_prev_beta_rf.get('fetchedAt', '?')})"
-
-    BETA_RF_CACHE_ENTRY = {
-        "beta": beta_val if beta_is_fresh else (_prev_beta_rf.get("beta") if _prev_beta_rf else beta_val),
-        "rf": rf_val if rf_is_fresh else (_prev_beta_rf.get("rf") if _prev_beta_rf else rf_val),
-        "fetchedAt": datetime.datetime.now().strftime("%Y-%m-%d %H:%M") if (rf_is_fresh or beta_is_fresh)
-                     else (_prev_beta_rf.get("fetchedAt") if _prev_beta_rf else None),
-    }
+    # Vá lại Beta/Rf bằng cache lần chạy trước nếu fetch trực tiếp thất bại hoàn toàn — xem
+    # beta_rf_cache.py (dùng chung với template_securities.py/template_kcn.py).
+    from beta_rf_cache import apply_beta_rf_cache_fallback
+    rf_val, rf_src, beta_val, beta_src, BETA_RF_CACHE_ENTRY = apply_beta_rf_cache_fallback(
+        ticker, PROJECT_ROOT, rf_val, rf_src, beta_val, beta_src, is_enough_sessions, beta_web)
     beta_raw = beta_val
     # Blume adjusted beta: β_adj = 0.67 × β_raw + 0.33 × 1 (mean reversion towards 1)
     beta_val = round(0.67 * beta_raw + 0.33, 4)

@@ -85,6 +85,12 @@ def fetch_section(ticker, section, quarterly=False):
 def fetch_all(ticker, use_cache=True):
     os.makedirs(CACHE_DIR, exist_ok=True)
     cache_file = os.path.join(CACHE_DIR, f"{ticker}_bctc.json")
+    # RECALCULATE_FRESH=true (input "Tính toán lại mới" trên GitHub Actions) ép bỏ qua cache BCTC,
+    # đảm bảo pull dữ liệu hoàn toàn mới — mặc định (false) vẫn ưu tiên cache nếu có (chủ yếu có tác
+    # dụng khi chạy local nhiều lần trong ngày; trên CI mới (.cache/ không persist giữa các run) thì
+    # luôn cache-miss nên không đổi hành vi).
+    if os.environ.get("RECALCULATE_FRESH", "false").strip().lower() == "true":
+        use_cache = False
 
     if use_cache and os.path.exists(cache_file):
         print(f"[Cache] Loading {ticker} from cache...")

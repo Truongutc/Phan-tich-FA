@@ -7,8 +7,8 @@ on:
         description: 'Nhập mã cổ phiếu cần phân tích (ví dụ: HPG, TCB, SSI, VAB, GMD...)'
         required: true
         default: 'TCB'
-      force_regenerate:
-        description: 'Tạo lại script phân tích dù đã có sẵn? (true/false)'
+      recalculate_fresh:
+        description: 'Tính toán lại mới hoàn toàn (bỏ qua phân tích cũ)? (true/false)'
         required: false
         default: 'false'
 
@@ -39,44 +39,12 @@ jobs:
           pip install -r requirements.txt
           pip install "opendataloader-pdf[hybrid]"
 
-      - name: Check Build Status
-        id: check_build
-        run: |
-          TICKER="${{ github.event.inputs.ticker }}"
-          BUILDER="build_${TICKER,,}_model.py"
-          # Danh sách ticker có custom builder thủ công — tuyệt đối không xoá
-          CUSTOM_TICKERS="HPG MBB VCB BID ACB CTG MWG"
-          IS_CUSTOM=false
-          for t in $CUSTOM_TICKERS; do
-            if [ "${TICKER,,}" = "${t,,}" ]; then IS_CUSTOM=true; break; fi
-          done
-          if [ -f "$BUILDER" ]; then
-            LINES=$(wc -l < "$BUILDER")
-            echo "Found $BUILDER with $LINES lines"
-            if [ "$IS_CUSTOM" = true ]; then
-              echo "CUSTOM_BUILDER=true" >> "$GITHUB_ENV"
-              echo "Custom builder detected — skipping Gemini, running directly."
-            elif [ "$LINES" -gt 500 ]; then
-              echo "CUSTOM_BUILDER=true" >> "$GITHUB_ENV"
-              echo "Large builder (>500 lines) — protected, running directly."
-            else
-              echo "GENERATED_BUILDER=true" >> "$GITHUB_ENV"
-            fi
-          fi
-
-      - name: Force Regenerate Generated Builder (only if <500 lines, not in custom list)
-        if: ${{ env.GENERATED_BUILDER == 'true' && github.event.inputs.force_regenerate == 'true' }}
-        run: |
-          TICKER="${{ github.event.inputs.ticker }}"
-          BUILDER="build_${TICKER,,}_model.py"
-          echo "Deleting $BUILDER for regeneration..."
-          rm -f "$BUILDER"
-
       - name: Start Hybrid PDF Server & Run Financial Analysis
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
+          RECALCULATE_FRESH: ${{ github.event.inputs.recalculate_fresh }}
         run: |
           # Khởi động hybrid server ngầm và đợi 5s cho server sẵn sàng
           opendataloader-pdf-hybrid --port 5002 &

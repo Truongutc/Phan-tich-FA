@@ -551,10 +551,19 @@ for _k, _lbl in enumerate(SALES_Q_LABELS):
 # KHÔNG dùng AI lúc chạy), theo đúng yêu cầu user. Nếu chưa có tin gì cho quý này → giữ nguyên
 # None, các chỗ dùng sẽ tự fallback về giả định cũ, KHÔNG BAO GIỜ chặn script.
 HPG_NEWS_SEED_URL = "https://www.hoaphat.com.vn/tin-tuc/hoa-phat-da-vuot-ke-hoach-loi-nhuan-nam-2018.html"
+# Verb "bán hàng/bán/cung cấp" = SALES (khớp đơn vị HRC_SALES_HIST_KT/XD_SALES_HIST_KT dùng cho doanh
+# thu); verb "sản xuất" = PRODUCTION (số liệu SẢN XUẤT, có thể gồm cả phôi/ống thép/tôn mạ ngoài
+# HRC+XD, KHÔNG cùng cơ sở với sản lượng bán hàng) — gắn nhãn "metric" để logic quyết định CUR_Q_SOURCE
+# chỉ dùng số liệu "sales" cho ước tính doanh thu, tránh trộn nhầm 2 khái niệm khác nhau (2026-07, phát
+# hiện khi HPG đổi cách viết PR sang "Hòa Phát sản xuất X triệu tấn thép trong nửa đầu năm YYYY").
 _HPG_TITLE_RE = re.compile(
-    r"(?:Sản lượng bán hàng thép Hòa Phát đạt|Hòa Phát (?:bán|cung cấp)(?: ra thị trường)?)\s*"
-    r"([\d.,]+)\s*(triệu\s*)?tấn.*?trong\s*"
-    r"(?:tháng\s*(\d{1,2})(?!\s*[/\-]\s*\d{4})|quý\s*([IVX\d]{1,3})(?:\s*[/\s]\s*(\d{4}))?|(\d{1,2})\s*tháng\s*đầu\s*năm)",
+    r"(?:Sản lượng (?P<verb1>bán hàng|tiêu thụ|sản xuất) thép Hòa Phát đạt|"
+    r"Hòa Phát (?P<verb2>bán|cung cấp|tiêu thụ|sản xuất)(?: ra thị trường)?)\s*"
+    r"(?P<num>[\d.,]+)\s*(?P<million>triệu\s*)?tấn.*?trong\s*"
+    r"(?:tháng\s*(?P<month>\d{1,2})(?!\s*[/\-]\s*\d{4})"
+    r"|quý\s*(?P<qnum>[IVX\d]{1,3})(?:\s*[/\s]\s*(?P<qyear>\d{4}))?"
+    r"|(?P<cummonths>\d{1,2})\s*tháng\s*đầu\s*năm"
+    r"|(?P<halfyear>nửa\s*đầu\s*năm)(?:\s*(?P<hyyear>\d{4}))?)",
     re.IGNORECASE,
 )
 _ROMAN_Q = {"I": 1, "II": 2, "III": 3, "IV": 4}
@@ -567,18 +576,21 @@ def _vn_number_to_kilotons(num_str, is_million):
     return round(float(num_str.replace(".", "").replace(",", "")) / 1000, 1)
 
 def _parse_hpg_production_title(title, pub_date):
-    """Parse tiêu đề bài công bố sản lượng HPG (mẫu chuẩn: "Sản lượng bán hàng thép Hòa Phát đạt
-    X (triệu/nghìn) tấn trong {tháng N | quý N/YYYY | N tháng đầu năm}"). Quý có thể viết số Ả Rập
-    (quý 2) hoặc La Mã (quý II), có hoặc không kèm năm (nếu thiếu năm thì suy từ ngày đăng bài — chỉ
-    đúng nếu bài đăng ngay sau khi kết thúc quý, đúng thông lệ PR của HPG). Trả về dict hoặc None nếu
-    tiêu đề không khớp mẫu (bài không phải công bố sản lượng, hoặc HPG đổi cách viết)."""
+    """Parse tiêu đề bài công bố sản lượng HPG. Nhận diện 2 loại verb ("bán hàng/bán/cung cấp" = sales,
+    "sản xuất" = production — xem comment ở _HPG_TITLE_RE) x 4 dạng kỳ báo cáo: "tháng N", "quý N[/YYYY]"
+    (số Ả Rập hoặc La Mã), "N tháng đầu năm", hoặc "nửa đầu năm [YYYY]" (= 6 tháng đầu năm). Năm suy từ
+    ngày đăng bài nếu tiêu đề không ghi rõ (chỉ đúng nếu bài đăng ngay sau khi kết thúc kỳ, đúng thông lệ
+    PR của HPG). Trả về dict (có key "metric": "sales"/"production") hoặc None nếu tiêu đề không khớp
+    mẫu nào (bài không phải công bố sản lượng, hoặc HPG đổi cách viết chưa được nhận diện)."""
     m = _HPG_TITLE_RE.search(title or "")
     if not m:
         return None
-    num_str, is_million, month, q_num_raw, q_year, cum_months = m.groups()
-    vol_kt = _vn_number_to_kilotons(num_str, bool(is_million))
+    verb = (m.group("verb1") or m.group("verb2") or "").lower()
+    metric = "production" if "sản xuất" in verb else "sales"
+    vol_kt = _vn_number_to_kilotons(m.group("num"), bool(m.group("million")))
     pub_year = int(pub_date[6:10]) if pub_date and re.match(r"\d{2}/\d{2}/\d{4}", pub_date) else None
     pub_month = int(pub_date[3:5]) if pub_date and re.match(r"\d{2}/\d{2}/\d{4}", pub_date) else None
+    q_num_raw, q_year = m.group("qnum"), m.group("qyear")
     if q_num_raw:
         q_num = _ROMAN_Q.get(q_num_raw.upper(), None)
         if q_num is None and q_num_raw.isdigit():
@@ -588,23 +600,32 @@ def _parse_hpg_production_title(title, pub_date):
         yr = int(q_year) if q_year else pub_year
         if yr is None:
             return None
-        return {"type": "quarter", "year": yr, "quarter": q_num, "volume_kt": vol_kt}
-    if month:
-        mo = int(month)
+        return {"type": "quarter", "year": yr, "quarter": q_num, "volume_kt": vol_kt, "metric": metric}
+    if m.group("month"):
+        mo = int(m.group("month"))
         # Bài đăng đầu năm sau thường nói về tháng 12 năm trước
         yr = (pub_year - 1) if (pub_year and mo == 12 and pub_month and pub_month <= 2) else pub_year
-        return {"type": "month", "year": yr, "month": mo, "volume_kt": vol_kt}
-    if cum_months:
-        return {"type": "cumulative", "year": pub_year, "months": int(cum_months), "volume_kt": vol_kt}
+        return {"type": "month", "year": yr, "month": mo, "volume_kt": vol_kt, "metric": metric}
+    if m.group("cummonths"):
+        return {"type": "cumulative", "year": pub_year, "months": int(m.group("cummonths")), "volume_kt": vol_kt, "metric": metric}
+    if m.group("halfyear"):
+        yr = int(m.group("hyyear")) if m.group("hyyear") else pub_year
+        if yr is None:
+            return None
+        return {"type": "cumulative", "year": yr, "months": 6, "volume_kt": vol_kt, "metric": metric}
     return None
 
-def fetch_hpg_production_updates(max_fetch=40):
+def fetch_hpg_production_updates(max_fetch=90):
     """Dò các bài công bố sản lượng thép mới nhất của HPG qua (1) khung 'Tin liên quan' 5 tin mới
-    nhất hiển thị trên MỌI trang bài viết (không cần trang danh sách bị che JS), và (2) sitemap tin
-    tức chính thức (curl + regex tiêu đề, không cần JS) lọc theo từ khóa sản lượng — giới hạn số
-    trang sitemap quét để không phải fetch toàn bộ lịch sử mỗi lần chạy. Trả về list dict đã parse
-    được (rỗng nếu lỗi/không tìm thấy) — KHÔNG BAO GIỜ crash script."""
-    candidates = {}
+    nhất hiển thị trên MỌI trang bài viết (không cần trang danh sách bị che JS), (2) sitemap tin tức
+    chính thức của www.hoaphat.com.vn (curl + regex tiêu đề, không cần JS) lọc theo từ khóa sản lượng,
+    và (3) sitemap của noibo.hoaphat.com.vn (cổng "nội bộ" nhưng PUBLIC, không cần đăng nhập — đã
+    verify — đôi khi đăng SỚM HƠN hoặc có bài KHÔNG mirror sang site công khai). candidates ưu tiên
+    (seed + noibo, đã biết ngày đăng) được fetch TRƯỚC candidates chưa rõ ngày (www sitemap) để không
+    bị giới hạn max_fetch cắt mất — trước đó noibo bị chèn cuối hàng đợi nên luôn bị bỏ sót. Trả về
+    list dict đã parse được (rỗng nếu lỗi/không tìm thấy) — KHÔNG BAO GIỜ crash script."""
+    priority_candidates = {}   # đã biết ngày đăng (seed + noibo) — luôn được fetch trước
+    candidates = {}            # chưa rõ ngày (www sitemap) — fetch sau, có thể bị max_fetch cắt bớt
     try:
         seed_html = fetch_via_curl(HPG_NEWS_SEED_URL, timeout=15, label="hoaphat-seed")
         for m in re.finditer(
@@ -612,22 +633,42 @@ def fetch_hpg_production_updates(max_fetch=40):
             r'<p class="clear time">.*?(\d{2}/\d{2}/\d{4}).*?</p>\s*<h3>([^<]+)</h3>',
             seed_html, re.S):
             url, date_str, _title = m.groups()
-            candidates[url] = date_str
+            priority_candidates[url] = date_str
     except Exception as e:
         print(f"  [WARN] HPG news sidebar fetch error: {e}")
+
+    # noibo.hoaphat.com.vn — sitemap có sẵn <lastmod> ngay trong XML (không như www.hoaphat.com.vn) nên
+    # lọc theo ngày gần đây (~120 ngày) được luôn mà không tốn thêm request nào.
+    try:
+        nb_idx_html = fetch_via_curl("https://noibo.hoaphat.com.vn/sitemap.xml", timeout=15, label="noibo-sitemap-idx")
+        nb_sm_urls = re.findall(r'<loc>(https://noibo\.hoaphat\.com\.vn/sitemap-posts-page-\d+\.xml)</loc>', nb_idx_html)
+        _nb_cutoff = (date.today() - timedelta(days=120)).isoformat()
+        for sm_url in nb_sm_urls[:2]:
+            sm_html = fetch_via_curl(sm_url, timeout=15, label="noibo-sitemap-page")
+            for m in re.finditer(r'<loc>([^<]+)</loc><lastmod>(\d{4}-\d{2}-\d{2})</lastmod>', sm_html):
+                loc, lastmod = m.groups()
+                if lastmod < _nb_cutoff:
+                    continue
+                if re.search(r'san-luong|trieu-tan|nghin-tan|tan-thep|ban-hang|tieu-thu|san-xuat.*thep', loc, re.I):
+                    d, mo, y = lastmod[8:10], lastmod[5:7], lastmod[0:4]
+                    priority_candidates[loc] = f"{d}/{mo}/{y}"
+    except Exception as e:
+        print(f"  [WARN] noibo.hoaphat.com.vn sitemap fetch error: {e}")
+
     try:
         idx_html = fetch_via_curl("https://www.hoaphat.com.vn/sitemap.xml", timeout=15, label="hoaphat-sitemap-idx")
         sm_urls = re.findall(r'<loc>(https://www\.hoaphat\.com\.vn/sitemap-tintuc-page-\d+\.xml)</loc>', idx_html)
         for sm_url in sm_urls[:4]:
             sm_html = fetch_via_curl(sm_url, timeout=15, label="hoaphat-sitemap-page")
             for loc in re.findall(r'<loc>([^<]+)</loc>', sm_html):
-                if re.search(r'san-luong|trieu-tan|nghin-tan|tan-thep', loc, re.I):
-                    candidates.setdefault(loc, None)
+                if re.search(r'san-luong|trieu-tan|nghin-tan|tan-thep|ban-hang|tieu-thu|san-xuat.*thep', loc, re.I):
+                    if loc not in priority_candidates:
+                        candidates.setdefault(loc, None)
     except Exception as e:
         print(f"  [WARN] HPG sitemap fetch error: {e}")
 
     records, fetched = [], 0
-    for url, known_date in candidates.items():
+    for url, known_date in list(priority_candidates.items()) + list(candidates.items()):
         if fetched >= max_fetch:
             break
         try:
@@ -711,7 +752,7 @@ def fetch_nguoiquansat_production_updates(days_back=70, max_fetch=25):
                     "type": "month", "year": yr, "month": month_num,
                     "hrc_kt": hrc_kt, "xd_kt": xd_kt,
                     "volume_kt": (hrc_kt or 0) + (xd_kt or 0),
-                    "url": url, "title": title, "date": pub_date,
+                    "url": url, "title": title, "date": pub_date, "metric": "sales",
                 })
         except Exception:
             continue
@@ -766,8 +807,76 @@ def fetch_dautucophieu_production_updates(max_fetch=15):
                     "type": "month", "year": yr, "month": month_num,
                     "hrc_kt": hrc_kt, "xd_kt": xd_kt,
                     "volume_kt": (hrc_kt or 0) + (xd_kt or 0),
-                    "url": url, "title": title, "date": pub_date,
+                    "url": url, "title": title, "date": pub_date, "metric": "sales",
                 })
+        except Exception:
+            continue
+    return records
+
+_CAFEF_Q_MARKER_RE = re.compile(r"[Qq]uý\s*([1-4])\s*/\s*(\d{4})")
+_CAFEF_Q_TOTAL_RE = re.compile(
+    r"[Ss]ản lượng bán hàng các sản phẩm[^.]{0,120}?đạt\s*(?:hơn|gần|trên)?\s*([\d.,]+)\s*(triệu\s*)?tấn")
+_CAFEF_Q_HRC_RE = re.compile(
+    r"(?:HRC\)|thép cuộn cán nóng)[^.]{0,60}?sản lượng bán hàng[^.]{0,40}?đạt\s*(?:hơn|gần|trên)?\s*"
+    r"([\d.,]+)\s*(triệu\s*)?tấn", re.IGNORECASE)
+_CAFEF_Q_XD_RE = re.compile(
+    r"thép xây dựng[^.]{0,60}?ghi nhận\s*(?:hơn|gần|trên)?\s*([\d.,]+)\s*(triệu\s*)?tấn", re.IGNORECASE)
+
+def fetch_cafef_production_updates(max_fetch=15):
+    """Dò tin cập nhật sản lượng thép HPG trên cafef.vn — nguồn giàu chi tiết nhất tìm được: mỗi bài
+    thường có TỔNG sản lượng bán hàng quý (tất cả sản phẩm) LẪN tách riêng HRC/thép xây dựng, khớp
+    đúng đơn vị HRC_SALES_HIST_KT/XD_SALES_HIST_KT (không giống PR của hoaphat.com.vn chỉ cho tổng
+    trong tiêu đề). Discovery qua trang tag `/hoa-phat.html` (liệt kê bài mới nhất trước, server-
+    rendered, không cần sitemap/JS) + Google News sitemap (bắt tin trong ngày nhanh hơn). KHÔNG BAO
+    GIỜ crash — trả về [] nếu lỗi bất kỳ bước nào."""
+    candidates = {}
+    try:
+        html = fetch_via_curl("https://cafef.vn/hoa-phat.html", timeout=15, label="cafef-tag")
+        for m in re.finditer(r'<a[^>]*href="(/[^"]+\.chn)"[^>]*title="([^"]+)"', html):
+            rel_url, title = m.groups()
+            if re.search(r"sản lượng|san-luong|san-xuat|tieu-thu|ban-hang", rel_url + " " + title, re.I):
+                candidates["https://cafef.vn" + rel_url] = title
+    except Exception as e:
+        print(f"  [WARN] cafef.vn tag page fetch error: {e}")
+    try:
+        sm_html = fetch_via_curl("https://cafef.vn/google-news-sitemap.xml", timeout=15, label="cafef-news-sitemap")
+        for m in re.finditer(
+                r'<loc>([^<]+)</loc>\s*<news:news>.*?<news:publication_date>([^<]+)</news:publication_date>\s*'
+                r'<news:title>([^<]+)</news:title>', sm_html, re.S):
+            url, pub_dt, title = m.groups()
+            if re.search(r"hòa phát|hoa phat", title, re.I) and re.search(r"sản lượng", title, re.I):
+                candidates.setdefault(url, title)
+    except Exception as e:
+        print(f"  [WARN] cafef.vn news sitemap fetch error: {e}")
+
+    records, fetched = [], 0
+    for url, title in candidates.items():
+        if fetched >= max_fetch:
+            break
+        try:
+            html = fetch_via_curl(url, timeout=12)
+            fetched += 1
+            if not html:
+                continue
+            date_m = re.search(r'"datePublished"\s*:\s*"(\d{4}-\d{2}-\d{2})', html)
+            pub_date = f"{date_m.group(1)[8:10]}/{date_m.group(1)[5:7]}/{date_m.group(1)[0:4]}" if date_m else None
+            title_m = re.search(r'"headline"\s*:\s*"([^"]+)"', html)
+            title = title_m.group(1) if title_m else title
+            q_m = _CAFEF_Q_MARKER_RE.search(title) or _CAFEF_Q_MARKER_RE.search(html[:3000])
+            total_m = _CAFEF_Q_TOTAL_RE.search(html)
+            if not q_m or not total_m:
+                continue
+            q_num, q_year = int(q_m.group(1)), int(q_m.group(2))
+            total_kt = _vn_number_to_kilotons(total_m.group(1), bool(total_m.group(2)))
+            hrc_m = _CAFEF_Q_HRC_RE.search(html)
+            xd_m = _CAFEF_Q_XD_RE.search(html)
+            hrc_kt = _vn_number_to_kilotons(hrc_m.group(1), bool(hrc_m.group(2))) if hrc_m else None
+            xd_kt = _vn_number_to_kilotons(xd_m.group(1), bool(xd_m.group(2))) if xd_m else None
+            records.append({
+                "type": "quarter", "year": q_year, "quarter": q_num,
+                "hrc_kt": hrc_kt, "xd_kt": xd_kt, "volume_kt": total_kt,
+                "url": url, "title": title, "date": pub_date, "metric": "sales",
+            })
         except Exception:
             continue
     return records
@@ -783,26 +892,53 @@ _nqs_records = fetch_nguoiquansat_production_updates()
 print(f"  -> nguoiquansat.vn: found {len(_nqs_records)} monthly record(s) with HRC/XD breakdown")
 _dtcp_records = fetch_dautucophieu_production_updates()
 print(f"  -> dautucophieu.net: found {len(_dtcp_records)} monthly record(s) with HRC/XD breakdown")
-# Gộp 3 nguồn — nếu TRÙNG tháng/năm, ưu tiên bản ghi có tách riêng HRC/XD (nguoiquansat/dautucophieu,
-# từ báo cáo CTCK Research — chi tiết hơn) thay vì bản gộp chung (hoaphat.com.vn PR).
+_cafef_records = fetch_cafef_production_updates()
+print(f"  -> cafef.vn: found {len(_cafef_records)} quarterly record(s) with HRC/XD breakdown")
+# Gộp 4 nguồn — nếu TRÙNG kỳ báo cáo, ưu tiên bản ghi có tách riêng HRC/XD (nguoiquansat/dautucophieu/
+# cafef, chi tiết hơn) thay vì bản gộp chung (hoaphat.com.vn/noibo.hoaphat.com.vn PR chỉ có tổng).
 _by_period = {}
-for r in HPG_PRODUCTION_NEWS + _nqs_records + _dtcp_records:
+for r in HPG_PRODUCTION_NEWS + _nqs_records + _dtcp_records + _cafef_records:
     key = (r["type"], r["year"], r.get("quarter") or r.get("month"))
     prev = _by_period.get(key)
     if prev is None or (r.get("hrc_kt") is not None and prev.get("hrc_kt") is None):
         _by_period[key] = r
 HPG_PRODUCTION_NEWS = list(_by_period.values())
 
-_official_q_rec = next((r for r in HPG_PRODUCTION_NEWS
+# Chỉ dùng record "sales" (khớp đơn vị HRC_SALES_HIST_KT/XD_SALES_HIST_KT) cho ước tính doanh thu —
+# record "production" (verb "sản xuất", có thể gồm cả phôi/ống thép/tôn mạ) được giữ lại riêng để báo
+# cho user biết đã tìm thấy tin (thay vì lặng lẽ bỏ qua) nhưng KHÔNG trộn vào số liệu tính toán.
+_sales_news = [r for r in HPG_PRODUCTION_NEWS if r.get("metric", "sales") == "sales"]
+_production_only_news = [r for r in HPG_PRODUCTION_NEWS if r.get("metric") == "production" and r["year"] == CUR_Q_YEAR and (
+    (r["type"] == "quarter" and r["quarter"] == CUR_Q_NUM) or
+    (r["type"] == "month" and r["month"] in _cur_q_months) or
+    (r["type"] == "cumulative" and r["months"] >= _cur_q_months[0]))]
+
+_official_q_rec = next((r for r in _sales_news
                         if r["type"] == "quarter" and r["year"] == CUR_Q_YEAR and r["quarter"] == CUR_Q_NUM), None)
 CUR_Q_MONTHLY_RECS = sorted(
-    [r for r in HPG_PRODUCTION_NEWS if r["type"] == "month" and r["year"] == CUR_Q_YEAR and r["month"] in _cur_q_months],
+    [r for r in _sales_news if r["type"] == "month" and r["year"] == CUR_Q_YEAR and r["month"] in _cur_q_months],
     key=lambda r: r["month"])
+# "Nửa đầu năm"/"N tháng đầu năm" lũy kế trùng đúng tháng cuối quý đang chạy → trừ đi các quý trước đã
+# biết CHÍNH THỨC (SALES_Q_LABELS/HRC_SALES_HIST_KT+XD_SALES_HIST_KT) để suy ra quý đang chạy. Chỉ dùng
+# khi có ĐỦ tất cả quý trước trong năm (không suy diễn nếu thiếu 1 quý nào).
+_cum_q_rec = next((r for r in _sales_news if r["type"] == "cumulative" and r["year"] == CUR_Q_YEAR
+                    and r["months"] == _cur_q_months[-1]), None)
+_prior_q_idxs = [i for i, lbl in enumerate(SALES_Q_LABELS)
+                 if lbl.startswith(str(CUR_Q_YEAR)) and int(lbl[5]) < CUR_Q_NUM]
+_prior_q_have = sorted(int(SALES_Q_LABELS[i][5]) for i in _prior_q_idxs)
+_prior_q_total_kt = (sum(HRC_SALES_HIST_KT[i] + XD_SALES_HIST_KT[i] for i in _prior_q_idxs)
+                     if _prior_q_have == list(range(1, CUR_Q_NUM)) else None)
 
 if _official_q_rec:
     CUR_Q_SOURCE = "OFFICIAL"
     CUR_Q_TOTAL_KT = _official_q_rec["volume_kt"]
-    print(f"  -> Found OFFICIAL {CUR_Q_LABEL} volume: {CUR_Q_TOTAL_KT:.0f} kt ({_official_q_rec['url']})")
+    # cafef.vn thường cho TỔNG + tách riêng HRC/XD trong cùng bài (khác PR hoaphat.com.vn/noibo chỉ
+    # cho tổng) — dùng trực tiếp khi có, chính xác hơn tỷ lệ lịch sử Q1 dùng làm fallback bên dưới.
+    CUR_Q_HRC_KT_DIRECT = _official_q_rec.get("hrc_kt")
+    CUR_Q_XD_KT_DIRECT = _official_q_rec.get("xd_kt")
+    print(f"  -> Found OFFICIAL {CUR_Q_LABEL} volume: {CUR_Q_TOTAL_KT:.0f} kt ({_official_q_rec['url']})"
+          + (f" (HRC={CUR_Q_HRC_KT_DIRECT:.0f}, XD={CUR_Q_XD_KT_DIRECT:.0f} kt, direct split from source)"
+             if CUR_Q_HRC_KT_DIRECT is not None else ""))
 elif CUR_Q_MONTHLY_RECS:
     CUR_Q_SOURCE = "ESTIMATED"
     _n_known = len(CUR_Q_MONTHLY_RECS)
@@ -816,7 +952,19 @@ elif CUR_Q_MONTHLY_RECS:
     CUR_Q_XD_KT_DIRECT = round(sum(_xd_known) / len(_xd_known) * 3, 1) if len(_xd_known) == _n_known else None
     print(f"  -> Found {_n_known}/3 months of {CUR_Q_LABEL} data, extrapolated total: {CUR_Q_TOTAL_KT:.0f} kt"
           + (f" (HRC={CUR_Q_HRC_KT_DIRECT:.0f}, XD={CUR_Q_XD_KT_DIRECT:.0f} kt, direct split from source)" if CUR_Q_HRC_KT_DIRECT else ""))
+elif _cum_q_rec and _prior_q_total_kt is not None and _cum_q_rec["volume_kt"] > _prior_q_total_kt:
+    CUR_Q_SOURCE = "ESTIMATED"
+    CUR_Q_HRC_KT_DIRECT = CUR_Q_XD_KT_DIRECT = None
+    CUR_Q_TOTAL_KT = round(_cum_q_rec["volume_kt"] - _prior_q_total_kt, 1)
+    print(f"  -> Found cumulative {_cum_q_rec['months']}-month sales ({_cum_q_rec['volume_kt']:.0f} kt) — "
+          f"minus known Q1-Q{CUR_Q_NUM-1}/{CUR_Q_YEAR} ({_prior_q_total_kt:.0f} kt) => {CUR_Q_LABEL} = "
+          f"{CUR_Q_TOTAL_KT:.0f} kt ({_cum_q_rec['url']})")
 else:
+    if _production_only_news:
+        _p = _production_only_news[0]
+        print(f"  [DIAG] Tìm thấy tin SẢN XUẤT (không phải sản lượng BÁN HÀNG) cho {CUR_Q_LABEL}: "
+              f"\"{_p['title']}\" ({_p['url']}) — bỏ qua vì khác cơ sở tính với HRC_SALES_HIST_KT/"
+              f"XD_SALES_HIST_KT (sản xuất có thể gồm cả phôi/ống thép/tôn mạ, không chỉ HRC+XD bán ra).")
     CUR_Q_SOURCE = "FALLBACK"
     CUR_Q_TOTAL_KT = None
     CUR_Q_HRC_KT_DIRECT = CUR_Q_XD_KT_DIRECT = None
@@ -825,7 +973,12 @@ else:
     # tĩnh cứng trong code (SL_HRC_A/SL_XD_A mặc định, có thể đã cũ nhiều tháng), thử dùng lại ước tính
     # đã lưu từ LẦN CHẠY GẦN NHẤT (data/HPG.json) nếu đúng quý đang xét — mới hơn giả định tĩnh, dù có
     # thể không mới bằng 1 lần fetch thành công thực sự.
+    # RECALCULATE_FRESH=true (input "Tính toán lại mới" trên GitHub Actions) bỏ qua cache này — đúng ý
+    # nghĩa "phân tích mới", chấp nhận rơi thẳng về FALLBACK (giả định tĩnh) nếu không fetch được tin gì.
+    _force_fresh = os.environ.get("RECALCULATE_FRESH", "false").strip().lower() == "true"
     try:
+        if _force_fresh:
+            raise RuntimeError("RECALCULATE_FRESH=true — bỏ qua cache lần chạy trước")
         _cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "HPG.json")
         with open(_cache_path, "r", encoding="utf-8") as _f:
             _prev_cache = json.load(_f).get("productionEstimateCache")
@@ -839,10 +992,53 @@ else:
                   f"{CUR_Q_TOTAL_KT:.0f} kt")
     except Exception as _e:
         print(f"  [DIAG] Không đọc được cache ước tính sản lượng từ lần chạy trước: {_e}")
-if CUR_Q_SOURCE not in ("ESTIMATED", "CACHED"):
+if CUR_Q_SOURCE not in ("OFFICIAL", "ESTIMATED", "CACHED"):
     CUR_Q_HRC_KT_DIRECT = CUR_Q_XD_KT_DIRECT = None
 if CUR_Q_SOURCE == "FALLBACK":
     print(f"  -> No production news found yet for {CUR_Q_LABEL} - using existing assumption (giả định tĩnh trong code)")
+
+# ── Chi tiết sản lượng quý đang chạy để hiển thị TRÊN WEB/PDF (không chỉ Excel) — liệt kê rõ tháng
+# nào đã có tin + số liệu, để user tự kiểm chứng cách ước tính tổng quý thay vì chỉ thấy 1 con số.
+_cur_q_months_detail = [
+    {"month": r["month"], "volumeKt": r["volume_kt"], "hrcKt": r.get("hrc_kt"), "xdKt": r.get("xd_kt"),
+     "url": r["url"], "date": r.get("date")}
+    for r in sorted(CUR_Q_MONTHLY_RECS, key=lambda r: r["month"])
+]
+if CUR_Q_SOURCE == "OFFICIAL":
+    _cur_q_note = (
+        f"Đã có số liệu CHÍNH THỨC {CUR_Q_LABEL}: Tổng {CUR_Q_TOTAL_KT:.0f} nghìn tấn"
+        + (f" (HRC {CUR_Q_HRC_KT_DIRECT:.0f} + XD {CUR_Q_XD_KT_DIRECT:.0f} nghìn tấn)" if CUR_Q_HRC_KT_DIRECT is not None else "")
+        + f" — nguồn: {_official_q_rec['url']} ({_official_q_rec.get('date', '?')})."
+    )
+elif CUR_Q_SOURCE == "ESTIMATED" and CUR_Q_MONTHLY_RECS:
+    _months_txt = "; ".join(f"tháng {m['month']}: {m['volumeKt']:.0f} nghìn tấn" for m in _cur_q_months_detail)
+    _cur_q_note = (
+        f"Đã có dữ liệu sản lượng {len(CUR_Q_MONTHLY_RECS)}/3 tháng của {CUR_Q_LABEL} ({_months_txt}). "
+        f"Ước tính TỔNG quý = trung bình {len(CUR_Q_MONTHLY_RECS)} tháng đã biết × 3 = {CUR_Q_TOTAL_KT:.0f} nghìn tấn"
+        + (f" (HRC {CUR_Q_HRC_KT_DIRECT:.0f} + XD {CUR_Q_XD_KT_DIRECT:.0f} nghìn tấn, tách trực tiếp từ nguồn)."
+           if CUR_Q_HRC_KT_DIRECT is not None else " (tách HRC/XD theo tỷ lệ quý trước, xem sheet 15).")
+    )
+elif CUR_Q_SOURCE == "ESTIMATED" and _cum_q_rec:
+    _cur_q_note = (
+        f"Chưa có tin riêng từng tháng, nhưng có số liệu LŨY KẾ {_cum_q_rec['months']} tháng đầu năm "
+        f"{CUR_Q_YEAR} ({_cum_q_rec['volume_kt']:.0f} nghìn tấn) — trừ đi các quý trước đã biết chính "
+        f"thức ({_prior_q_total_kt:.0f} nghìn tấn) => ước tính {CUR_Q_LABEL} = {CUR_Q_TOTAL_KT:.0f} nghìn "
+        f"tấn. Nguồn: {_cum_q_rec['url']} ({_cum_q_rec.get('date', '?')})."
+    )
+elif CUR_Q_SOURCE == "CACHED":
+    _cur_q_note = (
+        f"Không tìm được tin sản lượng mới cho {CUR_Q_LABEL} ở lần chạy này — dùng lại ước tính đã lưu "
+        f"từ lần chạy trước ({_prev_cache.get('fetchedAt', '?')}): {CUR_Q_TOTAL_KT:.0f} nghìn tấn."
+    )
+else:
+    _cur_q_note = f"Chưa có tin sản lượng nào cho {CUR_Q_LABEL} — đang dùng giả định tĩnh trong code (chưa cập nhật)."
+
+CUR_Q_PRODUCTION_DETAIL = {
+    "label": CUR_Q_LABEL, "source": CUR_Q_SOURCE,
+    "totalKt": CUR_Q_TOTAL_KT, "hrcKt": CUR_Q_HRC_KT_DIRECT, "xdKt": CUR_Q_XD_KT_DIRECT,
+    "monthsKnown": _cur_q_months_detail,
+    "note": _cur_q_note,
+}
 
 # Lưu lại ước tính vừa dùng để lần chạy SAU (kể cả trên GitHub Actions, nếu mạng bị chặn) có thể dùng
 # lại làm fallback thay vì rơi thẳng về giả định tĩnh trong code — xem save_json_summary().
@@ -6257,6 +6453,7 @@ def save_json_summary():
         "gdrivePdfUrl": None,
         "gdriveExcelUrl": None,
         "productionEstimateCache": PRODUCTION_CACHE_ENTRY,
+        "currentQuarterProduction": CUR_Q_PRODUCTION_DETAIL,
         "lastUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "data": {
             "years": all_years,

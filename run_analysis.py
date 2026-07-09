@@ -175,7 +175,11 @@ def run_analysis(ticker: str):
             print(f"[WARN] Failed to update KCN peer benchmark dynamically: {e}")
 
         import template_kcn
-        success = template_kcn.run_kcn_analysis(ticker, raw_data)
+        # run_kcn_analysis(ticker, use_cache=True) tự fetch_data.fetch_all() riêng (không nhận raw_data
+        # đã fetch sẵn ở Step 1) — trước đây bị truyền nhầm raw_data (dict) vào tham số use_cache
+        # (luôn truthy nên không crash, nhưng sai kiểu). use_cache thật sự đã được RECALCULATE_FRESH ở
+        # fetch_data.py chi phối, nên chỉ cần gọi đúng chữ ký, không cần đổi True/False thủ công ở đây.
+        success = template_kcn.run_kcn_analysis(ticker)
     else:
         # 1. Try to generate specialized builder via Gemini if key is present and builder doesn't exist yet
         if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):

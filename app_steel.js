@@ -1012,8 +1012,46 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
         commentary += ` <br/><span style="color:#f59e0b">\u26a0\ufe0f L\u01b0u \u00fd: LNST t\u0103ng m\u1ea1nh (${formatGrowth(yoyNpat)}) ${gapText} \u2014 d\u1ea5u hi\u1ec7u cho th\u1ea5y kh\u1ea3 n\u0103ng c\u00f3 thu nh\u1eadp \u0111\u1ed9t bi\u1ebfn, kh\u00f4ng l\u1eb7p l\u1ea1i (thu nh\u1eadp t\u00e0i ch\u00ednh, ho\u00e0n nh\u1eadp d\u1ef1 ph\u00f2ng, thanh l\u00fd t\u00e0i s\u1ea3n...) ho\u1eb7c bi\u00ean l\u1ee3i nhu\u1eadn gi\u00e3n n\u1edf b\u1ea5t th\u01b0\u1eddng, ch\u1ee9 kh\u00f4ng ho\u00e0n to\u00e0n \u0111\u1ebfn t\u1eeb t\u0103ng tr\u01b0\u1edfng ho\u1ea1t \u0111\u1ed9ng kinh doanh c\u1ed1t l\u00f5i theo \u0111\u00fang t\u1ef7 l\u1ec7 doanh thu. N\u00ean \u0111\u1ed1i chi\u1ebfu thuy\u1ebft minh BCTC qu\u00fd ${latestQ.quarter}/${latestQ.yearReport} \u0111\u1ec3 x\u00e1c nh\u1eadn ngu\u1ed3n g\u1ed1c l\u1ee3i nhu\u1eadn tr\u01b0\u1edbc khi ngo\u1ea1i suy cho c\u00e1c qu\u00fd ti\u1ebfp theo.</span>`;
     }
 
+    // \u01af\u1edbc t\u00ednh s\u1ea3n l\u01b0\u1ee3ng th\u00e9p qu\u00fd \u0111ang ch\u1ea1y (t\u1ef1 \u0111\u1ed9ng d\u00f2 tin hoaphat.com.vn/noibo.hoaphat.com.vn/
+    // nguoiquansat.vn/dautucophieu.net/cafef.vn \u2014 ch\u1ec9 c\u00f3 \u1edf data/HPG.json, field "currentQuarterProduction")
+    let productionBlockHTML = '';
+    if (localJson?.currentQuarterProduction) {
+        const cqp = localJson.currentQuarterProduction;
+        const sourceLabel = {
+            OFFICIAL: '\u2705 CH\u00cdNH TH\u1ee8C',
+            ESTIMATED: '\ud83d\udcca \u01af\u1edaC T\u00cdNH (t\u1eeb d\u1eef li\u1ec7u th\u00e1ng/l\u0169y k\u1ebf)',
+            CACHED: '\ud83d\udd04 D\u00f9ng l\u1ea1i l\u1ea7n ch\u1ea1y tr\u01b0\u1edbc',
+            FALLBACK: '\u26a0\ufe0f Gi\u1ea3 \u0111\u1ecbnh t\u0129nh (ch\u01b0a c\u00f3 tin)',
+        }[cqp.source] || cqp.source;
+        const monthsRows = (cqp.monthsKnown || []).map(m => `
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">\u2192 Th\u00e1ng ${m.month} \u0111\u00e3 c\u00f4ng b\u1ed1</span>
+                        <span class="q-metric-value">${formatNumber(m.volumeKt, 0)} ngh\u00ecn t\u1ea5n${m.hrcKt != null ? ` (HRC ${formatNumber(m.hrcKt, 0)} + XD ${formatNumber(m.xdKt, 0)})` : ''}</span>
+                    </div>`).join('');
+        productionBlockHTML = `
+            <div class="q-ytd-item" style="grid-column: 1 / -1">
+                <div class="q-ytd-header">
+                    <span class="q-ytd-title">\u01af\u1edbc t\u00ednh S\u1ea3n l\u01b0\u1ee3ng Th\u00e9p ${cqp.label} (t\u1ef1 \u0111\u1ed9ng d\u00f2 tin)</span>
+                    <span style="font-size:0.75rem;color:var(--text-dim)">${sourceLabel}</span>
+                </div>
+                <div class="q-ytd-metrics">
+                    <div class="q-metric-row">
+                        <span class="q-metric-label">T\u1ed5ng s\u1ea3n l\u01b0\u1ee3ng ${cqp.source === 'OFFICIAL' ? '' : '\u01b0\u1edbc t\u00ednh '}c\u1ea3 qu\u00fd</span>
+                        <span class="q-metric-value">${cqp.totalKt != null ? formatNumber(cqp.totalKt, 0) + ' ngh\u00ecn t\u1ea5n' : 'Ch\u01b0a c\u00f3'}</span>
+                    </div>
+                    ${cqp.hrcKt != null ? `<div class="q-metric-row"><span class="q-metric-label">\u2014 Trong \u0111\u00f3 HRC</span><span class="q-metric-value">${formatNumber(cqp.hrcKt, 0)} ngh\u00ecn t\u1ea5n</span></div>` : ''}
+                    ${cqp.xdKt != null ? `<div class="q-metric-row"><span class="q-metric-label">\u2014 Trong \u0111\u00f3 Th\u00e9p XD</span><span class="q-metric-value">${formatNumber(cqp.xdKt, 0)} ngh\u00ecn t\u1ea5n</span></div>` : ''}
+                    ${monthsRows}
+                </div>
+                <div class="q-commentary-box" style="margin-top:10px">
+                    <strong>\ud83d\udcc8 Ngu\u1ed3n d\u1eef li\u1ec7u:</strong> ${cqp.note || ''}
+                </div>
+            </div>`;
+    }
+
     container.innerHTML = `
         <div class="quarterly-ytd-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">
+            ${productionBlockHTML}
             <div class="q-ytd-item">
                 <div class="q-ytd-header">
                     <span class="q-ytd-title">Doanh thu Qu\u00fd g\u1ea7n nh\u1ea5t (${latestQ.quarter}Q/${latestQ.yearReport})</span>

@@ -1989,7 +1989,7 @@ def save_json_kcn(ticker, company_name, current_price, shares,
                   hist_years, rev_h, gp_h, npat_h,
                   seg_names, seg_labels, seg_colors,
                   yearly_seg, quarterly_seg,
-                  val, ai_comments, excel_url=None, pdf_url=None):
+                  val, ai_comments, excel_url=None, pdf_url=None, beta_rf_cache_entry=None):
     """Ghi data/TICKER.json cho dashboard web."""
     # Cơ cấu doanh thu theo mảng (năm)
     all_yk = sorted(set().union(*[yearly_seg[s].keys() for s in seg_names]))
@@ -2029,6 +2029,7 @@ def save_json_kcn(ticker, company_name, current_price, shares,
         "shares":      shares,
         "gdriveExcelUrl": excel_url,
         "gdrivePdfUrl":   pdf_url,
+        "betaRfCache":    beta_rf_cache_entry,
         # Tài chính tổng hợp
         "data": {
             "years":   list(hist_years),
@@ -2246,6 +2247,13 @@ def run_kcn_analysis(ticker, use_cache=True):
     rf, rf_src     = fetch_rf_vietnam()
     calc_beta, web_beta, is_enough, beta_src, latest_price_hist, aligned_data = fetch_and_calc_beta(ticker)
     beta_raw = calc_beta if is_enough else web_beta
+
+    # Vá lại Beta/Rf bằng cache lần chạy trước nếu fetch trực tiếp thất bại hoàn toàn — xem
+    # beta_rf_cache.py (dùng chung với template_banking.py/template_securities.py).
+    from beta_rf_cache import apply_beta_rf_cache_fallback
+    rf, rf_src, beta_raw, beta_src, BETA_RF_CACHE_ENTRY = apply_beta_rf_cache_fallback(
+        ticker, PROJECT_ROOT, rf, rf_src, beta_raw, beta_src, is_enough, web_beta)
+
     beta = round(0.67 * beta_raw + 0.33, 4)
     print(f"  Rf={rf*100:.2f}% ({rf_src}) | Beta thô={beta_raw:.3f} | Beta Blume={beta:.3f} ({beta_src})")
 
@@ -2361,7 +2369,7 @@ def run_kcn_analysis(ticker, use_cache=True):
         hist_years, rev_h, gp_h, npat_h,
         seg_names, seg_labels, seg_colors,
         yearly_seg, quarterly_seg,
-        val, ai_comments,
+        val, ai_comments, beta_rf_cache_entry=BETA_RF_CACHE_ENTRY,
     )
 
     # ── 13. Cleanup chart PNGs ───────────────────────────────────

@@ -477,6 +477,13 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     rf_val, rf_src = fetch_rf_vietnam()
     beta_calc, beta_web, is_enough_sessions, beta_src, _latest_px, BETA_ALIGNED_DATA = fetch_and_calc_beta(ticker)
     beta_raw = beta_calc if is_enough_sessions else beta_web
+
+    # Vá lại Beta/Rf bằng cache lần chạy trước nếu fetch trực tiếp thất bại hoàn toàn — xem
+    # beta_rf_cache.py (dùng chung với template_banking.py/template_kcn.py).
+    from beta_rf_cache import apply_beta_rf_cache_fallback
+    rf_val, rf_src, beta_raw, beta_src, BETA_RF_CACHE_ENTRY = apply_beta_rf_cache_fallback(
+        ticker, PROJECT_ROOT, rf_val, rf_src, beta_raw, beta_src, is_enough_sessions, beta_web)
+
     beta_val = round(0.67 * beta_raw + 0.33, 4)  # Blume adjustment
     ERP = 0.07
     SPECIFIC_RISK_PREMIUM = 0.02  # CTCK rủi ro thị trường cao hơn (đòn bẩy tự doanh + margin)
@@ -3103,6 +3110,7 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
         "shares": shares,
         "gdriveExcelUrl": None,
         "gdrivePdfUrl": None,
+        "betaRfCache": BETA_RF_CACHE_ENTRY,
         "data": {
             "years": all_years,
             "revenue": [round(v, 1) for v in rev_hist + rev_fc],

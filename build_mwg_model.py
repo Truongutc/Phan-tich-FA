@@ -1547,6 +1547,14 @@ def fetch_and_calc_beta(ticker, days=720, timeout=20, fallback=1.0):
 rf_val, rf_src = fetch_rf_vietnam()
 beta_calc, beta_web, is_enough_sessions, beta_src, _latest_px, BETA_ALIGNED_DATA = fetch_and_calc_beta(TICKER)
 beta_val = beta_calc if is_enough_sessions else beta_web
+
+# Vá lại Beta/Rf bằng cache lần chạy trước nếu fetch trực tiếp thất bại hoàn toàn — xem
+# beta_rf_cache.py (dùng chung với template_banking.py/template_securities.py/template_kcn.py).
+from beta_rf_cache import apply_beta_rf_cache_fallback
+rf_val, rf_src, beta_val, beta_src, BETA_RF_CACHE_ENTRY = apply_beta_rf_cache_fallback(
+    TICKER, os.path.dirname(os.path.abspath(__file__)), rf_val, rf_src, beta_val, beta_src,
+    is_enough_sessions, beta_web)
+
 beta_raw = beta_val
 beta_val = round(0.67 * beta_raw + 0.33, 4)  # Blume adjusted beta (mean reversion về 1)
 ERP = 0.07  # Damodaran ERP
@@ -3710,6 +3718,7 @@ def save_json_summary():
         "shares": SHARES * 1e6,
         "gdriveExcelUrl": None,
         "gdrivePdfUrl": None,
+        "betaRfCache": BETA_RF_CACHE_ENTRY,
         "data": {
             "years": years_all,
             "revenue": [round(v, 1) for v in revenue_hist + revenue_fc],
