@@ -599,6 +599,56 @@ def _tag_ocr_source(vals):
     return vals
 
 
+_CUM_MARKER_RE = re.compile(r"^\s*<!--\s*CUMULATIVE_QUARTERS:\s*(\d)\s*-->", re.IGNORECASE)
+
+
+def _load_store_quarterly(ticker):
+    """Đọc bucket 'quarterly' hiện có trong kho data/segments_kcn/<TICKER>.json (không phải patch
+    tạm) để lấy số liệu các quý trước đã biết, dùng trừ lũy kế — xem _derive_standalone_quarter."""
+    path = os.path.join(STORE_DIR, f"{ticker.upper()}.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f).get("quarterly", {})
+    except Exception:
+        return {}
+
+
+def _derive_standalone_quarter(vals, year, n, quarterly_store):
+    """`vals` hiện là số LŨY KẾ n quý đầu `year` (do người dùng dán qua marker 'Start NQyyyy' — xem
+    update_markdown_drive.py::parse_period_label). Trừ đi Q1..Q(n-1) đã có sẵn trong kho để suy ra
+    đúng số của RIÊNG quý thứ n — cùng nguyên lý derive-q4 trong segments_kcn_tool.py, áp dụng tổng
+    quát cho quý bất kỳ thay vì chỉ Q4. Mảng nào thiếu dữ liệu quý trước trong kho thì BỎ QUA (không
+    suy đại khái) để tránh lưu nhầm số lũy kế (gộp nhiều quý) thành số của 1 quý — sẽ thổi phồng sai.
+    Trả về (vals đã trừ xong, list mảng bị bỏ qua)."""
+    if n <= 1:
+        return vals, []
+    prior_qkeys = [f"{year}Q{i}" for i in range(1, n)]
+    result, skipped = {}, []
+    for seg, data in vals.items():
+        prior_rev, prior_cogs, ok = 0.0, 0.0, True
+        for qk in prior_qkeys:
+            seg_prior = quarterly_store.get(qk, {}).get(seg)
+            if not seg_prior:
+                ok = False
+                break
+            prior_rev += seg_prior.get("revenue") or 0
+            prior_cogs += seg_prior.get("cogs") or 0
+        if not ok:
+            skipped.append(seg)
+            continue
+        rev = round((data.get("revenue") or 0) - prior_rev, 2)
+        cogs = round((data.get("cogs") or 0) - prior_cogs, 2) if data.get("cogs") is not None else None
+        result[seg] = {
+            "revenue": rev, "cogs": cogs,
+            "source": f"{data.get('source', '')} [suy Q{n} riêng = lũy kế {n} quý trừ {'+'.join(prior_qkeys)}]".strip(),
+            "sourceType": data.get("sourceType", "manual"),
+            "derived": True,
+        }
+    return result, skipped
+
+
 def run_parse_and_merge(ticker, period_key, is_ocr=False):
     """
     Đoạn chạy chính: đọc file md -> parse -> tạo file patch -> merge.
@@ -628,7 +678,10 @@ def run_parse_and_merge(ticker, period_key, is_ocr=False):
     
     with open(md_file_path, "r", encoding="utf-8") as f:
         md_content = f.read()
-        
+
+    cum_m = _CUM_MARKER_RE.match(md_content)
+    cum_n = int(cum_m.group(1)) if cum_m else None
+
     tables = parse_markdown_tables(md_content)
     print(f"[Parser] Đã tìm thấy {len(tables)} bảng dữ liệu trong Markdown.")
     
@@ -666,8 +719,29 @@ def run_parse_and_merge(ticker, period_key, is_ocr=False):
         print(f"[Parser] Phát hiện BCTC {period_key} thuộc năm hiện tại ({report_year}). Bỏ qua trích xuất cột so sánh (prior period).")
         prior_vals = {}
 
+    # Nội dung được đánh dấu LŨY KẾ N quý đầu năm (marker "Start NQyyyy", vd. "Start 2q2022" — xem
+    # update_markdown_drive.py) — KHÔNG được lưu thẳng làm số của riêng kỳ này (sẽ gộp cả các quý
+    # trước vào), phải trừ Q1..Q(N-1) đã có trong kho trước.
+    if cum_n and cum_n > 1:
+        if not is_q:
+            print(f"[Parser] [WARN] Marker CUMULATIVE_QUARTERS chỉ áp dụng cho kỳ quý, bỏ qua với period_key={period_key}.")
+        else:
+            quarterly_store = _load_store_quarterly(ticker)
+            curr_vals, skipped_c = _derive_standalone_quarter(curr_vals, report_year, cum_n, quarterly_store)
+            if skipped_c:
+                prior_qkeys = [f"{report_year}Q{i}" for i in range(1, cum_n)]
+                print(f"[Parser] [WARN] Kỳ {period_key}: bỏ qua mảng {skipped_c} vì kho chưa có đủ dữ "
+                      f"liệu {prior_qkeys} để trừ lũy kế — KHÔNG lưu số lũy kế trực tiếp để tránh thổi "
+                      f"phồng sai. Hãy bổ sung {prior_qkeys} trước rồi chạy lại.")
+            if prior_vals:
+                prior_vals, skipped_p = _derive_standalone_quarter(prior_vals, report_year - 1, cum_n, quarterly_store)
+                if skipped_p:
+                    print(f"[Parser] [WARN] Kỳ so sánh {report_year - 1}Q{cum_n}: bỏ qua mảng {skipped_p} "
+                          f"(thiếu dữ liệu quý trước trong kho để trừ lũy kế).")
+
     if not curr_vals:
-        print(f"[Parser] [WARN] Không trích xuất được mảng nào cho {period_key}.")
+        print(f"[Parser] [WARN] Không trích xuất được mảng nào cho {period_key} (có thể do lũy kế "
+              f"thiếu dữ liệu quý trước để trừ — xem cảnh báo ở trên).")
         return False
         
     # Tính toán kỳ trước (prior period key)

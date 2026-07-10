@@ -23,6 +23,13 @@ Ví dụ nội dung nhiều kỳ:
     Start Q2 2024
     ... (markdown BCTC quý 2/2024) ...
     End Q2 2024
+
+Nhãn LŨY KẾ (số đứng TRƯỚC q/Q, khác với "Q2 2024" là quý riêng lẻ):
+    Start 2q2022    -> lũy kế Q1+Q2 gộp chung (không phải số riêng của Q2)
+    Start 3q 2022   -> lũy kế Q1+Q2+Q3 gộp chung
+Hệ thống (xem segments_kcn_parser.py::_derive_standalone_quarter) sẽ tự trừ các quý trước đã có
+trong kho để suy ra đúng số của riêng quý đó trước khi lưu — mảng nào kho chưa đủ dữ liệu để trừ thì
+bị bỏ qua (báo WARN) thay vì lưu nhầm số lũy kế thành số 1 quý.
 """
 import os
 import re
@@ -94,29 +101,50 @@ def detect_period_from_markdown(md_content):
 
 def parse_period_label(label):
     """Chuyển nhãn kỳ gõ tay ở dòng 'Start ...' (vd. '2025', '2025(CN)', 'Q2 2024', 'quý 2 năm 2024',
-    '2024 Q2') thành period_key chuẩn 'YYYY(CN)' hoặc 'YYYYQN'. Trả về None nếu không hiểu được nhãn
-    — khi đó main() sẽ tự dò kỳ trong nội dung khối như đường dự phòng."""
+    '2024 Q2') thành (period_key, cum_quarters).
+
+    cum_quarters=None  -> dữ liệu kỳ ĐƠN như thường lệ (đúng 1 quý riêng lẻ, hoặc cả năm).
+    cum_quarters=N>1   -> dữ liệu LŨY KẾ N quý đầu năm (vd. 'Start 2q2022' = lũy kế Q1+Q2 gộp chung,
+                          KHÔNG PHẢI số riêng của quý 2) — nhận biết bằng SỐ đứng TRƯỚC chữ q/Q
+                          ('2q2022', '3q 2022'), khác với 'q2 2022'/'Q2 2024' (chữ q đứng trước số)
+                          nghĩa là quý ĐƠN thứ 2 như bình thường. run_parse_and_merge() (xem
+                          segments_kcn_parser.py) sẽ tự trừ các quý trước đã có trong kho để suy ra
+                          đúng số của riêng quý N, tránh gán nhầm số lũy kế (gộp nhiều quý) thành số
+                          của 1 quý — sẽ thổi phồng sai (vd. lũy kế 2 quý gán nhầm thành Q2 sẽ cộng
+                          luôn cả Q1 vào).
+
+    Trả về (None, None) nếu không hiểu được nhãn — khi đó main() sẽ tự dò kỳ trong nội dung khối như
+    đường dự phòng."""
     label = label.strip()
+
+    # LŨY KẾ: số đứng NGAY TRƯỚC q/Q (vd. '2q2022', '3q 2022') — PHẢI kiểm tra trước các pattern
+    # "quý đơn" bên dưới để không bị nhầm.
+    m = re.fullmatch(r"(\d)\s*[Qq]\s*(\d{4})", label)
+    if m:
+        n, year = int(m.group(1)), m.group(2)
+        if 1 <= n <= 4:
+            return f"{year}Q{n}", (n if n > 1 else None)
+
     m = re.fullmatch(r"(\d{4})\s*\(\s*CN\s*\)", label, re.IGNORECASE)
     if m:
-        return f"{m.group(1)}(CN)"
+        return f"{m.group(1)}(CN)", None
     m = re.fullmatch(r"(\d{4})\s*[Qq]\s*([1-4])", label)
     if m:
-        return f"{m.group(1)}Q{m.group(2)}"
+        return f"{m.group(1)}Q{m.group(2)}", None
     m = re.search(r"qu[ýy]?\s*(I{1,3}|IV|[1-4])\s*[/\s\-]*\s*(\d{4})", label, re.IGNORECASE)
     if not m:
         m = re.search(r"\bQ\s*([1-4])\s*[/\s\-]*\s*(\d{4})", label, re.IGNORECASE)
     if m:
         qraw = m.group(1).upper()
         q = _ROMAN_Q.get(qraw) or int(qraw)
-        return f"{m.group(2)}Q{q}"
+        return f"{m.group(2)}Q{q}", None
     m = re.fullmatch(r"(\d{4})", label)
     if m:
-        return f"{m.group(1)}(CN)"
+        return f"{m.group(1)}(CN)", None
     m = re.search(r"(\d{4})", label)
     if m:
-        return f"{m.group(1)}(CN)"
-    return None
+        return f"{m.group(1)}(CN)", None
+    return None, None
 
 
 def split_markdown_blocks(content):
@@ -193,7 +221,9 @@ def main():
             print(f"[WARN] Bỏ qua khối '{label}' vì rỗng.")
             continue
 
-        period_key = parse_period_label(label) if label else None
+        period_key, cum_n = (None, None)
+        if label:
+            period_key, cum_n = parse_period_label(label)
         if label and not period_key:
             print(f"[WARN] Không hiểu nhãn kỳ '{label}' ở dòng Start — thử tự dò trong nội dung khối...")
         if not period_key:
@@ -207,7 +237,15 @@ def main():
             print(f"[DEBUG] Độ dài khối: {len(body)} ký tự. 400 ký tự đầu: {preview}")
             continue
 
-        print(f"[INFO] Khối '{label or '(tự dò)'}' -> kỳ báo cáo: {period_key}")
+        if cum_n and cum_n > 1:
+            # Đánh dấu ngay trong nội dung (không phải tên file) để run_parse_and_merge() nhận biết
+            # đây là số LŨY KẾ chứ không phải số riêng của kỳ — xem segments_kcn_parser.py.
+            body = f"<!-- CUMULATIVE_QUARTERS: {cum_n} -->\n" + body
+            print(f"[INFO] Khối '{label}' -> kỳ {period_key}, đánh dấu LŨY KẾ {cum_n} quý đầu năm "
+                  f"(hệ thống sẽ tự trừ các quý trước đã có trong kho để suy ra đúng số quý này).")
+        else:
+            print(f"[INFO] Khối '{label or '(tự dò)'}' -> kỳ báo cáo: {period_key}")
+
         if upload_one_period(ticker, sector, period_key, body):
             any_ok = True
 
