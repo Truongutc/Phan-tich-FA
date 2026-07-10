@@ -8,8 +8,10 @@ Nguồn chính (đã verify hoạt động qua curl thường, không cần cook
     -> JSON {"Data": [{"Quarter":1-4|5(năm), "Year":YYYY, "Name": "...", "Link": "...pdf"}]}
     Quarter=5 nghĩa là báo cáo năm (kiểm toán). Name chứa "hợp nhất" hoặc "công ty mẹ".
 
-Dự phòng: 24hmoney.vn/stock/<mã>/financial-report (HTML có sẵn link PDF CDN,
-không phân nhãn hợp nhất/riêng rõ ràng — phải tự phân biệt bằng số trang).
+Dự phòng: 24hmoney.vn/stock/<mã>/financial-report — dữ liệu nhúng sẵn trong window.__NUXT__
+(report.listFinancialReport.<TICKER>), có tiêu đề rõ ràng "hợp nhất"/"riêng lẻ" + kỳ báo cáo,
+không cần gọi API riêng. Gộp cùng CafeF trước khi chọn bản tối ưu — bù các kỳ CafeF thiếu bản
+hợp nhất (đã xác nhận thực tế: IDC quý 2/2025 CafeF chỉ có "công ty mẹ", 24hmoney có đủ).
 
 Usage:
     python bctc_pdf_tool.py list <TICKER>
@@ -27,6 +29,7 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import json
+import re
 import argparse
 import unicodedata
 import requests
@@ -93,9 +96,61 @@ def select_best_reports(items):
     return consolidated
 
 
+def _parse_24hmoney_period(title):
+    """Trích (year, quarter) từ tiêu đề 24hmoney dạng '...hợp nhất Quý N năm YYYY' hoặc '...hợp
+    nhất đã kiểm toán năm YYYY' — chỉ nhận bản HỢP NHẤT (bỏ qua 'riêng lẻ'/công ty mẹ). quarter=5
+    cho báo cáo năm (kiểm toán), khớp quy ước Quarter=5 của cafef để dùng chung select_best_reports.
+    Trả về None nếu không phải bản hợp nhất hoặc không khớp mẫu nào."""
+    if not is_consolidated(title):
+        return None
+    m = re.search(r"[Qq]uý\s*(\d)\s*năm\s*(\d{4})", title)
+    if m:
+        return int(m.group(2)), int(m.group(1))
+    m = re.search(r"năm\s*(\d{4})", title)
+    if m and re.search(r"kiểm toán", title, re.IGNORECASE):
+        return int(m.group(1)), 5
+    return None
+
+
+def fetch_24hmoney_list(ticker):
+    """Dò BCTC PDF trên 24hmoney.vn — nguồn DỰ PHÒNG khi CafeF thiếu bản hợp nhất 1 kỳ nào đó (xác
+    nhận thực tế 2026-07: CafeF không có "Báo cáo tài chính hợp nhất Quý 2 năm 2025" của IDC, chỉ có
+    bản "riêng lẻ", nhưng 24hmoney.vn có đủ). Trang /stock/<ticker>/financial-report nhúng sẵn dữ
+    liệu trong window.__NUXT__ (report.listFinancialReport.<TICKER> — mảng {title, file_url,
+    published_date}), không cần gọi API riêng/không cần JS render. Trả về list dict CÙNG SCHEMA với
+    fetch_cafef_list() ("Year","Quarter","Name","Link") để dùng chung select_best_reports(). KHÔNG
+    BAO GIỜ crash — trả về [] nếu lỗi bất kỳ bước nào."""
+    try:
+        r = requests.get(f"https://24hmoney.vn/stock/{ticker.lower()}/financial-report",
+                          headers=HEADERS, timeout=20)
+        r.raise_for_status()
+        html = r.text
+    except Exception as e:
+        print(f"  [WARN] 24hmoney.vn fetch error: {e}")
+        return []
+
+    m = re.search(r"listFinancialReport:\{" + re.escape(ticker.upper()) + r":\[(.*?)\]\}", html)
+    if not m:
+        return []
+
+    # JS minify escape URL/tieu de dang \uXXXX (vd / cho "/") - giai ma truoc khi dung, khong
+    # thi Link se chua chuoi "/" theo nghia den thay vi ky tu that.
+    _unescape = lambda s: re.sub(r"\\u([0-9a-fA-F]{4})", lambda mm: chr(int(mm.group(1), 16)), s)
+
+    items = []
+    for title, url in re.findall(r'\{title:"([^"]*)",file_url:"([^"]*)"', m.group(1)):
+        title, url = _unescape(title), _unescape(url)
+        parsed = _parse_24hmoney_period(title)
+        if not parsed:
+            continue
+        year, quarter = parsed
+        items.append({"Year": year, "Quarter": quarter, "Name": title, "Link": url})
+    return items
+
+
 def cmd_list(args):
     ticker = args.ticker.upper()
-    items = fetch_cafef_list(ticker)
+    items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
     consolidated = select_best_reports(items)
     print(f"[INFO] Tổng {len(items)} tài liệu, đã chọn {len(consolidated)} bản tối ưu cho {ticker}:")
     for x in sorted(consolidated, key=lambda x: (x.get("Year", 0), x.get("Quarter", 0)), reverse=True):
@@ -111,7 +166,10 @@ def _period_key(quarter, year):
 
 def cmd_plan_downloads(args):
     ticker = args.ticker.upper()
-    items = fetch_cafef_list(ticker)
+    # Gộp CafeF (nguồn chính) + 24hmoney.vn (dự phòng khi CafeF thiếu bản hợp nhất 1 kỳ nào đó — xem
+    # fetch_24hmoney_list) — select_best_reports() tự chọn bản tối ưu, CafeF đứng trước nên được ưu
+    # tiên khi cả 2 nguồn cùng có 1 kỳ (max() giữ phần tử đầu tiên khi điểm ưu tiên bằng nhau).
+    items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
     consolidated = select_best_reports(items)
 
     store_file = os.path.join(STORE_DIR, f"{ticker}.json")
@@ -210,7 +268,7 @@ def cmd_fetch_one(args):
     cột so sánh của kỳ liền kề nữa, vì cột so sánh có thể chính là nguồn dữ liệu thiếu/lệch)."""
     ticker = args.ticker.upper()
     period_key = args.period
-    items = fetch_cafef_list(ticker)
+    items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
     consolidated = select_best_reports(items)
     is_q = "Q" in period_key
     if is_q:
