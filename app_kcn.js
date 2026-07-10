@@ -182,12 +182,17 @@ function renderAnalysis(d) {
     const segs = Object.keys(segY);
     let leasingPct = '0%', utilitiesPct = '0%', otherPct = '0%';
     let leasingVal = 0, utilitiesVal = 0, otherVal = 0;
-    
-    // Tìm các mảng thực tế để tính tỷ trọng năm gần nhất 2025
+
+    // Tìm các mảng thực tế để tính tỷ trọng năm gần nhất
+    // Lưu ý: seg.data lưu theo key kỳ báo cáo dạng "YYYY(CN)" (xem template_kcn.py
+    // build_pdf_kcn/save_json_kcn), KHÔNG phải số năm trần trụi — phải nối "(CN)" khi tra cứu,
+    // nếu không mọi seg.data[year] đều undefined và toàn bộ tỷ trọng/chart mảng bị rỗng.
+    const ovYears = d.data?.years || [2021, 2022, 2023, 2024, 2025];
+    const ovLatestYear = ovYears[ovYears.length - 1];
     let totalRev2025 = 0;
     segs.forEach(segKey => {
         const seg = segY[segKey];
-        const rev2025 = seg.data && seg.data[2025] ? (seg.data[2025].revenue || 0) : 0;
+        const rev2025 = seg.data && seg.data[ovLatestYear + '(CN)'] ? (seg.data[ovLatestYear + '(CN)'].revenue || 0) : 0;
         totalRev2025 += rev2025;
         if (seg.label.includes('KCN') || seg.label.includes('đất')) {
             leasingVal = rev2025;
@@ -287,22 +292,23 @@ function renderAnalysis(d) {
 // ── CHARTS IMPLEMENTATION ────────────────────────────────────────────────
 function renderChartSegRev(d) {
     destroyChart('segRevChart');
-    
+
     const years = d.data?.years || [2021, 2022, 2023, 2024, 2025];
+    const latestYear = years[years.length - 1];
     const segY = d.segments_yearly || {};
     const segNames = Object.keys(segY);
-    
-    // Tính tổng doanh thu lịch sử các năm để lấy tỷ trọng năm 2025
+
+    // Tính tổng doanh thu lịch sử các năm để lấy tỷ trọng năm gần nhất
     let totalRev2025 = 0;
     const segWeights = {};
     segNames.forEach(segKey => {
         const seg = segY[segKey];
-        const r2025 = seg.data && seg.data[2025] ? (seg.data[2025].revenue || 0) : 0;
+        const r2025 = seg.data && seg.data[latestYear + '(CN)'] ? (seg.data[latestYear + '(CN)'].revenue || 0) : 0;
         totalRev2025 += r2025;
     });
     segNames.forEach(segKey => {
         const seg = segY[segKey];
-        const r2025 = seg.data && seg.data[2025] ? (seg.data[2025].revenue || 0) : 0;
+        const r2025 = seg.data && seg.data[latestYear + '(CN)'] ? (seg.data[latestYear + '(CN)'].revenue || 0) : 0;
         segWeights[segKey] = totalRev2025 > 0 ? (r2025 / totalRev2025) : (1 / segNames.length);
     });
 
@@ -320,7 +326,7 @@ function renderChartSegRev(d) {
         datasets = segNames.map(segKey => {
             const seg = segY[segKey];
             const dataArr = years.map(y => {
-                return seg.data && seg.data[y] ? seg.data[y].revenue : 0;
+                return seg.data && seg.data[y + '(CN)'] ? seg.data[y + '(CN)'].revenue : 0;
             });
             // Dự phóng: Doanh thu mảng = Tổng doanh thu dự phóng * Tỷ trọng mảng năm 2025
             const weight = segWeights[segKey];
@@ -402,20 +408,21 @@ function renderChartSegRev(d) {
 function renderChartSegGp(d) {
     destroyChart('segGpChart');
     const years = d.data?.years || [2021, 2022, 2023, 2024, 2025];
+    const latestYear = years[years.length - 1];
     const segY = d.segments_yearly || {};
     const segNames = Object.keys(segY);
-    
-    // Tính tỷ trọng doanh thu năm 2025
+
+    // Tính tỷ trọng doanh thu năm gần nhất
     let totalRev2025 = 0;
     const segWeights = {};
     segNames.forEach(segKey => {
         const seg = segY[segKey];
-        const r2025 = seg.data && seg.data[2025] ? (seg.data[2025].revenue || 0) : 0;
+        const r2025 = seg.data && seg.data[latestYear + '(CN)'] ? (seg.data[latestYear + '(CN)'].revenue || 0) : 0;
         totalRev2025 += r2025;
     });
     segNames.forEach(segKey => {
         const seg = segY[segKey];
-        const r2025 = seg.data && seg.data[2025] ? (seg.data[2025].revenue || 0) : 0;
+        const r2025 = seg.data && seg.data[latestYear + '(CN)'] ? (seg.data[latestYear + '(CN)'].revenue || 0) : 0;
         segWeights[segKey] = totalRev2025 > 0 ? (r2025 / totalRev2025) : (1 / segNames.length);
     });
 
@@ -436,7 +443,7 @@ function renderChartSegGp(d) {
             // Tính Biên LNG trung bình lịch sử thực tế của mảng
             let sumRev = 0, sumCogs = 0;
             years.forEach(y => {
-                const sData = seg.data && seg.data[y] ? seg.data[y] : null;
+                const sData = seg.data && seg.data[y + '(CN)'] ? seg.data[y + '(CN)'] : null;
                 if (sData) {
                     sumRev += sData.revenue || 0;
                     sumCogs += sData.cogs || 0;
@@ -445,7 +452,7 @@ function renderChartSegGp(d) {
             const histAvgMargin = sumRev > 0 ? ((sumRev - sumCogs) / sumRev) : 0.1;
 
             const dataArr = years.map(y => {
-                const sData = seg.data && seg.data[y] ? seg.data[y] : null;
+                const sData = seg.data && seg.data[y + '(CN)'] ? seg.data[y + '(CN)'] : null;
                 return sData ? (sData.revenue - sData.cogs) : 0;
             });
 
@@ -539,7 +546,7 @@ function renderChartSegMargin(d) {
             
             // Tính Biên LNG lịch sử từng năm
             const dataArr = years.map(y => {
-                const sData = seg.data && seg.data[y] ? seg.data[y] : null;
+                const sData = seg.data && seg.data[y + '(CN)'] ? seg.data[y + '(CN)'] : null;
                 if (sData && sData.revenue > 0) {
                     return Math.round((sData.revenue - sData.cogs) / sData.revenue * 1000) / 10;
                 }
@@ -549,7 +556,7 @@ function renderChartSegMargin(d) {
             // Biên LNG dự phóng giữ ổn định bằng trung bình lịch sử thực tế
             let sumRev = 0, sumCogs = 0;
             years.forEach(y => {
-                const sData = seg.data && seg.data[y] ? seg.data[y] : null;
+                const sData = seg.data && seg.data[y + '(CN)'] ? seg.data[y + '(CN)'] : null;
                 if (sData) {
                     sumRev += sData.revenue || 0;
                     sumCogs += sData.cogs || 0;
