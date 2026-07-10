@@ -7,7 +7,7 @@ on:
         description: 'Mã cổ phiếu cần bổ sung dữ liệu (ví dụ: IDC, SIP, HPG...)'
         required: true
       markdown:
-        description: 'Dán nội dung markdown BCTC đã chuyển đổi vào đây (1 kỳ báo cáo / 1 lần chạy)'
+        description: 'Markdown BCTC. 1 kỳ: dán thẳng. Nhiều kỳ/lần: mỗi khối bắt đầu bằng dòng "Start <kỳ>" (vd. Start 2025 / Start Q2 2024)'
         required: true
         type: string
 

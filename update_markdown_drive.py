@@ -4,13 +4,25 @@ update_markdown_drive.py — Nhận markdown BCTC người dùng dán thủ côn
 đọc đủ), tự dò kỳ báo cáo (quý/năm) từ nội dung, rồi upload lên đúng folder Google Drive Ngành/Mã
 của ticker đó — CÙNG folder chứa Excel/PDF báo cáo, KHÔNG lưu vào git (BCTC_PDF/ không được commit).
 
-Dùng bởi workflow GitHub Actions "Cập nhật Markdown BCTC" (2 ô nhập: mã cổ phiếu + markdown dán vào,
-mỗi lần chạy = 1 kỳ báo cáo). run_kcn_analysis() (template_kcn.py) sẽ tự tải các file này về từ Drive
-khi phát hiện kỳ tương ứng vẫn thiếu/lệch sau khi đã thử tự động tải+OCR (xem check_segment_consistency).
+Dùng bởi workflow GitHub Actions "Cập nhật Markdown BCTC" (2 ô nhập: mã cổ phiếu + markdown dán vào).
+Có thể dán NHIỀU kỳ trong 1 lần chạy bằng marker "Start <kỳ>" ở đầu mỗi khối (vd. "Start 2025",
+"Start Q2 2024", "Start 2024(CN)") — dòng "End ..." hoặc "---" ở cuối khối là tuỳ chọn, không bắt
+buộc, chỉ để dễ đọc. Nếu không dùng marker (dán 1 khối trơn), hệ thống tự dò kỳ từ nội dung như cũ.
+
+run_kcn_analysis() (template_kcn.py) sẽ tự tải các file này về từ Drive khi phát hiện kỳ tương ứng
+vẫn thiếu/lệch sau khi đã thử tự động tải+OCR (xem check_segment_consistency).
 
 Usage:
     python update_markdown_drive.py <TICKER>
     (nội dung markdown đọc từ biến môi trường MARKDOWN_CONTENT, hoặc từ stdin nếu không có)
+
+Ví dụ nội dung nhiều kỳ:
+    Start 2025
+    ... (toàn bộ markdown BCTC năm 2025, thường có sẵn cột so sánh năm 2024) ...
+    End 2025
+    Start Q2 2024
+    ... (markdown BCTC quý 2/2024) ...
+    End Q2 2024
 """
 import os
 import re
@@ -24,6 +36,10 @@ sys.path.insert(0, PROJECT_ROOT)
 import google_drive_uploader as gdrive
 
 _MONTH_TO_Q = {3: 1, 6: 2, 9: 3, 12: 4}
+_ROMAN_Q = {"I": 1, "II": 2, "III": 3, "IV": 4}
+
+_START_MARKER_RE = re.compile(r"(?im)^[ \t]*(?:start|bắt\s*đầu|bat\s*dau)\b[:\-]?\s*(.+?)\s*$")
+_END_MARKER_RE = re.compile(r"(?im)^[ \t]*(?:end|kết\s*thúc|ket\s*thuc)\b[:\-]?.*$")
 
 
 def detect_period_from_markdown(md_content):
@@ -66,15 +82,76 @@ def detect_period_from_markdown(md_content):
         md_content, re.IGNORECASE,
     )
     if m:
-        roman = {"I": 1, "II": 2, "III": 3, "IV": 4}
         qraw = m.group(1).upper()
-        q = roman.get(qraw) or int(qraw)
+        q = _ROMAN_Q.get(qraw) or int(qraw)
         return f"{m.group(2)}Q{q}"
 
     m = re.search(r"n[ăa]m\s*(\d{4})", md_content, re.IGNORECASE)
     if m and re.search(r"ki[eể]m\s*to[áa]n", md_content, re.IGNORECASE):
         return f"{m.group(1)}(CN)"
     return None
+
+
+def parse_period_label(label):
+    """Chuyển nhãn kỳ gõ tay ở dòng 'Start ...' (vd. '2025', '2025(CN)', 'Q2 2024', 'quý 2 năm 2024',
+    '2024 Q2') thành period_key chuẩn 'YYYY(CN)' hoặc 'YYYYQN'. Trả về None nếu không hiểu được nhãn
+    — khi đó main() sẽ tự dò kỳ trong nội dung khối như đường dự phòng."""
+    label = label.strip()
+    m = re.fullmatch(r"(\d{4})\s*\(\s*CN\s*\)", label, re.IGNORECASE)
+    if m:
+        return f"{m.group(1)}(CN)"
+    m = re.fullmatch(r"(\d{4})\s*[Qq]\s*([1-4])", label)
+    if m:
+        return f"{m.group(1)}Q{m.group(2)}"
+    m = re.search(r"qu[ýy]?\s*(I{1,3}|IV|[1-4])\s*[/\s\-]*\s*(\d{4})", label, re.IGNORECASE)
+    if not m:
+        m = re.search(r"\bQ\s*([1-4])\s*[/\s\-]*\s*(\d{4})", label, re.IGNORECASE)
+    if m:
+        qraw = m.group(1).upper()
+        q = _ROMAN_Q.get(qraw) or int(qraw)
+        return f"{m.group(2)}Q{q}"
+    m = re.fullmatch(r"(\d{4})", label)
+    if m:
+        return f"{m.group(1)}(CN)"
+    m = re.search(r"(\d{4})", label)
+    if m:
+        return f"{m.group(1)}(CN)"
+    return None
+
+
+def split_markdown_blocks(content):
+    """Tách nội dung dán vào theo marker 'Start <kỳ>' ở đầu dòng — mỗi khối chạy từ sau 1 dòng Start
+    tới trước dòng Start kế tiếp (hoặc hết nội dung). Dòng 'End ...' trong khối bị loại bỏ (chỉ mang
+    tính trang trí, không map period). Nếu KHÔNG có marker nào -> trả về 1 khối duy nhất (label=None)
+    chứa toàn bộ nội dung, giữ tương thích ngược với cách dán 1-kỳ/1-lần-chạy trước đây."""
+    starts = list(_START_MARKER_RE.finditer(content))
+    if not starts:
+        return [(None, content)]
+    blocks = []
+    for i, m in enumerate(starts):
+        label = m.group(1).strip()
+        body_start = m.end()
+        body_end = starts[i + 1].start() if i + 1 < len(starts) else len(content)
+        body = _END_MARKER_RE.sub("", content[body_start:body_end]).strip()
+        blocks.append((label, body))
+    return blocks
+
+
+def upload_one_period(ticker, sector, period_key, content):
+    normalized_period = period_key.replace("(", "_").replace(")", "")
+    file_name = f"{ticker}_{normalized_period}_manual.md"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = os.path.join(tmpdir, file_name)
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        file_id, link = gdrive.upload_file(tmp_path, sector=sector, ticker=ticker)
+
+    if file_id:
+        print(f"[OK] Đã lưu {file_name} (kỳ {period_key}) lên Google Drive: {link}")
+        return True
+    print(f"[ERROR] Upload {file_name} (kỳ {period_key}) lên Google Drive thất bại — kiểm tra lại "
+          "secret GDRIVE_SERVICE_ACCOUNT_JSON/GDRIVE_WEBAPP_URL.")
+    return False
 
 
 def main():
@@ -92,17 +169,6 @@ def main():
         print("[ERROR] Không có nội dung markdown để xử lý.")
         sys.exit(1)
 
-    period_key = detect_period_from_markdown(md_content)
-    if not period_key:
-        print("[ERROR] Không dò được kỳ báo cáo (quý/năm) từ nội dung markdown. Hãy đảm bảo trong "
-              "nội dung có câu dạng 'ngày DD tháng MM năm YYYY' (thường có sẵn ở đầu mọi bảng BCTC) "
-              "hoặc 'năm YYYY (đã kiểm toán)' cho báo cáo năm.")
-        preview = md_content[:400].replace("\n", " ⏎ ")
-        print(f"[DEBUG] Độ dài nội dung nhận được: {len(md_content)} ký tự.")
-        print(f"[DEBUG] 400 ký tự đầu tiên: {preview}")
-        sys.exit(1)
-    print(f"[INFO] Dò được kỳ báo cáo: {period_key}")
-
     # Sector lấy từ data/<TICKER>.json (đã có sau lần phân tích trước — xem save_json_kcn) để file
     # markdown lưu ĐÚNG folder Ngành/Mã trên Drive, khớp nơi Excel/PDF báo cáo đang được lưu.
     ticker_json_path = os.path.join(PROJECT_ROOT, "data", f"{ticker}.json")
@@ -117,19 +183,35 @@ def main():
         print(f"[WARN] Không tìm thấy data/{ticker}.json (chưa phân tích {ticker} lần nào) — hãy chạy "
               f"'Stock Analysis and Report Pipeline' cho {ticker} ít nhất 1 lần trước khi bổ sung markdown.")
 
-    normalized_period = period_key.replace("(", "_").replace(")", "")
-    file_name = f"{ticker}_{normalized_period}_manual.md"
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_path = os.path.join(tmpdir, file_name)
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            f.write(md_content)
-        file_id, link = gdrive.upload_file(tmp_path, sector=sector, ticker=ticker)
+    blocks = split_markdown_blocks(md_content)
+    if len(blocks) > 1:
+        print(f"[INFO] Phát hiện {len(blocks)} khối (marker 'Start ...') trong nội dung dán vào.")
 
-    if file_id:
-        print(f"[OK] Đã lưu {file_name} (kỳ {period_key}) lên Google Drive: {link}")
-    else:
-        print("[ERROR] Upload lên Google Drive thất bại — kiểm tra lại secret "
-              "GDRIVE_SERVICE_ACCOUNT_JSON/GDRIVE_WEBAPP_URL.")
+    any_ok = False
+    for label, body in blocks:
+        if not body.strip():
+            print(f"[WARN] Bỏ qua khối '{label}' vì rỗng.")
+            continue
+
+        period_key = parse_period_label(label) if label else None
+        if label and not period_key:
+            print(f"[WARN] Không hiểu nhãn kỳ '{label}' ở dòng Start — thử tự dò trong nội dung khối...")
+        if not period_key:
+            period_key = detect_period_from_markdown(body)
+
+        if not period_key:
+            print(f"[ERROR] Không dò được kỳ báo cáo cho khối '{label or '(không có marker Start)'}'. "
+                  "Hãy ghi rõ dòng 'Start <kỳ>' (vd. 'Start 2025' hoặc 'Start Q2 2024') ở đầu khối, "
+                  "hoặc đảm bảo nội dung có câu 'ngày DD tháng MM năm YYYY'.")
+            preview = body[:400].replace("\n", " ⏎ ")
+            print(f"[DEBUG] Độ dài khối: {len(body)} ký tự. 400 ký tự đầu: {preview}")
+            continue
+
+        print(f"[INFO] Khối '{label or '(tự dò)'}' -> kỳ báo cáo: {period_key}")
+        if upload_one_period(ticker, sector, period_key, body):
+            any_ok = True
+
+    if not any_ok:
         sys.exit(1)
 
 
