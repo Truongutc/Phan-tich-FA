@@ -27,6 +27,19 @@ function destroyChart(id) {
     if (charts[id]) { charts[id].destroy(); delete charts[id]; }
 }
 
+// Sinh danh sách quý "YYYYQn" cho năm hiện tại + 2 năm trước (đủ ô trên trục X kể cả quý
+// chưa có dữ liệu), hợp thêm bất kỳ quý nào khác (vd. dữ liệu cũ hơn 3 năm) mà backend đã có.
+function buildQuarterRange(extraKeys) {
+    const curYear = new Date().getFullYear();
+    const startYear = curYear - 2;
+    const qs = [];
+    for (let y = startYear; y <= curYear; y++) {
+        for (let q = 1; q <= 4; q++) qs.push(`${y}Q${q}`);
+    }
+    (extraKeys || []).forEach(k => { if (!qs.includes(k)) qs.push(k); });
+    return qs.sort();
+}
+
 // ── OVERVIEW ─────────────────────────────────────────────────────────────
 function showOverview() {
     document.getElementById('view-overview').style.display = 'flex';
@@ -267,7 +280,12 @@ function renderAnalysis(d) {
     renderFinTable(data);
 
     // ── Render 9 Charts ──
-    const qKeys = d.quarterly_keys || ["2024Q1", "2024Q2", "2024Q3", "2024Q4", "2025Q1", "2025Q2", "2025Q3", "2025Q4", "2026Q1"];
+    // d.quarterly_keys (từ backend) chỉ liệt kê các quý ĐÃ CÓ dữ liệu mảng — nếu dùng thẳng làm
+    // trục X, biểu đồ sẽ "nhảy cóc" bỏ qua hẳn các quý chưa có số, trông như chỉ có vài quý rời rạc
+    // và không phân biệt được quý nào thật sự thiếu dữ liệu. Dựng sẵn lưới đủ 3 năm gần nhất (năm
+    // hiện tại + 2 năm trước) để quý thiếu vẫn hiện trên trục X (cột rỗng), rồi hợp thêm bất kỳ quý
+    // nào khác ngoài khung 3 năm mà backend có sẵn dữ liệu.
+    const qKeys = buildQuarterRange(d.quarterly_keys || []);
     renderChartSegRev(d);
     renderChartSegGp(d);
     renderChartSegMargin(d);
