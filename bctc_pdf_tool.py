@@ -117,6 +117,7 @@ def cmd_plan_downloads(args):
     store_file = os.path.join(STORE_DIR, f"{ticker}.json")
     store = {}
     have_yearly, have_quarterly = set(), set()
+    have_yearly_own_pdf = set()
     if os.path.exists(store_file):
         with open(store_file, "r", encoding="utf-8") as f:
             store = json.load(f)
@@ -128,6 +129,13 @@ def cmd_plan_downloads(args):
             non_khac = [s for s in seg_data if s != "Khac" and (seg_data[s].get("revenue", 0) > 0 or seg_data[s].get("cogs", 0) > 0)]
             if non_khac or ticker not in ("IDC", "SIP", "PHR", "SZC"):
                 have_yearly.add(pkey)
+                # "Tự có nguồn" = ít nhất 1 field có source ghi ĐÚNG period_key này (tải PDF của chính
+                # năm đó) — phân biệt với năm chỉ có nhờ ăn theo cột so sánh (thuyết minh) của 1 PDF
+                # NĂM KHÁC (source ghi period_key khác). Chỉ mốc neo "tự có nguồn" mới được phép skip
+                # tải lại — nếu không, dữ liệu ăn theo dây chuyền lại tự làm gãy dây chuyền tiếp theo
+                # (xem bug 2022(CN) đã sửa ở trên).
+                if any(f"({pkey})" in (v.get("source") or "") for v in seg_data.values()):
+                    have_yearly_own_pdf.add(pkey)
                 
         for pkey, seg_data in store.get("quarterly", {}).items():
             non_khac = [s for s in seg_data if s != "Khac" and (seg_data[s].get("revenue", 0) > 0 or seg_data[s].get("cogs", 0) > 0)]
@@ -136,26 +144,36 @@ def cmd_plan_downloads(args):
 
     # Lấy năm cao nhất từ danh sách tài liệu CafeF
     current_year = max((x["Year"] for x in consolidated), default=2026)
-    
-    # 1. Yearly: Tải 5 năm gần nhất để phân tích lịch sử đầy đủ
-    years_wanted = [current_year, current_year - 1, current_year - 2, current_year - 3, current_year - 4]
-    
-    # 2. Quarterly: Tải các quý của năm nay và năm ngoái
+
+    # 1. Yearly: năm hiện tại (current_year) CHƯA CÓ báo cáo năm (chỉ có báo cáo quý, xem mục 2) nên
+    # bỏ qua hẳn khỏi kế hoạch tải năm. Mỗi PDF kiểm toán năm N tự chứa cột so sánh năm N-1 trong
+    # thuyết minh (trích "miễn phí" khi parse — xem segments_kcn_parser.py), nên chỉ cần tải các "mốc
+    # neo" SO LE (current_year-1, current_year-3, current_year-5, ...) là đủ phủ toàn bộ dải năm, mỗi
+    # mốc neo cho 2 năm. LUÔN tính tương đối theo current_year (KHÔNG hardcode theo lịch dương) nên tự
+    # đúng khi sang năm mới — VD 2026 neo tại {2025, 2023}; sang 2027 tự động neo tại {2026, 2024}.
+    N_YEAR_ANCHORS = 2  # 2 mốc neo => phủ 4 năm lịch sử (current_year-1 .. current_year-4)
+    years_wanted = [current_year - 1 - 2 * k for k in range(N_YEAR_ANCHORS)]
+
+    # 2. Quarterly: Tải TOÀN BỘ báo cáo quý của năm nay (current_year) VÀ năm ngoái (current_year-1)
+    # — đủ 8 quý của 2 năm gần nhất + các quý hiện tại (không có cơ chế "cột so sánh" tiết kiệm tải
+    # cho báo cáo quý — mỗi quý phải tải PDF riêng của chính nó).
     quarters_wanted_years = [current_year, current_year - 1]
 
     to_fetch = []
-    # Lập kế hoạch Yearly
+    # Lập kế hoạch Yearly (chỉ các mốc neo trong years_wanted — xem giải thích ở trên).
+    # LƯU Ý QUAN TRỌNG: chỉ skip tải mốc neo năm Y nếu năm Y đã "TỰ CÓ NGUỒN" (have_yearly_own_pdf —
+    # tức PDF của CHÍNH năm Y từng được tải), KHÔNG dùng have_yearly (chỉ cần "có dữ liệu bằng cách
+    # nào đó", kể cả ăn theo cột so sánh của 1 PDF NĂM KHÁC). Nếu skip nhầm theo have_yearly, PDF của
+    # năm Y sẽ không bao giờ thực sự được tải, nên cột so sánh năm Y-1 bên trong nó không thể tự "rơi
+    # ra" được — làm gãy dây chuyền lấy dữ liệu năm kế tiếp (2026-07, phát hiện qua case IDC: 2023(CN)
+    # chỉ có nhờ ăn theo PDF 2024(CN), nên PDF 2023(CN) không bao giờ được tải, khiến 2022(CN) — vốn
+    # cần cột so sánh bên trong PDF 2023(CN) — bị bỏ sót vĩnh viễn dù CafeF có sẵn báo cáo năm 2022).
     to_fetch_yearly = []
     for y in years_wanted:
         pkey = f"{y}(CN)"
-        next_pkey = f"{y+1}(CN)"
-        if next_pkey in have_yearly or next_pkey in [item[0] for item in to_fetch_yearly]:
-            print(f"  [INFO] Bỏ qua lập lịch tải {pkey} vì dữ liệu năm này sẽ có trong thuyết minh của năm {y+1}")
+        if pkey in have_yearly_own_pdf:
             continue
-            
-        if pkey in have_yearly:
-            continue
-            
+
         cands = [x for x in consolidated if x.get("Quarter") == 5 and x.get("Year") == y]
         if cands:
             to_fetch_yearly.append((pkey, cands[0]))
@@ -264,19 +282,37 @@ def cmd_download(args):
         convert_target = args.out
         sliced_pdf = args.out
 
+    # PDF ẢNH SCAN THUẦN (0 ký tự text nhúng — verify bằng pdfplumber) bắt buộc phải OCR mới đọc được.
+    # opendataloader-pdf mặc định dùng hybrid_mode="auto" (tự "triage" xem trang nào cần OCR) — đã phát
+    # hiện (2026-07) auto-triage có thể sai, tự quyết định KHÔNG trang nào cần OCR dù toàn bộ là ảnh
+    # scan (im lặng rơi về nhánh Java không OCR, ra .md rỗng, không lỗi/cảnh báo gì). Với PDF xác nhận
+    # scan thuần, ép "hybrid_mode=full" (bỏ qua triage, toàn bộ trang qua OCR thật) để tránh đúng bug
+    # này. Với PDF có text thật, giữ "auto" (nhanh hơn, không cần OCR).
+    _is_scanned = False
+    try:
+        import pdfplumber
+        with pdfplumber.open(convert_target) as _pdf:
+            _is_scanned = sum(len(p.extract_text() or "") for p in _pdf.pages[:5]) == 0
+    except Exception:
+        pass
+
     # Tự động convert PDF sang Markdown (.md) offline bằng opendataloader-pdf
     md_out_dir = os.path.join(os.path.dirname(args.out), "extracted_md")
     try:
         import opendataloader_pdf
         os.makedirs(md_out_dir, exist_ok=True)
-        print(f"[Opendataloader] Đang convert {os.path.basename(convert_target)} sang Markdown...")
-        opendataloader_pdf.convert(
+        print(f"[Opendataloader] Đang convert {os.path.basename(convert_target)} sang Markdown"
+              + (" (PDF ẢNH SCAN — ép OCR toàn bộ trang)..." if _is_scanned else "..."))
+        convert_kwargs = dict(
             input_path=convert_target,
             output_dir=md_out_dir,
             format="markdown",
             hybrid="docling-fast",
-            hybrid_fallback=True
+            hybrid_fallback=True,
         )
+        if _is_scanned:
+            convert_kwargs["hybrid_mode"] = "full"
+        opendataloader_pdf.convert(**convert_kwargs)
         print(f"[Opendataloader] [OK] Đã convert thành công sang Markdown tại {md_out_dir}")
     except Exception as e:
         print(f"[Opendataloader] [WARN] Không thể convert sang Markdown: {e}")
@@ -294,11 +330,10 @@ def cmd_download(args):
         try:
             print(f"[Parser] Kích hoạt segments_kcn_parser.py trích xuất mảng cho {args.ticker} kỳ {args.period}...")
             import subprocess
-            subprocess.run(
-                [sys.executable, "segments_kcn_parser.py", args.ticker, args.period],
-                cwd=PROJECT_ROOT,
-                check=True
-            )
+            _parser_cmd = [sys.executable, "segments_kcn_parser.py", args.ticker, args.period]
+            if _is_scanned:
+                _parser_cmd.append("--ocr")
+            subprocess.run(_parser_cmd, cwd=PROJECT_ROOT, check=True)
         except Exception as e:
             print(f"[Parser] [WARN] Trích xuất tự động thất bại: {e}")
 

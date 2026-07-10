@@ -570,7 +570,18 @@ def find_segment_values_from_text(ticker, md_content, period_key=""):
     return final_curr, final_prior
 
 
-def run_parse_and_merge(ticker, period_key):
+def _tag_ocr_source(vals):
+    """Gắn nhãn rõ dữ liệu trích xuất từ PDF ẢNH SCAN (bắt buộc OCR mới đọc được, xem bctc_pdf_tool.py
+    ::cmd_download) — để user tự nhận biết số nào cần đối chiếu kỹ hơn thay vì mặc định tin như số
+    trích từ PDF có text thật (đáng tin cậy hơn nhiều)."""
+    for seg_data in vals.values():
+        if isinstance(seg_data, dict):
+            seg_data["sourceType"] = f"{seg_data.get('sourceType', 'auto')}_ocr"
+            seg_data["source"] = f"{seg_data.get('source', '')} [OCR - PDF ảnh scan, cần đối chiếu]".strip()
+    return vals
+
+
+def run_parse_and_merge(ticker, period_key, is_ocr=False):
     """
     Đoạn chạy chính: đọc file md -> parse -> tạo file patch -> merge.
     """
@@ -609,7 +620,13 @@ def run_parse_and_merge(ticker, period_key):
     if not curr_vals:
         print("[Parser] [INFO] Không trích xuất được từ bảng markdown. Thử quét dòng văn bản thô line-by-line fallback...")
         curr_vals, prior_vals = find_segment_values_from_text(ticker, md_content, period_key=period_key)
-        
+
+    if is_ocr:
+        curr_vals = _tag_ocr_source(curr_vals)
+        prior_vals = _tag_ocr_source(prior_vals)
+        print(f"[Parser] [DIAG] Kỳ {period_key} trích xuất từ PDF ẢNH SCAN (đã OCR) — dữ liệu được "
+              f"gắn nhãn sourceType=*_ocr, cần đối chiếu qua check_segment_consistency trước khi tin dùng.")
+
     # Xác định năm của kỳ báo cáo này
     try:
         if is_q:
@@ -681,7 +698,8 @@ def run_parse_and_merge(ticker, period_key):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python segments_kcn_parser.py <TICKER> <PERIOD_KEY>")
+        print("Usage: python segments_kcn_parser.py <TICKER> <PERIOD_KEY> [--ocr]")
         print("Example: python segments_kcn_parser.py SIP 2024(CN)")
+        print("  --ocr: đánh dấu nguồn PDF là ảnh scan (đã OCR) — gắn nhãn sourceType=*_ocr trong kho dữ liệu")
         sys.exit(1)
-    run_parse_and_merge(sys.argv[1], sys.argv[2])
+    run_parse_and_merge(sys.argv[1], sys.argv[2], is_ocr="--ocr" in sys.argv[3:])

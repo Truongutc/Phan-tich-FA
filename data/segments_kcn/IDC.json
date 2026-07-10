@@ -166,16 +166,32 @@
         "derived": false
       },
       "BOT": {
-        "revenue": 73.69,
-        "cogs": 58.95,
-        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "revenue": 10.38,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô (2023(CN))",
         "sourceType": "auto",
         "derived": false
       },
       "Khac": {
-        "revenue": 0.07,
-        "cogs": 0.06,
-        "source": "Trích xuất ma trận ngang (2024(CN))",
+        "revenue": 7.2,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô (2023(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2022(CN)": {
+      "Khac": {
+        "revenue": 0.22,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BOT": {
+        "revenue": 10.96,
+        "cogs": 0.0,
+        "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
         "sourceType": "auto",
         "derived": false
       }
@@ -339,6 +355,38 @@
         "cogs": 2095.92,
         "source": "Trích xuất ma trận ngang (2025Q3)",
         "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2025Q2": {
+      "Khac": {
+        "revenue": 168.73,
+        "cogs": 0.0,
+        "source": "Trích xuất tự động từ BCTC md (2025Q2) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "HaTangKCN": {
+        "revenue": 1.83,
+        "cogs": 0.0,
+        "source": "Trích xuất tự động từ BCTC md (2025Q2) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      }
+    },
+    "2024Q2": {
+      "Khac": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2025Q2) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "HaTangKCN": {
+        "revenue": 534.7,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2025Q2) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
         "derived": false
       }
     }
