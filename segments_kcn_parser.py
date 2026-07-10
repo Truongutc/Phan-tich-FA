@@ -570,6 +570,24 @@ def find_segment_values_from_text(ticker, md_content, period_key=""):
     return final_curr, final_prior
 
 
+def _drop_outlier_segments(vals, period_key):
+    """Loại bỏ mảng có giá trị revenue bất thường lớn — dấu hiệu lỗi trích xuất bảng (đọc nhầm 1 dòng
+    tổng/lũy kế/số khác thay vì đúng dòng mảng), KHÔNG liên quan OCR (đã gặp thật: IDC 2024(CN) mảng
+    "Khác" ra 255.591 tỷ trong khi 5 mảng còn lại + Vietcap DT chỉ ~8.846 tỷ — lớn hơn tổng DT cả công
+    ty 30 lần). Nếu 1 mảng > 5x tổng TẤT CẢ mảng còn lại (và tổng các mảng còn lại đã đủ lớn để so
+    sánh có ý nghĩa) thì coi là lỗi, loại khỏi kết quả thay vì merge số sai vào kho dữ liệu."""
+    if len(vals) < 2:
+        return vals
+    for seg, data in list(vals.items()):
+        rev = (data or {}).get("revenue") or 0
+        others_sum = sum((v.get("revenue") or 0) for s, v in vals.items() if s != seg)
+        if others_sum > 10 and rev > others_sum * 5:
+            print(f"  [Parser] [WARN] Kỳ {period_key}: mảng '{seg}' có DT={rev:.1f} bất thường lớn "
+                  f"(>5x tổng các mảng còn lại {others_sum:.1f}) — nghi lỗi trích xuất bảng, loại khỏi kết quả.")
+            del vals[seg]
+    return vals
+
+
 def _tag_ocr_source(vals):
     """Gắn nhãn rõ dữ liệu trích xuất từ PDF ẢNH SCAN (bắt buộc OCR mới đọc được, xem bctc_pdf_tool.py
     ::cmd_download) — để user tự nhận biết số nào cần đối chiếu kỹ hơn thay vì mặc định tin như số
@@ -620,6 +638,10 @@ def run_parse_and_merge(ticker, period_key, is_ocr=False):
     if not curr_vals:
         print("[Parser] [INFO] Không trích xuất được từ bảng markdown. Thử quét dòng văn bản thô line-by-line fallback...")
         curr_vals, prior_vals = find_segment_values_from_text(ticker, md_content, period_key=period_key)
+
+    curr_vals = _drop_outlier_segments(curr_vals, period_key)
+    prior_period_key_for_log = f"kỳ so sánh của {period_key}"
+    prior_vals = _drop_outlier_segments(prior_vals, prior_period_key_for_log)
 
     if is_ocr:
         curr_vals = _tag_ocr_source(curr_vals)
