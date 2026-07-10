@@ -76,6 +76,30 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "Auto-analysis: ${{ github.event.inputs.ticker }} — $(date +'%Y-%m-%d')"
-            git push
-            echo "Changes committed and pushed."
+
+            # Job chạy lâu (OCR có thể mất 40-60 phút) → trong lúc chờ, master trên remote có thể
+            # đã có commit khác được push (vd. từ máy dev). Push thẳng sẽ bị reject
+            # (non-fast-forward) và toàn bộ kết quả phân tích sẽ mất. Rebase lên remote rồi push,
+            # thử lại vài lần để chịu được trường hợp remote tiếp tục đổi giữa lúc rebase và push.
+            PUSHED=0
+            for i in 1 2 3 4 5; do
+              git fetch origin master
+              if git rebase origin/master; then
+                if git push origin HEAD:master; then
+                  PUSHED=1
+                  break
+                fi
+              else
+                git rebase --abort
+              fi
+              echo "Push attempt $i failed, retrying..."
+              sleep 10
+            done
+
+            if [ "$PUSHED" = "1" ]; then
+              echo "Changes committed and pushed."
+            else
+              echo "::error::Could not push analysis results after 5 attempts (remote kept diverging)."
+              exit 1
+            fi
           fi
