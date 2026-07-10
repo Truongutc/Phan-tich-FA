@@ -5,12 +5,12 @@
   "currentPrice": 39300.0,
   "marketCap": 14914303743900.0,
   "shares": 379498823,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1HjozCtj2REwfRlh_NpSaRucBO8ATCJR2/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/13iq493h6XXdj3igZ2O7jXNhaJ_ZTvfCO/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1B_LNQ8-veStsYxemOUSXpxN6aiLZMIrI/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1jUUFFbnI2r7-UuRY_OOpPyJQtSa47eHh/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1507,
     "rf": 0.045,
-    "fetchedAt": "2026-07-10 16:03"
+    "fetchedAt": "2026-07-10 16:31"
   },
   "segmentConsistency": {
     "2025(CN)": {
@@ -671,5 +671,5 @@
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
   },
-  "lastUpdated": "2026-07-10 16:03"
+  "lastUpdated": "2026-07-10 16:32"
 }
