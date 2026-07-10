@@ -182,10 +182,10 @@
     },
     "2022(CN)": {
       "Khac": {
-        "revenue": 0.22,
+        "revenue": 0.01,
         "cogs": 0.0,
-        "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
-        "sourceType": "auto",
+        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
         "derived": false
       },
       "BOT": {
@@ -193,6 +193,15 @@
         "cogs": 0.0,
         "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
         "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2021(CN)": {
+      "Khac": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
         "derived": false
       }
     }

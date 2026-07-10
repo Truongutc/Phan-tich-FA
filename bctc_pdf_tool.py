@@ -203,6 +203,35 @@ def cmd_plan_downloads(args):
     return to_fetch
 
 
+def cmd_fetch_one(args):
+    """Tải + convert + parse ĐÚNG 1 kỳ cụ thể (bỏ qua logic 'mốc neo' tiết kiệm tải của
+    plan-downloads) — dùng khi check_segment_consistency (template_kcn.py) phát hiện kỳ đó có
+    dữ liệu mảng thiếu/lệch lớn, cần tải lại trực tiếp PDF của CHÍNH kỳ đó (không dựa vào ăn theo
+    cột so sánh của kỳ liền kề nữa, vì cột so sánh có thể chính là nguồn dữ liệu thiếu/lệch)."""
+    ticker = args.ticker.upper()
+    period_key = args.period
+    items = fetch_cafef_list(ticker)
+    consolidated = select_best_reports(items)
+    is_q = "Q" in period_key
+    if is_q:
+        year, q = int(period_key[:4]), int(period_key[4:].replace("Q", ""))
+        cands = [x for x in consolidated if x.get("Year") == year
+                 and (x.get("Quarter") == q or (q == 2 and x.get("Quarter") == 6))]
+    else:
+        year = int(period_key.split("(")[0])
+        cands = [x for x in consolidated if x.get("Year") == year and x.get("Quarter") == 5]
+    if not cands:
+        print(f"[MISS] Không tìm thấy BCTC {period_key} (hợp nhất) cho {ticker} để tải lại riêng.")
+        return False
+
+    pdf_filename = f"{ticker}_{period_key.replace('(', '_').replace(')', '')}.pdf"
+    pdf_path = os.path.join(PDF_DIR, ticker, pdf_filename)
+    print(f"[FetchOne] Tải lại riêng {period_key} cho {ticker}: {cands[0]['Name']}")
+    dl_args = argparse.Namespace(url=cands[0]["Link"], out=pdf_path, ticker=ticker, period=period_key)
+    cmd_download(dl_args)
+    return True
+
+
 def slice_pdf_tail(input_path: str, output_path: str) -> int:
     """
     Cắt lấy 1/3 cuối PDF (bỏ 5 trang cuối cùng) và lưu thành file tạm.
@@ -391,6 +420,11 @@ def main():
     p_dl.add_argument("--ticker", required=False, help="Mã cổ phiếu")
     p_dl.add_argument("--period", required=False, help="Kỳ BCTC ví dụ: 2024(CN) hoặc 2024Q1")
     p_dl.set_defaults(func=cmd_download)
+
+    p_one = sub.add_parser("fetch-one", help="Tải lại riêng đúng 1 kỳ cụ thể (dùng khi kỳ đó thiếu/lệch dữ liệu mảng)")
+    p_one.add_argument("ticker")
+    p_one.add_argument("period", help="Kỳ BCTC ví dụ: 2024(CN) hoặc 2024Q1")
+    p_one.set_defaults(func=cmd_fetch_one)
 
     p_render = sub.add_parser("render")
     p_render.add_argument("pdf")

@@ -1989,7 +1989,8 @@ def save_json_kcn(ticker, company_name, current_price, shares,
                   hist_years, rev_h, gp_h, npat_h,
                   seg_names, seg_labels, seg_colors,
                   yearly_seg, quarterly_seg,
-                  val, ai_comments, excel_url=None, pdf_url=None, beta_rf_cache_entry=None):
+                  val, ai_comments, excel_url=None, pdf_url=None, beta_rf_cache_entry=None,
+                  segment_consistency=None):
     """Ghi data/TICKER.json cho dashboard web."""
     # Cơ cấu doanh thu theo mảng (năm)
     all_yk = sorted(set().union(*[yearly_seg[s].keys() for s in seg_names]))
@@ -2030,6 +2031,10 @@ def save_json_kcn(ticker, company_name, current_price, shares,
         "gdriveExcelUrl": excel_url,
         "gdrivePdfUrl":   pdf_url,
         "betaRfCache":    beta_rf_cache_entry,
+        # Đối chiếu Σ mảng vs tổng DT/GVHB Vietcap theo từng kỳ — {periodKey: {gapRevPct, gapCogsPct,
+        # status: OK/WARN/FAIL}} — để user tự thấy kỳ nào dữ liệu mảng đáng ngờ (đặc biệt kỳ sourceType
+        # *_ocr) thay vì tin ngầm mọi số như nhau.
+        "segmentConsistency": segment_consistency,
         # Tài chính tổng hợp
         "data": {
             "years":   list(hist_years),
@@ -2235,8 +2240,26 @@ def run_kcn_analysis(ticker, use_cache=True):
     store = load_segments_kcn(ticker)
     seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store, is_recs_y, is_recs_q)
 
-    # Check consistency (log only, không block)
-    check_segment_consistency(store, is_recs_y, is_recs_q)
+    # Rà soát Σ mảng vs tổng DT/GVHB Vietcap — kỳ nào lệch lớn (WARN/FAIL) thì tự động tải lại
+    # RIÊNG đúng PDF của kỳ đó (bỏ qua cơ chế "ăn theo cột so sánh" — vì cột so sánh đó có thể
+    # chính là nguồn gây lệch) rồi re-check 1 lần. Giới hạn số kỳ retry để tránh chạy vô hạn.
+    consistency, max_gap = check_segment_consistency(store, is_recs_y, is_recs_q)
+    _bad_periods = [k for k, v in consistency.items() if v["status"] != "OK"]
+    if _bad_periods:
+        print(f"  [INFO] Phát hiện {len(_bad_periods)} kỳ lệch/thiếu dữ liệu mảng (WARN/FAIL): {_bad_periods[:5]}"
+              + (f" (+{len(_bad_periods)-5} kỳ khác)" if len(_bad_periods) > 5 else "")
+              + " — thử tải lại riêng từng kỳ...")
+        for pkey in _bad_periods[:3]:
+            try:
+                subprocess.run(
+                    [sys.executable, "bctc_pdf_tool.py", "fetch-one", ticker, pkey],
+                    cwd=PROJECT_ROOT, timeout=1800,
+                )
+            except Exception as e:
+                print(f"  [WARN] Tải lại riêng {pkey} thất bại: {e}")
+        store = load_segments_kcn(ticker)
+        seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store, is_recs_y, is_recs_q)
+        consistency, max_gap = check_segment_consistency(store, is_recs_y, is_recs_q)
 
     # Forecast mảng (dùng quarterly_seg để anchor YTD nếu có dữ liệu mới)
     years_hist_avail = sorted(set().union(*[yearly_seg[s].keys() for s in seg_names]))
@@ -2370,6 +2393,7 @@ def run_kcn_analysis(ticker, use_cache=True):
         seg_names, seg_labels, seg_colors,
         yearly_seg, quarterly_seg,
         val, ai_comments, beta_rf_cache_entry=BETA_RF_CACHE_ENTRY,
+        segment_consistency=consistency,
     )
 
     # ── 13. Cleanup chart PNGs ───────────────────────────────────
