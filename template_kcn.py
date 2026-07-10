@@ -1787,10 +1787,39 @@ def build_charts_kcn(out_dir, ticker, hist_years, fc_years,
 # ══════════════════════════════════════════════════════════════════════════
 # PDF REPORT BUILDER
 # ══════════════════════════════════════════════════════════════════════════
+def _format_period_label(period_key):
+    """'2024Q2' -> 'Quý 2/2024', '2024(CN)' -> 'Năm 2024'."""
+    if "Q" in period_key:
+        return f"Quý {period_key[-1]}/{period_key[:4]}"
+    return f"Năm {period_key.split('(')[0]}"
+
+
+def _build_missing_data_lines(segment_consistency):
+    """Từ kết quả check_segment_consistency(), liệt kê câu tiếng Việt rõ ràng kỳ/loại dữ liệu (cơ
+    cấu doanh thu và/hoặc giá vốn theo mảng) nào vẫn còn thiếu/lệch — để user biết chính xác cần bổ
+    sung markdown cho kỳ nào qua workflow 'Cập nhật Markdown BCTC'. Trả về [] nếu mọi kỳ đều OK."""
+    if not segment_consistency:
+        return []
+    lines = []
+    for pkey in sorted(segment_consistency.keys()):
+        v = segment_consistency[pkey]
+        if v.get("status") == "OK":
+            continue
+        label = _format_period_label(pkey)
+        parts = []
+        if v.get("gapRevPct") is not None and abs(v["gapRevPct"]) > 3:
+            parts.append(f"cơ cấu doanh thu (lệch {v['gapRevPct']}%)")
+        if v.get("gapCogsPct") is not None and abs(v["gapCogsPct"]) > 3:
+            parts.append(f"cơ cấu giá vốn (lệch {v['gapCogsPct']}%)")
+        if parts:
+            lines.append(f"Thiếu/lệch dữ liệu {' và '.join(parts)} — {label}")
+    return lines
+
+
 def build_pdf_kcn(pdf_path, ticker, company_name, current_price, shares,
                   hist_years, all_years, rev_h, gp_h, npat_h,
                   seg_names, seg_labels, yearly_seg, quarterly_seg,
-                  val, ai_comments, charts, beta_src):
+                  val, ai_comments, charts, beta_src, segment_consistency=None):
     """Tạo báo cáo PDF đầy đủ cho cổ phiếu KCN."""
     doc = SimpleDocTemplate(
         pdf_path, pagesize=A4,
@@ -1969,6 +1998,20 @@ def build_pdf_kcn(pdf_path, ticker, company_name, current_price, shares,
         f"CAPM: Rf = {val['rf']*100:.2f}% (TPCP 10Y VN) | Beta = {val['beta']:.3f} ({beta_src}) "
         f"| ERP = 5.5% | COE = {val['coe']*100:.2f}% | Payout avg = {val['avg_payout']*100:.1f}%",
         italic_st))
+    story.append(Spacer(1, 12))
+
+    # ── Tình trạng dữ liệu mảng (đối chiếu Σ mảng vs tổng DT/GVHB Vietcap) ─────────────────────
+    story.append(Paragraph("Tình trạng dữ liệu cơ cấu mảng kinh doanh", h1_st))
+    _missing_lines = _build_missing_data_lines(segment_consistency)
+    if _missing_lines:
+        for line in _missing_lines:
+            story.append(Paragraph(f"⚠ {line}", body_st))
+        story.append(Paragraph(
+            "Bổ sung dữ liệu markdown BCTC cho các kỳ trên qua workflow \"Cập nhật Markdown BCTC\" "
+            "trên GitHub Actions, sau đó chạy lại phân tích.",
+            italic_st))
+    else:
+        story.append(Paragraph("✅ Hệ thống load đầy đủ dữ liệu!", body_st))
     story.append(Spacer(1, 12))
 
     # ── Footer ──────────────────────────────────────────────────────
@@ -2261,6 +2304,46 @@ def run_kcn_analysis(ticker, use_cache=True):
         seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store, is_recs_y, is_recs_q)
         consistency, max_gap = check_segment_consistency(store, is_recs_y, is_recs_q)
 
+    # Sau khi đã thử tự động tải+OCR, kỳ nào VẪN còn lệch/thiếu thì tìm markdown BỔ SUNG THỦ CÔNG
+    # user dán qua workflow "Cập nhật Markdown BCTC" (lưu trên Google Drive, KHÔNG lưu git — xem
+    # update_markdown_drive.py) — đây là nguồn "cứu cánh cuối" cho các kỳ PDF gốc quá xấu, OCR không
+    # đọc nổi dù đã thử hết các cách tự động.
+    _still_bad = [k for k, v in consistency.items() if v["status"] != "OK"]
+    if _still_bad:
+        try:
+            import google_drive_uploader as _gdrive
+            _md_files = _gdrive.list_markdown_files("Bất động sản khu công nghiệp", ticker)
+        except Exception as e:
+            print(f"  [WARN] Không kiểm tra được markdown thủ công trên Drive: {e}")
+            _md_files = []
+        if _md_files:
+            print(f"  [INFO] Tìm thấy {len(_md_files)} file markdown thủ công trên Drive cho {ticker}.")
+            _extracted_md_dir = os.path.join(PROJECT_ROOT, "BCTC_PDF", ticker, "extracted_md")
+            os.makedirs(_extracted_md_dir, exist_ok=True)
+            _applied_any = False
+            for pkey in _still_bad:
+                _norm = pkey.replace("(", "_").replace(")", "")
+                _match = next((f for f in _md_files if _norm in f["name"]), None)
+                if not _match:
+                    continue
+                _content = _gdrive.download_file_content(_match["id"])
+                if not _content:
+                    print(f"  [WARN] Tải markdown thủ công '{_match['name']}' cho kỳ {pkey} thất bại.")
+                    continue
+                _local_path = os.path.join(_extracted_md_dir, _match["name"])
+                with open(_local_path, "w", encoding="utf-8") as f:
+                    f.write(_content)
+                print(f"  [INFO] Đang parse markdown thủ công cho kỳ {pkey} ({_match['name']})...")
+                subprocess.run(
+                    [sys.executable, "segments_kcn_parser.py", ticker, pkey],
+                    cwd=PROJECT_ROOT,
+                )
+                _applied_any = True
+            if _applied_any:
+                store = load_segments_kcn(ticker)
+                seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store, is_recs_y, is_recs_q)
+                consistency, max_gap = check_segment_consistency(store, is_recs_y, is_recs_q)
+
     # Forecast mảng (dùng quarterly_seg để anchor YTD nếu có dữ liệu mới)
     years_hist_avail = sorted(set().union(*[yearly_seg[s].keys() for s in seg_names]))
     seg_fc = forecast_segments(store, seg_names, yearly_seg, years_hist_avail, n_fc=3, quarterly=quarterly_seg)
@@ -2383,6 +2466,7 @@ def run_kcn_analysis(ticker, use_cache=True):
         rev_h, gp_h, npat_h,
         seg_names, seg_labels, yearly_seg, quarterly_seg,
         val, ai_comments, charts, beta_src,
+        segment_consistency=consistency,
     )
 
     # ── 12. JSON dashboard ───────────────────────────────────────

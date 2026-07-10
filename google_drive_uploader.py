@@ -1,11 +1,13 @@
 import os
 import json
+import io
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 # Shared Google Drive Folder ID
 DEFAULT_FOLDER_ID = "1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk"
+BANK_FOLDER_ID = "1WZnuR6MH2914b-efJj1_4XQel2ZaGRKw"
 
 def get_drive_service():
     """Initializes and returns the Google Drive API service using Service Account credentials."""
@@ -80,6 +82,55 @@ def get_or_create_folder(service, folder_name, parent_id):
         return parent_id
 
 
+def resolve_ticker_folder_id(service, sector, ticker, is_bank=False):
+    """Trả về folder Drive ID cấp 'Mã' (Ngành/Mã) cho ticker — dùng CHUNG logic phân giải thư mục với
+    upload_file() để bảo đảm chỗ đọc (list/download markdown thủ công) và chỗ ghi (upload báo cáo)
+    luôn trỏ về đúng 1 folder, không lệch nhau."""
+    base_folder_id = BANK_FOLDER_ID if is_bank else DEFAULT_FOLDER_ID
+    sector_level_folder_id = base_folder_id
+    if service and not is_bank and sector:
+        sector_level_folder_id = get_or_create_folder(service, sector, base_folder_id)
+    resolved_folder_id = sector_level_folder_id
+    if service and ticker:
+        resolved_folder_id = get_or_create_folder(service, ticker.upper(), sector_level_folder_id)
+    return resolved_folder_id
+
+
+def list_markdown_files(sector, ticker, is_bank=False):
+    """Liệt kê các file .md (dữ liệu BCTC người dùng dán thủ công qua action 'Cập nhật Markdown')
+    trong đúng folder Drive Ngành/Mã của ticker. Trả về list dict {id, name} — [] nếu không có
+    service account hoặc lỗi bất kỳ bước nào (KHÔNG BAO GIỜ crash pipeline phân tích chính)."""
+    service = get_drive_service()
+    if not service:
+        return []
+    try:
+        folder_id = resolve_ticker_folder_id(service, sector, ticker, is_bank=is_bank)
+        query = f"'{folder_id}' in parents and trashed = false and name contains '.md'"
+        results = service.files().list(q=query, fields="files(id, name)").execute()
+        return results.get("files", [])
+    except Exception as e:
+        print(f"[GDrive] Error listing markdown files for {ticker}: {e}")
+        return []
+
+
+def download_file_content(file_id):
+    """Tải nội dung text (UTF-8) của 1 file Drive theo ID. Trả về None nếu lỗi."""
+    service = get_drive_service()
+    if not service:
+        return None
+    try:
+        request = service.files().get_media(fileId=file_id)
+        buf = io.BytesIO()
+        downloader = MediaIoBaseDownload(buf, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+        return buf.getvalue().decode("utf-8", errors="replace")
+    except Exception as e:
+        print(f"[GDrive] Error downloading file {file_id}: {e}")
+        return None
+
+
 def upload_file(file_path, folder_id=None, sector=None, ticker=None):
     """
     Uploads a file to a specific Google Drive folder.
@@ -90,8 +141,6 @@ def upload_file(file_path, folder_id=None, sector=None, ticker=None):
         print(f"[GDrive] File not found: {file_path}")
         return None, None
 
-    BANK_FOLDER_ID = "1WZnuR6MH2914b-efJj1_4XQel2ZaGRKw"
-    
     is_bank = False
     if sector:
         sec_lower = sector.lower()

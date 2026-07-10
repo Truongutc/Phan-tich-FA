@@ -1,0 +1,48 @@
+name: Cập nhật Markdown BCTC (bổ sung thủ công)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: 'Mã cổ phiếu cần bổ sung dữ liệu (ví dụ: IDC, SIP, HPG...)'
+        required: true
+      markdown:
+        description: 'Dán nội dung markdown BCTC đã chuyển đổi vào đây (1 kỳ báo cáo / 1 lần chạy)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  update-markdown:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # Chỉ cài đúng dependency cần cho việc dò kỳ + upload Drive — KHÔNG cài toàn bộ requirements.txt
+      # (torch/docling/OCR...) vì workflow này không cần OCR, giữ chạy nhanh (vài chục giây, không
+      # phải vài phút như analyze_stock.yml).
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-api-python-client google-auth requests
+
+      - name: Upload Markdown to Google Drive
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
+          MARKDOWN_CONTENT: ${{ github.event.inputs.markdown }}
+        run: |
+          python update_markdown_drive.py "${{ github.event.inputs.ticker }}"
