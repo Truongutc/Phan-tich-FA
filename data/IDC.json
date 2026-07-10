@@ -2,11 +2,68 @@
   "ticker": "IDC",
   "companyName": "Tổng Công ty IDICO - CTCP",
   "sector": "Bất động sản khu công nghiệp",
-  "currentPrice": 40000.0,
-  "marketCap": 15179952920000.0,
+  "currentPrice": 39300.0,
+  "marketCap": 14914303743900.0,
   "shares": 379498823,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1uKn3SlWT0FxxAx_Gh32kBT1vv7yUJSXY/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1G_BC_13rIJyod7spyixF7r46TnqatQyT/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1HjozCtj2REwfRlh_NpSaRucBO8ATCJR2/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/13iq493h6XXdj3igZ2O7jXNhaJ_ZTvfCO/view?usp=drivesdk",
+  "betaRfCache": {
+    "beta": 1.1507,
+    "rf": 0.045,
+    "fetchedAt": "2026-07-10 16:03"
+  },
+  "segmentConsistency": {
+    "2025(CN)": {
+      "gapRevPct": 3.2,
+      "gapCogsPct": -228.3,
+      "status": "WARN"
+    },
+    "2024(CN)": {
+      "gapRevPct": 0.1,
+      "gapCogsPct": -228.3,
+      "status": "OK"
+    },
+    "2023(CN)": {
+      "gapRevPct": 68.2,
+      "gapCogsPct": -137.9,
+      "status": "FAIL"
+    },
+    "2022(CN)": {
+      "gapRevPct": 54.4,
+      "gapCogsPct": -168.1,
+      "status": "FAIL"
+    },
+    "2021(CN)": {
+      "gapRevPct": 100.0,
+      "gapCogsPct": -100.0,
+      "status": "FAIL"
+    },
+    "2026Q1": {
+      "gapRevPct": 0.0,
+      "gapCogsPct": -200.0,
+      "status": "OK"
+    },
+    "2025Q1": {
+      "gapRevPct": 0.0,
+      "gapCogsPct": -200.0,
+      "status": "OK"
+    },
+    "2025Q3": {
+      "gapRevPct": 1.8,
+      "gapCogsPct": -239.8,
+      "status": "OK"
+    },
+    "2025Q2": {
+      "gapRevPct": 90.3,
+      "gapCogsPct": -100.0,
+      "status": "FAIL"
+    },
+    "2024Q2": {
+      "gapRevPct": 75.1,
+      "gapCogsPct": -100.0,
+      "status": "FAIL"
+    }
+  },
   "data": {
     "years": [
       2021,
@@ -40,14 +97,14 @@
   "valuation": {
     "fair_pe": 77923,
     "fair_pb": 50780,
-    "fair_ri": 46348,
-    "fair_blend": 60751,
-    "upside": 0.5188,
+    "fair_ri": 46367,
+    "fair_blend": 60755,
+    "upside": 0.5459,
     "target_pe": 13.83,
     "target_pb": 2.8,
     "coe": 0.1421,
     "rf": 0.045,
-    "beta": 1.102,
+    "beta": 1.101,
     "eps_last": 5090.0,
     "bvps_last": 17021.0,
     "avg_payout": 0.8021
@@ -57,6 +114,18 @@
       "label": "Kinh doanh điện",
       "color": "#f59e0b",
       "data": {
+        "2021(CN)": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": 2697.68,
+          "cogs": 2540.82,
+          "grossProfit": 156.85999999999967,
+          "grossMargin": 0.05814625900773986
+        },
         "2023(CN)": {
           "revenue": 357.1,
           "cogs": 285.68,
@@ -81,6 +150,18 @@
       "label": "Cho thuê đất & hạ tầng KCN",
       "color": "#10b981",
       "data": {
+        "2021(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2023(CN)": {
           "revenue": 1724.63,
           "cogs": 1379.7,
@@ -105,6 +186,18 @@
       "label": "Dịch vụ khu công nghiệp",
       "color": "#3b82f6",
       "data": {
+        "2021(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2023(CN)": {
           "revenue": null,
           "cogs": null,
@@ -129,11 +222,23 @@
       "label": "Thu phí đường bộ (BOT)",
       "color": "#8b5cf6",
       "data": {
+        "2021(CN)": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": 10.96,
+          "cogs": 0.0,
+          "grossProfit": 10.96,
+          "grossMargin": 1.0
+        },
         "2023(CN)": {
-          "revenue": 73.69,
-          "cogs": 58.95,
-          "grossProfit": 14.739999999999995,
-          "grossMargin": 0.2000271407246573
+          "revenue": 10.38,
+          "cogs": 0.0,
+          "grossProfit": 10.38,
+          "grossMargin": 1.0
         },
         "2024(CN)": {
           "revenue": 532.63,
@@ -153,6 +258,18 @@
       "label": "Hoạt động xây dựng",
       "color": "#64748b",
       "data": {
+        "2021(CN)": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": 129.71,
+          "cogs": 0.0,
+          "grossProfit": 129.71,
+          "grossMargin": 1.0
+        },
         "2023(CN)": {
           "revenue": 189.45,
           "cogs": 151.56,
@@ -177,6 +294,18 @@
       "label": "Kinh doanh BĐS",
       "color": "#ec4899",
       "data": {
+        "2021(CN)": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": 149.39,
+          "cogs": 25.23,
+          "grossProfit": 124.15999999999998,
+          "grossMargin": 0.8311131936541937
+        },
         "2023(CN)": {
           "revenue": 10.93,
           "cogs": 8.74,
@@ -201,17 +330,29 @@
       "label": "Sản phẩm & dịch vụ khác",
       "color": "#9ca3af",
       "data": {
+        "2021(CN)": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
+        "2022(CN)": {
+          "revenue": 8569.6,
+          "cogs": 449.19,
+          "grossProfit": 8120.410000000001,
+          "grossMargin": 0.9475833177744586
+        },
         "2023(CN)": {
-          "revenue": 0.07,
-          "cogs": 0.06,
-          "grossProfit": 0.010000000000000009,
-          "grossMargin": 0.14285714285714296
+          "revenue": 7.2,
+          "cogs": 0.0,
+          "grossProfit": 7.2,
+          "grossMargin": 1.0
         },
         "2024(CN)": {
-          "revenue": 255591.0,
-          "cogs": 204472.8,
-          "grossProfit": 51118.20000000001,
-          "grossMargin": 0.20000000000000004
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
         },
         "2025(CN)": {
           "revenue": 238.95,
@@ -227,11 +368,23 @@
       "label": "Kinh doanh điện",
       "color": "#f59e0b",
       "data": {
+        "2024Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2025Q1": {
           "revenue": 815.7,
           "cogs": 745.2,
           "grossProfit": 70.5,
           "grossMargin": 0.08642883413019492
+        },
+        "2025Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
         },
         "2025Q3": {
           "revenue": 13.05,
@@ -251,11 +404,23 @@
       "label": "Cho thuê đất & hạ tầng KCN",
       "color": "#10b981",
       "data": {
+        "2024Q2": {
+          "revenue": 534.7,
+          "cogs": 0.0,
+          "grossProfit": 534.7,
+          "grossMargin": 1.0
+        },
         "2025Q1": {
           "revenue": 467.5,
           "cogs": 200.7,
           "grossProfit": 266.8,
           "grossMargin": 0.5706951871657754
+        },
+        "2025Q2": {
+          "revenue": 1.83,
+          "cogs": 0.0,
+          "grossProfit": 1.83,
+          "grossMargin": 1.0
         },
         "2025Q3": {
           "revenue": 95.51,
@@ -275,11 +440,23 @@
       "label": "Dịch vụ khu công nghiệp",
       "color": "#3b82f6",
       "data": {
+        "2024Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2025Q1": {
           "revenue": 121.2,
           "cogs": 61.7,
           "grossProfit": 59.5,
           "grossMargin": 0.4909240924092409
+        },
+        "2025Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
         },
         "2025Q3": {
           "revenue": null,
@@ -299,11 +476,23 @@
       "label": "Thu phí đường bộ (BOT)",
       "color": "#8b5cf6",
       "data": {
+        "2024Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2025Q1": {
           "revenue": 112.7,
           "cogs": 67.0,
           "grossProfit": 45.7,
           "grossMargin": 0.4055013309671695
+        },
+        "2025Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
         },
         "2025Q3": {
           "revenue": 19.18,
@@ -323,11 +512,23 @@
       "label": "Hoạt động xây dựng",
       "color": "#64748b",
       "data": {
+        "2024Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2025Q1": {
           "revenue": 37.8,
           "cogs": 83.5,
           "grossProfit": -45.7,
           "grossMargin": -1.208994708994709
+        },
+        "2025Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
         },
         "2025Q3": {
           "revenue": 0.72,
@@ -347,11 +548,23 @@
       "label": "Kinh doanh BĐS",
       "color": "#ec4899",
       "data": {
+        "2024Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
+        },
         "2025Q1": {
           "revenue": 182.2,
           "cogs": 33.8,
           "grossProfit": 148.39999999999998,
           "grossMargin": 0.814489571899012
+        },
+        "2025Q2": {
+          "revenue": null,
+          "cogs": null,
+          "grossProfit": null,
+          "grossMargin": null
         },
         "2025Q3": {
           "revenue": 72.33,
@@ -371,11 +584,23 @@
       "label": "Sản phẩm & dịch vụ khác",
       "color": "#9ca3af",
       "data": {
+        "2024Q2": {
+          "revenue": 0.0,
+          "cogs": 0.0,
+          "grossProfit": 0.0,
+          "grossMargin": null
+        },
         "2025Q1": {
           "revenue": 56.5,
           "cogs": 50.2,
           "grossProfit": 6.299999999999997,
           "grossMargin": 0.111504424778761
+        },
+        "2025Q2": {
+          "revenue": 168.73,
+          "cogs": 0.0,
+          "grossProfit": 168.73,
+          "grossMargin": 1.0
         },
         "2025Q3": {
           "revenue": 2619.9,
@@ -393,12 +618,16 @@
     }
   },
   "yearly_keys": [
+    "2021(CN)",
+    "2022(CN)",
     "2023(CN)",
     "2024(CN)",
     "2025(CN)"
   ],
   "quarterly_keys": [
+    "2024Q2",
     "2025Q1",
+    "2025Q2",
     "2025Q3",
     "2026Q1"
   ],
@@ -442,5 +671,5 @@
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
   },
-  "lastUpdated": "2026-07-09 13:30"
+  "lastUpdated": "2026-07-10 16:03"
 }
