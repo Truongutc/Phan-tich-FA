@@ -46,9 +46,14 @@ jobs:
           GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
           RECALCULATE_FRESH: ${{ github.event.inputs.recalculate_fresh }}
         run: |
-          # Khởi động hybrid server ngầm và đợi 5s cho server sẵn sàng
-          opendataloader-pdf-hybrid --port 5002 &
-          sleep 5
+          # Khởi động hybrid server ngầm — ép --ocr-lang vi (mặc định trước đây không đặt ngôn ngữ,
+          # khiến easyocr đọc theo model tiếng Anh, làm rụng dấu tiếng Việt nhiều — xem
+          # .opencode/skills/thep/changelog.md mục OCR đa mảng). Không dùng --force-ocr (đã gây
+          # segfault khi kết hợp nhiều ngôn ngữ cùng lúc trong môi trường test) và không dùng đa ngôn
+          # ngữ "vi,en" (cùng nguyên nhân crash) — chỉ "vi" đơn ngôn ngữ đã verify ổn định.
+          # DocumentConverter cần ~15-20s để khởi tạo model, sleep 5s cũ có rủi ro race condition.
+          opendataloader-pdf-hybrid --port 5002 --ocr-lang vi &
+          sleep 20
           python run_analysis.py "${{ github.event.inputs.ticker }}"
 
       - name: Commit Generated Files Back to Repository

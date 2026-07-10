@@ -175,8 +175,8 @@
     },
     "2022(CN)": {
       "Khac": {
-        "revenue": 0.01,
-        "cogs": 0.0,
+        "revenue": 8569.6,
+        "cogs": 449.19,
         "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
         "sourceType": "auto_ocr",
         "derived": false
@@ -187,10 +187,52 @@
         "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
         "sourceType": "auto",
         "derived": false
+      },
+      "DienNang": {
+        "revenue": 2697.68,
+        "cogs": 2540.82,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 129.71,
+        "cogs": 0.0,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 149.39,
+        "cogs": 25.23,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
       }
     },
     "2021(CN)": {
       "Khac": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "DienNang": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 0.0,
+        "cogs": 0.0,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
+        "sourceType": "auto_ocr",
+        "derived": false
+      },
+      "BDS": {
         "revenue": 0.0,
         "cogs": 0.0,
         "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
