@@ -2283,16 +2283,31 @@ def run_kcn_analysis(ticker, use_cache=True):
     store = load_segments_kcn(ticker)
     seg_names, seg_labels, seg_colors, yearly_seg, quarterly_seg = build_segment_history(store, is_recs_y, is_recs_q)
 
-    # Rà soát Σ mảng vs tổng DT/GVHB Vietcap — kỳ nào lệch lớn (WARN/FAIL) thì tự động tải lại
-    # RIÊNG đúng PDF của kỳ đó (bỏ qua cơ chế "ăn theo cột so sánh" — vì cột so sánh đó có thể
-    # chính là nguồn gây lệch) rồi re-check 1 lần. Giới hạn số kỳ retry để tránh chạy vô hạn.
+    # Rà soát Σ mảng vs tổng DT/GVHB Vietcap — kỳ nào lệch lớn (WARN/FAIL) thì XEM XÉT tải lại RIÊNG
+    # đúng PDF của kỳ đó (bỏ qua cơ chế "ăn theo cột so sánh").
+    #
+    # QUAN TRỌNG (2026-07, phát hiện qua run thật trên GitHub Actions — mỗi lần OCR 1 file tốn
+    # 10-15 PHÚT trên runner CPU-only, dễ vượt timeout 90 phút của workflow): CHỈ retry (tải+OCR lại
+    # từ đầu) những kỳ HOÀN TOÀN CHƯA CÓ mảng nào (0 mảng) — vì tải lại CHÍNH PDF đó với CÙNG cấu
+    # hình OCR gần như chắc chắn cho ra kết quả GIỐNG HỆT lần trước (không có gì thay đổi giữa 2 lần
+    # gọi), tốn thêm 10-15 phút OCR mà không cải thiện được gì. Kỳ đã có MỘT PHẦN dữ liệu (chỉ là
+    # tổng chưa khớp Vietcap, hoặc bị bộ lọc outlier loại bớt 1 mảng — xem _drop_outlier_segments
+    # trong segments_kcn_parser.py) thì để nguyên, báo cáo qua segmentConsistency/PDF cho user tự
+    # quyết định bổ sung markdown thủ công (xem update_markdown_drive.py) thay vì retry mù.
     consistency, max_gap = check_segment_consistency(store, is_recs_y, is_recs_q)
     _bad_periods = [k for k, v in consistency.items() if v["status"] != "OK"]
+
+    def _period_has_any_data(pkey):
+        bucket = "yearly" if "(" in pkey else "quarterly"
+        return bool(store.get(bucket, {}).get(pkey))
+
+    _empty_periods = [k for k in _bad_periods if not _period_has_any_data(k)]
     if _bad_periods:
         print(f"  [INFO] Phát hiện {len(_bad_periods)} kỳ lệch/thiếu dữ liệu mảng (WARN/FAIL): {_bad_periods[:5]}"
               + (f" (+{len(_bad_periods)-5} kỳ khác)" if len(_bad_periods) > 5 else "")
-              + " — thử tải lại riêng từng kỳ...")
-        for pkey in _bad_periods[:3]:
+              + f" — trong đó {len(_empty_periods)} kỳ hoàn toàn chưa có dữ liệu sẽ được tải+OCR lại; "
+              f"{len(_bad_periods)-len(_empty_periods)} kỳ đã có dữ liệu một phần sẽ để báo cáo, không retry mù.")
+        for pkey in _empty_periods[:3]:
             try:
                 subprocess.run(
                     [sys.executable, "bctc_pdf_tool.py", "fetch-one", ticker, pkey],

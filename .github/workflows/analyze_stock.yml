@@ -18,7 +18,10 @@ permissions:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # 90 -> 150 phút: mỗi lần OCR 1 file BCTC scan mất 10-15 phút trên runner CPU-only, đôi khi cần
+    # OCR nhiều kỳ trong 1 lần chạy (mốc neo + retry) — thêm lớp an toàn dù đã giảm số lần OCR không
+    # cần thiết (xem check_segment_consistency trong template_kcn.py, chỉ retry kỳ hoàn toàn trống).
+    timeout-minutes: 150
 
     steps:
       - name: Checkout Repository
