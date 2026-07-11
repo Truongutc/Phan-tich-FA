@@ -847,19 +847,20 @@ function renderChartRevNpat(data) {
             ]
         },
         plugins: [{
-            id: 'revLabels',
+            id: 'npatLabels',
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
                 ctx.font = 'bold 9px "Inter", sans-serif';
-                ctx.fillStyle = '#a3a3a3';
+                ctx.fillStyle = '#10b981';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'bottom';
 
-                const meta = chart.getDatasetMeta(0);
-                meta.data.forEach((bar, index) => {
-                    const val = chart.data.datasets[0].data[index];
-                    ctx.fillText(Math.round(val).toLocaleString('vi-VN'), bar.x, bar.y - 4);
+                // Điền số LNST (dataset 1 = đường LNST, trục phải) — không điền số cột doanh thu
+                const meta = chart.getDatasetMeta(1);
+                meta.data.forEach((point, index) => {
+                    const val = chart.data.datasets[1].data[index];
+                    ctx.fillText(Math.round(val).toLocaleString('vi-VN'), point.x, point.y - 8);
                 });
                 ctx.restore();
             }

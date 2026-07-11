@@ -648,10 +648,13 @@ def _payout_ratio(cf_recs, is_recs, year):
 
 
 def calc_valuation_kcn(ticker, is_recs_y, bs_recs_y, cf_recs_y, hist_years, shares,
-                        current_price, rf, beta, erp=0.07, specific_risk_premium=0.02, n_ri=3,
+                        current_price, rf, beta, erp=0.07, specific_risk_premium=0.0, n_ri=3,
                         target_pe=None, target_pb=None, eps_floor=0.0):
     """Tính định giá theo tổ hợp 40%P/E + 40%P/B + 20%RI.
-    Trả về dict chứa đủ inputs/outputs để ghi vào Excel và JSON."""
+    Trả về dict chứa đủ inputs/outputs để ghi vào Excel và JSON.
+    COE = Rf + β×ERP (KHÔNG cộng phần bù rủi ro đặc thù cho nhóm KCN — dòng tiền cho thuê ổn định,
+    khác với CTCK/ngân hàng — specific_risk_premium mặc định 0.0, chỉ giữ tham số để tương thích
+    ngược nếu cần override thủ công)."""
     coe = rf + beta * erp + specific_risk_premium  # COE = Rf + β × ERP + specific_risk_premium
 
     # --- Lấy số liệu lịch sử ---
@@ -823,7 +826,7 @@ def build_beta_coe_sheets(wb, ticker, beta_raw, beta_val, beta_src, aligned_data
     ws_coe.cell(row=7, column=2).font = DATA_FONT
     ws_coe.cell(row=7, column=3, value="Phần bù rủi ro quốc gia/KCN đặc thù").font = ITALIC_FONT
     
-    ws_coe.cell(row=9, column=1, value="COE = Rf + β × ERP + PBĐT").font = BOLD_FONT
+    ws_coe.cell(row=9, column=1, value="COE = Rf + β × ERP").font = BOLD_FONT
     ws_coe.cell(row=9, column=2, value="=B4+B5*B6+B7").font = BOLD_FONT
     ws_coe.cell(row=9, column=2).number_format = FMT_PCT
     ws_coe.cell(row=9, column=2).fill = P_FILL
@@ -895,7 +898,7 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
     beta_raw = val.get("beta")
     rf_val = val.get("rf")
     erp = val.get("erp", 0.07)
-    specific_rp = 0.02
+    specific_rp = 0.0  # KCN: COE = Rf + β×ERP, không cộng phần bù rủi ro đặc thù (khác CTCK/ngân hàng)
     coe = val.get("coe")
     build_beta_coe_sheets(wb, ticker, beta_raw, beta_raw, beta_src, aligned_data, rf_val, "TPCP 10Y VN", erp, specific_rp, coe)
     all_years = list(hist_years) + list(fc_years)
@@ -970,7 +973,7 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         ("Beta (CAPM)",                    "='00_COE'!B5",    beta_src),
         ("ERP (phần bù rủi ro thị trường)","='00_COE'!B6",    "Damodaran ERP cho VN (7%)"),
         ("Phần bù rủi ro đặc thù KCN",    "='00_COE'!B7",    "Thanh khoản thấp, phụ thuộc FDI (+2%)"),
-        ("COE = Rf + β × ERP + PBĐT",     "='00_COE'!B9",    "Cost of Equity (CAPM điều chỉnh)"),
+        ("COE = Rf + β × ERP",     "='00_COE'!B9",    "Cost of Equity (CAPM điều chỉnh)"),
         ("EPS lịch sử gần nhất (VND)",    f"='A4_EPS_Bridge'!{_last_hist_col}4", "isa22 / CP lưu hành năm tương ứng"),
         ("BVPS mẹ lịch sử gần nhất (VND)",f"='A4_EPS_Bridge'!{_last_hist_col}5","(bsa78 − bsa210) / CP lưu hành"),
         ("Payout ratio trung bình",        val["avg_payout"], "Trung bình lịch sử |cfa32| / isa22"),
@@ -1291,7 +1294,7 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
         ("Beta",                     "='00_COE'!B5",           beta_src),
         ("ERP",                      "='00_COE'!B6",           "Phần bù rủi ro TTCK VN"),
         ("Phần bù rủi ro đặc thù",    "='00_COE'!B7",           "Phần bù rủi ro quốc gia/ngành đặc thù"),
-        ("COE = Rf + β × ERP + PBĐT", "='00_COE'!B9",           "Chi phí vốn chủ sở hữu"),
+        ("COE = Rf + β × ERP", "='00_COE'!B9",           "Chi phí vốn chủ sở hữu"),
         ("─ P/E ─",                  "",     ""),
         ("EPS forward 1Y (VND)",     round(val["eps_fc1"]),    "Formula: EPS_last × (1 + CAGR EPS)"),
         ("P/E mục tiêu",             "=02_Assumptions!B12",    "Median P/E lịch sử, kẹp [8,25]"),
@@ -1327,7 +1330,7 @@ def build_excel_kcn(wb, ticker, company_name, current_price, shares,
             ws8.cell(ri_v, 1).fill = P_FILL
             
         if isinstance(value, (int, float)):
-            if "%" in label or label in ("COE = Rf + β × ERP + PBĐT", "CAGR EPS"):
+            if "%" in label or label in ("COE = Rf + β × ERP", "CAGR EPS"):
                 c.number_format = FMT_PCT
             elif isinstance(value, float) and 0 < abs(value) < 10:
                 c.number_format = "0.00"
@@ -1996,7 +1999,7 @@ def build_pdf_kcn(pdf_path, ticker, company_name, current_price, shares,
     # CAPM detail
     story.append(Paragraph(
         f"CAPM: Rf = {val['rf']*100:.2f}% (TPCP 10Y VN) | Beta = {val['beta']:.3f} ({beta_src}) "
-        f"| ERP = 5.5% | COE = {val['coe']*100:.2f}% | Payout avg = {val['avg_payout']*100:.1f}%",
+        f"| ERP = {val.get('erp', 0.07)*100:.1f}% | COE = {val['coe']*100:.2f}% | Payout avg = {val['avg_payout']*100:.1f}%",
         italic_st))
     story.append(Spacer(1, 12))
 
