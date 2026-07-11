@@ -708,8 +708,19 @@ def fetch_nguoiquansat_production_updates(days_back=70, max_fetch=25):
     tiết và đáng tin cậy hơn tin PR gộp chung của chính hoaphat.com.vn — xem comment ở
     fetch_hpg_production_updates). Dùng sitemap THEO NGÀY (sitemap-article-YYYY-MM-DD.xml, mỗi ngày
     ~70-100 bài, có sẵn tiêu đề trong thẻ <image:title> nên không cần fetch từng bài để lọc) quét
-    ngược `days_back` ngày gần nhất. KHÔNG BAO GIỜ crash — trả về [] nếu lỗi bất kỳ bước nào."""
+    ngược `days_back` ngày gần nhất. KHÔNG BAO GIỜ crash — trả về [] nếu lỗi bất kỳ bước nào.
+
+    2026-07: xác nhận qua log GitHub Actions thật — TOÀN BỘ (70/70) request sitemap-theo-ngày bị trả
+    403, trong khi cùng cơ chế fetch_via_curl (đã có UA trình duyệt thật) vẫn thành công với các
+    nguồn khác (cafef.vn google-news-sitemap.xml chỉ 1 request). Nhiều khả năng đây là rate-limit
+    theo IP kích hoạt bởi việc gọi 70 request LIÊN TIẾP cùng 1 site trong 1 lần chạy (dấu hiệu bot rõ
+    rệt), không hẳn là chặn cứng theo dải IP datacenter. Vì vậy thêm phương án dự phòng: nếu TẤT CẢ
+    sitemap theo ngày đều fetch lỗi (không phải chỉ "không có tin phù hợp"), thử sitemap-news.xml —
+    1 request duy nhất, cùng định dạng google-news-sitemap mà cafef.vn dùng, phủ ~48h gần nhất. Không
+    thay thế được hoàn toàn khả năng tra cứu lùi 70 ngày của sitemap theo ngày (chỉ bắt được tin RẤT
+    MỚI), nhưng đủ để không bỏ lỡ tin sản lượng vừa đăng khi cách chính bị chặn."""
     candidates = {}
+    _any_sitemap_ok = False
     try:
         today = date.today()
         for d in range(days_back):
@@ -717,6 +728,7 @@ def fetch_nguoiquansat_production_updates(days_back=70, max_fetch=25):
             sm_html = fetch_via_curl(f"https://nguoiquansat.vn/sitemap-article-{day_str}.xml", timeout=12, label="nguoiquansat-sitemap")
             if not sm_html:
                 continue
+            _any_sitemap_ok = True
             for m in re.finditer(
                 r'<loc>([^<]+)</loc>\s*<image:image>\s*<image:loc>[^<]*</image:loc>\s*'
                 r'<image:title><!\[CDATA\[([^\]]+)\]\]>', sm_html):
@@ -725,6 +737,21 @@ def fetch_nguoiquansat_production_updates(days_back=70, max_fetch=25):
                     candidates[url] = title
     except Exception as e:
         print(f"  [WARN] nguoiquansat.vn sitemap fetch error: {e}")
+
+    if not _any_sitemap_ok:
+        print("  [DIAG] Toàn bộ sitemap theo ngày của nguoiquansat.vn fetch lỗi (nghi rate-limit theo "
+              "IP do gọi liên tiếp) — thử sitemap-news.xml (1 request, phủ ~48h gần nhất)...")
+        try:
+            sm_html = fetch_via_curl("https://nguoiquansat.vn/sitemap-news.xml", timeout=15, label="nguoiquansat-news-sitemap")
+            if sm_html:
+                for m in re.finditer(
+                    r'<loc>([^<]+)</loc>\s*<lastmod>[^<]*</lastmod>\s*<news:news>.*?'
+                    r'<news:title><!\[CDATA\[([^\]]+)\]\]>', sm_html, re.S):
+                    url, title = m.groups()
+                    if re.search(r"Hòa Phát|HPG", title) and re.search(r"sản lượng", title, re.I):
+                        candidates[url] = title
+        except Exception as e:
+            print(f"  [WARN] nguoiquansat.vn news-sitemap fallback fetch error: {e}")
 
     records, fetched = [], 0
     for url, title in candidates.items():
@@ -765,6 +792,16 @@ _DTCP_PRODUCT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# 2026-07: HSC đổi cách viết trong báo cáo Q2/2026 — không còn dùng mẫu câu "HPG bán được X tấn...
+# trong tháng N" (_DTCP_PRODUCT_RE ở trên) cho tháng cuối quý nữa, mà lồng vào bài CẢ QUÝ dạng "trong
+# tháng N, sản lượng tiêu thụ HRC/thép xây dựng ... đạt X tấn" — khiến _DTCP_PRODUCT_RE không khớp
+# được nữa dù bài viết vẫn có đủ số liệu tháng. Thêm mẫu câu mới làm fallback khi mẫu cũ không khớp.
+_DTCP_MONTH_IN_Q_RE = re.compile(
+    r"trong\s*tháng\s*(\d{1,2})[^.]{0,10}?sản lượng tiêu thụ\s+(HRC|thép xây dựng)"
+    r"[^.]{0,120}?đạt\s*(?:gần|hơn|trên)?\s*([\d.,]+)\s*(triệu\s*)?tấn",
+    re.IGNORECASE,
+)
+
 def fetch_dautucophieu_production_updates(max_fetch=15):
     """Dò tin cập nhật sản lượng thép HPG trên dautucophieu.net — trang này đăng lại báo cáo cập
     nhật hàng tháng của HSC Research (tương tự nguoiquansat.vn đăng lại Vietcap), khá đều đặn trong
@@ -802,6 +839,22 @@ def fetch_dautucophieu_production_updates(max_fetch=15):
                     xd_kt = vol
                 elif "hrc" in product.lower() or "cán nóng" in product.lower():
                     hrc_kt = vol
+
+            if month_num is None:
+                # Mẫu câu cũ không khớp — thử mẫu câu mới (xem _DTCP_MONTH_IN_Q_RE). Chỉ chấp nhận
+                # nếu TẤT CẢ số liệu tìm được trong bài đều nói về CÙNG 1 tháng — tránh trộn nhầm
+                # HRC tháng này với XD tháng khác nếu bài đề cập nhiều tháng khác nhau.
+                _month_matches = _DTCP_MONTH_IN_Q_RE.findall(html)
+                _months_found = {int(mo) for mo, _, _, _ in _month_matches}
+                if len(_months_found) == 1:
+                    month_num = _months_found.pop()
+                    yr = int(pub_date[6:10]) if pub_date else None
+                    for _mo, product, num_str, is_million in _month_matches:
+                        vol = _vn_number_to_kilotons(num_str, bool(is_million))
+                        if "xây dựng" in product.lower():
+                            xd_kt = vol
+                        else:
+                            hrc_kt = vol
             if month_num and yr and (hrc_kt is not None or xd_kt is not None):
                 records.append({
                     "type": "month", "year": yr, "month": month_num,
