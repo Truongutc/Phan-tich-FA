@@ -63,6 +63,51 @@ NHIETDIEN_COMPANY_NAMES = {
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# STYLING CONSTANTS (copy nguyên từ template_kcn.py để đồng nhất giao diện Excel)
+# ══════════════════════════════════════════════════════════════════════════
+FONT_NAME = "Calibri"
+TITLE_FONT = Font(name=FONT_NAME, size=16, bold=True, color="1F4E78")
+HEADER_FILL = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
+HEADER_FONT = Font(name=FONT_NAME, size=11, bold=True, color="FFFFFF")
+BOLD_FONT = Font(name=FONT_NAME, size=11, bold=True)
+ITALIC_FONT = Font(name=FONT_NAME, size=9, italic=True, color="666666")
+DATA_FONT = Font(name=FONT_NAME, size=10)
+ASSUMP_FILL = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+LINK_FILL = PatternFill(start_color="E2EFDA", end_color="E2EFDA", fill_type="solid")
+P_FILL = PatternFill(start_color="DDEBF7", end_color="DDEBF7", fill_type="solid")
+THIN_BORDER = Border(left=Side(style="thin", color="D9D9D9"), right=Side(style="thin", color="D9D9D9"),
+                      top=Side(style="thin", color="D9D9D9"), bottom=Side(style="thin", color="D9D9D9"))
+FMT_NUM = '#,##0'
+FMT_PCT = '0.00%'
+FMT_MUL = '0.00"x"'
+FMT_PRICE = '#,##0'
+
+
+def header_row(ws, row, labels, widths=None):
+    for i, label in enumerate(labels, start=1):
+        c = ws.cell(row=row, column=i, value=label)
+        c.font = HEADER_FONT
+        c.fill = HEADER_FILL
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        if widths and i - 1 < len(widths):
+            ws.column_dimensions[get_column_letter(i)].width = widths[i - 1]
+
+
+def data_row(ws, row, label, values, fmt=None, note=None, bold=False, fill=None):
+    c0 = ws.cell(row=row, column=1, value=label)
+    c0.font = BOLD_FONT if bold else DATA_FONT
+    for i, v in enumerate(values, start=2):
+        c = ws.cell(row=row, column=i, value=v)
+        c.font = BOLD_FONT if bold else DATA_FONT
+        if fmt:
+            c.number_format = fmt
+        if fill:
+            c.fill = fill
+    if note:
+        ws.cell(row=row, column=len(values) + 3, value=note).font = ITALIC_FONT
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # VIETNAMESE FONT REGISTRATION (copy nguyên từ template_kcn.py)
 # ══════════════════════════════════════════════════════════════════════════
 def register_vn_fonts():
@@ -454,12 +499,13 @@ def calc_wacc(rf, beta, erp, current_price, shares, debt_last, debt_prev, intere
 
 
 def project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=5, tax_rate=0.20, is_recs_q=None):
-    """Dự phóng FCFF n_fc năm tới. EBIT tính từ Lợi nhuận gộp - Chi phí bán hàng - Chi
-    phí QLDN (isa5-isa9-isa10) — KHÔNG dùng isa11 (Lợi nhuận thuần HĐKD theo VAS) vì
-    isa11 đã trừ cả doanh thu/chi phí tài chính (gồm lãi vay), trong khi FCFF cần EBIT
-    THUẦN HOẠT ĐỘNG (chưa trừ lãi vay) — ảnh hưởng vốn vay đã nằm trong WACC, không
-    được trừ trùng ở đây. Biên EBIT/D&A/CAPEX dự phóng = bình quân lịch sử (D&A và
-    CAPEX không có driver vật lý rõ ràng ở Giai đoạn 1 nên neo theo % doanh thu).
+    """Dự phóng FCFF n_fc năm tới. EBIT tính từ Lợi nhuận gộp CỘNG Chi phí bán hàng+QLDN
+    (isa5 + isa9 + isa10 — isa9/isa10 Vietcap lưu ÂM nên CỘNG mới đúng, xem comment
+    sga_hist bên dưới) — KHÔNG dùng isa11 (Lợi nhuận thuần HĐKD theo VAS) vì isa11 đã trừ
+    cả doanh thu/chi phí tài chính (gồm lãi vay), trong khi FCFF cần EBIT THUẦN HOẠT ĐỘNG
+    (chưa trừ lãi vay) — ảnh hưởng vốn vay đã nằm trong WACC, không được trừ trùng ở đây.
+    Biên EBIT/D&A/CAPEX dự phóng = bình quân lịch sử (D&A và CAPEX không có driver vật lý
+    rõ ràng ở Giai đoạn 1 nên neo theo % doanh thu).
 
     NĂM DỰ PHÓNG ĐẦU TIÊN (năm hiện tại, ngay sau hist_years[-1]) — nếu đã có báo cáo quý
     thực tế trong năm đó (is_recs_q), dùng blend_annual_estimate() (fetch_data.py, DÙNG
@@ -472,8 +518,13 @@ def project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=5, tax_rate=0.20, is_recs
 
     revenue_hist = [_get_yr(is_recs_y, y, IS_GEN["revenue"]) for y in hist_years]
     gp_hist = [_get_yr(is_recs_y, y, IS_GEN["gross_profit"]) for y in hist_years]
+    # isa9 (sga_sales) và isa10 (sga_admin) được Vietcap lưu ÂM (verify trực tiếp cache
+    # POW 2025: isa9=-1.5 tỷ, isa10=-1245.7 tỷ) — cùng quy ước với isa4 (cogs, cũng âm,
+    # Revenue+COGS=GrossProfit). EBIT = GP + SGA (CỘNG, không trừ) mới đúng — bug thật đã
+    # phát hiện qua kiểm tra chéo Excel: công thức "GP-SGA" cũ cho EBIT > Gross Profit,
+    # vô lý (thêm chi phí bán hàng/QLDN thay vì trừ đi).
     sga_hist = [_get_yr(is_recs_y, y, IS_GEN["sga_sales"]) + _get_yr(is_recs_y, y, IS_GEN["sga_admin"]) for y in hist_years]
-    ebit_hist = [gp_hist[i] - sga_hist[i] for i in range(len(hist_years))]
+    ebit_hist = [gp_hist[i] + sga_hist[i] for i in range(len(hist_years))]
     da_hist = [_get_yr(cf_recs_y, y, CF_GEN["depreciation"]) for y in hist_years]
     capex_hist = [abs(_get_yr(cf_recs_y, y, CF_GEN["capex"])) for y in hist_years]
 
@@ -495,7 +546,7 @@ def project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=5, tax_rate=0.20, is_recs
         if n_q_rev > 0:
             ytd_blend_info = {
                 "current_year": current_year, "n_known_quarters": n_q_rev,
-                "revenue_ytd": rev_ytd, "ebit_ytd": (gp_ytd - sga1_ytd - sga2_ytd) if n_q_gp == n_q_rev else None,
+                "revenue_ytd": rev_ytd, "ebit_ytd": (gp_ytd + sga1_ytd + sga2_ytd) if n_q_gp == n_q_rev else None,
             }
 
     fc_rows = []
@@ -627,7 +678,7 @@ def fetch_peer_multiples(tickers=None, use_cache=True):
         gp = _get_yr(is_y, y_last, IS_GEN["gross_profit"])
         sga = _get_yr(is_y, y_last, IS_GEN["sga_sales"]) + _get_yr(is_y, y_last, IS_GEN["sga_admin"])
         da = _get_yr(cf_y, y_last, CF_GEN["depreciation"])
-        ebitda = (gp - sga) + da
+        ebitda = (gp + sga) + da  # sga (isa9+isa10) đã âm sẵn — CỘNG mới đúng, xem project_fcf
         debt = _get_yr(bs_y, y_last, BS_GEN["short_borrow"]) + _get_yr(bs_y, y_last, BS_GEN["long_borrow"])
         cash = _get_yr(bs_y, y_last, BS_GEN["cash"])
         net_debt = debt - cash
@@ -675,7 +726,7 @@ def calc_ev_ebitda_valuation(hist_years, is_recs_y, cf_recs_y, bs_recs_y, curren
         gp = _get_yr(is_recs_y, y, IS_GEN["gross_profit"])
         sga = _get_yr(is_recs_y, y, IS_GEN["sga_sales"]) + _get_yr(is_recs_y, y, IS_GEN["sga_admin"])
         da = _get_yr(cf_recs_y, y, CF_GEN["depreciation"])
-        ebit = gp - sga
+        ebit = gp + sga  # sga (isa9+isa10) đã âm sẵn — CỘNG mới đúng, xem project_fcf
         ebitda = ebit + da
         debt_y = _get_yr(bs_recs_y, y, BS_GEN["short_borrow"]) + _get_yr(bs_recs_y, y, BS_GEN["long_borrow"])
         cash_y = _get_yr(bs_recs_y, y, BS_GEN["cash"])
@@ -786,6 +837,451 @@ def calc_valuation_nhietdien(ticker, is_recs_y, bs_recs_y, cf_recs_y, hist_years
         "fair_pb": fair_pb, "fair_asset": fair_asset,
         "fair_blend": fair_blend, "current_price": current_price, "upside": upside,
     }
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# EXCEL BUILDER — FORMULA-DRIVEN (yêu cầu user: "file excel sẽ phải đầy đủ công thức
+# tính, việc tính định giá DCF... cũng phải có phương pháp luận và công thức tính đầy
+# đủ"). MỌI Ô TÍNH TOÁN (WACC, FCFF, PV, Terminal Value, Fair Value...) là CÔNG THỨC
+# EXCEL THẬT tham chiếu qua lại giữa các ô/sheet — sửa 1 giả định (vd Beta, growth rate)
+# ở ô màu vàng là cả bảng tính lại tự động, không phải paste số đã tính sẵn từ Python.
+# Chỉ dữ liệu LỊCH SỬ THÔ (revenue/COGS/D&A... lấy thẳng từ Vietcap) là giá trị tĩnh —
+# đây là INPUT gốc, không phải kết quả tính toán, không có công thức nào để thay thế.
+# ══════════════════════════════════════════════════════════════════════════
+def _ws_freeze(ws, cell="B2"):
+    ws.freeze_panes = cell
+
+
+def build_excel_nhietdien(ticker, company_name, current_price, shares, hist_years,
+                           is_recs_y, bs_recs_y, cf_recs_y, val, peer_result, fuel_prices):
+    """Xây workbook 6 sheet, công thức sống hoàn toàn cho phần tính toán:
+    00_TongQuan, 01_LichSuTaiChinh, 02_WACC_DCF, 03_PeerComps_EV_PE_PB,
+    04_GiaNhienLieu, 05_DinhGia."""
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    n_hist = len(hist_years)
+    year_cols = [get_column_letter(2 + i) for i in range(n_hist)]  # B, C, D...
+
+    # ── Sheet 00: Tổng quan ─────────────────────────────────────────────
+    ws0 = wb.create_sheet("00_TongQuan")
+    ws0.cell(row=1, column=1, value=f"{ticker} — {company_name}").font = TITLE_FONT
+    ws0.cell(row=2, column=1, value="Ngành: Nhiệt điện (Thermal Power Generation)").font = ITALIC_FONT
+    ws0.cell(row=3, column=1, value=f"Ngày lập báo cáo: {datetime.date.today().isoformat()}").font = ITALIC_FONT
+
+    r = 5
+    ws0.cell(row=r, column=1, value="Giá thị trường hiện tại (VND/cp)").font = BOLD_FONT
+    ws0.cell(row=r, column=2, value=current_price).number_format = FMT_PRICE
+    R_PRICE = r
+    r += 1
+    ws0.cell(row=r, column=1, value="Số lượng cổ phiếu lưu hành (cp)").font = BOLD_FONT
+    ws0.cell(row=r, column=2, value=shares).number_format = FMT_NUM
+    ws0.cell(row=r, column=3, value="= Vốn điều lệ (bsa80, năm gần nhất) / 10.000 VND mệnh giá").font = ITALIC_FONT
+    R_SHARES = r
+    r += 1
+    ws0.cell(row=r, column=1, value="Vốn hóa thị trường (tỷ VND)").font = BOLD_FONT
+    c = ws0.cell(row=r, column=2, value=f"=B{R_PRICE}*B{R_SHARES}/1000000000")
+    c.number_format = FMT_NUM
+    r += 2
+
+    ws0.cell(row=r, column=1, value="TÓM TẮT ĐỊNH GIÁ").font = BOLD_FONT
+    r += 1
+    header_row(ws0, r, ["Phương pháp", "Trọng số", "Fair Value (VND/cp)", "Nguồn công thức"], [26, 10, 20, 46])
+    r += 1
+    R_SUMMARY_START = r
+    rows_summary = [
+        ("DCF (FCFF chiết khấu WACC)", 0.50, "='02_WACC_DCF'!$B$" ),  # placeholder, patched below
+        ("EV/EBITDA (peer median)", 0.20, "='03_PeerComps_EV_PE_PB'!$B$"),
+        ("P/B (peer median)", 0.15, "='02_WACC_DCF'!$B$"),
+        ("Asset-based (Book Value of Equity)", 0.15, "='02_WACC_DCF'!$B$"),
+    ]
+    # (các ô tham chiếu chính xác được patch lại bên dưới sau khi biết đúng vị trí dòng
+    # trên sheet 02/03 — xem phần "PATCH liên kết 00_TongQuan" cuối hàm)
+    for label, weight, _ in rows_summary:
+        ws0.cell(row=r, column=1, value=label).font = DATA_FONT
+        wcell = ws0.cell(row=r, column=2, value=weight)
+        wcell.number_format = FMT_PCT
+        r += 1
+    R_SUMMARY_END = r - 1
+    ws0.cell(row=r, column=1, value="FAIR VALUE BLEND").font = BOLD_FONT
+    c = ws0.cell(row=r, column=2, value=f"=SUMPRODUCT(B{R_SUMMARY_START}:B{R_SUMMARY_END},C{R_SUMMARY_START}:C{R_SUMMARY_END})")
+    c.number_format = FMT_PRICE
+    c.font = BOLD_FONT
+    R_FAIRBLEND = r
+    r += 1
+    ws0.cell(row=r, column=1, value="Upside/Downside so với giá hiện tại").font = BOLD_FONT
+    c = ws0.cell(row=r, column=2, value=f"=B{R_FAIRBLEND}/B{R_PRICE}-1")
+    c.number_format = FMT_PCT
+    c.font = BOLD_FONT
+    ws0.column_dimensions["A"].width = 34
+    ws0.column_dimensions["B"].width = 16
+    _ws_freeze(ws0)
+
+    # ── Sheet 01: Lịch sử tài chính (input thô Vietcap + tỷ lệ công thức) ────
+    ws1 = wb.create_sheet("01_LichSuTaiChinh")
+    ws1.cell(row=1, column=1, value=f"{ticker} — Lịch sử tài chính (tỷ VND, nguồn Vietcap)").font = TITLE_FONT
+    r = 3
+    header_row(ws1, r, ["Chỉ tiêu"] + [str(y) for y in hist_years] + ["Nguồn/Ghi chú"], [30] + [12]*n_hist + [30])
+    r += 1
+
+    def _row_vals(field_map, key):
+        return [round(_get_yr(is_recs_y, y, field_map[key]), 2) for y in hist_years]
+
+    revenue_vals = _row_vals(IS_GEN, "revenue")
+    cogs_vals = [round(-_get_yr(is_recs_y, y, IS_GEN["cogs"]), 2) if _get_yr(is_recs_y, y, IS_GEN["cogs"]) < 0
+                 else round(_get_yr(is_recs_y, y, IS_GEN["cogs"]), 2) for y in hist_years]
+    gp_vals = _row_vals(IS_GEN, "gross_profit")
+    sga_vals = [round(_get_yr(is_recs_y, y, IS_GEN["sga_sales"]) + _get_yr(is_recs_y, y, IS_GEN["sga_admin"]), 2) for y in hist_years]
+    da_vals = [round(_get_yr(cf_recs_y, y, CF_GEN["depreciation"]), 2) for y in hist_years]
+    capex_vals = [round(abs(_get_yr(cf_recs_y, y, CF_GEN["capex"])), 2) for y in hist_years]
+    interest_vals = [round(abs(_get_yr(is_recs_y, y, IS_GEN["interest_expense"])), 2) for y in hist_years]
+    npat_vals = _row_vals(IS_GEN, "npat_parent")
+    equity_vals = [round(_get_yr(bs_recs_y, y, BS_GEN["equity_total"]) - _get_yr(bs_recs_y, y, BS_GEN["nci"]), 2) for y in hist_years]
+    debt_vals = [round(_get_yr(bs_recs_y, y, BS_GEN["short_borrow"]) + _get_yr(bs_recs_y, y, BS_GEN["long_borrow"]), 2) for y in hist_years]
+    cash_vals = [round(_get_yr(bs_recs_y, y, BS_GEN["cash"]), 2) for y in hist_years]
+
+    R_REV = r; data_row(ws1, r, "Doanh thu thuần (isa3)", revenue_vals, FMT_NUM, "Vietcap — BCTC hợp nhất"); r += 1
+    R_COGS = r; data_row(ws1, r, "Giá vốn hàng bán (isa4)", cogs_vals, FMT_NUM, "Vietcap"); r += 1
+    R_GP = r; data_row(ws1, r, "Lợi nhuận gộp (isa5)", gp_vals, FMT_NUM, "Vietcap"); r += 1
+    R_SGA = r; data_row(ws1, r, "CP bán hàng + QLDN (isa9+isa10, ÂM)", sga_vals, FMT_NUM, "Vietcap — đã âm sẵn"); r += 1
+    R_EBIT = r
+    # isa9/isa10 Vietcap lưu ÂM (verify cache thật) — CỘNG mới đúng EBIT, "-" sẽ cho EBIT
+    # > Gross Profit (vô lý) vì cộng ngược chi phí thay vì trừ.
+    ebit_formulas = [f"={year_cols[i]}{R_GP}+{year_cols[i]}{R_SGA}" for i in range(n_hist)]
+    data_row(ws1, r, "EBIT (= LN gộp + CP bán hàng+QLDN, đã âm)", ebit_formulas, FMT_NUM,
+             "CÔNG THỨC — KHÔNG dùng isa11 (đã trừ lãi vay, xem project_fcf)", bold=True); r += 1
+    R_EBITMARGIN = r
+    ebit_margin_formulas = [f"={year_cols[i]}{R_EBIT}/{year_cols[i]}{R_REV}" for i in range(n_hist)]
+    data_row(ws1, r, "Biên EBIT (%)", ebit_margin_formulas, FMT_PCT, "= EBIT / Doanh thu"); r += 1
+    R_GM = r
+    gm_formulas = [f"={year_cols[i]}{R_GP}/{year_cols[i]}{R_REV}" for i in range(n_hist)]
+    data_row(ws1, r, "Biên lợi nhuận gộp (%)", gm_formulas, FMT_PCT, "= LN gộp / Doanh thu"); r += 1
+    R_DA = r; data_row(ws1, r, "Khấu hao (cfa2)", da_vals, FMT_NUM, "Vietcap — Báo cáo LCTT"); r += 1
+    R_EBITDA = r
+    ebitda_formulas = [f"={year_cols[i]}{R_EBIT}+{year_cols[i]}{R_DA}" for i in range(n_hist)]
+    data_row(ws1, r, "EBITDA (= EBIT + Khấu hao)", ebitda_formulas, FMT_NUM, "CÔNG THỨC", bold=True); r += 1
+    R_CAPEX = r; data_row(ws1, r, "CAPEX (cfa19, trị tuyệt đối)", capex_vals, FMT_NUM, "Vietcap — Báo cáo LCTT"); r += 1
+    R_INTEREST = r; data_row(ws1, r, "Chi phí lãi vay (isa8, trị tuyệt đối)", interest_vals, FMT_NUM, "Vietcap"); r += 1
+    R_NPAT = r; data_row(ws1, r, "LNST cổ đông công ty mẹ (isa22)", npat_vals, FMT_NUM, "Vietcap"); r += 1
+    R_NPATMARGIN = r
+    npm_formulas = [f"={year_cols[i]}{R_NPAT}/{year_cols[i]}{R_REV}" for i in range(n_hist)]
+    data_row(ws1, r, "Biên LNST (%)", npm_formulas, FMT_PCT, "= LNST mẹ / Doanh thu"); r += 1
+    R_EQUITY = r; data_row(ws1, r, "VCSH thuộc cổ đông mẹ (bsa78-bsa210)", equity_vals, FMT_NUM, "Vietcap — Bảng CĐKT"); r += 1
+    R_DEBT = r; data_row(ws1, r, "Tổng nợ vay (bsa56+bsa71)", debt_vals, FMT_NUM, "Vietcap"); r += 1
+    R_CASH = r; data_row(ws1, r, "Tiền và tương đương tiền (bsa2)", cash_vals, FMT_NUM, "Vietcap"); r += 1
+    R_ROE = r
+    roe_formulas = [f"={year_cols[i]}{R_NPAT}/{year_cols[i]}{R_EQUITY}" for i in range(n_hist)]
+    data_row(ws1, r, "ROE (= LNST mẹ / VCSH mẹ)", roe_formulas, FMT_PCT, "CÔNG THỨC", bold=True); r += 1
+    ws1.column_dimensions["A"].width = 38
+    for col in year_cols:
+        ws1.column_dimensions[col].width = 13
+    _ws_freeze(ws1)
+
+    # ── Sheet 02: WACC & DCF (toàn bộ công thức sống) ────────────────────
+    ws2 = wb.create_sheet("02_WACC_DCF")
+    ws2.cell(row=1, column=1, value=f"{ticker} — WACC & Định giá DCF").font = TITLE_FONT
+    r = 3
+    ws2.cell(row=r, column=1, value="① CHI PHÍ VỐN (WACC)").font = BOLD_FONT
+    r += 1
+    ws2.cell(row=r, column=1, value="Lãi suất phi rủi ro Rf").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["rf"]); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    ws2.cell(row=r, column=3, value="Nguồn: investing.com VN 10Y bond yield / worldgovernmentbonds.com").font = ITALIC_FONT
+    R_RF = r; r += 1
+    ws2.cell(row=r, column=1, value="Beta (β)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["beta"]); c.number_format = "0.000"; c.fill = ASSUMP_FILL
+    ws2.cell(row=r, column=3, value="Tự tính hồi quy giá CP vs VNINDEX (≥250 phiên) hoặc Vietstock/Vietcap API").font = ITALIC_FONT
+    R_BETA = r; r += 1
+    ws2.cell(row=r, column=1, value="Phần bù rủi ro thị trường (ERP)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["erp"]); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    ws2.cell(row=r, column=3, value="Giả định chuẩn thị trường VN (~7%/năm)").font = ITALIC_FONT
+    R_ERP = r; r += 1
+    ws2.cell(row=r, column=1, value="Chi phí vốn CSH (COE = Rf + β×ERP)").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_RF}+B{R_BETA}*B{R_ERP}"); c.number_format = FMT_PCT
+    R_COE = r; r += 1
+    ws2.cell(row=r, column=1, value=f"Nợ vay năm {hist_years[-1]} (tỷ VND)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"='01_LichSuTaiChinh'!{year_cols[-1]}{R_DEBT}"); c.number_format = FMT_NUM
+    R_DEBTLAST = r; r += 1
+    ws2.cell(row=r, column=1, value=f"Chi phí lãi vay năm {hist_years[-1]} (tỷ VND)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"='01_LichSuTaiChinh'!{year_cols[-1]}{R_INTEREST}"); c.number_format = FMT_NUM
+    R_INTLAST = r; r += 1
+    ws2.cell(row=r, column=1, value="Chi phí nợ vay (COD = Lãi vay / Nợ vay, kẹp [2%,12%])").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=MAX(0.02,MIN(0.12,B{R_INTLAST}/MAX(B{R_DEBTLAST},1)))"); c.number_format = FMT_PCT
+    R_COD = r; r += 1
+    ws2.cell(row=r, column=1, value="Thuế suất TNDN").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=0.20); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    R_TAX = r; r += 1
+    ws2.cell(row=r, column=1, value="Vốn hóa thị trường (tỷ VND)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"='00_TongQuan'!$B${R_PRICE}*'00_TongQuan'!$B${R_SHARES}/1000000000"); c.number_format = FMT_NUM
+    R_MCAP = r; r += 1
+    ws2.cell(row=r, column=1, value="Tỷ trọng vốn CSH (E/(D+E))").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_MCAP}/(B{R_MCAP}+B{R_DEBTLAST})"); c.number_format = FMT_PCT
+    R_WE = r; r += 1
+    ws2.cell(row=r, column=1, value="Tỷ trọng nợ vay (D/(D+E))").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"=1-B{R_WE}"); c.number_format = FMT_PCT
+    R_WD = r; r += 1
+    ws2.cell(row=r, column=1, value="WACC = we×COE + wd×COD×(1-thuế), sàn 8%/trần 18%").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=MAX(0.08,MIN(0.18,B{R_WE}*B{R_COE}+B{R_WD}*B{R_COD}*(1-B{R_TAX})))")
+    c.number_format = FMT_PCT; c.font = BOLD_FONT; c.fill = LINK_FILL
+    R_WACC = r; r += 2
+
+    ws2.cell(row=r, column=1, value="② GIẢ ĐỊNH DỰ PHÓNG (từ mô hình kinh doanh — không phải ước lượng tùy ý)").font = BOLD_FONT
+    r += 1
+    ws2.cell(row=r, column=1, value="Tăng trưởng doanh thu dài hạn (CAGR lịch sử, kẹp [-5%,+15%])").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["fc_assumptions"]["rev_g"]); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    ws2.cell(row=r, column=3, value=f"CAGR doanh thu {n_hist} năm lịch sử ('01_LichSuTaiChinh')").font = ITALIC_FONT
+    R_REVG = r; r += 1
+    ws2.cell(row=r, column=1, value="Biên EBIT dự phóng (TB 2-3 năm gần nhất)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["fc_assumptions"]["ebit_margin_fc"]); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    R_EBITM = r; r += 1
+    ws2.cell(row=r, column=1, value="Khấu hao / Doanh thu (TB lịch sử)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["fc_assumptions"]["da_pct_fc"]); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    R_DAPCT = r; r += 1
+    ws2.cell(row=r, column=1, value="CAPEX / Doanh thu (TB lịch sử)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=val["fc_assumptions"]["capex_pct_fc"]); c.number_format = FMT_PCT; c.fill = ASSUMP_FILL
+    R_CAPEXPCT = r; r += 1
+    ytd = val["fc_assumptions"].get("ytd_blend_info")
+    if ytd:
+        ws2.cell(row=r, column=1,
+                 value=f"⚠ Năm {ytd['current_year']} đã có {ytd['n_known_quarters']}/4 quý báo cáo thực tế "
+                       f"(lũy kế DT={ytd['revenue_ytd']:.0f} tỷ). Bảng dự phóng bên dưới dùng công thức "
+                       f"THUẦN (Doanh thu năm trước × (1+g)) để giữ minh bạch/dễ kiểm tra công thức — "
+                       f"số Fair Value công bố trên PDF/web có thể lệch nhẹ vì đã BLEND thêm lũy kế thực "
+                       f"tế của năm {ytd['current_year']} (xem blend_annual_estimate trong code).").font = ITALIC_FONT
+        r += 1
+    r += 1
+
+    ws2.cell(row=r, column=1, value="③ DỰ PHÓNG FCFF 5 NĂM (công thức sống)").font = BOLD_FONT
+    r += 1
+    n_fc = len(val["fc_rows"])
+    fc_cols = [get_column_letter(2 + i) for i in range(n_fc)]
+    header_row(ws2, r, ["Chỉ tiêu"] + [f"Năm +{i+1}" for i in range(n_fc)], [40] + [14]*n_fc)
+    r += 1
+    R_FC_REV = r
+    ws2.cell(row=r, column=1, value="Doanh thu (tỷ VND)").font = DATA_FONT
+    for i in range(n_fc):
+        prev_ref = f"'01_LichSuTaiChinh'!{year_cols[-1]}{R_REV}" if i == 0 else f"{fc_cols[i-1]}{R_FC_REV}"
+        c = ws2.cell(row=r, column=2+i, value=f"={prev_ref}*(1+B{R_REVG})")
+        c.number_format = FMT_NUM
+    r += 1
+    R_FC_EBIT = r
+    ws2.cell(row=r, column=1, value="EBIT (= Doanh thu × Biên EBIT)").font = DATA_FONT
+    for i in range(n_fc):
+        c = ws2.cell(row=r, column=2+i, value=f"={fc_cols[i]}{R_FC_REV}*B{R_EBITM}")
+        c.number_format = FMT_NUM
+    r += 1
+    R_FC_NOPAT = r
+    ws2.cell(row=r, column=1, value="NOPAT (= EBIT × (1-thuế))").font = DATA_FONT
+    for i in range(n_fc):
+        c = ws2.cell(row=r, column=2+i, value=f"={fc_cols[i]}{R_FC_EBIT}*(1-B{R_TAX})")
+        c.number_format = FMT_NUM
+    r += 1
+    R_FC_DA = r
+    ws2.cell(row=r, column=1, value="Khấu hao (= Doanh thu × %DT)").font = DATA_FONT
+    for i in range(n_fc):
+        c = ws2.cell(row=r, column=2+i, value=f"={fc_cols[i]}{R_FC_REV}*B{R_DAPCT}")
+        c.number_format = FMT_NUM
+    r += 1
+    R_FC_CAPEX = r
+    ws2.cell(row=r, column=1, value="CAPEX (= Doanh thu × %DT)").font = DATA_FONT
+    for i in range(n_fc):
+        c = ws2.cell(row=r, column=2+i, value=f"={fc_cols[i]}{R_FC_REV}*B{R_CAPEXPCT}")
+        c.number_format = FMT_NUM
+    r += 1
+    R_FC_FCFF = r
+    ws2.cell(row=r, column=1, value="FCFF (= NOPAT + Khấu hao - CAPEX)").font = BOLD_FONT
+    for i in range(n_fc):
+        c = ws2.cell(row=r, column=2+i, value=f"={fc_cols[i]}{R_FC_NOPAT}+{fc_cols[i]}{R_FC_DA}-{fc_cols[i]}{R_FC_CAPEX}")
+        c.number_format = FMT_NUM; c.font = BOLD_FONT
+    r += 1
+    R_FC_PV = r
+    ws2.cell(row=r, column=1, value="PV(FCFF) chiết khấu về hiện tại ở WACC").font = DATA_FONT
+    for i in range(n_fc):
+        c = ws2.cell(row=r, column=2+i, value=f"={fc_cols[i]}{R_FC_FCFF}/(1+$B${R_WACC})^{i+1}")
+        c.number_format = FMT_NUM
+    r += 2
+
+    ws2.cell(row=r, column=1, value="④ TERMINAL VALUE (trung bình Gordon-growth + Exit-multiple)").font = BOLD_FONT
+    r += 1
+    ws2.cell(row=r, column=1, value="Tăng trưởng dài hạn g_term (=40% growth ngắn hạn, kẹp [0%,3%])").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"=MAX(0,MIN(0.03,B{R_REVG}*0.4))"); c.number_format = FMT_PCT
+    R_GTERM = r; r += 1
+    ws2.cell(row=r, column=1, value="Terminal Value (Gordon-growth) = FCFF cuối×(1+g)/(WACC-g)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"={fc_cols[-1]}{R_FC_FCFF}*(1+B{R_GTERM})/MAX(B{R_WACC}-B{R_GTERM},0.03)")
+    c.number_format = FMT_NUM
+    R_TVGORDON = r; r += 1
+    ws2.cell(row=r, column=1, value="EV/EBITDA mục tiêu (peer median — xem sheet 03)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value="='03_PeerComps_EV_PE_PB'!$B$3"); c.number_format = FMT_MUL
+    R_TARGETEVEBITDA_REF = r; r += 1
+    ws2.cell(row=r, column=1, value="EBITDA năm cuối dự phóng (= EBIT + Khấu hao)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"={fc_cols[-1]}{R_FC_EBIT}+{fc_cols[-1]}{R_FC_DA}"); c.number_format = FMT_NUM
+    R_EBITDALAST = r; r += 1
+    ws2.cell(row=r, column=1, value="Terminal Value (Exit-multiple) = EBITDA cuối × EV/EBITDA mục tiêu").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_EBITDALAST}*B{R_TARGETEVEBITDA_REF}"); c.number_format = FMT_NUM
+    R_TVEXIT = r; r += 1
+    ws2.cell(row=r, column=1, value="Terminal Value (trung bình 2 phương pháp)").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=AVERAGE(B{R_TVGORDON},B{R_TVEXIT})"); c.number_format = FMT_NUM; c.font = BOLD_FONT
+    R_TV = r; r += 1
+    ws2.cell(row=r, column=1, value="PV(Terminal Value)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_TV}/(1+B{R_WACC})^{n_fc}"); c.number_format = FMT_NUM
+    R_TVPV = r; r += 2
+
+    ws2.cell(row=r, column=1, value="⑤ TỪ ENTERPRISE VALUE RA FAIR VALUE/CP").font = BOLD_FONT
+    r += 1
+    ws2.cell(row=r, column=1, value="Enterprise Value (= ΣPV(FCFF) + PV(Terminal Value))").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=SUM({fc_cols[0]}{R_FC_PV}:{fc_cols[-1]}{R_FC_PV})+B{R_TVPV}")
+    c.number_format = FMT_NUM; c.font = BOLD_FONT
+    R_EV = r; r += 1
+    ws2.cell(row=r, column=1, value=f"Nợ vay ròng năm {hist_years[-1]} (= Nợ vay - Tiền mặt)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2,
+                 value=f"='01_LichSuTaiChinh'!{year_cols[-1]}{R_DEBT}-'01_LichSuTaiChinh'!{year_cols[-1]}{R_CASH}")
+    c.number_format = FMT_NUM
+    R_NETDEBT = r; r += 1
+    ws2.cell(row=r, column=1, value="Equity Value (= Enterprise Value - Nợ vay ròng)").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_EV}-B{R_NETDEBT}"); c.number_format = FMT_NUM; c.font = BOLD_FONT
+    R_EQVALUE = r; r += 1
+    ws2.cell(row=r, column=1, value="Fair Value DCF (VND/cp) = Equity Value × 1 tỷ / Số CP").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_EQVALUE}*1000000000/'00_TongQuan'!$B${R_SHARES}")
+    c.number_format = FMT_PRICE; c.font = BOLD_FONT; c.fill = LINK_FILL
+    R_FAIRDCF = r; r += 1
+
+    ws2.cell(row=r, column=1, value="P/B target (peer median — xem sheet 03)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2, value="='03_PeerComps_EV_PE_PB'!$C$3"); c.number_format = FMT_MUL
+    R_TARGETPB = r; r += 1
+    ws2.cell(row=r, column=1, value=f"BVPS hiện tại (= VCSH mẹ năm {hist_years[-1]} × 1 tỷ / Số CP)").font = DATA_FONT
+    c = ws2.cell(row=r, column=2,
+                 value=f"='01_LichSuTaiChinh'!{year_cols[-1]}{R_EQUITY}*1000000000/'00_TongQuan'!$B${R_SHARES}")
+    c.number_format = FMT_PRICE
+    R_BVPS = r; r += 1
+    ws2.cell(row=r, column=1, value="Fair Value P/B (= BVPS × P/B target)").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_BVPS}*B{R_TARGETPB}"); c.number_format = FMT_PRICE; c.font = BOLD_FONT
+    R_FAIRPB = r; r += 1
+    ws2.cell(row=r, column=1, value="Fair Value Asset-based (= BVPS hiện tại, sàn thanh lý)").font = BOLD_FONT
+    c = ws2.cell(row=r, column=2, value=f"=B{R_BVPS}"); c.number_format = FMT_PRICE; c.font = BOLD_FONT
+    R_FAIRASSET = r; r += 1
+    ws2.cell(row=r, column=1, value="P/E target (peer median, THAM CHIẾU — không dùng trong blend)").font = ITALIC_FONT
+    c = ws2.cell(row=r, column=2, value="='03_PeerComps_EV_PE_PB'!$D$3"); c.number_format = FMT_MUL
+    r += 1
+
+    ws1.column_dimensions["A"].width = 38
+    ws2.column_dimensions["A"].width = 52
+    ws2.column_dimensions["B"].width = 16
+    ws2.column_dimensions["C"].width = 50
+    _ws_freeze(ws2)
+
+    # ── Sheet 03: Peer Comps (P/E, P/B, EV/EBITDA cả 4 mã + MEDIAN công thức Excel) ──
+    ws3 = wb.create_sheet("03_PeerComps_EV_PE_PB")
+    ws3.cell(row=1, column=1, value="So sánh tương quan nhóm Nhiệt điện (POW/NT2/PPC/QTP)").font = TITLE_FONT
+    r = 3
+    ws3.cell(row=r, column=1, value="MEDIAN CẢ NHÓM (target multiple áp dụng đồng nhất — không tự đặt biên số)").font = BOLD_FONT
+    r += 1
+    header_row(ws3, r, ["", "EV/EBITDA", "P/B", "P/E"], [30, 14, 14, 14])
+    r += 1
+    peer_tickers = list(peer_result["per_ticker"].keys())
+    R_PEER_DATA_START = r + 1
+    R_PEER_DATA_END = R_PEER_DATA_START + len(peer_tickers) - 1
+    ws3.cell(row=r, column=1, value="MEDIAN").font = BOLD_FONT
+    c = ws3.cell(row=r, column=2, value=f"=MEDIAN(B{R_PEER_DATA_START}:B{R_PEER_DATA_END})"); c.number_format = FMT_MUL; c.font = BOLD_FONT; c.fill = LINK_FILL
+    c = ws3.cell(row=r, column=3, value=f"=MEDIAN(C{R_PEER_DATA_START}:C{R_PEER_DATA_END})"); c.number_format = FMT_MUL; c.font = BOLD_FONT; c.fill = LINK_FILL
+    c = ws3.cell(row=r, column=4, value=f"=MEDIAN(D{R_PEER_DATA_START}:D{R_PEER_DATA_END})"); c.number_format = FMT_MUL; c.font = BOLD_FONT; c.fill = LINK_FILL
+    r += 1
+    header_row(ws3, r, ["Mã", "EV/EBITDA", "P/B", "P/E", "Năm BC", "Giá (VND)", "Vốn hóa (tỷ)"], [12, 14, 14, 14, 10, 14, 16])
+    r += 1
+    for pt in peer_tickers:
+        pv = peer_result["per_ticker"][pt]
+        ws3.cell(row=r, column=1, value=pt).font = BOLD_FONT if pt == ticker else DATA_FONT
+        c = ws3.cell(row=r, column=2, value=round(pv["ev_ebitda"], 2) if pv["ev_ebitda"] else None); c.number_format = FMT_MUL
+        c = ws3.cell(row=r, column=3, value=round(pv["pb"], 2) if pv["pb"] else None); c.number_format = FMT_MUL
+        c = ws3.cell(row=r, column=4, value=round(pv["pe"], 2) if pv["pe"] else None); c.number_format = FMT_MUL
+        ws3.cell(row=r, column=5, value=pv["year"])
+        c = ws3.cell(row=r, column=6, value=pv["current_price"]); c.number_format = FMT_PRICE
+        c = ws3.cell(row=r, column=7, value=round(pv["market_cap"], 1)); c.number_format = FMT_NUM
+        r += 1
+    ws3.cell(row=r+1, column=1,
+             value="Nguồn: Vietcap BCTC hợp nhất kỳ báo cáo gần nhất mỗi mã + giá thị trường hiện tại — "
+                   "tính P/E=Giá/EPS, P/B=Giá/BVPS, EV/EBITDA=(Vốn hóa+Nợ vay ròng)/EBITDA.").font = ITALIC_FONT
+    ws3.column_dimensions["A"].width = 30
+    _ws_freeze(ws3)
+
+    # ── Sheet 04: Giá nhiên liệu & tỷ giá ────────────────────────────────
+    ws4 = wb.create_sheet("04_GiaNhienLieu")
+    ws4.cell(row=1, column=1, value="Giá nhiên liệu đầu vào & tỷ giá (tham chiếu rủi ro)").font = TITLE_FONT
+    r = 3
+    header_row(ws4, r, ["Chỉ tiêu", "Giá trị", "Đơn vị", "Nguồn"], [30, 14, 14, 40])
+    r += 1
+    fuel_rows = [
+        ("Giá than nhiệt (Newcastle coal)", fuel_prices["coal"][0], "USD/tấn", fuel_prices["coal"][1]),
+        ("Giá khí tự nhiên (Henry Hub)", fuel_prices["gas"][0], "USD/MMBtu", fuel_prices["gas"][1]),
+        ("Giá dầu thô (Brent)", fuel_prices["oil"][0], "USD/thùng", fuel_prices["oil"][1]),
+        ("Tỷ giá USD/VND", fuel_prices["usdvnd"][0], "VND/USD", fuel_prices["usdvnd"][1]),
+    ]
+    for label, value, unit, source in fuel_rows:
+        ws4.cell(row=r, column=1, value=label).font = DATA_FONT
+        c = ws4.cell(row=r, column=2, value=round(value, 2)); c.number_format = FMT_NUM
+        ws4.cell(row=r, column=3, value=unit).font = DATA_FONT
+        ws4.cell(row=r, column=4, value=source).font = ITALIC_FONT
+        r += 1
+    r += 1
+    ws4.cell(row=r, column=1,
+             value="Lưu ý (tài liệu hướng dẫn mục 6.2): than tăng 20% → LNST giảm ước 30-40%; khí đắt hơn "
+                   "than nên nhà máy khí (NT2) nhạy cảm hơn với giá LNG/Henry Hub.").font = ITALIC_FONT
+    ws4.column_dimensions["A"].width = 34
+    _ws_freeze(ws4)
+
+    # ── Sheet 05: Định giá — kết nối trọng số + PATCH lại tham chiếu sheet 00 ──
+    ws5 = wb.create_sheet("05_DinhGia")
+    ws5.cell(row=1, column=1, value=f"{ticker} — Định giá kết hợp: DCF 50% + EV/EBITDA 20% + P/B 15% + Asset 15%").font = TITLE_FONT
+    r = 3
+    header_row(ws5, r, ["Phương pháp", "Trọng số", "Fair Value (VND/cp)", "Ghi chú"], [30, 12, 20, 50])
+    r += 1
+    R5_DCF = r
+    ws5.cell(row=r, column=1, value="DCF (FCFF chiết khấu WACC)").font = DATA_FONT
+    c = ws5.cell(row=r, column=2, value=0.50); c.number_format = FMT_PCT
+    c = ws5.cell(row=r, column=3, value=f"='02_WACC_DCF'!$B${R_FAIRDCF}"); c.number_format = FMT_PRICE
+    ws5.cell(row=r, column=4, value="Terminal Value = TB(Gordon-growth, Exit-multiple EV/EBITDA)").font = ITALIC_FONT
+    r += 1
+    R5_EVEBITDA = r
+    ws5.cell(row=r, column=1, value="EV/EBITDA (peer median)").font = DATA_FONT
+    c = ws5.cell(row=r, column=2, value=0.20); c.number_format = FMT_PCT
+    ev_fair_ref = f"={round(val['fair_ev_ebitda'], 2)}"  # tính lại bằng công thức bên dưới thay vì giá trị cứng
+    # Fair EV/EBITDA = (target EV/EBITDA × EBITDA năm+1 - Net debt) × 1 tỷ / shares — công thức sống:
+    c = ws5.cell(row=r, column=3,
+                 value=(f"=('03_PeerComps_EV_PE_PB'!$B$3*'02_WACC_DCF'!${fc_cols[0]}${R_FC_EBIT}"
+                        f"+'03_PeerComps_EV_PE_PB'!$B$3*'02_WACC_DCF'!${fc_cols[0]}${R_FC_DA}"
+                        f"-'02_WACC_DCF'!$B${R_NETDEBT})*1000000000/'00_TongQuan'!$B${R_SHARES}"))
+    c.number_format = FMT_PRICE
+    ws5.cell(row=r, column=4, value="= (EV/EBITDA mục tiêu × EBITDA năm+1 - Nợ vay ròng) × 1 tỷ / Số CP").font = ITALIC_FONT
+    r += 1
+    R5_PB = r
+    ws5.cell(row=r, column=1, value="P/B (peer median)").font = DATA_FONT
+    c = ws5.cell(row=r, column=2, value=0.15); c.number_format = FMT_PCT
+    c = ws5.cell(row=r, column=3, value=f"='02_WACC_DCF'!$B${R_FAIRPB}"); c.number_format = FMT_PRICE
+    ws5.cell(row=r, column=4, value="= BVPS hiện tại × P/B mục tiêu (peer median)").font = ITALIC_FONT
+    r += 1
+    R5_ASSET = r
+    ws5.cell(row=r, column=1, value="Asset-based (Book Value of Equity)").font = DATA_FONT
+    c = ws5.cell(row=r, column=2, value=0.15); c.number_format = FMT_PCT
+    c = ws5.cell(row=r, column=3, value=f"='02_WACC_DCF'!$B${R_FAIRASSET}"); c.number_format = FMT_PRICE
+    ws5.cell(row=r, column=4, value="= BVPS mẹ hiện tại (bsa78-bsa210)/CP — sàn giá trị thanh lý").font = ITALIC_FONT
+    r += 1
+    ws5.cell(row=r, column=1, value="FAIR VALUE BLEND").font = BOLD_FONT
+    c = ws5.cell(row=r, column=2, value=f"=SUM(B{R5_DCF}:B{R5_ASSET})"); c.number_format = FMT_PCT; c.font = BOLD_FONT
+    c = ws5.cell(row=r, column=3, value=f"=SUMPRODUCT(B{R5_DCF}:B{R5_ASSET},C{R5_DCF}:C{R5_ASSET})")
+    c.number_format = FMT_PRICE; c.font = BOLD_FONT; c.fill = LINK_FILL
+    R5_BLEND = r; r += 1
+    ws5.cell(row=r, column=1, value="Giá thị trường hiện tại").font = DATA_FONT
+    c = ws5.cell(row=r, column=3, value="='00_TongQuan'!$B$" + str(R_PRICE)); c.number_format = FMT_PRICE
+    R5_PRICE = r; r += 1
+    ws5.cell(row=r, column=1, value="Upside/Downside").font = BOLD_FONT
+    c = ws5.cell(row=r, column=3, value=f"=C{R5_BLEND}/C{R5_PRICE}-1"); c.number_format = FMT_PCT; c.font = BOLD_FONT
+    ws5.column_dimensions["A"].width = 32
+    _ws_freeze(ws5)
+
+    # ── PATCH: sheet 00_TongQuan tóm tắt trỏ đúng về sheet 05 (đã biết vị trí) ──
+    ws0.cell(row=R_SUMMARY_START, column=3, value=f"='05_DinhGia'!$C${R5_DCF}").number_format = FMT_PRICE
+    ws0.cell(row=R_SUMMARY_START + 1, column=3, value=f"='05_DinhGia'!$C${R5_EVEBITDA}").number_format = FMT_PRICE
+    ws0.cell(row=R_SUMMARY_START + 2, column=3, value=f"='05_DinhGia'!$C${R5_PB}").number_format = FMT_PRICE
+    ws0.cell(row=R_SUMMARY_START + 3, column=3, value=f"='05_DinhGia'!$C${R5_ASSET}").number_format = FMT_PRICE
+
+    return wb
 
 
 if __name__ == "__main__":
