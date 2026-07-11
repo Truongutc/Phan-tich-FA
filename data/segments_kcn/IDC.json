@@ -175,68 +175,89 @@
     },
     "2022(CN)": {
       "Khac": {
-        "revenue": 8569.6,
-        "cogs": 449.19,
-        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
+        "revenue": 692.65,
+        "cogs": 535.71,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN))",
+        "sourceType": "auto",
         "derived": false
       },
       "BOT": {
-        "revenue": 10.96,
-        "cogs": 0.0,
-        "source": "Trích xuất văn bản thô kỳ so sánh (2023(CN))",
+        "revenue": 421.23,
+        "cogs": 231.99,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "DienNang": {
+        "revenue": 2878.13,
+        "cogs": 2640.97,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "XayDung": {
+        "revenue": 87.48,
+        "cogs": 72.67,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "BDS": {
+        "revenue": 85.76,
+        "cogs": 20.67,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN))",
+        "sourceType": "auto",
+        "derived": false
+      },
+      "HaTangKCN": {
+        "revenue": 3321.79,
+        "cogs": 923.54,
+        "source": "Trích xuất tự động từ BCTC md (2022(CN))",
+        "sourceType": "auto",
+        "derived": false
+      }
+    },
+    "2021(CN)": {
+      "Khac": {
+        "revenue": 361.51,
+        "cogs": 197.07,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN))",
         "sourceType": "auto",
         "derived": false
       },
       "DienNang": {
         "revenue": 2697.68,
         "cogs": 2540.82,
-        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN))",
+        "sourceType": "auto",
         "derived": false
       },
       "XayDung": {
         "revenue": 129.71,
-        "cogs": 0.0,
-        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
+        "cogs": 114.28,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN))",
+        "sourceType": "auto",
         "derived": false
       },
       "BDS": {
         "revenue": 149.39,
         "cogs": 25.23,
-        "source": "Trích xuất tự động từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
-        "derived": false
-      }
-    },
-    "2021(CN)": {
-      "Khac": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN))",
+        "sourceType": "auto",
         "derived": false
       },
-      "DienNang": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
+      "BOT": {
+        "revenue": 308.6,
+        "cogs": 137.84,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN))",
+        "sourceType": "auto",
         "derived": false
       },
-      "XayDung": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
-        "derived": false
-      },
-      "BDS": {
-        "revenue": 0.0,
-        "cogs": 0.0,
-        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN)) [OCR - PDF ảnh scan, cần đối chiếu]",
-        "sourceType": "auto_ocr",
+      "HaTangKCN": {
+        "revenue": 690.1,
+        "cogs": 558.02,
+        "source": "Trích xuất cột so sánh từ BCTC md (2022(CN))",
+        "sourceType": "auto",
         "derived": false
       }
     }

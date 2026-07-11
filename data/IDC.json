@@ -5,12 +5,12 @@
   "currentPrice": 39300.0,
   "marketCap": 14914303743900.0,
   "shares": 379498823,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1B_LNQ8-veStsYxemOUSXpxN6aiLZMIrI/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1jUUFFbnI2r7-UuRY_OOpPyJQtSa47eHh/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1sKvUPDy0GJ_Z0megJMsTDCEMmKswu3TV/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1BYU0n2BynAkX0ZXfFuRr3YTkL51J40Cy/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1507,
     "rf": 0.045,
-    "fetchedAt": "2026-07-10 16:31"
+    "fetchedAt": "2026-07-11 02:04"
   },
   "segmentConsistency": {
     "2025(CN)": {
@@ -29,14 +29,14 @@
       "status": "FAIL"
     },
     "2022(CN)": {
-      "gapRevPct": 54.4,
-      "gapCogsPct": -168.1,
-      "status": "FAIL"
+      "gapRevPct": 0.0,
+      "gapCogsPct": -200.0,
+      "status": "OK"
     },
     "2021(CN)": {
-      "gapRevPct": 100.0,
-      "gapCogsPct": -100.0,
-      "status": "FAIL"
+      "gapRevPct": 0.8,
+      "gapCogsPct": -200.3,
+      "status": "OK"
     },
     "2026Q1": {
       "gapRevPct": 0.0,
@@ -115,16 +115,16 @@
       "color": "#f59e0b",
       "data": {
         "2021(CN)": {
-          "revenue": 0.0,
-          "cogs": 0.0,
-          "grossProfit": 0.0,
-          "grossMargin": null
-        },
-        "2022(CN)": {
           "revenue": 2697.68,
           "cogs": 2540.82,
           "grossProfit": 156.85999999999967,
           "grossMargin": 0.05814625900773986
+        },
+        "2022(CN)": {
+          "revenue": 2878.13,
+          "cogs": 2640.97,
+          "grossProfit": 237.1600000000003,
+          "grossMargin": 0.08240072547105248
         },
         "2023(CN)": {
           "revenue": 357.1,
@@ -151,16 +151,16 @@
       "color": "#10b981",
       "data": {
         "2021(CN)": {
-          "revenue": null,
-          "cogs": null,
-          "grossProfit": null,
-          "grossMargin": null
+          "revenue": 690.1,
+          "cogs": 558.02,
+          "grossProfit": 132.08000000000004,
+          "grossMargin": 0.19139255180408643
         },
         "2022(CN)": {
-          "revenue": null,
-          "cogs": null,
-          "grossProfit": null,
-          "grossMargin": null
+          "revenue": 3321.79,
+          "cogs": 923.54,
+          "grossProfit": 2398.25,
+          "grossMargin": 0.7219752001180086
         },
         "2023(CN)": {
           "revenue": 1724.63,
@@ -223,16 +223,16 @@
       "color": "#8b5cf6",
       "data": {
         "2021(CN)": {
-          "revenue": null,
-          "cogs": null,
-          "grossProfit": null,
-          "grossMargin": null
+          "revenue": 308.6,
+          "cogs": 137.84,
+          "grossProfit": 170.76000000000002,
+          "grossMargin": 0.5533376539209333
         },
         "2022(CN)": {
-          "revenue": 10.96,
-          "cogs": 0.0,
-          "grossProfit": 10.96,
-          "grossMargin": 1.0
+          "revenue": 421.23,
+          "cogs": 231.99,
+          "grossProfit": 189.24,
+          "grossMargin": 0.44925575101488496
         },
         "2023(CN)": {
           "revenue": 10.38,
@@ -259,16 +259,16 @@
       "color": "#64748b",
       "data": {
         "2021(CN)": {
-          "revenue": 0.0,
-          "cogs": 0.0,
-          "grossProfit": 0.0,
-          "grossMargin": null
+          "revenue": 129.71,
+          "cogs": 114.28,
+          "grossProfit": 15.430000000000007,
+          "grossMargin": 0.11895767481304453
         },
         "2022(CN)": {
-          "revenue": 129.71,
-          "cogs": 0.0,
-          "grossProfit": 129.71,
-          "grossMargin": 1.0
+          "revenue": 87.48,
+          "cogs": 72.67,
+          "grossProfit": 14.810000000000002,
+          "grossMargin": 0.16929583904892548
         },
         "2023(CN)": {
           "revenue": 189.45,
@@ -295,16 +295,16 @@
       "color": "#ec4899",
       "data": {
         "2021(CN)": {
-          "revenue": 0.0,
-          "cogs": 0.0,
-          "grossProfit": 0.0,
-          "grossMargin": null
-        },
-        "2022(CN)": {
           "revenue": 149.39,
           "cogs": 25.23,
           "grossProfit": 124.15999999999998,
           "grossMargin": 0.8311131936541937
+        },
+        "2022(CN)": {
+          "revenue": 85.76,
+          "cogs": 20.67,
+          "grossProfit": 65.09,
+          "grossMargin": 0.7589785447761194
         },
         "2023(CN)": {
           "revenue": 10.93,
@@ -331,16 +331,16 @@
       "color": "#9ca3af",
       "data": {
         "2021(CN)": {
-          "revenue": 0.0,
-          "cogs": 0.0,
-          "grossProfit": 0.0,
-          "grossMargin": null
+          "revenue": 361.51,
+          "cogs": 197.07,
+          "grossProfit": 164.44,
+          "grossMargin": 0.45486985145639125
         },
         "2022(CN)": {
-          "revenue": 8569.6,
-          "cogs": 449.19,
-          "grossProfit": 8120.410000000001,
-          "grossMargin": 0.9475833177744586
+          "revenue": 692.65,
+          "cogs": 535.71,
+          "grossProfit": 156.93999999999994,
+          "grossMargin": 0.2265790803436078
         },
         "2023(CN)": {
           "revenue": 7.2,
@@ -671,5 +671,5 @@
     "Legal": "Luật Đất đai sửa đổi và quy định môi trường nghiêm ngặt hơn.",
     "Environmental": "Áp lực ESG từ nhà đầu tư FDI nước ngoài trong KCN."
   },
-  "lastUpdated": "2026-07-10 16:32"
+  "lastUpdated": "2026-07-11 02:05"
 }
