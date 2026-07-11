@@ -112,14 +112,6 @@
     "pdfUrl": null
   },
   {
-    "ticker": "HPG",
-    "companyName": "CTCP Tập đoàn Hòa Phát",
-    "sector": "Basic Resources",
-    "lastUpdated": "2026-07-09 00:30",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1ZDnmZ5s3pZiegsXcnHoJvdpCVgLyUzgo/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1yRVzAnKwzsjwiahvcez6kpBngjENOqD_/view?usp=drivesdk"
-  },
-  {
     "ticker": "IDC",
     "companyName": "Tổng Công ty IDICO - CTCP",
     "sector": "Bất động sản khu công nghiệp",
@@ -142,5 +134,13 @@
     "lastUpdated": "2026-07-11 20:11",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1ntTblHT_iiQyTypyba8iH6MxQRhT0qzk/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1SfflbFxk7Mi7w_iyAAu83oNeZA4ZCCjC/view?usp=drivesdk"
+  },
+  {
+    "ticker": "HPG",
+    "companyName": "CTCP Tập đoàn Hòa Phát",
+    "sector": "Basic Resources",
+    "lastUpdated": "2026-07-11 17:31",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1IbSFlPw9X-FH59yLNnERnBm8_DOuaUOB/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1BPgdZrqoHdFs4lUHuu1wKDFl1TBCUSNe/view?usp=drivesdk"
   }
 ]

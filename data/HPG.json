@@ -5,18 +5,27 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1yRVzAnKwzsjwiahvcez6kpBngjENOqD_/view?usp=drivesdk",
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1ZDnmZ5s3pZiegsXcnHoJvdpCVgLyUzgo/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1BPgdZrqoHdFs4lUHuu1wKDFl1TBCUSNe/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1IbSFlPw9X-FH59yLNnERnBm8_DOuaUOB/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
   "productionEstimateCache": {
     "year": 2026,
     "quarter": 2,
-    "totalKt": 3153.0,
-    "hrcKt": 1866.0,
-    "xdKt": 1287.0,
-    "source": "ESTIMATED",
-    "fetchedAt": "2026-07-04 15:38"
+    "totalKt": 3500.0,
+    "hrcKt": 1900.0,
+    "xdKt": 1300.0,
+    "source": "OFFICIAL",
+    "fetchedAt": "2026-07-11 17:31"
   },
-  "lastUpdated": "2026-07-09 00:30",
+  "currentQuarterProduction": {
+    "label": "2026Q2",
+    "source": "OFFICIAL",
+    "totalKt": 3500.0,
+    "hrcKt": 1900.0,
+    "xdKt": 1300.0,
+    "monthsKnown": [],
+    "note": "Đã có số liệu CHÍNH THỨC 2026Q2: Tổng 3500 nghìn tấn (HRC 1900 + XD 1300 nghìn tấn) — nguồn: https://cafef.vn/hoa-phat-san-xuat-luong-thep-tho-tang-48-trong-quy-2-2026-188260708165136651.chn (08/07/2026)."
+  },
+  "lastUpdated": "2026-07-11 17:31",
   "data": {
     "years": [
       2021,
@@ -34,7 +43,7 @@
       118953.0,
       138855.1,
       156116.1,
-      191998,
+      193349,
       203335,
       222166
     ],
@@ -44,9 +53,9 @@
       6835.1,
       12021.4,
       15453.2,
-      22829,
-      19164,
-      16735
+      22800,
+      18985,
+      16540
     ],
     "eps": [
       7166,
@@ -54,9 +63,9 @@
       1117,
       1751,
       1973,
-      2703,
-      2269,
-      1982
+      2700,
+      2248,
+      1959
     ],
     "equity": [
       90780.6,
@@ -64,9 +73,9 @@
       102836.4,
       114647.5,
       131220.0,
-      153287,
-      165054,
-      171096
+      153258,
+      164853,
+      170707
     ]
   },
   "ratios": {
@@ -76,9 +85,9 @@
       0.1088,
       0.1332,
       0.1569,
-      0.154,
-      0.148,
-      0.126
+      0.153,
+      0.147,
+      0.125
     ],
     "roe": [
       0.3798,
@@ -86,9 +95,9 @@
       0.0665,
       0.1049,
       0.1178,
-      0.1489,
-      0.1161,
-      0.0978
+      0.1488,
+      0.1152,
+      0.0969
     ],
     "debt_to_equity": [
       0.6302,
@@ -96,9 +105,9 @@
       0.6358,
       0.7236,
       0.7024,
-      0.5088,
-      0.4544,
-      0.4208
+      0.5089,
+      0.455,
+      0.4218
     ],
     "ebitMargin": [
       0.2473,
@@ -106,9 +115,9 @@
       0.0643,
       0.0955,
       0.1147,
-      0.119,
-      0.113,
-      0.091
+      0.118,
+      0.112,
+      0.09
     ],
     "nim": [],
     "npl": [],
@@ -116,28 +125,28 @@
     "casa": []
   },
   "valuation": {
-    "weightedTarget": 28148,
+    "weightedTarget": 28153,
     "upside": 19.3,
     "recommend": "MUA",
-    "bear": 23815,
-    "base": 28148,
-    "bull": 35723,
+    "bear": 23810,
+    "base": 28153,
+    "bull": 35715,
     "COE": 12.0,
-    "evEbitdaTarget": 26679,
+    "evEbitdaTarget": 26715,
     "pbAttractive": 1.31,
-    "pbAttractivePrice": 23815,
+    "pbAttractivePrice": 23810,
     "pbMedian": 1.64,
     "pbOver": 1.97,
     "peMedian": 10.3,
-    "peTarget": 27841,
+    "peTarget": 27810,
     "evWeight": 40,
     "pbWeight": 40,
     "peWeight": 20,
-    "bvpsBase": 18152
+    "bvpsBase": 18148
   },
   "thesis": [
     "HPG là nhà sản xuất thép tích hợp dọc lớn nhất VN với 6 nhà máy (~14,5 triệu tấn/năm). Dung Quất 2 (5.6 triệu tấn HRC) full công suất từ T12/2025, đưa HPG vào nhóm chi phí thấp nhất khu vực. Thuế CBPG 27.8% với HRC Trung Quốc bảo vệ thị trường nội địa.",
-    "Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ 15.69% (2025) lên 15.4% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
+    "Biên LNG dự phóng neo vào biên LNG THỰC TẾ quý gần nhất, nội suy theo tỷ lệ spread (không lấy trực tiếp spread làm biên). GP margin dự phóng từ 15.69% (2025) lên 15.3% (2026E). Sản lượng HRC tăng gấp đôi nhờ DQ2 full năm.",
     "Định giá hấp dẫn: P/B 1.56x (dưới median 1.61x), EV/EBITDA 2026E ~7.0x (dưới median 8.95x). Giá mục tiêu 40% EV/EBITDA + 40% P/B + 20% P/E cho upside +42%."
   ],
   "risks": [
@@ -584,7 +593,7 @@
       174.5,
       137.2,
       177.3,
-      167.9,
+      167.8,
       190.8,
       192.4
     ],
@@ -809,7 +818,7 @@
     "spreadNow": 147.0,
     "spreadHrcNow": 147.0,
     "spreadRebarNow": 183.2,
-    "spreadAllNow": 161.8,
+    "spreadAllNow": 161.7,
     "adDutyEffectiveQuarter": "2025Q3",
     "adDutyMultiplier": 1.15,
     "note": "Gia quy = TB dau/giua/cuoi quy. Gia hien tai fetch tu dong tu investing.com/SteelOnline khi chay script. Spread HRC da nhan thue CBPG AD20 tu quy hieu luc."
@@ -973,7 +982,7 @@
     1.79,
     1.67,
     1.67,
-    1.4
+    1.39
   ],
   "quarter_labels": [
     "2018-Q1",
