@@ -30,6 +30,10 @@
         <div class="nav-breadcrumb" id="nav-breadcrumb">
             <span class="breadcrumb-home">Tổng quan</span>
         </div>
+        <a href="https://aic-proweb.vercel.app/" class="home-link-btn" title="Về trang chủ AIC Pro Web">
+            <span class="home-link-icon">🏠</span>
+            <span>HOME</span>
+        </a>
     </header>
 
     <!-- VIEW: OVERVIEW (stock grid) -->
@@ -42,7 +46,7 @@
                 <p>Chọn mã cổ phiếu để xem dashboard chuyên sâu theo đúng nhóm ngành.</p>
                 <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
                     <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing"
-                       target="_blank" class="btn btn-secondary">📁 Google Drive ↗</a>
+                       target="_blank" class="btn btn-secondary" data-drive-gate>📁 Google Drive ↗</a>
                 </div>
             </div>
         </div>
@@ -200,6 +204,7 @@ function clearSearch() {
     }
 })();
 </script>
+<script src="access-gate.js"></script>
 
 </body>
 </html>

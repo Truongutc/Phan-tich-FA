@@ -111,6 +111,37 @@ body {
     margin-top: 1px;
 }
 
+.home-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.home-link-btn:hover {
+    background: var(--primary-glow);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+.home-link-btn .home-link-icon { font-size: 1rem; line-height: 1; }
+.home-link-btn span:last-child {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+@media (max-width: 480px) {
+    .home-link-btn { padding: 5px 8px; gap: 4px; }
+    .home-link-btn .home-link-icon { font-size: 0.9rem; }
+    .home-link-btn span:last-child { font-size: 0.66rem; }
+}
+
 .nav-breadcrumb {
     display: flex;
     align-items: center;
