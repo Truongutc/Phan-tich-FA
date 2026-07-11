@@ -373,13 +373,23 @@ def calc_wacc(rf, beta, erp, current_price, shares, debt_last, debt_prev, intere
     return {"wacc": wacc, "coe": coe, "cod": cod, "w_e": w_e, "w_d": w_d, "market_cap": market_cap}
 
 
-def project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=5, tax_rate=0.20):
+def project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=5, tax_rate=0.20, is_recs_q=None):
     """Dự phóng FCFF n_fc năm tới. EBIT tính từ Lợi nhuận gộp - Chi phí bán hàng - Chi
     phí QLDN (isa5-isa9-isa10) — KHÔNG dùng isa11 (Lợi nhuận thuần HĐKD theo VAS) vì
     isa11 đã trừ cả doanh thu/chi phí tài chính (gồm lãi vay), trong khi FCFF cần EBIT
     THUẦN HOẠT ĐỘNG (chưa trừ lãi vay) — ảnh hưởng vốn vay đã nằm trong WACC, không
     được trừ trùng ở đây. Biên EBIT/D&A/CAPEX dự phóng = bình quân lịch sử (D&A và
-    CAPEX không có driver vật lý rõ ràng ở Giai đoạn 1 nên neo theo % doanh thu)."""
+    CAPEX không có driver vật lý rõ ràng ở Giai đoạn 1 nên neo theo % doanh thu).
+
+    NĂM DỰ PHÓNG ĐẦU TIÊN (năm hiện tại, ngay sau hist_years[-1]) — nếu đã có báo cáo quý
+    thực tế trong năm đó (is_recs_q), dùng blend_annual_estimate() (fetch_data.py, DÙNG
+    CHUNG mọi ngành trong hệ thống) để BLEND: lũy kế THỰC TẾ các quý đã biết + ước tính
+    theo công thức gốc × phần quý CÒN LẠI — tránh 2 lỗi ngược chiều: (1) có dữ liệu đột
+    biến 1 quý mà không cập nhật vào dự phóng cả năm dẫn tới định giá sai (yêu cầu user),
+    (2) suy diễn 1 quý bất thường ra nguyên cả năm. Áp dụng cho revenue VÀ ebit độc lập
+    (không suy ebit từ % margin cũ khi đã có ebit quý thực tế)."""
+    from fetch_data import cumulative_actual_quarters, blend_annual_estimate
+
     revenue_hist = [_get_yr(is_recs_y, y, IS_GEN["revenue"]) for y in hist_years]
     gp_hist = [_get_yr(is_recs_y, y, IS_GEN["gross_profit"]) for y in hist_years]
     sga_hist = [_get_yr(is_recs_y, y, IS_GEN["sga_sales"]) + _get_yr(is_recs_y, y, IS_GEN["sga_admin"]) for y in hist_years]
@@ -395,24 +405,46 @@ def project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=5, tax_rate=0.20):
     capex_pct_hist = [capex_hist[i] / revenue_hist[i] for i in range(len(hist_years)) if revenue_hist[i] > 0]
     capex_pct_fc = stats.mean(capex_pct_hist) if capex_pct_hist else 0.10
 
+    current_year = (hist_years[-1] + 1) if hist_years else None
+    ytd_blend_info = None
+    if is_recs_q and current_year:
+        rev_ytd, n_q_rev = cumulative_actual_quarters(is_recs_q, current_year, IS_GEN["revenue"])
+        gp_ytd, n_q_gp = cumulative_actual_quarters(is_recs_q, current_year, IS_GEN["gross_profit"])
+        sga1_ytd, n_q_sga1 = cumulative_actual_quarters(is_recs_q, current_year, IS_GEN["sga_sales"])
+        sga2_ytd, n_q_sga2 = cumulative_actual_quarters(is_recs_q, current_year, IS_GEN["sga_admin"])
+        if n_q_rev > 0:
+            ytd_blend_info = {
+                "current_year": current_year, "n_known_quarters": n_q_rev,
+                "revenue_ytd": rev_ytd, "ebit_ytd": (gp_ytd - sga1_ytd - sga2_ytd) if n_q_gp == n_q_rev else None,
+            }
+
     fc_rows = []
     rev_t = revenue_hist[-1] if revenue_hist else 0.0
     for i in range(n_fc):
-        rev_t = rev_t * (1 + rev_g)
-        ebit_t = rev_t * ebit_margin_fc
-        nopat_t = ebit_t * (1 - tax_rate)
-        da_t = rev_t * da_pct_fc
-        capex_t = rev_t * capex_pct_fc
+        rev_formula = rev_t * (1 + rev_g)
+        ebit_formula = rev_formula * ebit_margin_fc
+        if i == 0 and ytd_blend_info:
+            rev_i = blend_annual_estimate(ytd_blend_info["revenue_ytd"], ytd_blend_info["n_known_quarters"], rev_formula)
+            if ytd_blend_info["ebit_ytd"] is not None:
+                ebit_i = blend_annual_estimate(ytd_blend_info["ebit_ytd"], ytd_blend_info["n_known_quarters"], ebit_formula)
+            else:
+                ebit_i = rev_i * ebit_margin_fc
+        else:
+            rev_i, ebit_i = rev_formula, ebit_formula
+        rev_t = rev_i  # năm sau lấy mốc từ năm đã blend (nếu có), không lùi về số formula thuần
+        nopat_t = ebit_i * (1 - tax_rate)
+        da_t = rev_i * da_pct_fc
+        capex_t = rev_i * capex_pct_fc
         fcff_t = nopat_t + da_t - capex_t
         fc_rows.append({
-            "year_offset": i + 1, "revenue": rev_t, "ebit": ebit_t, "nopat": nopat_t,
+            "year_offset": i + 1, "revenue": rev_i, "ebit": ebit_i, "nopat": nopat_t,
             "da": da_t, "capex": capex_t, "fcff": fcff_t,
         })
     assumptions = {
         "rev_g": rev_g, "ebit_margin_fc": ebit_margin_fc,
         "da_pct_fc": da_pct_fc, "capex_pct_fc": capex_pct_fc,
         "revenue_hist": revenue_hist, "ebit_hist": ebit_hist,
-        "da_hist": da_hist, "capex_hist": capex_hist,
+        "da_hist": da_hist, "capex_hist": capex_hist, "ytd_blend_info": ytd_blend_info,
     }
     return fc_rows, assumptions
 
@@ -461,8 +493,91 @@ def calc_dcf_valuation(fc_rows, wacc, shares, net_debt, rev_g, exit_ev_ebitda=No
     }
 
 
+def _get_shares_from_raw(raw, bs_recs_y):
+    """Số lượng cổ phiếu = Vốn điều lệ (bsa80, năm báo cáo MỚI NHẤT) / 10.000 (mệnh giá
+    10.000 VND/cp) — fallback numberOfSharesMktCap từ Vietcap API nếu năm nào cũng thiếu
+    bsa80. KHÔNG suy từ market cap/giá (dễ sai nếu giá cổ phiếu bất thường)."""
+    shares = 0
+    bs_sorted_desc = sorted(bs_recs_y, key=lambda r: r.get("yearReport", 0), reverse=True)
+    for r in bs_sorted_desc:
+        cap = r.get(BS_GEN["charter_capital"])
+        if cap and cap > 0:
+            shares = int(cap / 10_000)
+            break
+    if shares <= 0:
+        shares_api = raw.get("numberOfSharesMktCap", 0)
+        shares = int(shares_api) if shares_api > 0 else 0
+    return shares
+
+
+NHIETDIEN_TICKERS = ["POW", "NT2", "PPC", "QTP"]
+
+
+def fetch_peer_multiples(tickers=None, use_cache=True):
+    """Tính P/E, P/B, EV/EBITDA của TỪNG MÃ trong nhóm nhiệt điện tại kỳ báo cáo năm gần
+    nhất, rồi lấy MEDIAN CẢ NHÓM làm target multiple áp dụng đồng nhất cho tất cả — đây
+    là cách làm 'peer comps' chuẩn dùng SỐ LIỆU THẬT của toàn nhóm thay vì tự đặt biên số
+    kiểu 8-12x/0.8-1.2x không có căn cứ (yêu cầu user: 'median đầy đủ, không estimate').
+    Trả về {'per_ticker': {...từng mã...}, 'peer_median': {pe, pb, ev_ebitda, n_pe, n_pb,
+    n_ev_ebitda}} — n_* = số mã có dữ liệu hợp lệ đóng góp vào median (để biết median có
+    đáng tin không, vd chỉ 1-2/4 mã có lãi dương thì P/E median kém tin cậy hơn)."""
+    from fetch_data import fetch_all
+    tickers = tickers or NHIETDIEN_TICKERS
+    per_ticker = {}
+    for t in tickers:
+        try:
+            raw = fetch_all(t, use_cache=use_cache)
+        except Exception as e:
+            print(f"  [WARN] Không fetch được BCTC {t} cho peer comps: {e}")
+            continue
+        is_y = raw["sections"]["INCOME_STATEMENT"].get("years", [])
+        bs_y = raw["sections"]["BALANCE_SHEET"].get("years", [])
+        cf_y = raw["sections"]["CASH_FLOW"].get("years", [])
+        hist_years = sorted({r["yearReport"] for r in is_y if r.get("yearReport")})
+        if not hist_years:
+            continue
+        y_last = hist_years[-1]
+        current_price = raw.get("currentPrice") or 0
+        shares = _get_shares_from_raw(raw, bs_y)
+        if shares <= 0 or current_price <= 0:
+            continue
+
+        eps = _eps_parent(is_y, y_last)
+        bvps = _bvps_parent(bs_y, y_last, shares)
+        gp = _get_yr(is_y, y_last, IS_GEN["gross_profit"])
+        sga = _get_yr(is_y, y_last, IS_GEN["sga_sales"]) + _get_yr(is_y, y_last, IS_GEN["sga_admin"])
+        da = _get_yr(cf_y, y_last, CF_GEN["depreciation"])
+        ebitda = (gp - sga) + da
+        debt = _get_yr(bs_y, y_last, BS_GEN["short_borrow"]) + _get_yr(bs_y, y_last, BS_GEN["long_borrow"])
+        cash = _get_yr(bs_y, y_last, BS_GEN["cash"])
+        net_debt = debt - cash
+        market_cap = current_price * shares / 1e9
+        ev = market_cap + net_debt
+
+        pe = current_price / eps if eps and eps > 0 else None
+        pb = current_price / bvps if bvps and bvps > 0 else None
+        ev_ebitda = ev / ebitda if ebitda and ebitda > 0 else None
+
+        per_ticker[t] = {
+            "year": y_last, "current_price": current_price, "eps": eps, "bvps": bvps,
+            "ebitda": ebitda, "market_cap": market_cap, "net_debt": net_debt, "ev": ev,
+            "pe": pe, "pb": pb, "ev_ebitda": ev_ebitda,
+        }
+
+    pe_vals = [v["pe"] for v in per_ticker.values() if v["pe"] and v["pe"] > 0]
+    pb_vals = [v["pb"] for v in per_ticker.values() if v["pb"] and v["pb"] > 0]
+    ev_vals = [v["ev_ebitda"] for v in per_ticker.values() if v["ev_ebitda"] and v["ev_ebitda"] > 0]
+    peer_median = {
+        "pe": round(stats.median(pe_vals), 2) if pe_vals else None,
+        "pb": round(stats.median(pb_vals), 2) if pb_vals else None,
+        "ev_ebitda": round(stats.median(ev_vals), 2) if ev_vals else None,
+        "n_pe": len(pe_vals), "n_pb": len(pb_vals), "n_ev_ebitda": len(ev_vals),
+    }
+    return {"per_ticker": per_ticker, "peer_median": peer_median}
+
+
 def calc_ev_ebitda_valuation(hist_years, is_recs_y, cf_recs_y, bs_recs_y, current_price, shares,
-                              fc_rows, ev_low=4.5, ev_high=8.0):
+                              fc_rows, target_ev_ebitda=None, ev_low=4.5, ev_high=8.0):
     """Định giá theo EV/EBITDA lịch sử — thay cho P/E trong công thức blend (theo yêu cầu
     user 2026-07): nhóm nhiệt điện có KHẤU HAO và LÃI VAY rất lớn (nhà máy vốn đầu tư
     khủng, khấu hao nhanh; nhiều mã vay nợ lớn tài trợ dự án) nên LNST (dùng cho P/E) bị
@@ -490,7 +605,11 @@ def calc_ev_ebitda_valuation(hist_years, is_recs_y, cf_recs_y, bs_recs_y, curren
             ebitda_hist_pairs.append((y, ebitda, ev_y / ebitda))
 
     ev_ebitda_hist = [m for _, _, m in ebitda_hist_pairs]
-    target_ev_ebitda = round(max(ev_low, min(ev_high, stats.median(ev_ebitda_hist))), 2) if ev_ebitda_hist else round((ev_low + ev_high) / 2, 2)
+    if target_ev_ebitda is None:
+        # Không có target từ peer-group (fetch_peer_multiples) -> fallback tự-lịch sử của
+        # chính mã, kẹp biên giả định chung (ev_low/ev_high) — CHỈ dùng khi gọi hàm này
+        # độc lập/test 1 mã, bình thường luôn nên truyền target_ev_ebitda từ peer median.
+        target_ev_ebitda = round(max(ev_low, min(ev_high, stats.median(ev_ebitda_hist))), 2) if ev_ebitda_hist else round((ev_low + ev_high) / 2, 2)
 
     ebitda_fc1 = (fc_rows[0]["ebit"] + fc_rows[0]["da"]) if fc_rows else (ebitda_hist_pairs[-1][1] if ebitda_hist_pairs else 0.0)
     debt_last = _get_yr(bs_recs_y, hist_years[-1], BS_GEN["short_borrow"]) + _get_yr(bs_recs_y, hist_years[-1], BS_GEN["long_borrow"])
@@ -509,14 +628,24 @@ def calc_ev_ebitda_valuation(hist_years, is_recs_y, cf_recs_y, bs_recs_y, curren
 
 
 def calc_valuation_nhietdien(ticker, is_recs_y, bs_recs_y, cf_recs_y, hist_years, shares,
-                              current_price, rf, beta, erp=0.07, tax_rate=0.20, n_fc=5):
+                              current_price, rf, beta, erp=0.07, tax_rate=0.20, n_fc=5,
+                              peer_multiples=None, is_recs_q=None):
     """Entry point tính toán định giá: DCF 50% + EV/EBITDA 20% + P/B 15% + Asset-based 15%.
     (Đổi từ P/E sang EV/EBITDA theo yêu cầu user — xem docstring calc_ev_ebitda_valuation:
     D&A/lãi vay của nhóm nhiệt điện quá lớn khiến LNST/P/E bị méo). P/E vẫn được tính và
     trả về làm THAM CHIẾU hiển thị (không nằm trong trọng số blend).
+
+    `peer_multiples` (dict "peer_median" từ fetch_peer_multiples(), khuyến nghị LUÔN
+    truyền vào khi chạy thật) — target P/E, P/B, EV/EBITDA lấy từ MEDIAN CẢ NHÓM (POW+
+    NT2+PPC+QTP thực tế), KHÔNG tự đặt biên số áng chừng (yêu cầu user: 'median đầy đủ,
+    link đầy đủ không estimate'). Nếu None (test độc lập 1 mã không có dữ liệu 3 mã kia)
+    thì fallback về median lịch sử CHÍNH MÃ đó, kẹp biên giả định — CHỈ để không crash khi
+    test riêng lẻ, sản phẩm thật luôn phải chạy qua fetch_peer_multiples() trước.
+
     Asset-based diễn giải = Book Value of Equity mẹ hiện tại (bsa78-bsa210)/shares —
     KHÔNG chép công thức ví dụ trong tài liệu hướng dẫn (tự mâu thuẫn, trừ nợ 2 lần).
     Trả về dict đủ để ghi Excel/JSON."""
+    peer_multiples = peer_multiples or {}
     # --- WACC ---
     debt_last = _get_yr(bs_recs_y, hist_years[-1], BS_GEN["short_borrow"]) + _get_yr(bs_recs_y, hist_years[-1], BS_GEN["long_borrow"])
     debt_prev = 0.0
@@ -526,19 +655,21 @@ def calc_valuation_nhietdien(ticker, is_recs_y, bs_recs_y, cf_recs_y, hist_years
     wacc_info = calc_wacc(rf, beta, erp, current_price, shares, debt_last, debt_prev, interest_expense, tax_rate)
 
     # --- Dự phóng FCFF (dùng chung cho cả DCF và EV/EBITDA forward) ---
-    fc_rows, fc_assump = project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=n_fc, tax_rate=tax_rate)
+    fc_rows, fc_assump = project_fcf(hist_years, is_recs_y, cf_recs_y, n_fc=n_fc, tax_rate=tax_rate, is_recs_q=is_recs_q)
     cash_last = _get_yr(bs_recs_y, hist_years[-1], BS_GEN["cash"])
     net_debt = debt_last - cash_last
 
     # --- EV/EBITDA (thay P/E trong blend) — tính TRƯỚC DCF vì Terminal Value của DCF cần
     # target_ev_ebitda làm neo exit-multiple (xem calc_dcf_valuation) ---
-    ev_ebitda_result = calc_ev_ebitda_valuation(hist_years, is_recs_y, cf_recs_y, bs_recs_y, current_price, shares, fc_rows)
+    ev_ebitda_result = calc_ev_ebitda_valuation(hist_years, is_recs_y, cf_recs_y, bs_recs_y, current_price, shares, fc_rows,
+                                                 target_ev_ebitda=peer_multiples.get("ev_ebitda"))
 
     # --- DCF (Terminal Value neo cả Gordon-growth lẫn exit-multiple EV/EBITDA) ---
     dcf_result = calc_dcf_valuation(fc_rows, wacc_info["wacc"], shares, net_debt, fc_assump["rev_g"],
                                      exit_ev_ebitda=ev_ebitda_result["target_ev_ebitda"])
 
-    # --- P/E (chỉ để tham chiếu hiển thị) & P/B (nằm trong blend) ---
+    # --- P/E (chỉ để tham chiếu hiển thị) & P/B (nằm trong blend) — target lấy từ peer
+    # median nếu có, fallback tự-lịch sử kẹp biên khi test độc lập (xem docstring) ---
     eps_vals = [(y, _eps_parent(is_recs_y, y)) for y in hist_years]
     bvps_vals = [(y, _bvps_parent(bs_recs_y, y, shares)) for y in hist_years]
     eps_valid = [(y, v) for y, v in eps_vals if v is not None and v > 0]
@@ -547,9 +678,9 @@ def calc_valuation_nhietdien(ticker, is_recs_y, bs_recs_y, cf_recs_y, hist_years
     bvps_last = bvps_valid[-1][1] if bvps_valid else 10000.0
 
     pe_hist = [current_price / eps for _, eps in eps_valid if current_price > 0 and eps > 0]
-    target_pe = round(max(8.0, min(12.0, stats.median(pe_hist))), 1) if pe_hist else 10.0
+    target_pe = peer_multiples.get("pe") or (round(max(8.0, min(12.0, stats.median(pe_hist))), 1) if pe_hist else 10.0)
     pb_hist = [current_price / bvps for _, bvps in bvps_valid if current_price > 0 and bvps > 0]
-    target_pb = round(max(0.8, min(1.2, stats.median(pb_hist))), 2) if pb_hist else 1.0
+    target_pb = peer_multiples.get("pb") or (round(max(0.8, min(1.2, stats.median(pb_hist))), 2) if pb_hist else 1.0)
 
     eps_cagr = _cagr_nhietdien([v for _, v in eps_valid[-3:]]) if len(eps_valid) >= 2 else 0.02
     eps_fc1 = eps_last * (1 + eps_cagr)
@@ -617,13 +748,24 @@ if __name__ == "__main__":
         print(f"  {y}: DT={rev:8.1f} GVHB={cogs:8.1f} LNST_me={npat:7.1f} D&A={da:6.1f} "
               f"CAPEX={capex:7.1f} VCSH_me={equity:8.1f} No_vay={debt:7.1f} LaiVay={int_exp:5.1f}")
 
+    is_q = raw["sections"]["INCOME_STATEMENT"].get("quarters", [])
+
     print("\n[Fetching Rf/Beta...]")
     rf, rf_src = fetch_rf_vietnam()
     calc_beta, web_beta, is_enough, beta_src, _, _ = fetch_and_calc_beta(t)
     beta = calc_beta if is_enough else web_beta
     print(f"Rf={rf*100:.2f}% ({rf_src}) | Beta={beta:.3f} ({beta_src})")
 
-    val = calc_valuation_nhietdien(t, is_y, bs_y, cf_y, hist_years, shares, current_price, rf, beta)
+    print("\n[Fetching peer multiples cả nhóm POW/NT2/PPC/QTP...]")
+    peer_result = fetch_peer_multiples()
+    for pt, pv in peer_result["per_ticker"].items():
+        print(f"  {pt} ({pv['year']}): P/E={pv['pe']} P/B={pv['pb']} EV/EBITDA={pv['ev_ebitda']}")
+    pm = peer_result["peer_median"]
+    print(f"  -> PEER MEDIAN: P/E={pm['pe']}x (n={pm['n_pe']}) | P/B={pm['pb']}x (n={pm['n_pb']}) | "
+          f"EV/EBITDA={pm['ev_ebitda']}x (n={pm['n_ev_ebitda']})")
+
+    val = calc_valuation_nhietdien(t, is_y, bs_y, cf_y, hist_years, shares, current_price, rf, beta,
+                                    peer_multiples=pm, is_recs_q=is_q)
     w = val["wacc"]
     print(f"\nWACC={w['wacc']*100:.2f}% (COE={w['coe']*100:.2f}%, COD={w['cod']*100:.2f}%, "
           f"w_e={w['w_e']*100:.1f}%, w_d={w['w_d']*100:.1f}%)")
