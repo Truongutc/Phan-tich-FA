@@ -45,8 +45,38 @@ import google_drive_uploader as gdrive
 _MONTH_TO_Q = {3: 1, 6: 2, 9: 3, 12: 4}
 _ROMAN_Q = {"I": 1, "II": 2, "III": 3, "IV": 4}
 
-_START_MARKER_RE = re.compile(r"(?im)^[ \t]*(?:start|bắt\s*đầu|bat\s*dau)\b[:\-]?\s*(.+?)\s*$")
-_END_MARKER_RE = re.compile(r"(?im)^[ \t]*(?:end|kết\s*thúc|ket\s*thuc)\b[:\-]?.*$")
+# Ô nhập "markdown" của workflow_dispatch trên giao diện web GitHub render thành Ô 1 DÒNG — dán nội
+# dung nhiều dòng vào đó bị trình duyệt XOÁ SẠCH ký tự xuống dòng, gộp toàn bộ thành 1 dòng duy nhất
+# (xác nhận thực tế qua log lỗi thật: "Start 2022  # 6.1 DOANH THU...  | Chỉ tiêu | Năm 2022 ..." toàn
+# bộ dính liền). Vì vậy KHÔNG được dò marker dựa vào ranh giới đầu/cuối dòng (^/$) như trước — phải
+# tìm nhãn kỳ với ĐỘ DÀI GIỚI HẠN RÕ RÀNG ngay sau "Start", nếu không phần capture (.+?)$ sẽ ăn lan
+# hết toàn bộ phần còn lại của "dòng" (giờ là toàn bộ nội dung) làm nhãn, để lại thân khối rỗng.
+_LABEL_PATTERN = (
+    r"\d{4}\s*\(\s*[A-Za-z]{2}\s*\)"                                    # 2022(CN)
+    r"|\d\s*[Qq]\s*\d{4}"                                               # 2q2022 / 3q 2022 (lũy kế)
+    r"|\d{4}\s*[Qq]\s*[1-4]"                                            # 2024Q2
+    r"|[Qq]\s*[1-4]\s*[/\s\-]*\s*\d{4}"                                 # Q2 2024 / q2/2024
+    r"|qu[ýy]?\s*(?:I{1,3}|IV|[1-4])\s*[/\s\-]*\s*(?:n[ăa]m\s*)?\d{4}"  # quý 2 năm 2024
+    r"|\d{4}"                                                           # 2022
+)
+_START_MARKER_RE = re.compile(
+    r"\b(?:start|bắt\s*đầu|bat\s*dau)\b[:\-]?\s*(" + _LABEL_PATTERN + r")",
+    re.IGNORECASE,
+)
+_END_MARKER_RE = re.compile(
+    r"\b(?:end|kết\s*thúc|ket\s*thuc)\b[:\-]?\s*(?:" + _LABEL_PATTERN + r")?",
+    re.IGNORECASE,
+)
+
+
+def _reflow_table_rows(text):
+    """Khôi phục lại xuống dòng cho các HÀNG BẢNG markdown bị gộp thành 1 dòng (xem lý do ở
+    _START_MARKER_RE). Trong markdown BCTC, mỗi hàng bảng dạng '| a | b | c |' — khi bị gộp dòng,
+    ranh giới giữa 2 hàng liên tiếp luôn là '|' + ĐÚNG 2 khoảng trắng + '|' (khác với khoảng trắng
+    đơn quanh dấu '|' phân cách CỘT trong cùng 1 hàng) — xác nhận qua log lỗi thật. Chèn lại xuống
+    dòng tại đúng ranh giới đó để parse_markdown_tables() (segments_kcn_parser.py) nhận diện được
+    bảng. An toàn để chạy cả khi nội dung đã có xuống dòng thật (không đổi gì thêm)."""
+    return re.sub(r"\|(\s{2,})\|", "|\n|", text)
 
 
 def detect_period_from_markdown(md_content):
@@ -148,19 +178,22 @@ def parse_period_label(label):
 
 
 def split_markdown_blocks(content):
-    """Tách nội dung dán vào theo marker 'Start <kỳ>' ở đầu dòng — mỗi khối chạy từ sau 1 dòng Start
-    tới trước dòng Start kế tiếp (hoặc hết nội dung). Dòng 'End ...' trong khối bị loại bỏ (chỉ mang
-    tính trang trí, không map period). Nếu KHÔNG có marker nào -> trả về 1 khối duy nhất (label=None)
-    chứa toàn bộ nội dung, giữ tương thích ngược với cách dán 1-kỳ/1-lần-chạy trước đây."""
+    """Tách nội dung dán vào theo marker 'Start <kỳ>' — mỗi khối chạy từ sau 1 marker Start tới
+    trước marker Start kế tiếp (hoặc hết nội dung). KHÔNG dựa vào ranh giới đầu/cuối dòng (xem lý do
+    ở _START_MARKER_RE) nên vẫn hoạt động đúng dù nội dung bị gộp thành 1 dòng. Marker 'End ...'
+    (nếu có) bị loại bỏ khỏi thân khối — chỉ mang tính trang trí, không bắt buộc, không cần khớp
+    đúng nhãn với Start. Nếu KHÔNG có marker Start nào -> trả về 1 khối duy nhất (label=None) chứa
+    toàn bộ nội dung, giữ tương thích ngược với cách dán 1-kỳ/1-lần-chạy trước đây."""
     starts = list(_START_MARKER_RE.finditer(content))
     if not starts:
-        return [(None, content)]
+        return [(None, _reflow_table_rows(content))]
     blocks = []
     for i, m in enumerate(starts):
         label = m.group(1).strip()
         body_start = m.end()
         body_end = starts[i + 1].start() if i + 1 < len(starts) else len(content)
         body = _END_MARKER_RE.sub("", content[body_start:body_end]).strip()
+        body = _reflow_table_rows(body)
         blocks.append((label, body))
     return blocks
 

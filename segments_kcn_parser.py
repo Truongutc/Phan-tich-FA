@@ -143,6 +143,21 @@ def strip_accents(s):
     return s.lower().replace(" ", "").replace("\n", "").replace("\r", "")
 
 
+def _is_total_row(text):
+    """Nhận diện dòng/ô là TỔNG/CỘNG thật sự (để loại khỏi trích xuất mảng) — so khớp TOÀN BỘ nhãn
+    dạng '(Tổng) cộng' (có thể kèm ** markdown bold, dấu ':'). KHÔNG dùng kiểm tra substring "cong"
+    trên chuỗi đã xoá hết khoảng trắng (bug thật đã gặp: IDC có 2 mảng cốt lõi 'Cho thuê đất & hạ
+    tầng KCN' và 'Dịch vụ khu CÔNG NGHIỆP' — cả 2 đều chứa substring 'cong' trong 'công nghiệp' nên
+    bị lọc nhầm y như dòng Tổng cộng thật, làm rớt mất 2 mảng chính mỗi khi bảng dọc quét được)."""
+    if not text:
+        return False
+    import unicodedata
+    t = unicodedata.normalize("NFD", text)
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    t = t.lower().strip().strip("*").strip()
+    return bool(re.fullmatch(r"(?:tong\s*)?cong\s*:?", t))
+
+
 def find_segment_values(ticker, tables, period_key=""):
     """
     Tìm kiếm và trích xuất số liệu doanh thu/giá vốn mảng bằng thuật toán Dynamic Discovery:
@@ -183,13 +198,23 @@ def find_segment_values(ticker, tables, period_key=""):
         # Cấu trúc phổ biến: Mảng | Mã số | Kỳ này | Kỳ trước  hoặc Mảng | Kỳ này | Kỳ trước
         val_idx_curr = 1
         val_idx_prior = 2
-        
-        # Check thử dòng đầu tiên chứa giá trị để tinh chỉnh chỉ số cột
+
+        # Check thử dòng đầu tiên chứa giá trị để tinh chỉnh chỉ số cột — PHẢI khớp CHÍNH XÁC dạng
+        # mã số kế toán (2-4 CHỮ SỐ THUẦN, không dấu chấm/phẩy/gạch ngang). Trước đây chỉ check
+        # "len(row[1]) <= 4" nên các ô giá trị ngắn hợp lệ như "-" (bằng 0) hay số nhỏ cũng bị hiểu
+        # nhầm là cột mã số, làm lệch toàn bộ chỉ số cột đọc số liệu phía sau cho cả bảng (bug thật:
+        # dòng "Hàng bán bị trả lại | - | 16.733...") — kiểm tra qua nhiều dòng, lấy đa số thay vì
+        # dừng ở dòng đầu tiên khớp để tránh 1 dòng ngoại lệ làm sai cả bảng.
+        code_col_votes = 0
+        rows_checked = 0
         for row in table[1:]:
-            if len(row) > 2 and len(row[1].strip()) <= 4:
-                val_idx_curr = 2
-                val_idx_prior = 3
-                break
+            if len(row) > 2 and row[1].strip():
+                rows_checked += 1
+                if re.fullmatch(r"\d{2,4}", row[1].strip()):
+                    code_col_votes += 1
+        if rows_checked and code_col_votes / rows_checked > 0.5:
+            val_idx_curr = 2
+            val_idx_prior = 3
 
         # Duyệt qua từng dòng để bóc tách mảng
         for row in table:
@@ -197,9 +222,14 @@ def find_segment_values(ticker, tables, period_key=""):
                 continue
             row_text = row[0].strip()
             row_text_normalized = strip_accents(row_text)
-            
-            # Bỏ qua các dòng tổng cộng, tiêu đề cha hoặc chỉ tiêu tài chính tổng
-            if any(x in row_text_normalized for x in ["cong", "tongcong", "doanhthuthuan", "giavonhangban", "loinhuangop", "tructiep", "noibo"]):
+
+            # Bỏ qua các dòng tổng cộng, tiêu đề cha hoặc chỉ tiêu tài chính tổng. Dòng Tổng/Cộng
+            # kiểm tra riêng bằng _is_total_row (so khớp TOÀN BỘ nhãn) thay vì substring "cong" —
+            # tránh lọc nhầm dòng mảng thật có chữ "công nghiệp" (vd. "hạ tầng khu công nghiệp").
+            if _is_total_row(row_text) or any(
+                x in row_text_normalized
+                for x in ["doanhthuthuan", "giavonhangban", "loinhuangop", "tructiep", "noibo"]
+            ):
                 continue
             # Bỏ qua các dòng chỉ mục ngắn hoặc trống
             if len(row_text) < 4:
@@ -276,7 +306,9 @@ def find_segment_values(ticker, tables, period_key=""):
                     if not cell or col_idx == 0:
                         continue
                     cell_norm = strip_accents(cell)
-                    if any(x in cell_norm for x in ["cong", "tongcong", "loaihieu", "bo phan", "khoanmuc", "chi tieu"]):
+                    if _is_total_row(cell) or any(
+                        x in cell_norm for x in ["loaihieu", "bo phan", "khoanmuc", "chi tieu"]
+                    ):
                         continue
                     
                     # Thử map với mảng chuẩn của ticker
@@ -496,7 +528,7 @@ def find_segment_values_from_text(ticker, md_content, period_key=""):
         line_norm = strip_accents(line)
         if not line_norm or len(line_norm) < 4:
             continue
-        if any(x in line_norm for x in ["tongcong", "cong", "doanhthuthuan", "giavonhangban", "loinhuangop"]):
+        if _is_total_row(line) or any(x in line_norm for x in ["doanhthuthuan", "giavonhangban", "loinhuangop"]):
             continue
 
         matched_seg_key = None
