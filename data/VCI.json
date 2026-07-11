@@ -2,11 +2,16 @@
   "ticker": "VCI",
   "companyName": "Công ty Cổ phần Chứng khoán Vietcap",
   "sector": "Chứng khoán",
-  "currentPrice": 25100.0,
-  "marketCap": 28921021317500.0,
+  "currentPrice": 24450.0,
+  "marketCap": 28172070566250.0,
   "shares": 1152231925,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1CiPfIy78NE_LpGzVcQ7DI4_Wmb5-EiTy/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1WPf3ldKSQB9E9kjeUHYDhzo3IYDyj0An/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1ntTblHT_iiQyTypyba8iH6MxQRhT0qzk/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1SfflbFxk7Mi7w_iyAAu83oNeZA4ZCCjC/view?usp=drivesdk",
+  "betaRfCache": {
+    "beta": 1.1848,
+    "rf": 0.045,
+    "fetchedAt": "2026-07-11 13:02"
+  },
   "data": {
     "years": [
       2021,
@@ -377,7 +382,7 @@
     {
       "quarter": "2026-Q1",
       "roe": 7.87,
-      "pb": 1.66
+      "pb": 1.62
     }
   ],
   "marginLeverage": {
@@ -401,7 +406,7 @@
   },
   "thesis": [
     "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (42.8% DT).",
-    "Định giá theo P/B (trung vị lịch sử 1.93x) kết hợp P/E (trung vị 14.41x) cho giá mục tiêu 30,730 VND, tiềm năng +22.4%.",
+    "Định giá theo P/B (trung vị lịch sử 1.93x) kết hợp P/E (trung vị 14.41x) cho giá mục tiêu 30,730 VND, tiềm năng +25.7%.",
     "Cần theo dõi tỷ trọng mảng Tự doanh (FVTPL) — nguồn biến động LNST lớn nhất, nhạy cảm trực tiếp với VN-Index."
   ],
   "risks": [
@@ -464,7 +469,7 @@
     }
   ],
   "valuation": {
-    "bear": 27959,
+    "bear": 27792,
     "base": 30730,
     "bull": 41938,
     "methods": {
@@ -476,19 +481,19 @@
       "PE": 0.1
     },
     "recommendation": "MUA",
-    "upsidePct": 22.4,
-    "coe": 14.33,
+    "upsidePct": 25.7,
+    "coe": 14.37,
     "peMedian": 14.41,
     "pbMedian": 1.93,
-    "pbLowerMedian": 1.68,
+    "pbLowerMedian": 1.67,
     "pbUpperMedian": 2.52,
-    "lowerTarget": 27959,
+    "lowerTarget": 27792,
     "upperTarget": 41938
   },
   "comments": {
     "businessModel": "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (42.8% doanh thu dự phóng).",
     "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 3,633 tỷ VND, LNST cổ đông mẹ 1,458 tỷ VND, EPS 1,265 VND/CP.",
-    "valuationText": "Giá mục tiêu 30,730 VND (upside +22.4%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị MUA."
+    "valuationText": "Giá mục tiêu 30,730 VND (upside +25.7%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị MUA."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -524,7 +529,7 @@
     31.41,
     22.65,
     21.12,
-    19.09
+    18.6
   ],
   "pb_quarters": [
     1.8,
@@ -558,7 +563,7 @@
     2.49,
     1.82,
     1.77,
-    1.66
+    1.62
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -656,5 +661,5 @@
     },
     "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat. brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
   },
-  "lastUpdated": "2026-07-05 08:43"
+  "lastUpdated": "2026-07-11 13:03"
 }
