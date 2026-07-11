@@ -1284,6 +1284,155 @@ def build_excel_nhietdien(ticker, company_name, current_price, shares, hist_year
     return wb
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# CHART GENERATOR — matplotlib PNG, dùng cho PDF report
+# ══════════════════════════════════════════════════════════════════════════
+def build_charts_nhietdien(out_dir, ticker, hist_years, is_recs_y, bs_recs_y, cf_recs_y,
+                            is_recs_q, val, peer_result, fuel_prices, shares):
+    """7 biểu đồ: (1) Doanh thu & biên LNG, (2) LNST & biên LNST theo năm, (2b) LNST theo
+    quý, (3) ROE & P/B theo năm, (4) EV/EBITDA & P/E lịch sử, (5) Giá nhiên liệu hiện tại,
+    (6) FCF dự phóng + PV, (7) So sánh 4 phương pháp định giá. Trả về dict {name: path}."""
+    charts = {}
+    year_labels = [f"{y}A" for y in hist_years]
+
+    revenue_hist = [_get_yr(is_recs_y, y, IS_GEN["revenue"]) for y in hist_years]
+    gp_hist = [_get_yr(is_recs_y, y, IS_GEN["gross_profit"]) for y in hist_years]
+    gm_hist = [gp_hist[i] / revenue_hist[i] if revenue_hist[i] else 0 for i in range(len(hist_years))]
+    npat_hist = [_get_yr(is_recs_y, y, IS_GEN["npat_parent"]) for y in hist_years]
+    npm_hist = [npat_hist[i] / revenue_hist[i] if revenue_hist[i] else 0 for i in range(len(hist_years))]
+    equity_hist = [_get_yr(bs_recs_y, y, BS_GEN["equity_total"]) - _get_yr(bs_recs_y, y, BS_GEN["nci"]) for y in hist_years]
+    roe_hist = [npat_hist[i] / equity_hist[i] if equity_hist[i] else 0 for i in range(len(hist_years))]
+
+    # ── Chart 1: Doanh thu & Biên LNG ───────────────────────────────────
+    p1 = os.path.join(out_dir, f"{ticker}_chart1_revenue_gm.png")
+    fig, ax1 = plt.subplots(figsize=(8, 4.5))
+    ax1.bar(range(len(hist_years)), revenue_hist, color="#1F4E78", alpha=0.85, label="Doanh thu (tỷ)")
+    ax2 = ax1.twinx()
+    ax2.plot(range(len(hist_years)), [g*100 for g in gm_hist], color="#C00000", marker="o", linewidth=2, label="Biên LNG (%)")
+    ax1.set_xticks(range(len(hist_years))); ax1.set_xticklabels(year_labels, fontsize=9)
+    ax1.set_ylabel("Tỷ VND", fontsize=9); ax2.set_ylabel("Biên LNG (%)", fontsize=9, color="#C00000")
+    ax1.set_title(f"Doanh thu & Biên Lợi nhuận gộp — {ticker}", fontsize=11, fontweight="bold")
+    l1, lb1 = ax1.get_legend_handles_labels(); l2, lb2 = ax2.get_legend_handles_labels()
+    ax1.legend(l1+l2, lb1+lb2, loc="upper left", fontsize=8)
+    plt.tight_layout(); plt.savefig(p1, dpi=130); plt.close()
+    charts["revenue_gm"] = p1
+
+    # ── Chart 2: LNST & Biên LNST theo năm ──────────────────────────────
+    p2 = os.path.join(out_dir, f"{ticker}_chart2_npat_year.png")
+    fig, ax1 = plt.subplots(figsize=(8, 4.5))
+    ax1.bar(range(len(hist_years)), npat_hist, color="#2E75B6", alpha=0.85, label="LNST mẹ (tỷ)")
+    ax2 = ax1.twinx()
+    ax2.plot(range(len(hist_years)), [m*100 for m in npm_hist], color="#C00000", marker="o", linewidth=2, label="Biên LNST (%)")
+    ax1.set_xticks(range(len(hist_years))); ax1.set_xticklabels(year_labels, fontsize=9)
+    ax1.set_ylabel("Tỷ VND", fontsize=9); ax2.set_ylabel("Biên LNST (%)", fontsize=9, color="#C00000")
+    ax1.set_title(f"LNST & Biên LNST theo năm — {ticker}", fontsize=11, fontweight="bold")
+    l1, lb1 = ax1.get_legend_handles_labels(); l2, lb2 = ax2.get_legend_handles_labels()
+    ax1.legend(l1+l2, lb1+lb2, loc="upper left", fontsize=8)
+    plt.tight_layout(); plt.savefig(p2, dpi=130); plt.close()
+    charts["npat_year"] = p2
+
+    # ── Chart 2b: LNST theo quý (nếu có dữ liệu quý) ────────────────────
+    if is_recs_q:
+        q_keys = sorted({(r["yearReport"], r["lengthReport"]) for r in is_recs_q
+                          if r.get("yearReport") and r.get("lengthReport")})[-12:]
+        if len(q_keys) >= 4:
+            q_labels = [f"{y}Q{q}" for y, q in q_keys]
+            npat_q = [_get_q(is_recs_q, y, q, IS_GEN["npat_parent"]) for y, q in q_keys]
+            p2b = os.path.join(out_dir, f"{ticker}_chart2b_npat_qtr.png")
+            fig, ax = plt.subplots(figsize=(9, 4.5))
+            colors = ["#2E75B6" if v >= 0 else "#C00000" for v in npat_q]
+            ax.bar(range(len(q_keys)), npat_q, color=colors, alpha=0.85)
+            ax.set_xticks(range(len(q_keys))); ax.set_xticklabels(q_labels, fontsize=8, rotation=30, ha="right")
+            ax.set_ylabel("Tỷ VND", fontsize=9)
+            ax.set_title(f"LNST theo Quý (12 quý gần nhất) — {ticker}", fontsize=11, fontweight="bold")
+            ax.grid(axis="y", linestyle="--", alpha=0.4)
+            plt.tight_layout(); plt.savefig(p2b, dpi=130); plt.close()
+            charts["npat_qtr"] = p2b
+
+    # ── Chart 3: ROE & P/B theo năm ──────────────────────────────────────
+    p3 = os.path.join(out_dir, f"{ticker}_chart3_roe_pb.png")
+    current_price = val["current_price"]
+    # P/B lịch sử = giá hiện tại / BVPS từng năm — cùng quy ước fair_pb/pe_hist (giá cổ
+    # phiếu lịch sử không có sẵn nên xấp xỉ bằng giá hiện tại, giống calc_valuation_nhietdien).
+    bvps_hist = [(equity_hist[i]*1e9/shares) if shares > 0 else None for i in range(len(hist_years))]
+    pb_hist_chart = [(current_price/b if b and b > 0 else None) for b in bvps_hist]
+    fig, ax1 = plt.subplots(figsize=(8, 4.5))
+    ax1.plot(range(len(hist_years)), [r*100 for r in roe_hist], color="#10b981", marker="o", linewidth=2, label="ROE (%)")
+    ax1.set_xticks(range(len(hist_years))); ax1.set_xticklabels(year_labels, fontsize=9)
+    ax1.set_ylabel("ROE (%)", fontsize=9, color="#10b981")
+    ax2 = ax1.twinx()
+    ax2.plot(range(len(hist_years)), pb_hist_chart, color="#7c3aed", marker="s", linewidth=2, linestyle="--", label="P/B (x)")
+    ax2.set_ylabel("P/B (x)", fontsize=9, color="#7c3aed")
+    ax1.set_title(f"ROE & P/B theo năm — {ticker}", fontsize=11, fontweight="bold")
+    l1, lb1 = ax1.get_legend_handles_labels(); l2, lb2 = ax2.get_legend_handles_labels()
+    ax1.legend(l1+l2, lb1+lb2, loc="upper left", fontsize=8)
+    ax1.grid(axis="y", linestyle="--", alpha=0.4)
+    plt.tight_layout(); plt.savefig(p3, dpi=130); plt.close()
+    charts["roe_pb"] = p3
+
+    # ── Chart 4: EV/EBITDA & P/E lịch sử (chính mã, giá hiện tại áp vào quá khứ) ──
+    ev = val["ev_ebitda"]
+    if ev["ebitda_hist_pairs"]:
+        p4 = os.path.join(out_dir, f"{ticker}_chart4_ev_pe.png")
+        yrs_ev = [y for y, _, _ in ev["ebitda_hist_pairs"]]
+        mult_ev = [m for _, _, m in ev["ebitda_hist_pairs"]]
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        ax.plot(range(len(yrs_ev)), mult_ev, color="#7c3aed", marker="o", linewidth=2, label="EV/EBITDA (x)")
+        ax.axhline(y=ev["target_ev_ebitda"], color="#7c3aed", linestyle="--", alpha=0.5,
+                    label=f"Peer median {ev['target_ev_ebitda']}x")
+        ax.set_xticks(range(len(yrs_ev))); ax.set_xticklabels([str(y) for y in yrs_ev], fontsize=9)
+        ax.set_ylabel("EV/EBITDA (x)", fontsize=9)
+        ax.set_title(f"EV/EBITDA lịch sử — {ticker}", fontsize=11, fontweight="bold")
+        ax.legend(loc="upper left", fontsize=8)
+        ax.grid(axis="y", linestyle="--", alpha=0.4)
+        plt.tight_layout(); plt.savefig(p4, dpi=130); plt.close()
+        charts["ev_ebitda"] = p4
+
+    # ── Chart 5: Giá nhiên liệu hiện tại (snapshot) ─────────────────────
+    p5 = os.path.join(out_dir, f"{ticker}_chart5_fuel_prices.png")
+    fuel_labels = ["Than (USD/tấn)", "Khí (USD/MMBtu)", "Dầu Brent (USD/thùng)"]
+    fuel_vals = [fuel_prices["coal"][0], fuel_prices["gas"][0], fuel_prices["oil"][0]]
+    fig, ax = plt.subplots(figsize=(7, 4))
+    bars = ax.bar(fuel_labels, fuel_vals, color=["#475569", "#0891b2", "#f59e0b"], alpha=0.85)
+    for bar, v in zip(bars, fuel_vals):
+        ax.text(bar.get_x()+bar.get_width()/2, v, f"{v:,.1f}", ha="center", va="bottom", fontsize=9, fontweight="bold")
+    ax.set_title(f"Giá nhiên liệu đầu vào hiện tại (tỷ giá {fuel_prices['usdvnd'][0]:,.0f} VND/USD)",
+                 fontsize=10, fontweight="bold")
+    plt.tight_layout(); plt.savefig(p5, dpi=130); plt.close()
+    charts["fuel_prices"] = p5
+
+    # ── Chart 6: FCF dự phóng + PV ────────────────────────────────────────
+    p6 = os.path.join(out_dir, f"{ticker}_chart6_fcf.png")
+    fc_rows = val["fc_rows"]
+    fc_labels = [f"Năm +{row['year_offset']}" for row in fc_rows]
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.bar([i-0.2 for i in range(len(fc_rows))], [r["fcff"] for r in fc_rows], width=0.4, color="#2563eb", label="FCFF")
+    ax.bar([i+0.2 for i in range(len(fc_rows))], [r["fcff_pv"] for r in fc_rows], width=0.4, color="#94a3b8", label="PV(FCFF)")
+    ax.set_xticks(range(len(fc_rows))); ax.set_xticklabels(fc_labels, fontsize=9)
+    ax.set_ylabel("Tỷ VND", fontsize=9)
+    ax.set_title(f"FCFF dự phóng & Giá trị hiện tại — {ticker}", fontsize=11, fontweight="bold")
+    ax.legend(loc="upper left", fontsize=8)
+    plt.tight_layout(); plt.savefig(p6, dpi=130); plt.close()
+    charts["fcf"] = p6
+
+    # ── Chart 7: So sánh các phương pháp định giá ────────────────────────
+    p7 = os.path.join(out_dir, f"{ticker}_chart7_valuation.png")
+    labels_val = ["Giá TT", "DCF", "EV/EBITDA", "P/B", "Asset", "Blend"]
+    values_val = [current_price, val["fair_dcf"], val["fair_ev_ebitda"], val["fair_pb"], val["fair_asset"], val["fair_blend"]]
+    colors_val = ["#475569", "#2563eb", "#0891b2", "#7c3aed", "#f59e0b", "#C00000"]
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    bars = ax.bar(labels_val, values_val, color=colors_val, alpha=0.85)
+    for bar, v in zip(bars, values_val):
+        ax.text(bar.get_x()+bar.get_width()/2, v, f"{v:,.0f}", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
+    ax.set_ylabel("VND/cp", fontsize=9)
+    ax.set_title(f"So sánh Định giá — {ticker}", fontsize=11, fontweight="bold")
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y/1000:.0f}k"))
+    plt.tight_layout(); plt.savefig(p7, dpi=130); plt.close()
+    charts["valuation"] = p7
+
+    return charts
+
+
 if __name__ == "__main__":
     # Smoke-test Bước 1+2 của kế hoạch: fetch BCTC + Rf/Beta thật, in số liệu thô +
     # kết quả định giá WACC/DCF/blend để đối chiếu với ví dụ tính tay trong tài liệu
