@@ -70,6 +70,13 @@ jobs:
           
           git add data/ || true
           git add "$BUILDER" 2>/dev/null || true
+          # "Bao cao/<TICKER>/" (Excel/PDF/chart PNG) đã được track sẵn trong git từ trước (không phải
+          # file mới) — nếu không stage ở đây, lần chạy nào ghi đè các file này cũng để lại thay đổi
+          # CHƯA stage trên working tree, khiến `git rebase origin/master` bên dưới báo lỗi "cannot
+          # rebase: you have unstaged changes" và toàn bộ kết quả phân tích bị mất (không commit/push
+          # được) dù python run_analysis.py đã chạy thành công. Dùng ${TICKER^^} vì thư mục output luôn
+          # là ticker viết HOA (template_*.py tự .upper()), bất kể input gõ hoa/thường.
+          git add "Bao cao/${TICKER^^}/" 2>/dev/null || true
           
           # Commit only if there are changes
           if git diff --staged --quiet; then
