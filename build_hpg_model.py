@@ -941,6 +941,8 @@ _cur_q_months = [3*(CUR_Q_NUM-1)+1, 3*(CUR_Q_NUM-1)+2, 3*(CUR_Q_NUM-1)+3]
 
 print(f"[Production] Fetching HPG steel sales volume news for {CUR_Q_LABEL}...")
 HPG_PRODUCTION_NEWS = fetch_hpg_production_updates()
+print(f"  -> hoaphat.com.vn/noibo.hoaphat.com.vn: found {len(HPG_PRODUCTION_NEWS)} PR record(s) (nguồn "
+      f"chính thức công ty, thường chỉ có TỔNG sản lượng, không tách HRC/XD)")
 _nqs_records = fetch_nguoiquansat_production_updates()
 print(f"  -> nguoiquansat.vn: found {len(_nqs_records)} monthly record(s) with HRC/XD breakdown")
 _dtcp_records = fetch_dautucophieu_production_updates()
@@ -965,6 +967,13 @@ _production_only_news = [r for r in HPG_PRODUCTION_NEWS if r.get("metric") == "p
     (r["type"] == "quarter" and r["quarter"] == CUR_Q_NUM) or
     (r["type"] == "month" and r["month"] in _cur_q_months) or
     (r["type"] == "cumulative" and r["months"] >= _cur_q_months[0]))]
+
+if _production_only_news:
+    _p = _production_only_news[0]
+    print(f"  [DIAG] Tìm thấy tin SẢN XUẤT (không phải sản lượng BÁN HÀNG) cho {CUR_Q_LABEL} từ nguồn "
+          f"chính thức công ty: \"{_p['title']}\" ({_p['url']}) — không dùng để tính doanh thu vì khác "
+          f"cơ sở với HRC_SALES_HIST_KT/XD_SALES_HIST_KT (sản xuất có thể gồm cả phôi/ống thép/tôn "
+          f"mạ, không chỉ HRC+XD bán ra), nhưng vẫn nêu ở đây để đối chiếu/tham khảo.")
 
 _official_q_rec = next((r for r in _sales_news
                         if r["type"] == "quarter" and r["year"] == CUR_Q_YEAR and r["quarter"] == CUR_Q_NUM), None)
@@ -1013,11 +1022,6 @@ elif _cum_q_rec and _prior_q_total_kt is not None and _cum_q_rec["volume_kt"] > 
           f"minus known Q1-Q{CUR_Q_NUM-1}/{CUR_Q_YEAR} ({_prior_q_total_kt:.0f} kt) => {CUR_Q_LABEL} = "
           f"{CUR_Q_TOTAL_KT:.0f} kt ({_cum_q_rec['url']})")
 else:
-    if _production_only_news:
-        _p = _production_only_news[0]
-        print(f"  [DIAG] Tìm thấy tin SẢN XUẤT (không phải sản lượng BÁN HÀNG) cho {CUR_Q_LABEL}: "
-              f"\"{_p['title']}\" ({_p['url']}) — bỏ qua vì khác cơ sở tính với HRC_SALES_HIST_KT/"
-              f"XD_SALES_HIST_KT (sản xuất có thể gồm cả phôi/ống thép/tôn mạ, không chỉ HRC+XD bán ra).")
     CUR_Q_SOURCE = "FALLBACK"
     CUR_Q_TOTAL_KT = None
     CUR_Q_HRC_KT_DIRECT = CUR_Q_XD_KT_DIRECT = None
