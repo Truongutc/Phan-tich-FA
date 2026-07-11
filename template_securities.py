@@ -361,6 +361,40 @@ def data_row(ws, row, label, values, fmt=None, note=None, bold=False, fill=None)
 # ══════════════════════════════════════════════════════════════════════════
 # MAIN ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════
+def derive_real_fvtpl_mix(ticker):
+    """Suy tỷ trọng danh mục Tự doanh (CDs/TP/CP) từ dữ liệu THẬT trong data/fvtpl_holdings/<TICKER>.json
+    (5 nhóm tài sản trích từ thuyết minh BCTC — xem skill chung-khoan §8), thay cho bảng giả định
+    _FVTPL_MIX_OVERRIDE chung chung. Ánh xạ 5 nhóm -> 3 nhóm gốc để tái dùng nguyên vẹn công thức Excel/
+    JSON hiện có:
+        CP  (rủi ro cổ phiếu) = CoPhieuNiemYet + CoPhieuChuaNiemYet + ChungChiQuy
+                                 (Chứng chỉ quỹ gộp vào đây vì tại HCM toàn bộ là quỹ ETF/mở theo dõi
+                                 chỉ số cổ phiếu (VN30/Diamond/VNX50...) — nếu CTCK khác có quỹ trái
+                                 phiếu, cần tách riêng khi thêm dữ liệu ticker đó)
+        TP  (thu nhập cố định) = TraiPhieu
+        CDs (tiền gửi)         = ChungChiTienGui
+    Trả về None nếu ticker chưa có dữ liệu — caller tự fallback về bảng giả định."""
+    data = load_fvtpl_holdings(ticker)
+    if not data:
+        return None
+    fvtpl = data.get("fvtpl", {})
+    periods = _fvtpl_merged_periods(fvtpl)
+    if not periods:
+        return None
+    pkey, plabel = periods[-1]  # kỳ gần nhất
+    bucket = fvtpl.get("yearly", {}) if "Q" not in pkey else fvtpl.get("quarterly", {})
+    seg_vals = bucket.get(pkey, {})
+    total = sum((v.get("fairValue") or 0) for v in seg_vals.values())
+    if not total:
+        return None
+    cp = ((seg_vals.get("CoPhieuNiemYet", {}).get("fairValue") or 0)
+          + (seg_vals.get("CoPhieuChuaNiemYet", {}).get("fairValue") or 0)
+          + (seg_vals.get("ChungChiQuy", {}).get("fairValue") or 0))
+    tp = seg_vals.get("TraiPhieu", {}).get("fairValue") or 0
+    cds = seg_vals.get("ChungChiTienGui", {}).get("fairValue") or 0
+    return {"CDs": round(cds / total, 4), "TP": round(tp / total, 4), "CP": round(cp / total, 4),
+            "period": plabel, "totalBn": round(total / 1e9, 1)}
+
+
 def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     ticker = ticker.upper()
     print(f"\n--- Running Securities (CTCK) Analysis for {ticker} ---")
@@ -631,16 +665,28 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
         "MBS":      {"CDs": 0.40, "TP": 0.35, "CP": 0.25},
         "_DEFAULT": {"CDs": 0.45, "TP": 0.25, "CP": 0.30},
     }
-    fvtpl_mix_fc = _FVTPL_MIX_OVERRIDE.get(ticker, _FVTPL_MIX_OVERRIDE["_DEFAULT"])
-    print(f"  [FVTPL Mix] {ticker}: CDs={fvtpl_mix_fc['CDs']:.0%} / TP={fvtpl_mix_fc['TP']:.0%} / CP={fvtpl_mix_fc['CP']:.0%}"
-          f" {'(per-ticker override)' if ticker in _FVTPL_MIX_OVERRIDE else '(default)'}")
+    # Ưu tiên cơ cấu THẬT trích từ thuyết minh BCTC (data/fvtpl_holdings/<TICKER>.json — xem skill
+    # chung-khoan §8) — chỉ dùng bảng giả định _FVTPL_MIX_OVERRIDE khi ticker CHƯA có dữ liệu này.
+    _real_fvtpl = derive_real_fvtpl_mix(ticker)
+    fvtpl_mix_is_real = _real_fvtpl is not None
+    if fvtpl_mix_is_real:
+        fvtpl_mix_fc = {"CDs": _real_fvtpl["CDs"], "TP": _real_fvtpl["TP"], "CP": _real_fvtpl["CP"]}
+        print(f"  [FVTPL Mix] {ticker}: CDs={fvtpl_mix_fc['CDs']:.0%} / TP={fvtpl_mix_fc['TP']:.0%} / CP={fvtpl_mix_fc['CP']:.0%}"
+              f" (CƠ CẤU THẬT tại {_real_fvtpl['period']}, danh mục {_real_fvtpl['totalBn']:,.0f} tỷ VND — nguồn thuyết minh BCTC)")
+    else:
+        fvtpl_mix_fc = _FVTPL_MIX_OVERRIDE.get(ticker, _FVTPL_MIX_OVERRIDE["_DEFAULT"])
+        print(f"  [FVTPL Mix] {ticker}: CDs={fvtpl_mix_fc['CDs']:.0%} / TP={fvtpl_mix_fc['TP']:.0%} / CP={fvtpl_mix_fc['CP']:.0%}"
+              f" (GIẢ ĐỊNH — chưa có data/fvtpl_holdings/{ticker}.json; {'per-ticker override' if ticker in _FVTPL_MIX_OVERRIDE else 'default'})")
     # R_CDs = 7.0%: kiểm chứng qua lãi suất CDs 12 tháng thực tế 2026-07 (Vietcombank 7.4-7.9%, BVBank 7.2%,
     # dao động 5.5%-7.9% tùy NH — neo mức trung bình-thận trọng, KHÔNG dùng mức đỉnh).
     # R_TP = 7.0%: coupon trái phiếu NH bình quân phát hành 2026 là 6.4-6.5%, một số NH phát hành 8-8.9%
     # — nằm trong dải hợp lý.
-    # R_VNI = 10%: KHÔNG kiểm chứng được (kỳ vọng lợi suất tương lai mang tính chủ quan, không có "đúng/sai") —
-    # đối chiếu với COE (00_COE) hoặc quan điểm thị trường của người phân tích khi điều chỉnh.
-    fvtpl_r_fc = {"R_CDs": 0.070, "R_TP": 0.07, "R_VNI": 0.10}  # lãi suất/lợi suất kỳ vọng mỗi loại tài sản
+    # R_VNI: khi có cơ cấu THẬT, dùng ĐÚNG COE (CAPM, Rf+β×ERP+α) của chính ticker này làm lợi suất kỳ
+    # vọng cho phần rủi ro cổ phiếu — nhất quán với suất chiết khấu định giá, KHÔNG dùng số 10% chủ quan
+    # nữa. Khi chưa có dữ liệu thật, giữ 10% như giả định chung KHÔNG kiểm chứng được (đối chiếu COE thủ công).
+    fvtpl_r_fc = {"R_CDs": 0.070, "R_TP": 0.07, "R_VNI": (round(COE, 4) if fvtpl_mix_is_real else 0.10)}
+    if fvtpl_mix_is_real:
+        print(f"  [FVTPL Rate] R_VNI = COE = {COE:.2%} (nhất quán CAPM, thay vì giả định 10% chủ quan)")
     _FVTPL_RATE_KEY = {"CDs": "R_CDs", "TP": "R_TP", "CP": "R_VNI"}
     fvtpl_expected_yield_fc = sum(fvtpl_mix_fc[k] * fvtpl_r_fc[_FVTPL_RATE_KEY[k]] for k in fvtpl_mix_fc)
     # Tăng trưởng danh mục Tự doanh GIẢM DẦN (10%→8%→6%)
@@ -822,7 +868,8 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                                   fvtpl_mix_fc, fvtpl_r_fc, fvtpl_expected_yield_fc, fvtpl_portfolio_growth_fc,
                                   ib_pipeline_fc, ib_fee_pct_fc, custody_growth_fc, qlq_fee_rate_fc, qlq_aum_fc0,
                                   qlq_aum_growth_fc, sga_pct_fc, cost_pct_fc, tax_rate_fc, PE_HIST_MEDIAN, PB_HIST_MEDIAN,
-                                  PE_PB_MEDIAN_ROW, pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER)
+                                  PE_PB_MEDIAN_ROW, pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER,
+                                  fvtpl_mix_is_real=fvtpl_mix_is_real)
     RR = build_revenue_model_sheet(wb, ticker, years_hist, years_fc, RA,
                                     brokerage_rev_hist, margin_rev_hist, fvtpl_net_hist, ib_custody_rev_hist, qlq_rev_hist,
                                     margin_loans_hist, fvtpl_portfolio_hist, qlq_aum_fc0,
@@ -852,6 +899,7 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                               pb_lower_val=PB_HIST_MEDIAN_LOWER, pb_upper_val=PB_HIST_MEDIAN_UPPER)
     build_segment_quarterly_sheet(wb, ticker, is_q)
     build_peer_benchmark_sheet(wb, ticker)
+    build_fvtpl_holdings_sheet(wb, ticker)
 
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", ticker)
     os.makedirs(out_dir, exist_ok=True)
@@ -882,6 +930,12 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     chart_paths["npat_roe_quarterly"] = make_npat_roe_quarterly_chart(chart_dir, ticker, is_q, bs_q)
     chart_paths["roe_pb_correlation"] = make_roe_pb_correlation_chart(chart_dir, ticker, quarter_labels, pb_quarters, is_q, bs_q)
     chart_paths["margin_leverage_quarterly"] = make_margin_leverage_quarterly_chart(chart_dir, ticker, bs_q)
+
+    # ── Cơ cấu tự doanh FVTPL/AFS (chỉ có nếu data/fvtpl_holdings/<TICKER>.json tồn tại) ──
+    fvtpl_holdings_data = load_fvtpl_holdings(ticker)
+    if fvtpl_holdings_data:
+        chart_paths["fvtpl_composition"] = make_fvtpl_composition_chart(chart_dir, ticker, fvtpl_holdings_data)
+        chart_paths["fvtpl_holdings"] = make_fvtpl_holdings_chart(chart_dir, ticker, fvtpl_holdings_data)
 
     # ── Đòn bẩy Margin/VCSH quý gần nhất (dùng cho đánh giá trong PDF) ──
     _bs_q_sorted = sorted(bs_q, key=lambda x: (x.get("yearReport", 0), x.get("lengthReport", 0)))
@@ -957,7 +1011,7 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                        pb_target_price, pe_target_price, PE_HIST_MEDIAN, PB_HIST_MEDIAN, COE,
                        seg_hist_data, seg_fc_data, seg_pct_fc0, concentration_warning, concentration_flag,
                        is_q, bs_q, latest_margin_leverage, latest_leverage_label, VALUATION_WEIGHTS, quarterly_update,
-                       macro_liquidity=_macro_liq,
+                       macro_liquidity=_macro_liq, beta_rf_cache=BETA_RF_CACHE_ENTRY,
                        pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER,
                        weighted_lower_target=weighted_lower_target, weighted_upper_target=weighted_upper_target)
 
@@ -1228,7 +1282,7 @@ def build_assumptions_sheet(wb, ticker, years_hist, years_fc, price, shares, coe
                              fvtpl_mix_fc, fvtpl_r_fc, fvtpl_yield_fc, fvtpl_portfolio_growth_fc,
                              ib_pipeline_fc, ib_fee_pct_fc, custody_growth_fc, qlq_fee_rate_fc, qlq_aum0,
                              qlq_aum_growth_fc, sga_pct_fc, cost_pct_fc, tax_rate_fc, pe_median, pb_median,
-                             pe_pb_median_row, pb_lower_median=None, pb_upper_median=None):
+                             pe_pb_median_row, pb_lower_median=None, pb_upper_median=None, fvtpl_mix_is_real=False):
     ws = wb.create_sheet("02_Assumptions")
     N_HIST, N_FC = len(years_hist), len(years_fc)
     all_years = years_hist + years_fc
@@ -1325,15 +1379,20 @@ def build_assumptions_sheet(wb, ticker, years_hist, years_fc, price, shares, coe
 
     ws.cell(row=r, column=1, value="── (3) TỰ DOANH (FVTPL): DT = Danh mục × (%CDs×R_CDs + %TP×R_TP + %CP×R_VNI) ──").font = Font(bold=True, italic=True, color="1F4E78")
     r += 1
-    _fvtpl_manual_note = ("⚠ GIẢ ĐỊNH THỦ CÔNG — Vietcap KHÔNG công bố cơ cấu danh mục FVTPL chi tiết theo mã, nên KHÔNG thể "
-                          "tính bằng công thức sống. Mặc định chỉ mang tính khởi điểm — BẮT BUỘC điều chỉnh theo thuyết minh "
-                          "BCTC thực tế nếu có (một số CTCK gần đây tăng tỷ trọng trái phiếu/CDs, giảm cổ phiếu — xem báo cáo "
-                          "công ty gần nhất). Đối chiếu với dòng 'Hiệu suất Tự doanh THỰC TẾ lịch sử' bên dưới để hiệu chỉnh.")
+    if fvtpl_mix_is_real:
+        _fvtpl_manual_note = ("✓ CƠ CẤU THẬT — trích trực tiếp từ thuyết minh BCTC (data/fvtpl_holdings/"
+                              f"{ticker}.json, kỳ gần nhất, xem sheet 16_FVTPL_Composition) — KHÔNG phải giả định. "
+                              "Cập nhật lại khi có kỳ báo cáo mới hơn (chạy lại quy trình thu thập dữ liệu FVTPL).")
+    else:
+        _fvtpl_manual_note = ("⚠ GIẢ ĐỊNH THỦ CÔNG — chưa có data/fvtpl_holdings/" + ticker + ".json (thuyết minh cơ cấu danh mục "
+                              "FVTPL chi tiết theo loại tài sản), nên dùng bảng giả định chung theo ticker/ngành. Mặc định chỉ "
+                              "mang tính khởi điểm — BẮT BUỘC điều chỉnh theo thuyết minh BCTC thực tế nếu có. Đối chiếu với dòng "
+                              "'Hiệu suất Tự doanh THỰC TẾ lịch sử' bên dưới để hiệu chỉnh.")
     RA["fvtpl_pct_cds"] = arow("Tỷ trọng CDs (Chứng chỉ tiền gửi) trong danh mục", [None] * N_HIST + [fvtpl_mix_fc["CDs"]] * N_FC, FMT_PCT,
                                 _fvtpl_manual_note)
     RA["fvtpl_pct_tp"] = arow("Tỷ trọng TP (Trái phiếu) trong danh mục", [None] * N_HIST + [fvtpl_mix_fc["TP"]] * N_FC, FMT_PCT,
                                _fvtpl_manual_note)
-    RA["fvtpl_pct_cp"] = arow("Tỷ trọng CP (Cổ phiếu) trong danh mục", [None] * N_HIST + [fvtpl_mix_fc["CP"]] * N_FC, FMT_PCT,
+    RA["fvtpl_pct_cp"] = arow("Tỷ trọng CP (Cổ phiếu + Chứng chỉ quỹ) trong danh mục", [None] * N_HIST + [fvtpl_mix_fc["CP"]] * N_FC, FMT_PCT,
                                _fvtpl_manual_note)
     RA["fvtpl_r_cds"] = arow("R_CDs — Lãi suất kỳ vọng CDs (%/năm)", [None] * N_HIST + [fvtpl_r_fc["R_CDs"]] * N_FC, FMT_PCT,
                               "✓ Đã đối chiếu (2026-07): lãi suất CDs 12 tháng thực tế 5.5%-7.9% tùy NH (Vietcombank ~7.4-7.9%, "
@@ -1341,10 +1400,16 @@ def build_assumptions_sheet(wb, ticker, years_hist, years_fc, price, shares, coe
                               "thời điểm phân tích")
     RA["fvtpl_r_tp"] = arow("R_TP — Lợi suất kỳ vọng Trái phiếu (%/năm)", [None] * N_HIST + [fvtpl_r_fc["R_TP"]] * N_FC, FMT_PCT,
                              "✓ Đã đối chiếu (2026-07): coupon trái phiếu NH bình quân phát hành 2026 ~6.4-6.5%, một số NH "
-                             "phát hành 8-8.9% — 7.0% nằm trong dải hợp lý")
-    RA["fvtpl_r_vni"] = arow("R_VNI — Biến động kỳ vọng VN-Index (%/năm)", [None] * N_HIST + [fvtpl_r_fc["R_VNI"]] * N_FC, FMT_PCT,
-                              "⚠ KHÔNG kiểm chứng được — kỳ vọng lợi suất tương lai mang tính chủ quan, không có \"đúng/sai\". "
-                              "Đối chiếu với COE (sheet 00_COE) hoặc quan điểm thị trường riêng khi điều chỉnh")
+                             "phát hành 8-8.9% — 7.0% nằm trong dải hợp lý (đây là lợi suất coupon+lãi, KHÔNG dùng chênh lệch "
+                              "đánh giá lại trong thuyết minh FVTPL vì con số đó chỉ là lãi/lỗ giá thị trường, không gồm lãi coupon)")
+    if fvtpl_mix_is_real:
+        RA["fvtpl_r_vni"] = arow("R_VNI — Lợi suất kỳ vọng CP+Chứng chỉ quỹ (%/năm)", [None] * N_HIST + [fvtpl_r_fc["R_VNI"]] * N_FC, FMT_PCT,
+                                  "✓ NHẤT QUÁN CAPM — dùng ĐÚNG COE (sheet 00_COE = Rf+β×ERP+α của chính ticker này) làm lợi suất kỳ vọng "
+                                  "phần rủi ro cổ phiếu, thay vì con số 10% chủ quan trước đây — cùng suất chiết khấu với mô hình định giá.")
+    else:
+        RA["fvtpl_r_vni"] = arow("R_VNI — Biến động kỳ vọng VN-Index (%/năm)", [None] * N_HIST + [fvtpl_r_fc["R_VNI"]] * N_FC, FMT_PCT,
+                                  "⚠ KHÔNG kiểm chứng được — kỳ vọng lợi suất tương lai mang tính chủ quan, không có \"đúng/sai\". "
+                                  "Đối chiếu với COE (sheet 00_COE) hoặc quan điểm thị trường riêng khi điều chỉnh")
     RA["fvtpl_growth"] = arow("Tăng trưởng danh mục Tự doanh (%/năm)", [None] * N_HIST + fvtpl_portfolio_growth_fc, FMT_PCT,
                                "⚠ GIẢ ĐỊNH THỦ CÔNG, GIẢM DẦN theo năm (thận trọng cho năm xa) — điều chỉnh theo kế hoạch phân bổ "
                                "vốn tự doanh của CTCK (BCTN/ĐHĐCĐ) nếu có công bố")
@@ -2362,6 +2427,131 @@ def build_segment_quarterly_sheet(wb, ticker, is_q):
     print(f"[Excel] Sheet 14_Segment_Quarterly done ({r-2} quý).")
 
 
+def load_fvtpl_holdings(ticker):
+    """Đọc data/fvtpl_holdings/<TICKER>.json nếu tồn tại (kho dữ liệu cơ cấu tự doanh FVTPL/AFS trích
+    từ thuyết minh BCTC — xem skill chung-khoan §8). Trả về None nếu ticker chưa có dữ liệu này —
+    mọi hàm gọi hàm này (Excel/PDF) phải tự bỏ qua sheet/chart tương ứng khi trả về None."""
+    path = os.path.join(PROJECT_ROOT, "data", "fvtpl_holdings", f"{ticker}.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"  [WARN] Không đọc được data/fvtpl_holdings/{ticker}.json: {e}")
+        return None
+
+
+def _fvtpl_merged_periods(pool):
+    """Danh sách kỳ theo thời gian (giống logic app_securities.js::_fvtplMergedPeriods): năm nào đã
+    có Q4 trùng thời điểm 31/12 thì bỏ điểm yearly để tránh hiển thị trùng 2 lần cùng 1 mốc."""
+    quarterly = pool.get("quarterly", {}) or {}
+    yearly = pool.get("yearly", {}) or {}
+    q_years = {q[:4] for q in quarterly}
+    years = [(y, f"{y}(N)") for y in yearly if y not in q_years or f"{y}Q4" not in quarterly]
+    quarters = [(q, q) for q in quarterly]
+
+    def sort_key(item):
+        key = item[0]
+        y = int(key[:4])
+        q = int(key.split("Q")[1]) if "Q" in key else 0
+        return (y, q)
+
+    return sorted(years + quarters, key=sort_key)
+
+
+def build_fvtpl_holdings_sheet(wb, ticker):
+    """Sheet 16_FVTPL_Composition — cơ cấu danh mục tự doanh FVTPL/AFS theo 5 nhóm tài sản (giá gốc +
+    giá trị hợp lý), lãi/lỗ đánh giá lại theo nhóm, và danh mục cổ phiếu niêm yết cụ thể đang nắm giữ.
+    Nguồn: data/fvtpl_holdings/<TICKER>.json (trích trực tiếp từ thuyết minh BCTC — xem skill
+    chung-khoan §8). Sheet chỉ được tạo khi ticker có dữ liệu này, KHÔNG áp dụng cho mọi CTCK."""
+    data = load_fvtpl_holdings(ticker)
+    if not data:
+        print(f"  [INFO] Không có data/fvtpl_holdings/{ticker}.json — bỏ qua sheet FVTPL Composition.")
+        return
+
+    ws = wb.create_sheet("16_FVTPL_Composition")
+    ws.column_dimensions['A'].width = 28
+    ws.column_dimensions['B'].width = 3
+    for i in range(20):
+        ws.column_dimensions[get_column_letter(3 + i)].width = 13
+
+    cats = sorted(data.get("categories", {}).items(), key=lambda kv: kv[1].get("order", 99))
+    fvtpl_periods = _fvtpl_merged_periods(data.get("fvtpl", {}))
+
+    ws.cell(row=1, column=1, value=f"CƠ CẤU & HIỆU QUẢ DANH MỤC TỰ DOANH FVTPL/AFS — {ticker}").font = TITLE_FONT
+    ws.cell(row=2, column=1, value=(
+        "Nguồn: thuyết minh BCTC hợp nhất (mục 'Tài sản tài chính ghi nhận thông qua lãi/lỗ FVTPL' / "
+        "'sẵn sàng để bán AFS'), trích trực tiếp — KHÔNG ước tính. Đơn vị: tỷ VND.")).font = ITALIC_FONT
+
+    # ── Bảng 1: Cơ cấu theo nhóm tài sản (Giá trị hợp lý) ──
+    r = 4
+    ws.cell(row=r, column=1, value="1. CƠ CẤU DANH MỤC THEO NHÓM TÀI SẢN (Giá trị hợp lý, tỷ VND)").font = BOLD_FONT
+    r += 1
+    header_row(ws, r, ["Nhóm tài sản"] + [p[1] for p in fvtpl_periods])
+    r += 1
+    fvtpl = data.get("fvtpl", {})
+    for seg, meta in cats:
+        vals = []
+        for pkey, _ in fvtpl_periods:
+            bucket = (fvtpl.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else fvtpl.get("quarterly", {}))
+            v = bucket.get(pkey, {}).get(seg)
+            vals.append(round(v["fairValue"] / 1e9, 1) if v else None)
+        data_row(ws, r, meta.get("label", seg), vals, fmt=FMT_NUM)
+        r += 1
+    total_row = r
+    ws.cell(row=r, column=1, value="Tổng cộng").font = BOLD_FONT
+    for c in range(2, 2 + len(fvtpl_periods)):
+        col = get_column_letter(c)
+        ws.cell(row=r, column=c, value=f"=SUM({col}{r-len(cats)}:{col}{r-1})").font = BOLD_FONT
+        ws.cell(row=r, column=c).number_format = FMT_NUM
+    r += 3
+
+    # ── Bảng 2: Lãi/Lỗ đánh giá lại theo nhóm tài sản ──
+    ws.cell(row=r, column=1, value="2. LÃI/LỖ ĐÁNH GIÁ LẠI THEO NHÓM TÀI SẢN (tỷ VND, tại thời điểm báo cáo so với giá gốc)").font = BOLD_FONT
+    r += 1
+    header_row(ws, r, ["Nhóm tài sản"] + [p[1] for p in fvtpl_periods])
+    r += 1
+    for seg, meta in cats:
+        vals = []
+        for pkey, _ in fvtpl_periods:
+            bucket = (fvtpl.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else fvtpl.get("quarterly", {}))
+            v = bucket.get(pkey, {}).get(seg)
+            if v and (v.get("gain") is not None or v.get("loss") is not None):
+                net = (v.get("gain") or 0) + (v.get("loss") or 0)
+                vals.append(round(net / 1e9, 1))
+            else:
+                vals.append(None)
+        data_row(ws, r, meta.get("label", seg) + " (ròng)", vals, fmt=FMT_NUM)
+        r += 1
+    r += 2
+
+    # ── Bảng 3: Danh mục cổ phiếu niêm yết cụ thể ──
+    holdings = data.get("holdings", {})
+    h_periods = _fvtpl_merged_periods(holdings)
+    if h_periods:
+        ws.cell(row=r, column=1, value="3. DANH MỤC CỔ PHIẾU NIÊM YẾT CỤ THỂ ĐANG NẮM GIỮ (Giá trị hợp lý, tỷ VND)").font = BOLD_FONT
+        r += 1
+        header_row(ws, r, ["Mã CP"] + [p[1] for p in h_periods])
+        r += 1
+        tickers_seen = []
+        for pkey, _ in h_periods:
+            bucket = (holdings.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else holdings.get("quarterly", {}))
+            for t in bucket.get(pkey, {}):
+                if t != "Khac" and t not in tickers_seen:
+                    tickers_seen.append(t)
+        for t in tickers_seen + (["Khac"] if tickers_seen else []):
+            vals = []
+            for pkey, _ in h_periods:
+                bucket = (holdings.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else holdings.get("quarterly", {}))
+                v = bucket.get(pkey, {}).get(t)
+                vals.append(round(v / 1e9, 1) if v else None)
+            data_row(ws, r, t, vals, fmt=FMT_NUM)
+            r += 1
+
+    print(f"[Excel] Sheet 16_FVTPL_Composition done ({ticker}, {len(fvtpl_periods)} kỳ).")
+
+
 def build_peer_benchmark_sheet(wb, ticker):
     """Bảng thống kê so sánh các CTCK niêm yết — THUẦN TÚY diễn giải trực quan đặc điểm doanh nghiệp
     so với ngành, KHÔNG dùng làm input cho bất kỳ công thức định giá nào của ticker đang phân tích
@@ -2710,6 +2900,87 @@ def make_margin_leverage_quarterly_chart(chart_dir, ticker, bs_q, n_quarters=12)
     return path
 
 
+def make_fvtpl_composition_chart(chart_dir, ticker, fvtpl_data):
+    """Biểu đồ cột chồng cơ cấu danh mục tự doanh FVTPL theo 5 nhóm tài sản (giá trị hợp lý, tỷ VND),
+    trục thời gian gộp năm+quý theo _fvtpl_merged_periods. Trả về None nếu không có dữ liệu."""
+    cats = sorted(fvtpl_data.get("categories", {}).items(), key=lambda kv: kv[1].get("order", 99))
+    fvtpl = fvtpl_data.get("fvtpl", {})
+    periods = _fvtpl_merged_periods(fvtpl)
+    if not cats or not periods:
+        return None
+
+    labels = [p[1] for p in periods]
+    x = list(range(len(periods)))
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    bottom = [0.0] * len(periods)
+    for seg, meta in cats:
+        vals = []
+        for pkey, _ in periods:
+            bucket = fvtpl.get("yearly", {}) if "Q" not in pkey else fvtpl.get("quarterly", {})
+            v = bucket.get(pkey, {}).get(seg)
+            vals.append(round(v["fairValue"] / 1e9, 1) if v else 0)
+        if not any(vals):
+            continue
+        ax.bar(x, vals, bottom=bottom, label=meta.get("label", seg), color=meta.get("color", "#94a3b8"))
+        bottom = [bottom[i] + vals[i] for i in range(len(periods))]
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=45, ha='right', fontsize=8)
+    ax.set_ylabel("Giá trị hợp lý (tỷ VND)", fontsize=11)
+    ax.set_title(f"{ticker} — Cơ cấu Danh mục Tự doanh FVTPL theo Nhóm Tài sản", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=8, loc='upper left')
+    ax.grid(alpha=0.3, axis='y')
+    fig.tight_layout()
+    path = os.path.join(chart_dir, "fvtpl_composition.png")
+    fig.savefig(path, dpi=180, bbox_inches='tight')
+    plt.close(fig)
+    return path
+
+
+def make_fvtpl_holdings_chart(chart_dir, ticker, fvtpl_data):
+    """Biểu đồ cột chồng danh mục cổ phiếu niêm yết cụ thể đang nắm giữ (giá trị hợp lý, tỷ VND)."""
+    holdings = fvtpl_data.get("holdings", {})
+    periods = _fvtpl_merged_periods(holdings)
+    if not periods:
+        return None
+
+    tickers_seen = []
+    for pkey, _ in periods:
+        bucket = holdings.get("yearly", {}) if "Q" not in pkey else holdings.get("quarterly", {})
+        for t in bucket.get(pkey, {}):
+            if t != "Khac" and t not in tickers_seen:
+                tickers_seen.append(t)
+    all_tickers = tickers_seen + (["Khac"] if tickers_seen else [])
+    if not all_tickers:
+        return None
+
+    palette = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#eab308', '#f97316', '#64748b', '#84cc16']
+    labels = [p[1] for p in periods]
+    x = list(range(len(periods)))
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    bottom = [0.0] * len(periods)
+    for i, t in enumerate(all_tickers):
+        vals = []
+        for pkey, _ in periods:
+            bucket = holdings.get("yearly", {}) if "Q" not in pkey else holdings.get("quarterly", {})
+            v = bucket.get(pkey, {}).get(t)
+            vals.append(round(v / 1e9, 1) if v else 0)
+        if not any(vals):
+            continue
+        ax.bar(x, vals, bottom=bottom, label=t, color=palette[i % len(palette)])
+        bottom = [bottom[i2] + vals[i2] for i2 in range(len(periods))]
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=45, ha='right', fontsize=8)
+    ax.set_ylabel("Giá trị hợp lý (tỷ VND)", fontsize=11)
+    ax.set_title(f"{ticker} — Danh mục Cổ phiếu Niêm yết Đang Nắm giữ (Tự doanh)", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=7.5, loc='upper left', ncol=2)
+    ax.grid(alpha=0.3, axis='y')
+    fig.tight_layout()
+    path = os.path.join(chart_dir, "fvtpl_holdings.png")
+    fig.savefig(path, dpi=180, bbox_inches='tight')
+    plt.close(fig)
+    return path
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # PDF REPORT
 # ══════════════════════════════════════════════════════════════════════════
@@ -2879,6 +3150,21 @@ def build_pdf_report(pdf_path, ticker, company_name, price, mcap, shares, target
         story.append(Image(chart_paths["roe_pb_correlation"], width=130*mm, height=101*mm))
     story.append(PageBreak())
 
+    # ── Trang 5c: Cơ cấu Tự doanh FVTPL/AFS (chỉ hiện khi có data/fvtpl_holdings/<TICKER>.json) ──
+    if os.path.exists(chart_paths.get("fvtpl_composition", "")) or os.path.exists(chart_paths.get("fvtpl_holdings", "")):
+        story.append(Paragraph("CƠ CẤU & HIỆU QUẢ DANH MỤC TỰ DOANH FVTPL/AFS", style_h2))
+        story.append(Paragraph(
+            "Cơ cấu danh mục tự doanh theo 5 nhóm tài sản (giá trị hợp lý) và danh mục cổ phiếu niêm yết cụ thể "
+            "đang nắm giữ, trích trực tiếp từ thuyết minh BCTC hợp nhất (KHÔNG ước tính) — xem chi tiết số liệu "
+            "giá gốc/giá trị hợp lý/lãi/lỗ đánh giá lại theo từng kỳ tại sheet 16_FVTPL_Composition trong Excel Model.",
+            style_body))
+        if os.path.exists(chart_paths.get("fvtpl_composition", "")):
+            story.append(Image(chart_paths["fvtpl_composition"], width=160*mm, height=80*mm))
+        story.append(Spacer(1, 3*mm))
+        if os.path.exists(chart_paths.get("fvtpl_holdings", "")):
+            story.append(Image(chart_paths["fvtpl_holdings"], width=160*mm, height=80*mm))
+        story.append(PageBreak())
+
     # ── Trang 6: Bảng tài chính tóm tắt ──
     story.append(Paragraph("BẢNG TÀI CHÍNH TÓM TẮT", style_h2))
     all_years = years_hist + years_fc
@@ -3017,7 +3303,7 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
                        bear_target, bull_target, pb_target, pe_target, pe_median, pb_median, coe,
                        seg_hist, seg_fc, seg_pct_fc0, concentration_seg, concentration_flag,
                        is_q=None, bs_q=None, latest_margin_leverage=0.0, latest_leverage_label="",
-                       weights=None, quarterly_update=None, macro_liquidity=None,
+                       weights=None, quarterly_update=None, macro_liquidity=None, beta_rf_cache=None,
                        pb_lower_median=None, pb_upper_median=None, weighted_lower_target=None, weighted_upper_target=None):
     out_dir = os.path.join(PROJECT_ROOT, "data")
     os.makedirs(out_dir, exist_ok=True)
@@ -3110,7 +3396,7 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
         "shares": shares,
         "gdriveExcelUrl": None,
         "gdrivePdfUrl": None,
-        "betaRfCache": BETA_RF_CACHE_ENTRY,
+        "betaRfCache": beta_rf_cache,
         "data": {
             "years": all_years,
             "revenue": [round(v, 1) for v in rev_hist + rev_fc],
