@@ -1433,6 +1433,213 @@ def build_charts_nhietdien(out_dir, ticker, hist_years, is_recs_y, bs_recs_y, cf
     return charts
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# PDF REPORT BUILDER (reportlab) — cấu trúc mirror template_kcn.py::build_pdf_kcn
+# ══════════════════════════════════════════════════════════════════════════
+def build_pdf_nhietdien(pdf_path, ticker, company_name, current_price, shares, hist_years,
+                         is_recs_y, bs_recs_y, val, peer_result, fuel_prices, charts):
+    """Tạo báo cáo PDF đầy đủ cho cổ phiếu nhiệt điện."""
+    doc = SimpleDocTemplate(
+        pdf_path, pagesize=A4,
+        rightMargin=15 * mm, leftMargin=15 * mm,
+        topMargin=15 * mm, bottomMargin=15 * mm,
+    )
+    styles = getSampleStyleSheet()
+    title_st = ParagraphStyle("ND_Title", parent=styles["Heading1"], fontName=FONT_BOLD,
+                               fontSize=18, leading=22, textColor=HexColor("#1F4E78"), spaceAfter=12)
+    h1_st = ParagraphStyle("ND_H1", parent=styles["Heading2"], fontName=FONT_BOLD,
+                            fontSize=13, leading=17, textColor=HexColor("#2E75B6"), spaceBefore=14, spaceAfter=7)
+    h2_st = ParagraphStyle("ND_H2", parent=styles["Heading3"], fontName=FONT_BOLD,
+                            fontSize=11, leading=15, textColor=HexColor("#404040"), spaceBefore=8, spaceAfter=4)
+    body_st = ParagraphStyle("ND_Body", parent=styles["Normal"], fontName=FONT_REG,
+                              fontSize=10, leading=14, textColor=HexColor("#2D3748"), spaceAfter=6)
+    italic_st = ParagraphStyle("ND_Italic", parent=styles["Normal"], fontName=FONT_REG,
+                                fontSize=9, leading=12, textColor=HexColor("#718096"), italic=True)
+
+    BLUE_DARK = HexColor("#1F4E78")
+    LIGHT_BLUE = HexColor("#DDEBF7")
+
+    def tbl_style(header_col=BLUE_DARK, alt_col=LIGHT_BLUE, font_size=9):
+        return TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), header_col),
+            ("TEXTCOLOR", (0, 0), (-1, 0), white),
+            ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+            ("FONTSIZE", (0, 0), (-1, -1), font_size),
+            ("FONTNAME", (0, 1), (-1, -1), FONT_REG),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [white, alt_col]),
+            ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
+            ("ALIGN", (0, 0), (0, -1), "LEFT"),
+            ("GRID", (0, 0), (-1, -1), 0.4, HexColor("#CBD5E1")),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ])
+
+    story = []
+
+    # ── Trang bìa ──────────────────────────────────────────────────
+    story.append(Paragraph(f"PHÂN TÍCH & ĐỊNH GIÁ CỔ PHIẾU: {ticker}", title_st))
+    story.append(Paragraph(
+        f"<b>{company_name}</b> | Ngành: Nhiệt điện (Thermal Power Generation) | "
+        f"Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y')}", body_st))
+    story.append(Spacer(1, 8))
+
+    upside_pct = f"{val['upside']*100:+.1f}%"
+    summary_data = [
+        ["Mã CP", "Giá TT (VND)", "Vốn hóa (tỷ)", "Fair Value (VND)", "Upside/Down"],
+        [ticker, f"{current_price:,.0f}", f"{shares*current_price/1e9:,.1f}",
+         f"{val['fair_blend']:,.0f}", upside_pct],
+    ]
+    t_sum = Table(summary_data, colWidths=[22*mm, 32*mm, 32*mm, 38*mm, 32*mm])
+    t_sum.setStyle(tbl_style())
+    story.append(t_sum)
+    story.append(Spacer(1, 12))
+
+    # ── 1. Mô hình kinh doanh ──────────────────────────────────────
+    story.append(Paragraph("1. Mô hình kinh doanh", h1_st))
+    story.append(Paragraph(
+        f"{company_name} ({ticker}) hoạt động trong ngành nhiệt điện — vận hành nhà máy phát điện "
+        f"từ than/khí đốt, bán điện chủ yếu cho EVN theo hợp đồng mua bán điện (PPA). Doanh thu phụ "
+        f"thuộc vào sản lượng điện phát ra, giá bán điện bình quân, và chi phí nhiên liệu đầu vào "
+        f"(than/khí/dầu). Xem \"Hướng dẫn Định giá Doanh nghiệp Nhóm Nhiệt điện Việt Nam\" để biết "
+        f"chi tiết phương pháp luận.", body_st))
+
+    # ── 2. Kết quả tài chính lịch sử ─────────────────────────────
+    story.append(Paragraph("2. Kết quả tài chính lịch sử", h1_st))
+    revenue_h = [_get_yr(is_recs_y, y, IS_GEN["revenue"]) for y in hist_years]
+    gp_h = [_get_yr(is_recs_y, y, IS_GEN["gross_profit"]) for y in hist_years]
+    sga_h = [_get_yr(is_recs_y, y, IS_GEN["sga_sales"]) + _get_yr(is_recs_y, y, IS_GEN["sga_admin"]) for y in hist_years]
+    ebit_h = [gp_h[i] + sga_h[i] for i in range(len(hist_years))]
+    npat_h = [_get_yr(is_recs_y, y, IS_GEN["npat_parent"]) for y in hist_years]
+    pnl_header = ["Chỉ tiêu (tỷ VND)"] + [str(y) for y in hist_years]
+    pnl_rows = [
+        ["Doanh thu thuần"] + [f"{v:,.0f}" for v in revenue_h],
+        ["Lợi nhuận gộp"] + [f"{v:,.0f}" for v in gp_h],
+        ["Biên LNG (%)"] + [f"{gp_h[i]/revenue_h[i]*100:.1f}%" if revenue_h[i] else "—" for i in range(len(hist_years))],
+        ["EBIT"] + [f"{v:,.0f}" for v in ebit_h],
+        ["LNST cổ đông mẹ"] + [f"{v:,.0f}" for v in npat_h],
+        ["Biên LNST (%)"] + [f"{npat_h[i]/revenue_h[i]*100:.1f}%" if revenue_h[i] else "—" for i in range(len(hist_years))],
+    ]
+    col_w_pnl = [38*mm] + [max(15*mm, 90*mm/len(hist_years))]*len(hist_years)
+    t_pnl = Table([pnl_header] + pnl_rows, colWidths=col_w_pnl)
+    t_pnl.setStyle(tbl_style())
+    story.append(t_pnl)
+    story.append(Spacer(1, 8))
+    if "revenue_gm" in charts:
+        story.append(Image(charts["revenue_gm"], width=145*mm, height=82*mm))
+        story.append(Spacer(1, 6))
+    if "npat_year" in charts:
+        story.append(Image(charts["npat_year"], width=145*mm, height=82*mm))
+        story.append(Spacer(1, 6))
+    if "npat_qtr" in charts:
+        story.append(Paragraph("LNST theo quý (12 quý gần nhất):", h2_st))
+        story.append(Image(charts["npat_qtr"], width=150*mm, height=75*mm))
+        story.append(Spacer(1, 6))
+    if "roe_pb" in charts:
+        story.append(Image(charts["roe_pb"], width=145*mm, height=82*mm))
+        story.append(Spacer(1, 10))
+
+    # ── 3. Peer comps (P/E, P/B, EV/EBITDA cả nhóm) ────────────────
+    story.append(Paragraph("3. So sánh tương quan nhóm Nhiệt điện", h1_st))
+    pm = peer_result["peer_median"]
+    story.append(Paragraph(
+        f"Target multiple dùng trong định giá lấy từ MEDIAN thực tế cả nhóm (POW/NT2/PPC/QTP), "
+        f"không tự đặt biên số: EV/EBITDA={pm['ev_ebitda']}x, P/B={pm['pb']}x, P/E={pm['pe']}x "
+        f"(tham chiếu).", body_st))
+    peer_header = ["Mã", "EV/EBITDA", "P/B", "P/E", "Giá (VND)", "Vốn hóa (tỷ)"]
+    peer_rows = []
+    for pt, pv in peer_result["per_ticker"].items():
+        mark = f"{pt} ★" if pt == ticker else pt
+        peer_rows.append([
+            mark,
+            f"{pv['ev_ebitda']:.2f}x" if pv['ev_ebitda'] else "—",
+            f"{pv['pb']:.2f}x" if pv['pb'] else "—",
+            f"{pv['pe']:.2f}x" if pv['pe'] else "—",
+            f"{pv['current_price']:,.0f}",
+            f"{pv['market_cap']:,.0f}",
+        ])
+    t_peer = Table([peer_header] + peer_rows, colWidths=[24*mm, 26*mm, 22*mm, 22*mm, 28*mm, 28*mm])
+    t_peer.setStyle(tbl_style())
+    story.append(t_peer)
+    story.append(Spacer(1, 8))
+    if "ev_ebitda" in charts:
+        story.append(Image(charts["ev_ebitda"], width=145*mm, height=82*mm))
+        story.append(Spacer(1, 10))
+
+    # ── 4. Định giá DCF + Blend ──────────────────────────────────
+    story.append(Paragraph("4. Định giá: DCF 50% + EV/EBITDA 20% + P/B 15% + Asset-based 15%", h1_st))
+    w = val["wacc"]
+    story.append(Paragraph(
+        f"WACC = {w['wacc']*100:.2f}% (COE={w['coe']*100:.2f}% từ CAPM Rf={val['rf']*100:.2f}%+"
+        f"β={val['beta']:.2f}×ERP={val['erp']*100:.1f}%; COD={w['cod']*100:.2f}%; tỷ trọng vốn CSH "
+        f"{w['w_e']*100:.1f}%/nợ vay {w['w_d']*100:.1f}%). FCFF chiết khấu 5 năm + Terminal Value = "
+        f"trung bình phương pháp Gordon-growth và Exit-multiple (EV/EBITDA mục tiêu) — xem sheet "
+        f"Excel \"02_WACC_DCF\" để biết công thức đầy đủ, có thể chỉnh giả định và tự tính lại.",
+        body_st))
+    val_header = ["Phương pháp", "Trọng số", "Fair Value (VND/cp)"]
+    val_rows = [
+        ["DCF (FCFF chiết khấu WACC)", "50%", f"{val['fair_dcf']:,.0f}"],
+        [f"EV/EBITDA (target {val['ev_ebitda']['target_ev_ebitda']}x)", "20%", f"{val['fair_ev_ebitda']:,.0f}"],
+        [f"P/B (target {val['target_pb']}x)", "15%", f"{val['fair_pb']:,.0f}"],
+        ["Asset-based (Book Value of Equity)", "15%", f"{val['fair_asset']:,.0f}"],
+        [f"P/E (target {val['target_pe']}x) — THAM CHIẾU, không trong blend", "—", f"{val['fair_pe']:,.0f}"],
+    ]
+    t_val = Table([val_header] + val_rows, colWidths=[75*mm, 25*mm, 45*mm])
+    t_val.setStyle(tbl_style())
+    story.append(t_val)
+    story.append(Spacer(1, 8))
+    if "fcf" in charts:
+        story.append(Image(charts["fcf"], width=145*mm, height=82*mm))
+        story.append(Spacer(1, 6))
+    if "valuation" in charts:
+        story.append(Image(charts["valuation"], width=145*mm, height=82*mm))
+        story.append(Spacer(1, 10))
+
+    # ── 5. Giá nhiên liệu & rủi ro ────────────────────────────────
+    story.append(Paragraph("5. Giá nhiên liệu đầu vào & Rủi ro", h1_st))
+    fuel_header = ["Chỉ tiêu", "Giá trị", "Đơn vị", "Nguồn"]
+    fuel_rows_pdf = [
+        ["Than nhiệt (Newcastle)", f"{fuel_prices['coal'][0]:,.1f}", "USD/tấn", fuel_prices['coal'][1]],
+        ["Khí tự nhiên (Henry Hub)", f"{fuel_prices['gas'][0]:,.2f}", "USD/MMBtu", fuel_prices['gas'][1]],
+        ["Dầu thô (Brent)", f"{fuel_prices['oil'][0]:,.1f}", "USD/thùng", fuel_prices['oil'][1]],
+        ["Tỷ giá USD/VND", f"{fuel_prices['usdvnd'][0]:,.0f}", "VND/USD", fuel_prices['usdvnd'][1]],
+    ]
+    t_fuel = Table([fuel_header] + fuel_rows_pdf, colWidths=[45*mm, 30*mm, 30*mm, 45*mm])
+    t_fuel.setStyle(tbl_style())
+    story.append(t_fuel)
+    story.append(Spacer(1, 6))
+    if "fuel_prices" in charts:
+        story.append(Image(charts["fuel_prices"], width=120*mm, height=68*mm))
+        story.append(Spacer(1, 8))
+
+    story.append(Paragraph("Các nhóm rủi ro chính (theo Hướng dẫn Định giá Nhóm Nhiệt điện):", h2_st))
+    risk_items = [
+        "<b>Chính sách năng lượng:</b> Việt Nam ưu tiên phát triển năng lượng tái tạo (điện mặt trời, "
+        "gió) có thể giảm hệ số tải nhiệt điện; các quy định môi trường (CO2, NOx, SO2) có thể tăng "
+        "chi phí vận hành.",
+        "<b>Giá nhiên liệu:</b> Than/khí/dầu biến động lớn theo thị trường quốc tế — giá than tăng "
+        "~20% có thể làm LNST giảm ước 30-40% (độ nhạy cao nhất trong các biến số).",
+        "<b>Hệ số tải:</b> Phụ thuộc điều độ của EVN và nhu cầu điện — nhu cầu giảm hoặc ưu tiên năng "
+        "lượng tái tạo sẽ giảm sản lượng phát, giảm doanh thu.",
+        "<b>Kỹ thuật:</b> Nhà máy cũ (như PPC) có chi phí vận hành cao hơn, hiệu suất thấp hơn; bảo "
+        "trì lớn định kỳ có thể yêu cầu dừng máy, giảm sản lượng tạm thời.",
+        "<b>Tài chính:</b> Nợ vay cao (đặc biệt các dự án đang xây dựng như NT3/NT4 của POW) làm tăng "
+        "rủi ro lãi suất; cấu trúc vốn ảnh hưởng trực tiếp tới WACC và định giá.",
+    ]
+    for item in risk_items:
+        story.append(Paragraph(f"• {item}", body_st))
+    story.append(Spacer(1, 8))
+
+    story.append(Paragraph(
+        "⚠ Giai đoạn 1: định giá dựa trên BCTC chuẩn (Vietcap) + giá nhiên liệu quốc tế — CHƯA tích "
+        "hợp trực tiếp sản lượng điện (MWh)/hệ số tải (%)/giá bán bình quân theo IR từng công ty/EVN "
+        "(sẽ bổ sung ở giai đoạn 2). Dự phóng FCFF dùng tăng trưởng CAGR lịch sử + biên EBIT bình "
+        "quân — với POW đang đầu tư thêm NT3/NT4 (tăng công suất đáng kể), fair value DCF có thể "
+        "CHƯA phản ánh đủ tiềm năng tăng trưởng sản lượng từ dự án mới.", italic_st))
+
+    doc.build(story)
+    return pdf_path
+
+
 if __name__ == "__main__":
     # Smoke-test Bước 1+2 của kế hoạch: fetch BCTC + Rf/Beta thật, in số liệu thô +
     # kết quả định giá WACC/DCF/blend để đối chiếu với ví dụ tính tay trong tài liệu
