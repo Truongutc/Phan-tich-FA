@@ -16,6 +16,9 @@ let chartMarginLeverage = null;
 let chartMarketShare = null;
 let chartPE = null;
 let chartPB = null;
+let chartFvtplComp = null;
+let chartFvtplGainLoss = null;
+let chartFvtplHoldings = null;
 
 if (typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
 
@@ -209,6 +212,7 @@ async function loadStockDashboard(ticker) {
     renderCommentary(localJson.comments);
     renderSegmentPctGrid(localJson);
     loadPeerBenchmark(ticker);
+    loadFvtplHoldings(ticker);
 
     // Charts
     renderSegmentRevenueChart(localJson);
@@ -224,9 +228,11 @@ async function loadStockDashboard(ticker) {
 
 function destroyCharts() {
     [chartSegmentRevenue, chartSegmentMix, chartRevNpat, chartQuarterlyNpatRoe,
-     chartRoePbCorrelation, chartMarginLeverage, chartMarketShare, chartPE, chartPB].forEach(c => { if (c) c.destroy(); });
+     chartRoePbCorrelation, chartMarginLeverage, chartMarketShare, chartPE, chartPB,
+     chartFvtplComp, chartFvtplGainLoss, chartFvtplHoldings].forEach(c => { if (c) c.destroy(); });
     chartSegmentRevenue = chartSegmentMix = chartRevNpat = chartQuarterlyNpatRoe =
-    chartRoePbCorrelation = chartMarginLeverage = chartMarketShare = chartPE = chartPB = null;
+    chartRoePbCorrelation = chartMarginLeverage = chartMarketShare = chartPE = chartPB =
+    chartFvtplComp = chartFvtplGainLoss = chartFvtplHoldings = null;
 }
 
 function calcMedian(arr) {
@@ -562,6 +568,189 @@ async function loadPeerBenchmark(ticker) {
         console.warn('Peer benchmark load error:', e);
         tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#ef4444">Không thể tải dữ liệu so sánh CTCK cùng ngành.</td></tr>';
     }
+}
+
+// ═══════════════════════════════════════════════════════════
+// FVTPL/AFS — Cơ cấu danh mục Tự doanh theo nhóm tài sản (data/fvtpl_holdings/<TICKER>.json)
+// Chỉ hiện khi có file dữ liệu cho ticker đang xem — hoàn toàn tách biệt khỏi data/<TICKER>.json
+// (giống pattern peer_benchmark_securities.json / market_share_history.json).
+// ═══════════════════════════════════════════════════════════
+const FVTPL_HOLDING_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#eab308', '#f97316', '#64748b', '#84cc16'];
+
+function _fvtplPeriodSort(a, b) {
+    const ay = parseInt(a.slice(0, 4), 10), by = parseInt(b.slice(0, 4), 10);
+    const aq = a.includes('Q') ? parseInt(a.split('Q')[1], 10) : 0;
+    const bq = b.includes('Q') ? parseInt(b.split('Q')[1], 10) : 0;
+    return ay - by || aq - bq;
+}
+
+function _fvtplMergedPeriods(pool) {
+    // pool: {yearly:{...}, quarterly:{...}} -> danh sách nhãn kỳ theo thời gian, nhãn năm có hậu tố (N).
+    // Năm nào đã có đủ Q4 (= cùng thời điểm 31/12) trong quarterly thì bỏ điểm yearly trùng đó để
+    // tránh hiển thị 2 lần cùng 1 mốc thời gian (yearly chỉ dùng cho năm KHÔNG có dữ liệu quý).
+    const qYears = new Set(Object.keys(pool.quarterly || {}).map(q => q.slice(0, 4)));
+    const years = Object.keys(pool.yearly || {})
+        .filter(y => !qYears.has(y) || !(pool.quarterly || {})[`${y}Q4`])
+        .map(y => ({ key: y, label: `${y}(N)` }));
+    const quarters = Object.keys(pool.quarterly || {}).map(q => ({ key: q, label: q }));
+    return [...years, ...quarters].sort((a, b) => _fvtplPeriodSort(a.key, b.key));
+}
+
+function _fvtplValueAt(pool, periodKey, isYearly, seg) {
+    const bucket = isYearly ? (pool.yearly || {})[periodKey] : (pool.quarterly || {})[periodKey];
+    return bucket ? (bucket[seg] || null) : null;
+}
+
+async function loadFvtplHoldings(ticker) {
+    const section = document.getElementById('fvtpl-holdings-section');
+    if (!section) return;
+    try {
+        const resp = await fetch(`data/fvtpl_holdings/${ticker}.json`);
+        if (!resp.ok) { section.style.display = 'none'; return; }
+        const data = await resp.json();
+        section.style.display = '';
+        renderFvtplCompositionChart(data);
+        renderFvtplGainLossChart(data);
+        renderFvtplHoldingsChart(data);
+    } catch (e) {
+        console.warn('FVTPL holdings load error:', e);
+        section.style.display = 'none';
+    }
+}
+
+function renderFvtplCompositionChart(data) {
+    const cats = Object.entries(data.categories || {}).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
+    const periods = _fvtplMergedPeriods(data.fvtpl || {});
+    if (!cats.length || !periods.length) return;
+
+    const datasets = cats.map(([key, meta]) => ({
+        label: meta.label,
+        backgroundColor: meta.color,
+        data: periods.map(p => {
+            const v = _fvtplValueAt(data.fvtpl, p.key, p.label.includes('(N)'), key);
+            return v ? Math.round(v.fairValue / 1e9 * 100) / 100 : 0; // tỷ VND
+        }),
+        stack: 'fvtpl',
+    }));
+
+    chartFvtplComp = new Chart(document.getElementById('fvtplCompositionChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: periods.map(p => p.label), datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Giá trị hợp lý (tỷ VND)', color: '#8892a4' } },
+            },
+        },
+    });
+
+    const latest = periods[periods.length - 1];
+    const latestVals = cats.map(([key, meta]) => {
+        const v = _fvtplValueAt(data.fvtpl, latest.key, latest.label.includes('(N)'), key);
+        return { label: meta.label, fv: v ? v.fairValue : 0 };
+    }).filter(x => x.fv > 0).sort((a, b) => b.fv - a.fv);
+    const total = latestVals.reduce((s, x) => s + x.fv, 0);
+    const top = latestVals[0];
+    document.getElementById('analysis-text-fvtpl-comp').textContent = top
+        ? `Tại ${latest.label}: danh mục tự doanh (FVTPL) đạt ${formatNumber(total / 1e9, 1)} tỷ VND, tập trung nhiều nhất ở "${top.label}" (${(top.fv / total * 100).toFixed(1)}% danh mục).`
+        : 'Chưa đủ dữ liệu cơ cấu tự doanh.';
+}
+
+function renderFvtplGainLossChart(data) {
+    const cats = Object.entries(data.categories || {}).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
+    const periods = _fvtplMergedPeriods(data.fvtpl || {});
+    if (!cats.length || !periods.length) return;
+
+    const gainDatasets = cats.map(([key, meta]) => ({
+        label: meta.label + ' — Lãi',
+        backgroundColor: meta.color,
+        data: periods.map(p => {
+            const v = _fvtplValueAt(data.fvtpl, p.key, p.label.includes('(N)'), key);
+            return v ? Math.round((v.gain || 0) / 1e9 * 100) / 100 : 0;
+        }),
+        stack: 'gainloss',
+    }));
+    const lossDatasets = cats.map(([key, meta]) => ({
+        label: meta.label + ' — Lỗ',
+        backgroundColor: meta.color + '80',
+        data: periods.map(p => {
+            const v = _fvtplValueAt(data.fvtpl, p.key, p.label.includes('(N)'), key);
+            return v ? Math.round((v.loss || 0) / 1e9 * 100) / 100 : 0;
+        }),
+        stack: 'gainloss',
+    }));
+
+    chartFvtplGainLoss = new Chart(document.getElementById('fvtplGainLossChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: periods.map(p => p.label), datasets: [...gainDatasets, ...lossDatasets] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Chênh lệch đánh giá lại (tỷ VND)', color: '#8892a4' } },
+            },
+        },
+    });
+
+    const latest = periods[periods.length - 1];
+    const isY = latest.label.includes('(N)');
+    const rows = cats.map(([key, meta]) => {
+        const v = _fvtplValueAt(data.fvtpl, latest.key, isY, key);
+        return { label: meta.label, gain: v ? (v.gain || 0) : 0, loss: v ? (v.loss || 0) : 0 };
+    });
+    const topGain = rows.slice().sort((a, b) => b.gain - a.gain)[0];
+    const topLoss = rows.slice().sort((a, b) => a.loss - b.loss)[0];
+    let txt = `Tại ${latest.label}: `;
+    txt += topGain && topGain.gain > 0 ? `lãi đánh giá lại chủ yếu từ "${topGain.label}" (+${formatNumber(topGain.gain / 1e9, 1)} tỷ VND).` : 'không ghi nhận lãi đánh giá lại đáng kể.';
+    if (topLoss && topLoss.loss < 0) txt += ` Lỗ đánh giá lại chủ yếu từ "${topLoss.label}" (${formatNumber(topLoss.loss / 1e9, 1)} tỷ VND).`;
+    document.getElementById('analysis-text-fvtpl-gainloss').textContent = txt;
+}
+
+function renderFvtplHoldingsChart(data) {
+    const holdings = data.holdings || {};
+    const periods = _fvtplMergedPeriods(holdings);
+    if (!periods.length) return;
+
+    // Gộp danh sách mã cổ phiếu xuất hiện ở bất kỳ kỳ nào (trừ 'Khac', đẩy xuống cuối)
+    const tickerSet = new Set();
+    periods.forEach(p => {
+        const bucket = (p.label.includes('(N)') ? holdings.yearly : holdings.quarterly)[p.key] || {};
+        Object.keys(bucket).forEach(t => { if (t !== 'Khac') tickerSet.add(t); });
+    });
+    const tickers = [...tickerSet];
+    if (holdings.yearly || holdings.quarterly) tickers.push('Khac');
+
+    const datasets = tickers.map((t, i) => ({
+        label: t,
+        backgroundColor: FVTPL_HOLDING_COLORS[i % FVTPL_HOLDING_COLORS.length],
+        data: periods.map(p => {
+            const bucket = (p.label.includes('(N)') ? holdings.yearly : holdings.quarterly)[p.key] || {};
+            const v = bucket[t];
+            return v ? Math.round(v / 1e9 * 100) / 100 : 0;
+        }),
+        stack: 'holdings',
+    }));
+
+    chartFvtplHoldings = new Chart(document.getElementById('fvtplHoldingsChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: periods.map(p => p.label), datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Giá trị hợp lý (tỷ VND)', color: '#8892a4' } },
+            },
+        },
+    });
+
+    const latest = periods[periods.length - 1];
+    const bucket = (latest.label.includes('(N)') ? holdings.yearly : holdings.quarterly)[latest.key] || {};
+    const sorted = Object.entries(bucket).filter(([t]) => t !== 'Khac').sort((a, b) => b[1] - a[1]);
+    document.getElementById('analysis-text-fvtpl-holdings').textContent = sorted.length
+        ? `Tại ${latest.label}, cổ phiếu niêm yết được nắm giữ lớn nhất trong danh mục tự doanh: ${sorted.slice(0, 3).map(([t, v]) => `${t} (${formatNumber(v / 1e9, 1)} tỷ)`).join(', ')}.`
+        : 'Chưa có dữ liệu danh mục cổ phiếu cụ thể.';
 }
 
 // ═══════════════════════════════════════════════════════════

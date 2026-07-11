@@ -318,6 +318,51 @@
                     </div>
                 </div>
 
+                <!-- FVTPL/AFS: chỉ hiện khi có data/fvtpl_holdings/<TICKER>.json -->
+                <div id="fvtpl-holdings-section" style="display:none">
+                    <!-- Chart: Cơ cấu danh mục Tự doanh FVTPL/AFS theo 5 nhóm tài sản -->
+                    <div class="chart-card-split margin-top-20">
+                        <div class="chart-split-left">
+                            <h3>Cơ cấu Danh mục Tự doanh FVTPL/AFS (Giá trị hợp lý, theo Quý &amp; Năm)</h3>
+                            <div class="chart-container">
+                                <canvas id="fvtplCompositionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-split-right">
+                            <h4>🧾 Kết cấu Tự doanh</h4>
+                            <div id="analysis-text-fvtpl-comp" class="chart-analysis-text"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chart: Lãi/Lỗ đánh giá lại theo nhóm tài sản -->
+                    <div class="chart-card-split margin-top-20">
+                        <div class="chart-split-left">
+                            <h3>Lãi/Lỗ Đánh giá lại Tự doanh theo Nhóm Tài sản</h3>
+                            <div class="chart-container">
+                                <canvas id="fvtplGainLossChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-split-right">
+                            <h4>⚖️ Nguồn Lãi/Lỗ Tự doanh</h4>
+                            <div id="analysis-text-fvtpl-gainloss" class="chart-analysis-text"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chart: Danh mục cổ phiếu niêm yết cụ thể đang nắm giữ -->
+                    <div class="chart-card-split margin-top-20">
+                        <div class="chart-split-left">
+                            <h3>Danh mục Cổ phiếu Niêm yết Đang Nắm giữ (Tự doanh)</h3>
+                            <div class="chart-container">
+                                <canvas id="fvtplHoldingsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-split-right">
+                            <h4>📌 Cổ phiếu Nắm giữ Lớn nhất</h4>
+                            <div id="analysis-text-fvtpl-holdings" class="chart-analysis-text"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- RIGHT: Moat + Valuation -->

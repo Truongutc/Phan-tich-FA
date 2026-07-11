@@ -1,0 +1,202 @@
+{
+  "ticker": "HCM",
+  "companyName": "CTCP Chứng khoán TP.HCM",
+  "unit": "vnd",
+  "lastUpdated": "2026-07-11",
+  "categories": {
+    "CoPhieuNiemYet":     {"label": "Cổ phiếu niêm yết/UPCoM", "order": 1, "color": "#3b82f6"},
+    "CoPhieuChuaNiemYet": {"label": "Cổ phiếu chưa niêm yết",  "order": 2, "color": "#8b5cf6"},
+    "TraiPhieu":          {"label": "Trái phiếu",              "order": 3, "color": "#f59e0b"},
+    "ChungChiQuy":        {"label": "Chứng chỉ quỹ (ETF+Quỹ mở)", "order": 4, "color": "#10b981"},
+    "ChungChiTienGui":    {"label": "Chứng chỉ tiền gửi",      "order": 5, "color": "#64748b"}
+  },
+  "fvtpl": {
+    "yearly": {
+      "2022": {
+        "CoPhieuNiemYet":     {"cost": 193404214494, "fairValue": 191095647425, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán HCM, TM 3.2 (cột đối chiếu 31/12/2022; báo cáo không công bố gain/loss cho kỳ này, chỉ giá gốc/giá trị hợp lý)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1201000000000, "fairValue": 1216336958904, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán HCM, TM 3.2 (cột đối chiếu 31/12/2022)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 16964865864, "fairValue": 17063099500, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán HCM, TM 3.2 (cột đối chiếu 31/12/2022, chỉ ETF)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2023": {
+        "CoPhieuNiemYet":     {"cost": 863247297095, "fairValue": 864216167443, "gain": 13038070057, "loss": -12069199709,
+                                "source": "BCTC hợp nhất Q1&Q3/2024 HCM, TM 3.2 (cột đối chiếu 31/12/2023, gộp cổ phiếu niêm yết/UPCoM + TS phòng ngừa rủi ro chứng quyền)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1200000000000, "fairValue": 1213045479452, "gain": 13045479452, "loss": 0,
+                                "source": "BCTC hợp nhất Q1&Q3/2024 HCM, TM 3.2 (cột đối chiếu 31/12/2023)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 141577212688, "fairValue": 144891468700, "gain": 3314256012, "loss": 0,
+                                "source": "BCTC hợp nhất Q1&Q3/2024 HCM, TM 3.2 (cột đối chiếu 31/12/2023, chỉ ETF)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024": {
+        "CoPhieuNiemYet":     {"cost": 2512587201426, "fairValue": 2536662043589, "gain": 39941253149, "loss": -15866410986,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 (cột đối chiếu 31/12/2024, gộp cổ phiếu niêm yết/UPCoM + TS phòng ngừa rủi ro chứng quyền)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 5000000000000, "fairValue": 5144629178082, "gain": 144629178082, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 94979702077, "fairValue": 96751534800, "gain": 1771832723, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 (cột đối chiếu 31/12/2024, chỉ ETF)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 153182450000, "fairValue": 153396257407, "gain": 213807407, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025": {
+        "CoPhieuNiemYet":     {"cost": 4449375192183, "fairValue": 4496000873894, "gain": 92976485299, "loss": -46350803588,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2 (cột đối chiếu 31/12/2025, gộp cổ phiếu niêm yết/UPCoM + TS phòng ngừa rủi ro chứng quyền)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 6999999900000, "fairValue": 7169299761805, "gain": 169299861805, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2 (cột đối chiếu 31/12/2025)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 36971574013, "fairValue": 39772970040, "gain": 2801396027, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2 (cột đối chiếu 31/12/2025)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 2000000000000, "fairValue": 2061046575340, "gain": 61046575340, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2 (cột đối chiếu 31/12/2025)", "sourceType": "bctc_pdf", "derived": false}
+      }
+    },
+    "quarterly": {
+      "2024Q1": {
+        "CoPhieuNiemYet":     {"cost": 897514449017, "fairValue": 910899663455, "gain": 20829988319, "loss": -7444773881,
+                                "source": "BCTC hợp nhất Q1/2024 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1200000000000, "fairValue": 1231594520548, "gain": 31594520548, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2024 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 129423446266, "fairValue": 131180119200, "gain": 1756672934, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2024 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q2": {
+        "CoPhieuNiemYet":     {"cost": 1209829432288, "fairValue": 1191601195673, "gain": 1679821336, "loss": -19908057951,
+                                "source": "BCTC hợp nhất Q2/2024 (soát xét) HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 4200000000000, "fairValue": 4261030493150, "gain": 61030493150, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2024 (soát xét) HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 454141324824, "fairValue": 453277942596, "gain": 696997801, "loss": -1560380029,
+                                "source": "BCTC hợp nhất Q2/2024 (soát xét) HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q3": {
+        "CoPhieuNiemYet":     {"cost": 2272439574066, "fairValue": 2305909958216, "gain": 42837688268, "loss": -9367304118,
+                                "source": "BCTC hợp nhất Q3/2024 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 6200000000000, "fairValue": 6335518493150, "gain": 135518493150, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2024 HCM, TM 3.2 (gộp trái phiếu niêm yết + chưa niêm yết)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 58055766533, "fairValue": 60035885600, "gain": 1980119067, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2024 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q4": {
+        "CoPhieuNiemYet":     {"cost": 2512587201426, "fairValue": 2536662043589, "gain": 39941253149, "loss": -15866410986,
+                                "source": "= BCTC năm 2024 kiểm toán (31/12/2024), trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 5000000000000, "fairValue": 5144629178082, "gain": 144629178082, "loss": 0,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 94979702077, "fairValue": 96751534800, "gain": 1771832723, "loss": 0,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 153182450000, "fairValue": 153396257407, "gain": 213807407, "loss": 0,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q1": {
+        "CoPhieuNiemYet":     {"cost": 2154291013172, "fairValue": 2142527579734, "gain": 1248438925, "loss": -13011872363,
+                                "source": "BCTC hợp nhất Q1/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 5000000000000, "fairValue": 5217849726028, "gain": 217849726028, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 35656164809, "fairValue": 36530833609, "gain": 1162392711, "loss": -287723911,
+                                "source": "BCTC hợp nhất Q1/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q2": {
+        "CoPhieuNiemYet":     {"cost": 3802461608772, "fairValue": 3851051710436, "gain": 48855617248,  "loss": -265515584,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 (gộp cổ phiếu niêm yết/UPCoM + TS phòng ngừa rủi ro chứng quyền)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 — không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 6994200000000, "fairValue": 7130887111452, "gain": 136687111452, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 72981112398, "fairValue": 77256059900, "gain": 4274947502, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2 (gộp Chứng chỉ Quỹ ETF + Quỹ mở)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 2000000000000, "fairValue": 2008619178082, "gain": 8619178082, "loss": 0,
+                                "source": "BCTC hợp nhất Q2/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q3": {
+        "CoPhieuNiemYet":     {"cost": 6843597704115, "fairValue": 6840017130898, "gain": 58042705167, "loss": -61623278384,
+                                "source": "BCTC hợp nhất Q3/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 6946600000000, "fairValue": 7068375780821, "gain": 121775780821, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 94019017390, "fairValue": 100933310320, "gain": 7152193797, "loss": -237900867,
+                                "source": "BCTC hợp nhất Q3/2025 HCM, TM 3.2 (gộp ETF + Quỹ mở)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 2000000000000, "fairValue": 2034832876712, "gain": 34832876712, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2025 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q4": {
+        "CoPhieuNiemYet":     {"cost": 4449375192183, "fairValue": 4496000873894, "gain": 92976485299, "loss": -46350803588,
+                                "source": "= BCTC năm 2025 kiểm toán (31/12/2025), trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 6999999900000, "fairValue": 7169299761805, "gain": 169299861805, "loss": 0,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 36971574013, "fairValue": 39772970040, "gain": 2801396027, "loss": 0,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 2000000000000, "fairValue": 2061046575340, "gain": 61046575340, "loss": 0,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2026Q1": {
+        "CoPhieuNiemYet":     {"cost": 334157488203, "fairValue": 329903649902, "gain": 564089459, "loss": -4817927760,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 6999942500000, "fairValue": 7273053458292, "gain": 273110958292, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 414098755064, "fairValue": 419609820570, "gain": 5831821381, "loss": -320755875,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 2000000000000, "fairValue": 2086690410956, "gain": 86690410956, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 HCM, TM 3.2", "sourceType": "bctc_pdf", "derived": false}
+      }
+    }
+  },
+  "afs": {
+    "quarterly": {},
+    "yearly": {},
+    "notes": ["HCM không phát sinh danh mục AFS trong các kỳ đã trích (Vietcap nos496 cũng xác nhận = 0). Cấu trúc để trống, dùng chung schema 5 nhóm khi CTCK khác có AFS."]
+  },
+  "holdings": {
+    "note": "Danh mục cổ phiếu niêm yết cụ thể trong nhóm CoPhieuNiemYet (giá trị hợp lý, VND) — KHÔNG gồm 'Tài sản cơ sở phòng ngừa rủi ro chứng quyền' (số liệu riêng, không lưu ở đây để tránh trùng đếm với biểu đồ cơ cấu). 'Khac' = phần dư gộp các mã nhỏ/không nêu tên. Danh sách mã thay đổi qua các kỳ vì HCM đổi danh mục nắm giữ — biểu đồ tự gộp union các mã đã từng xuất hiện.",
+    "yearly": {
+      "2022": {"FPT": 21869343400, "MWG": 15037136400, "TCB": 12342341000, "VPB": 10967884900, "ACB": 9639832500, "Khac": 98948526425},
+      "2023": {"VNM": 48767924400, "MBB": 47172004500, "FPT": 45775697400, "VPB": 42033235200, "POW": 32055412500,
+                "ACB": 34934056400, "TCB": 34539888000, "HPG": 30206179900, "MWG": 25749164800, "STB": 22950304000, "Khac": 236835155093},
+      "2024": {"FPT": 691428747500, "STB": 437546178000, "TCB": 85158848000, "HPG": 50207640600, "VPB": 48181075200,
+                "MWG": 33768990000, "VHM": 38785400000, "NT2": 18653880000, "VNM": 16272053800, "PVT": 2679698000, "Khac": 831964425289},
+      "2025": {"TCB": 895659640000, "HPG": 566824368000, "MWG": 539903000000, "VPB": 573025785000, "ACB": 449504040000,
+                "STB": 441008800000, "Khac": 476104878294}
+    },
+    "quarterly": {
+      "2024Q2": {"FPT": 88930269000, "TCB": 76345627000, "VPB": 55624203150, "ACB": 53713672600, "MBB": 41695729200,
+                  "STB": 41639616000, "HPG": 39502951200, "MWG": 31174416000, "HDB": 26764985000, "SSI": 26416868450, "Khac": 352805394973},
+      "2024Q3": {"ACB": 227433630500, "TCB": 174768044000, "STB": 166497207000, "FPT": 115301335500, "VPB": 87304973100,
+                  "MBB": 75182497300, "HDB": 59953059000, "HPG": 57526371400, "BMP": 52480500000, "Khac": 782614326516},
+      "2025Q1": {"GEX": 54700950000, "PVT": 51984900000, "VPB": 43162300000, "VNM": 37572000000, "VHC": 26318750000,
+                  "TCH": 24028200000, "NT2": 21366450000, "TCB": 17355200000, "STB": 17120100000, "HPG": 16202475000,
+                  "MWG": 13516900000, "VHM": 8361900000, "FPT": 2395800000, "Khac": 1791136023734},
+      "2025Q2": {"TCB": 1219893480262, "FPT": 891074340000, "MWG": 386469650000, "STB": 376355300000,
+                 "HPG": 258976128000, "MBB": 157063692000, "VIB": 80896980000, "VPB": 66592600000,
+                 "GMD": 35567970000, "SSI": 32722560000, "Khac": 76413469636},
+      "2025Q3": {"VPB": 560848070000, "VNM": 480378000000, "CTG": 457708000000, "BID": 440096000000, "MWG": 388709790000,
+                  "VIC": 386822700000, "MSN": 324615600000, "LPB": 267807870000, "HPG": 283223343000, "ACB": 257177445000, "Khac": 2501385208798},
+      "2026Q1": {"HPG": 1418168000, "ACB": 716744000, "STB": 796160000, "MWG": 760740000, "TCB": 227180000, "VPB": 104152000, "Khac": 14162522052}
+    }
+  },
+  "hedgingHoldings": {
+    "note": "Tài sản cơ sở cho hoạt động phòng ngừa rủi ro chứng quyền (đã gộp vào tổng CoPhieuNiemYet ở trên, tách riêng để theo dõi cơ cấu chứng quyền — không phải cổ phiếu tự doanh thuần túy).",
+    "yearly": {
+      "2022": {"STB": 3049875000, "FPT": 2373903000, "VPB": 9687336800, "TCB": 1064503000, "Khac": 2773494000},
+      "2024": {"MWG": 75267900000, "FPT": 0, "MSN": 15401400000, "VPB": 39056486400, "Khac": 152108447800}
+    },
+    "quarterly": {
+      "2024Q3": {"VHM": 96308560000, "MWG": 61358100000, "FPT": 60321770500, "VPB": 44854999200, "VRE": 39551707000, "Khac": 204452877200},
+      "2025Q2": {"MWG": 65427950000, "FPT": 42209220000, "MSN": 46310400000, "VPB": 33442450000, "Khac": 81635520800},
+      "2025Q3": {"FPT": 117413430000, "MWG": 118531350000, "MSN": 65610000000, "TPB": 50018475000, "Khac": 139671849100},
+      "2026Q1": {"HPG": 106017042600, "MWG": 76957440000, "STB": 31566500000, "Khac": 97177001000}
+    }
+  }
+}
