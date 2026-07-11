@@ -123,6 +123,86 @@ def fetch_via_curl(url, timeout=10, label=None):
         return ""
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# GIÁ NHIÊN LIỆU (than/khí/dầu) + TỶ GIÁ USD/VND — cùng kỹ thuật fetch_via_curl +
+# regex data-test="instrument-price-last" trên investing.com đã dùng thành công cho
+# HRC/quặng sắt/than luyện cốc trong build_hpg_model.py (đã verify chạy tốt trên GitHub
+# Actions — xem log thật phiên trước). KHÔNG import build_hpg_model.py (chạy side-effect
+# toàn bộ pipeline HPG ngay khi import) — copy độc lập.
+#
+# LƯU Ý MÔI TRƯỜNG LOCAL (2026-07): máy dev đang bị nhà mạng (FPT) chặn DNS investing.com
+# (vn.investing.com bị trả về 127.0.0.1 — xác nhận qua nslookup, KHÔNG phải lỗi code/URL).
+# Không verify được bằng curl thật tại đây — sẽ verify khi chạy GitHub Actions (mạng khác,
+# đã xác nhận investing.com hoạt động bình thường ở đó qua log thật). Nguồn/URL bên dưới
+# tham khảo cùng cấu trúc trang đã dùng cho than luyện cốc/quặng sắt/HRC, chỉ đổi slug
+# sản phẩm — cùng độ tin cậy với các fetcher đã proven trong build_hpg_model.py.
+# ══════════════════════════════════════════════════════════════════════════
+def fetch_usd_vnd_rate(fallback=26200.0, timeout=15):
+    """Tỷ giá USD/VND từ investing.com — dùng để quy đổi giá nhiên liệu quốc tế (thường
+    niêm yết USD) sang VND khi cần, và tham chiếu trong PDF (tài liệu hướng dẫn mục 9.3:
+    'Giá bán điện thường tính bằng USD... nếu tỷ giá tăng, doanh thu VND tăng')."""
+    html = fetch_via_curl("https://vn.investing.com/currencies/usd-vnd", timeout=timeout, label="investing-usdvnd")
+    if html:
+        m = re.search(r'data-test="instrument-price-last"[^>]*>([\d.,]+)', html)
+        if m:
+            try:
+                rate = float(m.group(1).replace(",", ""))
+                if 15000 <= rate <= 35000:
+                    return rate, "investing.com"
+            except ValueError:
+                pass
+    return fallback, "Fallback (manual)"
+
+
+def fetch_coal_price(fallback=110.0, timeout=15):
+    """Giá than nhiệt (Newcastle coal), USD/tấn — investing.com. Dùng ước tính chi phí
+    nhiên liệu than cho POW/PPC/QTP (nhà máy than) và ngữ cảnh rủi ro giá nhiên liệu
+    (tài liệu hướng dẫn mục 6.2/9.2.1)."""
+    html = fetch_via_curl("https://vn.investing.com/commodities/coal-futures", timeout=timeout, label="investing-coal")
+    if html:
+        m = re.search(r'data-test="instrument-price-last"[^>]*>([\d.,]+)', html)
+        if m:
+            try:
+                price = float(m.group(1).replace(",", ""))
+                if 30 <= price <= 500:
+                    return price, "investing.com (Newcastle coal, USD/tấn)"
+            except ValueError:
+                pass
+    return fallback, "Fallback (manual)"
+
+
+def fetch_gas_price(fallback=3.0, timeout=15):
+    """Giá khí tự nhiên (Henry Hub), USD/MMBtu — investing.com. Dùng ước tính chi phí
+    nhiên liệu khí cho NT2 (nhà máy khí) và ngữ cảnh rủi ro giá nhiên liệu."""
+    html = fetch_via_curl("https://vn.investing.com/commodities/natural-gas", timeout=timeout, label="investing-gas")
+    if html:
+        m = re.search(r'data-test="instrument-price-last"[^>]*>([\d.,]+)', html)
+        if m:
+            try:
+                price = float(m.group(1).replace(",", ""))
+                if 0.5 <= price <= 30:
+                    return price, "investing.com (Henry Hub, USD/MMBtu)"
+            except ValueError:
+                pass
+    return fallback, "Fallback (manual)"
+
+
+def fetch_oil_price(fallback=75.0, timeout=15):
+    """Giá dầu thô Brent, USD/thùng — investing.com. Một số nhà máy dùng dầu FO/DO thay
+    thế khi than/khí không đủ (tài liệu hướng dẫn mục 2.3.3)."""
+    html = fetch_via_curl("https://vn.investing.com/commodities/brent-oil", timeout=timeout, label="investing-oil")
+    if html:
+        m = re.search(r'data-test="instrument-price-last"[^>]*>([\d.,]+)', html)
+        if m:
+            try:
+                price = float(m.group(1).replace(",", ""))
+                if 20 <= price <= 200:
+                    return price, "investing.com (Brent, USD/thùng)"
+            except ValueError:
+                pass
+    return fallback, "Fallback (manual)"
+
+
 def fetch_rf_vietnam(timeout=15):
     FALLBACK_RF = 0.045
     try:
