@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const DRIVE_ACCESS_PASSWORD = '222222'; // SYS_PWD_DRIVE
+const DRIVE_ACCESS_PASSWORD = '123123'; // SYS_PWD_DRIVE
 
 const _DRIVE_GATE_SESSION_KEY = 'aic_drive_unlocked';
 
