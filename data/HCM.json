@@ -10,7 +10,7 @@
   "betaRfCache": {
     "beta": 1.2178,
     "rf": 0.04537,
-    "fetchedAt": "2026-07-11 11:41"
+    "fetchedAt": "2026-07-12 00:49"
   },
   "data": {
     "years": [
@@ -29,9 +29,9 @@
       2903.2,
       4276.2,
       5136.2,
-      5635.4,
-      6113.4,
-      6578.8
+      5800.2,
+      6896.1,
+      7825.5
     ],
     "npat": [
       1147.1,
@@ -39,9 +39,9 @@
       674.4,
       1039.7,
       1178.6,
-      1286.9,
-      1440.9,
-      1550.6
+      1316.0,
+      1625.4,
+      1844.4
     ],
     "eps": [
       1062,
@@ -49,9 +49,9 @@
       624,
       963,
       1091,
-      1192,
-      1334,
-      1436
+      1219,
+      1505,
+      1708
     ],
     "equity": [
       7325.3,
@@ -59,9 +59,9 @@
       8312.1,
       10443.9,
       14543.1,
-      15572.7,
-      16725.4,
-      17965.9
+      15595.9,
+      16896.3,
+      18371.8
     ]
   },
   "segments": {
@@ -75,7 +75,7 @@
     "labels": {
       "MoiGioi": "Môi giới",
       "Margin": "Cho vay Margin",
-      "TuDoanh": "Tự doanh (FVTPL)",
+      "TuDoanh": "Tự doanh (FVTPL+AFS)",
       "IB_LuuKy": "IB + Lưu ký",
       "QLQ": "Quản lý quỹ"
     },
@@ -118,14 +118,14 @@
     },
     "revenueForecast": {
       "MoiGioi": [
-        1284.4,
-        1356.9,
-        1424.7
+        1391.0,
+        1635.6,
+        1815.5
       ],
       "Margin": [
-        3083.6,
-        3463.7,
-        3773.8
+        3196.3,
+        3966.7,
+        4627.9
       ],
       "TuDoanh": [
         1092.7,
@@ -133,9 +133,9 @@
         1273.4
       ],
       "IB_LuuKy": [
-        83.3,
-        85.5,
-        88.0
+        83.7,
+        86.5,
+        89.8
       ],
       "QLQ": [
         14.7,
@@ -144,12 +144,65 @@
       ]
     },
     "pctNow": {
-      "MoiGioi": 0.2279,
-      "Margin": 0.5472,
-      "TuDoanh": 0.1939,
-      "IB_LuuKy": 0.0148,
-      "QLQ": 0.0026
-    }
+      "MoiGioi": 0.2398,
+      "Margin": 0.5511,
+      "TuDoanh": 0.1884,
+      "IB_LuuKy": 0.0144,
+      "QLQ": 0.0025
+    },
+    "grossProfitHist": {
+      "MoiGioi": [
+        623.7,
+        308.9,
+        202.1,
+        250.5,
+        407.0
+      ],
+      "Margin": [
+        1178.7,
+        1273.4,
+        1066.7,
+        1714.0,
+        2395.0
+      ],
+      "TuDoanh": [
+        630.1,
+        551.1,
+        424.7,
+        568.1,
+        581.7
+      ],
+      "IB_LuuKy": [
+        24.4,
+        27.2,
+        -4.1,
+        26.1,
+        31.1
+      ]
+    },
+    "grossProfitForecast": {
+      "MoiGioi": [
+        443.5,
+        521.4,
+        578.8
+      ],
+      "Margin": [
+        3196.3,
+        3966.7,
+        4627.9
+      ],
+      "TuDoanh": [
+        901.9,
+        982.6,
+        1051.0
+      ],
+      "IB_LuuKy": [
+        30.0,
+        31.0,
+        32.2
+      ]
+    },
+    "grossProfitNote": "Lợi nhuận gộp KHÔNG gồm Quản lý quỹ (Vietcap không có field chi phí QLQ, doanh thu QLQ cũng chỉ là proxy). Margin dùng Chi phí lãi vay toàn công ty làm giá vốn (không tách bạch được theo mảng trong BCTC). Dự phóng = driver riêng từng mảng (công thức Excel sống, xem sheet 03_Revenue_Model): tỷ lệ chi phí/DT hoặc chi phí/dư nợ bình quân lịch sử (trung bình 2 năm gần nhất)."
   },
   "quarterly": {
     "labels": [
@@ -221,7 +274,137 @@
       1.9,
       1.94,
       1.95
-    ]
+    ],
+    "segmentRevenue": {
+      "MoiGioi": [
+        139.69,
+        224.02,
+        176.01,
+        214.68,
+        253.47,
+        193.0,
+        187.26,
+        164.41,
+        232.66,
+        506.66,
+        285.38,
+        324.31
+      ],
+      "Margin": [
+        231.42,
+        292.27,
+        319.98,
+        339.39,
+        386.37,
+        478.36,
+        509.89,
+        522.78,
+        499.11,
+        641.57,
+        731.52,
+        765.25
+      ],
+      "TuDoanh": [
+        152.62,
+        109.92,
+        85.08,
+        160.79,
+        172.77,
+        152.04,
+        179.93,
+        110.6,
+        107.05,
+        226.27,
+        216.19,
+        171.87
+      ],
+      "IB_LuuKy": [
+        3.11,
+        8.06,
+        16.59,
+        3.7,
+        53.98,
+        4.6,
+        9.24,
+        61.93,
+        4.97,
+        5.34,
+        16.2,
+        8.08
+      ],
+      "QLQ": [
+        0.93,
+        0.92,
+        1.21,
+        1.01,
+        0.93,
+        0.95,
+        0.72,
+        0.74,
+        0.58,
+        3.54,
+        7.36,
+        3.83
+      ]
+    },
+    "segmentGrossProfit": {
+      "MoiGioi": [
+        35.7,
+        86.91,
+        45.85,
+        80.97,
+        85.33,
+        41.62,
+        42.64,
+        29.51,
+        62.52,
+        242.18,
+        72.8,
+        92.41
+      ],
+      "Margin": [
+        231.42,
+        292.27,
+        319.98,
+        339.39,
+        386.37,
+        478.36,
+        509.89,
+        522.78,
+        499.11,
+        641.57,
+        731.52,
+        765.25
+      ],
+      "TuDoanh": [
+        140.12,
+        97.17,
+        74.96,
+        136.19,
+        146.42,
+        130.53,
+        154.96,
+        91.76,
+        88.86,
+        206.46,
+        194.58,
+        150.74
+      ],
+      "IB_LuuKy": [
+        -5.36,
+        -2.27,
+        7.5,
+        -5.39,
+        36.87,
+        -3.88,
+        -1.46,
+        45.13,
+        -3.69,
+        -14.72,
+        4.39,
+        -4.07
+      ]
+    }
   },
   "roePbCorrelation": [
     {
@@ -400,13 +583,13 @@
     "n_known_q": 1,
     "cum_rev": 1466.40324373,
     "cum_npat": 290.720447794,
-    "pct_of_annual_est_rev": 26.0,
-    "pct_of_annual_est_npat": 22.6,
+    "pct_of_annual_est_rev": 25.3,
+    "pct_of_annual_est_npat": 22.1,
     "cur_fc_year": 2026
   },
   "thesis": [
-    "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (54.7% DT).",
-    "Định giá theo P/B (trung vị lịch sử 1.92x) kết hợp P/E (trung vị 15.62x) cho giá mục tiêu 26,779 VND, tiềm năng -3.7%.",
+    "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (55.1% DT).",
+    "Định giá theo P/B (trung vị lịch sử 1.92x) kết hợp P/E (trung vị 15.62x) cho giá mục tiêu 26,858 VND, tiềm năng -3.4%.",
     "Cần theo dõi tỷ trọng mảng Tự doanh (FVTPL) — nguồn biến động LNST lớn nhất, nhạy cảm trực tiếp với VN-Index."
   ],
   "risks": [
@@ -469,31 +652,31 @@
     }
   ],
   "valuation": {
-    "bear": 23505,
-    "base": 26779,
-    "bull": 30426,
+    "bear": 23539,
+    "base": 26858,
+    "bull": 30471,
     "methods": {
-      "pb": 27686,
-      "pe": 18619
+      "pb": 27727,
+      "pe": 19041
     },
     "weights": {
       "PB": 0.9,
       "PE": 0.1
     },
     "recommendation": "THEO DÕI",
-    "upsidePct": -3.7,
+    "upsidePct": -3.4,
     "coe": 14.56,
     "peMedian": 15.62,
     "pbMedian": 1.92,
     "pbLowerMedian": 1.63,
     "pbUpperMedian": 2.11,
-    "lowerTarget": 23505,
-    "upperTarget": 30426
+    "lowerTarget": 23539,
+    "upperTarget": 30471
   },
   "comments": {
-    "businessModel": "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (54.7% doanh thu dự phóng).",
-    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 5,635 tỷ VND, LNST cổ đông mẹ 1,287 tỷ VND, EPS 1,192 VND/CP.",
-    "valuationText": "Giá mục tiêu 26,779 VND (upside -3.7%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị THEO DÕI."
+    "businessModel": "Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (55.1% doanh thu dự phóng).",
+    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 5,800 tỷ VND, LNST cổ đông mẹ 1,316 tỷ VND, EPS 1,219 VND/CP.",
+    "valuationText": "Giá mục tiêu 26,858 VND (upside -3.4%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị THEO DÕI."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -599,6 +782,40 @@
     "2025-Q4",
     "2026-Q1"
   ],
+  "roe_quarters_ttm": [
+    28.72,
+    27.93,
+    26.7,
+    23.09,
+    14.23,
+    11.79,
+    10.26,
+    11.75,
+    10.47,
+    11.32,
+    11.91,
+    12.13,
+    16.72,
+    22.18,
+    22.18,
+    19.5,
+    15.84,
+    12.36,
+    11.2,
+    8.74,
+    7.18,
+    7.77,
+    8.32,
+    10.04,
+    11.02,
+    10.55,
+    11.09,
+    9.54,
+    8.47,
+    10.46,
+    9.43,
+    9.99
+  ],
   "ratios": {
     "roe": [
       0.1566,
@@ -606,9 +823,9 @@
       0.0811,
       0.0995,
       0.081,
-      0.0826,
-      0.0862,
-      0.0863
+      0.0844,
+      0.0962,
+      0.1004
     ],
     "net_margin": [
       0.2572,
@@ -616,7 +833,7 @@
       0.2323,
       0.2431,
       0.2295,
-      0.2284,
+      0.2269,
       0.2357,
       0.2357
     ]
@@ -630,14 +847,14 @@
       "2025": 28500.0
     },
     "adtv_fc": {
-      "2026": 30780.0,
-      "2027": 32627.0,
-      "2028": 34258.0
+      "2026": 34200.0,
+      "2027": 39330.0,
+      "2028": 43656.0
     },
     "adtv_growth_taper": [
-      0.08,
-      0.06,
-      0.05
+      0.2,
+      0.15,
+      0.11
     ],
     "fvtpl_mix": {
       "CDs": 0.2064,
@@ -661,5 +878,5 @@
     },
     "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat. brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
   },
-  "lastUpdated": "2026-07-11 11:41"
+  "lastUpdated": "2026-07-12 00:49"
 }

@@ -235,7 +235,10 @@ SEG = {
     "margin_rev": "iss120",       # Lãi từ các khoản cho vay và phải thu
     "fvtpl_gain": "iss115",       # Lãi từ tài sản tài chính FVTPL
     "fvtpl_loss": "iss124",       # Lỗ tài sản tài chính FVTPL (âm)
-    "fvtpl_cost": "iss132",       # Chi phí hoạt động tự doanh (âm)
+    "afs_gain": "iss121",         # Lãi từ tài sản tài chính AFS — verify khớp KQKD thật VCI (dòng "04
+                                   # Lãi từ các tài sản tài chính sẵn sàng để bán") 2024=225.002.928.869,
+                                   # 2025=277.121.231.575; CTCK không có AFS (vd HCM) field này = 0.
+    "fvtpl_cost": "iss132",       # Chi phí hoạt động tự doanh (âm, dùng chung cho cả FVTPL+AFS)
     "ib_underwrite": "iss44",     # Doanh thu bảo lãnh phát hành
     "ib_advisory": "iss46",       # Doanh thu tư vấn đầu tư chứng khoán
     "ib_finadvisory": "iss123",   # Doanh thu tư vấn tài chính
@@ -276,7 +279,7 @@ BS = {
 }
 SEGMENT_NAMES = ["MoiGioi", "Margin", "TuDoanh", "IB_LuuKy", "QLQ"]
 SEGMENT_LABELS_VI = {
-    "MoiGioi": "Môi giới", "Margin": "Cho vay Margin", "TuDoanh": "Tự doanh (FVTPL)",
+    "MoiGioi": "Môi giới", "Margin": "Cho vay Margin", "TuDoanh": "Tự doanh (FVTPL+AFS)",
     "IB_LuuKy": "IB + Lưu ký", "QLQ": "Quản lý quỹ",
 }
 SEGMENT_COLORS = {"MoiGioi": "#3b82f6", "Margin": "#f59e0b", "TuDoanh": "#10b981",
@@ -290,6 +293,35 @@ def _get_yr(records, year, field):
             if v is not None:
                 return v / 1e9
     return 0.0
+
+
+def _segment_gp_from_record(rec):
+    """Lợi nhuận gộp 4 mảng (mục lớn, KHÔNG gồm Quản lý quỹ) từ 1 record BCTC quý — dùng cho JSON
+    quarterly export. Đơn vị tỷ VND. Cùng công thức với khối gp_*_hist ở run_securities_analysis
+    (Margin dùng chi phí lãi vay toàn công ty làm giá vốn, xem SEG["interest_expense"])."""
+    def g(key):
+        return (rec.get(SEG[key]) or 0) / 1e9
+    return {
+        "MoiGioi": g("brokerage_rev") + g("brokerage_cost"),
+        "Margin": g("margin_rev") + g("interest_expense"),
+        "TuDoanh": g("fvtpl_gain") + g("fvtpl_loss") + g("afs_gain") + g("fvtpl_cost"),
+        "IB_LuuKy": g("ib_underwrite") + g("ib_advisory") + g("ib_finadvisory") + g("custody_rev")
+                    + g("ib_cost") + g("advisory_cost") + g("finadvisory_cost") + g("custody_cost"),
+    }
+
+
+def _segment_rev_from_record(rec):
+    """Doanh thu 5 mảng (mục lớn) từ 1 record BCTC quý — dùng cho JSON quarterly export. Tỷ VND."""
+    def g(key):
+        return (rec.get(SEG[key]) or 0) / 1e9
+    other = g("other_rev")
+    return {
+        "MoiGioi": g("brokerage_rev"),
+        "Margin": g("margin_rev"),
+        "TuDoanh": g("fvtpl_gain") + g("fvtpl_loss") + g("afs_gain"),
+        "IB_LuuKy": g("ib_underwrite") + g("ib_advisory") + g("ib_finadvisory") + g("custody_rev"),
+        "QLQ": round(other * 0.4, 3),
+    }
 
 
 def _get_yr_raw(records, year, field):
@@ -376,7 +408,7 @@ def derive_real_fvtpl_mix(ticker):
     data = load_fvtpl_holdings(ticker)
     if not data:
         return None
-    fvtpl = data.get("fvtpl", {})
+    fvtpl = _combine_fvtpl_afs(data)  # gộp FVTPL+AFS — cả 2 đều là tài sản tự doanh (xem _combine_fvtpl_afs)
     periods = _fvtpl_merged_periods(fvtpl)
     if not periods:
         return None
@@ -450,7 +482,10 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     margin_rev_hist = [_get_yr(is_recs, y, SEG["margin_rev"]) for y in years_hist]
     fvtpl_gain_hist = [_get_yr(is_recs, y, SEG["fvtpl_gain"]) for y in years_hist]
     fvtpl_loss_hist = [_get_yr(is_recs, y, SEG["fvtpl_loss"]) for y in years_hist]
-    fvtpl_net_hist = [fvtpl_gain_hist[i] + fvtpl_loss_hist[i] for i in range(N_HIST)]
+    afs_gain_hist = [_get_yr(is_recs, y, SEG["afs_gain"]) for y in years_hist]
+    # "Tự doanh" gộp cả FVTPL (lãi+lỗ) và AFS (chỉ có dòng lãi trong KQKD, không có dòng lỗ riêng —
+    # xem SEG["afs_gain"]) — CTCK không có AFS thì afs_gain_hist toàn 0, không đổi kết quả (vd HCM).
+    fvtpl_net_hist = [fvtpl_gain_hist[i] + fvtpl_loss_hist[i] + afs_gain_hist[i] for i in range(N_HIST)]
     fvtpl_cost_hist = [_get_yr(is_recs, y, SEG["fvtpl_cost"]) for y in years_hist]
     ib_rev_hist = [_get_yr(is_recs, y, SEG["ib_underwrite"]) + _get_yr(is_recs, y, SEG["ib_advisory"])
                    + _get_yr(is_recs, y, SEG["ib_finadvisory"]) for y in years_hist]
@@ -462,6 +497,19 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     # để driver AUM×fee có cơ sở lịch sử tham chiếu (KHÔNG chính xác tuyệt đối, ghi rõ trong Assumptions).
     qlq_rev_hist = [round(other_rev_hist[i] * 0.4, 2) for i in range(N_HIST)]
     other_rev_adj_hist = [round(other_rev_hist[i] * 0.6, 2) for i in range(N_HIST)]
+
+    # ── Chi phí theo mảng (mục lớn, KHÔNG gồm Quản lý quỹ — Vietcap không có field chi phí QLQ
+    # và bản thân doanh thu QLQ cũng chỉ là proxy 40% "other_rev", không đủ tin cậy để trừ giá vốn).
+    # Margin dùng "Chi phí lãi vay" toàn công ty (SEG["interest_expense"]) làm giá vốn — CTCK không tách
+    # bạch chi phí vốn theo mảng cho vay margin/tự doanh trong BCTC công khai.
+    interest_expense_hist = [_get_yr(is_recs, y, SEG["interest_expense"]) for y in years_hist]
+    ib_cost_hist = [_get_yr(is_recs, y, SEG["ib_cost"]) + _get_yr(is_recs, y, SEG["advisory_cost"])
+                    + _get_yr(is_recs, y, SEG["finadvisory_cost"]) + _get_yr(is_recs, y, SEG["custody_cost"])
+                    for y in years_hist]
+    gp_moigioi_hist = [brokerage_rev_hist[i] + brokerage_cost_hist[i] for i in range(N_HIST)]
+    gp_margin_hist = [margin_rev_hist[i] + interest_expense_hist[i] for i in range(N_HIST)]
+    gp_tudoanh_hist = [fvtpl_net_hist[i] + fvtpl_cost_hist[i] for i in range(N_HIST)]
+    gp_ibluuky_hist = [ib_custody_rev_hist[i] + ib_cost_hist[i] for i in range(N_HIST)]
 
     total_rev_hist = [_get_yr(is_recs, y, IS_TOTAL["total_rev"]) for y in years_hist]
     total_cost_hist = [_get_yr(is_recs, y, IS_TOTAL["total_cost"]) for y in years_hist]
@@ -528,7 +576,7 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     # ══════════════════════════════════════════════════════════════════
     # 3. P/E, P/B LỊCH SỬ (median toàn bộ quý, cùng chuẩn skill ngan-hang/thep)
     # ══════════════════════════════════════════════════════════════════
-    pe_quarters, pb_quarters, quarter_labels = [], [], []
+    pe_quarters, pb_quarters, quarter_labels, roe_quarters = [], [], [], []
     try:
         r = requests.get(f"https://trading.vietcap.com.vn/api/iq-insight-service/v1/company/{ticker}/statistics-financial",
                           headers={"User-Agent": RF_UA_STR, "Referer": "https://trading.vietcap.com.vn/"}, timeout=15)
@@ -540,7 +588,8 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                 quarter_labels.append(f"{x['year']}-Q{x['quarter']}")
                 pe_quarters.append(round(x["pe"], 2) if x.get("pe") else None)
                 pb_quarters.append(round(x["pb"], 2) if x.get("pb") else None)
-            print(f"  -> Đã lấy {len(quarter_labels)} quý P/E, P/B lịch sử từ Vietcap")
+                roe_quarters.append(round(x["roe"] * 100, 2) if x.get("roe") else None)  # đã là ROE TTM (4 quý gần nhất) — ratioType RATIO_TTM
+            print(f"  -> Đã lấy {len(quarter_labels)} quý P/E, P/B, ROE (TTM) lịch sử từ Vietcap")
     except Exception as e:
         print(f"  [WARN] Live P/E, P/B fetch failed: {e}")
 
@@ -632,10 +681,22 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
         _brok_model = f'Market share {market_share_fc:.2%}'
         print(f"  [Brokerage] {ticker}: Market share {market_share_fc:.2%} — đủ tin cậy (≥ {MIN_RELIABLE_SHARE:.1%})")
 
-    # Tăng trưởng GTGD toàn TT GIẢM DẦN qua các năm dự phóng (8%→6%→5%) — tránh dự phóng quá lạc quan/
-    # "quá đà" cho các năm xa, đúng nguyên tắc thận trọng hóa dần theo thời gian.
-    # ⚠ Điều chỉnh taper nếu quan điểm vĩ mô thay đổi (xem sheet 09_PESTLE/khung đánh giá vĩ mô).
-    ADTV_GROWTH_TAPER = [0.08, 0.06, 0.05]
+    # ══════════════════════════════════════════════════════════════════
+    # 4b. VĨ MÔ THANH KHOẢN — driver GTGD (ADTV) CĂN CỨ DỮ LIỆU LỊCH SỬ THẬT (MARKET_ADTV_HIST, số
+    # liệu HOSE/SSC đã đối chiếu — xem comment tại _ADTV_ACTUAL), THAY cho taper cố định trước đây
+    # (8%/6%/5% — hoàn toàn chủ quan, không căn cứ gì). Phương pháp: tăng trưởng gốc = TB tăng trưởng
+    # YoY thực tế 3 năm gần nhất (clamp [-10%,+20%] để tránh ngoại suy quá đà từ chu kỳ bùng nổ/điều
+    # chỉnh mạnh của TTCK VN), sau đó áp hệ số suy giảm dần cho 3 năm dự phóng (giữ nguyên tắc thận
+    # trọng hóa dần theo thời gian đã dùng xuyên suốt template này).
+    _adtv_years_sorted = sorted(MARKET_ADTV_HIST.keys())
+    adtv_yoy_growth_hist = [round(MARKET_ADTV_HIST[_adtv_years_sorted[i]] / MARKET_ADTV_HIST[_adtv_years_sorted[i-1]] - 1, 4)
+                            for i in range(1, len(_adtv_years_sorted)) if MARKET_ADTV_HIST[_adtv_years_sorted[i-1]]]
+    _adtv_growth_base_raw = stats.mean(adtv_yoy_growth_hist[-3:]) if len(adtv_yoy_growth_hist) >= 1 else 0.08
+    ADTV_GROWTH_BASE = round(min(max(_adtv_growth_base_raw, -0.10), 0.20), 4)  # clamp căn cứ dải biến động lịch sử thực tế
+    ADTV_TAPER_FACTOR = [1.0, 0.75, 0.55]  # hệ số suy giảm dần áp lên tăng trưởng gốc (không suy giảm tuyệt đối cố định)
+    ADTV_GROWTH_TAPER = [round(ADTV_GROWTH_BASE * f, 4) for f in ADTV_TAPER_FACTOR]
+    print(f"  [Vĩ mô Thanh khoản] TB tăng trưởng GTGD 3 năm gần nhất: {ADTV_GROWTH_BASE:+.1%} (clamp [-10%,+20%]) "
+          f"-> Dự phóng 3 năm: {[f'{g:+.1%}' for g in ADTV_GROWTH_TAPER]}")
     market_adtv_fc = []
     _adtv_prev = MARKET_ADTV_HIST[years_hist[-1]]
     for _g in ADTV_GROWTH_TAPER:
@@ -644,10 +705,14 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
 
     # ── (2) Cho vay Margin: Dư nợ bình quân × NIM ──
     margin_nim_fc_base = round(stats.mean(margin_nim_hist[-2:]), 4) if len(margin_nim_hist) >= 2 else margin_nim_hist[-1]
-    # Tăng trưởng dư nợ Margin GIẢM DẦN (15%→10%→8%) — năm 1 neo theo đà hiện tại, các năm sau thận
-    # trọng hơn vì dư nợ margin có TRẦN PHÁP LÝ 2,0x VCSH (xem sheet 10_Hieu_Qua_Mang), không thể
-    # duy trì tốc độ cao liên tục nhiều năm nếu công ty chưa có kế hoạch tăng vốn tương ứng
-    margin_loan_growth_fc = [0.15, 0.10, 0.08]
+    # Tăng trưởng dư nợ Margin GẮN VỚI THANH KHOẢN THỊ TRƯỜNG (không còn taper cố định 15%/10%/8% chủ
+    # quan) — dư nợ margin toàn ngành lịch sử tăng/giảm cùng chiều và MẠNH HƠN GTGD (nhà đầu tư dùng đòn
+    # bẩy nhiều hơn khi thanh khoản/tâm lý thị trường tốt), dùng hệ số nhạy cảm MARGIN_LIQUIDITY_BETA để
+    # khuếch đại tăng trưởng GTGD — hệ số này là GIẢ ĐỊNH có thể điều chỉnh, không phải số đo lường trực
+    # tiếp được (không có dữ liệu công khai tăng trưởng dư nợ margin TOÀN NGÀNH theo quý để hồi quy chính
+    # xác), nhưng ít nhất đã THAY được taper hoàn toàn độc lập với vĩ mô trước đây bằng 1 driver chung.
+    MARGIN_LIQUIDITY_BETA = 1.3
+    margin_loan_growth_fc = [round(min(max(g * MARGIN_LIQUIDITY_BETA, -0.15), 0.30), 4) for g in ADTV_GROWTH_TAPER]
 
     # ── (3) FVTPL (Tự doanh): Danh mục × (%CDs×R_CDs + %TP×R_TP + %CP×R_VNI) ──
     # Tỷ trọng CDs/TP/CP PHÂN BIỆT THEO TỪNG CTCK dựa trên đặc điểm kinh doanh:
@@ -697,7 +762,11 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     # ⚠ 2%: phí M&A/IPO tại VN KHÔNG công bố công khai (đàm phán riêng từng deal) — KHÔNG kiểm chứng được,
     # neo theo thông lệ quốc tế phổ biến (M&A advisory ~1-3% giá trị deal).
     ib_fee_pct_fc = 0.02  # phí IB bình quân trên giá trị deal
-    custody_growth_fc = round(stats.mean([custody_rev_hist[i] / custody_rev_hist[i-1] - 1 for i in range(1, N_HIST) if custody_rev_hist[i-1]] or [0.1]), 4)
+    # DT Lưu ký gắn 1 phần với thanh khoản thị trường (số dư/số lượng NĐT lưu ký tăng theo hoạt động
+    # giao dịch chung) — blend tăng trưởng lịch sử CỦA CHÍNH CTCK (phản ánh tốc độ mở rộng khách hàng
+    # riêng) với tăng trưởng GTGD thị trường năm 1 (phản ánh yếu tố vĩ mô chung), trọng số 50/50.
+    _custody_growth_self = stats.mean([custody_rev_hist[i] / custody_rev_hist[i-1] - 1 for i in range(1, N_HIST) if custody_rev_hist[i-1]] or [0.1])
+    custody_growth_fc = round((_custody_growth_self + ADTV_GROWTH_TAPER[0]) / 2, 4)
 
     # ── (5) Quản lý quỹ: AUM × Fee rate (~0.75%/năm) ──
     # ⚠ 0.75%: phí quản lý quỹ mở tại VN dao động rộng 0.1%-2%/năm tùy loại quỹ (tiền tệ/trái phiếu thấp,
@@ -713,6 +782,19 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     sga_pct_fc = round(stats.mean(sga_pct_rev_hist[-2:]), 4) if len(sga_pct_rev_hist) >= 2 else 0.03
     cost_pct_of_rev_hist = [abs(total_cost_hist[i]) / total_rev_hist[i] if total_rev_hist[i] else 0 for i in range(N_HIST)]
     cost_pct_fc = round(stats.mean(cost_pct_of_rev_hist[-2:]), 4) if len(cost_pct_of_rev_hist) >= 2 else 0.35
+
+    # ── Chi phí THEO MẢNG (tỷ lệ lịch sử, formula-driven — thay cho "cost_pct" gộp chung ở trên, dùng
+    # để dự phóng lợi nhuận gộp bottom-up theo đặc điểm từng mảng thay vì áp 1 tỷ lệ bình quân toàn công
+    # ty cho mọi mảng có biên lợi nhuận rất khác nhau) ──
+    brokerage_cost_pct_hist = [abs(brokerage_cost_hist[i]) / brokerage_rev_hist[i] if brokerage_rev_hist[i] else 0 for i in range(N_HIST)]
+    brokerage_cost_pct_fc = round(stats.mean(brokerage_cost_pct_hist[-2:]), 4) if len(brokerage_cost_pct_hist) >= 2 else 0.6
+    margin_cost_rate_hist = [abs(interest_expense_hist[i]) / borrow_avg_hist[i] if borrow_avg_hist[i] else 0 for i in range(N_HIST)]
+    margin_cost_rate_fc = round(stats.mean(margin_cost_rate_hist[-2:]), 4) if len(margin_cost_rate_hist) >= 2 else 0.06
+    fvtpl_cost_pct_hist = [abs(fvtpl_cost_hist[i]) / fvtpl_avg_hist[i] if fvtpl_avg_hist[i] else 0 for i in range(N_HIST)]
+    fvtpl_cost_pct_fc = round(stats.mean(fvtpl_cost_pct_hist[-2:]), 4) if len(fvtpl_cost_pct_hist) >= 2 else 0.01
+    ib_cost_pct_hist = [abs(ib_cost_hist[i]) / ib_custody_rev_hist[i] if ib_custody_rev_hist[i] else 0 for i in range(N_HIST)]
+    ib_cost_pct_fc = round(stats.mean(ib_cost_pct_hist[-2:]), 4) if len(ib_cost_pct_hist) >= 2 else 0.5
+
     tax_rate_hist = [abs(tax_hist[i]) / pbt_hist[i] if pbt_hist[i] else 0.2 for i in range(N_HIST)]
     tax_rate_fc = min(max(round(stats.mean([t for t in tax_rate_hist if 0 < t < 0.3] or [0.2]), 4), 0.15), 0.22)
 
@@ -720,11 +802,12 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     # 5. DỰ PHÓNG DOANH THU 5 MẢNG (Python mirror — Excel sẽ có công thức sống riêng)
     # ══════════════════════════════════════════════════════════════════
     brokerage_rev_fc, margin_rev_fc, fvtpl_rev_fc, ib_custody_rev_fc, qlq_rev_fc = [], [], [], [], []
-    margin_loans_fc, fvtpl_portfolio_fc, qlq_aum_fc = [], [], []
+    margin_loans_fc, fvtpl_portfolio_fc, qlq_aum_fc, borrow_total_fc = [], [], [], []
 
     _margin_prev = margin_loans_hist[-1]
     _fvtpl_prev = fvtpl_portfolio_hist[-1]
     _qlq_aum_prev = qlq_aum_fc0
+    _borrow_prev = borrow_total_hist[-1]
     for i in range(3):
         # (1) Môi giới — 2 phương pháp tùy độ tin cậy thị phần:
         if _use_ols:
@@ -738,6 +821,10 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
         margin_avg_fc_i = (_margin_prev + margin_loans_fc[i]) / 2
         margin_rev_fc.append(round(margin_avg_fc_i * margin_nim_fc_base, 1))
         _margin_prev = margin_loans_fc[i]
+        # Tổng vay & nợ thuê tài chính — dùng chung tốc độ tăng trưởng dư nợ Margin làm proxy (CTCK vay
+        # chủ yếu để tài trợ margin/tự doanh, không tách bạch được nguồn vốn theo mục đích trong BCTC)
+        borrow_total_fc.append(round(_borrow_prev * (1 + margin_loan_growth_fc[i]), 1))
+        _borrow_prev = borrow_total_fc[i]
         # (3) FVTPL
         fvtpl_portfolio_fc.append(round(_fvtpl_prev * (1 + fvtpl_portfolio_growth_fc[i]), 1))
         fvtpl_avg_fc_i = (_fvtpl_prev + fvtpl_portfolio_fc[i]) / 2
@@ -765,6 +852,16 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
         print(f"  [Blend-Môi giới] {_cur_fc_year}F: {_n_brok_q}/4 quý thực (lũy kế {_brok_cum:,.1f} tỷ, annualized {_brok_annual:,.1f}) "
               f"+ mô hình {_brok_base0:,.1f} → blend = {brokerage_rev_fc[0]:,.1f} tỷ (độ lệch mô hình: {(_brok_annual/_brok_base0-1)*100:+.1f}%)")
 
+    # Blend mảng Margin tương tự Môi giới — cả 2 đều gắn với thanh khoản/tâm lý thị trường, số quý thực
+    # tế đã công bố phản ánh đúng hơn diễn biến hiện tại so với mô hình thanh khoản dự phóng cứng.
+    _margin_cum, _n_margin_q = cumulative_actual_quarters(is_q, _cur_fc_year, SEG["margin_rev"])
+    _margin_base0 = margin_rev_fc[0]
+    margin_rev_fc[0] = round(blend_annual_estimate(_margin_cum, _n_margin_q, _margin_base0), 1)
+    if _n_margin_q > 0:
+        _margin_annual = _margin_cum * (4 / _n_margin_q)
+        print(f"  [Blend-Margin] {_cur_fc_year}F: {_n_margin_q}/4 quý thực (lũy kế {_margin_cum:,.1f} tỷ, annualized {_margin_annual:,.1f}) "
+              f"+ mô hình {_margin_base0:,.1f} → blend = {margin_rev_fc[0]:,.1f} tỷ (độ lệch mô hình: {(_margin_annual/_margin_base0-1)*100:+.1f}%)")
+
     total_rev_fc = [brokerage_rev_fc[i] + margin_rev_fc[i] + fvtpl_rev_fc[i] + ib_custody_rev_fc[i] + qlq_rev_fc[i] for i in range(3)]
 
     # ── Blend năm hiện tại (years_fc[0]) với số quý ĐÃ CÓ báo cáo thực tế ──
@@ -777,6 +874,31 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
     total_rev_fc[0] = round(blend_annual_estimate(_rev_cum, _n_rev_q, _rev_base0), 1)
     print(f"  [Blend] {_cur_fc_year}F Doanh thu HĐ: {_n_rev_q}/4 quý đã biết (lũy kế {_rev_cum:,.0f} tỷ, base gốc {_rev_base0:,.0f} tỷ) -> blend = {total_rev_fc[0]:,.0f} tỷ")
 
+    # ── Chi phí & lợi nhuận gộp THEO MẢNG (bottom-up, formula-driven — thay cho cost_pct gộp chung).
+    # Mỗi mảng dùng đúng driver căn cứ dữ liệu lịch sử của chính mảng đó (không áp 1 tỷ lệ chung cho
+    # các mảng có đặc điểm tài sản/biên lợi nhuận rất khác nhau: Môi giới là dịch vụ phí, Margin là
+    # cho vay có tài sản đảm bảo (giá vốn = lãi vay funding), Tự doanh là danh mục đầu tư (giá vốn nhỏ,
+    # chủ yếu phí giao dịch), IB+Lưu ký là dịch vụ tư vấn/lưu ký). QLQ không có chi phí model (không có
+    # dữ liệu KQKD thật) — coi như lợi nhuận gộp = doanh thu (không trừ chi phí) cho phần QLQ nhỏ này. ──
+    _borrow_chain = [borrow_total_hist[-1]] + borrow_total_fc
+    borrow_avg_fc = [(_borrow_chain[i] + _borrow_chain[i + 1]) / 2 for i in range(3)]
+    _fvtpl_chain = [fvtpl_portfolio_hist[-1]] + fvtpl_portfolio_fc
+    fvtpl_bal_avg_fc = [(_fvtpl_chain[i] + _fvtpl_chain[i + 1]) / 2 for i in range(3)]
+    brokerage_cost_fc = [-round(brokerage_rev_fc[i] * brokerage_cost_pct_fc, 1) for i in range(3)]
+    margin_cost_fc = [-round(borrow_avg_fc[i] * margin_cost_rate_fc, 1) for i in range(3)]
+    fvtpl_cost_fc = [-round(fvtpl_bal_avg_fc[i] * fvtpl_cost_pct_fc, 1) for i in range(3)]
+    ib_cost_fc = [-round(ib_custody_rev_fc[i] * ib_cost_pct_fc, 1) for i in range(3)]
+
+    gp_moigioi_fc = [round(brokerage_rev_fc[i] + brokerage_cost_fc[i], 1) for i in range(3)]
+    gp_margin_fc = [round(margin_rev_fc[i] + margin_cost_fc[i], 1) for i in range(3)]
+    gp_tudoanh_fc = [round(fvtpl_rev_fc[i] + fvtpl_cost_fc[i], 1) for i in range(3)]
+    gp_ibluuky_fc = [round(ib_custody_rev_fc[i] + ib_cost_fc[i], 1) for i in range(3)]
+
+    # ── "Chi phí hoạt động" TỔNG CÔNG TY (dùng cho 04_PnL/chuỗi LNST chính thức) — GIỮ tỷ lệ gộp
+    # cost_pct như cũ (không dùng tổng chi phí bottom-up 4 mảng ở trên). Theo yêu cầu: chỉ cần lợi
+    # nhuận gộp THEO MẢNG để phân tích hiệu quả từng mảng, còn chi phí hoạt động chung của công ty vẫn
+    # tính theo cách cũ (đơn giản, không cần phân bổ chi tiết theo mảng). Lợi nhuận gộp THEO MẢNG ở trên
+    # (gp_*_fc) chỉ phục vụ mục đích phân tích (chart/JSON/03_Revenue_Model), KHÔNG feed vào PnL tổng.
     total_cost_fc = [-round(total_rev_fc[i] * cost_pct_fc, 1) for i in range(3)]
     gross_profit_fc = [round(total_rev_fc[i] + total_cost_fc[i], 1) for i in range(3)]
     sga_fc = [-round(total_rev_fc[i] * sga_pct_fc, 1) for i in range(3)]
@@ -862,6 +984,9 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                            SPECIFIC_RISK_PREMIUM, COE)
     build_cover_sheet(wb, ticker, company_name, current_price, market_cap, shares, weighted_target, upside_pct,
                        recommend, pb_target_price, pe_target_price, PE_HIST_MEDIAN, PB_HIST_MEDIAN)
+    build_macro_liquidity_sheet(wb, ticker, years_hist, years_fc, MARKET_ADTV_HIST, adtv_yoy_growth_hist,
+                                 market_adtv_fc, ADTV_GROWTH_BASE, ADTV_GROWTH_TAPER, MARGIN_LIQUIDITY_BETA,
+                                 margin_loan_growth_fc, custody_growth_fc)
     RA = build_assumptions_sheet(wb, ticker, years_hist, years_fc, current_price, shares, COE,
                                   MARKET_ADTV_HIST, TRADING_DAYS, ASSUMED_FEE_BPS, brokerage_share_hist, market_share_fc,
                                   market_adtv_fc, margin_nim_hist, margin_nim_fc_base, margin_loan_growth_fc,
@@ -875,7 +1000,10 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                                     margin_loans_hist, fvtpl_portfolio_hist, qlq_aum_fc0,
                                     brokerage_rev_fc, margin_rev_fc, fvtpl_rev_fc, ib_custody_rev_fc, qlq_rev_fc,
                                     margin_loans_fc, fvtpl_portfolio_fc, qlq_aum_fc, total_rev_hist, total_rev_fc,
-                                    ib_rev_hist, custody_rev_hist)
+                                    ib_rev_hist, custody_rev_hist,
+                                    borrow_total_hist, borrow_total_fc,
+                                    brokerage_cost_hist, interest_expense_hist, fvtpl_cost_hist, ib_cost_hist,
+                                    brokerage_cost_fc, margin_cost_fc, fvtpl_cost_fc, ib_cost_fc)
     RP = build_pnl_sheet(wb, ticker, years_hist, years_fc, RR, RA,
                           total_rev_hist, total_cost_hist, gross_profit_hist, sga_hist, pbt_hist, tax_hist,
                           npat_hist, npat_parent_hist, eps_hist,
@@ -1004,6 +1132,10 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
             "brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
         ),
     }
+    gp_hist_data = {"MoiGioi": gp_moigioi_hist, "Margin": gp_margin_hist, "TuDoanh": gp_tudoanh_hist,
+                     "IB_LuuKy": gp_ibluuky_hist}
+    gp_fc_data = {"MoiGioi": gp_moigioi_fc, "Margin": gp_margin_fc, "TuDoanh": gp_tudoanh_fc,
+                  "IB_LuuKy": gp_ibluuky_fc}
     save_json_summary(ticker, company_name, current_price, market_cap, shares, years_hist, years_fc,
                        total_rev_hist, total_rev_fc, npat_parent_hist, npat_parent_fc, eps_hist, eps_fc,
                        equity_hist, equity_fc, quarter_labels, pe_quarters, pb_quarters,
@@ -1013,7 +1145,8 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
                        is_q, bs_q, latest_margin_leverage, latest_leverage_label, VALUATION_WEIGHTS, quarterly_update,
                        macro_liquidity=_macro_liq, beta_rf_cache=BETA_RF_CACHE_ENTRY,
                        pb_lower_median=PB_HIST_MEDIAN_LOWER, pb_upper_median=PB_HIST_MEDIAN_UPPER,
-                       weighted_lower_target=weighted_lower_target, weighted_upper_target=weighted_upper_target)
+                       weighted_lower_target=weighted_lower_target, weighted_upper_target=weighted_upper_target,
+                       gp_hist=gp_hist_data, roe_quarters=roe_quarters, gp_fc=gp_fc_data)
 
     print(f"\n--- Securities Analysis Complete for {ticker} ---")
     return True
@@ -1022,6 +1155,84 @@ def run_securities_analysis(ticker: str, raw_data: dict) -> bool:
 # ══════════════════════════════════════════════════════════════════════════
 # SHEET BUILDERS
 # ══════════════════════════════════════════════════════════════════════════
+def build_macro_liquidity_sheet(wb, ticker, years_hist, years_fc, market_adtv_hist, adtv_yoy_growth_hist,
+                                 market_adtv_fc, adtv_growth_base, adtv_growth_taper, margin_liquidity_beta,
+                                 margin_loan_growth_fc, custody_growth_fc):
+    """Sheet 01b_Vi_Mo_Thanh_Khoan — mô hình hóa thanh khoản thị trường (GTGD bình quân/phiên toàn TT)
+    làm driver CHUNG cho 3 mảng phụ thuộc thanh khoản: Môi giới (trực tiếp), Cho vay Margin (dư nợ toàn
+    ngành tăng/giảm cùng chiều thanh khoản, khuếch đại qua MARGIN_LIQUIDITY_BETA), Lưu ký (blend với tốc
+    độ tăng trưởng riêng của công ty). Tự doanh (FVTPL+AFS) KHÔNG dùng driver này — vẫn theo phương pháp
+    CAPM cũ (Danh mục × (%CDs×R_CDs+%TP×R_TP+%CP×R_VNI), xem sheet 02_Assumptions mục (3))."""
+    ws = wb.create_sheet("01b_Vi_Mo_Thanh_Khoan")
+    ws.column_dimensions['A'].width = 42
+    all_years = years_hist + years_fc
+    for i in range(len(all_years)):
+        ws.column_dimensions[get_column_letter(2 + i)].width = 14
+
+    ws.cell(row=1, column=1, value=f"VĨ MÔ THANH KHOẢN THỊ TRƯỜNG — {ticker}").font = TITLE_FONT
+    ws.cell(row=2, column=1, value=(
+        "GTGD bình quân/phiên toàn TT (HOSE, tỷ VND) là driver dùng chung cho Môi giới/Margin/Lưu ký — "
+        "3 mảng phụ thuộc mật thiết vào thanh khoản thị trường. Tự doanh KHÔNG dùng sheet này (xem "
+        "02_Assumptions mục (3), phương pháp CAPM riêng, giữ nguyên theo yêu cầu).")).font = ITALIC_FONT
+    r = 4
+    header_row(ws, r, ["Chỉ tiêu"] + [f"{y}A" if y in years_hist else f"{y}E" for y in all_years])
+    r += 1
+
+    ws.cell(row=r, column=1, value="GTGD bình quân/phiên toàn TT (tỷ VND)").font = BOLD_FONT
+    for i, y in enumerate(years_hist):
+        ws.cell(row=r, column=2 + i, value=market_adtv_hist[y]).number_format = FMT_NUM
+    for i, v in enumerate(market_adtv_fc):
+        ws.cell(row=r, column=2 + len(years_hist) + i, value=v).number_format = FMT_NUM
+    _adtv_row = r
+    r += 1
+
+    ws.cell(row=r, column=1, value="  Tăng trưởng YoY (%)").font = ITALIC_FONT
+    for i in range(1, len(years_hist)):
+        ws.cell(row=r, column=2 + i, value=f"={get_column_letter(2+i)}{_adtv_row}/{get_column_letter(1+i)}{_adtv_row}-1").number_format = FMT_PCT
+    for i in range(len(market_adtv_fc)):
+        cc = 2 + len(years_hist) + i
+        ws.cell(row=r, column=cc, value=f"={get_column_letter(cc)}{_adtv_row}/{get_column_letter(cc-1)}{_adtv_row}-1").number_format = FMT_PCT
+    r += 2
+
+    ws.cell(row=r, column=1, value="── PHƯƠNG PHÁP DỰ PHÓNG (căn cứ dữ liệu lịch sử, KHÔNG áp đặt số cố định) ──").font = Font(bold=True, italic=True, color="1F4E78")
+    r += 1
+    ws.cell(row=r, column=1, value="TB tăng trưởng GTGD 3 năm gần nhất (căn cứ)").font = BOLD_FONT
+    ws.cell(row=r, column=2, value=adtv_growth_base).number_format = FMT_PCT
+    ws.cell(row=r, column=3, value="Clamp [-10%, +20%] để tránh ngoại suy quá đà từ chu kỳ bùng nổ/điều chỉnh mạnh của TTCK VN").font = ITALIC_FONT
+    r += 1
+    ws.cell(row=r, column=1, value="Hệ số suy giảm dần theo năm dự phóng").font = DATA_FONT
+    for i, f in enumerate([1.0, 0.75, 0.55]):
+        ws.cell(row=r, column=2 + len(years_hist) + i, value=f).number_format = '0%'
+    r += 1
+    ws.cell(row=r, column=1, value="  ↳ Tăng trưởng GTGD dự phóng (= TB căn cứ × hệ số suy giảm)").font = BOLD_FONT
+    for i, g in enumerate(adtv_growth_taper):
+        ws.cell(row=r, column=2 + len(years_hist) + i, value=g).number_format = FMT_PCT
+    r += 2
+
+    ws.cell(row=r, column=1, value="── LAN TỎA SANG CÁC MẢNG PHỤ THUỘC THANH KHOẢN ──").font = Font(bold=True, italic=True, color="1F4E78")
+    r += 1
+    ws.cell(row=r, column=1, value="Hệ số nhạy cảm Margin / GTGD (MARGIN_LIQUIDITY_BETA)").font = BOLD_FONT
+    ws.cell(row=r, column=2, value=margin_liquidity_beta).number_format = '0.00"x"'
+    ws.cell(row=r, column=3, value=("⚠ GIẢ ĐỊNH — dư nợ margin toàn ngành lịch sử biến động MẠNH HƠN GTGD (đòn bẩy tăng khi thanh khoản/tâm lý "
+                                     "tốt), không có dữ liệu công khai đủ chi tiết để hồi quy chính xác hệ số này, nhưng thay được cho taper "
+                                     "15%/10%/8% hoàn toàn độc lập với vĩ mô trước đây")).font = ITALIC_FONT
+    r += 1
+    ws.cell(row=r, column=1, value="  ↳ Tăng trưởng dư nợ Margin dự phóng (= Tăng trưởng GTGD × hệ số)").font = BOLD_FONT
+    for i, g in enumerate(margin_loan_growth_fc):
+        ws.cell(row=r, column=2 + len(years_hist) + i, value=g).number_format = FMT_PCT
+    r += 1
+    ws.cell(row=r, column=1, value="Tăng trưởng DT Lưu ký dự phóng (blend 50% tự thân + 50% GTGD năm 1)").font = BOLD_FONT
+    ws.cell(row=r, column=2 + len(years_hist), value=custody_growth_fc).number_format = FMT_PCT
+    r += 2
+
+    ws.cell(row=r, column=1, value=(
+        "Ghi chú: Môi giới dùng TRỰC TIẾP GTGD dự phóng ở trên làm driver chính (xem 02_Assumptions/"
+        "03_Revenue_Model). Tự doanh (FVTPL+AFS) KHÔNG dùng vĩ mô thanh khoản này — vẫn theo phương pháp "
+        "Danh mục × (%CDs×R_CDs+%TP×R_TP+%CP×R_VNI), R_VNI neo theo COE (CAPM), giữ nguyên theo yêu cầu.")).font = ITALIC_FONT
+
+    print(f"[Excel] Sheet 01b_Vi_Mo_Thanh_Khoan done.")
+
+
 def build_beta_coe_sheets(wb, ticker, beta_raw, beta_val, beta_src, aligned_data, rf_val, rf_src, erp, specific_rp, coe):
     ws_beta = wb.create_sheet("00_Beta")
     ws_beta.column_dimensions['A'].width = 15
@@ -1138,6 +1349,8 @@ def _rev_model_layout():
     L["margin_bal_avg"] = r; r += 2
     L["fvtpl_bal"] = r; r += 1
     L["fvtpl_bal_avg"] = r; r += 2
+    L["borrow_bal"] = r; r += 1
+    L["borrow_bal_avg"] = r; r += 2
     L["qlq_aum"] = r; r += 2
     r += 1  # header "── DOANH THU THEO MẢNG ──"
     L["brokerage"] = r; r += 1
@@ -1149,6 +1362,19 @@ def _rev_model_layout():
     L["qlq"] = r; r += 1
     L["rev_blend_adj"] = r; r += 1
     L["total"] = r; r += 1
+    r += 1  # header "── TỶ TRỌNG ĐÓNG GÓP THEO MẢNG (%) ──"
+    r += 5  # 5 dòng % đóng góp (Môi giới/Margin/Tự doanh/IB+Lưu ký/QLQ)
+    r += 1  # header "── CHI PHÍ THEO MẢNG (giá vốn) ──"
+    L["brokerage_cost"] = r; r += 1
+    L["margin_cost"] = r; r += 1
+    L["fvtpl_cost"] = r; r += 1
+    L["ib_cost"] = r; r += 1
+    r += 1  # header "── LỢI NHUẬN GỘP THEO MẢNG ──"
+    L["gp_moigioi"] = r; r += 1
+    L["gp_margin"] = r; r += 1
+    L["gp_tudoanh"] = r; r += 1
+    L["gp_ibluuky"] = r; r += 1
+    L["gp_total"] = r; r += 1
     return L
 
 
@@ -1438,10 +1664,47 @@ def build_assumptions_sheet(wb, ticker, years_hist, years_fc, price, shares, coe
                              "⚠ GIẢ ĐỊNH THỦ CÔNG, GIẢM DẦN theo năm (thận trọng cho năm xa) — điều chỉnh theo kế hoạch huy động "
                              "AUM thực tế nếu CTCK có công bố")
 
-    ws.cell(row=r, column=1, value="── CHI PHÍ & THUẾ ──").font = Font(bold=True, italic=True, color="1F4E78")
+    ws.cell(row=r, column=1, value="── CHI PHÍ THEO MẢNG (giá vốn — dùng cho Lợi nhuận gộp bottom-up theo mảng) ──").font = Font(bold=True, italic=True, color="1F4E78")
+    r += 1
+    _bc_row = r
+    _bc_vals = [f"='03_Revenue_Model'!{col(i)}{RML['brokerage_cost']}/'03_Revenue_Model'!{col(i)}{RML['brokerage']}" for i in range(N_HIST)]
+    for i in range(N_FC):
+        _bc_vals.append(f"=AVERAGE({col(N_HIST-2)}{_bc_row}:{col(N_HIST-1)}{_bc_row})")
+    RA["brokerage_cost_pct"] = arow("Tỷ lệ Chi phí Môi giới / DT Môi giới (%)", _bc_vals, FMT_PCT,
+                                     "Công thức: Chi phí môi giới thực tế / DT môi giới ('03_Revenue_Model') — công thức sống; "
+                                     "Dự phóng = TB 2 năm gần nhất (thay cho tỷ lệ chi phí gộp chung toàn công ty)")
+
+    _mc_row = r
+    _mc_vals = [f"='03_Revenue_Model'!{col(i)}{RML['margin_cost']}/'03_Revenue_Model'!{col(i)}{RML['borrow_bal_avg']}" for i in range(N_HIST)]
+    for i in range(N_FC):
+        _mc_vals.append(f"=AVERAGE({col(N_HIST-2)}{_mc_row}:{col(N_HIST-1)}{_mc_row})")
+    RA["margin_cost_rate"] = arow("Chi phí lãi vay / Tổng dư nợ vay bình quân (%/năm)", _mc_vals, FMT_PCT,
+                                   "Công thức: Chi phí lãi vay toàn công ty / Dư nợ vay bình quân ('03_Revenue_Model') — công thức sống; "
+                                   "Dự phóng = TB 2 năm gần nhất. Giá vốn của mảng Margin — CTCK không tách bạch chi phí vốn theo mảng "
+                                   "vay margin/tự doanh trong BCTC công khai, dùng chi phí lãi vay TOÀN CÔNG TY (theo yêu cầu)")
+
+    _fcst_row = r
+    _fcst_vals = [f"='03_Revenue_Model'!{col(i)}{RML['fvtpl_cost']}/'03_Revenue_Model'!{col(i)}{RML['fvtpl_bal_avg']}" for i in range(N_HIST)]
+    for i in range(N_FC):
+        _fcst_vals.append(f"=AVERAGE({col(N_HIST-2)}{_fcst_row}:{col(N_HIST-1)}{_fcst_row})")
+    RA["fvtpl_cost_pct"] = arow("Tỷ lệ Chi phí hoạt động Tự doanh / Danh mục bình quân (%/năm)", _fcst_vals, FMT_PCT,
+                                 "Công thức: Chi phí hoạt động tự doanh / Danh mục Tự doanh bình quân ('03_Revenue_Model') — công thức sống; "
+                                 "Dự phóng = TB 2 năm gần nhất")
+
+    _ic_row = r
+    _ic_vals = [f"='03_Revenue_Model'!{col(i)}{RML['ib_cost']}/'03_Revenue_Model'!{col(i)}{RML['ib_custody']}" for i in range(N_HIST)]
+    for i in range(N_FC):
+        _ic_vals.append(f"=AVERAGE({col(N_HIST-2)}{_ic_row}:{col(N_HIST-1)}{_ic_row})")
+    RA["ib_cost_pct"] = arow("Tỷ lệ Chi phí IB+Lưu ký / DT IB+Lưu ký (%)", _ic_vals, FMT_PCT,
+                              "Công thức: (Chi phí bảo lãnh+tư vấn+lưu ký) / DT IB+Lưu ký ('03_Revenue_Model') — công thức sống; "
+                              "Dự phóng = TB 2 năm gần nhất")
+
+    ws.cell(row=r, column=1, value="── CHI PHÍ & THUẾ (tổng công ty) ──").font = Font(bold=True, italic=True, color="1F4E78")
     r += 1
     RA["cost_pct"] = arow("Chi phí hoạt động / DT hoạt động (%)", [None] * N_HIST + [cost_pct_fc] * N_FC, FMT_PCT,
-                           "TB 2 năm gần nhất (chi phí môi giới, lưu ký, tự doanh...) — số derive từ lịch sử, có thể điều chỉnh nếu dự kiến thay đổi cơ cấu chi phí")
+                           "TB 2 năm gần nhất (chi phí môi giới, lưu ký, tự doanh...) — số derive từ lịch sử, có thể điều chỉnh nếu dự kiến "
+                           "thay đổi cơ cấu chi phí. Đây là driver CHÍNH cho Chi phí hoạt động/Lợi nhuận gộp TỔNG CÔNG TY (04_PnL). Chi phí/lợi "
+                           "nhuận gộp THEO MẢNG ở mục dưới chỉ phục vụ phân tích hiệu quả từng mảng, không cộng dồn vào dòng này.")
     RA["sga_pct"] = arow("CP Quản lý CTCK / DT hoạt động (%)", [None] * N_HIST + [sga_pct_fc] * N_FC, FMT_PCT,
                           "TB 2 năm gần nhất — số derive từ lịch sử, điều chỉnh nếu công ty có kế hoạch mở rộng/thu hẹp bộ máy")
     RA["tax_rate"] = arow("Thuế suất TNDN hiệu dụng (%)", [None] * N_HIST + [tax_rate_fc] * N_FC, FMT_PCT,
@@ -1457,7 +1720,10 @@ def build_revenue_model_sheet(wb, ticker, years_hist, years_fc, RA,
                                margin_loans_hist, fvtpl_portfolio_hist, qlq_aum0,
                                brokerage_rev_fc, margin_rev_fc, fvtpl_rev_fc, ib_custody_rev_fc, qlq_rev_fc,
                                margin_loans_fc, fvtpl_portfolio_fc, qlq_aum_fc, total_rev_hist, total_rev_fc,
-                               ib_rev_hist=None, custody_rev_hist=None):
+                               ib_rev_hist=None, custody_rev_hist=None,
+                               borrow_total_hist=None, borrow_total_fc=None,
+                               brokerage_cost_hist=None, interest_expense_hist=None, fvtpl_cost_hist=None, ib_cost_hist=None,
+                               brokerage_cost_fc=None, margin_cost_fc=None, fvtpl_cost_fc=None, ib_cost_fc=None):
     ws = wb.create_sheet("03_Revenue_Model")
     N_HIST, N_FC = len(years_hist), len(years_fc)
     all_years = years_hist + years_fc
@@ -1507,6 +1773,23 @@ def build_revenue_model_sheet(wb, ticker, years_hist, years_fc, RA,
     r += 1
     RR["fvtpl_bal_avg"] = r
     ws.cell(row=r, column=1, value="  Danh mục Tự doanh bình quân").font = ITALIC_FONT
+    for i in range(N_ALL):
+        prev_col = col(i - 1) if i > 0 else col(i)
+        ws.cell(row=r, column=2 + i, value=f"=AVERAGE({prev_col}{r-1}:{col(i)}{r-1})").number_format = FMT_NUM
+    r += 2
+
+    # ── Tổng vay & nợ thuê tài chính (cuối kỳ + bình quân) — dùng làm cơ sở giá vốn Margin ──
+    RR["borrow_bal"] = r
+    ws.cell(row=r, column=1, value="Tổng vay & nợ thuê tài chính (cuối kỳ)").font = BOLD_FONT
+    for i in range(N_HIST):
+        ws.cell(row=r, column=2 + i, value=round((borrow_total_hist or [0]*N_HIST)[i], 1)).number_format = FMT_NUM
+    for i in range(N_FC):
+        prev = f"{col(N_HIST + i - 1)}{r}"
+        formula = f"={prev}*(1+{a_col(N_HIST+i)}{RA['margin_growth']})"
+        ws.cell(row=r, column=2 + N_HIST + i, value=formula).number_format = FMT_NUM
+    r += 1
+    RR["borrow_bal_avg"] = r
+    ws.cell(row=r, column=1, value="  Tổng vay & nợ thuê bình quân").font = ITALIC_FONT
     for i in range(N_ALL):
         prev_col = col(i - 1) if i > 0 else col(i)
         ws.cell(row=r, column=2 + i, value=f"=AVERAGE({prev_col}{r-1}:{col(i)}{r-1})").number_format = FMT_NUM
@@ -1645,6 +1928,83 @@ def build_revenue_model_sheet(wb, ticker, years_hist, years_fc, RA,
             cl = col(i)
             ws.cell(row=r, column=2 + i, value=f"={cl}{seg_row}/{cl}{RR['total']}").number_format = FMT_PCT
         r += 1
+
+    # ── CHI PHÍ THEO MẢNG (giá vốn) — lịch sử = số thực tế BCTC; dự phóng = công thức Excel sống
+    # tham chiếu tỷ lệ chi phí ('02_Assumptions') × dư nợ/danh mục/doanh thu tương ứng ──
+    ws.cell(row=r, column=1, value="── CHI PHÍ THEO MẢNG (giá vốn, tỷ VND) ──").font = Font(bold=True, italic=True, color="1F4E78")
+    r += 1
+    RR["brokerage_cost"] = r
+    ws.cell(row=r, column=1, value="(1) Chi phí Môi giới").font = BOLD_FONT
+    for i in range(N_HIST):
+        ws.cell(row=r, column=2 + i, value=round((brokerage_cost_hist or [0]*N_HIST)[i], 1)).number_format = FMT_NUM
+    for i in range(N_FC):
+        cl = a_col(N_HIST + i)
+        ws.cell(row=r, column=2 + N_HIST + i, value=f"={col(N_HIST+i)}{RR['brokerage']}*{cl}{RA['brokerage_cost_pct']}").number_format = FMT_NUM
+    r += 1
+
+    RR["margin_cost"] = r
+    ws.cell(row=r, column=1, value="(2) Chi phí lãi vay (giá vốn Margin)").font = BOLD_FONT
+    for i in range(N_HIST):
+        ws.cell(row=r, column=2 + i, value=round((interest_expense_hist or [0]*N_HIST)[i], 1)).number_format = FMT_NUM
+    for i in range(N_FC):
+        cl = a_col(N_HIST + i)
+        ws.cell(row=r, column=2 + N_HIST + i, value=f"={col(N_HIST+i)}{RR['borrow_bal_avg']}*{cl}{RA['margin_cost_rate']}").number_format = FMT_NUM
+    r += 1
+
+    RR["fvtpl_cost"] = r
+    ws.cell(row=r, column=1, value="(3) Chi phí hoạt động Tự doanh").font = BOLD_FONT
+    for i in range(N_HIST):
+        ws.cell(row=r, column=2 + i, value=round((fvtpl_cost_hist or [0]*N_HIST)[i], 1)).number_format = FMT_NUM
+    for i in range(N_FC):
+        cl = a_col(N_HIST + i)
+        ws.cell(row=r, column=2 + N_HIST + i, value=f"={col(N_HIST+i)}{RR['fvtpl_bal_avg']}*{cl}{RA['fvtpl_cost_pct']}").number_format = FMT_NUM
+    r += 1
+
+    RR["ib_cost"] = r
+    ws.cell(row=r, column=1, value="(4) Chi phí IB + Lưu ký").font = BOLD_FONT
+    for i in range(N_HIST):
+        ws.cell(row=r, column=2 + i, value=round((ib_cost_hist or [0]*N_HIST)[i], 1)).number_format = FMT_NUM
+    for i in range(N_FC):
+        cl = a_col(N_HIST + i)
+        ws.cell(row=r, column=2 + N_HIST + i, value=f"={col(N_HIST+i)}{RR['ib_custody']}*{cl}{RA['ib_cost_pct']}").number_format = FMT_NUM
+    r += 1
+
+    # ── LỢI NHUẬN GỘP THEO MẢNG (= DT + Chi phí, cả lịch sử lẫn dự phóng đều là công thức trong-sheet) ──
+    ws.cell(row=r, column=1, value="── LỢI NHUẬN GỘP THEO MẢNG (tỷ VND, KHÔNG gồm QLQ) ──").font = Font(bold=True, italic=True, color="1F4E78")
+    r += 1
+    RR["gp_moigioi"] = r
+    ws.cell(row=r, column=1, value="LNG Môi giới").font = BOLD_FONT
+    for i in range(N_ALL):
+        cl = col(i)
+        ws.cell(row=r, column=2 + i, value=f"={cl}{RR['brokerage']}+{cl}{RR['brokerage_cost']}").number_format = FMT_NUM
+    r += 1
+    RR["gp_margin"] = r
+    ws.cell(row=r, column=1, value="LNG Cho vay Margin").font = BOLD_FONT
+    for i in range(N_ALL):
+        cl = col(i)
+        ws.cell(row=r, column=2 + i, value=f"={cl}{RR['margin']}+{cl}{RR['margin_cost']}").number_format = FMT_NUM
+    r += 1
+    RR["gp_tudoanh"] = r
+    ws.cell(row=r, column=1, value="LNG Tự doanh (FVTPL+AFS)").font = BOLD_FONT
+    for i in range(N_ALL):
+        cl = col(i)
+        ws.cell(row=r, column=2 + i, value=f"={cl}{RR['fvtpl']}+{cl}{RR['fvtpl_cost']}").number_format = FMT_NUM
+    r += 1
+    RR["gp_ibluuky"] = r
+    ws.cell(row=r, column=1, value="LNG IB + Lưu ký").font = BOLD_FONT
+    for i in range(N_ALL):
+        cl = col(i)
+        ws.cell(row=r, column=2 + i, value=f"={cl}{RR['ib_custody']}+{cl}{RR['ib_cost']}").number_format = FMT_NUM
+    r += 1
+    RR["gp_total"] = r
+    ws.cell(row=r, column=1, value="TỔNG LNG 4 MẢNG (không gồm QLQ)").font = Font(bold=True, color="FFFFFF")
+    for i in range(N_ALL):
+        cl = col(i)
+        c = ws.cell(row=r, column=2 + i, value=f"={cl}{RR['gp_moigioi']}+{cl}{RR['gp_margin']}+{cl}{RR['gp_tudoanh']}+{cl}{RR['gp_ibluuky']}")
+        c.number_format = FMT_NUM
+        c.font = Font(bold=True, color="FFFFFF")
+        c.fill = HEADER_FILL
+    r += 1
 
     _layout = _rev_model_layout()
     _mismatch = {k: (RR[k], _layout[k]) for k in _layout if RR.get(k) != _layout[k]}
@@ -2407,21 +2767,21 @@ def build_pe_pb_history_sheet(wb, ticker, quarter_labels, pe_quarters, pb_quarte
 
 def build_segment_quarterly_sheet(wb, ticker, is_q):
     ws = wb.create_sheet("14_Segment_Quarterly")
-    header_row(ws, 1, ["Quý", "DT Môi giới", "DT Margin", "DT Tự doanh (net)", "DT IB+Lưu ký", "LNST"],
-               [12, 14, 14, 16, 14, 14])
+    header_row(ws, 1, ["Quý", "DT Môi giới", "DT Margin", "DT Tự doanh (FVTPL+AFS)", "DT IB+Lưu ký", "DT QLQ (ước tính)",
+                        "LNG Môi giới", "LNG Margin", "LNG Tự doanh", "LNG IB+Lưu ký", "LNST"],
+               [12, 14, 14, 18, 14, 15, 14, 14, 14, 14, 14])
     quarters = sorted(set((r.get("yearReport"), r.get("lengthReport")) for r in is_q
                           if r.get("yearReport") and r.get("lengthReport") in (1, 2, 3, 4)))
     r = 2
     for y, q in quarters:
         rec = next((x for x in is_q if x.get("yearReport") == y and x.get("lengthReport") == q), {})
-        brokerage = (rec.get(SEG["brokerage_rev"]) or 0) / 1e9
-        margin = (rec.get(SEG["margin_rev"]) or 0) / 1e9
-        fvtpl = ((rec.get(SEG["fvtpl_gain"]) or 0) + (rec.get(SEG["fvtpl_loss"]) or 0)) / 1e9
-        ib = ((rec.get(SEG["ib_underwrite"]) or 0) + (rec.get(SEG["ib_advisory"]) or 0)
-              + (rec.get(SEG["custody_rev"]) or 0) + (rec.get(SEG["ib_finadvisory"]) or 0)) / 1e9
+        rev = _segment_rev_from_record(rec)
+        gp = _segment_gp_from_record(rec)
         npat = (rec.get(IS_TOTAL["npat_parent"]) or 0) / 1e9
         ws.cell(row=r, column=1, value=f"{y}Q{q}")
-        for c, v in enumerate([brokerage, margin, fvtpl, ib, npat], start=2):
+        vals = [rev["MoiGioi"], rev["Margin"], rev["TuDoanh"], rev["IB_LuuKy"], rev["QLQ"],
+                gp["MoiGioi"], gp["Margin"], gp["TuDoanh"], gp["IB_LuuKy"], npat]
+        for c, v in enumerate(vals, start=2):
             ws.cell(row=r, column=c, value=round(v, 1)).number_format = FMT_NUM
         r += 1
     print(f"[Excel] Sheet 14_Segment_Quarterly done ({r-2} quý).")
@@ -2440,6 +2800,35 @@ def load_fvtpl_holdings(ticker):
     except Exception as e:
         print(f"  [WARN] Không đọc được data/fvtpl_holdings/{ticker}.json: {e}")
         return None
+
+
+def _combine_fvtpl_afs(data):
+    """Gộp 2 khối fvtpl + afs (cùng schema 5 nhóm tài sản x cost/fairValue/gain/loss) thành 1 pool
+    'Tự doanh' tổng — với CTCK có cả FVTPL và AFS (vd VCI), cơ cấu tài sản/lãi-lỗ đánh giá lại phải
+    tính tổng cả 2 vì cả hai đều là tài sản tự doanh. CTCK không có AFS (vd HCM, afs toàn rỗng) thì
+    cộng vào không đổi kết quả so với chỉ dùng fvtpl."""
+    fvtpl = data.get("fvtpl", {}) or {}
+    afs = data.get("afs", {}) or {}
+
+    def _sum_field(a, b, key):
+        va, vb = a.get(key), b.get(key)
+        if va is None and vb is None:
+            return None
+        return (va or 0) + (vb or 0)
+
+    out = {"yearly": {}, "quarterly": {}}
+    for bucket in ("yearly", "quarterly"):
+        f_bucket = fvtpl.get(bucket, {}) or {}
+        a_bucket = afs.get(bucket, {}) or {}
+        for pkey in set(f_bucket) | set(a_bucket):
+            f_seg = f_bucket.get(pkey, {}) or {}
+            a_seg = a_bucket.get(pkey, {}) or {}
+            merged = {}
+            for cat in set(f_seg) | set(a_seg):
+                fv, av = f_seg.get(cat, {}) or {}, a_seg.get(cat, {}) or {}
+                merged[cat] = {k: _sum_field(fv, av, k) for k in ("cost", "fairValue", "gain", "loss")}
+            out[bucket][pkey] = merged
+    return out
 
 
 def _fvtpl_merged_periods(pool):
@@ -2477,7 +2866,8 @@ def build_fvtpl_holdings_sheet(wb, ticker):
         ws.column_dimensions[get_column_letter(3 + i)].width = 13
 
     cats = sorted(data.get("categories", {}).items(), key=lambda kv: kv[1].get("order", 99))
-    fvtpl_periods = _fvtpl_merged_periods(data.get("fvtpl", {}))
+    combined = _combine_fvtpl_afs(data)  # gộp FVTPL+AFS — cả 2 đều là tài sản tự doanh
+    fvtpl_periods = _fvtpl_merged_periods(combined)
 
     ws.cell(row=1, column=1, value=f"CƠ CẤU & HIỆU QUẢ DANH MỤC TỰ DOANH FVTPL/AFS — {ticker}").font = TITLE_FONT
     ws.cell(row=2, column=1, value=(
@@ -2490,13 +2880,12 @@ def build_fvtpl_holdings_sheet(wb, ticker):
     r += 1
     header_row(ws, r, ["Nhóm tài sản"] + [p[1] for p in fvtpl_periods])
     r += 1
-    fvtpl = data.get("fvtpl", {})
     for seg, meta in cats:
         vals = []
         for pkey, _ in fvtpl_periods:
-            bucket = (fvtpl.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else fvtpl.get("quarterly", {}))
+            bucket = (combined.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else combined.get("quarterly", {}))
             v = bucket.get(pkey, {}).get(seg)
-            vals.append(round(v["fairValue"] / 1e9, 1) if v else None)
+            vals.append(round(v["fairValue"] / 1e9, 1) if v and v.get("fairValue") is not None else None)
         data_row(ws, r, meta.get("label", seg), vals, fmt=FMT_NUM)
         r += 1
     total_row = r
@@ -2515,7 +2904,7 @@ def build_fvtpl_holdings_sheet(wb, ticker):
     for seg, meta in cats:
         vals = []
         for pkey, _ in fvtpl_periods:
-            bucket = (fvtpl.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else fvtpl.get("quarterly", {}))
+            bucket = (combined.get("yearly", {}) if not any(ch == 'Q' for ch in pkey) else combined.get("quarterly", {}))
             v = bucket.get(pkey, {}).get(seg)
             if v and (v.get("gain") is not None or v.get("loss") is not None):
                 net = (v.get("gain") or 0) + (v.get("loss") or 0)
@@ -2904,8 +3293,8 @@ def make_fvtpl_composition_chart(chart_dir, ticker, fvtpl_data):
     """Biểu đồ cột chồng cơ cấu danh mục tự doanh FVTPL theo 5 nhóm tài sản (giá trị hợp lý, tỷ VND),
     trục thời gian gộp năm+quý theo _fvtpl_merged_periods. Trả về None nếu không có dữ liệu."""
     cats = sorted(fvtpl_data.get("categories", {}).items(), key=lambda kv: kv[1].get("order", 99))
-    fvtpl = fvtpl_data.get("fvtpl", {})
-    periods = _fvtpl_merged_periods(fvtpl)
+    combined = _combine_fvtpl_afs(fvtpl_data)  # gộp FVTPL+AFS — cả 2 đều là tài sản tự doanh
+    periods = _fvtpl_merged_periods(combined)
     if not cats or not periods:
         return None
 
@@ -2916,9 +3305,9 @@ def make_fvtpl_composition_chart(chart_dir, ticker, fvtpl_data):
     for seg, meta in cats:
         vals = []
         for pkey, _ in periods:
-            bucket = fvtpl.get("yearly", {}) if "Q" not in pkey else fvtpl.get("quarterly", {})
+            bucket = combined.get("yearly", {}) if "Q" not in pkey else combined.get("quarterly", {})
             v = bucket.get(pkey, {}).get(seg)
-            vals.append(round(v["fairValue"] / 1e9, 1) if v else 0)
+            vals.append(round(v["fairValue"] / 1e9, 1) if v and v.get("fairValue") is not None else 0)
         if not any(vals):
             continue
         ax.bar(x, vals, bottom=bottom, label=meta.get("label", seg), color=meta.get("color", "#94a3b8"))
@@ -3304,14 +3693,17 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
                        seg_hist, seg_fc, seg_pct_fc0, concentration_seg, concentration_flag,
                        is_q=None, bs_q=None, latest_margin_leverage=0.0, latest_leverage_label="",
                        weights=None, quarterly_update=None, macro_liquidity=None, beta_rf_cache=None,
-                       pb_lower_median=None, pb_upper_median=None, weighted_lower_target=None, weighted_upper_target=None):
+                       pb_lower_median=None, pb_upper_median=None, weighted_lower_target=None, weighted_upper_target=None,
+                       gp_hist=None, roe_quarters=None, gp_fc=None):
     out_dir = os.path.join(PROJECT_ROOT, "data")
     os.makedirs(out_dir, exist_ok=True)
     all_years = years_hist + years_fc
     weights = weights or {"PB": 0.9, "PE": 0.1}
 
-    # ── Chuỗi dữ liệu theo QUÝ cho web (LNST/ROE, đòn bẩy Margin, tương quan ROE-P/B) ──
-    quarterly_series = {"labels": [], "revenue": [], "npat": [], "roe": [], "marginLeverage": []}
+    # ── Chuỗi dữ liệu theo QUÝ cho web (LNST/ROE, đòn bẩy Margin, tương quan ROE-P/B, DT/LNG 5 mảng) ──
+    quarterly_series = {"labels": [], "revenue": [], "npat": [], "roe": [], "marginLeverage": [],
+                         "segmentRevenue": {seg: [] for seg in SEGMENT_NAMES},
+                         "segmentGrossProfit": {seg: [] for seg in SEGMENT_NAMES if seg != "QLQ"}}
     roe_pb_pairs = []
     if is_q and bs_q:
         _q_keys = sorted(set((r.get("yearReport"), r.get("lengthReport")) for r in is_q
@@ -3330,6 +3722,12 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
             quarterly_series["npat"].append(npat_q)
             quarterly_series["roe"].append(roe_q)
             quarterly_series["marginLeverage"].append(lev_q)
+            seg_rev_q = _segment_rev_from_record(rec_is)
+            seg_gp_q = _segment_gp_from_record(rec_is)
+            for seg in SEGMENT_NAMES:
+                quarterly_series["segmentRevenue"][seg].append(round(seg_rev_q[seg], 2))
+            for seg in quarterly_series["segmentGrossProfit"]:
+                quarterly_series["segmentGrossProfit"][seg].append(round(seg_gp_q[seg], 2))
         for i, lbl in enumerate(quarter_labels):
             try:
                 y_str, q_str = lbl.split("-Q")
@@ -3410,6 +3808,15 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
             "revenueHist": {seg: [round(v, 1) for v in seg_hist[seg]] for seg in SEGMENT_NAMES},
             "revenueForecast": {seg: [round(v, 1) for v in seg_fc[seg]] for seg in SEGMENT_NAMES},
             "pctNow": {seg: round(seg_pct_fc0[seg], 4) for seg in SEGMENT_NAMES},
+            "grossProfitHist": ({seg: [round(v, 1) for v in gp_hist[seg]] for seg in gp_hist}
+                                 if gp_hist else None),
+            "grossProfitForecast": ({seg: [round(v, 1) for v in gp_fc[seg]] for seg in gp_fc}
+                                     if gp_fc else None),
+            "grossProfitNote": ("Lợi nhuận gộp KHÔNG gồm Quản lý quỹ (Vietcap không có field chi phí "
+                                 "QLQ, doanh thu QLQ cũng chỉ là proxy). Margin dùng Chi phí lãi vay toàn "
+                                 "công ty làm giá vốn (không tách bạch được theo mảng trong BCTC). Dự phóng "
+                                 "= driver riêng từng mảng (công thức Excel sống, xem sheet 03_Revenue_Model): "
+                                 "tỷ lệ chi phí/DT hoặc chi phí/dư nợ bình quân lịch sử (trung bình 2 năm gần nhất)."),
         },
         "quarterly": quarterly_series,
         "roePbCorrelation": roe_pb_pairs,
@@ -3446,6 +3853,7 @@ def save_json_summary(ticker, company_name, price, mcap, shares, years_hist, yea
         "pe_quarters": pe_quarters,
         "pb_quarters": pb_quarters,
         "quarter_labels": quarter_labels,
+        "roe_quarters_ttm": roe_quarters,
         "ratios": {
             "roe": [round(npat_hist[i] / equity_hist[i], 4) if equity_hist[i] else None for i in range(len(years_hist))]
                    + [round(npat_fc[i] / equity_fc[i], 4) if equity_fc[i] else None for i in range(len(years_fc))],

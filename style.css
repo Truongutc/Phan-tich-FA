@@ -518,6 +518,30 @@ body {
 @media (max-width: 1100px) {
     .dashboard-grid-two { grid-template-columns: 1fr; }
 }
+
+/* ════════════════════════════════════════════
+   MOBILE — enlarge charts, stack split layout
+════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .app-shell { padding: 0 10px 30px; }
+    .chart-card-split { padding: 14px; gap: 14px; border-radius: 14px; }
+    .chart-split-left { flex: 1 1 100%; min-width: 100%; }
+    .chart-split-right {
+        flex: 1 1 100%;
+        min-width: 100%;
+        border-left: none;
+        border-top: 3px solid var(--sector-color, var(--primary));
+        border-radius: 12px 12px 0 0;
+        padding: 14px 4px 4px;
+    }
+    .chart-container { height: 360px; }
+    .card, .chart-card, .moat-card, .valuation-card,
+    .thesis-card, .risks-card, .pestle-card,
+    .commentary-card, .table-card, .bank-kpi-card { padding: 16px; }
+}
+@media (max-width: 420px) {
+    .chart-container { height: 320px; }
+}
 .col-left, .col-right { display: flex; flex-direction: column; gap: 20px; }
 
 /* ════════════════════════════════════════════

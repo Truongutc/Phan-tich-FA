@@ -19,6 +19,10 @@ let chartPB = null;
 let chartFvtplComp = null;
 let chartFvtplGainLoss = null;
 let chartFvtplHoldings = null;
+let chartFvtplHoldingsQuarterly = null;
+let chartSegmentRevenueQuarterly = null;
+let chartSegmentGrossProfit = null;
+let chartSegmentGrossProfitQuarterly = null;
 
 if (typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
 
@@ -26,7 +30,7 @@ const SEGMENT_COLORS = {
     MoiGioi: '#3b82f6', Margin: '#f59e0b', TuDoanh: '#10b981', IB_LuuKy: '#8b5cf6', QLQ: '#ec4899',
 };
 const SEGMENT_LABELS_FALLBACK = {
-    MoiGioi: 'Môi giới', Margin: 'Cho vay Margin', TuDoanh: 'Tự doanh (FVTPL)', IB_LuuKy: 'IB + Lưu ký', QLQ: 'Quản lý quỹ',
+    MoiGioi: 'Môi giới', Margin: 'Cho vay Margin', TuDoanh: 'Tự doanh (FVTPL+AFS)', IB_LuuKy: 'IB + Lưu ký', QLQ: 'Quản lý quỹ',
 };
 const CFG = { icon: '📈', label: 'Chứng Khoán', color: '#3b82f6' };
 
@@ -217,6 +221,9 @@ async function loadStockDashboard(ticker) {
     // Charts
     renderSegmentRevenueChart(localJson);
     renderSegmentMixChart(localJson);
+    renderSegmentRevenueQuarterlyChart(localJson);
+    renderSegmentGrossProfitChart(localJson);
+    renderSegmentGrossProfitQuarterlyChart(localJson);
     renderRevNpatChart(localJson);
     renderQuarterlyNpatRoeChart(localJson);
     renderRoePbCorrelationChart(localJson);
@@ -229,10 +236,12 @@ async function loadStockDashboard(ticker) {
 function destroyCharts() {
     [chartSegmentRevenue, chartSegmentMix, chartRevNpat, chartQuarterlyNpatRoe,
      chartRoePbCorrelation, chartMarginLeverage, chartMarketShare, chartPE, chartPB,
-     chartFvtplComp, chartFvtplGainLoss, chartFvtplHoldings].forEach(c => { if (c) c.destroy(); });
+     chartFvtplComp, chartFvtplGainLoss, chartFvtplHoldings, chartFvtplHoldingsQuarterly,
+     chartSegmentRevenueQuarterly, chartSegmentGrossProfit, chartSegmentGrossProfitQuarterly].forEach(c => { if (c) c.destroy(); });
     chartSegmentRevenue = chartSegmentMix = chartRevNpat = chartQuarterlyNpatRoe =
     chartRoePbCorrelation = chartMarginLeverage = chartMarketShare = chartPE = chartPB =
-    chartFvtplComp = chartFvtplGainLoss = chartFvtplHoldings = null;
+    chartFvtplComp = chartFvtplGainLoss = chartFvtplHoldings = chartFvtplHoldingsQuarterly =
+    chartSegmentRevenueQuarterly = chartSegmentGrossProfit = chartSegmentGrossProfitQuarterly = null;
 }
 
 function calcMedian(arr) {
@@ -601,6 +610,39 @@ function _fvtplValueAt(pool, periodKey, isYearly, seg) {
     return bucket ? (bucket[seg] || null) : null;
 }
 
+function _combineFvtplAfs(data) {
+    // Gộp 2 khối fvtpl + afs (cùng schema 5 nhóm tài sản x cost/fairValue/gain/loss) thành 1 pool
+    // "Tự doanh" tổng — CTCK có cả FVTPL và AFS (vd VCI) thì cơ cấu/lãi-lỗ đánh giá lại phải tính tổng
+    // cả 2 vì cả hai đều là tài sản tự doanh. CTCK không có AFS (afs rỗng, vd HCM) thì gộp vào không
+    // đổi kết quả so với chỉ dùng fvtpl.
+    const fvtpl = data.fvtpl || {};
+    const afs = data.afs || {};
+    const sumField = (a, b, key) => {
+        const va = a[key], vb = b[key];
+        if (va == null && vb == null) return null;
+        return (va || 0) + (vb || 0);
+    };
+    const out = { yearly: {}, quarterly: {} };
+    for (const bucketName of ['yearly', 'quarterly']) {
+        const fBucket = fvtpl[bucketName] || {};
+        const aBucket = afs[bucketName] || {};
+        const periods = new Set([...Object.keys(fBucket), ...Object.keys(aBucket)]);
+        for (const pkey of periods) {
+            const fSeg = fBucket[pkey] || {};
+            const aSeg = aBucket[pkey] || {};
+            const cats = new Set([...Object.keys(fSeg), ...Object.keys(aSeg)]);
+            const merged = {};
+            for (const cat of cats) {
+                const fv = fSeg[cat] || {}, av = aSeg[cat] || {};
+                merged[cat] = { cost: sumField(fv, av, 'cost'), fairValue: sumField(fv, av, 'fairValue'),
+                                gain: sumField(fv, av, 'gain'), loss: sumField(fv, av, 'loss') };
+            }
+            out[bucketName][pkey] = merged;
+        }
+    }
+    return out;
+}
+
 async function loadFvtplHoldings(ticker) {
     const section = document.getElementById('fvtpl-holdings-section');
     if (!section) return;
@@ -612,6 +654,7 @@ async function loadFvtplHoldings(ticker) {
         renderFvtplCompositionChart(data);
         renderFvtplGainLossChart(data);
         renderFvtplHoldingsChart(data);
+        renderFvtplHoldingsQuarterlyChart(data);
     } catch (e) {
         console.warn('FVTPL holdings load error:', e);
         section.style.display = 'none';
@@ -620,15 +663,16 @@ async function loadFvtplHoldings(ticker) {
 
 function renderFvtplCompositionChart(data) {
     const cats = Object.entries(data.categories || {}).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
-    const periods = _fvtplMergedPeriods(data.fvtpl || {});
+    const combined = _combineFvtplAfs(data);
+    const periods = _fvtplMergedPeriods(combined);
     if (!cats.length || !periods.length) return;
 
     const datasets = cats.map(([key, meta]) => ({
         label: meta.label,
         backgroundColor: meta.color,
         data: periods.map(p => {
-            const v = _fvtplValueAt(data.fvtpl, p.key, p.label.includes('(N)'), key);
-            return v ? Math.round(v.fairValue / 1e9 * 100) / 100 : 0; // tỷ VND
+            const v = _fvtplValueAt(combined, p.key, p.label.includes('(N)'), key);
+            return v && v.fairValue != null ? Math.round(v.fairValue / 1e9 * 100) / 100 : 0; // tỷ VND
         }),
         stack: 'fvtpl',
     }));
@@ -647,26 +691,27 @@ function renderFvtplCompositionChart(data) {
 
     const latest = periods[periods.length - 1];
     const latestVals = cats.map(([key, meta]) => {
-        const v = _fvtplValueAt(data.fvtpl, latest.key, latest.label.includes('(N)'), key);
-        return { label: meta.label, fv: v ? v.fairValue : 0 };
+        const v = _fvtplValueAt(combined, latest.key, latest.label.includes('(N)'), key);
+        return { label: meta.label, fv: v ? (v.fairValue || 0) : 0 };
     }).filter(x => x.fv > 0).sort((a, b) => b.fv - a.fv);
     const total = latestVals.reduce((s, x) => s + x.fv, 0);
     const top = latestVals[0];
     document.getElementById('analysis-text-fvtpl-comp').textContent = top
-        ? `Tại ${latest.label}: danh mục tự doanh (FVTPL) đạt ${formatNumber(total / 1e9, 1)} tỷ VND, tập trung nhiều nhất ở "${top.label}" (${(top.fv / total * 100).toFixed(1)}% danh mục).`
+        ? `Tại ${latest.label}: danh mục tự doanh (FVTPL+AFS) đạt ${formatNumber(total / 1e9, 1)} tỷ VND, tập trung nhiều nhất ở "${top.label}" (${(top.fv / total * 100).toFixed(1)}% danh mục).`
         : 'Chưa đủ dữ liệu cơ cấu tự doanh.';
 }
 
 function renderFvtplGainLossChart(data) {
     const cats = Object.entries(data.categories || {}).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
-    const periods = _fvtplMergedPeriods(data.fvtpl || {});
+    const combined = _combineFvtplAfs(data);
+    const periods = _fvtplMergedPeriods(combined);
     if (!cats.length || !periods.length) return;
 
     const gainDatasets = cats.map(([key, meta]) => ({
         label: meta.label + ' — Lãi',
         backgroundColor: meta.color,
         data: periods.map(p => {
-            const v = _fvtplValueAt(data.fvtpl, p.key, p.label.includes('(N)'), key);
+            const v = _fvtplValueAt(combined, p.key, p.label.includes('(N)'), key);
             return v ? Math.round((v.gain || 0) / 1e9 * 100) / 100 : 0;
         }),
         stack: 'gainloss',
@@ -675,7 +720,7 @@ function renderFvtplGainLossChart(data) {
         label: meta.label + ' — Lỗ',
         backgroundColor: meta.color + '80',
         data: periods.map(p => {
-            const v = _fvtplValueAt(data.fvtpl, p.key, p.label.includes('(N)'), key);
+            const v = _fvtplValueAt(combined, p.key, p.label.includes('(N)'), key);
             return v ? Math.round((v.loss || 0) / 1e9 * 100) / 100 : 0;
         }),
         stack: 'gainloss',
@@ -697,7 +742,7 @@ function renderFvtplGainLossChart(data) {
     const latest = periods[periods.length - 1];
     const isY = latest.label.includes('(N)');
     const rows = cats.map(([key, meta]) => {
-        const v = _fvtplValueAt(data.fvtpl, latest.key, isY, key);
+        const v = _fvtplValueAt(combined, latest.key, isY, key);
         return { label: meta.label, gain: v ? (v.gain || 0) : 0, loss: v ? (v.loss || 0) : 0 };
     });
     const topGain = rows.slice().sort((a, b) => b.gain - a.gain)[0];
@@ -708,19 +753,15 @@ function renderFvtplGainLossChart(data) {
     document.getElementById('analysis-text-fvtpl-gainloss').textContent = txt;
 }
 
-function renderFvtplHoldingsChart(data) {
-    const holdings = data.holdings || {};
-    const periods = _fvtplMergedPeriods(holdings);
+function _renderFvtplHoldingsChartGeneric(holdings, periods, canvasId, analysisElId, chartVarSetter) {
     if (!periods.length) return;
-
-    // Gộp danh sách mã cổ phiếu xuất hiện ở bất kỳ kỳ nào (trừ 'Khac', đẩy xuống cuối)
     const tickerSet = new Set();
     periods.forEach(p => {
         const bucket = (p.label.includes('(N)') ? holdings.yearly : holdings.quarterly)[p.key] || {};
         Object.keys(bucket).forEach(t => { if (t !== 'Khac') tickerSet.add(t); });
     });
     const tickers = [...tickerSet];
-    if (holdings.yearly || holdings.quarterly) tickers.push('Khac');
+    tickers.push('Khac');
 
     const datasets = tickers.map((t, i) => ({
         label: t,
@@ -733,7 +774,9 @@ function renderFvtplHoldingsChart(data) {
         stack: 'holdings',
     }));
 
-    chartFvtplHoldings = new Chart(document.getElementById('fvtplHoldingsChart').getContext('2d'), {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const chart = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: { labels: periods.map(p => p.label), datasets },
         options: {
@@ -744,13 +787,34 @@ function renderFvtplHoldingsChart(data) {
             },
         },
     });
+    chartVarSetter(chart);
 
     const latest = periods[periods.length - 1];
     const bucket = (latest.label.includes('(N)') ? holdings.yearly : holdings.quarterly)[latest.key] || {};
     const sorted = Object.entries(bucket).filter(([t]) => t !== 'Khac').sort((a, b) => b[1] - a[1]);
-    document.getElementById('analysis-text-fvtpl-holdings').textContent = sorted.length
-        ? `Tại ${latest.label}, cổ phiếu niêm yết được nắm giữ lớn nhất trong danh mục tự doanh: ${sorted.slice(0, 3).map(([t, v]) => `${t} (${formatNumber(v / 1e9, 1)} tỷ)`).join(', ')}.`
-        : 'Chưa có dữ liệu danh mục cổ phiếu cụ thể.';
+    const el = document.getElementById(analysisElId);
+    if (el) {
+        el.textContent = sorted.length
+            ? `Tại ${latest.label}, cổ phiếu niêm yết được nắm giữ lớn nhất trong danh mục tự doanh: ${sorted.slice(0, 3).map(([t, v]) => `${t} (${formatNumber(v / 1e9, 1)} tỷ)`).join(', ')}.`
+            : 'Chưa có dữ liệu danh mục cổ phiếu cụ thể.';
+    }
+}
+
+function renderFvtplHoldingsChart(data) {
+    const holdings = data.holdings || {};
+    const periods = _fvtplMergedPeriods(holdings).filter(p => p.label.includes('(N)'));
+    _renderFvtplHoldingsChartGeneric(holdings, periods, 'fvtplHoldingsChart', 'analysis-text-fvtpl-holdings', c => { chartFvtplHoldings = c; });
+}
+
+function renderFvtplHoldingsQuarterlyChart(data) {
+    const holdings = data.holdings || {};
+    const periods = _fvtplMergedPeriods(holdings).filter(p => !p.label.includes('(N)'));
+    if (!periods.length) {
+        const card = document.getElementById('fvtplHoldingsQuarterlyChart')?.closest('.chart-card-split');
+        if (card) card.style.display = 'none';
+        return;
+    }
+    _renderFvtplHoldingsChartGeneric(holdings, periods, 'fvtplHoldingsQuarterlyChart', 'analysis-text-fvtpl-holdings-quarterly', c => { chartFvtplHoldingsQuarterly = c; });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -848,7 +912,117 @@ function renderSegmentMixChart(localJson) {
         },
     });
     document.getElementById('analysis-text-mix').textContent =
-        'Theo dõi tỷ trọng Tự doanh (FVTPL) qua các năm — mảng này biến động mạnh nhất theo VN-Index, tỷ trọng tăng nhanh đồng nghĩa LNST kém ổn định hơn.';
+        'Theo dõi tỷ trọng Tự doanh (FVTPL+AFS) qua các năm — mảng này biến động mạnh nhất theo VN-Index, tỷ trọng tăng nhanh đồng nghĩa LNST kém ổn định hơn.';
+}
+
+function renderSegmentRevenueQuarterlyChart(localJson) {
+    const seg = localJson.segments;
+    const q = localJson.quarterly;
+    if (!seg || !seg.names || !q || !q.segmentRevenue || !q.labels || !q.labels.length) return;
+    const names = seg.names;
+
+    const ctx = document.getElementById('segmentRevenueQuarterlyChart');
+    if (!ctx) return;
+    chartSegmentRevenueQuarterly = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: q.labels,
+            datasets: names.map(n => ({
+                label: (seg.labels && seg.labels[n]) || SEGMENT_LABELS_FALLBACK[n] || n,
+                data: (q.segmentRevenue[n] || []).map(v => Math.round(v)),
+                backgroundColor: (SEGMENT_COLORS[n] || '#64748b') + 'cc',
+                borderRadius: 3,
+                stack: 'segq',
+            })),
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true } },
+        },
+    });
+
+    const lastIdx = q.labels.length - 1;
+    const lastVals = names.map(n => ({ n, v: (q.segmentRevenue[n] || [])[lastIdx] || 0 })).sort((a, b) => b.v - a.v);
+    const top = lastVals[0];
+    const label = top ? ((seg.labels && seg.labels[top.n]) || SEGMENT_LABELS_FALLBACK[top.n] || top.n) : null;
+    document.getElementById('analysis-text-segment-quarterly').textContent = top
+        ? `Quý ${q.labels[lastIdx]}: mảng đóng góp doanh thu lớn nhất là ${label} (${formatNumber(top.v, 0)} tỷ VND).`
+        : 'Chưa đủ dữ liệu doanh thu theo quý.';
+}
+
+function renderSegmentGrossProfitChart(localJson) {
+    const seg = localJson.segments;
+    if (!seg || !seg.grossProfitHist) return;
+    const gpSegNames = Object.keys(seg.grossProfitHist);
+    if (!gpSegNames.length) return;
+    const gpFc = seg.grossProfitForecast || {};
+    const nHistYears = Math.max(...gpSegNames.map(n => (seg.grossProfitHist[n] || []).length));
+    const nFcYears = Math.max(0, ...gpSegNames.map(n => (gpFc[n] || []).length));
+    const years = (localJson.data?.years || []).map((y, i) => i < nHistYears ? `${y}A` : `${y}E`);
+
+    const ctx = document.getElementById('segmentGrossProfitChart');
+    if (!ctx) return;
+    chartSegmentGrossProfit = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: gpSegNames.map(n => ({
+                label: (seg.labels && seg.labels[n]) || SEGMENT_LABELS_FALLBACK[n] || n,
+                data: [...(seg.grossProfitHist[n] || []), ...(gpFc[n] || [])].map(v => Math.round(v)),
+                backgroundColor: (SEGMENT_COLORS[n] || '#64748b') + 'cc',
+                borderRadius: 3,
+                stack: 'gp',
+            })),
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true } },
+        },
+    });
+
+    const lastIdx = nHistYears - 1;
+    const lastVals = gpSegNames.map(n => ({ n, v: (seg.grossProfitHist[n] || [])[lastIdx] || 0 })).sort((a, b) => b.v - a.v);
+    const top = lastVals[0];
+    const label = top ? ((seg.labels && seg.labels[top.n]) || SEGMENT_LABELS_FALLBACK[top.n] || top.n) : null;
+    document.getElementById('analysis-text-segment-gp').textContent = top
+        ? `Năm ${years[lastIdx] || ''}: mảng đóng góp lợi nhuận gộp lớn nhất là ${label} (${formatNumber(top.v, 0)} tỷ VND). Không gồm Quản lý quỹ (Vietcap không có dữ liệu chi phí riêng mảng này). Các năm ${nFcYears ? 'dự phóng dùng công thức Excel căn cứ tỷ lệ chi phí lịch sử từng mảng' : ''}.`
+        : 'Chưa đủ dữ liệu lợi nhuận gộp theo mảng.';
+}
+
+function renderSegmentGrossProfitQuarterlyChart(localJson) {
+    const q = localJson.quarterly;
+    const seg = localJson.segments;
+    if (!seg || !q || !q.segmentGrossProfit || !q.labels || !q.labels.length) return;
+    const gpSegNames = Object.keys(q.segmentGrossProfit);
+    if (!gpSegNames.length) return;
+
+    const ctx = document.getElementById('segmentGrossProfitQuarterlyChart');
+    if (!ctx) return;
+    chartSegmentGrossProfitQuarterly = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: q.labels,
+            datasets: gpSegNames.map(n => ({
+                label: (seg.labels && seg.labels[n]) || SEGMENT_LABELS_FALLBACK[n] || n,
+                data: (q.segmentGrossProfit[n] || []).map(v => Math.round(v)),
+                backgroundColor: (SEGMENT_COLORS[n] || '#64748b') + 'cc',
+                borderRadius: 3,
+                stack: 'gpq',
+            })),
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true } },
+        },
+    });
+
+    const lastIdx = q.labels.length - 1;
+    const lastVals = gpSegNames.map(n => ({ n, v: (q.segmentGrossProfit[n] || [])[lastIdx] || 0 })).sort((a, b) => b.v - a.v);
+    const top = lastVals[0];
+    const label = top ? ((seg.labels && seg.labels[top.n]) || SEGMENT_LABELS_FALLBACK[top.n] || top.n) : null;
+    document.getElementById('analysis-text-segment-gp-quarterly').textContent = top
+        ? `Quý ${q.labels[lastIdx]}: mảng đóng góp lợi nhuận gộp lớn nhất là ${label} (${formatNumber(top.v, 0)} tỷ VND).`
+        : 'Chưa đủ dữ liệu lợi nhuận gộp theo quý.';
 }
 
 function renderRevNpatChart(localJson) {
@@ -999,6 +1173,7 @@ function renderPEChart(localJson) {
 function renderPBChart(localJson) {
     const labels = localJson.quarter_labels || [];
     const data = localJson.pb_quarters || [];
+    const roeData = localJson.roe_quarters_ttm || [];
     if (!labels.length) return;
     const med = calcMedian(data.filter(v => v && v > 0));
     const ctx = document.getElementById('pbChart').getContext('2d');
@@ -1007,14 +1182,25 @@ function renderPBChart(localJson) {
         data: {
             labels,
             datasets: [
-                { label: 'P/B TTM', data, borderColor: '#27AE60', backgroundColor: '#27AE6018', borderWidth: 2, pointRadius: 3, tension: 0.3, fill: true, spanGaps: true },
-                { label: `Trung vị (${med ? med.toFixed(2) + 'x' : '-'})`, data: labels.map(() => med), borderColor: '#f59e0b', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false },
+                { label: 'P/B TTM', data, borderColor: '#27AE60', backgroundColor: '#27AE6018', borderWidth: 2, pointRadius: 3, tension: 0.3, fill: true, spanGaps: true, yAxisID: 'y' },
+                { label: `Trung vị (${med ? med.toFixed(2) + 'x' : '-'})`, data: labels.map(() => med), borderColor: '#f59e0b', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false, yAxisID: 'y' },
+                { label: 'ROE (%, TTM 4 quý)', data: roeData, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.08)', borderWidth: 2, pointRadius: 2.5, tension: 0.3, spanGaps: true, yAxisID: 'y1' },
             ],
         },
-        options: { ...CHART_DEFAULTS },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'P/B (x)', color: '#8892a4' } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'ROE (%)', color: '#8892a4' } },
+            },
+        },
     });
+    const validRoe = roeData.filter(v => v != null);
+    const lastRoe = validRoe.length ? validRoe[validRoe.length - 1] : null;
     document.getElementById('analysis-text-pb').textContent = med
-        ? `P/B trung vị lịch sử: ${med.toFixed(2)}x — neo chính cho định giá (trọng số 90%).`
+        ? `P/B trung vị lịch sử: ${med.toFixed(2)}x — neo chính cho định giá (trọng số 90%).` +
+          (lastRoe != null ? ` ROE TTM gần nhất: ${lastRoe.toFixed(1)}%.` : '')
         : 'Đang tính P/B trung vị lịch sử.';
 }
 

@@ -537,6 +537,18 @@
             width: 100%;
         }
 
+        @media (max-width: 768px) {
+            .app-shell { padding: 10px; }
+            .dashboard-grid-two { grid-template-columns: 1fr; }
+            .chart-card-split { grid-template-columns: 1fr; padding: 14px; gap: 14px; }
+            .chart-container { height: 340px; }
+            .chart-split-right { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 14px; }
+            .card { padding: 16px; }
+        }
+        @media (max-width: 420px) {
+            .chart-container { height: 300px; }
+        }
+
         .chart-split-right {
             border-left: 1px solid var(--border);
             padding-left: 20px;
