@@ -5,12 +5,12 @@
   "currentPrice": 24450.0,
   "marketCap": 28172070566250.0,
   "shares": 1152231925,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1ntTblHT_iiQyTypyba8iH6MxQRhT0qzk/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1SfflbFxk7Mi7w_iyAAu83oNeZA4ZCCjC/view?usp=drivesdk",
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
   "betaRfCache": {
     "beta": 1.1848,
     "rf": 0.045,
-    "fetchedAt": "2026-07-11 13:02"
+    "fetchedAt": "2026-07-11 20:11"
   },
   "data": {
     "years": [
@@ -29,9 +29,9 @@
       2472.5,
       3695.5,
       4980.2,
-      3633.4,
-      3175.8,
-      3404.8
+      3662.2,
+      3217.8,
+      3449.7
     ],
     "npat": [
       1498.7,
@@ -39,9 +39,9 @@
       491.9,
       910.7,
       1342.0,
-      1457.6,
-      1301.6,
-      1395.5
+      1466.5,
+      1318.8,
+      1413.9
     ],
     "eps": [
       1301,
@@ -49,9 +49,9 @@
       427,
       790,
       1165,
-      1265,
-      1130,
-      1211
+      1273,
+      1145,
+      1227
     ],
     "equity": [
       6541.9,
@@ -59,9 +59,9 @@
       7371.2,
       12944.3,
       18009.9,
-      19176.0,
-      20217.3,
-      21333.7
+      19183.1,
+      20238.1,
+      21369.3
     ]
   },
   "segments": {
@@ -128,9 +128,9 @@
         1903.6
       ],
       "TuDoanh": [
-        175.1,
-        190.7,
-        204.0
+        213.5,
+        232.7,
+        248.9
       ],
       "IB_LuuKy": [
         81.7,
@@ -144,10 +144,10 @@
       ]
     },
     "pctNow": {
-      "MoiGioi": 0.3182,
-      "Margin": 0.4281,
-      "TuDoanh": 0.0482,
-      "IB_LuuKy": 0.0225,
+      "MoiGioi": 0.3157,
+      "Margin": 0.4247,
+      "TuDoanh": 0.0583,
+      "IB_LuuKy": 0.0223,
       "QLQ": 0.0002
     }
   },
@@ -400,13 +400,13 @@
     "n_known_q": 1,
     "cum_rev": 1406.482341875,
     "cum_npat": 340.729881088,
-    "pct_of_annual_est_rev": 38.7,
-    "pct_of_annual_est_npat": 23.4,
+    "pct_of_annual_est_rev": 38.4,
+    "pct_of_annual_est_npat": 23.2,
     "cur_fc_year": 2026
   },
   "thesis": [
-    "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (42.8% DT).",
-    "Định giá theo P/B (trung vị lịch sử 1.93x) kết hợp P/E (trung vị 14.41x) cho giá mục tiêu 30,730 VND, tiềm năng +25.7%.",
+    "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình 5 mảng kinh doanh (Môi giới, Cho vay Margin, Tự doanh, IB+Lưu ký, Quản lý quỹ), mảng đóng góp lớn nhất hiện tại là Cho vay Margin (42.5% DT).",
+    "Định giá theo P/B (trung vị lịch sử 1.93x) kết hợp P/E (trung vị 14.41x) cho giá mục tiêu 30,754 VND, tiềm năng +25.8%.",
     "Cần theo dõi tỷ trọng mảng Tự doanh (FVTPL) — nguồn biến động LNST lớn nhất, nhạy cảm trực tiếp với VN-Index."
   ],
   "risks": [
@@ -469,31 +469,31 @@
     }
   ],
   "valuation": {
-    "bear": 27792,
-    "base": 30730,
-    "bull": 41938,
+    "bear": 27804,
+    "base": 30754,
+    "bull": 41955,
     "methods": {
-      "pb": 32119,
-      "pe": 18229
+      "pb": 32133,
+      "pe": 18344
     },
     "weights": {
       "PB": 0.9,
       "PE": 0.1
     },
     "recommendation": "MUA",
-    "upsidePct": 25.7,
+    "upsidePct": 25.8,
     "coe": 14.37,
     "peMedian": 14.41,
     "pbMedian": 1.93,
     "pbLowerMedian": 1.67,
     "pbUpperMedian": 2.52,
-    "lowerTarget": 27792,
-    "upperTarget": 41938
+    "lowerTarget": 27804,
+    "upperTarget": 41955
   },
   "comments": {
-    "businessModel": "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (42.8% doanh thu dự phóng).",
-    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 3,633 tỷ VND, LNST cổ đông mẹ 1,458 tỷ VND, EPS 1,265 VND/CP.",
-    "valuationText": "Giá mục tiêu 30,730 VND (upside +25.7%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị MUA."
+    "businessModel": "Công ty Cổ phần Chứng khoán Vietcap vận hành mô hình bán lẻ dịch vụ tài chính 5 mảng: Môi giới, Cho vay Margin, Tự doanh (FVTPL), IB+Lưu ký, Quản lý quỹ. Mảng Cho vay Margin hiện đóng góp lớn nhất (42.5% doanh thu dự phóng).",
+    "financialPerformance": "Doanh thu hoạt động dự phóng 2026E đạt 3,662 tỷ VND, LNST cổ đông mẹ 1,466 tỷ VND, EPS 1,273 VND/CP.",
+    "valuationText": "Giá mục tiêu 30,754 VND (upside +25.8%) theo mô hình P/B 90% + P/E 10%. Khuyến nghị MUA."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -606,9 +606,9 @@
       0.0667,
       0.0704,
       0.0745,
-      0.076,
-      0.0644,
-      0.0654
+      0.0764,
+      0.0652,
+      0.0662
     ],
     "net_margin": [
       0.4043,
@@ -616,7 +616,7 @@
       0.199,
       0.2464,
       0.2695,
-      0.4012,
+      0.4004,
       0.4098,
       0.4099
     ]
@@ -640,16 +640,16 @@
       0.05
     ],
     "fvtpl_mix": {
-      "CDs": 0.5,
-      "TP": 0.35,
-      "CP": 0.15
+      "CDs": 0.2007,
+      "TP": 0.5162,
+      "CP": 0.2832
     },
     "fvtpl_rates": {
       "R_CDs": 0.07,
       "R_TP": 0.07,
-      "R_VNI": 0.1
+      "R_VNI": 0.1437
     },
-    "fvtpl_expected_yield": 0.0745,
+    "fvtpl_expected_yield": 0.0909,
     "market_share": 0.0943,
     "brokerage_model": "Market share 9.43%",
     "brokerage_share_hist": {
@@ -661,5 +661,5 @@
     },
     "note": "GTGD binh quan/phien HOSE (ty VND). Nguon: HOSE/SSC thong ke. adtv_hist: du lieu thuc te da doi chieu; adtv_fc: du bao tang truong giam dan. fvtpl_mix: ty trong danh muc tu doanh (CDs/TP/CP) theo tung CTCK — BAT BUOC cap nhat theo thuyet minh BCTC thuc te moi nhat. brokerage_model: phuong phap du phong mang moi gioi (Market share vs OLS fallback)."
   },
-  "lastUpdated": "2026-07-11 13:03"
+  "lastUpdated": "2026-07-11 20:11"
 }

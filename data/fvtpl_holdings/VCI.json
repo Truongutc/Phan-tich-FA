@@ -1,0 +1,304 @@
+{
+  "ticker": "VCI",
+  "companyName": "CTCP Chứng khoán Vietcap",
+  "unit": "vnd",
+  "lastUpdated": "2026-07-11",
+  "categories": {
+    "CoPhieuNiemYet":     {"label": "Cổ phiếu niêm yết/UPCoM", "order": 1, "color": "#3b82f6"},
+    "CoPhieuChuaNiemYet": {"label": "Cổ phiếu chưa niêm yết",  "order": 2, "color": "#8b5cf6"},
+    "TraiPhieu":          {"label": "Trái phiếu",              "order": 3, "color": "#f59e0b"},
+    "ChungChiQuy":        {"label": "Chứng chỉ quỹ (ETF+Quỹ mở)", "order": 4, "color": "#10b981"},
+    "ChungChiTienGui":    {"label": "Chứng chỉ tiền gửi",      "order": 5, "color": "#64748b"}
+  },
+  "notes": [
+    "VCI trình bày FVTPL và AFS trong note gộp '4. CÁC KHOẢN ĐẦU TƯ TÀI CHÍNH' (khác HCM dùng note riêng '3.2'), kèm cả Margin lending + HTM trong cùng note — Margin lending LOẠI TRỪ hoàn toàn khỏi kho này (đã có driver riêng), HTM chỉ giữ lại dòng 'Chứng chỉ tiền gửi' (CD) khi note nêu rõ, KHÔNG gộp 'Tiền gửi ngân hàng có kỳ hạn' thông thường (bản chất là quản lý ngân quỹ, không phải tài sản tự doanh).",
+    "Trái phiếu (kể cả khi VCI lồng trong mục 'niêm yết' hoặc 'chưa niêm yết') luôn gộp vào TraiPhieu theo tên gọi, không theo vị trí lồng.",
+    "'Tài sản cơ sở cho hoạt động phòng ngừa rủi ro chứng quyền' (cổ phiếu hedge CW) được gộp vào CoPhieuNiemYet theo quy ước chung, chi tiết theo mã lưu ở hedgingHoldings.",
+    "Toàn bộ số liệu trích trực tiếp từ thuyết minh BCTC hợp nhất (PDF scan, đọc trực tiếp bằng render ảnh — không qua MD), mọi kỳ đã đối chiếu tổng khớp chính xác với dòng Tổng cộng in trong BCTC nguồn."
+  ],
+  "fvtpl": {
+    "yearly": {
+      "2022": {
+        "CoPhieuNiemYet":     {"cost": 68273489947, "fairValue": 66665433700, "gain": 498111105, "loss": -2106167352,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(a) (cột đối chiếu 31/12/2022)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 598592462616, "fairValue": 598592462616, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(a) — trái phiếu chưa niêm yết (cột đối chiếu 31/12/2022)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2023": {
+        "CoPhieuNiemYet":     {"cost": 125069081721, "fairValue": 122137632000, "gain": 801838837, "loss": -3733288558,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(a)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024": {
+        "CoPhieuNiemYet":     {"cost": 201157282172, "fairValue": 197266994500, "gain": 2734235336, "loss": -6624523008,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(a) (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 628581768726, "fairValue": 628581768726, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(a) — trái phiếu chưa niêm yết (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 18507200729, "fairValue": 20403554000, "gain": 1920220825, "loss": -23867554,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(a), chứng chỉ quỹ ETF (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025": {
+        "CoPhieuNiemYet":     {"cost": 45416078519, "fairValue": 44981700000, "gain": 1145281761, "loss": -1579660280,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(a)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 2135240868416, "fairValue": 2135240868416, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(a) — gộp trái phiếu Chính phủ niêm yết (1.500.980.250.000) + trái phiếu chưa niêm yết (634.260.618.416)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 55405161913, "fairValue": 57726293000, "gain": 2673927446, "loss": -352796359,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(a), chứng chỉ quỹ ETF", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      }
+    },
+    "quarterly": {
+      "2024Q1": {
+        "CoPhieuNiemYet":     {"cost": 405134112937, "fairValue": 412628379400, "gain": 8653537358, "loss": -1159270895,
+                                "source": "BCTC hợp nhất Q1/2024 VCI, TM 4", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 357000000000, "fairValue": 357000000000, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2024 VCI, TM 4(II) — chỉ lấy dòng Chứng chỉ tiền gửi trong mục HTM, loại trừ Tiền gửi có kỳ hạn thông thường", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q2": {
+        "CoPhieuNiemYet":     {"cost": 762823454666, "fairValue": 753826118000, "gain": 1289033824, "loss": -10286370490,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2024 (soát xét) VCI, TM 3.2(a) — cổ phiếu niêm yết chờ hoán đổi ETF", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 40563833282, "fairValue": 40563833282, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2024 (soát xét) VCI, TM 3.2(a) — trái phiếu chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 212682253861, "fairValue": 213016269000, "gain": 1328372084, "loss": -994356945,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2024 (soát xét) VCI, TM 3.2(a), chứng chỉ quỹ niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này (TM 3.2(b) HTM chỉ có tiền gửi kỳ hạn 310 tỷ, loại trừ)", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q3": {
+        "CoPhieuNiemYet":     {"cost": 2031812668, "fairValue": 2117608200, "gain": 95815806, "loss": -10020274,
+                                "source": "BCTC hợp nhất Q3/2024 VCI, TM 4 — cổ phiếu chờ hoán đổi ETF", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 452481232800, "fairValue": 452481232800, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2024 VCI, TM 4 — trái phiếu chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 19482022975, "fairValue": 21561766000, "gain": 2089150579, "loss": -9407554,
+                                "source": "BCTC hợp nhất Q3/2024 VCI, TM 4, chứng chỉ quỹ niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này (TM HTM chỉ có tiền gửi kỳ hạn 310 tỷ, loại trừ)", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q4": {
+        "CoPhieuNiemYet":     {"cost": 201157282172, "fairValue": 197266994500, "gain": 2734235336, "loss": -6624523008,
+                                "source": "= BCTC năm 2024 kiểm toán (31/12/2024), trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 628581768726, "fairValue": 628581768726, "gain": 0, "loss": 0,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 18507200729, "fairValue": 20403554000, "gain": 1920220825, "loss": -23867554,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q1": {
+        "CoPhieuNiemYet":     {"cost": 871834886074, "fairValue": 823786439850, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất Q1/2025 VCI, TM 4 — cổ phiếu niêm yết (không tách rõ tăng/giảm theo dòng con trong bản chụp)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 270987754927, "fairValue": 271921811070, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất Q1/2025 VCI, TM 4 — gộp trái phiếu niêm yết (63.290.918.857/64.224.975.000) + chưa niêm yết (207.696.836.070)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 99630000000, "fairValue": 99630000000, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2025 VCI, TM 4, chứng chỉ quỹ niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q2": {
+        "CoPhieuNiemYet":     {"cost": 32992134722, "fairValue": 32193526600, "gain": 119453640, "loss": -918061762,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(a) — cổ phiếu niêm yết + giao dịch UPCoM", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 713450264799, "fairValue": 713450264799, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(a) — trái phiếu chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 30126794331, "fairValue": 31439734000, "gain": 1312939669, "loss": 0,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(a) — gộp chứng chỉ quỹ ETF niêm yết (20.126.794.331) + chứng chỉ quỹ chưa niêm yết (10.000.000.000)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này (TM HTM chỉ có tiền gửi kỳ hạn + ký quỹ chứng quyền, loại trừ)", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q3": {
+        "CoPhieuNiemYet":     {"cost": 160691360055, "fairValue": 156445275800, "gain": 1770191061, "loss": -6016275316,
+                                "source": "BCTC hợp nhất Q3/2025 VCI, TM 4 — cổ phiếu niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 440458265787, "fairValue": 442999825021, "gain": 2730495776, "loss": -188936542,
+                                "source": "BCTC hợp nhất Q3/2025 VCI, TM 4 — gộp trái phiếu niêm yết (26.173.072.766/28.714.632.000) + chưa niêm yết (414.285.193.021)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này (đã bán hết)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q4": {
+        "CoPhieuNiemYet":     {"cost": 45416078519, "fairValue": 44981700000, "gain": 1145281761, "loss": -1579660280,
+                                "source": "= BCTC năm 2025 kiểm toán (31/12/2025), trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 2135240868416, "fairValue": 2135240868416, "gain": 0, "loss": 0,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 55405161913, "fairValue": 57726293000, "gain": 2673927446, "loss": -352796359,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2026Q1": {
+        "CoPhieuNiemYet":     {"cost": 539691913490, "fairValue": 549150560000, "gain": 10978221717, "loss": -1519575207,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4 — cổ phiếu chờ hoán đổi ETF", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1316856282018, "fairValue": 1316856282018, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4 — gộp trái phiếu Chính phủ niêm yết (503.375.000.000) + trái phiếu chưa niêm yết (813.481.282.018)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 171351490593, "fairValue": 173244758540, "gain": 2307701465, "loss": -414433518,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4, chứng chỉ quỹ niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 511908049000, "fairValue": 511908049000, "gain": 0, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4(2.2) — chứng chỉ tiền gửi", "sourceType": "bctc_pdf", "derived": false}
+      }
+    }
+  },
+  "afs": {
+    "yearly": {
+      "2022": {
+        "CoPhieuNiemYet":     {"cost": 1741641641517, "fairValue": 2841704589737, "gain": 1271498298070, "loss": -171435349850,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(c) — gộp cổ phiếu niêm yết/UPCoM (1.736.090.790.598) + tài sản cơ sở phòng ngừa rủi ro chứng quyền (5.550.850.919)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 704704425713, "fairValue": 892304425713, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(c) (cột đối chiếu 31/12/2022)", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2023": {
+        "CoPhieuNiemYet":     {"cost": 3928748828691, "fairValue": 5750818576702, "gain": 1894135325926, "loss": -72065577915,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(c) — gộp cổ phiếu niêm yết/UPCoM (3.920.371.868.215) + TS phòng ngừa rủi ro chứng quyền (8.376.960.476)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 665410575713, "fairValue": 853010575713, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất năm 2023 kiểm toán VCI, TM 3.2(c)", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024": {
+        "CoPhieuNiemYet":     {"cost": 4287085613065, "fairValue": 7019241166452, "gain": 2734235336, "loss": -6624523008,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(c) — không phát sinh TS phòng ngừa rủi ro chứng quyền trong AFS kỳ này (đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 658451739733, "fairValue": 846051739733, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(c) (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 497669557592, "fairValue": 543463535000, "gain": 47659977408, "loss": -1866000000,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(c) — trái phiếu niêm yết CII424002 (cột đối chiếu 31/12/2024)", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025": {
+        "CoPhieuNiemYet":     {"cost": 7873059238315, "fairValue": 10548175641000, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(c) — gộp cổ phiếu niêm yết/UPCoM (7.756.131.180.733) + TS phòng ngừa rủi ro chứng quyền (116.928.057.582). Báo cáo năm không công bố cột tăng/giảm cho AFS, chỉ giá gốc/giá trị hợp lý", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 892506426285, "fairValue": 1080106426285, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(c)", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1174461391528, "fairValue": 1679426038550, "gain": null, "loss": null,
+                                "source": "BCTC hợp nhất năm 2025 kiểm toán VCI, TM 3.2(c) — trái phiếu niêm yết CII425021 + HDB124006", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      }
+    },
+    "quarterly": {
+      "2024Q1": {
+        "CoPhieuNiemYet":     {"cost": 4251935900604, "fairValue": 6834408997052, "gain": 2594515967797, "loss": -12042871349,
+                                "source": "BCTC hợp nhất Q1/2024 VCI, TM 4(IV) — cổ phiếu AFS niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 665410575713, "fairValue": 853010575713, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2024 VCI, TM 4(IV) — cổ phiếu AFS chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q2": {
+        "CoPhieuNiemYet":     {"cost": 4104384162343, "fairValue": 6972740107462, "gain": 2883697778376, "loss": -15341833257,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2024 (soát xét) VCI, TM 3.2(c) — cổ phiếu niêm yết/UPCoM (không phát sinh TS phòng ngừa rủi ro chứng quyền kỳ này)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 663778964993, "fairValue": 851378964993, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2024 (soát xét) VCI, TM 3.2(c)", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 538631160792, "fairValue": 689254410000, "gain": 150623249208, "loss": 0,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2024 (soát xét) VCI, TM 3.2(c) — trái phiếu niêm yết CII424002", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q3": {
+        "CoPhieuNiemYet":     {"cost": 2961816769000, "fairValue": 5661970791562, "gain": 2700154749563, "loss": -727001,
+                                "source": "BCTC hợp nhất Q3/2024 VCI, TM 4(IV) — cổ phiếu AFS niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 663778964993, "fairValue": 851378964993, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2024 VCI, TM 4(IV) — cổ phiếu AFS chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2024Q4": {
+        "CoPhieuNiemYet":     {"cost": 4287085613065, "fairValue": 7019241166452, "gain": 2734235336, "loss": -6624523008,
+                                "source": "= BCTC năm 2024 kiểm toán (31/12/2024), trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 658451739733, "fairValue": 846051739733, "gain": 187600000000, "loss": 0,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 497669557592, "fairValue": 543463535000, "gain": 47659977408, "loss": -1866000000,
+                                "source": "= BCTC năm 2024 kiểm toán, trùng dữ liệu yearly.2024", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q1": {
+        "CoPhieuNiemYet":     {"cost": 4499321346558, "fairValue": 6677863661500, "gain": 2227875207896, "loss": -49332892954,
+                                "source": "BCTC hợp nhất Q1/2025 VCI, TM 4(IV) — cổ phiếu AFS niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 658451739733, "fairValue": 846051739733, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2025 VCI, TM 4(IV) — cổ phiếu AFS chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh kỳ này", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q2": {
+        "CoPhieuNiemYet":     {"cost": 4974128935276, "fairValue": 6647996098090, "gain": 1816322800459, "loss": -142455637645,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(c) — cổ phiếu niêm yết/UPCoM", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 658451739733, "fairValue": 846051739733, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(c)", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 190418515673, "fairValue": 288882820203, "gain": 98501675500, "loss": -37370970,
+                                "source": "BCTC hợp nhất giữa niên độ Q2/2025 (soát xét) VCI, TM 3.2(c) — trái phiếu niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q3": {
+        "CoPhieuNiemYet":     {"cost": 7415324812177, "fairValue": 8883373240590, "gain": 1736969972707, "loss": -268921544294,
+                                "source": "BCTC hợp nhất Q3/2025 VCI, TM 4(IV) — cổ phiếu AFS niêm yết (đã tách trái phiếu niêm yết lồng trong mục này ra TraiPhieu)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 926980459170, "fairValue": 1114580459170, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2025 VCI, TM 4(IV) — cổ phiếu AFS chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1458461391528, "fairValue": 1458546628900, "gain": 85237372, "loss": 0,
+                                "source": "BCTC hợp nhất Q3/2025 VCI, TM 4(IV.1.7) — trái phiếu niêm yết lồng trong mục 'Chứng khoán AFS niêm yết'", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2025Q4": {
+        "CoPhieuNiemYet":     {"cost": 7873059238315, "fairValue": 10548175641000, "gain": null, "loss": null,
+                                "source": "= BCTC năm 2025 kiểm toán (31/12/2025), trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 892506426285, "fairValue": 1080106426285, "gain": null, "loss": null,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1174461391528, "fairValue": 1679426038550, "gain": null, "loss": null,
+                                "source": "= BCTC năm 2025 kiểm toán, trùng dữ liệu yearly.2025", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      },
+      "2026Q1": {
+        "CoPhieuNiemYet":     {"cost": 8761151096817, "fairValue": 10709724018060, "gain": 2544120866248, "loss": -595547945005,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4(IV.1) — cổ phiếu AFS niêm yết (đã tách trái phiếu niêm yết lồng trong mục này ra TraiPhieu)", "sourceType": "bctc_pdf", "derived": false},
+        "CoPhieuChuaNiemYet": {"cost": 887691264205, "fairValue": 1075291264205, "gain": 187600000000, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4(IV.2) — cổ phiếu AFS chưa niêm yết", "sourceType": "bctc_pdf", "derived": false},
+        "TraiPhieu":          {"cost": 1095604500000, "fairValue": 1303769355000, "gain": 208164855000, "loss": 0,
+                                "source": "BCTC hợp nhất Q1/2026 VCI, TM 4(IV.1.8) — trái phiếu niêm yết lồng trong mục 'Chứng khoán AFS niêm yết'", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiQuy":        {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false},
+        "ChungChiTienGui":    {"cost": 0, "fairValue": 0, "gain": 0, "loss": 0, "source": "Không phát sinh", "sourceType": "bctc_pdf", "derived": false}
+      }
+    }
+  },
+  "holdings": {
+    "note": "Danh mục cổ phiếu niêm yết cụ thể (giá trị hợp lý, VND) trong nhóm CoPhieuNiemYet của AFS — đây là danh mục tự doanh cổ phiếu niêm yết THẬT của VCI (chiếm tỷ trọng lớn hơn nhiều so với FVTPL, vốn ở VCI chủ yếu chỉ là cổ phiếu chờ hoán đổi ETF). Không gồm 'Tài sản cơ sở phòng ngừa rủi ro chứng quyền' (lưu riêng ở hedgingHoldings) và không gồm trái phiếu niêm yết lồng trong cùng mục (lưu trong TraiPhieu). 'Khac' = phần dư gộp các mã nhỏ/không nêu tên.",
+    "yearly": {
+      "2022": {"IDP": 1617938299327, "KDH": 357034042700, "MBB": 176103312000, "MSN": 1905880000, "PNJ": 1574758200, "Khac": 681776090710},
+      "2023": {"IDP": 2166246145000, "KDH": 1019022849800, "MBB": 246635899250, "MSN": 236322065000, "PNJ": 234066200000, "FPT": 174563151400, "STB": 109167110000, "Khac": 1556589287452},
+      "2024": {"MCH": 569696869200, "IDP": 2117616129500, "KDH": 1183755100000, "TDM": 772398000000, "FPT": 695359587500, "MBB": 12334140000, "Khac": 1668081340252},
+      "2025": {"MCH": 2529680898000, "IDP": 1945200620000, "KDH": 1065240949500, "TDM": 884070000000, "FPT": 588339605600, "MBB": 450941077400, "Khac": 2959696572450}
+    },
+    "quarterly": {
+      "2024Q2": {"IDP": 2201613429000, "KDH": 1016704113300, "TDM": 759990000000, "FPT": 548665717500, "MBB": 222641580000, "PNJ": 84326500000, "MSN": 77999040000, "STB": 373500000, "Khac": 2060426227662}
+    }
+  },
+  "hedgingHoldings": {
+    "note": "Tài sản cơ sở cho hoạt động phòng ngừa rủi ro chứng quyền (đã gộp vào tổng CoPhieuNiemYet của AFS ở trên, tách riêng để theo dõi cơ cấu chứng quyền — không phải cổ phiếu tự doanh thuần túy). VCI không có mục này ở FVTPL (khác HCM), chỉ xuất hiện trong AFS.",
+    "yearly": {
+      "2022": {},
+      "2023": {"FPT": 3305455600, "MSN": 150288000, "Khac": 4424378200},
+      "2024": {},
+      "2025": {"VHM": 62334304000, "VJC": 23415524000, "Khac": 39256090050}
+    },
+    "quarterly": {}
+  }
+}
