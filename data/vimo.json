@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1gpWGY90jrDr0p7UKX1sQc8tPcJvp2uyC/view?usp=drivesdk",
-  "lastUpdated": "2026-07-12 11:42",
+  "gdrivePdfUrl": null,
+  "lastUpdated": "2026-07-12 21:23",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -60,7 +60,7 @@
       },
       "Thanh khoản": {
         "score": 1,
-        "nVotes": 2,
+        "nVotes": 3,
         "detail": [
           {
             "indicator": "credit_growth",
@@ -68,6 +68,13 @@
             "vote": 1,
             "arrow": "▲",
             "judgment_label": "Tốt lên"
+          },
+          {
+            "indicator": "m2_growth",
+            "label": "Tăng trưởng cung tiền M2 (YoY)",
+            "vote": -1,
+            "arrow": "▼",
+            "judgment_label": "Xấu đi"
           },
           {
             "indicator": "forex_reserves",
@@ -132,10 +139,10 @@
     "text": "Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt."
   },
   "synthesis": {
-    "overview": "Scorecard Vĩ Mô tổng hợp đạt +2/5 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lạm phát & Lãi suất và Thanh khoản. Ngược lại, nhóm Bên ngoài đang là điểm nghẽn, kéo lùi điểm tổng. Riêng nhóm Tâm lý thị trường chưa có đủ chỉ báo có xu hướng rõ để tính điểm, nên tạm giữ 0 theo quy ước thận trọng (không suy diễn khi thiếu dữ liệu).\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 %; (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %; (3) Doanh số bán lẻ (YoY) đạt 14.80 %; (4) CPI (YoY) đạt 4.69 %; (5) Tăng trưởng tín dụng (YoY) đạt 5.96 %; (6) Dự trữ ngoại hối đạt 85.58 tỷ USD; (7) Nợ công / GDP đạt 32.86 %; (8) Tỷ lệ thất nghiệp đạt 2.21 %; (9) Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm. Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) PMI sản xuất (S&P Global) đạt 51.80 điểm; (2) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD; (3) FDI giải ngân (lũy kế) đạt 5.41 tỷ USD; (4) Giá dầu Brent đạt 69.56 USD/thùng.\n\nVề định giá, VN-Index đang giao dịch ở P/E 15.43x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 1.98% — mức định giá được xếp loại \"Hợp lý\". Kết hợp Scorecard vĩ mô (+2/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.",
-    "economy_impact": "Về tăng trưởng và lạm phát: Tăng trưởng GDP (YoY) đạt 8.39 %, tốt lên; Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %, tốt lên; PMI sản xuất (S&P Global) đạt 51.80 điểm, xấu đi; Doanh số bán lẻ (YoY) đạt 14.80 %, tốt lên. Ở chiều giá cả, CPI (YoY) đạt 4.69 %, tốt lên.\n\nVề thanh khoản hệ thống: lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 %. Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 4.68% so với 9 tháng 9.26%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở đầu ra huy động dân cư, Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 %; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 %; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 %.\n\nVề thương mại và dòng vốn: Xuất khẩu (YoY) đạt 28.09 %; Nhập khẩu (YoY) đạt 45.19 %; Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD, xấu đi; FDI giải ngân (lũy kế) đạt 5.41 tỷ USD, xấu đi. Tốc độ tăng nhập khẩu đang cao hơn xuất khẩu, cho thấy áp lực thu hẹp cán cân thương mại nếu xu hướng này kéo dài. Về đầu tư công, Thu ngân sách (YoY) đạt 20.91 %; Chi ngân sách (YoY) đạt -8.16 %; Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 13.90 % — mức độ giải ngân thực tế quyết định hiệu ứng lan tỏa tới các ngành xây dựng, vật liệu, hạ tầng.\n\nVề lao động, Tỷ lệ thất nghiệp ở mức 2.21 %. Áp lực từ bên ngoài: Lãi suất Fed (FEDFUNDS) đạt 3.63 %, ổn định; Giá dầu Brent đạt 69.56 USD/thùng, xấu đi; Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm, tốt lên; Tăng trưởng GDP Trung Quốc đạt 4.96 %, ổn định. Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là một trong các đối tác thương mại lớn nhất.",
-    "market_impact": "Với Scorecard vĩ mô +2/5 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Hợp lý\", khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 1.98%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ bù đắp rủi ro này tương đối mỏng — nếu lãi suất huy động/trái phiếu tiếp tục tăng, sức hấp dẫn tương đối của cổ phiếu so với kênh tiền gửi/trái phiếu sẽ giảm thêm.\n\nỞ cấp độ ngành: Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng.",
-    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: PMI sản xuất (S&P Global), Cán cân thương mại (lũy kế), FDI giải ngân (lũy kế) và Giá dầu Brent.\n- Nhóm Tâm lý thị trường hiện chưa đủ chỉ báo có xu hướng rõ để đưa vào Scorecard — cần bổ sung nguồn dữ liệu hoặc theo dõi thủ công.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
+    "overview": "Scorecard Vĩ Mô tổng hợp đạt +2/5 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lạm phát & Lãi suất và Thanh khoản. Ngược lại, nhóm Bên ngoài đang là điểm nghẽn, kéo lùi điểm tổng. Riêng nhóm Tâm lý thị trường chưa có đủ chỉ báo có xu hướng rõ để tính điểm, nên tạm giữ 0 theo quy ước thận trọng (không suy diễn khi thiếu dữ liệu).\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 %; (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %; (3) Doanh số bán lẻ (YoY) đạt 14.80 %; (4) CPI (YoY) đạt 4.69 %; (5) Tăng trưởng tín dụng (YoY) đạt 5.96 %; (6) Dự trữ ngoại hối đạt 85.58 tỷ USD; (7) Nợ công / GDP đạt 32.86 %; (8) Tỷ lệ thất nghiệp đạt 2.21 %; (9) Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm. Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) PMI sản xuất (S&P Global) đạt 51.80 điểm; (2) Tăng trưởng cung tiền M2 (YoY) đạt 5.86 %; (3) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD; (4) FDI giải ngân (lũy kế) đạt 5.41 tỷ USD; (5) Giá dầu Brent đạt 69.56 USD/thùng.\n\nVề định giá, VN-Index đang giao dịch ở P/E 15.43x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 1.98% — mức định giá được xếp loại \"Hợp lý\". Kết hợp Scorecard vĩ mô (+2/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.",
+    "economy_impact": "Về tăng trưởng và lạm phát: Tăng trưởng GDP (YoY) đạt 8.39 %, tốt lên; Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %, tốt lên; PMI sản xuất (S&P Global) đạt 51.80 điểm, xấu đi; Doanh số bán lẻ (YoY) đạt 14.80 %, tốt lên. Theo NSO, động lực tăng trưởng GDP 2026-Q2 chủ yếu đến từ khu vực Công nghiệp-Xây dựng (đóng góp 50.07% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, tư nhân và FDI — tăng 15.20% (2026-H1), vượt xa tốc độ tăng tiêu dùng cuối cùng, cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. Ở chiều giá cả, CPI (YoY) đạt 4.69 %, tốt lên.\n\nVề thanh khoản hệ thống: lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 %. Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 4.68% so với 9 tháng 9.26%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 %; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 %; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 %.\n\nLƯU Ý QUAN TRỌNG — không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, tín dụng vượt huy động khoảng 1,48 lần) và báo chí (VnExpress, 2026-06): một số ngân hàng đã phải chào lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) lên tới 9.0%/năm cho khoản tiền gửi lớn (200 triệu - 1 tỷ đồng trở lên) để bù đắp khoảng cách này. Bảng lãi suất ONLINE công khai đa ngân hàng (24hmoney.vn, 07/2026) cũng cho thấy nhiều NHTM (SHB, Saigonbank, PGBank, Sacombank...) đã niêm yết công khai 6,8-7,8%/năm kỳ hạn 12 tháng — cao hơn hẳn mức ~5,9% của riêng nhóm Big4 nêu trên. Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh khoản để đáp ứng nhu cầu tín dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.\n\nVề thương mại và dòng vốn: Xuất khẩu (YoY) đạt 28.09 %; Nhập khẩu (YoY) đạt 45.19 %; Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD, xấu đi; FDI giải ngân (lũy kế) đạt 5.41 tỷ USD, xấu đi. Tốc độ tăng nhập khẩu đang cao hơn xuất khẩu, cho thấy áp lực thu hẹp cán cân thương mại nếu xu hướng này kéo dài. Về đầu tư công, Thu ngân sách (YoY) đạt 20.91 %; Chi ngân sách (YoY) đạt -8.16 %; Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 13.90 % — mức độ giải ngân thực tế quyết định hiệu ứng lan tỏa tới các ngành xây dựng, vật liệu, hạ tầng.\n\nVề lao động, Tỷ lệ thất nghiệp ở mức 2.21 %. Áp lực từ bên ngoài: Lãi suất Fed (FEDFUNDS) đạt 3.63 %, ổn định; Giá dầu Brent đạt 69.56 USD/thùng, xấu đi; Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm, tốt lên; Tăng trưởng GDP Trung Quốc đạt 4.96 %, ổn định. Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là một trong các đối tác thương mại lớn nhất.",
+    "market_impact": "Với Scorecard vĩ mô +2/5 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Hợp lý\", khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 1.98%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ bù đắp rủi ro này tương đối mỏng — nếu lãi suất huy động/trái phiếu tiếp tục tăng, sức hấp dẫn tương đối của cổ phiếu so với kênh tiền gửi/trái phiếu sẽ giảm thêm. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (9.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng.",
+    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: PMI sản xuất (S&P Global), Tăng trưởng cung tiền M2 (YoY), Cán cân thương mại (lũy kế), FDI giải ngân (lũy kế) và Giá dầu Brent.\n- Nhóm Tâm lý thị trường hiện chưa đủ chỉ báo có xu hướng rõ để đưa vào Scorecard — cần bổ sung nguồn dữ liệu hoặc theo dõi thủ công.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
   },
   "indicators": {
     "gdp_growth": {
@@ -899,24 +906,132 @@
       "label": "Tăng trưởng cung tiền M2 (YoY)",
       "unit": "%",
       "goodDirection": "higher",
-      "autoSource": "manual",
+      "autoSource": "vietnambiz",
       "series": [
         {
           "period": "2024",
           "value": 11.97,
           "source_url": "https://tradingeconomics.com/vietnam/money-supply-m2"
+        },
+        {
+          "period": "2026-04",
+          "value": 5.86,
+          "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
         }
       ],
       "trend": {
-        "latest": 11.97,
-        "latest_period": "2024",
-        "latest_source": "https://tradingeconomics.com/vietnam/money-supply-m2",
+        "latest": 5.86,
+        "latest_period": "2026-04",
+        "latest_source": "https://data.vietnambiz.vn/currency-interest-rate",
+        "n_points": 2,
+        "prior": 11.97,
+        "prior_period": "2024",
+        "delta": -6.11,
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
+      },
+      "note": "Điểm 2024 là seed thủ công cũ (tự tính từ mức M2 cuối 2023/2024 theo tradingeconomics.com). Từ nay nâng cấp lên nguồn tự động data.vietnambiz.vn/currency-interest-rate (__NEXT_DATA__ JSON, có độ trễ công bố 1-3 tháng) — các điểm mới sẽ tự tích lũy theo tháng."
+    },
+    "deposit_growth": {
+      "group": "monetary",
+      "label": "Tăng trưởng huy động vốn (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "vietnambiz",
+      "series": [
+        {
+          "period": "2026-04",
+          "value": 10.76,
+          "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
+        }
+      ],
+      "trend": {
+        "latest": 10.76,
+        "latest_period": "2026-04",
+        "latest_source": "https://data.vietnambiz.vn/currency-interest-rate",
         "n_points": 1,
         "label": "insufficient",
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Tự tính từ mức M2 cuối 2023 (15,998,956 tỷ VND) và cuối 2024 (17,914,566 tỷ VND) theo nguồn trên — (17914566-15998956)/15998956=11.97%."
+      "note": "QUAN TRỌNG để đối chiếu với credit_growth: khi tín dụng tăng NHANH HƠN huy động vốn, hệ thống ngân hàng phải cạnh tranh huy động mạnh hơn để bù đắp — biểu hiện qua lãi suất huy động THỰC TẾ/THỎA THUẬN thường cao hơn hẳn biểu niêm yết công khai (xem deposit_rate_negotiated_max). Theo NSO (nso.gov.vn, báo cáo KT-XH Quý II & 6T/2026, https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/): tính đến 26/6/2026, huy động vốn TCTD tăng 5,02% trong khi tín dụng nền kinh tế tăng 7,41% (cùng thước đo YTD) — tín dụng vượt huy động ~1,48 lần, xác nhận độc lập với DSC Research (báo cáo T6/2026: 'tín dụng tăng gấp gần 1,5 lần tốc độ huy động vốn') và VnExpress (15/6/2026: tín dụng +6,38% YTD vs huy động +4,3% YTD, nguồn: https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html). Nguồn auto-update (data.vietnambiz.vn) là chuỗi YoY, khác thước đo YTD của 3 nguồn trên — không cộng gộp trực tiếp, chỉ dùng để theo dõi XU HƯỚNG khoảng cách qua các kỳ."
+    },
+    "deposit_rate_negotiated_max": {
+      "group": "monetary",
+      "label": "Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "manual",
+      "series": [
+        {
+          "period": "2026-06",
+          "value": 9.0,
+          "source_url": "https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html"
+        }
+      ],
+      "trend": {
+        "latest": 9.0,
+        "latest_period": "2026-06",
+        "latest_source": "https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "MANUAL, một lần, KHÔNG tự động cập nhật (bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, không có biểu niêm yết công khai để scrape). Theo VnExpress (15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường."
+    },
+    "gdp_industry_contribution": {
+      "group": "growth",
+      "label": "Đóng góp khu vực Công nghiệp-Xây dựng vào tăng trưởng GDP",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "manual",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 50.07,
+          "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        }
+      ],
+      "trend": {
+        "latest": 50.07,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO (chưa có auto-scrape ổn định cho báo cáo dạng 'bai-top', xem ghi chú kiến trúc). Quý II/2026: khu vực Công nghiệp-Xây dựng tăng 10,51% YoY, đóng góp 50,07% vào tăng trưởng GDP chung (8,39%) — ĐỘNG LỰC CHÍNH. Trong đó riêng ngành CHẾ BIẾN, CHẾ TẠO tăng trưởng 6 tháng đạt 11,4%, đóng góp 8,9 điểm phần trăm vào mức tăng IIP chung — là động lực lớn nhất trong nội bộ khu vực này. Khu vực Dịch vụ tăng 7,87%, đóng góp 44,28%; Nông-Lâm-Thủy sản tăng 4,06%, đóng góp 5,65%. Nguồn: NSO, mục 1 'Tốc độ tăng tổng sản phẩm trong nước'."
+    },
+    "gdp_investment_growth": {
+      "group": "growth",
+      "label": "Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "manual",
+      "series": [
+        {
+          "period": "2026-H1",
+          "value": 15.2,
+          "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        }
+      ],
+      "trend": {
+        "latest": 15.2,
+        "latest_period": "2026-H1",
+        "latest_source": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO. Về SỬ DỤNG GDP 6 tháng đầu năm 2026 (mục 1 báo cáo NSO): tích lũy tài sản (đầu tư — gồm cả đầu tư công, tư nhân, FDI) tăng 15,20% so với cùng kỳ — CAO HƠN NHIỀU tốc độ tăng tiêu dùng cuối cùng (8,15%) và gần bằng tốc độ tăng xuất khẩu hàng hóa & dịch vụ (20,18%). Cho thấy tăng trưởng GDP 6 tháng đầu 2026 được dẫn dắt chủ yếu bởi ĐẦU TƯ và XUẤT KHẨU, không phải bởi cầu tiêu dùng nội địa — nhất quán với việc khu vực Công nghiệp-Xây dựng (thâm dụng vốn, xuất khẩu) đóng góp áp đảo vào tăng trưởng (xem gdp_industry_contribution)."
     },
     "usdvnd": {
       "group": "monetary",
