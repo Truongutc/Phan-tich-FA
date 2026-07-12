@@ -33,7 +33,9 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: python fetch_macro_data.py
 
-      - name: Tính toán Scorecard + xuất PDF/JSON
+      - name: Tính toán Scorecard + Tổng hợp phân tích AI + xuất PDF/JSON
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python -c "from template_vimo import run_vimo_analysis; run_vimo_analysis()"
 
       - name: Upload PDF lên Google Drive

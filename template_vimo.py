@@ -155,7 +155,7 @@ SCORECARD_GROUPS = {
     "Tăng trưởng": ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth", "unemployment_rate"],
     "Lạm phát & Lãi suất": ["cpi_yoy", "core_inflation", "refinancing_rate", "interbank_rate_3m"],
     "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves", "omo_rate_7d"],
-    "Bên ngoài": ["trade_balance", "fdi_disbursed", "usdvnd", "fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"],
+    "Bên ngoài": ["trade_balance", "export_growth", "fdi_disbursed", "usdvnd", "fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"],
     "Tâm lý thị trường": ["vnindex_pe"],
 }
 
@@ -309,6 +309,108 @@ def calc_decision_matrix(scorecard_total, valuation_label):
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ — "bức tranh tổng thể" (user yêu cầu rõ: không chỉ liệt kê số
+# liệu/Scorecard, mà phải có ĐÁNH GIÁ TÁC ĐỘNG thật sự tới kinh tế Việt Nam và TTCK, viết chuyên
+# nghiệp, đủ chi tiết — không phải 1-2 câu ngắn). Dùng Gemini (mirror get_ai_commentary_kcn() ở
+# template_kcn.py) vì đây là việc TỔNG HỢP/DIỄN GIẢI liên hệ giữa nhiều chỉ báo — bản chất khác
+# hẳn phần tính toán số học (Scorecard/ERP) phía trên, cần khả năng viết văn phân tích thật.
+# ══════════════════════════════════════════════════════════════════════════
+def build_macro_context_summary(raw, trends, scorecard, scorecard_total, valuation, decision_label):
+    """Gói TOÀN BỘ số liệu thật (không phải tóm tắt sơ sài) thành 1 khối text có cấu trúc, làm
+    input cho Gemini — để AI viết phân tích DỰA TRÊN SỐ THẬT, không tự bịa xu hướng chung chung."""
+    lines = []
+    lines.append(f"SCORECARD VĨ MÔ TỔNG: {scorecard_total:+d}/5")
+    for gname, gdata in scorecard.items():
+        detail = "; ".join(f"{d['label']} ({d['judgment_label']})" for d in gdata["detail"]) or "chưa đủ dữ liệu"
+        lines.append(f"- Nhóm {gname}: điểm {gdata['score']:+d} — {detail}")
+
+    lines.append(f"\nĐỊNH GIÁ THỊ TRƯỜNG: VN-Index P/E={valuation.get('pe')}x, ERP={valuation.get('erp')*100:.2f}%"
+                  if valuation.get("erp") is not None else "\nĐỊNH GIÁ THỊ TRƯỜNG: chưa đủ dữ liệu")
+    lines.append(f"=> Đánh giá định giá: {valuation.get('valuation_label')}")
+    lines.append(f"MA TRẬN QUYẾT ĐỊNH: {decision_label}")
+
+    lines.append("\nCHI TIẾT TỪNG CHỈ BÁO (giá trị mới nhất, kỳ, xu hướng):")
+    groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market"]
+    for grp in groups_order:
+        keys = [k for k, v in raw.items() if k != "_meta" and v["group"] == grp]
+        if not keys:
+            continue
+        lines.append(f"[{GROUP_LABELS[grp]}]")
+        for k in keys:
+            t = trends.get(k, {})
+            ind = raw[k]
+            if t.get("latest") is None:
+                continue
+            val_txt = f"{t['latest']:.2f}{ind['unit']}"
+            trend_txt = f", xu hướng {t['judgment_label']} (kỳ {t.get('latest_period')})" if t.get("judgment_label") else ""
+            lines.append(f"  - {ind['label']}: {val_txt}{trend_txt}")
+    return "\n".join(lines)
+
+
+def get_ai_synthesis_vimo(context_summary):
+    """Gọi Gemini viết PHÂN TÍCH TỔNG HỢP ĐA CHỈ SỐ chuyên nghiệp — bức tranh tổng thể, tác động
+    tới kinh tế Việt Nam, tác động tới TTCK, và các điểm cần theo dõi. Trả dict {overview,
+    economy_impact, market_impact, watch_points}. Nếu thiếu API key hoặc lỗi thì dùng fallback
+    ngắn gọn (rõ ràng kém chi tiết hơn bản AI thật — không giả vờ đầy đủ khi không có)."""
+    fallback = {
+        "overview": "Chưa có phân tích AI tổng hợp (thiếu GEMINI_API_KEY hoặc lỗi gọi API) — xem trực tiếp Scorecard và bảng chỉ báo chi tiết ở trên để tự đánh giá bức tranh tổng thể.",
+        "economy_impact": "N/A — cần GEMINI_API_KEY để sinh phân tích tác động tới nền kinh tế.",
+        "market_impact": "N/A — cần GEMINI_API_KEY để sinh phân tích tác động tới TTCK.",
+        "watch_points": "N/A.",
+    }
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return fallback
+    try:
+        from google import genai
+        from google.genai import types as genai_types
+        client = genai.Client(api_key=api_key)
+        prompt = (
+            "Bạn là chuyên gia phân tích vĩ mô và chiến lược đầu tư tại một công ty chứng khoán Việt Nam, "
+            "đang viết phần TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ cho báo cáo vĩ mô định kỳ. Đây là phần QUAN TRỌNG "
+            "NHẤT của báo cáo — phải chuyên nghiệp, có chiều sâu, liên hệ NHIỀU chỉ báo với nhau (không liệt "
+            "kê rời rạc từng số), và đưa ra nhận định RÕ RÀNG về tác động thực tế — TUYỆT ĐỐI không viết "
+            "chung chung/hời hợt.\n\n"
+            f"DỮ LIỆU THẬT (dùng đúng số liệu này, không bịa thêm số nào khác):\n{context_summary}\n\n"
+            "Viết 4 phần, MỖI PHẦN 2-4 ĐOẠN VĂN THẬT SỰ (không phải 1 câu), theo đúng văn phong báo cáo "
+            "chứng khoán chuyên nghiệp:\n\n"
+            "1. TỔNG QUAN BỨC TRANH VĨ MÔ (overview): Tổng hợp các nhóm chỉ báo lại thành 1 câu chuyện "
+            "mạch lạc — đâu là động lực chính, đâu là điểm nghẽn, các chỉ báo có ĐỒNG THUẬN hay MÂU THUẪN "
+            "với nhau (vd tăng trưởng tốt nhưng lạm phát/tỷ giá đang tạo áp lực)? Đang ở giai đoạn nào của "
+            "chu kỳ kinh tế?\n\n"
+            "2. TÁC ĐỘNG TỚI KINH TẾ VIỆT NAM (economy_impact): Phân tích cụ thể cơ chế truyền dẫn — vd "
+            "giá dầu/tỷ giá tác động tới lạm phát nhập khẩu và chi phí doanh nghiệp ra sao, lãi suất "
+            "liên ngân hàng/OMO phản ánh thanh khoản hệ thống thế nào, xuất nhập khẩu/FDI nói lên điều gì "
+            "về vị thế cạnh tranh, đầu tư công có đang thực sự lan tỏa hay không.\n\n"
+            "3. TÁC ĐỘNG TỚI THỊ TRƯỜNG CHỨNG KHOÁN (market_impact): Liên hệ trực tiếp bức tranh vĩ mô "
+            "với dòng tiền/định giá TTCK — lãi suất và tỷ giá ảnh hưởng thế nào tới sức hấp dẫn tương đối "
+            "của cổ phiếu so với kênh khác, nhóm ngành nào hưởng lợi/chịu áp lực từ bối cảnh hiện tại "
+            "(vd giá dầu, tỷ giá, lãi suất), định giá hiện tại (P/E, ERP) có phản ánh đúng bức tranh vĩ mô "
+            "hay đang lệch pha.\n\n"
+            "4. ĐIỂM CẦN THEO DÕI TIẾP (watch_points): 3-5 tín hiệu/ngưỡng cụ thể nhà đầu tư nên theo dõi "
+            "trong 1-3 tháng tới để biết khi nào bức tranh này thay đổi.\n\n"
+            "Trả về JSON thuần (không markdown, không ```): "
+            '{"overview":"...","economy_impact":"...","market_impact":"...","watch_points":"..."}'
+        )
+        resp = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=genai_types.GenerateContentConfig(temperature=0.3, max_output_tokens=4000),
+        )
+        text = resp.text.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
+        parsed = json.loads(text)
+        return {
+            "overview": parsed.get("overview", fallback["overview"]),
+            "economy_impact": parsed.get("economy_impact", fallback["economy_impact"]),
+            "market_impact": parsed.get("market_impact", fallback["market_impact"]),
+            "watch_points": parsed.get("watch_points", fallback["watch_points"]),
+        }
+    except Exception as e:
+        print(f"  [WARN] AI synthesis vĩ mô thất bại: {e}. Dùng fallback.")
+        return fallback
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # CHARTS — 1 chart/chỉ báo cho các chỉ báo có ≥4 điểm dữ liệu (đủ để vẽ đường xu hướng có ý
 # nghĩa); chỉ báo thưa dữ liệu hơn hiển thị dạng bảng trong PDF/dashboard, không ép vẽ chart.
 # ══════════════════════════════════════════════════════════════════════════
@@ -378,11 +480,48 @@ def build_bank_comparison_chart(out_dir, raw):
     return path
 
 
+# Kỳ hạn VNIBOR theo đúng thứ tự tăng dần — khớp key trong vimo_raw.json (fetch_sbv_interest_rates()
+# trong fetch_macro_data.py). Kiểu trình bày lấy cảm hứng từ chart lãi suất liên ngân hàng đa kỳ
+# hạn của vimo.cuthongthai.vn (user chỉ ra) — nhưng dùng CHÍNH dữ liệu đã cào từ sbv.gov.vn,
+# không phụ thuộc gì vào nguồn của họ.
+INTERBANK_TENOR_KEYS = [
+    ("interbank_rate_on", "O/N"), ("interbank_rate_1w", "1 Tuần"), ("interbank_rate_2w", "2 Tuần"),
+    ("interbank_rate_1m", "1 Tháng"), ("interbank_rate_3m", "3 Tháng"),
+    ("interbank_rate_6m", "6 Tháng"), ("interbank_rate_9m", "9 Tháng"),
+]
+
+
+def build_interbank_curve_chart(out_dir, raw):
+    """1 bar chart đường cong lãi suất liên ngân hàng (VNIBOR) theo 7 kỳ hạn tại cùng 1 thời
+    điểm — cho thấy hình dạng đường cong lãi suất (dốc lên = thị trường kỳ vọng thanh khoản căng
+    hơn ở kỳ hạn dài). Trả path hoặc None nếu chưa đủ dữ liệu."""
+    labels, values = [], []
+    for key, tenor_label in INTERBANK_TENOR_KEYS:
+        series = raw.get(key, {}).get("series", [])
+        if series:
+            labels.append(tenor_label)
+            values.append(series[-1]["value"])
+    if len(values) < 2:
+        return None
+    fig, ax = plt.subplots(figsize=(7.5, 3.4))
+    ax.plot(labels, values, marker="o", color="#8b5cf6", linewidth=2)
+    ax.fill_between(labels, values, alpha=0.08, color="#8b5cf6")
+    for i, v in enumerate(values):
+        ax.text(i, v + 0.08, f"{v:.2f}%", ha="center", fontsize=9, fontweight="bold")
+    ax.set_title("Đường cong lãi suất liên ngân hàng VNIBOR theo kỳ hạn (%)", fontsize=11, fontweight="bold")
+    ax.grid(alpha=0.25)
+    fig.tight_layout()
+    path = os.path.join(out_dir, "vimo_interbank_curve.png")
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+    return path
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # PDF
 # ══════════════════════════════════════════════════════════════════════════
 def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label,
-                    decision_text, charts):
+                    decision_text, charts, synthesis):
     doc = SimpleDocTemplate(pdf_path, pagesize=A4, rightMargin=15 * mm, leftMargin=15 * mm,
                              topMargin=15 * mm, bottomMargin=15 * mm)
     styles = getSampleStyleSheet()
@@ -432,8 +571,21 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn:</b> {decision_text}", body_st))
     story.append(Spacer(1, 10))
 
+    # ── 1. TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ (AI, dựa trên số liệu thật) — đặt NGAY ĐẦU báo cáo vì
+    # đây là phần quan trọng nhất theo yêu cầu user, không phải phần liệt kê số liệu thô.
+    story.append(Paragraph("1. Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể", h1_st))
+    story.append(Paragraph("1.1. Tổng quan bức tranh vĩ mô", h2_st))
+    story.append(Paragraph(synthesis["overview"], body_st))
+    story.append(Paragraph("1.2. Tác động tới kinh tế Việt Nam", h2_st))
+    story.append(Paragraph(synthesis["economy_impact"], body_st))
+    story.append(Paragraph("1.3. Tác động tới thị trường chứng khoán", h2_st))
+    story.append(Paragraph(synthesis["market_impact"], body_st))
+    story.append(Paragraph("1.4. Điểm cần theo dõi tiếp", h2_st))
+    story.append(Paragraph(synthesis["watch_points"], body_st))
+    story.append(Spacer(1, 10))
+
     # ── Scorecard chi tiết 5 nhóm ──
-    story.append(Paragraph("1. Scorecard Vĩ Mô — 5 nhóm chỉ số (Chương 4.1/6.1)", h1_st))
+    story.append(Paragraph("2. Scorecard Vĩ Mô — 5 nhóm chỉ số (Chương 4.1/6.1)", h1_st))
     sc_rows = [["Nhóm", "Điểm", "Số chỉ báo có xu hướng rõ", "Chi tiết"]]
     for gname, gdata in scorecard.items():
         score_txt = {1: "+1 (Tốt)", 0: "0 (Trung tính)", -1: "-1 (Xấu)"}[gdata["score"]]
@@ -445,13 +597,13 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Spacer(1, 10))
 
     # ── Từng nhóm chỉ báo chi tiết + chart ──
-    story.append(Paragraph("2. Chi tiết theo từng nhóm chỉ báo (Chương 3)", h1_st))
+    story.append(Paragraph("3. Chi tiết theo từng nhóm chỉ báo (Chương 3)", h1_st))
     groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market"]
     for grp in groups_order:
         keys = [k for k, v in raw.items() if k != "_meta" and v["group"] == grp]
         if not keys:
             continue
-        story.append(Paragraph(f"2.{groups_order.index(grp)+1}. {GROUP_LABELS[grp]}", h2_st))
+        story.append(Paragraph(f"3.{groups_order.index(grp)+1}. {GROUP_LABELS[grp]}", h2_st))
         rows = [["Chỉ báo", "Giá trị mới nhất", "Kỳ", "Số liệu", "Đánh giá", "Nguồn cập nhật"]]
         for k in keys:
             t = trends.get(k, {})
@@ -478,13 +630,17 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
         for k in keys:
             if k in charts:
                 story.append(Image(charts[k], width=140 * mm, height=63 * mm))
+        if grp == "monetary" and "interbank_curve" in charts:
+            story.append(Paragraph("Đường cong lãi suất liên ngân hàng VNIBOR theo kỳ hạn:", small_st))
+            story.append(Image(charts["interbank_curve"], width=140 * mm, height=63 * mm))
+            story.append(Spacer(1, 4))
         if grp == "monetary" and "bank_comparison" in charts:
             story.append(Paragraph("So sánh lãi suất huy động 12 tháng theo ngân hàng đại diện:", small_st))
             story.append(Image(charts["bank_comparison"], width=140 * mm, height=63 * mm))
         story.append(Spacer(1, 8))
 
     # ── Nguồn tham khảo đầy đủ ──
-    story.append(Paragraph("3. Nguồn dữ liệu đầy đủ (theo từng chỉ báo)", h1_st))
+    story.append(Paragraph("4. Nguồn dữ liệu đầy đủ (theo từng chỉ báo)", h1_st))
     for key, ind in raw.items():
         if key == "_meta":
             continue
@@ -512,7 +668,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 # JSON EXPORT
 # ══════════════════════════════════════════════════════════════════════════
 def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
-                    pdf_url=None):
+                    synthesis, pdf_url=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -524,6 +680,7 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         },
         "marketValuation": valuation,
         "decision": {"label": decision_label, "text": decision_text},
+        "synthesis": synthesis,
         "indicators": {},
     }
     for key, ind in raw.items():
@@ -579,6 +736,12 @@ def run_vimo_analysis():
     decision_label, decision_text = calc_decision_matrix(scorecard_total, valuation["valuation_label"])
     print(f"[INFO] Ma trận quyết định: {decision_label} — {decision_text}")
 
+    print("[INFO] Tổng hợp phân tích đa chỉ số (Gemini AI, dựa trên số liệu thật)...")
+    context_summary = build_macro_context_summary(raw, trends, scorecard, scorecard_total, valuation, decision_label)
+    synthesis = get_ai_synthesis_vimo(context_summary)
+    has_ai = os.environ.get("GEMINI_API_KEY") is not None
+    print(f"  -> {'Đã sinh phân tích AI' if has_ai else 'Thiếu GEMINI_API_KEY, dùng fallback'}")
+
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", "VIMO")
     os.makedirs(out_dir, exist_ok=True)
     print("[INFO] Building charts...")
@@ -586,16 +749,20 @@ def run_vimo_analysis():
     bank_chart = build_bank_comparison_chart(out_dir, raw)
     if bank_chart:
         charts["bank_comparison"] = bank_chart
+    interbank_chart = build_interbank_curve_chart(out_dir, raw)
+    if interbank_chart:
+        charts["interbank_curve"] = interbank_chart
     print(f"  -> {len(charts)} charts")
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d")
     pdf_path = os.path.join(out_dir, f"VIMO_Report_{date_str}.pdf")
     print("[INFO] Building PDF...")
-    build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, charts)
+    build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
+                    charts, synthesis)
     print(f"  [OK] PDF: {pdf_path}")
 
     print("[INFO] Saving JSON dashboard...")
-    save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text)
+    save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis)
 
     for p in charts.values():
         try:

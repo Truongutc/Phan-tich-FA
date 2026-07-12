@@ -58,6 +58,9 @@
         .vimo-indicator-card .ind-note { font-size: 0.72em; color: #f59e0b; margin-top: 6px; font-style: italic; }
         .vimo-group-header { display: flex; align-items: center; gap: 8px; margin-top: 24px; }
         .vimo-group-header h3 { margin: 0; }
+        .vimo-synthesis-section { margin-top: 16px; }
+        .vimo-synthesis-section h4 { font-size: 0.95em; color: #60a5fa; margin-bottom: 6px; }
+        .vimo-synthesis-text { font-size: 0.9em; line-height: 1.7; color: var(--text-main, #f3f4f6); white-space: pre-line; }
     </style>
 </head>
 <body>
@@ -108,6 +111,27 @@
             <div class="vimo-decision-banner" id="decision-banner" style="display:none">
                 <div class="decision-label" id="decision-label"></div>
                 <div id="decision-text"></div>
+            </div>
+        </div>
+
+        <!-- Tổng hợp phân tích đa chỉ số (AI) -->
+        <div class="card margin-top-20" id="synthesis-card">
+            <h3 class="border-blue">🧭 Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể</h3>
+            <div class="vimo-synthesis-section">
+                <h4>Tổng quan bức tranh vĩ mô</h4>
+                <p id="synthesis-overview" class="vimo-synthesis-text">Đang tải...</p>
+            </div>
+            <div class="vimo-synthesis-section">
+                <h4>🇻🇳 Tác động tới kinh tế Việt Nam</h4>
+                <p id="synthesis-economy" class="vimo-synthesis-text"></p>
+            </div>
+            <div class="vimo-synthesis-section">
+                <h4>📈 Tác động tới thị trường chứng khoán</h4>
+                <p id="synthesis-market" class="vimo-synthesis-text"></p>
+            </div>
+            <div class="vimo-synthesis-section">
+                <h4>👀 Điểm cần theo dõi tiếp</h4>
+                <p id="synthesis-watch" class="vimo-synthesis-text"></p>
             </div>
         </div>
 

@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'manual' — 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-12 14:14"
+    "last_auto_update": "2026-07-12 16:54"
   },
   "gdp_growth": {
     "group": "growth",
@@ -314,6 +314,96 @@
     ],
     "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy)."
   },
+  "interbank_rate_on": {
+    "group": "monetary",
+    "label": "Lãi suất liên ngân hàng qua đêm (O/N)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 4.68,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      }
+    ],
+    "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm)."
+  },
+  "interbank_rate_1w": {
+    "group": "monetary",
+    "label": "Lãi suất liên ngân hàng 1 tuần",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 5.23,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      }
+    ],
+    "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+  },
+  "interbank_rate_2w": {
+    "group": "monetary",
+    "label": "Lãi suất liên ngân hàng 2 tuần",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 6.04,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      }
+    ],
+    "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+  },
+  "interbank_rate_1m": {
+    "group": "monetary",
+    "label": "Lãi suất liên ngân hàng 1 tháng",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 7.43,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      }
+    ],
+    "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+  },
+  "interbank_rate_6m": {
+    "group": "monetary",
+    "label": "Lãi suất liên ngân hàng 6 tháng",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 8.64,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      }
+    ],
+    "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+  },
+  "interbank_rate_9m": {
+    "group": "monetary",
+    "label": "Lãi suất liên ngân hàng 9 tháng",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 9.26,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      }
+    ],
+    "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+  },
   "omo_rate_7d": {
     "group": "monetary",
     "label": "Lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản)",
@@ -478,6 +568,36 @@
       }
     ],
     "note": "'lower=better' theo nghĩa VND ít mất giá hơn (áp lực tỷ giá giảm). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới sẽ tự APPEND mỗi lần Action chạy qua fetch_macro_data.py."
+  },
+  "export_growth": {
+    "group": "trade",
+    "label": "Xuất khẩu (YoY)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "vietnambiz",
+    "series": [
+      {
+        "period": "2026-06",
+        "value": 28.09,
+        "source_url": "https://data.vietnambiz.vn/macro-economic"
+      }
+    ],
+    "note": "Tự động cập nhật điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài theo thời gian). Tách riêng khỏi trade_balance (vốn là số LŨY KẾ) — đây là tốc độ tăng trưởng YoY theo tháng."
+  },
+  "import_growth": {
+    "group": "trade",
+    "label": "Nhập khẩu (YoY)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "vietnambiz",
+    "series": [
+      {
+        "period": "2026-06",
+        "value": 45.19,
+        "source_url": "https://data.vietnambiz.vn/macro-economic"
+      }
+    ],
+    "note": "LƯU Ý: 'higher=better' mang tính quy ước, không hoàn toàn đúng — nhập khẩu tăng có thể là tín hiệu TỐT (nhu cầu nguyên liệu sản xuất/đầu tư tăng) hoặc XẤU (nhập siêu, áp lực tỷ giá) tùy so sánh với tốc độ xuất khẩu. Nên đọc CÙNG export_growth và trade_balance để đánh giá đúng bối cảnh, không đọc riêng lẻ. Tự động cập nhật qua data.vietnambiz.vn."
   },
   "trade_balance": {
     "group": "trade",

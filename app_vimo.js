@@ -48,9 +48,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderHeader(data);
     renderScorecard(data.scorecard);
     renderDecision(data.decision, data.scorecard.total);
+    renderSynthesis(data.synthesis);
     renderValuation(data.marketValuation);
     renderIndicatorGroups(data.indicators);
 });
+
+function renderSynthesis(synthesis) {
+    if (!synthesis) return;
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text || '-'; };
+    set('synthesis-overview', synthesis.overview);
+    set('synthesis-economy', synthesis.economy_impact);
+    set('synthesis-market', synthesis.market_impact);
+    set('synthesis-watch', synthesis.watch_points);
+}
 
 function renderHeader(data) {
     const btnPdf = document.getElementById('download-pdf');
@@ -183,8 +193,57 @@ function renderIndicatorGroups(indicators) {
             }
         });
 
-        if (grp === 'monetary') renderBankComparisonChart(grid, indicators);
+        if (grp === 'monetary') {
+            renderInterbankCurveChart(grid, indicators);
+            renderBankComparisonChart(grid, indicators);
+        }
     });
+}
+
+// Đường cong lãi suất liên ngân hàng VNIBOR theo 7 kỳ hạn — khớp INTERBANK_TENOR_KEYS trong
+// template_vimo.py (build_interbank_curve_chart()). Kiểu trình bày lấy cảm hứng từ chart VNIBOR
+// đa kỳ hạn của vimo.cuthongthai.vn nhưng dùng dữ liệu tự cào từ sbv.gov.vn.
+const INTERBANK_TENOR_KEYS = [
+    ['interbank_rate_on', 'O/N'], ['interbank_rate_1w', '1 Tuần'], ['interbank_rate_2w', '2 Tuần'],
+    ['interbank_rate_1m', '1 Tháng'], ['interbank_rate_3m', '3 Tháng'],
+    ['interbank_rate_6m', '6 Tháng'], ['interbank_rate_9m', '9 Tháng'],
+];
+
+function renderInterbankCurveChart(grid, indicators) {
+    const labels = [];
+    const values = [];
+    INTERBANK_TENOR_KEYS.forEach(([key, tenorLabel]) => {
+        const series = (indicators[key] || {}).series || [];
+        if (series.length) {
+            labels.push(tenorLabel);
+            values.push(series[series.length - 1].value);
+        }
+    });
+    if (values.length < 2) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">📈 Đường cong lãi suất liên ngân hàng VNIBOR theo kỳ hạn</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="chart-interbank-curve"></canvas></div>
+        <div class="ind-note">Nguồn: sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động cập nhật).</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-interbank-curve');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                data: values, borderColor: '#8b5cf6', backgroundColor: '#8b5cf615',
+                fill: true, tension: 0.25, pointRadius: 3,
+            }],
+        },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+    });
+    chartInstances.push(chart);
 }
 
 // So sánh lãi suất huy động 12 tháng theo ngân hàng đại diện — CHART RIÊNG (cột so sánh nhiều

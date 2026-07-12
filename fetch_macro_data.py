@@ -244,9 +244,22 @@ def fetch_sbv_interest_rates():
     render): (1) lãi suất tái chiết khấu/tái cấp vốn hiện hành, (2) lãi suất bình quân liên ngân
     hàng theo kỳ hạn (O/N, 1W, 2W, 1M, 3M, 6M, 9M). Số dùng dấu phẩy thập phân kiểu Việt Nam
     ('4,500%') — phải đổi ',' -> '.' trước khi ép kiểu float.
-    Trả dict {"refinancing_rate": value, "interbank_rate_3m": value} (key nào không tìm thấy thì
-    bị bỏ qua, không lỗi)."""
+    Trả dict {"refinancing_rate": value, "interbank_rate_on": value, "interbank_rate_1w": value,
+    "interbank_rate_2w": value, "interbank_rate_1m": value, "interbank_rate_3m": value,
+    "interbank_rate_6m": value, "interbank_rate_9m": value} (key nào không tìm thấy thì bị bỏ
+    qua, không lỗi)."""
     url = "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+    # Nhãn kỳ hạn TRÊN TRANG SBV -> tên field trong out dict. Thứ tự khớp đúng cột "Doanh số"
+    # đứng cạnh mỗi dòng trong bảng "Lãi suất BQ liên Ngân hàng".
+    TENOR_MAP = [
+        ("Qua đêm", "interbank_rate_on"),
+        ("1 Tuần", "interbank_rate_1w"),
+        ("2 Tuần", "interbank_rate_2w"),
+        ("1 Tháng", "interbank_rate_1m"),
+        ("3 Tháng", "interbank_rate_3m"),
+        ("6 Tháng", "interbank_rate_6m"),
+        ("9 Tháng", "interbank_rate_9m"),
+    ]
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=20, verify=False)
         r.raise_for_status()
@@ -257,9 +270,10 @@ def fetch_sbv_interest_rates():
         m = re.search(r"Lãi suất tái cấp vốn(?:\s*\|)+\s*([\d,]+)\s*%", text)
         if m:
             out["refinancing_rate"] = float(m.group(1).replace(",", "."))
-        m = re.search(r"3 Tháng(?:\s*\|)+\s*([\d,]+)\s", text)
-        if m:
-            out["interbank_rate_3m"] = float(m.group(1).replace(",", "."))
+        for label, key in TENOR_MAP:
+            m = re.search(re.escape(label) + r"(?:\s*\|)+\s*([\d,]+)\s", text)
+            if m:
+                out[key] = float(m.group(1).replace(",", "."))
         return out
     except Exception as e:
         print(f"  [WARN] SBV lãi suất thất bại: {e}")
@@ -366,6 +380,8 @@ VIETNAMBIZ_TITLE_MAP = {
     "Thu ngân sách (YoY)": "budget_revenue_growth",
     "Chi ngân sách (YoY)": "budget_expenditure_growth",
     "Vốn đầu tư NSNN (YoY)": "public_investment_growth",
+    "Xuất khẩu (YoY)": "export_growth",
+    "Nhập khẩu (YoY)": "import_growth",
 }
 
 
