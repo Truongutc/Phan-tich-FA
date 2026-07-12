@@ -215,6 +215,17 @@ def update_vimo_raw():
         ]
         print(f"  -> {len(pts)} điểm")
 
+    print("[World Bank — Vietnam forex reserves]")
+    pts = fetch_worldbank("FI.RES.TOTL.CD", "VN", n=8)
+    if pts:
+        # World Bank trả USD thô — quy đổi tỷ USD cho khớp đơn vị đã khai báo trong vimo_raw.json
+        raw["forex_reserves"]["series"] = [
+            {"period": y, "value": round(v / 1e9, 2),
+             "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"}
+            for y, v in sorted(pts)
+        ]
+        print(f"  -> {len(pts)} điểm")
+
     print("[IMF DataMapper — Vietnam public debt/GDP]")
     pts = fetch_imf_datamapper("GG_DEBT_GDP", "VNM", n=8)
     if pts:

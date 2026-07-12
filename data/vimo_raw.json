@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'manual' — 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-12 11:20"
+    "last_auto_update": "2026-07-12 11:26"
   },
   "gdp_growth": {
     "group": "growth",
@@ -412,9 +412,50 @@
     "label": "Dự trữ ngoại hối",
     "unit": "tỷ USD",
     "good_direction": "higher",
-    "auto_source": "manual",
-    "series": [],
-    "note": "Chưa nghiên cứu — SBV không công bố đều đặn, cần bổ sung khi tinh chỉnh."
+    "auto_source": "worldbank",
+    "series": [
+      {
+        "period": "2018",
+        "value": 55.45,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2019",
+        "value": 78.33,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2020",
+        "value": 94.83,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2021",
+        "value": 109.37,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2022",
+        "value": 86.54,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2023",
+        "value": 92.24,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2024",
+        "value": 83.08,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      },
+      {
+        "period": "2025",
+        "value": 85.58,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/FI.RES.TOTL.CD"
+      }
+    ],
+    "note": "World Bank API (FI.RES.TOTL.CD, 'Total reserves' — bao gồm vàng, quy đổi USD) — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy. SBV không công bố dự trữ ngoại hối trực tiếp/đều đặn nên đây là nguồn thay thế đáng tin cậy nhất tìm được."
   },
   "public_debt_gdp": {
     "group": "fiscal",
