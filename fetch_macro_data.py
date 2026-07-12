@@ -462,6 +462,59 @@ def fetch_vietnambiz_rates():
         return {}
 
 
+# Lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) không có API/trang công bố chính thức nào —
+# chỉ xuất hiện rải rác trong tin tức khi báo chí phát hiện/phỏng vấn. RSS_NEWS_FEEDS là các
+# nguồn tin thật, tần suất cao, đã xác nhận hoạt động (không phải trang search JS-rendered).
+RSS_NEWS_FEEDS = [
+    "https://cafef.vn/tai-chinh-ngan-hang.rss",
+    "https://vietstock.vn/144/tai-chinh-ngan-hang.rss",
+]
+NEGOTIATED_RATE_TITLE_KEYWORDS = ["thỏa thuận", "chạm mốc", "vượt trần", "ngầm"]
+
+
+def fetch_negotiated_deposit_rate_news():
+    """Quét RSS tin tức tài chính-ngân hàng (CafeF, VietStock) mỗi lần Action chạy, tìm bài viết
+    có tiêu đề chứa 'lãi suất' + 1 trong các từ khóa đặc trưng cho tin lãi suất THỎA THUẬN/ngầm
+    (khác hẳn tin lãi suất niêm yết định kỳ). Thể loại tin này gần như luôn nêu THẲNG con số %
+    ngay trong tiêu đề (vd 'Lãi suất thỏa thuận chạm mốc 9%/năm') — chỉ trích số khi tìm thấy %
+    NGAY TRONG TIÊU ĐỀ của bài khớp từ khóa, để giảm rủi ro trích nhầm số từ nội dung bài (không
+    đọc/hiểu văn bản tự do — chỉ regex có điều kiện chặt). Phần lớn các lần chạy sẽ KHÔNG tìm thấy
+    bài nào khớp (bình thường — đây là tin hiếm, sự kiện) — hàm trả None, KHÔNG ghi đè dữ liệu cũ.
+    Trả (period, value, source_url, title) hoặc None."""
+    for feed_url in RSS_NEWS_FEEDS:
+        try:
+            r = requests.get(feed_url, headers={"User-Agent": UA}, timeout=15)
+            r.raise_for_status()
+            items = re.findall(r"<item>(.*?)</item>", r.text, re.S)
+            for it in items:
+                title_m = re.search(r"<title>\s*(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?\s*</title>", it, re.S)
+                title = title_m.group(1).strip() if title_m else ""
+                if "lãi suất" not in title.lower():
+                    continue
+                if not any(kw in title.lower() for kw in NEGOTIATED_RATE_TITLE_KEYWORDS):
+                    continue
+                pct_m = re.search(r"(\d+(?:[.,]\d+)?)\s*%", title)
+                if not pct_m:
+                    continue
+                value = float(pct_m.group(1).replace(",", "."))
+                if not (3.0 <= value <= 15.0):  # biên hợp lý cho lãi suất huy động VND — loại số nhiễu
+                    continue
+                link_m = re.search(r"<link>\s*(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?\s*</link>", it, re.S)
+                link = link_m.group(1).strip() if link_m else feed_url
+                pubdate_m = re.search(r"<pubDate>(.*?)</pubDate>", it, re.S)
+                period = _current_period()
+                if pubdate_m:
+                    try:
+                        dt = datetime.datetime.strptime(pubdate_m.group(1).strip()[:16], "%a, %d %b %y")
+                        period = dt.strftime("%Y-%m")
+                    except ValueError:
+                        pass
+                return (period, value, link, title)
+        except Exception as e:
+            print(f"  [WARN] RSS {feed_url} thất bại: {e}")
+    return None
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════
@@ -605,6 +658,15 @@ def update_vimo_raw():
     if v is not None:
         _append_point(raw, "deposit_rate_12m_nab", period_now, v, "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2")
         print(f"  -> NamABank {period_now}: {v}")
+
+    print("[RSS tin tức — lãi suất huy động THỎA THUẬN (quét CafeF/VietStock, chỉ ghi khi có tin mới khớp)]")
+    hit = fetch_negotiated_deposit_rate_news()
+    if hit:
+        period, value, link, title = hit
+        _append_point(raw, "deposit_rate_negotiated_max", period, value, link)
+        print(f"  -> {period}: {value}% — \"{title}\"")
+    else:
+        print("  -> Không có tin mới khớp từ khóa (bình thường, đây là tin hiếm)")
 
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     save_raw(raw)

@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'manual' — 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
+    "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-12 21:23"
+    "last_auto_update": "2026-07-12 21:39"
   },
   "gdp_growth": {
     "group": "growth",
@@ -574,15 +574,20 @@
     "label": "Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết)",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "manual",
+    "auto_source": "news_rss",
     "series": [
       {
         "period": "2026-06",
         "value": 9.0,
         "source_url": "https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html"
+      },
+      {
+        "period": "2026-07",
+        "value": 9.0,
+        "source_url": "https://cafef.vn/lai-suat-thoa-thuan-vuot-9-nam-cuoc-dua-nong-den-bao-gio-188260711163332688.chn"
       }
     ],
-    "note": "MANUAL, một lần, KHÔNG tự động cập nhật (bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, không có biểu niêm yết công khai để scrape). Theo VnExpress (15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường."
+    "note": "Bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, KHÔNG có biểu niêm yết công khai để scrape trực tiếp — thay vào đó fetch_negotiated_deposit_rate_news() quét RSS tin tức (CafeF, VietStock) mỗi lần Action chạy, tự động bắt các bài viết mới có tiêu đề chứa 'lãi suất' + từ khóa đặc trưng ('thỏa thuận'/'chạm mốc'/'vượt trần'/'ngầm') và trích % NGAY TRONG TIÊU ĐỀ (không đọc/suy diễn nội dung bài, giảm rủi ro trích sai). Phần lớn các lần chạy sẽ không tìm thấy tin mới (bình thường, đây là tin hiếm/sự kiện) — điểm dữ liệu chỉ được thêm khi có tin thật khớp. Điểm seed 2026-06 (VnExpress, 15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường."
   },
   "gdp_industry_contribution": {
     "group": "growth",

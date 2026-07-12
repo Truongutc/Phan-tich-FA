@@ -813,6 +813,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "sbv_table": "sbv.gov.vn (bảng lãi suất, tự động)",
                          "vietnambiz": "data.vietnambiz.vn (tự động)",
                          "bank_page": "Trang NH chính thức (tự động)",
+                         "news_rss": "RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)",
                          "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
             # value_arrow = chiều số liệu THẬT (↑/↓/→), judgment_label = đánh giá tốt lên/xấu đi
