@@ -154,7 +154,7 @@ GROUP_LABELS = {
 SCORECARD_GROUPS = {
     "Tăng trưởng": ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth", "unemployment_rate"],
     "Lạm phát & Lãi suất": ["cpi_yoy", "core_inflation", "refinancing_rate", "interbank_rate_3m"],
-    "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves"],
+    "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves", "omo_rate_7d"],
     "Bên ngoài": ["trade_balance", "fdi_disbursed", "usdvnd", "fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"],
     "Tâm lý thị trường": ["vnindex_pe", "vnindex_pb"],
 }

@@ -266,6 +266,33 @@ def fetch_sbv_interest_rates():
         return {}
 
 
+def fetch_sbv_omo_rate():
+    """sbv.gov.vn/vi/web/sbv_portal/nghiệp-vụ-thị-trường-mở — kết quả đấu thầu OMO (mua kỳ hạn)
+    mới nhất, bảng HTML thật. LƯU Ý BẢN CHẤT (user giải thích, ghi lại để không hiểu nhầm khi
+    dùng dữ liệu): OMO là công cụ BƠM/HÚT THANH KHOẢN NGẮN HẠN của NHNN tại thị trường LIÊN NGÂN
+    HÀNG (thị trường 2) — hoàn toàn KHÔNG PHẢI cung tiền M2 (M2 là tổng phương tiện thanh toán
+    trong nền kinh tế, đo lường khác hẳn). Hoạt động bơm/hút rất ngắn hạn (7/35/63 ngày), mục
+    đích là khơi thông tắc nghẽn thanh khoản tức thời, không phải tăng/giảm cung tiền dài hạn.
+    Tác động lan tỏa dần từ thị trường 2 (lãi suất liên ngân hàng) sang thị trường 1 (lãi suất
+    huy động/cho vay với doanh nghiệp & dân cư) qua kênh truyền dẫn lãi suất liên ngân hàng —
+    KHÔNG tức thời, KHÔNG trực tiếp. Trả dict {"omo_rate_7d": value} hoặc {} nếu thất bại."""
+    url = "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        text = re.sub(r"<[^>]+>", " | ", r.text)
+        text = re.sub(r"\s+", " ", text)
+
+        out = {}
+        m = re.search(r"Kỳ hạn 7 ngày(?:\s*\|)+\s*([\d/]+)(?:\s*\|)+\s*([\d,]+)(?:\s*\|)+\s*([\d,]+)", text)
+        if m:
+            out["omo_rate_7d"] = float(m.group(3).replace(",", "."))
+        return out
+    except Exception as e:
+        print(f"  [WARN] SBV OMO thất bại: {e}")
+        return {}
+
+
 # VietnamBiz's Vietnamese "title" field -> indicator key trong vimo_raw.json. CHỈ map các chỉ
 # báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (PMI, bán lẻ — trước đây "manual" chỉ 1 điểm) —
 # không map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy
@@ -419,6 +446,13 @@ def update_vimo_raw():
     rates = fetch_sbv_interest_rates()
     for key, value in rates.items():
         _append_point(raw, key, period_now, value, "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1")
+        print(f"  -> {key} {period_now}: {value}")
+
+    print("[SBV — lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản thị trường 2, tích lũy theo lần chạy)]")
+    omo = fetch_sbv_omo_rate()
+    for key, value in omo.items():
+        _append_point(raw, key, period_now,
+                       value, "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F")
         print(f"  -> {key} {period_now}: {value}")
 
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")

@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-07-12 12:08",
+  "lastUpdated": "2026-07-12 12:16",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -560,6 +560,30 @@
         "judgment_color": "#f59e0b"
       },
       "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy)."
+    },
+    "omo_rate_7d": {
+      "group": "monetary",
+      "label": "Lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "sbv_table",
+      "series": [
+        {
+          "period": "2026-07",
+          "value": 4.5,
+          "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+        }
+      ],
+      "trend": {
+        "latest": 4.5,
+        "latest_period": "2026-07",
+        "latest_source": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy)."
     },
     "credit_growth": {
       "group": "monetary",
