@@ -311,103 +311,220 @@ def calc_decision_matrix(scorecard_total, valuation_label):
 # ══════════════════════════════════════════════════════════════════════════
 # TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ — "bức tranh tổng thể" (user yêu cầu rõ: không chỉ liệt kê số
 # liệu/Scorecard, mà phải có ĐÁNH GIÁ TÁC ĐỘNG thật sự tới kinh tế Việt Nam và TTCK, viết chuyên
-# nghiệp, đủ chi tiết — không phải 1-2 câu ngắn). Dùng Gemini (mirror get_ai_commentary_kcn() ở
-# template_kcn.py) vì đây là việc TỔNG HỢP/DIỄN GIẢI liên hệ giữa nhiều chỉ báo — bản chất khác
-# hẳn phần tính toán số học (Scorecard/ERP) phía trên, cần khả năng viết văn phân tích thật.
+# nghiệp, đủ chi tiết — không phải 1-2 câu ngắn). RULE-BASED, KHÔNG dùng AI/LLM (user: "tôi không
+# cần gemini api key, vì tôi không muốn dùng ai") — mọi câu chữ được ráp từ template có điều kiện,
+# mọi con số lấy trực tiếp từ raw/trends/scorecard/valuation, không suy diễn ngoài dữ liệu thật.
 # ══════════════════════════════════════════════════════════════════════════
-def build_macro_context_summary(raw, trends, scorecard, scorecard_total, valuation, decision_label):
-    """Gói TOÀN BỘ số liệu thật (không phải tóm tắt sơ sài) thành 1 khối text có cấu trúc, làm
-    input cho Gemini — để AI viết phân tích DỰA TRÊN SỐ THẬT, không tự bịa xu hướng chung chung."""
+def _vn_join(items):
+    items = list(items)
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    return ", ".join(items[:-1]) + " và " + items[-1]
+
+
+def _indicator_txt(raw, trends, key):
+    """Trả (label, value_text, judgment_label) cho 1 chỉ báo nếu có dữ liệu, else None."""
+    ind = raw.get(key)
+    t = trends.get(key, {})
+    if not ind or t.get("latest") is None:
+        return None
+    val_txt = f"{t['latest']:.2f} {ind['unit']}"
+    return ind["label"], val_txt, t.get("judgment_label")
+
+
+def _join_indicators(raw, trends, keys):
+    parts = []
+    for k in keys:
+        info = _indicator_txt(raw, trends, k)
+        if info:
+            label, val, judgment = info
+            j = f", {judgment.lower()}" if judgment else ""
+            parts.append(f"{label} đạt {val}{j}")
+    return parts
+
+
+def _build_overview(scorecard, scorecard_total, valuation, decision_label, decision_text):
+    pos = [g for g, d in scorecard.items() if d["score"] == 1]
+    neg = [g for g, d in scorecard.items() if d["score"] == -1]
+    neu = [g for g, d in scorecard.items() if d["score"] == 0 and d["n_votes"] > 0]
+    no_data = [g for g, d in scorecard.items() if d["n_votes"] == 0]
+
+    posture = "tích cực" if scorecard_total > 0 else ("tiêu cực" if scorecard_total < 0 else "trung tính, chưa nghiêng hẳn về hướng nào")
+    sentences = [f"Scorecard Vĩ Mô tổng hợp đạt {scorecard_total:+d}/5 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng {posture}."]
+    if pos:
+        sentences.append(f"Động lực tích cực đến từ nhóm {_vn_join(pos)}.")
+    if neg:
+        sentences.append(f"Ngược lại, nhóm {_vn_join(neg)} đang là điểm nghẽn, kéo lùi điểm tổng.")
+    if neu:
+        sentences.append(f"Nhóm {_vn_join(neu)} giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.")
+    if no_data:
+        sentences.append(f"Riêng nhóm {_vn_join(no_data)} chưa có đủ chỉ báo có xu hướng rõ để tính điểm, nên tạm giữ 0 theo quy ước thận trọng (không suy diễn khi thiếu dữ liệu).")
+    para1 = " ".join(sentences)
+
+    if valuation.get("erp") is not None:
+        para2 = (f"Về định giá, VN-Index đang giao dịch ở P/E {valuation['pe']:.2f}x, tương ứng ERP (lợi suất thu nhập trừ "
+                 f"lãi suất phi rủi ro) {valuation['erp']*100:.2f}% — mức định giá được xếp loại \"{valuation['valuation_label']}\". "
+                 f"Kết hợp Scorecard vĩ mô ({scorecard_total:+d}/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là "
+                 f"\"{decision_label}\": {decision_text}")
+    else:
+        para2 = (f"Chưa đủ dữ liệu P/E để tính ERP — phần định giá thị trường tạm thời để trống, không suy diễn. "
+                 f"Khuyến nghị phân bổ vốn dựa trên Scorecard: \"{decision_label}\" — {decision_text}")
+    return f"{para1}\n\n{para2}"
+
+
+def _build_economy_impact(raw, trends):
+    paras = []
+
+    growth_keys = ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth"]
+    inflation_keys = ["cpi_yoy", "core_inflation"]
+    g_parts = _join_indicators(raw, trends, growth_keys)
+    i_parts = _join_indicators(raw, trends, inflation_keys)
+    if g_parts or i_parts:
+        txt = "Về tăng trưởng và lạm phát: "
+        if g_parts:
+            txt += "; ".join(g_parts) + ". "
+        if i_parts:
+            txt += "Ở chiều giá cả, " + "; ".join(i_parts) + ". "
+        usdvnd_j = _indicator_txt(raw, trends, "usdvnd")
+        if usdvnd_j and usdvnd_j[2] == "Xấu đi":
+            txt += ("Tỷ giá USD/VND đang chịu áp lực tăng, làm tăng chi phí nhập khẩu nguyên nhiên liệu và có thể cộng "
+                    "thêm áp lực lên CPI trong các kỳ tới qua kênh lạm phát nhập khẩu.")
+        paras.append(txt.strip())
+
+    omo = _indicator_txt(raw, trends, "omo_rate_7d")
+    interbank_on_series = raw.get("interbank_rate_on", {}).get("series", [])
+    interbank_9m_series = raw.get("interbank_rate_9m", {}).get("series", [])
+    refin = _indicator_txt(raw, trends, "refinancing_rate")
+    if omo or interbank_on_series or refin:
+        txt2 = ("Về thanh khoản hệ thống: lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN "
+                "HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — ")
+        if omo:
+            txt2 += f"hiện ở mức {omo[1]}. "
+        if interbank_on_series and interbank_9m_series:
+            on_v = interbank_on_series[-1]["value"]
+            m9_v = interbank_9m_series[-1]["value"]
+            slope = "dốc lên" if m9_v > on_v else ("gần như phẳng" if abs(m9_v - on_v) < 0.3 else "đảo ngược nhẹ")
+            txt2 += (f"Đường cong lãi suất liên ngân hàng VNIBOR hiện {slope} (O/N {on_v:.2f}% so với 9 tháng {m9_v:.2f}%), "
+                     "phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. ")
+        txt2 += ("Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân "
+                 "cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ "
+                 "vài tuần đến vài tháng tùy thanh khoản từng ngân hàng.")
+        dep_parts = _join_indicators(raw, trends, ["deposit_rate_12m_vcb", "deposit_rate_12m_ctg", "deposit_rate_12m_nab"])
+        if dep_parts:
+            txt2 += " Ở đầu ra huy động dân cư, " + "; ".join(dep_parts) + "."
+        paras.append(txt2.strip())
+
+    trade_keys = ["export_growth", "import_growth", "trade_balance", "fdi_disbursed"]
+    fiscal_keys = ["budget_revenue_growth", "budget_expenditure_growth", "public_investment_growth"]
+    t_parts = _join_indicators(raw, trends, trade_keys)
+    f_parts = _join_indicators(raw, trends, fiscal_keys)
+    if t_parts or f_parts:
+        txt3 = ""
+        if t_parts:
+            txt3 += "Về thương mại và dòng vốn: " + "; ".join(t_parts) + ". "
+            exp_v = trends.get("export_growth", {}).get("latest")
+            imp_v = trends.get("import_growth", {}).get("latest")
+            if exp_v is not None and imp_v is not None:
+                if imp_v > exp_v:
+                    txt3 += "Tốc độ tăng nhập khẩu đang cao hơn xuất khẩu, cho thấy áp lực thu hẹp cán cân thương mại nếu xu hướng này kéo dài. "
+                else:
+                    txt3 += "Xuất khẩu đang tăng nhanh hơn nhập khẩu, hỗ trợ tích cực cho cán cân thương mại và nguồn cung ngoại tệ. "
+        if f_parts:
+            txt3 += ("Về đầu tư công, " + "; ".join(f_parts) + " — mức độ giải ngân thực tế quyết định hiệu ứng lan tỏa "
+                     "tới các ngành xây dựng, vật liệu, hạ tầng.")
+        paras.append(txt3.strip())
+
+    unemp = _indicator_txt(raw, trends, "unemployment_rate")
+    ext_keys = ["fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"]
+    e_parts = _join_indicators(raw, trends, ext_keys)
+    if unemp or e_parts:
+        txt4 = ""
+        if unemp:
+            txt4 += f"Về lao động, {unemp[0]} ở mức {unemp[1]}. "
+        if e_parts:
+            txt4 += "Áp lực từ bên ngoài: " + "; ".join(e_parts) + ". "
+            txt4 += ("Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent "
+                     "tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu "
+                     "tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là "
+                     "một trong các đối tác thương mại lớn nhất.")
+        paras.append(txt4.strip())
+
+    if not paras:
+        return "Chưa đủ dữ liệu chỉ báo có xu hướng rõ để đánh giá tác động tới nền kinh tế."
+    return "\n\n".join(paras)
+
+
+def _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text):
+    paras = []
+    posture = "thuận lợi" if scorecard_total > 0 else ("bất lợi" if scorecard_total < 0 else "trung tính")
+    paras.append(f"Với Scorecard vĩ mô {scorecard_total:+d}/5 điểm ({posture} cho kênh cổ phiếu) và định giá VN-Index "
+                 f"được xếp loại \"{valuation.get('valuation_label', 'chưa xác định')}\", khuyến nghị phân bổ vốn hiện "
+                 f"tại là \"{decision_label}\": {decision_text}")
+
+    if valuation.get("erp") is not None and valuation.get("rf") is not None:
+        p2 = (f"Chênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức {valuation['erp']*100:.2f}%, "
+              f"trên nền lãi suất phi rủi ro tham chiếu {valuation['rf']*100:.2f}%. ")
+        if valuation["erp"] < 0.02:
+            p2 += ("Biên độ bù đắp rủi ro này tương đối mỏng — nếu lãi suất huy động/trái phiếu tiếp tục tăng, sức hấp "
+                   "dẫn tương đối của cổ phiếu so với kênh tiền gửi/trái phiếu sẽ giảm thêm.")
+        else:
+            p2 += ("Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái "
+                   "phiếu ở mức lãi suất hiện tại.")
+        paras.append(p2)
+
+    sector_notes = []
+    usdvnd_j = _indicator_txt(raw, trends, "usdvnd")
+    if usdvnd_j and usdvnd_j[2] == "Xấu đi":
+        sector_notes.append("VND mất giá có lợi tương đối cho nhóm xuất khẩu (dệt may, thủy sản, gỗ) nhờ tăng sức cạnh "
+                             "tranh giá, nhưng gây áp lực chi phí cho nhóm nhập khẩu nguyên liệu và doanh nghiệp có dư "
+                             "nợ vay ngoại tệ lớn.")
+    brent_j = _indicator_txt(raw, trends, "brent_oil")
+    if brent_j:
+        if brent_j[2] == "Tốt lên":
+            sector_notes.append("Giá dầu Brent hạ nhiệt hỗ trợ biên lợi nhuận nhóm vận tải, nhựa, phân bón (chi phí "
+                                 "đầu vào giảm), nhưng bất lợi cho nhóm khai thác/dầu khí thượng nguồn.")
+        elif brent_j[2] == "Xấu đi":
+            sector_notes.append("Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận "
+                                 "nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng.")
+    interbank_j = _indicator_txt(raw, trends, "interbank_rate_3m")
+    if interbank_j and interbank_j[2] == "Xấu đi":
+        sector_notes.append("Lãi suất liên ngân hàng tăng phản ánh thanh khoản hệ thống thắt chặt hơn — thường bất lợi "
+                             "cho nhóm cổ phiếu dùng đòn bẩy cao (bất động sản, xây dựng) do chi phí vốn tăng.")
+    if sector_notes:
+        paras.append("Ở cấp độ ngành: " + " ".join(sector_notes))
+
+    return "\n\n".join(paras)
+
+
+def _build_watch_points(raw, trends, scorecard):
+    worsening = []
+    for gdata in scorecard.values():
+        for d in gdata["detail"]:
+            if d["judgment_label"] == "Xấu đi":
+                worsening.append(d["label"])
     lines = []
-    lines.append(f"SCORECARD VĨ MÔ TỔNG: {scorecard_total:+d}/5")
-    for gname, gdata in scorecard.items():
-        detail = "; ".join(f"{d['label']} ({d['judgment_label']})" for d in gdata["detail"]) or "chưa đủ dữ liệu"
-        lines.append(f"- Nhóm {gname}: điểm {gdata['score']:+d} — {detail}")
-
-    lines.append(f"\nĐỊNH GIÁ THỊ TRƯỜNG: VN-Index P/E={valuation.get('pe')}x, ERP={valuation.get('erp')*100:.2f}%"
-                  if valuation.get("erp") is not None else "\nĐỊNH GIÁ THỊ TRƯỜNG: chưa đủ dữ liệu")
-    lines.append(f"=> Đánh giá định giá: {valuation.get('valuation_label')}")
-    lines.append(f"MA TRẬN QUYẾT ĐỊNH: {decision_label}")
-
-    lines.append("\nCHI TIẾT TỪNG CHỈ BÁO (giá trị mới nhất, kỳ, xu hướng):")
-    groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market"]
-    for grp in groups_order:
-        keys = [k for k, v in raw.items() if k != "_meta" and v["group"] == grp]
-        if not keys:
-            continue
-        lines.append(f"[{GROUP_LABELS[grp]}]")
-        for k in keys:
-            t = trends.get(k, {})
-            ind = raw[k]
-            if t.get("latest") is None:
-                continue
-            val_txt = f"{t['latest']:.2f}{ind['unit']}"
-            trend_txt = f", xu hướng {t['judgment_label']} (kỳ {t.get('latest_period')})" if t.get("judgment_label") else ""
-            lines.append(f"  - {ind['label']}: {val_txt}{trend_txt}")
+    if worsening:
+        lines.append(f"- Các chỉ báo đang xấu đi cần theo dõi sát: {_vn_join(worsening)}.")
+    no_data_groups = [g for g, d in scorecard.items() if d["n_votes"] == 0]
+    if no_data_groups:
+        lines.append(f"- Nhóm {_vn_join(no_data_groups)} hiện chưa đủ chỉ báo có xu hướng rõ để đưa vào Scorecard — cần bổ sung nguồn dữ liệu hoặc theo dõi thủ công.")
+    lines.append("- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.")
+    lines.append("- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.")
+    lines.append("- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo.")
     return "\n".join(lines)
 
 
-def get_ai_synthesis_vimo(context_summary):
-    """Gọi Gemini viết PHÂN TÍCH TỔNG HỢP ĐA CHỈ SỐ chuyên nghiệp — bức tranh tổng thể, tác động
-    tới kinh tế Việt Nam, tác động tới TTCK, và các điểm cần theo dõi. Trả dict {overview,
-    economy_impact, market_impact, watch_points}. Nếu thiếu API key hoặc lỗi thì dùng fallback
-    ngắn gọn (rõ ràng kém chi tiết hơn bản AI thật — không giả vờ đầy đủ khi không có)."""
-    fallback = {
-        "overview": "Chưa có phân tích AI tổng hợp (thiếu GEMINI_API_KEY hoặc lỗi gọi API) — xem trực tiếp Scorecard và bảng chỉ báo chi tiết ở trên để tự đánh giá bức tranh tổng thể.",
-        "economy_impact": "N/A — cần GEMINI_API_KEY để sinh phân tích tác động tới nền kinh tế.",
-        "market_impact": "N/A — cần GEMINI_API_KEY để sinh phân tích tác động tới TTCK.",
-        "watch_points": "N/A.",
+def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text):
+    """Tổng hợp phân tích đa chỉ số RULE-BASED (không AI) — trả dict {overview, economy_impact,
+    market_impact, watch_points}, mỗi mục là 1+ đoạn văn ráp từ số liệu thật trong raw/trends."""
+    return {
+        "overview": _build_overview(scorecard, scorecard_total, valuation, decision_label, decision_text),
+        "economy_impact": _build_economy_impact(raw, trends),
+        "market_impact": _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text),
+        "watch_points": _build_watch_points(raw, trends, scorecard),
     }
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        return fallback
-    try:
-        from google import genai
-        from google.genai import types as genai_types
-        client = genai.Client(api_key=api_key)
-        prompt = (
-            "Bạn là chuyên gia phân tích vĩ mô và chiến lược đầu tư tại một công ty chứng khoán Việt Nam, "
-            "đang viết phần TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ cho báo cáo vĩ mô định kỳ. Đây là phần QUAN TRỌNG "
-            "NHẤT của báo cáo — phải chuyên nghiệp, có chiều sâu, liên hệ NHIỀU chỉ báo với nhau (không liệt "
-            "kê rời rạc từng số), và đưa ra nhận định RÕ RÀNG về tác động thực tế — TUYỆT ĐỐI không viết "
-            "chung chung/hời hợt.\n\n"
-            f"DỮ LIỆU THẬT (dùng đúng số liệu này, không bịa thêm số nào khác):\n{context_summary}\n\n"
-            "Viết 4 phần, MỖI PHẦN 2-4 ĐOẠN VĂN THẬT SỰ (không phải 1 câu), theo đúng văn phong báo cáo "
-            "chứng khoán chuyên nghiệp:\n\n"
-            "1. TỔNG QUAN BỨC TRANH VĨ MÔ (overview): Tổng hợp các nhóm chỉ báo lại thành 1 câu chuyện "
-            "mạch lạc — đâu là động lực chính, đâu là điểm nghẽn, các chỉ báo có ĐỒNG THUẬN hay MÂU THUẪN "
-            "với nhau (vd tăng trưởng tốt nhưng lạm phát/tỷ giá đang tạo áp lực)? Đang ở giai đoạn nào của "
-            "chu kỳ kinh tế?\n\n"
-            "2. TÁC ĐỘNG TỚI KINH TẾ VIỆT NAM (economy_impact): Phân tích cụ thể cơ chế truyền dẫn — vd "
-            "giá dầu/tỷ giá tác động tới lạm phát nhập khẩu và chi phí doanh nghiệp ra sao, lãi suất "
-            "liên ngân hàng/OMO phản ánh thanh khoản hệ thống thế nào, xuất nhập khẩu/FDI nói lên điều gì "
-            "về vị thế cạnh tranh, đầu tư công có đang thực sự lan tỏa hay không.\n\n"
-            "3. TÁC ĐỘNG TỚI THỊ TRƯỜNG CHỨNG KHOÁN (market_impact): Liên hệ trực tiếp bức tranh vĩ mô "
-            "với dòng tiền/định giá TTCK — lãi suất và tỷ giá ảnh hưởng thế nào tới sức hấp dẫn tương đối "
-            "của cổ phiếu so với kênh khác, nhóm ngành nào hưởng lợi/chịu áp lực từ bối cảnh hiện tại "
-            "(vd giá dầu, tỷ giá, lãi suất), định giá hiện tại (P/E, ERP) có phản ánh đúng bức tranh vĩ mô "
-            "hay đang lệch pha.\n\n"
-            "4. ĐIỂM CẦN THEO DÕI TIẾP (watch_points): 3-5 tín hiệu/ngưỡng cụ thể nhà đầu tư nên theo dõi "
-            "trong 1-3 tháng tới để biết khi nào bức tranh này thay đổi.\n\n"
-            "Trả về JSON thuần (không markdown, không ```): "
-            '{"overview":"...","economy_impact":"...","market_impact":"...","watch_points":"..."}'
-        )
-        resp = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=genai_types.GenerateContentConfig(temperature=0.3, max_output_tokens=4000),
-        )
-        text = resp.text.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
-        parsed = json.loads(text)
-        return {
-            "overview": parsed.get("overview", fallback["overview"]),
-            "economy_impact": parsed.get("economy_impact", fallback["economy_impact"]),
-            "market_impact": parsed.get("market_impact", fallback["market_impact"]),
-            "watch_points": parsed.get("watch_points", fallback["watch_points"]),
-        }
-    except Exception as e:
-        print(f"  [WARN] AI synthesis vĩ mô thất bại: {e}. Dùng fallback.")
-        return fallback
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -736,11 +853,9 @@ def run_vimo_analysis():
     decision_label, decision_text = calc_decision_matrix(scorecard_total, valuation["valuation_label"])
     print(f"[INFO] Ma trận quyết định: {decision_label} — {decision_text}")
 
-    print("[INFO] Tổng hợp phân tích đa chỉ số (Gemini AI, dựa trên số liệu thật)...")
-    context_summary = build_macro_context_summary(raw, trends, scorecard, scorecard_total, valuation, decision_label)
-    synthesis = get_ai_synthesis_vimo(context_summary)
-    has_ai = os.environ.get("GEMINI_API_KEY") is not None
-    print(f"  -> {'Đã sinh phân tích AI' if has_ai else 'Thiếu GEMINI_API_KEY, dùng fallback'}")
+    print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
+    synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text)
+    print("  -> Đã sinh phân tích tổng hợp")
 
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", "VIMO")
     os.makedirs(out_dir, exist_ok=True)
