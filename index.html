@@ -78,6 +78,7 @@ const SECTOR_PAGES = {
     retail: 'retail.html',
     securities: 'securities.html',
     kcn: 'kcn.html',
+    nhietdien: 'nhietdien.html',
     other: 'index.html',
 };
 
@@ -98,6 +99,7 @@ function getSectorKey(s) {
     if (v.includes('bán lẻ') || v.includes('ban le') || v.includes('retail') || v.includes('consumer discretionary')) return 'retail';
     if (v.includes('chứng khoán') || v.includes('chung khoan') || v.includes('securities')) return 'securities';
     if (v.includes('khu công nghiệp') || v.includes('khu cong nghiep') || v.includes('industrial park') || v.includes('kcn')) return 'kcn';
+    if (v.includes('nhiệt điện') || v.includes('nhiet dien') || v.includes('thermal power')) return 'nhietdien';
     return 'other';
 }
 
@@ -107,6 +109,7 @@ const SECTOR_CFG = {
     retail: { label: 'Bán Lẻ',              icon: '🛒', color: '#8b5cf6' },
     securities: { label: 'Chứng Khoán',     icon: '📈', color: '#0ea5e9' },
     kcn:    { label: 'BĐS Khu Công Nghiệp',  icon: '🏭', color: '#10b981' },
+    nhietdien: { label: 'Nhiệt Điện',       icon: '🔥', color: '#dc2626' },
     other:  { label: 'Ngành Khác',          icon: '📁', color: '#a0aec0' },
 };
 
@@ -119,7 +122,7 @@ function groupAndRender(stocks) {
     });
     const container = document.getElementById('sector-groups-container');
     container.innerHTML = '';
-    const order = ['banks', 'materials', 'retail', 'securities', 'kcn', 'other'];
+    const order = ['banks', 'materials', 'retail', 'securities', 'kcn', 'nhietdien', 'other'];
     order.forEach(key => {
         if (!groups[key]) return;
         const cfg = SECTOR_CFG[key] || { label: 'Khác', icon: '📁', color: '#a0aec0' };

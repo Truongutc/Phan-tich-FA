@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIC FA — Nhiệt Điện</title>
+    <meta name="description" content="Hệ thống báo cáo và phân tích tài chính doanh nghiệp tự động hóa — Ngành Nhiệt điện (POW, NT2, PPC, QTP)">
+
+    <!-- Favicon & Mobile Icons -->
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="shortcut icon" type="image/png" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+
+    <!-- ══════════════════════════════════════════
+         TOP NAVBAR
+    ══════════════════════════════════════════ -->
+    <header class="top-navbar">
+        <button class="logo-btn" id="home-btn" onclick="location.href='index.html'" title="Quay lại Tổng quan">
+            <img src="logoaic.png" alt="AIC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">AIC FA SYSTEM</span>
+                <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
+            </div>
+        </button>
+
+        <div class="nav-breadcrumb" id="nav-breadcrumb">
+            <span class="breadcrumb-home">Tổng quan</span>
+        </div>
+
+        <div class="sector-badge-nav" id="sector-badge-nav" style="display:none">
+            <span class="sector-icon-nav" id="sector-icon-nav">🔥</span>
+            <span class="sector-label-nav" id="sector-label-nav">Nhiệt Điện</span>
+        </div>
+
+        <button class="home-text-btn" id="back-btn" onclick="location.href='index.html'" style="display:none">
+            ← Chọn cổ phiếu khác
+        </button>
+
+        <a href="https://aic-proweb.vercel.app/" class="home-link-btn" title="Về trang chủ AIC Pro Web">
+            <span class="home-link-icon">🏠</span>
+            <span>HOME</span>
+        </a>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 1: OVERVIEW (default)
+    ══════════════════════════════════════════ -->
+    <main id="view-overview" class="view view-overview" style="display:flex">
+
+        <div class="overview-hero card">
+            <div class="hero-content">
+                <div class="hero-icon">🔥</div>
+                <h2>AIC FA — Phân Tích Nhiệt Điện</h2>
+                <p>Chọn mã cổ phiếu để xem dashboard định giá DCF 50% + EV/EBITDA 20% + P/B 15% + Asset-based 15% cho nhóm nhiệt điện thuần (POW, NT2, PPC, QTP).</p>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+                    <a href="https://drive.google.com/drive/folders/1cDNkx6L806mgws_CbPve-ZfSKfvEwhdk?usp=sharing"
+                       target="_blank" class="btn btn-secondary">📁 Google Drive ↗</a>
+                    <a href="index.html" class="btn btn-secondary">📊 Tất cả ngành</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-bar-wrap">
+            <div class="search-bar card">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="stock-search-input" placeholder="Tìm kiếm mã cổ phiếu hoặc tên công ty..." autocomplete="off">
+                <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
+            </div>
+        </div>
+
+        <div id="sector-groups-container">
+            <div class="loading-state card">
+                <span>Đang tải danh sách cổ phiếu...</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ══════════════════════════════════════════
+         VIEW 2: ANALYSIS
+    ══════════════════════════════════════════ -->
+    <main id="view-analysis" class="view view-analysis" style="display:none">
+
+        <!-- Header Info Card -->
+        <div class="card header-card">
+            <div class="sector-ribbon" id="sector-ribbon">NHIỆT ĐIỆN</div>
+            <div class="header-main">
+                <div class="header-info">
+                    <span id="ticker-badge" class="badge">POW</span>
+                    <h2 id="company-name">-</h2>
+                    <p id="company-sector" class="subtitle">Nhiệt điện (Thermal Power)</p>
+                </div>
+                <div class="actions">
+                    <a id="download-pdf" href="#" target="_blank" class="btn btn-primary hidden">
+                        📥 Báo Cáo PDF
+                    </a>
+                    <a id="download-excel" href="#" target="_blank" class="btn btn-excel hidden">
+                        🟢 Excel Model
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valuation Snapshot -->
+        <div class="card val-snapshot-card margin-top-20">
+            <h3 class="border-blue">💎 Tóm tắt Định giá (DCF 50% + EV/EBITDA 20% + P/B 15% + Asset 15%)</h3>
+            <div class="val-snapshot-grid">
+                <div class="val-snap-box">
+                    <span class="lbl">Giá hiện tại</span>
+                    <span class="val" id="snap-curr-price">- VND</span>
+                </div>
+                <div class="val-snap-box highlight">
+                    <span class="lbl">Fair Value (Blend)</span>
+                    <span class="val text-blue" id="snap-target-price">- VND</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Tiềm năng tăng giá</span>
+                    <span class="val text-green" id="snap-upside">- %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Khuyến nghị</span>
+                    <span class="val badge-rec" id="snap-recommend">-</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">DCF (50%)</span>
+                    <span class="val" id="snap-dcf">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">EV/EBITDA (20%)</span>
+                    <span class="val" id="snap-evebitda">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/B (15%)</span>
+                    <span class="val" id="snap-pb">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Asset-based (15%)</span>
+                    <span class="val" id="snap-asset">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/E (tham chiếu)</span>
+                    <span class="val" id="snap-pe">- đ</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">WACC</span>
+                    <span class="val" id="snap-wacc">- %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Cost of Equity (CAPM)</span>
+                    <span class="val" id="snap-coe">- %</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Beta (Blume)</span>
+                    <span class="val" id="snap-beta">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Snapshot Table -->
+        <div class="card margin-top-20" id="web-financial-snapshot-card">
+            <h3 class="border-blue">📋 Bảng tài chính tóm tắt (5 năm lịch sử)</h3>
+            <div class="table-container">
+                <table class="web-table" id="web-financial-snapshot-table">
+                    <thead><tr id="fs-header-row"><th>Chỉ tiêu (tỷ VND)</th></tr></thead>
+                    <tbody id="web-financial-snapshot-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Two-column: Charts Left | Moat Right -->
+        <div class="dashboard-grid-two margin-top-20">
+
+            <!-- LEFT: Charts -->
+            <div class="col-left">
+
+                <!-- Chart: Doanh thu & Biên LNG -->
+                <div class="chart-card-split">
+                    <div class="chart-split-left">
+                        <h3>Doanh thu &amp; Biên Lợi nhuận gộp theo năm</h3>
+                        <div class="chart-container">
+                            <canvas id="revenueGmChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💡 Phân tích Doanh thu & Biên LNG</h4>
+                        <div id="analysis-text-revenue" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart: EBIT & LNST theo năm -->
+                <div class="chart-card-split margin-top-20">
+                    <div class="chart-split-left">
+                        <h3>EBIT &amp; LNST cổ đông mẹ theo năm</h3>
+                        <div class="chart-container">
+                            <canvas id="ebitNpatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📈 Nhận định Hiệu quả Sinh lời</h4>
+                        <div id="analysis-text-ebit" class="chart-analysis-text">
+                            EBIT = Lợi nhuận gộp + Chi phí bán hàng &amp; quản lý (đã ở dạng âm). D&amp;A và lãi vay nhóm nhiệt điện lớn khiến LNST bị méo hơn EBIT — đây là lý do EV/EBITDA được ưu tiên hơn P/E trong định giá.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart: FCFF dự phóng -->
+                <div class="chart-card-split margin-top-20">
+                    <div class="chart-split-left">
+                        <h3>FCFF dự phóng 5 năm (DCF)</h3>
+                        <div class="chart-container">
+                            <canvas id="fcfChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>💰 Dòng tiền tự do chiết khấu WACC</h4>
+                        <div id="analysis-text-fcf" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart: So sánh các phương pháp định giá -->
+                <div class="chart-card-split margin-top-20">
+                    <div class="chart-split-left">
+                        <h3>So sánh các phương pháp định giá</h3>
+                        <div class="chart-container">
+                            <canvas id="valuationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>⚖️ Blend định giá</h4>
+                        <div id="analysis-text-valuation" class="chart-analysis-text"></div>
+                    </div>
+                </div>
+
+                <!-- Chart: Peer EV/EBITDA -->
+                <div class="chart-card-split margin-top-20">
+                    <div class="chart-split-left">
+                        <h3>So sánh EV/EBITDA, P/B, P/E nhóm Nhiệt điện</h3>
+                        <div class="chart-container">
+                            <canvas id="peerCompsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-split-right">
+                        <h4>📊 Target multiple = median cả nhóm</h4>
+                        <div id="analysis-text-peer" class="chart-analysis-text">
+                            Target multiple dùng trong định giá lấy từ MEDIAN thực tế cả nhóm POW/NT2/PPC/QTP — không tự đặt biên số áng chừng.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Moat + Fuel prices -->
+            <div class="col-right">
+                <div class="card moat-card">
+                    <h3>Lợi thế cạnh tranh (Moat Scorecard)</h3>
+                    <div class="moat-list" id="moat-scorecard-list"></div>
+                </div>
+
+                <div class="card margin-top-20" id="fuel-prices-card">
+                    <h3>⛽ Giá nhiên liệu đầu vào & Tỷ giá</h3>
+                    <div class="bank-kpi-grid" id="fuel-prices-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Thesis + Risks -->
+        <div class="dashboard-grid-two margin-top-20">
+            <div class="card thesis-card">
+                <h3 class="border-blue">Luận điểm đầu tư (Thesis)</h3>
+                <ul id="thesis-list" class="thesis-ul"></ul>
+            </div>
+            <div class="card risks-card">
+                <h3 class="border-red">Rủi ro chính (Investment Risks)</h3>
+                <ul id="risks-list" class="risks-ul"></ul>
+            </div>
+        </div>
+
+        <!-- Peer Comps Table -->
+        <div class="card peer-bench-card margin-top-20" id="web-peer-card">
+            <h3 class="border-blue">📊 Bảng So sánh nhóm Nhiệt điện (Peer Comps)</h3>
+            <div style="font-size:0.85em; color:#a0aec0; margin:-10px 0 15px 0">
+                EV/EBITDA, P/B, P/E thực tế của cả 4 mã tại kỳ báo cáo gần nhất — median dùng làm target multiple định giá.
+            </div>
+            <div class="table-container">
+                <table class="web-table">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>EV/EBITDA (x)</th>
+                            <th>P/B (x)</th>
+                            <th>P/E (x)</th>
+                            <th>Giá (VND)</th>
+                            <th>Vốn hóa (tỷ)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="peer-comps-tbody">
+                        <tr><td colspan="6" style="text-align:center">Đang tải dữ liệu peer comps...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PESTLE -->
+        <div class="card pestle-card margin-top-20">
+            <h3>Bối cảnh vĩ mô (PESTLE Matrix)</h3>
+            <div class="pestle-grid" id="pestle-grid-container"></div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+    </footer>
+
+</div>
+<script src="app_nhietdien.js?v=1"></script>
+<script src="access-gate.js"></script>
+</body>
+</html>

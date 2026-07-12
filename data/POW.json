@@ -1,0 +1,241 @@
+{
+  "ticker": "POW",
+  "companyName": "Tổng Công ty Điện lực Dầu khí Việt Nam - CTCP",
+  "sector": "Nhiệt điện",
+  "currentPrice": 14100.0,
+  "marketCap": 39294177453600.0,
+  "shares": 2786821096,
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
+  "betaRfCache": {
+    "beta": 0.9141,
+    "rf": 0.045,
+    "fetchedAt": "2026-07-12 08:49"
+  },
+  "data": {
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "revenue": [
+      24560.95,
+      28224.12,
+      28329.36,
+      30305.63,
+      34306.14
+    ],
+    "grossProfit": [
+      2540.0,
+      3726.1,
+      2704.25,
+      1997.67,
+      4478.55
+    ],
+    "ebit": [
+      2399.64,
+      2858.5,
+      1436.13,
+      1119.88,
+      3231.31
+    ],
+    "npat": [
+      1798.55,
+      2060.86,
+      1038.36,
+      1111.59,
+      2426.66
+    ]
+  },
+  "peerComps": {
+    "perTicker": {
+      "POW": {
+        "year": 2025,
+        "current_price": 14100.0,
+        "eps": 871.0,
+        "bvps": 12277.451829162197,
+        "ebitda": 6090.064321049001,
+        "market_cap": 39294.1774536,
+        "net_debt": 22149.126742929002,
+        "ev": 61443.304196529,
+        "pe": 16.18828932261768,
+        "pb": 1.1484467783867633,
+        "ev_ebitda": 10.089105953144601
+      },
+      "NT2": {
+        "year": 2025,
+        "current_price": 21800.0,
+        "eps": 3829.0,
+        "bvps": 16880.18584477209,
+        "ebitda": 1719.2523628440001,
+        "market_cap": 6275.6974322,
+        "net_debt": 1740.002252909,
+        "ev": 8015.699685109,
+        "pe": 5.693392530686864,
+        "pb": 1.2914549757016809,
+        "ev_ebitda": 4.662317096862598
+      },
+      "PPC": {
+        "year": 2025,
+        "current_price": 9240.0,
+        "eps": 515.0,
+        "bvps": 13690.68553946695,
+        "ebitda": 195.89982341500001,
+        "market_cap": 3014.4114,
+        "net_debt": -395.414669779,
+        "ev": 2618.996730221,
+        "pe": 17.941747572815533,
+        "pb": 0.6749114186695258,
+        "ev_ebitda": 13.369061209783938
+      },
+      "QTP": {
+        "year": 2025,
+        "current_price": 11400.0,
+        "eps": 2302.0,
+        "bvps": 13177.161885035555,
+        "ebitda": 1936.702896992,
+        "market_cap": 5130.0,
+        "net_debt": -72.706840025,
+        "ev": 5057.293159975,
+        "pe": 4.9522154648132055,
+        "pb": 0.865133182657962,
+        "ev_ebitda": 2.6112901301638782
+      }
+    },
+    "peerMedian": {
+      "pe": 10.94,
+      "pb": 1.01,
+      "ev_ebitda": 7.38,
+      "n_pe": 4,
+      "n_pb": 4,
+      "n_ev_ebitda": 4
+    }
+  },
+  "fuelPrices": {
+    "coal": {
+      "value": 110.0,
+      "source": "Fallback (manual)"
+    },
+    "gas": {
+      "value": 3.0,
+      "source": "Fallback (manual)"
+    },
+    "oil": {
+      "value": 75.0,
+      "source": "Fallback (manual)"
+    },
+    "usdvnd": {
+      "value": 26200.0,
+      "source": "Fallback (manual)"
+    }
+  },
+  "valuation": {
+    "fair_dcf": -2558.619286360315,
+    "fair_ev_ebitda": 11147.355117461504,
+    "fair_pb": 12400.22634745382,
+    "fair_asset": 12277.451829162197,
+    "fair_pe": 10958.051,
+    "fair_blend": 4651.813106804546,
+    "upside": -0.6700841768223726,
+    "target_pb": 1.01,
+    "target_pe": 10.94,
+    "target_ev_ebitda": 7.38,
+    "wacc": 0.08,
+    "coe": 0.111,
+    "cod": 0.0254,
+    "rf": 0.045,
+    "beta": 0.942,
+    "eps_last": 871.0,
+    "bvps_last": 12277.0
+  },
+  "fcRows": [
+    {
+      "year_offset": 1,
+      "revenue": 40298.46,
+      "ebit": 3263.52,
+      "nopat": 2610.81,
+      "da": 3947.16,
+      "capex": 6453.85,
+      "fcff": 104.13,
+      "fcff_pv": 96.42
+    },
+    {
+      "year_offset": 2,
+      "revenue": 43809.68,
+      "ebit": 2655.41,
+      "nopat": 2124.33,
+      "da": 4291.08,
+      "capex": 7016.17,
+      "fcff": -600.77,
+      "fcff_pv": -515.06
+    },
+    {
+      "year_offset": 3,
+      "revenue": 47626.84,
+      "ebit": 2886.78,
+      "nopat": 2309.42,
+      "da": 4664.96,
+      "capex": 7627.5,
+      "fcff": -653.11,
+      "fcff_pv": -518.46
+    },
+    {
+      "year_offset": 4,
+      "revenue": 51776.59,
+      "ebit": 3138.3,
+      "nopat": 2510.64,
+      "da": 5071.42,
+      "capex": 8292.08,
+      "fcff": -710.02,
+      "fcff_pv": -521.88
+    },
+    {
+      "year_offset": 5,
+      "revenue": 56287.91,
+      "ebit": 3411.74,
+      "nopat": 2729.4,
+      "da": 5513.3,
+      "capex": 9014.58,
+      "fcff": -771.88,
+      "fcff_pv": -525.33
+    }
+  ],
+  "thesis": [
+    "Tổng Công ty Điện lực Dầu khí Việt Nam - CTCP (POW) là doanh nghiệp nhiệt điện bán điện chủ yếu cho EVN theo hợp đồng PPA — dòng tiền tương đối ổn định nhưng phụ thuộc mạnh vào sản lượng huy động và giá nhiên liệu đầu vào.",
+    "Định giá blend (DCF 50%+EV/EBITDA 20%+P/B 15%+Asset 15%) = 4,652 VND/cp, upside -67.0% so với giá thị trường 14,100 VND."
+  ],
+  "risks": [
+    "Chính sách năng lượng ưu tiên tái tạo có thể giảm hệ số tải huy động nhiệt điện.",
+    "Giá than/khí/dầu biến động mạnh theo thị trường quốc tế — ảnh hưởng trực tiếp biên lợi nhuận.",
+    "D&A và lãi vay lớn (đặc biệt các dự án đang xây dựng như NT3/NT4 của POW) khiến LNST/P-E bị méo — đây là lý do EV/EBITDA được ưu tiên hơn P/E trong blend định giá."
+  ],
+  "moats": {
+    "Switching Cost": {
+      "score": 4,
+      "desc": "Hợp đồng PPA dài hạn với EVN, rào cản chuyển đổi nhà cung cấp điện cao."
+    },
+    "Efficient Scale": {
+      "score": 3,
+      "desc": "Nhà máy công suất lớn, vốn đầu tư ban đầu là rào cản gia nhập ngành."
+    },
+    "Cost Advantage": {
+      "score": 2,
+      "desc": "Phụ thuộc giá nhiên liệu đầu vào, ít lợi thế chi phí bền vững."
+    },
+    "Network Effect": {
+      "score": 1,
+      "desc": "Không có hiệu ứng mạng lưới đáng kể trong ngành phát điện."
+    }
+  },
+  "pestle": {
+    "Political": "Quy hoạch điện VIII ưu tiên năng lượng tái tạo, hạn chế phát triển nhiệt điện than mới.",
+    "Economic": "Nhu cầu điện tăng theo tăng trưởng GDP, nhưng giá bán điện chịu điều tiết của EVN/Bộ Công Thương.",
+    "Social": "Áp lực giảm phát thải carbon từ cộng đồng và nhà đầu tư quốc tế.",
+    "Technological": "Công nghệ tua-bin khí hiệu suất cao (NT3/NT4) giúp giảm phát thải và tăng hiệu suất so với nhà máy cũ.",
+    "Legal": "Cam kết Net Zero 2050 của Việt Nam tạo áp lực pháp lý dài hạn lên nhiệt điện than.",
+    "Environmental": "Phát thải CO2/NOx/SO2 là rủi ro ESG lớn nhất của ngành nhiệt điện than."
+  },
+  "lastUpdated": "2026-07-12 08:49"
+}
