@@ -22,6 +22,7 @@ const SOURCE_LABELS = {
     nso_scrape: 'nso.gov.vn (báo cáo quý, tự động)',
     nso_chart_embed: 'nso.gov.vn (biểu đồ tháng, tự động)',
     sbv_chart: 'sbv.gov.vn (biểu đồ, tự động)',
+    sbv_table: 'sbv.gov.vn (bảng lãi suất, tự động)',
     vietnambiz: 'data.vietnambiz.vn (tự động)',
     manual: 'Nghiên cứu thủ công',
 };

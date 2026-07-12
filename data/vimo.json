@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-07-12 11:58",
+  "lastUpdated": "2026-07-12 12:08",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -506,48 +506,60 @@
       "label": "Lãi suất tái cấp vốn (NHNN)",
       "unit": "%",
       "goodDirection": "lower",
-      "autoSource": "manual",
+      "autoSource": "sbv_table",
       "series": [
         {
           "period": "2026-07",
           "value": 4.5,
-          "source_url": "https://luatvietnam.vn/linh-vuc-khac/lai-suat-dieu-hanh-la-gi-883-96788-article.html"
+          "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
         }
       ],
       "trend": {
         "latest": 4.5,
         "latest_period": "2026-07",
-        "latest_source": "https://luatvietnam.vn/linh-vuc-khac/lai-suat-dieu-hanh-la-gi-883-96788-article.html",
+        "latest_source": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1",
         "n_points": 1,
         "label": "insufficient",
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục theo quý. Đã xác nhận: link 'lãi suất' trên sbv.gov.vn bị lỗi 404 (bug CMS toàn site, không phải do cách cào) — không có trang SBV nào hiện scrape được cho chỉ báo này."
+      "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật."
     },
     "interbank_rate_3m": {
       "group": "monetary",
       "label": "Lãi suất liên ngân hàng 3 tháng",
       "unit": "%",
       "goodDirection": "lower",
-      "autoSource": "manual",
+      "autoSource": "sbv_table",
       "series": [
         {
           "period": "2026-06",
           "value": 7.79,
           "source_url": "https://tradingeconomics.com/vietnam/interbank-rate"
+        },
+        {
+          "period": "2026-07",
+          "value": 7.8,
+          "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
         }
       ],
       "trend": {
-        "latest": 7.79,
-        "latest_period": "2026-06",
-        "latest_source": "https://tradingeconomics.com/vietnam/interbank-rate",
-        "n_points": 1,
-        "label": "insufficient",
-        "arrow": "—",
-        "is_improving": null
+        "latest": 7.8,
+        "latest_period": "2026-07",
+        "latest_source": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1",
+        "n_points": 2,
+        "prior": 7.79,
+        "prior_period": "2026-06",
+        "delta": 0.01,
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
-      "note": "Trading Economics (nguồn chuẩn) bị chặn 403 (WAF), nhiều khả năng cũng chặn trên GitHub Actions. Đã xác nhận: link tương ứng trên sbv.gov.vn cũng bị lỗi 404 (bug CMS toàn site). VietnamBiz không có chỉ báo này trong 25 mục đã khảo sát. Cần nguồn thay thế (CEIC trả phí, hoặc báo cáo daily SSI/VCBS/Vietcap — dạng đọc/research, không phải API/scrape đơn giản) hoặc bổ sung thủ công định kỳ."
+      "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy)."
     },
     "credit_growth": {
       "group": "monetary",

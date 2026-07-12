@@ -236,6 +236,36 @@ def fetch_sbv_credit_growth():
         return []
 
 
+def fetch_sbv_interest_rates():
+    """sbv.gov.vn/vi/lãi-suất1 — LƯU Ý: URL này bị 404 khi test bằng curl KHÔNG có domain
+    'www.' phía trước hoặc thiếu -L theo redirect (đã từng kết luận nhầm là link chết ở lần
+    khảo sát trước — user cung cấp lại URL và test kỹ hơn xác nhận trang THẬT SỰ hoạt động qua
+    'https://www.sbv.gov.vn/...' + theo redirect). Trang chứa 2 bảng HTML thật (không phải JS
+    render): (1) lãi suất tái chiết khấu/tái cấp vốn hiện hành, (2) lãi suất bình quân liên ngân
+    hàng theo kỳ hạn (O/N, 1W, 2W, 1M, 3M, 6M, 9M). Số dùng dấu phẩy thập phân kiểu Việt Nam
+    ('4,500%') — phải đổi ',' -> '.' trước khi ép kiểu float.
+    Trả dict {"refinancing_rate": value, "interbank_rate_3m": value} (key nào không tìm thấy thì
+    bị bỏ qua, không lỗi)."""
+    url = "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        text = re.sub(r"<[^>]+>", " | ", r.text)
+        text = re.sub(r"\s+", " ", text)
+
+        out = {}
+        m = re.search(r"Lãi suất tái cấp vốn(?:\s*\|)+\s*([\d,]+)\s*%", text)
+        if m:
+            out["refinancing_rate"] = float(m.group(1).replace(",", "."))
+        m = re.search(r"3 Tháng(?:\s*\|)+\s*([\d,]+)\s", text)
+        if m:
+            out["interbank_rate_3m"] = float(m.group(1).replace(",", "."))
+        return out
+    except Exception as e:
+        print(f"  [WARN] SBV lãi suất thất bại: {e}")
+        return {}
+
+
 # VietnamBiz's Vietnamese "title" field -> indicator key trong vimo_raw.json. CHỈ map các chỉ
 # báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (PMI, bán lẻ — trước đây "manual" chỉ 1 điểm) —
 # không map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy
@@ -384,6 +414,12 @@ def update_vimo_raw():
     for key, (period, value) in vnb.items():
         _append_point(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
         print(f"  -> {key} {period}: {value}")
+
+    print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3 tháng (tích lũy theo lần chạy)]")
+    rates = fetch_sbv_interest_rates()
+    for key, value in rates.items():
+        _append_point(raw, key, period_now, value, "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1")
+        print(f"  -> {key} {period_now}: {value}")
 
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     save_raw(raw)

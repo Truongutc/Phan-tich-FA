@@ -423,6 +423,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "nso_scrape": "nso.gov.vn (báo cáo quý, tự động)",
                          "nso_chart_embed": "nso.gov.vn (biểu đồ tháng, tự động)",
                          "sbv_chart": "sbv.gov.vn (biểu đồ, tự động)",
+                         "sbv_table": "sbv.gov.vn (bảng lãi suất, tự động)",
                          "vietnambiz": "data.vietnambiz.vn (tự động)",
                          "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
