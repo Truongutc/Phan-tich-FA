@@ -1640,6 +1640,227 @@ def build_pdf_nhietdien(pdf_path, ticker, company_name, current_price, shares, h
     return pdf_path
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# JSON EXPORT cho dashboard web (data/<TICKER>.json) — mirror save_json_kcn(),
+# không có phần segment (nhiệt điện Giai đoạn 1 chỉ định giá cấp công ty).
+# ══════════════════════════════════════════════════════════════════════════
+def save_json_nhietdien(ticker, company_name, current_price, shares, hist_years,
+                         is_recs_y, val, peer_result, fuel_prices,
+                         excel_url=None, pdf_url=None, beta_rf_cache_entry=None):
+    """Ghi data/TICKER.json cho dashboard web (nhietdien.html)."""
+    revenue_h = [_get_yr(is_recs_y, y, IS_GEN["revenue"]) for y in hist_years]
+    gp_h = [_get_yr(is_recs_y, y, IS_GEN["gross_profit"]) for y in hist_years]
+    sga_h = [_get_yr(is_recs_y, y, IS_GEN["sga_sales"]) + _get_yr(is_recs_y, y, IS_GEN["sga_admin"]) for y in hist_years]
+    ebit_h = [gp_h[i] + sga_h[i] for i in range(len(hist_years))]
+    npat_h = [_get_yr(is_recs_y, y, IS_GEN["npat_parent"]) for y in hist_years]
+
+    w = val["wacc"]
+    out = {
+        "ticker": ticker,
+        "companyName": company_name,
+        "sector": "Nhiệt điện",
+        "currentPrice": current_price,
+        "marketCap": shares * current_price,
+        "shares": shares,
+        "gdriveExcelUrl": excel_url,
+        "gdrivePdfUrl": pdf_url,
+        "betaRfCache": beta_rf_cache_entry,
+        "data": {
+            "years": list(hist_years),
+            "revenue": [round(v, 2) for v in revenue_h],
+            "grossProfit": [round(v, 2) for v in gp_h],
+            "ebit": [round(v, 2) for v in ebit_h],
+            "npat": [round(v, 2) for v in npat_h],
+        },
+        "peerComps": {
+            "perTicker": peer_result["per_ticker"],
+            "peerMedian": peer_result["peer_median"],
+        },
+        "fuelPrices": {
+            "coal": {"value": fuel_prices["coal"][0], "source": fuel_prices["coal"][1]},
+            "gas": {"value": fuel_prices["gas"][0], "source": fuel_prices["gas"][1]},
+            "oil": {"value": fuel_prices["oil"][0], "source": fuel_prices["oil"][1]},
+            "usdvnd": {"value": fuel_prices["usdvnd"][0], "source": fuel_prices["usdvnd"][1]},
+        },
+        "valuation": {
+            "fair_dcf": val["fair_dcf"],
+            "fair_ev_ebitda": val["fair_ev_ebitda"],
+            "fair_pb": val["fair_pb"],
+            "fair_asset": val["fair_asset"],
+            "fair_pe": val["fair_pe"],
+            "fair_blend": val["fair_blend"],
+            "upside": val["upside"],
+            "target_pb": val["target_pb"],
+            "target_pe": val["target_pe"],
+            "target_ev_ebitda": val["ev_ebitda"]["target_ev_ebitda"],
+            "wacc": round(w["wacc"], 4),
+            "coe": round(w["coe"], 4),
+            "cod": round(w["cod"], 4),
+            "rf": round(val["rf"], 4),
+            "beta": round(val["beta"], 3),
+            "eps_last": round(val["eps_last"], 0),
+            "bvps_last": round(val["bvps_last"], 0),
+        },
+        "fcRows": [
+            {k: round(v, 2) if isinstance(v, float) else v for k, v in row.items()}
+            for row in val["fc_rows"]
+        ],
+        "thesis": [
+            f"{company_name} ({ticker}) là doanh nghiệp nhiệt điện bán điện chủ yếu cho EVN theo hợp "
+            f"đồng PPA — dòng tiền tương đối ổn định nhưng phụ thuộc mạnh vào sản lượng huy động và "
+            f"giá nhiên liệu đầu vào.",
+            f"Định giá blend (DCF 50%+EV/EBITDA 20%+P/B 15%+Asset 15%) = {val['fair_blend']:,.0f} "
+            f"VND/cp, upside {val['upside']*100:+.1f}% so với giá thị trường {current_price:,.0f} VND.",
+        ],
+        "risks": [
+            "Chính sách năng lượng ưu tiên tái tạo có thể giảm hệ số tải huy động nhiệt điện.",
+            "Giá than/khí/dầu biến động mạnh theo thị trường quốc tế — ảnh hưởng trực tiếp biên lợi nhuận.",
+            "D&A và lãi vay lớn (đặc biệt các dự án đang xây dựng như NT3/NT4 của POW) khiến LNST/P-E "
+            "bị méo — đây là lý do EV/EBITDA được ưu tiên hơn P/E trong blend định giá.",
+        ],
+        "moats": {
+            "Switching Cost": {"score": 4, "desc": "Hợp đồng PPA dài hạn với EVN, rào cản chuyển đổi nhà cung cấp điện cao."},
+            "Efficient Scale": {"score": 3, "desc": "Nhà máy công suất lớn, vốn đầu tư ban đầu là rào cản gia nhập ngành."},
+            "Cost Advantage": {"score": 2, "desc": "Phụ thuộc giá nhiên liệu đầu vào, ít lợi thế chi phí bền vững."},
+            "Network Effect": {"score": 1, "desc": "Không có hiệu ứng mạng lưới đáng kể trong ngành phát điện."},
+        },
+        "pestle": {
+            "Political": "Quy hoạch điện VIII ưu tiên năng lượng tái tạo, hạn chế phát triển nhiệt điện than mới.",
+            "Economic": "Nhu cầu điện tăng theo tăng trưởng GDP, nhưng giá bán điện chịu điều tiết của EVN/Bộ Công Thương.",
+            "Social": "Áp lực giảm phát thải carbon từ cộng đồng và nhà đầu tư quốc tế.",
+            "Technological": "Công nghệ tua-bin khí hiệu suất cao (NT3/NT4) giúp giảm phát thải và tăng hiệu suất so với nhà máy cũ.",
+            "Legal": "Cam kết Net Zero 2050 của Việt Nam tạo áp lực pháp lý dài hạn lên nhiệt điện than.",
+            "Environmental": "Phát thải CO2/NOx/SO2 là rủi ro ESG lớn nhất của ngành nhiệt điện than.",
+        },
+    }
+
+    json_path = os.path.join(PROJECT_ROOT, "data", f"{ticker}.json")
+    os.makedirs(os.path.dirname(json_path), exist_ok=True)
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, indent=2)
+    print(f"  [OK] JSON: {json_path}")
+    return json_path
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# ENTRY POINT — run_nhietdien_analysis(ticker)
+# ══════════════════════════════════════════════════════════════════════════
+def run_nhietdien_analysis(ticker, use_cache=True):
+    """Entry point chính: fetch BCTC -> WACC/DCF/EV-EBITDA/P-B/Asset -> Excel+PDF+JSON."""
+    ticker = ticker.upper()
+    print(f"\n{'='*60}")
+    print(f"  NHIỆT ĐIỆN ANALYSIS ENGINE — {ticker}")
+    print(f"{'='*60}")
+
+    from fetch_data import fetch_all
+    raw = fetch_all(ticker, use_cache=use_cache)
+
+    company_name = NHIETDIEN_COMPANY_NAMES.get(ticker, raw.get("companyName") or ticker)
+    current_price = raw.get("currentPrice") or raw.get("info", {}).get("currentPrice") or 0
+
+    is_recs_y = raw["sections"]["INCOME_STATEMENT"].get("years", [])
+    bs_recs_y = raw["sections"]["BALANCE_SHEET"].get("years", [])
+    cf_recs_y = raw["sections"]["CASH_FLOW"].get("years", [])
+    is_recs_q = raw["sections"]["INCOME_STATEMENT"].get("quarters", [])
+
+    if not is_recs_y:
+        print(f"[ERROR] Không có dữ liệu IS năm cho {ticker}. Dừng.")
+        return False
+
+    hist_years = sorted({r["yearReport"] for r in is_recs_y if r.get("yearReport")})[-5:]
+    shares = _get_shares_from_raw(raw, bs_recs_y)
+
+    print(f"  Company : {company_name}")
+    print(f"  Price   : {current_price:,.0f} VND")
+    print(f"  Shares  : {shares:,.0f} cp")
+    print(f"  Hist YR : {hist_years}")
+
+    # ── Rf & Beta (Blume-adjusted, cache fallback — đồng nhất với các template khác) ──
+    print("  [INFO] Fetching Rf & Beta...")
+    rf, rf_src = fetch_rf_vietnam()
+    calc_beta, web_beta, is_enough, beta_src, latest_price_hist, _aligned = fetch_and_calc_beta(ticker)
+    beta_raw = calc_beta if is_enough else web_beta
+
+    from beta_rf_cache import apply_beta_rf_cache_fallback
+    rf, rf_src, beta_raw, beta_src, BETA_RF_CACHE_ENTRY = apply_beta_rf_cache_fallback(
+        ticker, PROJECT_ROOT, rf, rf_src, beta_raw, beta_src, is_enough, web_beta)
+
+    beta = round(0.67 * beta_raw + 0.33, 4)
+    print(f"  Rf={rf*100:.2f}% ({rf_src}) | Beta thô={beta_raw:.3f} | Beta Blume={beta:.3f} ({beta_src})")
+
+    if current_price <= 0 and latest_price_hist:
+        current_price = latest_price_hist
+        print(f"  [INFO] Dùng giá lịch sử cuối: {current_price:,.0f} VND")
+
+    # ── Peer multiples cả nhóm (median thực tế, không estimate) ──
+    print("  [INFO] Fetching peer multiples cả nhóm POW/NT2/PPC/QTP...")
+    peer_result = fetch_peer_multiples()
+    pm = peer_result["peer_median"]
+    print(f"  -> PEER MEDIAN: P/E={pm['pe']}x P/B={pm['pb']}x EV/EBITDA={pm['ev_ebitda']}x")
+
+    # ── Giá nhiên liệu than/khí/dầu/tỷ giá ──
+    print("  [INFO] Fetching giá nhiên liệu & tỷ giá...")
+    fuel_prices = {
+        "coal": fetch_coal_price(),
+        "gas": fetch_gas_price(),
+        "oil": fetch_oil_price(),
+        "usdvnd": fetch_usd_vnd_rate(),
+    }
+
+    # ── Định giá ──
+    print("  [INFO] Calculating valuation...")
+    val = calc_valuation_nhietdien(ticker, is_recs_y, bs_recs_y, cf_recs_y, hist_years, shares,
+                                    current_price, rf, beta, peer_multiples=pm, is_recs_q=is_recs_q)
+    print(f"  DCF={val['fair_dcf']:,.0f} | EV/EBITDA={val['fair_ev_ebitda']:,.0f} | "
+          f"P/B={val['fair_pb']:,.0f} | Asset={val['fair_asset']:,.0f} | "
+          f"Blend={val['fair_blend']:,.0f} ({val['upside']*100:+.1f}%)")
+
+    # ── Output paths ──
+    out_dir = os.path.join(PROJECT_ROOT, "Bao cao", ticker)
+    os.makedirs(out_dir, exist_ok=True)
+    date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+    excel_path = os.path.join(out_dir, f"{ticker}_NhietDien_Model_{date_str}.xlsx")
+    pdf_path = os.path.join(out_dir, f"{ticker}_NhietDien_Report_{date_str}.pdf")
+
+    # ── Excel ──
+    print("  [INFO] Building Excel...")
+    wb = build_excel_nhietdien(ticker, company_name, current_price, shares, hist_years,
+                                is_recs_y, bs_recs_y, cf_recs_y, val, peer_result, fuel_prices)
+    wb.save(excel_path)
+    print(f"  [OK] Excel: {excel_path}")
+
+    # ── Charts ──
+    print("  [INFO] Building charts...")
+    charts = build_charts_nhietdien(out_dir, ticker, hist_years, is_recs_y, bs_recs_y, cf_recs_y,
+                                     is_recs_q, val, peer_result, fuel_prices, shares)
+
+    # ── PDF ──
+    print("  [INFO] Building PDF...")
+    build_pdf_nhietdien(pdf_path, ticker, company_name, current_price, shares, hist_years,
+                         is_recs_y, bs_recs_y, val, peer_result, fuel_prices, charts)
+    print(f"  [OK] PDF: {pdf_path}")
+
+    # ── JSON dashboard ──
+    print("  [INFO] Saving JSON dashboard...")
+    save_json_nhietdien(ticker, company_name, current_price, shares, hist_years,
+                         is_recs_y, val, peer_result, fuel_prices,
+                         beta_rf_cache_entry=BETA_RF_CACHE_ENTRY)
+
+    # ── Cleanup chart PNGs (đã nhúng vào PDF) ──
+    for p in charts.values():
+        try:
+            os.remove(p)
+        except Exception:
+            pass
+
+    print(f"\n{'='*60}")
+    print(f"  HOÀN THÀNH — {ticker}")
+    print(f"  Excel : {excel_path}")
+    print(f"  PDF   : {pdf_path}")
+    print(f"{'='*60}\n")
+    return True
+
+
 if __name__ == "__main__":
     # Smoke-test Bước 1+2 của kế hoạch: fetch BCTC + Rf/Beta thật, in số liệu thô +
     # kết quả định giá WACC/DCF/blend để đối chiếu với ví dụ tính tay trong tài liệu

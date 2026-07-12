@@ -114,6 +114,9 @@ def run_analysis(ticker: str):
 
     KCN_TICKERS = {"SIP", "IDC", "SZC", "SZL", "KBC", "NTC", "LHG", "VGC", "D2D", "TIP", "BCM", "DTD"}
 
+    # Nhóm Nhiệt điện thuần (REE bị loại — công ty đa ngành, không xử lý ở template này)
+    NHIETDIEN_TICKERS = {"POW", "NT2", "PPC", "QTP"}
+
     # ── STEP 1: Fetch raw data ───────────────────────────────────────────────
     import fetch_data
     print(f"[Step 1] Fetching raw financial data for {ticker}...")
@@ -142,6 +145,7 @@ def run_analysis(ticker: str):
     # Ticker nằm trong danh sách KCN tĩnh được ƯU TIÊN hơn auto-detect CTCK
     is_kcn = not is_bank and ticker in KCN_TICKERS
     is_securities = not is_bank and not is_kcn and (ticker in SECURITIES_TICKERS or has_securities_accounts)
+    is_nhietdien = not is_bank and not is_kcn and not is_securities and ticker in NHIETDIEN_TICKERS
 
     if is_bank:
         print(f"\n[Step 2] Ticker {ticker} classified as Bank. Directly running upgraded template_banking.py...")
@@ -180,6 +184,14 @@ def run_analysis(ticker: str):
         # (luôn truthy nên không crash, nhưng sai kiểu). use_cache thật sự đã được RECALCULATE_FRESH ở
         # fetch_data.py chi phối, nên chỉ cần gọi đúng chữ ký, không cần đổi True/False thủ công ở đây.
         success = template_kcn.run_kcn_analysis(ticker)
+    elif is_nhietdien:
+        print(f"\n[Step 2] Ticker {ticker} classified as Nhiệt điện. Directly running template_nhietdien.py...")
+        import template_nhietdien
+        # run_nhietdien_analysis(ticker, use_cache=True) tự fetch_data.fetch_all() riêng, không nhận
+        # raw_data đã fetch sẵn ở Step 1 (đồng nhất với template_kcn.run_kcn_analysis(), xem comment ở
+        # nhánh is_kcn phía trên) — không có peer-benchmark cache riêng, fetch_peer_multiples() bên
+        # trong tự tính median 4 mã POW/NT2/PPC/QTP trực tiếp từ Vietcap mỗi lần chạy.
+        success = template_nhietdien.run_nhietdien_analysis(ticker)
     else:
         # 1. Try to generate specialized builder via Gemini if key is present and builder doesn't exist yet
         if not os.path.exists(builder_path) and os.environ.get("GEMINI_API_KEY"):
