@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-07-12 12:16",
+  "lastUpdated": "2026-07-12 12:24",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -1032,6 +1032,78 @@
         "judgment_color": "#10b981"
       },
       "note": "IMF DataMapper API — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy (imf.org/external/datamapper/api/v1/GG_DEBT_GDP/VNM)."
+    },
+    "budget_revenue_growth": {
+      "group": "fiscal",
+      "label": "Thu ngân sách (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "vietnambiz",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 20.91,
+          "source_url": "https://data.vietnambiz.vn/macro-economic"
+        }
+      ],
+      "trend": {
+        "latest": 20.91,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://data.vietnambiz.vn/macro-economic",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài). CHỈ tham chiếu hiển thị — chưa đưa vào Scorecard 5 nhóm vì tài liệu hướng dẫn gốc (Chương 4.1/6.1) không có nhóm 'Tài khóa' riêng, cùng cách xử lý với public_debt_gdp."
+    },
+    "budget_expenditure_growth": {
+      "group": "fiscal",
+      "label": "Chi ngân sách (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "vietnambiz",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": -8.16,
+          "source_url": "https://data.vietnambiz.vn/macro-economic"
+        }
+      ],
+      "trend": {
+        "latest": -8.16,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://data.vietnambiz.vn/macro-economic",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "LƯU Ý: hướng 'tốt' không rõ ràng như các chỉ báo khác — chi ngân sách tăng có thể là tích cực (kích thích tăng trưởng, đẩy mạnh đầu tư công) hoặc tiêu cực (rủi ro thâm hụt) tùy bối cảnh, không mang tính kết luận một chiều như nhãn 'higher=tốt' ngụ ý. Tự động lấy điểm mới nhất qua data.vietnambiz.vn. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm."
+    },
+    "public_investment_growth": {
+      "group": "fiscal",
+      "label": "Vốn đầu tư NSNN (YoY) — Đầu tư công",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "vietnambiz",
+      "series": [
+        {
+          "period": "2026-06",
+          "value": 13.9,
+          "source_url": "https://data.vietnambiz.vn/macro-economic"
+        }
+      ],
+      "trend": {
+        "latest": 13.9,
+        "latest_period": "2026-06",
+        "latest_source": "https://data.vietnambiz.vn/macro-economic",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Theo tài liệu hướng dẫn gốc (Chương 5.4): đẩy mạnh giải ngân đầu tư công là một trong các động lực/cơ hội chính cho TTCK Việt Nam. Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm (không có nhóm 'Tài khóa' riêng theo khung gốc)."
     },
     "unemployment_rate": {
       "group": "labor",

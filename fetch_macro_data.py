@@ -300,6 +300,9 @@ def fetch_sbv_omo_rate():
 VIETNAMBIZ_TITLE_MAP = {
     "PMI": "pmi_manufacturing",
     "Bán lẻ HH&DV (YoY)": "retail_sales_growth",
+    "Thu ngân sách (YoY)": "budget_revenue_growth",
+    "Chi ngân sách (YoY)": "budget_expenditure_growth",
+    "Vốn đầu tư NSNN (YoY)": "public_investment_growth",
 }
 
 
@@ -323,8 +326,15 @@ def fetch_vietnambiz_macro():
             key = VIETNAMBIZ_TITLE_MAP.get(it.get("title"))
             if not key:
                 continue
-            m2 = re.match(r"Tháng\s+(\d{1,2})/(\d{4})", it.get("ngay", ""))
-            period = f"{m2.group(2)}-{int(m2.group(1)):02d}" if m2 else it.get("ngay")
+            ngay = it.get("ngay", "")
+            m_month = re.match(r"Tháng\s+(\d{1,2})/(\d{4})", ngay)
+            m_quarter = re.match(r"Quý\s+(\d)/(\d{4})", ngay)
+            if m_month:
+                period = f"{m_month.group(2)}-{int(m_month.group(1)):02d}"
+            elif m_quarter:
+                period = f"{m_quarter.group(2)}-Q{m_quarter.group(1)}"
+            else:
+                period = ngay
             out[key] = (period, round(float(it["value"]), 2))
         return out
     except Exception as e:
