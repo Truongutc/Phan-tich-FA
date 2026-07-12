@@ -345,7 +345,7 @@ def _join_indicators(raw, trends, keys):
     return parts
 
 
-def _build_overview(scorecard, scorecard_total, valuation, decision_label, decision_text):
+def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text):
     pos = [g for g, d in scorecard.items() if d["score"] == 1]
     neg = [g for g, d in scorecard.items() if d["score"] == -1]
     neu = [g for g, d in scorecard.items() if d["score"] == 0 and d["n_votes"] > 0]
@@ -363,15 +363,43 @@ def _build_overview(scorecard, scorecard_total, valuation, decision_label, decis
         sentences.append(f"Riêng nhóm {_vn_join(no_data)} chưa có đủ chỉ báo có xu hướng rõ để tính điểm, nên tạm giữ 0 theo quy ước thận trọng (không suy diễn khi thiếu dữ liệu).")
     para1 = " ".join(sentences)
 
+    # Liệt kê CỤ THỂ điểm sáng/điểm nghẽn từ TOÀN BỘ chỉ báo (không chỉ giới hạn trong Scorecard)
+    # — mirror phong cách "ĐÁNH GIÁ CHU KỲ" của báo cáo vĩ mô DSC/VikkiBankS (T6/2026, user cung
+    # cấp làm mẫu tham khảo): nêu số cụ thể, đánh số rõ ràng từng điểm thay vì chỉ nói chung chung.
+    positives, risks = [], []
+    for key, ind in raw.items():
+        if key == "_meta":
+            continue
+        t = trends.get(key, {})
+        if t.get("latest") is None:
+            continue
+        item_txt = f"{ind['label']} đạt {t['latest']:.2f} {ind['unit']}"
+        if t.get("judgment_label") == "Tốt lên":
+            positives.append(item_txt)
+        elif t.get("judgment_label") == "Xấu đi":
+            risks.append(item_txt)
+
+    para2_parts = []
+    if positives:
+        para2_parts.append("Các điểm sáng cụ thể: " + "; ".join(f"({i+1}) {p}" for i, p in enumerate(positives)) + ".")
+    if risks:
+        para2_parts.append("Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: " + "; ".join(f"({i+1}) {r}" for i, r in enumerate(risks)) + ".")
+    para2 = " ".join(para2_parts)
+
     if valuation.get("erp") is not None:
-        para2 = (f"Về định giá, VN-Index đang giao dịch ở P/E {valuation['pe']:.2f}x, tương ứng ERP (lợi suất thu nhập trừ "
+        para3 = (f"Về định giá, VN-Index đang giao dịch ở P/E {valuation['pe']:.2f}x, tương ứng ERP (lợi suất thu nhập trừ "
                  f"lãi suất phi rủi ro) {valuation['erp']*100:.2f}% — mức định giá được xếp loại \"{valuation['valuation_label']}\". "
                  f"Kết hợp Scorecard vĩ mô ({scorecard_total:+d}/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là "
                  f"\"{decision_label}\": {decision_text}")
     else:
-        para2 = (f"Chưa đủ dữ liệu P/E để tính ERP — phần định giá thị trường tạm thời để trống, không suy diễn. "
+        para3 = (f"Chưa đủ dữ liệu P/E để tính ERP — phần định giá thị trường tạm thời để trống, không suy diễn. "
                  f"Khuyến nghị phân bổ vốn dựa trên Scorecard: \"{decision_label}\" — {decision_text}")
-    return f"{para1}\n\n{para2}"
+
+    paras = [para1]
+    if para2:
+        paras.append(para2)
+    paras.append(para3)
+    return "\n\n".join(paras)
 
 
 def _build_economy_impact(raw, trends):
@@ -520,7 +548,7 @@ def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, dec
     """Tổng hợp phân tích đa chỉ số RULE-BASED (không AI) — trả dict {overview, economy_impact,
     market_impact, watch_points}, mỗi mục là 1+ đoạn văn ráp từ số liệu thật trong raw/trends."""
     return {
-        "overview": _build_overview(scorecard, scorecard_total, valuation, decision_label, decision_text),
+        "overview": _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text),
         "economy_impact": _build_economy_impact(raw, trends),
         "market_impact": _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text),
         "watch_points": _build_watch_points(raw, trends, scorecard),
