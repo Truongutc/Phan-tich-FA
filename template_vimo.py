@@ -467,18 +467,24 @@ def _build_economy_impact(raw, trends):
         paras.append(txt2.strip())
 
         neg_series = raw.get("deposit_rate_negotiated_max", {}).get("series", [])
+        market_max_series = raw.get("deposit_rate_12m_market_max", {}).get("series", [])
+        market_avg_series = raw.get("deposit_rate_12m_market_avg", {}).get("series", [])
         txt3 = "LƯU Ý QUAN TRỌNG — không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. "
         if neg_series:
             p = neg_series[-1]
             txt3 += (f"Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, "
-                     f"tín dụng vượt huy động khoảng 1,48 lần) và báo chí (VnExpress, {p['period']}): một số ngân hàng "
-                     f"đã phải chào lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) lên tới {p['value']:.1f}%/năm cho "
-                     "khoản tiền gửi lớn (200 triệu - 1 tỷ đồng trở lên) để bù đắp khoảng cách này. Bảng lãi suất ONLINE "
-                     "công khai đa ngân hàng (24hmoney.vn, 07/2026) cũng cho thấy nhiều NHTM (SHB, Saigonbank, PGBank, "
-                     "Sacombank...) đã niêm yết công khai 6,8-7,8%/năm kỳ hạn 12 tháng — cao hơn hẳn mức ~5,9% của "
-                     "riêng nhóm Big4 nêu trên. Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh "
-                     "khoản để đáp ứng nhu cầu tín dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.")
-        if neg_series:
+                     f"tín dụng vượt huy động khoảng 1,48 lần) và báo chí tài chính (bài gần nhất ghi nhận, "
+                     f"{p['period']}): một số ngân hàng đã phải chào lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) "
+                     f"lên tới {p['value']:.1f}%/năm cho khoản tiền gửi lớn (200 triệu - 1 tỷ đồng trở lên) để bù đắp "
+                     "khoảng cách này. ")
+        if market_max_series and market_avg_series:
+            mm, ma = market_max_series[-1], market_avg_series[-1]
+            txt3 += (f"Bảng lãi suất ONLINE công khai đa ngân hàng ({mm['period']}, 24hmoney.vn) cũng cho thấy mặt "
+                     f"bằng thị trường rộng hơn nhiều: mức cao nhất {mm['value']:.2f}%/năm, trung bình "
+                     f"{ma['value']:.2f}%/năm kỳ hạn 12 tháng — cao hơn hẳn mức ~5,9% của riêng nhóm Big4 nêu trên. ")
+        if neg_series or market_max_series:
+            txt3 += ("Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh khoản để đáp ứng nhu cầu tín "
+                     "dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.")
             paras.append(txt3.strip())
 
     trade_keys = ["export_growth", "import_growth", "trade_balance", "fdi_disbursed"]
@@ -814,6 +820,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "vietnambiz": "data.vietnambiz.vn (tự động)",
                          "bank_page": "Trang NH chính thức (tự động)",
                          "news_rss": "RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)",
+                         "market_table": "24hmoney.vn (bảng đa ngân hàng, tự động)",
                          "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
             # value_arrow = chiều số liệu THẬT (↑/↓/→), judgment_label = đánh giá tốt lên/xấu đi

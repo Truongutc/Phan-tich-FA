@@ -462,6 +462,38 @@ def fetch_vietnambiz_rates():
         return {}
 
 
+def fetch_market_deposit_rate_12m():
+    """24hmoney.vn/lai-suat-gui-ngan-hang — trang HTML tĩnh THẬT (đã xác nhận qua curl, không
+    phải SPA rỗng), có bảng lãi suất gửi ONLINE kỳ hạn 12 tháng của ~38 ngân hàng (class
+    "online-table", cột cuối trong 5 cột 1/3/6/9/12 tháng). Khác biểu niêm yết Big4 (VCB/
+    VietinBank/NamABank) đang theo dõi riêng — bảng này cho thấy MẶT BẰNG rộng hơn nhiều của toàn
+    thị trường, xác nhận việc chỉ nhìn Big4 sẽ đánh giá thấp mức lãi suất huy động thực tế. Trả
+    (max_rate, avg_rate, n_banks) hoặc (None, None, 0) nếu lỗi/không tìm thấy bảng."""
+    url = "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        idx = r.text.find("online-table")
+        if idx == -1:
+            print("  [WARN] 24hmoney: không tìm thấy bảng 'online-table' — trang có thể đã đổi cấu trúc.")
+            return None, None, 0
+        tbody_m = re.search(r"<tbody>(.*?)</tbody>", r.text[idx:], re.S)
+        if not tbody_m:
+            return None, None, 0
+        rows = re.findall(r"<tr[^>]*>(.*?)</tr>", tbody_m.group(1), re.S)
+        rates = []
+        for row in rows:
+            m = re.findall(r'class="bank-interest-rate[^"]*">([\d.]+)</p>', row)
+            if len(m) >= 5:  # cột thứ 5 = kỳ hạn 12 tháng
+                rates.append(float(m[4]))
+        if not rates:
+            return None, None, 0
+        return max(rates), round(sum(rates) / len(rates), 2), len(rates)
+    except Exception as e:
+        print(f"  [WARN] 24hmoney thất bại: {e}")
+        return None, None, 0
+
+
 # Lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) không có API/trang công bố chính thức nào —
 # chỉ xuất hiện rải rác trong tin tức khi báo chí phát hiện/phỏng vấn. RSS_NEWS_FEEDS là các
 # nguồn tin thật, tần suất cao, đã xác nhận hoạt động (không phải trang search JS-rendered).
@@ -658,6 +690,14 @@ def update_vimo_raw():
     if v is not None:
         _append_point(raw, "deposit_rate_12m_nab", period_now, v, "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2")
         print(f"  -> NamABank {period_now}: {v}")
+
+    print("[24hmoney — lãi suất huy động online 12 tháng, mặt bằng toàn thị trường (~38 NH, tích lũy theo lần chạy)]")
+    max_r, avg_r, n = fetch_market_deposit_rate_12m()
+    if max_r is not None:
+        src = "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+        _append_point(raw, "deposit_rate_12m_market_max", period_now, max_r, src)
+        _append_point(raw, "deposit_rate_12m_market_avg", period_now, avg_r, src)
+        print(f"  -> {period_now}: max={max_r}% avg={avg_r}% (n={n} ngân hàng)")
 
     print("[RSS tin tức — lãi suất huy động THỎA THUẬN (quét CafeF/VietStock, chỉ ghi khi có tin mới khớp)]")
     hit = fetch_negotiated_deposit_rate_news()

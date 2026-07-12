@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
+    "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-12 21:39"
+    "last_auto_update": "2026-07-12 21:48"
   },
   "gdp_growth": {
     "group": "growth",
@@ -568,6 +568,36 @@
       }
     ],
     "note": "QUAN TRỌNG để đối chiếu với credit_growth: khi tín dụng tăng NHANH HƠN huy động vốn, hệ thống ngân hàng phải cạnh tranh huy động mạnh hơn để bù đắp — biểu hiện qua lãi suất huy động THỰC TẾ/THỎA THUẬN thường cao hơn hẳn biểu niêm yết công khai (xem deposit_rate_negotiated_max). Theo NSO (nso.gov.vn, báo cáo KT-XH Quý II & 6T/2026, https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/): tính đến 26/6/2026, huy động vốn TCTD tăng 5,02% trong khi tín dụng nền kinh tế tăng 7,41% (cùng thước đo YTD) — tín dụng vượt huy động ~1,48 lần, xác nhận độc lập với DSC Research (báo cáo T6/2026: 'tín dụng tăng gấp gần 1,5 lần tốc độ huy động vốn') và VnExpress (15/6/2026: tín dụng +6,38% YTD vs huy động +4,3% YTD, nguồn: https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html). Nguồn auto-update (data.vietnambiz.vn) là chuỗi YoY, khác thước đo YTD của 3 nguồn trên — không cộng gộp trực tiếp, chỉ dùng để theo dõi XU HƯỚNG khoảng cách qua các kỳ."
+  },
+  "deposit_rate_12m_market_max": {
+    "group": "monetary",
+    "label": "Lãi suất huy động online 12 tháng — CAO NHẤT thị trường (đa ngân hàng)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "market_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 7.8,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      }
+    ],
+    "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max."
+  },
+  "deposit_rate_12m_market_avg": {
+    "group": "monetary",
+    "label": "Lãi suất huy động online 12 tháng — TRUNG BÌNH thị trường (đa ngân hàng)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "market_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 6.17,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      }
+    ],
+    "note": "Auto-scrape cùng nguồn/thời điểm với deposit_rate_12m_market_max (24hmoney.vn) — giá trị trung bình cộng của ~38 ngân hàng, đại diện MẶT BẰNG CHUNG thị trường tốt hơn con số của riêng nhóm Big4."
   },
   "deposit_rate_negotiated_max": {
     "group": "monetary",
