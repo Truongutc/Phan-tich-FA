@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'manual' — 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-12 11:04"
+    "last_auto_update": "2026-07-12 21:17"
   },
   "gdp_growth": {
     "group": "growth",
@@ -539,15 +539,80 @@
     "label": "Tăng trưởng cung tiền M2 (YoY)",
     "unit": "%",
     "good_direction": "higher",
-    "auto_source": "manual",
+    "auto_source": "vietnambiz",
     "series": [
       {
         "period": "2024",
         "value": 11.97,
         "source_url": "https://tradingeconomics.com/vietnam/money-supply-m2"
+      },
+      {
+        "period": "2026-04",
+        "value": 5.86,
+        "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
       }
     ],
-    "note": "Tự tính từ mức M2 cuối 2023 (15,998,956 tỷ VND) và cuối 2024 (17,914,566 tỷ VND) theo nguồn trên — (17914566-15998956)/15998956=11.97%."
+    "note": "Điểm 2024 là seed thủ công cũ (tự tính từ mức M2 cuối 2023/2024 theo tradingeconomics.com). Từ nay nâng cấp lên nguồn tự động data.vietnambiz.vn/currency-interest-rate (__NEXT_DATA__ JSON, có độ trễ công bố 1-3 tháng) — các điểm mới sẽ tự tích lũy theo tháng."
+  },
+  "deposit_growth": {
+    "group": "monetary",
+    "label": "Tăng trưởng huy động vốn (YoY)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "vietnambiz",
+    "series": [
+      {
+        "period": "2026-04",
+        "value": 10.76,
+        "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
+      }
+    ],
+    "note": "QUAN TRỌNG để đối chiếu với credit_growth: khi tín dụng tăng NHANH HƠN huy động vốn, hệ thống ngân hàng phải cạnh tranh huy động mạnh hơn để bù đắp — biểu hiện qua lãi suất huy động THỰC TẾ/THỎA THUẬN thường cao hơn hẳn biểu niêm yết công khai (xem deposit_rate_negotiated_max). Theo NSO (nso.gov.vn, báo cáo KT-XH Quý II & 6T/2026, https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/): tính đến 26/6/2026, huy động vốn TCTD tăng 5,02% trong khi tín dụng nền kinh tế tăng 7,41% (cùng thước đo YTD) — tín dụng vượt huy động ~1,48 lần, xác nhận độc lập với DSC Research (báo cáo T6/2026: 'tín dụng tăng gấp gần 1,5 lần tốc độ huy động vốn') và VnExpress (15/6/2026: tín dụng +6,38% YTD vs huy động +4,3% YTD, nguồn: https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html). Nguồn auto-update (data.vietnambiz.vn) là chuỗi YoY, khác thước đo YTD của 3 nguồn trên — không cộng gộp trực tiếp, chỉ dùng để theo dõi XU HƯỚNG khoảng cách qua các kỳ."
+  },
+  "deposit_rate_negotiated_max": {
+    "group": "monetary",
+    "label": "Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2026-06",
+        "value": 9.0,
+        "source_url": "https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html"
+      }
+    ],
+    "note": "MANUAL, một lần, KHÔNG tự động cập nhật (bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, không có biểu niêm yết công khai để scrape). Theo VnExpress (15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường."
+  },
+  "gdp_industry_contribution": {
+    "group": "growth",
+    "label": "Đóng góp khu vực Công nghiệp-Xây dựng vào tăng trưởng GDP",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2026-Q2",
+        "value": 50.07,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO (chưa có auto-scrape ổn định cho báo cáo dạng 'bai-top', xem ghi chú kiến trúc). Quý II/2026: khu vực Công nghiệp-Xây dựng tăng 10,51% YoY, đóng góp 50,07% vào tăng trưởng GDP chung (8,39%) — ĐỘNG LỰC CHÍNH. Trong đó riêng ngành CHẾ BIẾN, CHẾ TẠO tăng trưởng 6 tháng đạt 11,4%, đóng góp 8,9 điểm phần trăm vào mức tăng IIP chung — là động lực lớn nhất trong nội bộ khu vực này. Khu vực Dịch vụ tăng 7,87%, đóng góp 44,28%; Nông-Lâm-Thủy sản tăng 4,06%, đóng góp 5,65%. Nguồn: NSO, mục 1 'Tốc độ tăng tổng sản phẩm trong nước'."
+  },
+  "gdp_investment_growth": {
+    "group": "growth",
+    "label": "Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 15.2,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO. Về SỬ DỤNG GDP 6 tháng đầu năm 2026 (mục 1 báo cáo NSO): tích lũy tài sản (đầu tư — gồm cả đầu tư công, tư nhân, FDI) tăng 15,20% so với cùng kỳ — CAO HƠN NHIỀU tốc độ tăng tiêu dùng cuối cùng (8,15%) và gần bằng tốc độ tăng xuất khẩu hàng hóa & dịch vụ (20,18%). Cho thấy tăng trưởng GDP 6 tháng đầu 2026 được dẫn dắt chủ yếu bởi ĐẦU TƯ và XUẤT KHẨU, không phải bởi cầu tiêu dùng nội địa — nhất quán với việc khu vực Công nghiệp-Xây dựng (thâm dụng vốn, xuất khẩu) đóng góp áp đảo vào tăng trưởng (xem gdp_industry_contribution)."
   },
   "usdvnd": {
     "group": "monetary",

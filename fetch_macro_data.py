@@ -421,6 +421,47 @@ def fetch_vietnambiz_macro():
         return {}
 
 
+VIETNAMBIZ_RATE_TITLE_MAP = {
+    "Tăng trưởng huy động (YoY)": "deposit_growth",
+    "Tăng trưởng cung tiền M2 (YoY)": "m2_growth",
+}
+
+
+def fetch_vietnambiz_rates():
+    """data.vietnambiz.vn/currency-interest-rate — cùng cấu trúc __NEXT_DATA__ như
+    fetch_vietnambiz_macro() nhưng trang riêng cho tiền tệ/lãi suất, chứa "Tăng trưởng huy động
+    (YoY)" — chỉ báo QUAN TRỌNG để đối chiếu với credit_growth (đã có, nguồn SBV riêng): khi tín
+    dụng tăng nhanh hơn huy động vốn, hệ thống ngân hàng phải cạnh tranh huy động mạnh hơn (lãi
+    suất huy động thực tế/thỏa thuận thường cao hơn biểu niêm yết — xem note của deposit_growth
+    trong vimo_raw.json). Cũng lấy luôn M2 growth thật (trước đây chỉ có 1 điểm seed thủ công)."""
+    url = "https://data.vietnambiz.vn/currency-interest-rate"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.S)
+        if not m:
+            print("  [WARN] VietnamBiz rates: không tìm thấy __NEXT_DATA__ — trang có thể đã đổi cấu trúc.")
+            return {}
+        data = json.loads(m.group(1))
+        items = data.get("props", {}).get("pageProps", {}).get("data", [])
+        out = {}
+        for it in items:
+            key = VIETNAMBIZ_RATE_TITLE_MAP.get(it.get("title"))
+            if not key:
+                continue
+            ngay = it.get("ngay", "")
+            m_month = re.match(r"Tháng\s+(\d{1,2})/(\d{4})", ngay)
+            if m_month:
+                period = f"{m_month.group(2)}-{int(m_month.group(1)):02d}"
+            else:
+                period = ngay
+            out[key] = (period, round(float(it["value"]), 2))
+        return out
+    except Exception as e:
+        print(f"  [WARN] VietnamBiz rates thất bại: {e}")
+        return {}
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════
@@ -529,6 +570,12 @@ def update_vimo_raw():
     vnb = fetch_vietnambiz_macro()
     for key, (period, value) in vnb.items():
         _append_point(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
+        print(f"  -> {key} {period}: {value}")
+
+    print("[VietnamBiz — Tăng trưởng huy động & M2 (đối chiếu credit_growth, tích lũy theo lần chạy)]")
+    vnb_rates = fetch_vietnambiz_rates()
+    for key, (period, value) in vnb_rates.items():
+        _append_point(raw, key, period, value, "https://data.vietnambiz.vn/currency-interest-rate")
         print(f"  -> {key} {period}: {value}")
 
     print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3 tháng (tích lũy theo lần chạy)]")

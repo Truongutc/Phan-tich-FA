@@ -413,14 +413,36 @@ def _build_economy_impact(raw, trends):
         txt = "Về tăng trưởng và lạm phát: "
         if g_parts:
             txt += "; ".join(g_parts) + ". "
+        # Bóc tách ĐỘNG LỰC tăng trưởng thật (theo NSO) thay vì chỉ nêu con số GDP đơn lẻ — trả
+        # lời trực tiếp câu hỏi "GDP tăng do đâu, do chi tiêu công hay đầu tư tư nhân".
+        industry_series = raw.get("gdp_industry_contribution", {}).get("series", [])
+        invest_series = raw.get("gdp_investment_growth", {}).get("series", [])
+        if industry_series:
+            p = industry_series[-1]
+            txt += (f"Theo NSO, động lực tăng trưởng GDP {p['period']} chủ yếu đến từ khu vực Công nghiệp-Xây dựng "
+                     f"(đóng góp {p['value']:.2f}% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. ")
+        if invest_series:
+            p = invest_series[-1]
+            txt += (f"Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, "
+                     f"tư nhân và FDI — tăng {p['value']:.2f}% ({p['period']}), vượt xa tốc độ tăng tiêu dùng cuối cùng, "
+                     "cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. ")
         if i_parts:
             txt += "Ở chiều giá cả, " + "; ".join(i_parts) + ". "
+        brent_j = _indicator_txt(raw, trends, "brent_oil")
+        if brent_j and brent_j[2] == "Tốt lên":
+            txt += ("Giá dầu Brent hạ nhiệt là một kênh giảm áp lực CPI đáng chú ý — tác động trực tiếp nhất qua cấu "
+                    "phần chi phí vận tải/nhiên liệu trong rổ CPI (nhóm Giao thông), gián tiếp qua chi phí logistics "
+                    "đầu vào của doanh nghiệp sản xuất, chứ không phải do giá lương thực-thực phẩm hạ. ")
         usdvnd_j = _indicator_txt(raw, trends, "usdvnd")
         if usdvnd_j and usdvnd_j[2] == "Xấu đi":
             txt += ("Tỷ giá USD/VND đang chịu áp lực tăng, làm tăng chi phí nhập khẩu nguyên nhiên liệu và có thể cộng "
                     "thêm áp lực lên CPI trong các kỳ tới qua kênh lạm phát nhập khẩu.")
         paras.append(txt.strip())
 
+    # Thanh khoản/lãi suất — đây là mục QUAN TRỌNG NHẤT cần trung thực: biểu lãi suất huy động
+    # niêm yết CÔNG KHAI (VCB/VietinBank/NamABank, xem dep_parts bên dưới) thấp hơn NHIỀU so với
+    # thực tế thị trường — user đã chỉ ra và cung cấp nguồn thật (VnExpress, NSO) xác nhận độc
+    # lập: KHÔNG được kết luận "vĩ mô ổn định" chỉ vì lãi suất niêm yết thấp và đi ngang.
     omo = _indicator_txt(raw, trends, "omo_rate_7d")
     interbank_on_series = raw.get("interbank_rate_on", {}).get("series", [])
     interbank_9m_series = raw.get("interbank_rate_9m", {}).get("series", [])
@@ -441,8 +463,23 @@ def _build_economy_impact(raw, trends):
                  "vài tuần đến vài tháng tùy thanh khoản từng ngân hàng.")
         dep_parts = _join_indicators(raw, trends, ["deposit_rate_12m_vcb", "deposit_rate_12m_ctg", "deposit_rate_12m_nab"])
         if dep_parts:
-            txt2 += " Ở đầu ra huy động dân cư, " + "; ".join(dep_parts) + "."
+            txt2 += " Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: " + "; ".join(dep_parts) + "."
         paras.append(txt2.strip())
+
+        neg_series = raw.get("deposit_rate_negotiated_max", {}).get("series", [])
+        txt3 = "LƯU Ý QUAN TRỌNG — không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. "
+        if neg_series:
+            p = neg_series[-1]
+            txt3 += (f"Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, "
+                     f"tín dụng vượt huy động khoảng 1,48 lần) và báo chí (VnExpress, {p['period']}): một số ngân hàng "
+                     f"đã phải chào lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) lên tới {p['value']:.1f}%/năm cho "
+                     "khoản tiền gửi lớn (200 triệu - 1 tỷ đồng trở lên) để bù đắp khoảng cách này. Bảng lãi suất ONLINE "
+                     "công khai đa ngân hàng (24hmoney.vn, 07/2026) cũng cho thấy nhiều NHTM (SHB, Saigonbank, PGBank, "
+                     "Sacombank...) đã niêm yết công khai 6,8-7,8%/năm kỳ hạn 12 tháng — cao hơn hẳn mức ~5,9% của "
+                     "riêng nhóm Big4 nêu trên. Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh "
+                     "khoản để đáp ứng nhu cầu tín dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.")
+        if neg_series:
+            paras.append(txt3.strip())
 
     trade_keys = ["export_growth", "import_growth", "trade_balance", "fdi_disbursed"]
     fiscal_keys = ["budget_revenue_growth", "budget_expenditure_growth", "public_investment_growth"]
@@ -500,6 +537,15 @@ def _build_market_impact(raw, trends, scorecard_total, valuation, decision_label
         else:
             p2 += ("Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái "
                    "phiếu ở mức lãi suất hiện tại.")
+        neg_series = raw.get("deposit_rate_negotiated_max", {}).get("series", [])
+        if neg_series and valuation.get("rf") is not None:
+            real_gap = neg_series[-1]["value"] / 100 - valuation["rf"]
+            if real_gap > 0:
+                p2 += (f" LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ "
+                       f"cao nhất đang ghi nhận trên thị trường ({neg_series[-1]['value']:.1f}%/năm, xem chi tiết ở mục "
+                       f"tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf "
+                       f"trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — "
+                       "không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.")
         paras.append(p2)
 
     sector_notes = []
@@ -541,6 +587,12 @@ def _build_watch_points(raw, trends, scorecard):
     lines.append("- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.")
     lines.append("- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.")
     lines.append("- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo.")
+    cred_v = trends.get("credit_growth", {}).get("latest")
+    dep_growth_v = trends.get("deposit_growth", {}).get("latest")
+    if cred_v is not None and dep_growth_v is not None and cred_v > dep_growth_v:
+        lines.append(f"- Khoảng cách tăng trưởng tín dụng ({cred_v:.2f}%) so với huy động vốn ({dep_growth_v:.2f}%) — "
+                      "nếu tiếp tục nới rộng, lãi suất huy động thực tế/thỏa thuận (đã ghi nhận tới 9%/năm, cao hơn "
+                      "nhiều biểu niêm yết công khai) có thể còn tăng thêm, siết chi phí vốn toàn nền kinh tế.")
     return "\n".join(lines)
 
 
