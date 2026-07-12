@@ -1,16 +1,23 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-07-12 11:26",
+  "lastUpdated": "2026-07-12 11:58",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
         "score": 1,
-        "nVotes": 3,
+        "nVotes": 5,
         "detail": [
           {
             "indicator": "gdp_growth",
             "label": "Tăng trưởng GDP (YoY)",
+            "vote": 1,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên"
+          },
+          {
+            "indicator": "iip_growth",
+            "label": "Chỉ số sản xuất công nghiệp IIP (YoY)",
             "vote": 1,
             "arrow": "▲",
             "judgment_label": "Tốt lên"
@@ -23,6 +30,13 @@
             "judgment_label": "Xấu đi"
           },
           {
+            "indicator": "retail_sales_growth",
+            "label": "Doanh số bán lẻ (YoY)",
+            "vote": 1,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên"
+          },
+          {
             "indicator": "unemployment_rate",
             "label": "Tỷ lệ thất nghiệp",
             "vote": 1,
@@ -32,22 +46,29 @@
         ]
       },
       "Lạm phát & Lãi suất": {
-        "score": -1,
+        "score": 1,
         "nVotes": 1,
         "detail": [
           {
             "indicator": "cpi_yoy",
             "label": "CPI (YoY)",
-            "vote": -1,
-            "arrow": "▼",
-            "judgment_label": "Xấu đi"
+            "vote": 1,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên"
           }
         ]
       },
       "Thanh khoản": {
         "score": 1,
-        "nVotes": 1,
+        "nVotes": 2,
         "detail": [
+          {
+            "indicator": "credit_growth",
+            "label": "Tăng trưởng tín dụng (YoY)",
+            "vote": 1,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên"
+          },
           {
             "indicator": "forex_reserves",
             "label": "Dự trữ ngoại hối",
@@ -97,7 +118,7 @@
         "detail": []
       }
     },
-    "total": 0
+    "total": 2
   },
   "marketValuation": {
     "pe": 15.43,
@@ -108,8 +129,8 @@
     "pe_source": "https://worldperatio.com/area/vietnam/"
   },
   "decision": {
-    "label": "Phòng thủ, giữ tiền mặt",
-    "text": "Vĩ mô xấu, định giá hợp lý — ưu tiên bảo toàn vốn, tăng tỷ trọng tiền mặt/tài sản phòng thủ."
+    "label": "Duy trì, chọn lọc",
+    "text": "Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt."
   },
   "indicators": {
     "gdp_growth": {
@@ -195,31 +216,100 @@
       "label": "Chỉ số sản xuất công nghiệp IIP (YoY)",
       "unit": "%",
       "goodDirection": "higher",
-      "autoSource": "manual",
+      "autoSource": "nso_chart_embed",
       "series": [
         {
-          "period": "2026-05",
+          "period": "2025-06",
+          "value": 8.0,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2025-07",
+          "value": 7.5,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2025-08",
+          "value": 8.7,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2025-09",
+          "value": 12.7,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2025-10",
           "value": 10.4,
-          "source_url": "https://www.ssi.com.vn/en/organization-customer/monthly-market-outlook"
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2025-11",
+          "value": 9.1,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2025-12",
+          "value": 10.1,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2026-01",
+          "value": 21.2,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2026-02",
+          "value": 1.0,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2026-03",
+          "value": 8.7,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2026-04",
+          "value": 10.6,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2026-05",
+          "value": 10.1,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
+        },
+        {
+          "period": "2026-06",
+          "value": 12.7,
+          "source_url": "https://www.nso.gov.vn/iip-vi/"
         }
       ],
       "trend": {
-        "latest": 10.4,
-        "latest_period": "2026-05",
-        "latest_source": "https://www.ssi.com.vn/en/organization-customer/monthly-market-outlook",
-        "n_points": 1,
-        "label": "insufficient",
-        "arrow": "—",
-        "is_improving": null
+        "latest": 12.7,
+        "latest_period": "2026-06",
+        "latest_source": "https://www.nso.gov.vn/iip-vi/",
+        "n_points": 13,
+        "prior": 10.1,
+        "prior_period": "2026-05",
+        "delta": 2.6,
+        "delta_vs_4back": 11.7,
+        "far_period": "2026-02",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
-      "note": "Chỉ có 1 điểm dữ liệu từ nghiên cứu ban đầu — cần bổ sung thêm các tháng/quý khác qua nso.gov.vn khi tinh chỉnh."
+      "note": "Nâng cấp lên nso.gov.vn/iip-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ (2026-05, SSI) sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới."
     },
     "pmi_manufacturing": {
       "group": "growth",
       "label": "PMI sản xuất (S&P Global)",
       "unit": "điểm",
       "goodDirection": "higher",
-      "autoSource": "manual",
+      "autoSource": "vietnambiz",
       "series": [
         {
           "period": "2025-12",
@@ -244,13 +334,13 @@
         {
           "period": "2026-06",
           "value": 51.8,
-          "source_url": "https://english.vov.vn/en/economy/vietnam-manufacturing-pmi-stands-at-518-in-june-signaling-solid-start-to-h2-post1311352.vov"
+          "source_url": "https://data.vietnambiz.vn/macro-economic"
         }
       ],
       "trend": {
         "latest": 51.8,
         "latest_period": "2026-06",
-        "latest_source": "https://english.vov.vn/en/economy/vietnam-manufacturing-pmi-stands-at-518-in-june-signaling-solid-start-to-h2-post1311352.vov",
+        "latest_source": "https://data.vietnambiz.vn/macro-economic",
         "n_points": 5,
         "prior": 52.8,
         "prior_period": "2026-05",
@@ -265,109 +355,136 @@
         "judgment_label": "Xấu đi",
         "judgment_color": "#ef4444"
       },
-      "note": ">50 = mở rộng, <50 = thu hẹp. Thiếu tháng 1-2/2026 và cả năm 2024-2025 — cần bổ sung khi tinh chỉnh."
+      "note": ">50 = mở rộng, <50 = thu hẹp. Nguồn duy nhất đáng tin cậy là S&P Global (không có API miễn phí) — tự động lấy điểm MỚI NHẤT qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài), các điểm lịch sử phía trên vẫn giữ nguyên vì đã nghiên cứu thủ công trước đó."
     },
     "retail_sales_growth": {
       "group": "growth",
       "label": "Doanh số bán lẻ (YoY)",
       "unit": "%",
       "goodDirection": "higher",
-      "autoSource": "manual",
+      "autoSource": "vietnambiz",
       "series": [
         {
           "period": "2025-07",
           "value": 9.2,
           "source_url": "https://tradingeconomics.com/vietnam/retail-sales-yoy"
+        },
+        {
+          "period": "2026-06",
+          "value": 14.8,
+          "source_url": "https://data.vietnambiz.vn/macro-economic"
         }
       ],
       "trend": {
-        "latest": 9.2,
-        "latest_period": "2025-07",
-        "latest_source": "https://tradingeconomics.com/vietnam/retail-sales-yoy",
-        "n_points": 1,
-        "label": "insufficient",
-        "arrow": "—",
-        "is_improving": null
+        "latest": 14.8,
+        "latest_period": "2026-06",
+        "latest_source": "https://data.vietnambiz.vn/macro-economic",
+        "n_points": 2,
+        "prior": 9.2,
+        "prior_period": "2025-07",
+        "delta": 5.6,
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
-      "note": "Chỉ có 1 điểm — cần bổ sung qua nso.gov.vn khi tinh chỉnh."
+      "note": "Tự động cập nhật điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài theo thời gian)."
     },
     "cpi_yoy": {
       "group": "inflation",
       "label": "CPI (YoY)",
       "unit": "%",
       "goodDirection": "lower",
-      "autoSource": "nso_scrape",
+      "autoSource": "nso_chart_embed",
       "series": [
         {
-          "period": "2024-Q1",
-          "value": 3.77,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2024/04/socio-economic-situation-report-in-the-first-quarter-of-2024/"
+          "period": "2025-06",
+          "value": 3.57,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2024-Q2",
-          "value": 4.34,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2025/07/press-release-socio-economic-situation-in-the-second-quarter-and-six-months-of-2024/"
+          "period": "2025-07",
+          "value": 3.19,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2024-Q3",
+          "period": "2025-08",
+          "value": 3.24,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        },
+        {
+          "period": "2025-09",
+          "value": 3.38,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        },
+        {
+          "period": "2025-10",
+          "value": 3.25,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        },
+        {
+          "period": "2025-11",
+          "value": 3.58,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        },
+        {
+          "period": "2025-12",
           "value": 3.48,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2024/11/socio-economic-situation-in-the-third-quarter-and-nine-months-of-2024/"
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2024-Q4",
-          "value": 2.87,
-          "source_url": "https://www.nso.gov.vn/en/highlight/2025/02/socio-economic-situation-in-the-fourth-quarter-and-2024/"
+          "period": "2026-01",
+          "value": 2.53,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2025-Q1",
-          "value": 3.22,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2025/04/report-on-socio-economic-situation-in-quarter-i-in-2025/"
+          "period": "2026-02",
+          "value": 3.35,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2025-Q2",
-          "value": 3.31,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2025/07/report-on-socio-economic-situation-in-second-quarter-and-six-months-of-2025/"
+          "period": "2026-03",
+          "value": 4.65,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2025-Q3",
-          "value": 3.27,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2025/12/socio-economic-situation-in-the-third-quarter-and-9-months-of-2025/"
+          "period": "2026-04",
+          "value": 5.46,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
-          "period": "2025-Q4",
-          "value": 3.44,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2026/01/socio-economic-situation-in-the-fourth-quarter-and-2025/"
-        },
-        {
-          "period": "2026-Q1",
-          "value": 3.51,
-          "source_url": "https://www.nso.gov.vn/en/data-and-statistics/2026/04/report-on-socio-economic-situation-in-quarter-i-in-2026/"
+          "period": "2026-05",
+          "value": 5.6,
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         },
         {
           "period": "2026-06",
           "value": 4.69,
-          "source_url": "https://data.vietnambiz.vn/macro-economic"
+          "source_url": "https://www.nso.gov.vn/cpi-vi/"
         }
       ],
       "trend": {
         "latest": 4.69,
         "latest_period": "2026-06",
-        "latest_source": "https://data.vietnambiz.vn/macro-economic",
-        "n_points": 10,
-        "prior": 3.51,
-        "prior_period": "2026-Q1",
-        "delta": 1.18,
-        "delta_vs_4back": 1.38,
-        "far_period": "2025-Q2",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "latest_source": "https://www.nso.gov.vn/cpi-vi/",
+        "n_points": 13,
+        "prior": 5.6,
+        "prior_period": "2026-05",
+        "delta": -0.91,
+        "delta_vs_4back": 1.34,
+        "far_period": "2026-02",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
-      "note": "Ngưỡng mục tiêu NHNN: dưới 4-5%. Tháng 6/2026 (4.69%) là điểm tháng riêng lẻ (không phải trung bình quý) — nguồn từ tài liệu hướng dẫn gốc."
+      "note": "Ngưỡng mục tiêu NHNN: dưới 4-5%. Nâng cấp lên nso.gov.vn/cpi-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới."
     },
     "core_inflation": {
       "group": "inflation",
@@ -382,7 +499,7 @@
         "label": "no_data",
         "arrow": "—"
       },
-      "note": "Chưa nghiên cứu — cần bổ sung khi tinh chỉnh (nguồn gợi ý: nso.gov.vn/en/cpi/, MacroMicro core CPI)."
+      "note": "Đã khảo sát nso.gov.vn/cong-nghiep/, nso.gov.vn/cpi-vi/, data.vietnambiz.vn — không tìm thấy nguồn 'lạm phát cơ bản' (core, loại trừ lương thực/năng lượng) tách riêng dạng scrape được. VietnamBiz có 'Tỷ lệ lạm phát (Average CPI YoY)' nhưng đó là CPI BÌNH QUÂN, khác khái niệm core — không map nhầm. Cần bổ sung khi tinh chỉnh."
     },
     "refinancing_rate": {
       "group": "monetary",
@@ -406,7 +523,7 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục theo quý — cần bổ sung lịch sử thay đổi khi tinh chỉnh."
+      "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục theo quý. Đã xác nhận: link 'lãi suất' trên sbv.gov.vn bị lỗi 404 (bug CMS toàn site, không phải do cách cào) — không có trang SBV nào hiện scrape được cho chỉ báo này."
     },
     "interbank_rate_3m": {
       "group": "monetary",
@@ -430,31 +547,95 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Chỉ có 1 điểm — Trading Economics (nguồn chuẩn của chỉ báo này) bị chặn 403 khi cào tự động, cần tinh chỉnh nguồn thay thế (vd CEIC, VBMA) hoặc bổ sung thủ công định kỳ."
+      "note": "Trading Economics (nguồn chuẩn) bị chặn 403 (WAF), nhiều khả năng cũng chặn trên GitHub Actions. Đã xác nhận: link tương ứng trên sbv.gov.vn cũng bị lỗi 404 (bug CMS toàn site). VietnamBiz không có chỉ báo này trong 25 mục đã khảo sát. Cần nguồn thay thế (CEIC trả phí, hoặc báo cáo daily SSI/VCBS/Vietcap — dạng đọc/research, không phải API/scrape đơn giản) hoặc bổ sung thủ công định kỳ."
     },
     "credit_growth": {
       "group": "monetary",
       "label": "Tăng trưởng tín dụng (YoY)",
       "unit": "%",
       "goodDirection": "higher",
-      "autoSource": "manual",
+      "autoSource": "sbv_chart",
       "series": [
         {
+          "period": "2025-06",
+          "value": 9.91,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2025-07",
+          "value": 10.24,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2025-08",
+          "value": 11.78,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2025-09",
+          "value": 13.86,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2025-10",
+          "value": 15.31,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2025-11",
+          "value": 16.85,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
           "period": "2025-12",
-          "value": 17.87,
-          "source_url": "https://en.vietnamplus.vn/credit-growth-nears-18-in-2025-central-bank-post335108.vnp"
+          "value": 19.07,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2026-01",
+          "value": 1.19,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2026-02",
+          "value": 1.33,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2026-03",
+          "value": 3.18,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2026-04",
+          "value": 4.59,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+        },
+        {
+          "period": "2026-05",
+          "value": 5.96,
+          "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
         }
       ],
       "trend": {
-        "latest": 17.87,
-        "latest_period": "2025-12",
-        "latest_source": "https://en.vietnamplus.vn/credit-growth-nears-18-in-2025-central-bank-post335108.vnp",
-        "n_points": 1,
-        "label": "insufficient",
-        "arrow": "—",
-        "is_improving": null
+        "latest": 5.96,
+        "latest_period": "2026-05",
+        "latest_source": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt",
+        "n_points": 12,
+        "prior": 4.59,
+        "prior_period": "2026-04",
+        "delta": 1.37,
+        "delta_vs_4back": 4.77,
+        "far_period": "2026-01",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
-      "note": "NHNN đặt mục tiêu ~15% cho 2026. Cần bổ sung các quý khác khi tinh chỉnh."
+      "note": "NHNN đặt mục tiêu ~15% cho 2026. Nâng cấp lên sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt (biểu đồ 'Tổng cộng' theo tháng, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi SBV khi fetch_macro_data.py chạy lần tới."
     },
     "m2_growth": {
       "group": "monetary",

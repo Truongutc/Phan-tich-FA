@@ -19,7 +19,11 @@ const GROUP_ICONS = {
 const SOURCE_LABELS = {
     worldbank: 'World Bank API', imf: 'IMF DataMapper API', fred: 'FRED API',
     fx_api: 'exchangerate-api.com', pe_ratio_api: 'worldperatio.com',
-    nso_scrape: 'nso.gov.vn (tự động)', manual: 'Nghiên cứu thủ công',
+    nso_scrape: 'nso.gov.vn (báo cáo quý, tự động)',
+    nso_chart_embed: 'nso.gov.vn (biểu đồ tháng, tự động)',
+    sbv_chart: 'sbv.gov.vn (biểu đồ, tự động)',
+    vietnambiz: 'data.vietnambiz.vn (tự động)',
+    manual: 'Nghiên cứu thủ công',
 };
 
 const CHART_DEFAULTS = {

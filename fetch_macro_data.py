@@ -184,6 +184,97 @@ def fetch_nso_latest_report():
         return None
 
 
+def fetch_nso_chart_embed(chart_slug):
+    """nso.gov.vn có các trang chuyên đề (vd /cpi-vi/, /iip-vi/) nhúng iframe biểu đồ Highcharts
+    tại nso.gov.vn/chart/<slug>/embed/ — trang embed chứa thẳng mảng "data":[[kỳ, giá trị], ...]
+    dạng JSON trong HTML, KHÔNG cần crawl trang danh sách như fetch_nso_latest_report(). Đây là
+    nguồn chi tiết theo THÁNG (tốt hơn báo cáo quý dùng cho GDP/thất nghiệp/XNK/FDI).
+    Trả list [(period_label_goc, value), ...] hoặc [] nếu thất bại."""
+    url = f"https://www.nso.gov.vn/chart/{chart_slug}/embed/?show=chart&width=responsive&share"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        m = re.search(r'"data":(\[\[.*?\]\])', r.text)
+        if not m:
+            print(f"  [WARN] NSO chart embed {chart_slug}: không tìm thấy mảng 'data' — trang có thể đã đổi cấu trúc.")
+            return []
+        pairs = json.loads(m.group(1))
+        return [(str(p[0]), float(p[1])) for p in pairs]
+    except Exception as e:
+        print(f"  [WARN] NSO chart embed {chart_slug} thất bại: {e}")
+        return []
+
+
+def _nso_period_to_iso(label):
+    """NSO chart embed trả nhãn kỳ kiểu '6/2025' hoặc '01/2026' (tháng/năm, không đệm số 0 nhất
+    quán) — chuẩn hóa về 'YYYY-MM' để khớp định dạng period dùng chung trong vimo_raw.json."""
+    m = re.match(r"(\d{1,2})/(\d{4})", label)
+    if m:
+        month, year = m.groups()
+        return f"{year}-{int(month):02d}"
+    return label
+
+
+def fetch_sbv_credit_growth():
+    """sbv.gov.vn nhúng thẳng mảng JS 'const tongCong = [...]' (tăng trưởng tín dụng TỔNG theo
+    tháng, %) cùng 'const labels = [...]' trên trang dư nợ tín dụng — không cần API key, không
+    JS rendering. Trả list [(period_iso, value), ...] hoặc [] nếu thất bại."""
+    url = "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        m_labels = re.search(r"const labels\s*=\s*(\[[^\]]+\]);", r.text)
+        m_total = re.search(r"const tongCong\s*=\s*(\[[\d.,\s\-]+\]);", r.text)
+        if not (m_labels and m_total):
+            print("  [WARN] SBV credit growth: không tìm thấy 'labels'/'tongCong' — trang có thể đã đổi cấu trúc.")
+            return []
+        labels = json.loads(m_labels.group(1))
+        values = json.loads(m_total.group(1))
+        return [(_nso_period_to_iso(lb), float(v)) for lb, v in zip(labels, values)]
+    except Exception as e:
+        print(f"  [WARN] SBV credit growth thất bại: {e}")
+        return []
+
+
+# VietnamBiz's Vietnamese "title" field -> indicator key trong vimo_raw.json. CHỈ map các chỉ
+# báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (PMI, bán lẻ — trước đây "manual" chỉ 1 điểm) —
+# không map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy
+# hơn nguồn tổng hợp lại của bên thứ ba, dù VietnamBiz cũng có các chỉ báo đó làm đối chiếu.
+VIETNAMBIZ_TITLE_MAP = {
+    "PMI": "pmi_manufacturing",
+    "Bán lẻ HH&DV (YoY)": "retail_sales_growth",
+}
+
+
+def fetch_vietnambiz_macro():
+    """data.vietnambiz.vn/macro-economic nhúng __NEXT_DATA__ JSON (Next.js server-rendered,
+    KHÔNG phải SPA rỗng) chứa ~25 chỉ báo vĩ mô, mỗi chỉ báo có value (kỳ mới nhất) + pre_value
+    (kỳ trước) + nhãn kỳ tiếng Việt ('Tháng 06/2026'/'Quý 2/2026'/'Năm 2023'). Trả dict
+    {indicator_key: (period_iso, value)} cho các chỉ báo có trong VIETNAMBIZ_TITLE_MAP."""
+    url = "https://data.vietnambiz.vn/macro-economic"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.S)
+        if not m:
+            print("  [WARN] VietnamBiz: không tìm thấy __NEXT_DATA__ — trang có thể đã đổi cấu trúc.")
+            return {}
+        data = json.loads(m.group(1))
+        items = data.get("props", {}).get("pageProps", {}).get("data", [])
+        out = {}
+        for it in items:
+            key = VIETNAMBIZ_TITLE_MAP.get(it.get("title"))
+            if not key:
+                continue
+            m2 = re.match(r"Tháng\s+(\d{1,2})/(\d{4})", it.get("ngay", ""))
+            period = f"{m2.group(2)}-{int(m2.group(1)):02d}" if m2 else it.get("ngay")
+            out[key] = (period, round(float(it["value"]), 2))
+        return out
+    except Exception as e:
+        print(f"  [WARN] VietnamBiz macro thất bại: {e}")
+        return {}
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════
@@ -257,6 +348,42 @@ def update_vimo_raw():
             print(f"  -> unemployment_rate {today_q}: {nso['unemployment_rate']}")
         if "gdp_growth" not in nso and "unemployment_rate" not in nso:
             print("  [WARN] Fetch được bài báo cáo nhưng không trích được số liệu nào — có thể mẫu câu đã đổi.")
+
+    print("[NSO — biểu đồ chuyên đề CPI (nso.gov.vn/cpi-vi/, chi tiết THEO THÁNG)]")
+    pts = fetch_nso_chart_embed("cpi")
+    if pts:
+        raw["cpi_yoy"]["series"] = [
+            {"period": _nso_period_to_iso(p), "value": v,
+             "source_url": "https://www.nso.gov.vn/cpi-vi/"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm (thay thế chuỗi theo quý cũ bằng chuỗi theo tháng)")
+
+    print("[NSO — biểu đồ chuyên đề IIP (nso.gov.vn/iip-vi/, chi tiết THEO THÁNG)]")
+    pts = fetch_nso_chart_embed("index-of-industrial-production")
+    if pts:
+        raw["iip_growth"]["series"] = [
+            {"period": _nso_period_to_iso(p), "value": v,
+             "source_url": "https://www.nso.gov.vn/iip-vi/"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[SBV — tăng trưởng tín dụng theo tháng]")
+    pts = fetch_sbv_credit_growth()
+    if pts:
+        raw["credit_growth"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://www.sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VietnamBiz — PMI & Bán lẻ (đối chiếu, tích lũy theo lần chạy)]")
+    vnb = fetch_vietnambiz_macro()
+    for key, (period, value) in vnb.items():
+        _append_point(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
+        print(f"  -> {key} {period}: {value}")
 
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     save_raw(raw)
