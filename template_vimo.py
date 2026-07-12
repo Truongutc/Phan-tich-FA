@@ -341,6 +341,43 @@ def build_charts_vimo(out_dir, raw, min_points=4):
     return charts
 
 
+# Danh sách chỉ báo lãi suất huy động 12T theo ngân hàng, gắn nhãn NHÓM quy mô (user yêu cầu so
+# sánh theo nhóm lớn/vừa/nhỏ — hiện chỉ có đại diện nhóm lớn và nhỏ, xem note trong vimo_raw.json
+# về lý do thiếu đại diện nhóm vừa — MBB/TCB không có nguồn scrape ổn định).
+BANK_DEPOSIT_RATE_KEYS = [
+    ("deposit_rate_12m_vcb", "VCB (lớn)"),
+    ("deposit_rate_12m_ctg", "VietinBank (lớn)"),
+    ("deposit_rate_12m_nab", "NamABank (nhỏ)"),
+]
+
+
+def build_bank_comparison_chart(out_dir, raw):
+    """1 bar chart so sánh lãi suất huy động 12 tháng giữa các ngân hàng đại diện — riêng biệt
+    với build_charts_vimo() (ở đó mỗi chỉ báo có chart đường thời gian RIÊNG, còn ở đây cần 1
+    chart CỘT so sánh NGANG giữa nhiều ngân hàng tại cùng 1 thời điểm). Trả path hoặc None nếu
+    chưa có ngân hàng nào có dữ liệu."""
+    labels, values = [], []
+    for key, bank_label in BANK_DEPOSIT_RATE_KEYS:
+        series = raw.get(key, {}).get("series", [])
+        if series:
+            labels.append(bank_label)
+            values.append(series[-1]["value"])
+    if not values:
+        return None
+    fig, ax = plt.subplots(figsize=(7.5, 3.4))
+    colors = ["#3b82f6", "#3b82f6", "#f59e0b"][:len(labels)]
+    bars = ax.bar(labels, values, color=colors)
+    for b, v in zip(bars, values):
+        ax.text(b.get_x() + b.get_width() / 2, v + 0.05, f"{v:.2f}%", ha="center", fontsize=10, fontweight="bold")
+    ax.set_title("Lãi suất huy động 12 tháng theo ngân hàng (%)", fontsize=11, fontweight="bold")
+    ax.grid(alpha=0.25, axis="y")
+    fig.tight_layout()
+    path = os.path.join(out_dir, "vimo_bank_deposit_comparison.png")
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+    return path
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # PDF
 # ══════════════════════════════════════════════════════════════════════════
@@ -426,6 +463,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "sbv_chart": "sbv.gov.vn (biểu đồ, tự động)",
                          "sbv_table": "sbv.gov.vn (bảng lãi suất, tự động)",
                          "vietnambiz": "data.vietnambiz.vn (tự động)",
+                         "bank_page": "Trang NH chính thức (tự động)",
                          "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
             # value_arrow = chiều số liệu THẬT (↑/↓/→), judgment_label = đánh giá tốt lên/xấu đi
@@ -440,6 +478,9 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
         for k in keys:
             if k in charts:
                 story.append(Image(charts[k], width=140 * mm, height=63 * mm))
+        if grp == "monetary" and "bank_comparison" in charts:
+            story.append(Paragraph("So sánh lãi suất huy động 12 tháng theo ngân hàng đại diện:", small_st))
+            story.append(Image(charts["bank_comparison"], width=140 * mm, height=63 * mm))
         story.append(Spacer(1, 8))
 
     # ── Nguồn tham khảo đầy đủ ──
@@ -542,6 +583,9 @@ def run_vimo_analysis():
     os.makedirs(out_dir, exist_ok=True)
     print("[INFO] Building charts...")
     charts = build_charts_vimo(out_dir, raw)
+    bank_chart = build_bank_comparison_chart(out_dir, raw)
+    if bank_chart:
+        charts["bank_comparison"] = bank_chart
     print(f"  -> {len(charts)} charts")
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d")

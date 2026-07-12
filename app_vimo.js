@@ -182,5 +182,53 @@ function renderIndicatorGroups(indicators) {
                 chartInstances.push(chart);
             }
         });
+
+        if (grp === 'monetary') renderBankComparisonChart(grid, indicators);
     });
+}
+
+// So sánh lãi suất huy động 12 tháng theo ngân hàng đại diện — CHART RIÊNG (cột so sánh nhiều
+// ngân hàng cùng thời điểm), khác với chart đường thời gian của renderIndicatorGroups() ở trên.
+// Khớp BANK_DEPOSIT_RATE_KEYS trong template_vimo.py (build_bank_comparison_chart()).
+const BANK_DEPOSIT_RATE_KEYS = [
+    ['deposit_rate_12m_vcb', 'VCB (lớn)'],
+    ['deposit_rate_12m_ctg', 'VietinBank (lớn)'],
+    ['deposit_rate_12m_nab', 'NamABank (nhỏ)'],
+];
+
+function renderBankComparisonChart(grid, indicators) {
+    const labels = [];
+    const values = [];
+    BANK_DEPOSIT_RATE_KEYS.forEach(([key, bankLabel]) => {
+        const series = (indicators[key] || {}).series || [];
+        if (series.length) {
+            labels.push(bankLabel);
+            values.push(series[series.length - 1].value);
+        }
+    });
+    if (!values.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">📊 So sánh lãi suất huy động 12 tháng theo ngân hàng</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="chart-bank-comparison"></canvas></div>
+        <div class="ind-note">Đại diện nhóm lớn: VCB, VietinBank. Nhóm nhỏ: NamABank. Chưa có đại diện nhóm vừa (Techcombank/MBBank không có nguồn scrape ổn định — xem ghi chú từng chỉ báo).</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-bank-comparison');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: labels.map(l => l.includes('nhỏ') ? '#f59e0b' : '#3b82f6'),
+            }],
+        },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+    });
+    chartInstances.push(chart);
 }

@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-07-12 12:24",
+  "lastUpdated": "2026-07-12 14:14",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -583,6 +583,78 @@
         "is_improving": null
       },
       "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy)."
+    },
+    "deposit_rate_12m_vcb": {
+      "group": "monetary",
+      "label": "Lãi suất huy động 12T — Vietcombank (nhóm lớn)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "bank_page",
+      "series": [
+        {
+          "period": "2026-07",
+          "value": 5.9,
+          "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+        }
+      ],
+      "trend": {
+        "latest": 5.9,
+        "latest_period": "2026-07",
+        "latest_source": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Nguồn: API JSON thật của Vietcombank (vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal, field tenor='12-months'/currencyCode='VND'/tenorType='Savings') — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. 'lower=better' mang tính quy ước (giống các lãi suất khác trong dashboard) — thực ra lãi suất huy động tăng có thể là tín hiệu TỐT (thu hút tiết kiệm) hoặc XẤU (ngân hàng cạnh tranh thanh khoản), không kết luận một chiều — CHỈ BÁO THAM CHIẾU, không tính vào Scorecard 5 nhóm. Đã khảo sát nhưng KHÔNG tìm được nguồn ổn định cho lãi suất cho vay SXKD/mua nhà của VCB (không có endpoint tương ứng)."
+    },
+    "deposit_rate_12m_ctg": {
+      "group": "monetary",
+      "label": "Lãi suất huy động 12T — VietinBank (nhóm lớn)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "bank_page",
+      "series": [
+        {
+          "period": "2026-07",
+          "value": 5.9,
+          "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
+        }
+      ],
+      "trend": {
+        "latest": 5.9,
+        "latest_period": "2026-07",
+        "latest_source": "https://www.vietinbank.vn/lai-suat-khcn",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Nguồn: bảng HTML thật tại vietinbank.vn/lai-suat-khcn (dòng '12 tháng' chính xác, không nhầm với 'Từ 11 đến dưới 12 tháng'/'Trên 12 đến 13 tháng') — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Lãi suất cho vay SXKD/mua nhà của VietinBank chỉ tìm thấy trong văn bản quảng cáo/khuyến mãi (không phải bảng số liệu ổn định) — không đủ tin cậy để tự động hóa, bỏ qua."
+    },
+    "deposit_rate_12m_nab": {
+      "group": "monetary",
+      "label": "Lãi suất huy động 12T — NamABank (nhóm nhỏ)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "bank_page",
+      "series": [
+        {
+          "period": "2026-07",
+          "value": 6.2,
+          "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
+        }
+      ],
+      "trend": {
+        "latest": 6.2,
+        "latest_period": "2026-07",
+        "latest_source": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Nguồn: bảng HTML thật tại namabank.com.vn/lai-suat-tien-gui-vnd-2 (dòng '12 tháng, 365 ngày', cột lãi cuối kỳ) — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Đại diện nhóm ngân hàng nhỏ theo yêu cầu user — Techcombank (nhóm vừa), MBBank (nhóm vừa), VietABank (nhóm nhỏ) đều KHÔNG tìm được nguồn scrape ổn định (JS-render hoặc không tìm ra đúng trang) nên chưa có đại diện nhóm vừa trong so sánh này."
     },
     "credit_growth": {
       "group": "monetary",

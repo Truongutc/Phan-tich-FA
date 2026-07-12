@@ -293,6 +293,69 @@ def fetch_sbv_omo_rate():
         return {}
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# NGUỒN 4: Lãi suất huy động 12 tháng — từng ngân hàng đại diện theo nhóm quy mô (user yêu cầu).
+# LƯU Ý: đã khảo sát 6 ngân hàng (VCB/CTG nhóm lớn, MBB/TCB nhóm vừa, NAB/VAB nhóm nhỏ) — CHỈ
+# VCB/CTG/NAB có nguồn cào ổn định cho lãi suất HUY ĐỘNG; KHÔNG ngân hàng nào có nguồn ổn định
+# cho lãi suất CHO VAY SXKD/mua nhà (JS-render hoặc chỉ nằm trong văn bản quảng cáo không đáng
+# tin cậy để tự động hóa) — không cố ép lấy, tránh vi phạm nguyên tắc "không estimate".
+# ══════════════════════════════════════════════════════════════════════════
+def fetch_vcb_deposit_rate_12m():
+    """Vietcombank có API JSON thật (không cần JS render): trả toàn bộ biểu lãi suất huy động
+    theo kỳ hạn/loại tiền. Lọc tenor='12-months', currencyCode='VND', tenorType='Savings'."""
+    url = "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        data = r.json()
+        for item in data.get("Data", []):
+            if item.get("tenor") == "12-months" and item.get("currencyCode") == "VND" and item.get("tenorType") == "Savings":
+                return round(item["rates"] * 100, 2)
+        print("  [WARN] VCB: không tìm thấy dòng 12-months/VND/Savings trong API response.")
+        return None
+    except Exception as e:
+        print(f"  [WARN] VCB deposit rate thất bại: {e}")
+        return None
+
+
+def fetch_ctg_deposit_rate_12m():
+    """VietinBank — bảng HTML thật tại lai-suat-khcn. Regex khớp CHÍNH XÁC nhãn '12 tháng' (loại
+    trừ 'Từ 11 tháng đến dưới 12 tháng'/'Trên 12 tháng đến 13 tháng' — các nhãn khác cũng chứa
+    chuỗi '12 tháng' nên phải cẩn thận không khớp nhầm)."""
+    url = "https://www.vietinbank.vn/lai-suat-khcn"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m = re.search(r'text-left\s*\">12\s*tháng</td><td class="p-4">([\d,]+)<!-- -->\s*%</td>', r.text)
+        if m:
+            return round(float(m.group(1).replace(",", ".")), 2)
+        print("  [WARN] VietinBank: không khớp được dòng '12 tháng' — trang có thể đã đổi cấu trúc.")
+        return None
+    except Exception as e:
+        print(f"  [WARN] VietinBank deposit rate thất bại: {e}")
+        return None
+
+
+def fetch_nab_deposit_rate_12m():
+    """NamABank — bảng HTML thật tại lai-suat-tien-gui-vnd-2. Nhãn '12 tháng, 365 ngày' xuống
+    dòng qua nhiều thẻ <p>/<strong> — regex phải cho phép whitespace/tag linh hoạt giữa nhãn và
+    giá trị cột đầu tiên (lãi cuối kỳ)."""
+    url = "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m = re.search(
+            r"12\s*tháng,\s*</strong></p>\s*<p><strong>365\s*ngày<br\s*/>\s*</strong></p>\s*</td>\s*"
+            r"<td>\s*<p>([\d.]+)<br\s*/>", r.text)
+        if m:
+            return round(float(m.group(1)), 2)
+        print("  [WARN] NamABank: không khớp được dòng '12 tháng, 365 ngày' — trang có thể đã đổi cấu trúc.")
+        return None
+    except Exception as e:
+        print(f"  [WARN] NamABank deposit rate thất bại: {e}")
+        return None
+
+
 # VietnamBiz's Vietnamese "title" field -> indicator key trong vimo_raw.json. CHỈ map các chỉ
 # báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (PMI, bán lẻ — trước đây "manual" chỉ 1 điểm) —
 # không map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy
@@ -464,6 +527,21 @@ def update_vimo_raw():
         _append_point(raw, key, period_now,
                        value, "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F")
         print(f"  -> {key} {period_now}: {value}")
+
+    print("[Ngân hàng — lãi suất huy động 12 tháng: VCB / VietinBank / NamABank (tích lũy theo lần chạy)]")
+    v = fetch_vcb_deposit_rate_12m()
+    if v is not None:
+        _append_point(raw, "deposit_rate_12m_vcb", period_now, v,
+                       "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal")
+        print(f"  -> VCB {period_now}: {v}")
+    v = fetch_ctg_deposit_rate_12m()
+    if v is not None:
+        _append_point(raw, "deposit_rate_12m_ctg", period_now, v, "https://www.vietinbank.vn/lai-suat-khcn")
+        print(f"  -> VietinBank {period_now}: {v}")
+    v = fetch_nab_deposit_rate_12m()
+    if v is not None:
+        _append_point(raw, "deposit_rate_12m_nab", period_now, v, "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2")
+        print(f"  -> NamABank {period_now}: {v}")
 
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     save_raw(raw)
