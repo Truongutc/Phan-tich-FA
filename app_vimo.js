@@ -24,6 +24,9 @@ const SOURCE_LABELS = {
     sbv_chart: 'sbv.gov.vn (biểu đồ, tự động)',
     sbv_table: 'sbv.gov.vn (bảng lãi suất, tự động)',
     vietnambiz: 'data.vietnambiz.vn (tự động)',
+    bank_page: 'Trang NH chính thức (tự động)',
+    news_rss: 'RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)',
+    market_table: '24hmoney.vn (bảng đa ngân hàng, tự động)',
     manual: 'Nghiên cứu thủ công',
 };
 
@@ -46,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     renderHeader(data);
+    renderVerdict(data.synthesis && data.synthesis.verdict, data.decision);
     renderScorecard(data.scorecard);
     renderDecision(data.decision, data.scorecard.total);
     renderSynthesis(data.synthesis);
@@ -60,6 +64,33 @@ function renderSynthesis(synthesis) {
     set('synthesis-economy', synthesis.economy_impact);
     set('synthesis-market', synthesis.market_impact);
     set('synthesis-watch', synthesis.watch_points);
+}
+
+// Đánh giá Tổng thể — 3 câu hỏi user luôn quan tâm: đang tốt lên/xấu đi (xu hướng so kỳ trước),
+// bức tranh rõ ràng hay xám/hỗn hợp (mức đồng thuận giữa các chỉ báo), có phù hợp đầu tư không.
+function renderVerdict(verdict, decision) {
+    if (!verdict) return;
+    const trendEl = document.getElementById('verdict-trend');
+    const clarityEl = document.getElementById('verdict-clarity');
+    const decisionEl = document.getElementById('verdict-decision');
+    const detailEl = document.getElementById('verdict-detail');
+
+    const trendColor = verdict.trend_arrow === '▲' ? '#10b981' : (verdict.trend_arrow === '▼' ? '#ef4444' : '#f59e0b');
+    trendEl.textContent = `${verdict.trend_arrow} ${verdict.trend_label}`;
+    trendEl.style.color = trendColor;
+
+    const clarityColor = (verdict.clarity_label || '').includes('Sáng') ? '#10b981'
+        : (verdict.clarity_label || '').includes('Tối') ? '#ef4444' : '#f59e0b';
+    clarityEl.textContent = verdict.clarity_label || '-';
+    clarityEl.style.color = clarityColor;
+
+    if (decision) {
+        const decisionColor = ['Bung vốn mạnh', 'Duy trì, chọn lọc', 'Mua từ từ, phân kỳ'].includes(decision.label) ? '#10b981' : '#ef4444';
+        decisionEl.textContent = decision.label;
+        decisionEl.style.color = decisionColor;
+    }
+
+    detailEl.textContent = `${verdict.trend_detail || ''} ${verdict.clarity_detail || ''}`.trim();
 }
 
 function renderHeader(data) {

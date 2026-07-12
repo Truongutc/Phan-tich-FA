@@ -32,6 +32,21 @@
         }
         .vimo-score-box .lbl { font-size: 0.78em; color: var(--text-muted, #9ca3af); display: block; margin-bottom: 6px; }
         .vimo-score-box .val { font-family: 'Outfit', sans-serif; font-size: 1.5em; font-weight: 800; }
+        .vimo-verdict-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .vimo-verdict-box {
+            background: var(--bg-card-hover, #1f2937);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border, #1f2937);
+        }
+        .vimo-verdict-box .lbl { font-size: 0.78em; color: var(--text-muted, #9ca3af); display: block; margin-bottom: 8px; }
+        .vimo-verdict-box .val { font-family: 'Outfit', sans-serif; font-size: 1.15em; font-weight: 800; }
         .vimo-decision-banner {
             margin-top: 16px; padding: 16px 20px; border-radius: 10px;
             border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08);
@@ -104,6 +119,26 @@
             </div>
         </div>
 
+        <!-- Đánh giá Tổng thể — trả lời trực tiếp: đang tốt lên/xấu đi, rõ ràng/xám, phù hợp đầu tư không -->
+        <div class="card margin-top-20" id="verdict-card">
+            <h3 class="border-blue">🧭 Đánh giá Tổng thể</h3>
+            <div class="vimo-verdict-grid">
+                <div class="vimo-verdict-box">
+                    <span class="lbl">Xu hướng (so kỳ trước)</span>
+                    <span class="val" id="verdict-trend">-</span>
+                </div>
+                <div class="vimo-verdict-box">
+                    <span class="lbl">Mức độ đồng thuận tín hiệu</span>
+                    <span class="val" id="verdict-clarity">-</span>
+                </div>
+                <div class="vimo-verdict-box">
+                    <span class="lbl">Phù hợp đầu tư</span>
+                    <span class="val" id="verdict-decision">-</span>
+                </div>
+            </div>
+            <p id="verdict-detail" class="vimo-synthesis-text" style="margin-top:10px"></p>
+        </div>
+
         <!-- Scorecard tổng hợp -->
         <div class="card val-snapshot-card margin-top-20">
             <h3 class="border-blue">📊 Scorecard Vĩ Mô (5 nhóm chỉ số)</h3>
@@ -114,7 +149,7 @@
             </div>
         </div>
 
-        <!-- Tổng hợp phân tích đa chỉ số (AI) -->
+        <!-- Tổng hợp phân tích đa chỉ số -->
         <div class="card margin-top-20" id="synthesis-card">
             <h3 class="border-blue">🧭 Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể</h3>
             <div class="vimo-synthesis-section">

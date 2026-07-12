@@ -137,6 +137,11 @@ def load_vimo_raw():
         return json.load(f)
 
 
+def save_vimo_raw(raw):
+    with open(VIMO_RAW_PATH, "w", encoding="utf-8") as f:
+        json.dump(raw, f, ensure_ascii=False, indent=2)
+
+
 GROUP_LABELS = {
     "growth": "Tăng trưởng",
     "inflation": "Lạm phát",
@@ -309,6 +314,95 @@ def calc_decision_matrix(scorecard_total, valuation_label):
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# ĐÁNH GIÁ TỔNG THỂ — user yêu cầu rõ: phải trả lời được "vĩ mô đang tốt lên hay xấu đi" (XU
+# HƯỚNG theo thời gian, không chỉ mức điểm tại 1 thời điểm), "gam màu xám hay sáng tỏ" (mức độ
+# ĐỒNG THUẬN giữa các chỉ báo — nhiều chỉ báo cùng chiều = rõ ràng/sáng, chỉ báo trái chiều nhau =
+# xám/hỗn hợp), và "có phù hợp đầu tư không" (map thẳng ma trận quyết định). 3 trục này ĐỘC LẬP
+# với nhau — 1 nền kinh tế có thể "tốt" (điểm dương) nhưng "đang xấu đi" (điểm giảm dần so với kỳ
+# trước) và "xám" (nhiều chỉ báo trái chiều) cùng lúc — không gộp chung thành 1 con số duy nhất.
+# ══════════════════════════════════════════════════════════════════════════
+def _closest_history_entry(history, target_date, tolerance_days):
+    """Tìm entry trong scorecard_history có 'date' gần target_date nhất, trong phạm vi
+    tolerance_days. Action chạy theo workflow_dispatch thủ công (không cố định lịch), nên KHÔNG
+    thể giả định entry[-1] là 'kỳ trước' có ý nghĩa — có thể chỉ cách vài giờ. Neo theo mốc thời
+    gian THẬT (tháng trước/quý trước/đầu năm) mới phản ánh đúng xu hướng, đúng yêu cầu user."""
+    best, best_diff = None, None
+    for h in history:
+        try:
+            hd = datetime.datetime.strptime(h["date"], "%Y-%m-%d")
+        except (KeyError, ValueError, TypeError):
+            continue
+        diff = abs((hd - target_date).days)
+        if diff <= tolerance_days and (best_diff is None or diff < best_diff):
+            best, best_diff = h, diff
+    return best
+
+
+def calc_overall_verdict(scorecard_total, trends, scorecard_history):
+    """scorecard_history: list các lần chạy TRƯỚC (chưa gồm lần này) [{date, total, ...}], lấy từ
+    raw['_meta']['scorecard_history'] TRƯỚC KHI ghi thêm điểm của lần chạy hiện tại. So sánh xu
+    hướng theo mốc thời gian THẬT (tháng trước ~30 ngày, quý trước ~90 ngày, đầu năm) — KHÔNG so
+    với "entry gần nhất" (vô nghĩa nếu Action chạy nhiều lần gần nhau trong cùng ngày/tuần). Trả
+    dict {trend_label, trend_arrow, trend_detail, clarity_label, clarity_pct, clarity_detail}."""
+    now = datetime.datetime.now()
+    year_start = datetime.datetime(now.year, 1, 1)
+    entry_month = _closest_history_entry(scorecard_history, now - datetime.timedelta(days=30), 10)
+    entry_quarter = _closest_history_entry(scorecard_history, now - datetime.timedelta(days=90), 15)
+    entry_ytd = _closest_history_entry(scorecard_history, year_start, 20) if now > year_start else None
+
+    def _cmp_txt(label, entry):
+        if not entry:
+            return None
+        diff = scorecard_total - entry["total"]
+        arrow = "▲" if diff > 0 else ("▼" if diff < 0 else "→")
+        return f"{label} ({entry['date']}): {entry['total']:+d}/5 → {scorecard_total:+d}/5 {arrow}"
+
+    comparisons = [c for c in [
+        _cmp_txt("So với tháng trước", entry_month),
+        _cmp_txt("So với quý trước", entry_quarter),
+        _cmp_txt("So với đầu năm", entry_ytd),
+    ] if c]
+
+    # Xu hướng CHÍNH ưu tiên mốc gần nhất có dữ liệu (tháng trước nhạy nhất với biến động gần
+    # đây; nếu chưa đủ 1 tháng lịch sử thì lùi dần ra quý trước rồi đầu năm).
+    primary_entry = entry_month or entry_quarter or entry_ytd
+    if primary_entry:
+        diff = scorecard_total - primary_entry["total"]
+        if diff > 0:
+            trend_label, trend_arrow = "Đang cải thiện", "▲"
+        elif diff < 0:
+            trend_label, trend_arrow = "Đang xấu đi", "▼"
+        else:
+            trend_label, trend_arrow = "Đi ngang, chưa có chuyển biến rõ", "→"
+        trend_detail = ". ".join(comparisons) + "."
+    else:
+        trend_label, trend_arrow = "Chưa đủ lịch sử để so sánh", "—"
+        trend_detail = ("Chưa có đủ lịch sử Scorecard cách đây khoảng 1 tháng/1 quý/đầu năm để so sánh xu hướng đáng "
+                         "tin cậy — hệ thống sẽ tự tích lũy qua các lần cập nhật tiếp theo.")
+
+    n_good = sum(1 for t in trends.values() if t.get("judgment_label") == "Tốt lên")
+    n_bad = sum(1 for t in trends.values() if t.get("judgment_label") == "Xấu đi")
+    n_judged = n_good + n_bad
+    if n_judged < 5:
+        clarity_label, clarity_pct = "Chưa đủ dữ liệu để đánh giá mức độ đồng thuận", None
+        clarity_detail = f"Mới có {n_judged} chỉ báo có xu hướng rõ (cần tối thiểu 5 để đánh giá đáng tin cậy)."
+    else:
+        clarity_pct = round(n_good / n_judged * 100, 1)
+        if clarity_pct >= 65:
+            clarity_label = "Sáng — đa số chỉ báo đồng thuận tích cực"
+        elif clarity_pct <= 35:
+            clarity_label = "Tối — đa số chỉ báo đồng thuận tiêu cực"
+        else:
+            clarity_label = "Xám — tín hiệu trái chiều/hỗn hợp"
+        clarity_detail = f"{n_good}/{n_judged} chỉ báo có xu hướng rõ đang tốt lên ({clarity_pct:.0f}%), {n_bad}/{n_judged} đang xấu đi."
+
+    return {
+        "trend_label": trend_label, "trend_arrow": trend_arrow, "trend_detail": trend_detail,
+        "clarity_label": clarity_label, "clarity_pct": clarity_pct, "clarity_detail": clarity_detail,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ — "bức tranh tổng thể" (user yêu cầu rõ: không chỉ liệt kê số
 # liệu/Scorecard, mà phải có ĐÁNH GIÁ TÁC ĐỘNG thật sự tới kinh tế Việt Nam và TTCK, viết chuyên
 # nghiệp, đủ chi tiết — không phải 1-2 câu ngắn). RULE-BASED, KHÔNG dùng AI/LLM (user: "tôi không
@@ -345,7 +439,18 @@ def _join_indicators(raw, trends, keys):
     return parts
 
 
-def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text):
+def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict):
+    # Headline — trả lời TRỰC TIẾP 3 câu hỏi user luôn quan tâm khi đọc báo cáo: (1) đang tốt lên
+    # hay xấu đi (xu hướng theo thời gian), (2) bức tranh rõ ràng hay xám/hỗn hợp (mức đồng thuận
+    # giữa các chỉ báo), (3) có phù hợp đầu tư lúc này không (ma trận quyết định). Đặt NGAY ĐẦU,
+    # trước cả phần liệt kê điểm sáng/điểm nghẽn phía dưới.
+    trend_sentence = ("Chưa đủ lịch sử để xác định xu hướng theo thời gian"
+                       if verdict["trend_arrow"] == "—"
+                       else f"Xu hướng vĩ mô đang {verdict['trend_label'].lower()} {verdict['trend_arrow']}")
+    headline = (f"TÓM TẮT: {trend_sentence} — {verdict['trend_detail']} Bức tranh tổng thể hiện ở mức "
+                f"\"{verdict['clarity_label']}\" — {verdict['clarity_detail']} Về mức độ phù hợp đầu tư: "
+                f"khuyến nghị hiện tại là \"{decision_label}\".")
+
     pos = [g for g, d in scorecard.items() if d["score"] == 1]
     neg = [g for g, d in scorecard.items() if d["score"] == -1]
     neu = [g for g, d in scorecard.items() if d["score"] == 0 and d["n_votes"] > 0]
@@ -395,7 +500,7 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
         para3 = (f"Chưa đủ dữ liệu P/E để tính ERP — phần định giá thị trường tạm thời để trống, không suy diễn. "
                  f"Khuyến nghị phân bổ vốn dựa trên Scorecard: \"{decision_label}\" — {decision_text}")
 
-    paras = [para1]
+    paras = [headline, para1]
     if para2:
         paras.append(para2)
     paras.append(para3)
@@ -602,11 +707,13 @@ def _build_watch_points(raw, trends, scorecard):
     return "\n".join(lines)
 
 
-def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text):
+def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict):
     """Tổng hợp phân tích đa chỉ số RULE-BASED (không AI) — trả dict {overview, economy_impact,
-    market_impact, watch_points}, mỗi mục là 1+ đoạn văn ráp từ số liệu thật trong raw/trends."""
+    market_impact, watch_points, verdict}, mỗi mục text là 1+ đoạn văn ráp từ số liệu thật trong
+    raw/trends. verdict giữ nguyên dạng dict (không ráp thành văn) để dashboard render badge riêng."""
     return {
-        "overview": _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text),
+        "verdict": verdict,
+        "overview": _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict),
         "economy_impact": _build_economy_impact(raw, trends),
         "market_impact": _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text),
         "watch_points": _build_watch_points(raw, trends, scorecard),
@@ -724,7 +831,7 @@ def build_interbank_curve_chart(out_dir, raw):
 # PDF
 # ══════════════════════════════════════════════════════════════════════════
 def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label,
-                    decision_text, charts, synthesis):
+                    decision_text, charts, synthesis, verdict):
     doc = SimpleDocTemplate(pdf_path, pagesize=A4, rightMargin=15 * mm, leftMargin=15 * mm,
                              topMargin=15 * mm, bottomMargin=15 * mm)
     styles = getSampleStyleSheet()
@@ -761,7 +868,6 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                             f"Ngày lập: {today_str}", body_st))
     story.append(Spacer(1, 8))
 
-    scorecard_color = "#10b981" if scorecard_total > 0 else ("#ef4444" if scorecard_total < 0 else "#f59e0b")
     summary_data = [
         ["Scorecard Vĩ Mô (tổng)", "Định giá thị trường", "ERP", "Khuyến nghị"],
         [f"{scorecard_total:+d} / 5", valuation["valuation_label"],
@@ -774,8 +880,33 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn:</b> {decision_text}", body_st))
     story.append(Spacer(1, 10))
 
-    # ── 1. TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ (AI, dựa trên số liệu thật) — đặt NGAY ĐẦU báo cáo vì
-    # đây là phần quan trọng nhất theo yêu cầu user, không phải phần liệt kê số liệu thô.
+    # ── Banner "Đánh giá tổng thể" — trả lời trực tiếp: đang tốt lên/xấu đi (xu hướng theo thời
+    # gian, so với lần chạy trước) và bức tranh rõ ràng/xám (mức đồng thuận giữa các chỉ báo).
+    trend_color = (HexColor("#10b981") if verdict["trend_arrow"] == "▲"
+                   else HexColor("#ef4444") if verdict["trend_arrow"] == "▼" else HexColor("#f59e0b"))
+    clarity_color = (HexColor("#10b981") if "Sáng" in verdict["clarity_label"]
+                      else HexColor("#ef4444") if "Tối" in verdict["clarity_label"] else HexColor("#f59e0b"))
+    verdict_data = [
+        ["Xu hướng (so kỳ trước)", "Mức độ đồng thuận tín hiệu"],
+        [f"{verdict['trend_arrow']} {verdict['trend_label']}", verdict["clarity_label"]],
+    ]
+    t_verdict = Table(verdict_data, colWidths=[85 * mm, 86 * mm])
+    t_verdict.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), BLUE_DARK), ("TEXTCOLOR", (0, 0), (-1, 0), white),
+        ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD), ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("FONTNAME", (0, 1), (-1, 1), FONT_BOLD), ("FONTSIZE", (0, 1), (-1, 1), 11),
+        ("TEXTCOLOR", (0, 1), (0, 1), trend_color), ("TEXTCOLOR", (1, 1), (1, 1), clarity_color),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("GRID", (0, 0), (-1, -1), 0.4, HexColor("#CBD5E1")),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6), ("TOPPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    story.append(t_verdict)
+    story.append(Spacer(1, 4))
+    story.append(Paragraph(f"<i>{verdict['trend_detail']} {verdict['clarity_detail']}</i>", italic_st))
+    story.append(Spacer(1, 10))
+
+    # ── 1. TỔNG HỢP PHÂN TÍCH ĐA CHỈ SỐ (rule-based, dựa trên số liệu thật) — đặt NGAY ĐẦU báo
+    # cáo vì đây là phần quan trọng nhất theo yêu cầu user, không phải phần liệt kê số liệu thô.
     story.append(Paragraph("1. Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể", h1_st))
     story.append(Paragraph("1.1. Tổng quan bức tranh vĩ mô", h2_st))
     story.append(Paragraph(synthesis["overview"], body_st))
@@ -941,8 +1072,27 @@ def run_vimo_analysis():
     decision_label, decision_text = calc_decision_matrix(scorecard_total, valuation["valuation_label"])
     print(f"[INFO] Ma trận quyết định: {decision_label} — {decision_text}")
 
+    print("[INFO] Đánh giá tổng thể (xu hướng + mức độ đồng thuận)...")
+    scorecard_history = raw.get("_meta", {}).get("scorecard_history", [])
+    verdict = calc_overall_verdict(scorecard_total, trends, scorecard_history)
+    print(f"  Xu hướng: {verdict['trend_label']} {verdict['trend_arrow']}")
+    print(f"  Mức độ rõ ràng: {verdict['clarity_label']}")
+    today_str_iso = datetime.datetime.now().strftime("%Y-%m-%d")
+    today_entry = {
+        "date": today_str_iso, "total": scorecard_total,
+        "valuation_label": valuation["valuation_label"], "decision_label": decision_label,
+    }
+    # Ghi đè entry NẾU cùng ngày (Action có thể chạy nhiều lần/ngày qua workflow_dispatch thủ
+    # công) — tránh phình lịch sử với các điểm trùng ngày vô nghĩa cho việc so sánh xu hướng.
+    if scorecard_history and scorecard_history[-1]["date"] == today_str_iso:
+        new_history = scorecard_history[:-1] + [today_entry]
+    else:
+        new_history = scorecard_history + [today_entry]
+    raw.setdefault("_meta", {})["scorecard_history"] = new_history[-60:]
+    save_vimo_raw(raw)
+
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
-    synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text)
+    synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)
     print("  -> Đã sinh phân tích tổng hợp")
 
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", "VIMO")
@@ -961,7 +1111,7 @@ def run_vimo_analysis():
     pdf_path = os.path.join(out_dir, f"VIMO_Report_{date_str}.pdf")
     print("[INFO] Building PDF...")
     build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
-                    charts, synthesis)
+                    charts, synthesis, verdict)
     print(f"  [OK] PDF: {pdf_path}")
 
     print("[INFO] Saving JSON dashboard...")
