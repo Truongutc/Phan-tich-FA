@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIC FA — Phân Tích Vĩ Mô</title>
+    <meta name="description" content="Phân tích Vĩ mô Kinh tế Việt Nam — Scorecard 5 nhóm chỉ số & Ma trận Quyết định Phân bổ Vốn">
+
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="shortcut icon" type="image/png" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .vimo-score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .vimo-score-box {
+            background: var(--bg-card-hover, #1f2937);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid var(--border, #1f2937);
+        }
+        .vimo-score-box .lbl { font-size: 0.78em; color: var(--text-muted, #9ca3af); display: block; margin-bottom: 6px; }
+        .vimo-score-box .val { font-family: 'Outfit', sans-serif; font-size: 1.5em; font-weight: 800; }
+        .vimo-decision-banner {
+            margin-top: 16px; padding: 16px 20px; border-radius: 10px;
+            border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08);
+        }
+        .vimo-decision-banner .decision-label { font-size: 1.15em; font-weight: 700; margin-bottom: 6px; }
+        .vimo-indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .vimo-indicator-card {
+            background: var(--bg-card-hover, #1f2937);
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid var(--border, #1f2937);
+        }
+        .vimo-indicator-card .ind-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+        .vimo-indicator-card .ind-name { font-weight: 600; font-size: 0.92em; }
+        .vimo-indicator-card .ind-judgment { font-size: 0.8em; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+        .vimo-indicator-card .ind-value { font-family: 'Outfit', sans-serif; font-size: 1.4em; font-weight: 800; margin: 4px 0; }
+        .vimo-indicator-card .ind-meta { font-size: 0.75em; color: var(--text-muted, #9ca3af); }
+        .vimo-indicator-card .ind-chart { height: 120px; margin-top: 8px; }
+        .vimo-indicator-card .ind-note { font-size: 0.72em; color: #f59e0b; margin-top: 6px; font-style: italic; }
+        .vimo-group-header { display: flex; align-items: center; gap: 8px; margin-top: 24px; }
+        .vimo-group-header h3 { margin: 0; }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <header class="top-navbar">
+        <button class="logo-btn" onclick="location.href='index.html'" title="Trang chủ">
+            <img src="logoaic.png" alt="AIC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">AIC FA SYSTEM</span>
+                <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
+            </div>
+        </button>
+        <div class="nav-breadcrumb">
+            <span class="breadcrumb-home" style="cursor:pointer" onclick="location.href='index.html'">Tổng quan</span>
+            <span class="breadcrumb-sep">›</span>
+            <span class="breadcrumb-sector" style="color:#0ea5e9">🌍 Vĩ Mô</span>
+        </div>
+        <a href="https://aic-proweb.vercel.app/" class="home-link-btn" title="Về trang chủ AIC Pro Web">
+            <span class="home-link-icon">🏠</span>
+            <span>HOME</span>
+        </a>
+    </header>
+
+    <main class="view" style="display:flex">
+
+        <!-- Header Card -->
+        <div class="card header-card">
+            <div class="sector-ribbon" style="background:#0ea5e9">VĨ MÔ VIỆT NAM</div>
+            <div class="header-main">
+                <div class="header-info">
+                    <h2>Phân Tích Vĩ Mô Kinh Tế Việt Nam</h2>
+                    <p class="subtitle">Khung Top-Down — Scorecard 5 nhóm & Ma trận Quyết định Phân bổ Vốn</p>
+                    <p class="subtitle" id="last-updated" style="margin-top:4px;font-size:0.85em;color:var(--text-muted)"></p>
+                </div>
+                <div class="actions">
+                    <a id="download-pdf" href="#" target="_blank" class="btn btn-primary hidden">
+                        📥 Báo Cáo PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scorecard tổng hợp -->
+        <div class="card val-snapshot-card margin-top-20">
+            <h3 class="border-blue">📊 Scorecard Vĩ Mô (5 nhóm chỉ số)</h3>
+            <div class="vimo-score-grid" id="scorecard-grid"></div>
+            <div class="vimo-decision-banner" id="decision-banner" style="display:none">
+                <div class="decision-label" id="decision-label"></div>
+                <div id="decision-text"></div>
+            </div>
+        </div>
+
+        <!-- Định giá thị trường -->
+        <div class="card margin-top-20">
+            <h3 class="border-blue">💎 Định giá Thị trường (VN-Index)</h3>
+            <div class="val-snapshot-grid">
+                <div class="val-snap-box">
+                    <span class="lbl">P/E VN-Index</span>
+                    <span class="val" id="val-pe">-</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">P/B VN-Index</span>
+                    <span class="val" id="val-pb">-</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Lãi suất phi rủi ro (Rf)</span>
+                    <span class="val" id="val-rf">-</span>
+                </div>
+                <div class="val-snap-box highlight">
+                    <span class="lbl">Equity Risk Premium (ERP)</span>
+                    <span class="val text-blue" id="val-erp">-</span>
+                </div>
+                <div class="val-snap-box">
+                    <span class="lbl">Đánh giá định giá</span>
+                    <span class="val" id="val-label">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Các nhóm chỉ báo -->
+        <div id="indicator-groups-container"></div>
+
+        <div class="card margin-top-20">
+            <p style="font-size:0.82em;color:var(--text-muted)">
+                ⚠ Giai đoạn 1 (khung sơ bộ): một số chỉ báo (PMI, lãi suất liên ngân hàng, tăng trưởng
+                tín dụng, cung tiền M2, dự trữ ngoại hối, lạm phát cơ bản) hiện chỉ có dữ liệu thưa hoặc
+                chưa có nguồn tự động cập nhật — xem nhãn nguồn ở mỗi thẻ chỉ báo. Trục "Dòng tiền & Tâm
+                lý" (khối ngoại/margin) chưa được tích hợp vào ma trận quyết định.
+            </p>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+    </footer>
+
+</div>
+<script src="app_vimo.js?v=1"></script>
+<script src="access-gate.js"></script>
+</body>
+</html>

@@ -464,9 +464,11 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 # ══════════════════════════════════════════════════════════════════════════
 # JSON EXPORT
 # ══════════════════════════════════════════════════════════════════════════
-def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text):
+def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
+                    pdf_url=None):
     out = {
         "sector": "Vĩ mô",
+        "gdrivePdfUrl": pdf_url,
         "lastUpdated": raw.get("_meta", {}).get("last_auto_update") or raw.get("_meta", {}).get("seeded_at"),
         "scorecard": {
             "groups": {gname: {"score": g["score"], "nVotes": g["n_votes"],
