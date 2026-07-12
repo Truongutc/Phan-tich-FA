@@ -156,7 +156,7 @@ SCORECARD_GROUPS = {
     "Lạm phát & Lãi suất": ["cpi_yoy", "core_inflation", "refinancing_rate", "interbank_rate_3m"],
     "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves", "omo_rate_7d"],
     "Bên ngoài": ["trade_balance", "fdi_disbursed", "usdvnd", "fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"],
-    "Tâm lý thị trường": ["vnindex_pe", "vnindex_pb"],
+    "Tâm lý thị trường": ["vnindex_pe"],
 }
 
 
@@ -263,10 +263,11 @@ def calc_scorecard(raw, trends):
 # ĐỊNH GIÁ THỊ TRƯỜNG — ERP = E/P (từ VN-Index P/E) - Rf (Chương 5.2/6.1)
 # ══════════════════════════════════════════════════════════════════════════
 def calc_market_valuation(raw, rf):
+    # VN-Index P/B ĐÃ LOẠI KHỎI phạm vi (theo quyết định user — không phải tiêu chí chính, và
+    # không tìm được nguồn API tự động cho riêng cấp độ CHỈ SỐ, chỉ có API cấp từng công ty —
+    # xem lịch sử trao đổi/git log). Chỉ còn P/E làm cơ sở tính ERP.
     pe_series = raw["vnindex_pe"]["series"]
-    pb_series = raw["vnindex_pb"]["series"]
     pe = pe_series[-1]["value"] if pe_series else None
-    pb = pb_series[-1]["value"] if pb_series else None
     erp = None
     valuation_label = "Không xác định"
     if pe and pe > 0:
@@ -279,7 +280,7 @@ def calc_market_valuation(raw, rf):
         else:
             valuation_label = "Hợp lý"
     return {
-        "pe": pe, "pb": pb, "rf": rf, "erp": erp, "valuation_label": valuation_label,
+        "pe": pe, "rf": rf, "erp": erp, "valuation_label": valuation_label,
         "pe_source": pe_series[-1]["source_url"] if pe_series else None,
     }
 

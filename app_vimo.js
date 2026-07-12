@@ -113,7 +113,6 @@ function renderDecision(decision, total) {
 function renderValuation(val) {
     if (!val) return;
     document.getElementById('val-pe').textContent = val.pe ? `${formatNumber(val.pe)}x` : '-';
-    document.getElementById('val-pb').textContent = val.pb ? `${formatNumber(val.pb)}x` : '-';
     document.getElementById('val-rf').textContent = val.rf ? `${(val.rf * 100).toFixed(2)}%` : '-';
     document.getElementById('val-erp').textContent = val.erp !== null && val.erp !== undefined ? `${(val.erp * 100).toFixed(2)}%` : '-';
     const labelEl = document.getElementById('val-label');

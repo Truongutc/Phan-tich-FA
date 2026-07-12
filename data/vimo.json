@@ -122,7 +122,6 @@
   },
   "marketValuation": {
     "pe": 15.43,
-    "pb": 1.89,
     "rf": 0.045,
     "erp": 0.019808813998703823,
     "valuation_label": "Hợp lý",
@@ -1527,31 +1526,7 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế) — khớp số liệu tài liệu hướng dẫn gốc (15,43 lần, 10/7/2026). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy."
-    },
-    "vnindex_pb": {
-      "group": "market",
-      "label": "VN-Index P/B",
-      "unit": "x",
-      "goodDirection": "lower",
-      "autoSource": "manual",
-      "series": [
-        {
-          "period": "2026",
-          "value": 1.89,
-          "source_url": "https://www.vietnam.vn/en/vndirect-research-du-bao-vn-index-dat-2-014-diem-cuoi-nam-2026-gdp-tang-8-7-trong-kich-ban-binh-minh-sau-con-bao"
-        }
-      ],
-      "trend": {
-        "latest": 1.89,
-        "latest_period": "2026",
-        "latest_source": "https://www.vietnam.vn/en/vndirect-research-du-bao-vn-index-dat-2-014-diem-cuoi-nam-2026-gdp-tang-8-7-trong-kich-ban-binh-minh-sau-con-bao",
-        "n_points": 1,
-        "label": "insufficient",
-        "arrow": "—",
-        "is_improving": null
-      },
-      "note": "Số P/B DỰ BÁO cả năm 2026 theo VNDIRECT Research (không phải giá trị spot hiện tại) — cần thay bằng nguồn P/B thực tế theo thời gian thực khi tinh chỉnh (vd FiinGroup)."
+      "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế) — khớp số liệu tài liệu hướng dẫn gốc (15,43 lần, 10/7/2026). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. LƯU Ý: user cung cấp ảnh chụp biểu đồ P/E-TTM VNINDEX từ Vietcap (12/7/2026) cho số KHÁC — 13.7 (Mean 14.5, +1SD 17.1, +2SD 19.8, -1SD 11.9, -2SD 9.2) — chênh lệch với worldperatio.com (15.43) do khác phương pháp tính (cách xác định TTM, cách xử lý cổ phiếu lỗ/outlier trong rổ chỉ số...). Không tự ý đổi nguồn auto — ghi chú lại để biết có 2 số liệu tham chiếu khác nhau, không phải lỗi dữ liệu."
     }
   }
 }
