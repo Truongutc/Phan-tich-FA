@@ -5,8 +5,8 @@ template_vimo.py — Phân tích Vĩ mô Kinh tế Việt Nam (không gắn vớ
 Dựa theo "Hướng Dẫn Phân Tích Vĩ Mô Kinh Tế Việt Nam & Ứng Dụng Đầu Tư Chứng Khoán" trong
 Logic phan tich cac nganh/ — khung Top-Down 7 chương: theo dõi ~20 chỉ báo (tăng trưởng, lạm
 phát, tiền tệ, thương mại/vốn, tài khóa, lao động) + áp lực bên ngoài (Fed, DXY, dầu, Trung
-Quốc) + định giá thị trường (P/E, P/B, ERP VN-Index), tổng hợp thành Scorecard Vĩ Mô 5 nhóm
-(-1/0/+1 mỗi nhóm) và ma trận quyết định phân bổ vốn (Chương 6).
+Quốc) + định giá thị trường (P/E, P/B, ERP VN-Index), tổng hợp thành Scorecard Vĩ Mô 6 nhóm
+(-1/0/+1 mỗi nhóm, xem SCORECARD_GROUPS) và ma trận quyết định phân bổ vốn (Chương 6).
 
 Dữ liệu THÔ nằm ở data/vimo_raw.json (được fetch_macro_data.py cập nhật) — file này CHỈ tính
 toán/trình bày (trend, scorecard, ERP, ma trận quyết định, PDF, JSON dashboard), KHÔNG tự fetch
@@ -161,7 +161,7 @@ GROUP_LABELS = {
     "market": "Thị trường chứng khoán",
 }
 
-# Ánh xạ 8 nhóm dữ liệu (vimo_raw.json) -> 5 nhóm Scorecard Vĩ Mô theo đúng Chương 4.1/6.1 tài
+# Ánh xạ 8 nhóm dữ liệu (vimo_raw.json) -> 6 nhóm Scorecard Vĩ Mô theo đúng Chương 4.1/6.1 tài
 # liệu hướng dẫn (KHÔNG trùng 1-1 với 8 nhóm dữ liệu — vd tỷ giá thuộc "monetary" trong dữ liệu
 # nhưng thuộc "Tỷ giá & Dòng vốn ngoại" trong scorecard, theo đúng cách tài liệu phân loại).
 #
@@ -170,18 +170,112 @@ GROUP_LABELS = {
 #   GIÁ, không phải "tâm lý" theo nghĩa phân tích kỹ thuật, và đã có chỗ riêng ở marketValuation.
 # - Tách "Bên ngoài" (8 chỉ báo khác bản chất, gộp thành 1 phiếu bầu trung bình dễ thiên kiến)
 #   thành 2 nhóm độc lập theo cơ chế tác động: (1) tỷ giá/dòng vốn ngoại, (2) thương mại/hàng hóa.
+# - Tách tiếp "Lạm phát & Lãi suất" thành 2 nhóm riêng "Lạm phát" / "Lãi suất" (user: "lạm phát và
+#   lãi suất nên cho ra 2 tiêu chí khác nhau, gộp vào thì không đánh giá được tổng thể") — Scorecard
+#   giờ có 6 nhóm (không còn 5) — xem vimo.html/index.html đã cập nhật lại text "5 nhóm" -> "6 nhóm".
 # - Thêm deposit_rate_12m_market_avg (lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG ~38 NH qua 24hmoney,
-#   xem fetch_market_deposit_rate_12m() trong fetch_macro_data.py) vào "Lạm phát & Lãi suất" — trước
-#   đây nhóm này chỉ có cpi_yoy thực sự có phiếu (core_inflation/refinancing_rate/interbank_rate_3m
+#   xem fetch_market_deposit_rate_12m() trong fetch_macro_data.py) vào nhóm "Lãi suất" — trước đây
+#   nhóm gộp chỉ có cpi_yoy thực sự có phiếu (core_inflation/refinancing_rate/interbank_rate_3m
 #   hiếm khi đủ dữ liệu tính trend), nên KHÔNG phản ánh áp lực lãi suất thị trường THẬT (~6-9%,
 #   cao hơn nhiều lãi suất điều hành/liên ngân hàng ổn định thấp).
 SCORECARD_GROUPS = {
     "Tăng trưởng": ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth", "unemployment_rate"],
-    "Lạm phát & Lãi suất": ["cpi_yoy", "core_inflation", "refinancing_rate", "interbank_rate_3m", "deposit_rate_12m_market_avg"],
+    "Lạm phát": ["cpi_yoy", "core_inflation"],
+    "Lãi suất": ["refinancing_rate", "interbank_rate_3m", "deposit_rate_12m_market_avg"],
     "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves", "omo_rate_7d"],
-    "Tỷ giá & Dòng vốn ngoại": ["usdvnd", "dxy_proxy", "fed_funds_rate", "fdi_disbursed"],
+    "Tỷ giá & Dòng vốn ngoại": ["usdvnd", "dxy_proxy", "fed_funds_rate", "fdi_disbursed",
+                                 "fdi_registered_usd_bn", "fii_net_flow_hose"],
     "Thương mại & Hàng hóa": ["trade_balance", "export_growth", "brent_oil", "china_gdp_growth"],
 }
+
+# Tên NGẮN dùng riêng cho dòng "lý do cốt lõi" của Scorecard (user 2026-07-13: muốn nêu thẳng tên
+# chỉ báo + nhận định, kiểu "GDP tốt lên, PMI xấu đi", KHÔNG phải đếm số phiếu) — khác với "label"
+# đầy đủ dùng ở các chỗ khác (bảng PDF, thẻ chỉ báo web).
+SHORT_LABEL = {
+    "gdp_growth": "GDP", "iip_growth": "IIP", "pmi_manufacturing": "PMI",
+    "retail_sales_growth": "Bán lẻ", "unemployment_rate": "Thất nghiệp",
+    "cpi_yoy": "CPI", "core_inflation": "Lạm phát lõi",
+    "refinancing_rate": "LS điều hành", "interbank_rate_3m": "LS liên NH 3T",
+    "deposit_rate_12m_market_avg": "LS huy động thị trường",
+    "credit_growth": "Tín dụng", "m2_growth": "Cung tiền M2", "forex_reserves": "Dự trữ ngoại hối",
+    "omo_rate_7d": "OMO",
+    "usdvnd": "Tỷ giá", "dxy_proxy": "DXY", "fed_funds_rate": "Lãi suất Fed", "fdi_disbursed": "FDI giải ngân",
+    "fdi_registered_usd_bn": "FDI đăng ký", "fii_net_flow_hose": "Khối ngoại HOSE",
+    "trade_balance": "Cán cân TM", "export_growth": "Xuất khẩu", "brent_oil": "Dầu Brent",
+    "china_gdp_growth": "GDP Trung Quốc",
+}
+
+# Ngưỡng mục tiêu lạm phát CHÍNH THỨC (Quốc hội/Chính phủ đặt cho giai đoạn hiện tại — hiện tại:
+# Nghị quyết Quốc hội 2026 đặt mục tiêu CPI bình quân dưới 4,5%). CẬP NHẬT hằng số này khi có mục
+# tiêu năm mới. Dùng để chấm phiếu THEO MỨC (level), ĐỘC LẬP với phiếu THEO XU HƯỚNG (calc_trend)
+# đã có — theo đúng yêu cầu user (2026-07-13): "cao hơn mục tiêu chính phủ = không tốt; nếu CPI
+# đang TĂNG (và vượt mục tiêu) = cực xấu; nếu đang GIẢM (nhưng vẫn vượt mục tiêu) = hạ nhiệt, chưa
+# thể coi là tốt". Cơ chế 2-phiếu-độc-lập-cộng-trung-bình xử lý đúng cả 2 tình huống: vượt mục
+# tiêu + đang tăng -> phiếu mức (-1) VÀ phiếu xu hướng (-1) -> điểm nhóm -1 (cực xấu, đúng ý);
+# vượt mục tiêu + đang giảm -> phiếu mức (-1) VÀ phiếu xu hướng (+1) -> trung bình 0 (hạ nhiệt,
+# không phải "tốt" dù đang cải thiện) — KHÔNG để 1 điểm dữ liệu (chỉ xu hướng) quyết định cả nhóm.
+CPI_TARGET_CEILING = 4.5
+
+
+def _cpi_level_vote(cpi_value):
+    if cpi_value is None:
+        return None
+    return -1 if cpi_value > CPI_TARGET_CEILING else 1
+
+
+# Chỉ báo nào có NGƯỠNG MỤC TIÊU CHÍNH THỨC được định nghĩa thì mới có thêm phiếu mức (level) —
+# hiện chỉ cpi_yoy (có mục tiêu Quốc hội rõ ràng).
+LEVEL_VOTE_FUNCS = {"cpi_yoy": _cpi_level_vote}
+
+
+# CHÊNH LỆCH lãi suất huy động THỰC TẾ (ngoài khung cho phép — deposit_rate_negotiated_max) so với
+# lãi suất NIÊM YẾT Big4 (deposit_rate_12m_vcb) — theo đúng cơ chế user mô tả (2026-07-13): "nếu
+# lãi suất huy động thực tế bên ngoài cao hơn trên 2% so với lãi suất niêm yết là cao, tức là bank
+# đang quá đói vốn và cần huy động cao hơn khung cho phép bằng nhiều biện pháp để có tiền". Đây LÀ
+# phiếu MỨC riêng cho nhóm "Lãi suất" — ĐỘC LẬP với xu hướng tăng/giảm của từng chỉ báo niêm yết
+# (lãi suất niêm yết đứng yên/giảm nhẹ KHÔNG có nghĩa hệ thống đang khỏe nếu khoảng cách với thực
+# tế bên ngoài vẫn giãn rộng). Ngưỡng 2 điểm % là do user chọn — không tự suy diễn số khác.
+DEPOSIT_RATE_GAP_CEILING = 2.0
+
+
+def _deposit_rate_gap_level_vote(raw, trends):
+    actual = trends.get("deposit_rate_negotiated_max", {}).get("latest")
+    listed = trends.get("deposit_rate_12m_vcb", {}).get("latest")
+    if actual is None or listed is None:
+        return None
+    gap = actual - listed
+    vote = -1 if gap > DEPOSIT_RATE_GAP_CEILING else 1
+    label = f"Chênh lệch lãi suất thực tế/niêm yết ({gap:+.2f} điểm %)"
+    judgment_label = "đói vốn, huy động vượt khung cho phép" if vote < 0 else "huy động trong khung an toàn"
+    return {"indicator": "deposit_rate_gap", "label": label, "vote": vote,
+            "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
+
+
+# So lãi suất LIÊN NGÂN HÀNG (interbank_rate_9m — kỳ hạn dài nhất đang theo dõi, gần 12 tháng
+# nhất) với lãi suất HUY ĐỘNG NIÊM YẾT Big4 cùng kỳ hạn gần nhất (deposit_rate_12m_vcb) — theo yêu
+# cầu user (2026-07-13): "nếu liên ngân hàng cao hơn huy động niêm yết cùng kỳ hạn thì cũng là
+# căng thanh khoản và áp lực lãi suất còn lớn". ĐỘC LẬP với _deposit_rate_gap_level_vote ở trên
+# (dùng lãi suất thỏa thuận, dữ liệu THƯA vì chỉ có khi báo chí đưa tin) — chỉ báo này dùng dữ liệu
+# CÓ MỖI LẦN ACTION CHẠY (không phụ thuộc tin tức), nên đáng tin cậy/ổn định hơn để xác nhận chéo.
+def _interbank_vs_deposit_level_vote(raw, trends):
+    interbank = trends.get("interbank_rate_9m", {}).get("latest")
+    listed = trends.get("deposit_rate_12m_vcb", {}).get("latest")
+    if interbank is None or listed is None:
+        return None
+    vote = -1 if interbank > listed else 1
+    label = f"Liên ngân hàng 9 tháng ({interbank:.2f}%) so với huy động niêm yết 12 tháng ({listed:.2f}%)"
+    judgment_label = ("cao hơn niêm yết, căng thanh khoản" if vote < 0
+                       else "thấp hơn niêm yết, thanh khoản ổn")
+    return {"indicator": "interbank_vs_deposit", "label": label, "vote": vote,
+            "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
+
+
+# Các "phiếu mức" cần dữ liệu TỪ NHIỀU CHỈ BÁO cùng lúc (không chỉ 1 chỉ báo tự so với ngưỡng của
+# chính nó như LEVEL_VOTE_FUNCS) — gắn theo TÊN NHÓM Scorecard (LIST vì 1 nhóm có thể có nhiều
+# phép so sánh độc lập), gọi hết trong calc_scorecard.
+GROUP_LEVEL_CHECKS = {"Lãi suất": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote]}
+SHORT_LABEL["deposit_rate_gap"] = "Ngân hàng"
+SHORT_LABEL["interbank_vs_deposit"] = "Liên ngân hàng"
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -258,29 +352,80 @@ def calc_trend(series, good_direction):
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# SCORECARD VĨ MÔ — 5 nhóm, mỗi nhóm -1/0/+1 (Chương 4.1/6.1)
+# SCORECARD VĨ MÔ — 6 nhóm, mỗi nhóm -1/0/+1 (Chương 4.1/6.1, đã tách Lạm phát/Lãi suất riêng)
 # ══════════════════════════════════════════════════════════════════════════
 def calc_scorecard(raw, trends):
-    """trends: {indicator_key: calc_trend(...) result}. Trả {group_name: {score, detail, n}}."""
+    """trends: {indicator_key: calc_trend(...) result}. Trả {group_name: {score, detail, n}}.
+    Mỗi chỉ báo góp 1 PHIẾU XU HƯỚNG (như cũ); các chỉ báo có ngưỡng mục tiêu chính thức
+    (LEVEL_VOTE_FUNCS) góp THÊM 1 PHIẾU MỨC độc lập — 1 chỉ báo có thể góp 2 phiếu vào cùng 1
+    nhóm, nên n_votes đếm SỐ PHIẾU chứ không còn nhất thiết = số chỉ báo."""
     scorecard = {}
     for group_name, keys in SCORECARD_GROUPS.items():
         votes = []
         detail = []
         for k in keys:
             t = trends.get(k)
-            if not t or t.get("is_improving") is None:
-                continue
-            votes.append(1 if t["is_improving"] else -1)
-            detail.append({"indicator": k, "label": raw[k]["label"], "vote": votes[-1],
-                            "arrow": t["arrow"], "judgment_label": t["judgment_label"]})
+            if t and t.get("is_improving") is not None:
+                votes.append(1 if t["is_improving"] else -1)
+                detail.append({"indicator": k, "label": raw[k]["label"], "vote": votes[-1],
+                                "arrow": t["arrow"], "judgment_label": t["judgment_label"]})
+            level_func = LEVEL_VOTE_FUNCS.get(k)
+            if level_func and t and t.get("latest") is not None:
+                level_vote = level_func(t["latest"])
+                if level_vote is not None:
+                    votes.append(level_vote)
+                    detail.append({
+                        "indicator": k, "label": f"{raw[k]['label']} (so với mục tiêu)",
+                        "vote": level_vote, "arrow": "⚠" if level_vote < 0 else "✓",
+                        "judgment_label": "Vượt mục tiêu" if level_vote < 0 else "Trong mục tiêu",
+                    })
+        for group_level_check in GROUP_LEVEL_CHECKS.get(group_name, []):
+            group_vote = group_level_check(raw, trends)
+            if group_vote:
+                votes.append(group_vote["vote"])
+                detail.append(group_vote)
         if not votes:
             score = 0
         else:
             avg = sum(votes) / len(votes)
             score = 1 if avg > 0.2 else (-1 if avg < -0.2 else 0)
-        scorecard[group_name] = {"score": score, "detail": detail, "n_votes": len(votes)}
+        scorecard[group_name] = {"score": score, "detail": detail, "n_votes": len(votes),
+                                  "reason": _scorecard_group_reason(detail, raw, trends)}
     total = sum(g["score"] for g in scorecard.values())
     return scorecard, total
+
+
+def _scorecard_group_reason(detail, raw, trends):
+    """1 dòng NGẮN GỌN NHẤT nêu LUẬN ĐIỂM CỐT LÕI đứng sau điểm nhóm — user (2026-07-13): không
+    muốn đếm phiếu ("4/5 phiếu tốt lên"), muốn biết THẲNG chỉ báo nào tốt/xấu (vd "GDP tốt lên,
+    PMI xấu đi"). Với chỉ báo có CẢ phiếu mức lẫn phiếu xu hướng (vd CPI: vượt/trong mục tiêu VÀ
+    đang tăng/giảm), ghép thành 1 câu đủ nghĩa (vd "CPI vượt mục tiêu nhưng đang giảm") thay vì
+    liệt kê 2 dòng rời rạc cho cùng 1 chỉ báo."""
+    if not detail:
+        return "Chưa đủ dữ liệu để chấm điểm."
+
+    by_indicator = {}
+    for d in detail:
+        by_indicator.setdefault(d["indicator"], []).append(d)
+
+    _DIRECTION_WORD = {"up": "đang tăng", "down": "đang giảm", "flat": "đi ngang"}
+    phrases = []
+    for ind_key, votes in by_indicator.items():
+        # deposit_rate_gap (từ GROUP_LEVEL_CHECKS) không phải key thật trong raw — dùng label có
+        # sẵn trong chính detail làm fallback thay vì tra raw[ind_key] (sẽ KeyError).
+        short = SHORT_LABEL.get(ind_key) or (raw[ind_key]["label"] if ind_key in raw else votes[0]["label"])
+        level_v = next((v for v in votes if "mục tiêu" in v["judgment_label"]), None)
+        trend_v = next((v for v in votes if v is not level_v), None)
+        if level_v and trend_v:
+            direction = trends.get(ind_key, {}).get("direction")
+            trend_txt = _DIRECTION_WORD.get(direction, trend_v["judgment_label"].lower())
+            level_txt = level_v["judgment_label"].lower()
+            joiner = "và" if level_v["vote"] == trend_v["vote"] else "nhưng"
+            phrases.append(f"{short} {level_txt} {joiner} {trend_txt}")
+        else:
+            v = votes[0]
+            phrases.append(f"{short} {v['judgment_label'].lower()}")
+    return "; ".join(phrases) + "."
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -296,6 +441,7 @@ def calc_market_valuation(raw, rf):
     pb_series = raw.get("vnindex_pb", {}).get("series", [])
     pb = pb_series[-1]["value"] if pb_series else None
     erp = None
+    earnings_yield = None
     valuation_label = "Không xác định"
     if pe and pe > 0:
         earnings_yield = 1 / pe
@@ -310,6 +456,55 @@ def calc_market_valuation(raw, rf):
         "pe": pe, "pb": pb, "rf": rf, "erp": erp, "valuation_label": valuation_label,
         "pe_source": pe_series[-1]["source_url"] if pe_series else None,
         "pb_source": pb_series[-1]["source_url"] if pb_series else None,
+        "risk_compensation": _calc_risk_compensation(raw, rf, earnings_yield),
+    }
+
+
+# Bù đắp rủi ro cổ phiếu vs kênh an toàn hơn (user 2026-07-13: "PE PB nêu ra cho có thì để làm gì —
+# tôi cần so sánh định giá với mức hấp dẫn của tiền gửi/trái phiếu, có bù được rủi ro đầu tư cổ
+# phiếu hay không"). So Earnings Yield (1/P/E) với NGƯỠNG = bội số của lãi suất tham chiếu — dùng
+# CẢ 2 mốc: TPCP 10 năm (Rf lý thuyết, sẵn có) VÀ lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế
+# (deposit_rate_12m_market_avg — kênh thay thế THẬT mà nhà đầu tư VN có thể chọn, không chỉ lý
+# thuyết như Rf trái phiếu). 4 mức, xếp từ tốt nhất xuống xấu nhất:
+#   1) E/Y >= 1.5x lãi suất gửi tiết kiệm thực tế -> Bù đắp tốt
+#   2) E/Y >= 2x Rf TPCP (nhưng chưa tới mức 1) -> Bù đắp khá so TPCP, CHƯA đủ so gửi tiết kiệm
+#   3) E/Y >= 1.5x Rf TPCP (nhưng chưa tới mức 2) -> Bù đắp tối thiểu, chưa có biên an toàn
+#   4) E/Y < 1.5x Rf TPCP -> KHÔNG đủ bù đắp rủi ro, kể cả so với kênh phi rủi ro lý thuyết
+def _calc_risk_compensation(raw, rf, earnings_yield):
+    if earnings_yield is None:
+        return None
+    deposit_series = raw.get("deposit_rate_12m_market_avg", {}).get("series", [])
+    deposit_rf = deposit_series[-1]["value"] / 100 if deposit_series else None
+
+    hurdle_1_5x_bond = 1.5 * rf
+    hurdle_2x_bond = 2.0 * rf
+    hurdle_1_5x_deposit = 1.5 * deposit_rf if deposit_rf is not None else None
+
+    if hurdle_1_5x_deposit is not None and earnings_yield >= hurdle_1_5x_deposit:
+        label, color = "Bù đắp tốt", "good"
+    elif earnings_yield >= hurdle_2x_bond:
+        label, color = "Bù đắp khá (so TPCP), chưa đủ so với gửi tiết kiệm thực tế", "warn"
+    elif earnings_yield >= hurdle_1_5x_bond:
+        label, color = "Bù đắp tối thiểu, chưa có biên an toàn", "warn"
+    else:
+        label, color = "KHÔNG đủ bù đắp rủi ro", "bad"
+
+    parts = [f"Earnings Yield (1/P·E) hiện {earnings_yield*100:.2f}%."]
+    parts.append(f"So với lãi suất TPCP 10 năm ({rf*100:.2f}%): "
+                 f"{'ĐẠT' if earnings_yield >= hurdle_1_5x_bond else 'CHƯA đạt'} mức 1,5 lần ({hurdle_1_5x_bond*100:.2f}%), "
+                 f"{'ĐẠT' if earnings_yield >= hurdle_2x_bond else 'CHƯA đạt'} mức 2 lần ({hurdle_2x_bond*100:.2f}%).")
+    if hurdle_1_5x_deposit is not None:
+        parts.append(f"So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế ({deposit_rf*100:.2f}%): "
+                      f"{'ĐẠT' if earnings_yield >= hurdle_1_5x_deposit else 'CHƯA đạt'} mức 1,5 lần ({hurdle_1_5x_deposit*100:.2f}%).")
+    else:
+        parts.append("Chưa có dữ liệu lãi suất huy động thị trường để so mức 1,5 lần.")
+    parts.append(f"=> {label}.")
+
+    return {
+        "earnings_yield": earnings_yield, "deposit_rf": deposit_rf,
+        "hurdle_1_5x_bond": hurdle_1_5x_bond, "hurdle_2x_bond": hurdle_2x_bond,
+        "hurdle_1_5x_deposit": hurdle_1_5x_deposit,
+        "label": label, "color": color, "text": " ".join(parts),
     }
 
 
@@ -373,12 +568,19 @@ def calc_overall_verdict(scorecard_total, trends, scorecard_history):
     entry_quarter = _closest_history_entry(scorecard_history, now - datetime.timedelta(days=90), 15)
     entry_ytd = _closest_history_entry(scorecard_history, year_start, 20) if now > year_start else None
 
+    # LƯU Ý: scorecard_history có thể chứa entry cũ được tính từ TRƯỚC lần đổi số nhóm Scorecard
+    # gần nhất (vd 5 nhóm -> 6 nhóm ngày 2026-07-13) — các entry cũ đó có thang điểm khác (vd ±5
+    # thay vì ±6). Hiển thị luôn dùng đúng thang HIỆN TẠI (len(SCORECARD_GROUPS)) cho cả 2 vế để
+    # không tự mâu thuẫn trong 1 câu, dù về bản chất so sánh 2 thang điểm khác nhau vẫn có sai số
+    # nhỏ trong giai đoạn chuyển tiếp (sẽ tự hết khi lịch sử tích lũy đủ dài sau lần đổi).
+    n_groups = len(SCORECARD_GROUPS)
+
     def _cmp_txt(label, entry):
         if not entry:
             return None
         diff = scorecard_total - entry["total"]
         arrow = "▲" if diff > 0 else ("▼" if diff < 0 else "→")
-        return f"{label} ({entry['date']}): {entry['total']:+d}/5 → {scorecard_total:+d}/5 {arrow}"
+        return f"{label} ({entry['date']}): {entry['total']:+d}/{n_groups} → {scorecard_total:+d}/{n_groups} {arrow}"
 
     comparisons = [c for c in [
         _cmp_txt("So với tháng trước", entry_month),
@@ -480,7 +682,7 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
     no_data = [g for g, d in scorecard.items() if d["n_votes"] == 0]
 
     posture = "tích cực" if scorecard_total > 0 else ("tiêu cực" if scorecard_total < 0 else "trung tính, chưa nghiêng hẳn về hướng nào")
-    sentences = [f"Scorecard Vĩ Mô tổng hợp đạt {scorecard_total:+d}/5 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng {posture}."]
+    sentences = [f"Scorecard Vĩ Mô tổng hợp đạt {scorecard_total:+d}/{len(SCORECARD_GROUPS)} điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng {posture}."]
     if pos:
         sentences.append(f"Động lực tích cực đến từ nhóm {_vn_join(pos)}.")
     if neg:
@@ -518,7 +720,7 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
         pb_clause = f", P/B {valuation['pb']:.2f}x" if valuation.get("pb") is not None else ""
         para3 = (f"Về định giá, VN-Index đang giao dịch ở P/E {valuation['pe']:.2f}x{pb_clause}, tương ứng ERP (lợi suất thu nhập trừ "
                  f"lãi suất phi rủi ro) {valuation['erp']*100:.2f}% — mức định giá được xếp loại \"{valuation['valuation_label']}\". "
-                 f"Kết hợp Scorecard vĩ mô ({scorecard_total:+d}/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là "
+                 f"Kết hợp Scorecard vĩ mô ({scorecard_total:+d}/{len(SCORECARD_GROUPS)}) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là "
                  f"\"{decision_label}\": {decision_text}")
     else:
         para3 = (f"Chưa đủ dữ liệu P/E để tính ERP — phần định giá thị trường tạm thời để trống, không suy diễn. "
@@ -532,14 +734,18 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
 
 
 def _build_economy_impact(raw, trends):
-    paras = []
+    """Trả list [{heading, text}, ...] — MỖI PHẦN có tiêu đề rõ ràng riêng (user 2026-07-13: đọc
+    1 khối văn bản dài không biết đoạn nào đang nói chủ đề gì) — KHÔNG còn gộp chung thành 1 chuỗi
+    text duy nhất như trước. Web/PDF phải render mỗi {heading, text} thành 1 khối có heading in
+    đậm/nổi bật riêng, không phải nối liền bằng \\n\\n."""
+    sections = []
 
     growth_keys = ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth"]
     inflation_keys = ["cpi_yoy", "core_inflation"]
     g_parts = _join_indicators(raw, trends, growth_keys)
     i_parts = _join_indicators(raw, trends, inflation_keys)
     if g_parts or i_parts:
-        txt = "Về tăng trưởng và lạm phát: "
+        txt = ""
         if g_parts:
             txt += "; ".join(g_parts) + ". "
         # Bóc tách ĐỘNG LỰC tăng trưởng thật (theo NSO) thay vì chỉ nêu con số GDP đơn lẻ — trả
@@ -566,7 +772,7 @@ def _build_economy_impact(raw, trends):
         if usdvnd_j and usdvnd_j[2] == "Xấu đi":
             txt += ("Tỷ giá USD/VND đang chịu áp lực tăng, làm tăng chi phí nhập khẩu nguyên nhiên liệu và có thể cộng "
                     "thêm áp lực lên CPI trong các kỳ tới qua kênh lạm phát nhập khẩu.")
-        paras.append(txt.strip())
+        sections.append({"heading": "Tăng trưởng & Lạm phát", "text": txt.strip()})
 
     # Thanh khoản/lãi suất — đây là mục QUAN TRỌNG NHẤT cần trung thực: biểu lãi suất huy động
     # niêm yết CÔNG KHAI (VCB/VietinBank/NamABank, xem dep_parts bên dưới) thấp hơn NHIỀU so với
@@ -577,7 +783,7 @@ def _build_economy_impact(raw, trends):
     interbank_9m_series = raw.get("interbank_rate_9m", {}).get("series", [])
     refin = _indicator_txt(raw, trends, "refinancing_rate")
     if omo or interbank_on_series or refin:
-        txt2 = ("Về thanh khoản hệ thống: lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN "
+        txt2 = ("Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN "
                 "HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — ")
         if omo:
             txt2 += f"hiện ở mức {omo[1]}. "
@@ -590,15 +796,25 @@ def _build_economy_impact(raw, trends):
         txt2 += ("Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân "
                  "cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ "
                  "vài tuần đến vài tháng tùy thanh khoản từng ngân hàng.")
+        # 2 CHIỀU bơm/hút (user 2026-07-13): OMO ở trên là chiều BƠM — tín phiếu NHNN là chiều HÚT
+        # đối lập, cần nêu CẢ 2 mới đánh giá đúng thanh khoản hệ thống đang thừa hay thiếu.
+        tin_phieu_series = raw.get("tin_phieu_days_since_issuance", {}).get("series", [])
+        if tin_phieu_series:
+            days = tin_phieu_series[-1]["value"]
+            txt2 += (f" Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong {days:.0f} ngày "
+                      "gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào "
+                      "diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa "
+                      "vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra).")
         dep_parts = _join_indicators(raw, trends, ["deposit_rate_12m_vcb", "deposit_rate_12m_ctg", "deposit_rate_12m_nab"])
         if dep_parts:
             txt2 += " Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: " + "; ".join(dep_parts) + "."
-        paras.append(txt2.strip())
+        sections.append({"heading": "Thanh khoản hệ thống & Lãi suất chính thức (OMO/VNIBOR/niêm yết Big4)",
+                          "text": txt2.strip()})
 
         neg_series = raw.get("deposit_rate_negotiated_max", {}).get("series", [])
         market_max_series = raw.get("deposit_rate_12m_market_max", {}).get("series", [])
         market_avg_series = raw.get("deposit_rate_12m_market_avg", {}).get("series", [])
-        txt3 = "LƯU Ý QUAN TRỌNG — không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. "
+        txt3 = "Không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. "
         if neg_series:
             p = neg_series[-1]
             txt3 += (f"Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, "
@@ -614,7 +830,7 @@ def _build_economy_impact(raw, trends):
         if neg_series or market_max_series:
             txt3 += ("Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh khoản để đáp ứng nhu cầu tín "
                      "dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.")
-            paras.append(txt3.strip())
+            sections.append({"heading": "⚠️ Lãi suất THỰC TẾ thị trường (khác biểu niêm yết)", "text": txt3.strip()})
 
     trade_keys = ["export_growth", "import_growth", "trade_balance", "fdi_disbursed"]
     fiscal_keys = ["budget_revenue_growth", "budget_expenditure_growth", "public_investment_growth"]
@@ -623,7 +839,7 @@ def _build_economy_impact(raw, trends):
     if t_parts or f_parts:
         txt3 = ""
         if t_parts:
-            txt3 += "Về thương mại và dòng vốn: " + "; ".join(t_parts) + ". "
+            txt3 += "; ".join(t_parts) + ". "
             exp_v = trends.get("export_growth", {}).get("latest")
             imp_v = trends.get("import_growth", {}).get("latest")
             if exp_v is not None and imp_v is not None:
@@ -634,7 +850,7 @@ def _build_economy_impact(raw, trends):
         if f_parts:
             txt3 += ("Về đầu tư công, " + "; ".join(f_parts) + " — mức độ giải ngân thực tế quyết định hiệu ứng lan tỏa "
                      "tới các ngành xây dựng, vật liệu, hạ tầng.")
-        paras.append(txt3.strip())
+        sections.append({"heading": "Thương mại, Dòng vốn & Đầu tư công", "text": txt3.strip()})
 
     unemp = _indicator_txt(raw, trends, "unemployment_rate")
     ext_keys = ["fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"]
@@ -649,17 +865,17 @@ def _build_economy_impact(raw, trends):
                      "tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu "
                      "tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là "
                      "một trong các đối tác thương mại lớn nhất.")
-        paras.append(txt4.strip())
+        sections.append({"heading": "Lao động & Áp lực bên ngoài", "text": txt4.strip()})
 
-    if not paras:
-        return "Chưa đủ dữ liệu chỉ báo có xu hướng rõ để đánh giá tác động tới nền kinh tế."
-    return "\n\n".join(paras)
+    if not sections:
+        sections.append({"heading": "Chưa đủ dữ liệu", "text": "Chưa đủ dữ liệu chỉ báo có xu hướng rõ để đánh giá tác động tới nền kinh tế."})
+    return sections
 
 
 def _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text):
     paras = []
     posture = "thuận lợi" if scorecard_total > 0 else ("bất lợi" if scorecard_total < 0 else "trung tính")
-    paras.append(f"Với Scorecard vĩ mô {scorecard_total:+d}/5 điểm ({posture} cho kênh cổ phiếu) và định giá VN-Index "
+    paras.append(f"Với Scorecard vĩ mô {scorecard_total:+d}/{len(SCORECARD_GROUPS)} điểm ({posture} cho kênh cổ phiếu) và định giá VN-Index "
                  f"được xếp loại \"{valuation.get('valuation_label', 'chưa xác định')}\", khuyến nghị phân bổ vốn hiện "
                  f"tại là \"{decision_label}\": {decision_text}")
 
@@ -777,41 +993,85 @@ def build_charts_vimo(out_dir, raw, min_points=4):
     return charts
 
 
-# Danh sách chỉ báo lãi suất huy động 12T theo ngân hàng, gắn nhãn NHÓM quy mô (user yêu cầu so
-# sánh theo nhóm lớn/vừa/nhỏ — hiện chỉ có đại diện nhóm lớn và nhỏ, xem note trong vimo_raw.json
-# về lý do thiếu đại diện nhóm vừa — MBB/TCB không có nguồn scrape ổn định).
-BANK_DEPOSIT_RATE_KEYS = [
-    ("deposit_rate_12m_vcb", "VCB (lớn)"),
-    ("deposit_rate_12m_ctg", "VietinBank (lớn)"),
-    ("deposit_rate_12m_nab", "NamABank (nhỏ)"),
+# Kỳ hạn hiển thị trong chart lịch sử liên ngân hàng — khớp INTERBANK_HISTORY_TENORS trong
+# app_vimo.js (user yêu cầu 2026-07-13: gộp O/N + 1 tháng vào chung chart 6 tháng theo thời gian).
+INTERBANK_HISTORY_TENORS = [
+    ("interbank_rate_on", "O/N", "#f59e0b"),
+    ("interbank_rate_1m", "1 Tháng", "#a78bfa"),
+    ("interbank_rate_6m", "6 Tháng", "#3b82f6"),
 ]
 
 
-def build_bank_comparison_chart(out_dir, raw):
-    """1 bar chart so sánh lãi suất huy động 12 tháng giữa các ngân hàng đại diện — riêng biệt
-    với build_charts_vimo() (ở đó mỗi chỉ báo có chart đường thời gian RIÊNG, còn ở đây cần 1
-    chart CỘT so sánh NGANG giữa nhiều ngân hàng tại cùng 1 thời điểm). Trả path hoặc None nếu
-    chưa có ngân hàng nào có dữ liệu."""
-    labels, values = [], []
-    for key, bank_label in BANK_DEPOSIT_RATE_KEYS:
-        series = raw.get(key, {}).get("series", [])
-        if series:
-            labels.append(bank_label)
-            values.append(series[-1]["value"])
-    if not values:
+def build_interbank_6m_history_chart(out_dir, raw):
+    """1 line chart nhiều dòng: lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng THEO THỜI GIAN, vẽ
+    TOÀN BỘ lịch sử sẵn có mỗi kỳ hạn (không giới hạn min_points=4 như build_charts_vimo()) — thay
+    cho chart so sánh ngân hàng cũ (đã gỡ bỏ theo yêu cầu user 2026-07-13, xem cùng thay đổi ở
+    app_vimo.js). Trả path hoặc None nếu không kỳ hạn nào có dữ liệu."""
+    series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", []) if p.get("value") is not None])
+                        for key, label, color in INTERBANK_HISTORY_TENORS]
+    all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s})
+    if not all_periods:
         return None
+
     fig, ax = plt.subplots(figsize=(7.5, 3.4))
-    colors = ["#3b82f6", "#3b82f6", "#f59e0b"][:len(labels)]
-    bars = ax.bar(labels, values, color=colors)
-    for b, v in zip(bars, values):
-        ax.text(b.get_x() + b.get_width() / 2, v + 0.05, f"{v:.2f}%", ha="center", fontsize=10, fontweight="bold")
-    ax.set_title("Lãi suất huy động 12 tháng theo ngân hàng (%)", fontsize=11, fontweight="bold")
-    ax.grid(alpha=0.25, axis="y")
+    for label, color, s in series_by_tenor:
+        by_period = {p["period"]: p["value"] for p in s}
+        values = [by_period.get(period, float("nan")) for period in all_periods]  # NaN = có khoảng trống, khớp spanGaps ở app_vimo.js
+        ax.plot(all_periods, values, marker="o", color=color, linewidth=2, label=label)
+    ax.set_title("Lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng theo thời gian (%)", fontsize=11, fontweight="bold")
+    ax.tick_params(axis="x", rotation=45, labelsize=8)
+    ax.grid(alpha=0.25)
+    ax.legend(fontsize=8)
     fig.tight_layout()
-    path = os.path.join(out_dir, "vimo_bank_deposit_comparison.png")
+    path = os.path.join(out_dir, "vimo_interbank_rate_6m_history.png")
     fig.savefig(path, dpi=130)
     plt.close(fig)
     return path
+
+
+# Biểu đồ miền (stacked area) DÙNG CHUNG cho cơ cấu GDP theo khu vực VÀ cơ cấu vốn đầu tư theo
+# thành phần (user 2026-07-13, khớp renderStackedAreaChart() trong app_vimo.js) — mỗi kỳ báo cáo
+# LŨY KẾ (Q1/6 tháng/9 tháng/cả năm) là 1 điểm trên trục X, các thành phần % cộng lại ~100%.
+def build_stacked_area_chart(out_dir, raw, keys, title, filename):
+    series_by_key = [(label, color, [p for p in raw.get(key, {}).get("series", []) if p.get("value") is not None])
+                      for key, label, color in keys]
+    all_periods = sorted({p["period"] for _, _, s in series_by_key for p in s})
+    if not all_periods:
+        return None
+
+    values_matrix = []
+    labels, colors = [], []
+    for label, color, s in series_by_key:
+        by_period = {p["period"]: p["value"] for p in s}
+        values_matrix.append([by_period.get(period, 0) for period in all_periods])
+        labels.append(label)
+        colors.append(color)
+
+    fig, ax = plt.subplots(figsize=(7.5, 3.6))
+    ax.stackplot(all_periods, values_matrix, labels=labels, colors=colors, alpha=0.85)
+    ax.set_title(title, fontsize=11, fontweight="bold")
+    ax.set_ylim(0, 100)
+    ax.tick_params(axis="x", rotation=45, labelsize=8)
+    ax.grid(alpha=0.25, axis="y")
+    ax.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=len(labels))
+    fig.tight_layout()
+    path = os.path.join(out_dir, filename)
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+    return path
+
+
+GDP_STRUCTURE_KEYS = [
+    ("gdp_share_agri", "Nông-Lâm-Thủy sản", "#10b981"),
+    ("gdp_share_industry", "Công nghiệp-Xây dựng", "#3b82f6"),
+    ("gdp_share_services", "Dịch vụ", "#f59e0b"),
+    ("gdp_share_tax", "Thuế sản phẩm (ròng)", "#a78bfa"),
+]
+INVESTMENT_STRUCTURE_KEYS = [
+    ("investment_share_state", "Nhà nước", "#3b82f6"),
+    ("investment_share_private", "Ngoài Nhà nước (tư nhân)", "#10b981"),
+    ("investment_share_fdi", "FDI", "#f59e0b"),
+]
 
 
 # Kỳ hạn VNIBOR theo đúng thứ tự tăng dần — khớp key trong vimo_raw.json (fetch_sbv_interest_rates()
@@ -865,6 +1125,8 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                             leading=17, textColor=HexColor("#2E75B6"), spaceBefore=14, spaceAfter=7)
     h2_st = ParagraphStyle("VM_H2", parent=styles["Heading3"], fontName=FONT_BOLD, fontSize=11,
                             leading=15, textColor=HexColor("#404040"), spaceBefore=8, spaceAfter=4)
+    h3_st = ParagraphStyle("VM_H3", parent=styles["Heading4"], fontName=FONT_BOLD, fontSize=9.5,
+                            leading=13, textColor=HexColor("#2E75B6"), spaceBefore=6, spaceAfter=2)
     body_st = ParagraphStyle("VM_Body", parent=styles["Normal"], fontName=FONT_REG, fontSize=10,
                               leading=14, textColor=HexColor("#2D3748"), spaceAfter=6)
     italic_st = ParagraphStyle("VM_Italic", parent=styles["Normal"], fontName=FONT_REG, fontSize=8,
@@ -894,7 +1156,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 
     summary_data = [
         ["Scorecard Vĩ Mô (tổng)", "Định giá thị trường", "ERP", "Khuyến nghị"],
-        [f"{scorecard_total:+d} / 5", valuation["valuation_label"],
+        [f"{scorecard_total:+d} / {len(SCORECARD_GROUPS)}", valuation["valuation_label"],
          f"{valuation['erp']*100:.2f}%" if valuation["erp"] is not None else "N/A", decision_label],
     ]
     t_sum = Table(summary_data, colWidths=[42 * mm, 42 * mm, 32 * mm, 55 * mm])
@@ -902,6 +1164,9 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(t_sum)
     story.append(Spacer(1, 6))
     story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn:</b> {decision_text}", body_st))
+    rc = valuation.get("risk_compensation")
+    if rc:
+        story.append(Paragraph(f"<b>⚖️ Bù đắp rủi ro cổ phiếu: {rc['label']}</b> — {rc['text']}", body_st))
     story.append(Spacer(1, 10))
 
     # ── Banner "Đánh giá tổng thể" — trả lời trực tiếp: đang tốt lên/xấu đi (xu hướng theo thời
@@ -935,20 +1200,23 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Paragraph("1.1. Tổng quan bức tranh vĩ mô", h2_st))
     story.append(Paragraph(synthesis["overview"], body_st))
     story.append(Paragraph("1.2. Tác động tới kinh tế Việt Nam", h2_st))
-    story.append(Paragraph(synthesis["economy_impact"], body_st))
+    for section in synthesis["economy_impact"]:
+        story.append(Paragraph(section["heading"], h3_st))
+        story.append(Paragraph(section["text"], body_st))
     story.append(Paragraph("1.3. Tác động tới thị trường chứng khoán", h2_st))
     story.append(Paragraph(synthesis["market_impact"], body_st))
     story.append(Paragraph("1.4. Điểm cần theo dõi tiếp", h2_st))
     story.append(Paragraph(synthesis["watch_points"], body_st))
     story.append(Spacer(1, 10))
 
-    # ── Scorecard chi tiết 5 nhóm ──
-    story.append(Paragraph("2. Scorecard Vĩ Mô — 5 nhóm chỉ số (Chương 4.1/6.1)", h1_st))
-    sc_rows = [["Nhóm", "Điểm", "Số chỉ báo có xu hướng rõ", "Chi tiết"]]
+    # ── Scorecard chi tiết ──
+    story.append(Paragraph(f"2. Scorecard Vĩ Mô — {len(SCORECARD_GROUPS)} nhóm chỉ số (Chương 4.1/6.1)", h1_st))
+    sc_rows = [["Nhóm", "Điểm", "Số chỉ báo có xu hướng rõ", "Lý do & Chi tiết"]]
     for gname, gdata in scorecard.items():
         score_txt = {1: "+1 (Tốt)", 0: "0 (Trung tính)", -1: "-1 (Xấu)"}[gdata["score"]]
-        detail_txt = ", ".join(f"{d['label']} ({d['judgment_label']})" for d in gdata["detail"]) or "Chưa đủ dữ liệu"
-        sc_rows.append([gname, score_txt, str(gdata["n_votes"]), detail_txt])
+        detail_txt = ", ".join(f"{d['label']} ({d['judgment_label']})" for d in gdata["detail"])
+        cell_txt = f"<b>{gdata['reason']}</b>" + (f" — {detail_txt}" if detail_txt else "")
+        sc_rows.append([gname, score_txt, str(gdata["n_votes"]), Paragraph(cell_txt, small_st)])
     t_sc = Table(sc_rows, colWidths=[32 * mm, 26 * mm, 26 * mm, 85 * mm])
     t_sc.setStyle(tbl_style())
     story.append(t_sc)
@@ -977,6 +1245,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "news_rss": "RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)",
                          "market_table": "24hmoney.vn (bảng đa ngân hàng, tự động)",
                          "24hmoney_scrape": "24hmoney.vn (chỉ số P/E-P/B, tự động)",
+                         "cafef_ajax": "cafef.vn (khối ngoại HOSE, tự động)",
                          "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
             # value_arrow = chiều số liệu THẬT (↑/↓/→), judgment_label = đánh giá tốt lên/xấu đi
@@ -995,9 +1264,15 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
             story.append(Paragraph("Đường cong lãi suất liên ngân hàng VNIBOR theo kỳ hạn:", small_st))
             story.append(Image(charts["interbank_curve"], width=140 * mm, height=63 * mm))
             story.append(Spacer(1, 4))
-        if grp == "monetary" and "bank_comparison" in charts:
-            story.append(Paragraph("So sánh lãi suất huy động 12 tháng theo ngân hàng đại diện:", small_st))
-            story.append(Image(charts["bank_comparison"], width=140 * mm, height=63 * mm))
+        if grp == "monetary" and "interbank_6m_history" in charts:
+            story.append(Paragraph("Lãi suất liên ngân hàng kỳ hạn 6 tháng theo thời gian:", small_st))
+            story.append(Image(charts["interbank_6m_history"], width=140 * mm, height=63 * mm))
+        if grp == "growth" and "gdp_structure" in charts:
+            story.append(Paragraph("Cơ cấu GDP theo khu vực kinh tế (lũy kế theo kỳ báo cáo):", small_st))
+            story.append(Image(charts["gdp_structure"], width=140 * mm, height=67 * mm))
+        if grp == "trade" and "investment_structure" in charts:
+            story.append(Paragraph("Cơ cấu vốn đầu tư thực hiện toàn xã hội theo thành phần (lũy kế theo kỳ báo cáo):", small_st))
+            story.append(Image(charts["investment_structure"], width=140 * mm, height=67 * mm))
         story.append(Spacer(1, 8))
 
     # ── Nguồn tham khảo đầy đủ ──
@@ -1036,7 +1311,7 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         "lastUpdated": raw.get("_meta", {}).get("last_auto_update") or raw.get("_meta", {}).get("seeded_at"),
         "scorecard": {
             "groups": {gname: {"score": g["score"], "nVotes": g["n_votes"],
-                                "detail": g["detail"]} for gname, g in scorecard.items()},
+                                "detail": g["detail"], "reason": g["reason"]} for gname, g in scorecard.items()},
             "total": scorecard_total,
         },
         "marketValuation": valuation,
@@ -1237,8 +1512,8 @@ def run_vimo_analysis():
     print("[INFO] Tính Scorecard Vĩ Mô...")
     scorecard, scorecard_total = calc_scorecard(raw, trends)
     for gname, g in scorecard.items():
-        print(f"  {gname}: {g['score']:+d} ({g['n_votes']} chỉ báo có xu hướng)")
-    print(f"  => TỔNG SCORECARD: {scorecard_total:+d} / 5")
+        print(f"  {gname}: {g['score']:+d} ({g['n_votes']} phiếu bầu)")
+    print(f"  => TỔNG SCORECARD: {scorecard_total:+d} / {len(SCORECARD_GROUPS)}")
 
     print("[INFO] Tính định giá thị trường (P/E, ERP)...")
     valuation = calc_market_valuation(raw, rf)
@@ -1275,12 +1550,21 @@ def run_vimo_analysis():
     os.makedirs(out_dir, exist_ok=True)
     print("[INFO] Building charts...")
     charts = build_charts_vimo(out_dir, raw)
-    bank_chart = build_bank_comparison_chart(out_dir, raw)
-    if bank_chart:
-        charts["bank_comparison"] = bank_chart
+    interbank_6m_chart = build_interbank_6m_history_chart(out_dir, raw)
+    if interbank_6m_chart:
+        charts["interbank_6m_history"] = interbank_6m_chart
     interbank_chart = build_interbank_curve_chart(out_dir, raw)
     if interbank_chart:
         charts["interbank_curve"] = interbank_chart
+    gdp_structure_chart = build_stacked_area_chart(out_dir, raw, GDP_STRUCTURE_KEYS,
+                                                    "Cơ cấu GDP theo khu vực kinh tế (%)", "vimo_gdp_structure.png")
+    if gdp_structure_chart:
+        charts["gdp_structure"] = gdp_structure_chart
+    investment_structure_chart = build_stacked_area_chart(
+        out_dir, raw, INVESTMENT_STRUCTURE_KEYS,
+        "Cơ cấu vốn đầu tư thực hiện toàn xã hội theo thành phần (%)", "vimo_investment_structure.png")
+    if investment_structure_chart:
+        charts["investment_structure"] = investment_structure_chart
     print(f"  -> {len(charts)} charts")
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d")

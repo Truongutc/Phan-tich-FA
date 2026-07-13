@@ -28,6 +28,7 @@ const SOURCE_LABELS = {
     news_rss: 'RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)',
     market_table: '24hmoney.vn (bảng đa ngân hàng, tự động)',
     '24hmoney_scrape': '24hmoney.vn (chỉ số P/E-P/B, tự động)',
+    cafef_ajax: 'cafef.vn (khối ngoại HOSE, tự động)',
     manual: 'Nghiên cứu thủ công',
 };
 
@@ -62,9 +63,18 @@ function renderSynthesis(synthesis) {
     if (!synthesis) return;
     const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text || '-'; };
     set('synthesis-overview', synthesis.overview);
-    set('synthesis-economy', synthesis.economy_impact);
     set('synthesis-market', synthesis.market_impact);
     set('synthesis-watch', synthesis.watch_points);
+
+    // economy_impact giờ là list [{heading, text}] (không còn 1 chuỗi text duy nhất) — mỗi phần
+    // render thành 1 khối có tiêu đề riêng rõ ràng, để biết ngay đoạn đang nói chủ đề gì.
+    const econEl = document.getElementById('synthesis-economy');
+    if (econEl) {
+        const sections = synthesis.economy_impact;
+        econEl.innerHTML = Array.isArray(sections)
+            ? sections.map(s => `<div class="impact-block"><h5>${s.heading}</h5><p>${s.text}</p></div>`).join('')
+            : (sections || '-');
+    }
 }
 
 // Đánh giá Tổng thể — 3 câu hỏi user luôn quan tâm: đang tốt lên/xấu đi (xu hướng so kỳ trước),
@@ -117,11 +127,13 @@ function renderScorecard(scorecard) {
     const scoreColor = (s) => s > 0 ? '#10b981' : (s < 0 ? '#ef4444' : '#f59e0b');
     const scoreText = (s) => s > 0 ? '+1 Tốt' : (s < 0 ? '-1 Xấu' : '0 Trung tính');
 
+    const nGroups = Object.keys(scorecard.groups).length;
     let html = Object.entries(scorecard.groups).map(([gname, g]) => `
         <div class="vimo-score-box">
             <span class="lbl">${gname}</span>
             <span class="val" style="color:${scoreColor(g.score)}">${scoreText(g.score)}</span>
-            <div style="font-size:0.7em;color:var(--text-muted);margin-top:4px">${g.nVotes} chỉ báo</div>
+            <div style="font-size:0.7em;color:var(--text-muted);margin-top:4px">${g.nVotes} phiếu bầu</div>
+            ${g.reason ? `<div style="font-size:0.68em;color:var(--text-muted);margin-top:4px;line-height:1.3">${g.reason}</div>` : ''}
         </div>
     `).join('');
 
@@ -129,7 +141,7 @@ function renderScorecard(scorecard) {
     html += `
         <div class="vimo-score-box" style="border:2px solid ${totalColor}">
             <span class="lbl">TỔNG SCORECARD</span>
-            <span class="val" style="color:${totalColor}">${scorecard.total > 0 ? '+' : ''}${scorecard.total} / 5</span>
+            <span class="val" style="color:${totalColor}">${scorecard.total > 0 ? '+' : ''}${scorecard.total} / ${nGroups}</span>
         </div>
     `;
     grid.innerHTML = html;
@@ -163,6 +175,22 @@ function renderValuation(val) {
     labelEl.textContent = val.valuation_label || '-';
     labelEl.style.color = val.valuation_label === 'Rẻ/Hấp dẫn' ? '#10b981'
         : val.valuation_label === 'Đắt/Kém hấp dẫn' ? '#ef4444' : '#f59e0b';
+
+    // Bù đắp rủi ro cổ phiếu so với gửi tiết kiệm/TPCP (user 2026-07-13: P/E-P/B suông không đủ,
+    // cần biết có bù được rủi ro đầu tư cổ phiếu so với kênh an toàn hơn hay không).
+    const rc = val.risk_compensation;
+    const banner = document.getElementById('risk-comp-banner');
+    if (banner && rc) {
+        banner.style.display = 'block';
+        const color = rc.color === 'good' ? '#10b981' : (rc.color === 'bad' ? '#ef4444' : '#f59e0b');
+        banner.style.borderLeftColor = color;
+        banner.style.background = color + '15';
+        document.getElementById('risk-comp-label').textContent = `⚖️ Bù đắp rủi ro cổ phiếu: ${rc.label}`;
+        document.getElementById('risk-comp-label').style.color = color;
+        document.getElementById('risk-comp-text').textContent = rc.text;
+    } else if (banner) {
+        banner.style.display = 'none';
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -230,9 +258,77 @@ function renderIndicatorGroups(indicators) {
 
         if (grp === 'monetary') {
             renderInterbankCurveChart(grid, indicators);
-            renderBankComparisonChart(grid, indicators);
+            renderInterbank6mHistoryChart(grid, indicators);
+        }
+        if (grp === 'growth') {
+            renderStackedAreaChart(grid, indicators, {
+                title: '🗺️ Cơ cấu GDP theo khu vực kinh tế (%)',
+                keys: [
+                    ['gdp_share_agri', 'Nông-Lâm-Thủy sản', '#10b981'],
+                    ['gdp_share_industry', 'Công nghiệp-Xây dựng', '#3b82f6'],
+                    ['gdp_share_services', 'Dịch vụ', '#f59e0b'],
+                    ['gdp_share_tax', 'Thuế sản phẩm (ròng)', '#a78bfa'],
+                ],
+                canvasId: 'chart-gdp-structure',
+                note: 'Nguồn: nso.gov.vn (Thông cáo báo chí KT-XH quý, tự động). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm), không phải chuỗi quý độc lập.',
+            });
+        }
+        if (grp === 'trade') {
+            renderStackedAreaChart(grid, indicators, {
+                title: '🗺️ Cơ cấu vốn đầu tư thực hiện toàn xã hội theo thành phần (%)',
+                keys: [
+                    ['investment_share_state', 'Nhà nước', '#3b82f6'],
+                    ['investment_share_private', 'Ngoài Nhà nước (tư nhân)', '#10b981'],
+                    ['investment_share_fdi', 'FDI', '#f59e0b'],
+                ],
+                canvasId: 'chart-investment-structure',
+                note: 'Nguồn: nso.gov.vn (Thông cáo báo chí KT-XH quý, tự động). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm), không phải chuỗi quý độc lập.',
+            });
         }
     });
+}
+
+// Biểu đồ miền (stacked area) DÙNG CHUNG cho cơ cấu GDP theo khu vực VÀ cơ cấu vốn đầu tư theo
+// thành phần (user 2026-07-13) — mỗi kỳ báo cáo là 1 điểm trên trục X, các thành phần % cộng lại
+// ~100%. Vẽ được ngay cả khi mới có 1 điểm (sẽ dài dần mỗi lần Action chạy, giống các chart khác).
+function renderStackedAreaChart(grid, indicators, { title, keys, canvasId, note }) {
+    const seriesByKey = keys.map(([key, label, color]) => [
+        label, color, ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
+    ]);
+    const allPeriods = [...new Set(seriesByKey.flatMap(([, , s]) => s.map(p => p.period)))].sort();
+    if (!allPeriods.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">${title}</span></div>
+        <div class="ind-chart" style="height:260px"><canvas id="${canvasId}"></canvas></div>
+        <div class="ind-note">${note}</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector(`#${canvasId}`);
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: seriesByKey.map(([label, color, s]) => {
+                const byPeriod = Object.fromEntries(s.map(p => [p.period, p.value]));
+                return {
+                    label, data: allPeriods.map(p => byPeriod[p] ?? null),
+                    borderColor: color, backgroundColor: color + '55', fill: true,
+                    tension: 0.15, pointRadius: 2, spanGaps: true,
+                };
+            }),
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
+            scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, stacked: true, min: 0, max: 100 } },
+        },
+    });
+    chartInstances.push(chart);
 }
 
 // Đường cong lãi suất liên ngân hàng VNIBOR theo 7 kỳ hạn — khớp INTERBANK_TENOR_KEYS trong
@@ -281,48 +377,53 @@ function renderInterbankCurveChart(grid, indicators) {
     chartInstances.push(chart);
 }
 
-// So sánh lãi suất huy động 12 tháng theo ngân hàng đại diện — CHART RIÊNG (cột so sánh nhiều
-// ngân hàng cùng thời điểm), khác với chart đường thời gian của renderIndicatorGroups() ở trên.
-// Khớp BANK_DEPOSIT_RATE_KEYS trong template_vimo.py (build_bank_comparison_chart()).
-const BANK_DEPOSIT_RATE_KEYS = [
-    ['deposit_rate_12m_vcb', 'VCB (lớn)'],
-    ['deposit_rate_12m_ctg', 'VietinBank (lớn)'],
-    ['deposit_rate_12m_nab', 'NamABank (nhỏ)'],
+// Lãi suất liên ngân hàng — O/N, 1 tháng, 6 tháng THEO THỜI GIAN, cùng 1 chart đường nhiều dòng
+// (không giới hạn số điểm tối thiểu như renderIndicatorGroups() ở trên) để càng nhiều Action chạy
+// càng tích lũy được chuỗi dài, thay cho chart so sánh ngân hàng cũ (đã gỡ bỏ theo yêu cầu user).
+// Theo yêu cầu user (2026-07-13): thêm O/N và 1 tháng vào chung biểu đồ 6 tháng để so sánh nhiều
+// kỳ hạn trên cùng 1 trục thời gian (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn).
+const INTERBANK_HISTORY_TENORS = [
+    ['interbank_rate_on', 'O/N', '#f59e0b'],
+    ['interbank_rate_1m', '1 Tháng', '#a78bfa'],
+    ['interbank_rate_6m', '6 Tháng', '#3b82f6'],
 ];
 
-function renderBankComparisonChart(grid, indicators) {
-    const labels = [];
-    const values = [];
-    BANK_DEPOSIT_RATE_KEYS.forEach(([key, bankLabel]) => {
-        const series = (indicators[key] || {}).series || [];
-        if (series.length) {
-            labels.push(bankLabel);
-            values.push(series[series.length - 1].value);
-        }
-    });
-    if (!values.length) return;
+function renderInterbank6mHistoryChart(grid, indicators) {
+    // Hợp nhất TOÀN BỘ period của cả 3 kỳ hạn thành 1 trục thời gian chung — các kỳ hạn được cào
+    // cùng 1 lần fetch_sbv_interest_rates() mỗi Action nên thường trùng period, nhưng hợp nhất
+    // (thay vì chỉ lấy period của 1 kỳ hạn) để không mất điểm nếu có kỳ hạn nào lệch lịch sử.
+    const seriesByTenor = INTERBANK_HISTORY_TENORS.map(([key, tenorLabel, color]) => [
+        tenorLabel, color,
+        ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
+    ]);
+    const allPeriods = [...new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period)))].sort();
+    if (!allPeriods.length) return;
 
     const card = document.createElement('div');
     card.className = 'vimo-indicator-card';
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
-        <div class="ind-header"><span class="ind-name">📊 So sánh lãi suất huy động 12 tháng theo ngân hàng</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="chart-bank-comparison"></canvas></div>
-        <div class="ind-note">Đại diện nhóm lớn: VCB, VietinBank. Nhóm nhỏ: NamABank. Chưa có đại diện nhóm vừa (Techcombank/MBBank không có nguồn scrape ổn định — xem ghi chú từng chỉ báo).</div>
+        <div class="ind-header"><span class="ind-name">📈 Lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng theo thời gian</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="chart-interbank-6m-history"></canvas></div>
+        <div class="ind-note">Nguồn: sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).</div>
     `;
     grid.appendChild(card);
 
-    const ctx = card.querySelector('#chart-bank-comparison');
+    const ctx = card.querySelector('#chart-interbank-6m-history');
     const chart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels,
-            datasets: [{
-                data: values,
-                backgroundColor: labels.map(l => l.includes('nhỏ') ? '#f59e0b' : '#3b82f6'),
-            }],
+            labels: allPeriods,
+            datasets: seriesByTenor.map(([tenorLabel, color, s]) => {
+                const byPeriod = Object.fromEntries(s.map(p => [p.period, p.value]));
+                return {
+                    label: tenorLabel, data: allPeriods.map(p => byPeriod[p] ?? null),
+                    borderColor: color, backgroundColor: color + '15', fill: false,
+                    tension: 0.25, pointRadius: 3, spanGaps: true,
+                };
+            }),
         },
-        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: true, labels: { boxWidth: 12 } } } },
     });
     chartInstances.push(chart);
 }

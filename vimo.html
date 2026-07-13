@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIC FA — Phân Tích Vĩ Mô</title>
-    <meta name="description" content="Phân tích Vĩ mô Kinh tế Việt Nam — Scorecard 5 nhóm chỉ số & Ma trận Quyết định Phân bổ Vốn">
+    <meta name="description" content="Phân tích Vĩ mô Kinh tế Việt Nam — Scorecard 6 nhóm chỉ số & Ma trận Quyết định Phân bổ Vốn">
 
     <link rel="icon" type="image/png" href="app_icon.png">
     <link rel="shortcut icon" type="image/png" href="app_icon.png">
@@ -77,6 +77,9 @@
         .vimo-synthesis-section { margin-top: 16px; }
         .vimo-synthesis-section h4 { font-size: 0.95em; color: #60a5fa; margin-bottom: 6px; }
         .vimo-synthesis-text { font-size: 0.9em; line-height: 1.7; color: var(--text-main, #f3f4f6); white-space: pre-line; }
+        .vimo-synthesis-text .impact-block { margin-bottom: 14px; }
+        .vimo-synthesis-text .impact-block h5 { font-size: 1em; color: #93c5fd; margin: 0 0 4px; font-weight: 700; }
+        .vimo-synthesis-text .impact-block p { margin: 0; }
     </style>
 </head>
 <body>
@@ -142,7 +145,7 @@
 
         <!-- Scorecard tổng hợp -->
         <div class="card val-snapshot-card margin-top-20">
-            <h3 class="border-blue">📊 Scorecard Vĩ Mô (5 nhóm chỉ số)</h3>
+            <h3 class="border-blue">📊 Scorecard Vĩ Mô (6 nhóm chỉ số)</h3>
             <div class="vimo-score-grid" id="scorecard-grid"></div>
             <div class="vimo-decision-banner" id="decision-banner" style="display:none">
                 <div class="decision-label" id="decision-label"></div>
@@ -159,7 +162,7 @@
             </div>
             <div class="vimo-synthesis-section">
                 <h4>🇻🇳 Tác động tới kinh tế Việt Nam</h4>
-                <p id="synthesis-economy" class="vimo-synthesis-text"></p>
+                <div id="synthesis-economy" class="vimo-synthesis-text"></div>
             </div>
             <div class="vimo-synthesis-section">
                 <h4>📈 Tác động tới thị trường chứng khoán</h4>
@@ -195,6 +198,10 @@
                     <span class="lbl">Đánh giá định giá</span>
                     <span class="val" id="val-label">-</span>
                 </div>
+            </div>
+            <div id="risk-comp-banner" class="vimo-decision-banner" style="display:none; margin-top:14px;">
+                <div id="risk-comp-label" class="decision-label"></div>
+                <div id="risk-comp-text" style="font-size:0.9em; line-height:1.6;"></div>
             </div>
         </div>
 

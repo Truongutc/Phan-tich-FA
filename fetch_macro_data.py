@@ -103,6 +103,30 @@ def fetch_usdvnd_current():
         return None, None
 
 
+def fetch_fii_net_flow():
+    """cafef.vn — endpoint Ajax nội bộ (KHÔNG public API chính thức, nhưng public/không cần key,
+    xác nhận hoạt động qua test thủ công 2026-07-13) trả khối lượng/giá trị mua-bán của KHỐI NGOẠI
+    trên sàn HOSE. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (không nhất thiết đúng ngày truyền
+    vào tham số Date — vd cuối tuần/nghỉ lễ tự lùi về phiên gần nhất). Trả (net_ty_vnd, date_iso,
+    source_url) hoặc (None, None, None) nếu lỗi. net > 0 = mua ròng, net < 0 = bán ròng."""
+    today_str = datetime.date.today().strftime("%d/%m/%Y")
+    url = f"https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date={today_str}"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=15)
+        r.raise_for_status()
+        data = r.json().get("Data", {})
+        diff_value = data.get("DiffValue")
+        date_str = data.get("Date")
+        if diff_value is None or not date_str:
+            return None, None, None
+        net_ty_vnd = round(diff_value / 1e9, 2)
+        d, m, y = date_str.split("/")
+        return net_ty_vnd, f"{y}-{m}-{d}", url
+    except Exception as e:
+        print(f"  [WARN] FII (khối ngoại HOSE) thất bại: {e}")
+        return None, None, None
+
+
 def fetch_vnindex_pe_pb_24hmoney():
     """24hmoney.vn/indices/vn-index — trang Nuxt SPA, nhưng dữ liệu P/E và P/B (cấp CHỈ SỐ, không
     phải từng mã) đã được server render sẵn dạng JS object literal trong <script> window.__NUXT__,
@@ -215,6 +239,91 @@ def fetch_nso_latest_report():
     except Exception as e:
         print(f"  [WARN] NSO scrape thất bại: {e}")
         return None
+
+
+def _nso_cumulative_period(phrase, fallback_year=None):
+    """Chuyển cụm từ mô tả kỳ báo cáo NSO (vd 'sáu tháng đầu năm 2026', 'quý I năm 2026', 'chín
+    tháng đầu năm 2026') thành nhãn kỳ chuẩn 'YYYY-H1'/'YYYY-Q1'/'YYYY-9M'/'YYYY-FY' — khớp quy
+    ước period lũy kế đã dùng cho budget_revenue_growth/public_investment_growth trong dự án.
+    Trả None nếu không xác định được năm."""
+    year_m = re.search(r"(20\d{2})", phrase)
+    year = year_m.group(1) if year_m else fallback_year
+    if not year:
+        return None
+    p = phrase.lower()
+    if "sáu tháng" in p or "6 tháng" in p:
+        return f"{year}-H1"
+    if "chín tháng" in p or "9 tháng" in p:
+        return f"{year}-9M"
+    if "quý i" in p or "quý 1" in p:
+        return f"{year}-Q1"
+    if "cả năm" in p:
+        return f"{year}-FY"
+    return f"{year}-FY"  # không khớp mẫu nào đã biết -> coi là lũy kế cả năm (an toàn hơn báo lỗi)
+
+
+def fetch_nso_gdp_structure_report():
+    """Tự động tìm bài 'Thông cáo báo chí về tình hình kinh tế-xã hội' MỚI NHẤT (tiếng Việt) trên
+    nso.gov.vn/du-lieu-va-so-lieu-thong-ke/ (index Việt — KHÁC index tiếng Anh đã dùng ở
+    fetch_nso_latest_report()), rồi trích 3 nhóm câu chữ THẬT (không suy diễn):
+    1) Cơ cấu GDP theo khu vực kinh tế (nông-lâm-thủy sản / công nghiệp-xây dựng / dịch vụ / thuế
+       sản phẩm), tính theo % — dùng vẽ biểu đồ miền cơ cấu GDP theo khu vực.
+    2) Cơ cấu vốn đầu tư thực hiện toàn xã hội theo thành phần (Nhà nước / ngoài Nhà nước / FDI),
+       tính theo % — dùng vẽ biểu đồ miền cơ cấu đầu tư.
+    3) Tổng vốn FDI ĐĂNG KÝ (khác fdi_disbursed đã có — đó là FDI GIẢI NGÂN).
+    LƯU Ý: đây là số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm), KHÔNG phải chuỗi quý
+    độc lập — xem _nso_cumulative_period(). Trả dict hoặc {} nếu thất bại/chưa có bài mới."""
+    try:
+        r = requests.get("https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/",
+                          headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        links = re.findall(
+            r'href="(https://www\.nso\.gov\.vn/du-lieu-va-so-lieu-thong-ke/\d{4}/\d{2}/'
+            r'[^"]*thong-cao-bao-chi[^"]*)"', r.text)
+        if not links:
+            print("  [INFO] NSO (VN): chưa tìm thấy bài thông cáo báo chí mới trên trang danh sách.")
+            return {}
+        latest_url = links[0]
+
+        r2 = requests.get(latest_url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r2.raise_for_status()
+        text = re.sub(r"<[^>]+>", " ", r2.text)
+        text = re.sub(r"&#\d+;", " ", text)
+        text = re.sub(r"\s+", " ", text)
+
+        out = {"source_url": latest_url}
+
+        m = re.search(
+            r"Về cơ cấu nền kinh tế ([^,]+?), khu vực nông, lâm nghiệp và thủy sản chiếm tỷ trọng "
+            r"([\d,]+)%; khu vực công nghiệp và xây dựng chiếm ([\d,]+)%; khu vực dịch vụ chiếm "
+            r"([\d,]+)%; thuế sản phẩm trừ trợ cấp sản phẩm chiếm ([\d,]+)%", text)
+        if m:
+            period = _nso_cumulative_period(m.group(1))
+            if period:
+                out["period"] = period
+                out["gdp_share_agri"] = float(m.group(2).replace(",", "."))
+                out["gdp_share_industry"] = float(m.group(3).replace(",", "."))
+                out["gdp_share_services"] = float(m.group(4).replace(",", "."))
+                out["gdp_share_tax"] = float(m.group(5).replace(",", "."))
+
+        m2 = re.search(
+            r"Vốn khu vực Nhà nước đạt [\d.,]+ nghìn tỷ đồng, chiếm ([\d,]+)% tổng vốn.*?"
+            r"khu vực ngoài Nhà nước đạt [\d.,]+ nghìn tỷ đồng, chiếm ([\d,]+)%.*?"
+            r"khu vực có vốn đầu tư trực tiếp nước ngoài đạt [\d.,]+ nghìn tỷ đồng, chiếm ([\d,]+)%", text)
+        if m2:
+            out["investment_share_state"] = float(m2.group(1).replace(",", "."))
+            out["investment_share_private"] = float(m2.group(2).replace(",", "."))
+            out["investment_share_fdi"] = float(m2.group(3).replace(",", "."))
+
+        m3 = re.search(
+            r"Tổng vốn đầu tư nước ngoài đăng ký vào Việt Nam.*?đạt ([\d,]+) tỷ USD, tăng ([\d,]+)%", text)
+        if m3:
+            out["fdi_registered_usd_bn"] = float(m3.group(1).replace(",", "."))
+
+        return out
+    except Exception as e:
+        print(f"  [WARN] NSO (VN) cơ cấu GDP/đầu tư thất bại: {e}")
+        return {}
 
 
 def fetch_nso_chart_embed(chart_slug):
@@ -338,6 +447,34 @@ def fetch_sbv_omo_rate():
     except Exception as e:
         print(f"  [WARN] SBV OMO thất bại: {e}")
         return {}
+
+
+def fetch_sbv_tin_phieu_days_since():
+    """sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn — trang THÔNG BÁO BÁN TÍN
+    PHIẾU NHNN (kênh HÚT thanh khoản, ĐỐI LẬP với OMO ở fetch_sbv_omo_rate() vốn là kênh BƠM) —
+    user (2026-07-13) muốn hệ thống tự nhận biết khi NHNN chuyển sang chế độ hút bớt thanh khoản
+    qua tín phiếu, để đánh giá 2 CHIỀU (bơm/hút) thay vì chỉ nhìn 1 chiều OMO. Số liệu thật (đã
+    kiểm tra thủ công 2026-07-13): lần thông báo bán tín phiếu gần nhất là 30/10/2025 — nghĩa là
+    SUỐT một thời gian dài KHÔNG có hoạt động hút thanh khoản, chỉ có bơm qua OMO. Trả
+    (days_since_last, last_date_iso, source_url) hoặc (None, None, None) nếu lỗi/không tìm thấy
+    ngày nào. KHÔNG trích được khối lượng/lãi suất tín phiếu đáng tin cậy từ trang này (thông báo
+    chào bán khác thông báo kết quả trúng thầu) — chỉ theo dõi NGÀY để biết đang ở chế độ nào."""
+    url = "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        text = re.sub(r"<[^>]+>", " ", r.text)
+        text = re.sub(r"\s+", " ", text)
+        dates = re.findall(r"(\d{2}/\d{2}/20\d{2}) \d{2}:\d{2}:\d{2}", text)
+        if not dates:
+            return None, None, None
+        parsed = [datetime.datetime.strptime(d, "%d/%m/%Y") for d in dates]
+        latest = max(parsed)
+        days_since = (datetime.datetime.now() - latest).days
+        return days_since, latest.strftime("%Y-%m-%d"), url
+    except Exception as e:
+        print(f"  [WARN] SBV tín phiếu (kênh hút thanh khoản) thất bại: {e}")
+        return None, None, None
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -596,6 +733,12 @@ def update_vimo_raw():
         _append_point(raw, "usdvnd", period_now, v, src)
         print(f"  -> {period_now}: {v}")
 
+    print("[FII — khối ngoại mua/bán ròng HOSE]")
+    net_ty_vnd, date_iso, src = fetch_fii_net_flow()
+    if net_ty_vnd is not None:
+        _append_point(raw, "fii_net_flow_hose", date_iso, net_ty_vnd, src)
+        print(f"  -> {date_iso}: {net_ty_vnd:+.2f} tỷ VND ({'mua ròng' if net_ty_vnd > 0 else 'bán ròng'})")
+
     print("[VN-Index P/E & P/B]")
     pe, pb, src = fetch_vnindex_pe_pb_24hmoney()
     if not pe:  # 24hmoney lỗi/đổi cấu trúc -> fallback P/E riêng qua worldperatio.com (không có P/B)
@@ -659,6 +802,24 @@ def update_vimo_raw():
         if "gdp_growth" not in nso and "unemployment_rate" not in nso:
             print("  [WARN] Fetch được bài báo cáo nhưng không trích được số liệu nào — có thể mẫu câu đã đổi.")
 
+    print("[NSO (VN) — cơ cấu GDP theo khu vực & cơ cấu vốn đầu tư theo thành phần (lũy kế)]")
+    gdp_struct = fetch_nso_gdp_structure_report()
+    if gdp_struct.get("period"):
+        period = gdp_struct["period"]
+        src = gdp_struct["source_url"]
+        for key in ["gdp_share_agri", "gdp_share_industry", "gdp_share_services", "gdp_share_tax",
+                    "investment_share_state", "investment_share_private", "investment_share_fdi"]:
+            if key in gdp_struct:
+                _append_point(raw, key, period, gdp_struct[key], src)
+        if "fdi_registered_usd_bn" in gdp_struct:
+            _append_point(raw, "fdi_registered_usd_bn", period, gdp_struct["fdi_registered_usd_bn"], src)
+        print(f"  -> {period}: cơ cấu GDP {gdp_struct.get('gdp_share_agri')}/{gdp_struct.get('gdp_share_industry')}/"
+              f"{gdp_struct.get('gdp_share_services')}/{gdp_struct.get('gdp_share_tax')}%, "
+              f"cơ cấu đầu tư {gdp_struct.get('investment_share_state')}/{gdp_struct.get('investment_share_private')}/"
+              f"{gdp_struct.get('investment_share_fdi')}%, FDI đăng ký {gdp_struct.get('fdi_registered_usd_bn')} tỷ USD")
+    else:
+        print("  [INFO] Chưa trích được cơ cấu GDP/đầu tư kỳ này — giữ nguyên seed cũ.")
+
     print("[NSO — biểu đồ chuyên đề CPI (nso.gov.vn/cpi-vi/, chi tiết THEO THÁNG)]")
     pts = fetch_nso_chart_embed("cpi")
     if pts:
@@ -713,6 +874,12 @@ def update_vimo_raw():
         _append_point(raw, key, period_now,
                        value, "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F")
         print(f"  -> {key} {period_now}: {value}")
+
+    print("[SBV — tín phiếu NHNN (hút thanh khoản thị trường 2, đối lập OMO — 2 chiều bơm/hút)]")
+    days_since, last_date, src = fetch_sbv_tin_phieu_days_since()
+    if days_since is not None:
+        _append_point(raw, "tin_phieu_days_since_issuance", period_now, days_since, src)
+        print(f"  -> {period_now}: {days_since} ngày kể từ lần chào bán tín phiếu gần nhất ({last_date})")
 
     print("[Ngân hàng — lãi suất huy động 12 tháng: VCB / VietinBank / NamABank (tích lũy theo lần chạy)]")
     v = fetch_vcb_deposit_rate_12m()

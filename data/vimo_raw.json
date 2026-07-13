@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-13 10:57",
+    "last_auto_update": "2026-07-13 18:33",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -13,9 +13,9 @@
       },
       {
         "date": "2026-07-13",
-        "total": 2,
+        "total": 0,
         "valuation_label": "Hợp lý",
-        "decision_label": "Duy trì, chọn lọc"
+        "decision_label": "Phòng thủ, giữ tiền mặt"
       }
     ]
   },
@@ -329,7 +329,7 @@
       },
       {
         "period": "2026-07",
-        "value": 7.8,
+        "value": 7.18,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -345,7 +345,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 4.68,
+        "value": 4.28,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -361,7 +361,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 5.23,
+        "value": 4.92,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -377,7 +377,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 6.04,
+        "value": 5.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -393,7 +393,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 7.43,
+        "value": 6.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -409,7 +409,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 8.64,
+        "value": 7.2,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -441,7 +441,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 4.5,
+        "value": 0.0,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
       }
     ],
@@ -1368,5 +1368,165 @@
     ],
     "note": "Auto-scrape 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} nhúng trong window.__NUXT__) — cùng lần fetch với vnindex_pe. Trước đây P/B bị loại khỏi phạm vi vì không tìm được nguồn API cấp CHỈ SỐ (chỉ có API cấp từng mã) — 24hmoney cung cấp trực tiếp P/B cấp chỉ số nên bổ sung lại theo yêu cầu user.",
     "impact": "P/B cho biết thị giá đang cao/thấp hơn bao nhiêu lần so với giá trị sổ sách của toàn bộ doanh nghiệp niêm yết — hữu ích để đối chiếu chéo với P/E (vd P/E thấp nhưng P/B cao có thể do ROE đang ở đỉnh chu kỳ, không hẳn là rẻ bền vững)."
+  },
+  "gdp_share_agri": {
+    "group": "growth",
+    "label": "Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 10.61,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO (fetch_nso_gdp_structure_report() trong fetch_macro_data.py). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm) — KHÔNG phải chuỗi quý độc lập cộng dồn được. Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm — đây là chỉ số CƠ CẤU, không có hướng 'tốt/xấu' cố định.",
+    "impact": "Tỷ trọng khu vực Nông-Lâm-Thủy sản trong GDP phản ánh mức độ nền kinh tế còn phụ thuộc vào sản xuất nông nghiệp — tỷ trọng giảm dần theo thời gian là xu hướng tự nhiên của quá trình công nghiệp hóa, không nhất thiết là tín hiệu xấu."
+  },
+  "gdp_share_industry": {
+    "group": "growth",
+    "label": "Cơ cấu GDP — Công nghiệp & Xây dựng",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 37.66,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
+    "impact": "Tỷ trọng khu vực Công nghiệp-Xây dựng cao cho thấy nền kinh tế thiên về sản xuất/xuất khẩu — nhóm cổ phiếu công nghiệp, khu công nghiệp, vật liệu xây dựng hưởng lợi trực tiếp khi tỷ trọng này tăng."
+  },
+  "gdp_share_services": {
+    "group": "growth",
+    "label": "Cơ cấu GDP — Dịch vụ",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 43.52,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
+    "impact": "Tỷ trọng khu vực Dịch vụ tăng dần thường đi kèm thu nhập bình quân đầu người tăng và tiêu dùng nội địa mở rộng — có lợi cho nhóm bán lẻ, ngân hàng, du lịch, bất động sản thương mại."
+  },
+  "gdp_share_tax": {
+    "group": "growth",
+    "label": "Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 8.21,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo. Tham chiếu hiển thị (thành phần thứ 4 của biểu đồ miền cơ cấu GDP, cộng đủ 100% cùng 3 khu vực kinh tế), KHÔNG tính vào Scorecard 6 nhóm.",
+    "impact": "Cấu phần kế toán (thuế sản phẩm trừ trợ cấp) để tổng cơ cấu GDP theo giá hiện hành cộng đủ 100% — không phản ánh trực tiếp 1 ngành/khu vực kinh tế cụ thể nào."
+  },
+  "investment_share_state": {
+    "group": "trade",
+    "label": "Cơ cấu vốn đầu tư — Khu vực Nhà nước",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 28.1,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Vốn đầu tư thực hiện toàn xã hội...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo. Tham chiếu hiển thị (biểu đồ miền cơ cấu đầu tư theo thành phần), KHÔNG tính vào Scorecard 6 nhóm.",
+    "impact": "Tỷ trọng đầu tư công tăng phản ánh mức độ Chính phủ đang dùng đầu tư công làm động lực kích thích tăng trưởng — có lợi trực tiếp cho nhóm xây dựng hạ tầng, vật liệu xây dựng khi tỷ trọng này tăng và giải ngân thực tế tốt."
+  },
+  "investment_share_private": {
+    "group": "trade",
+    "label": "Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 53.8,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Vốn đầu tư thực hiện toàn xã hội...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo. Tham chiếu hiển thị (biểu đồ miền cơ cấu đầu tư theo thành phần), KHÔNG tính vào Scorecard 6 nhóm.",
+    "impact": "Tỷ trọng đầu tư tư nhân cao và tăng dần là tín hiệu tích cực về niềm tin kinh doanh trong nước — khác với đầu tư công (do ngân sách quyết định), khu vực này phản ánh kỳ vọng thực sự của doanh nghiệp/hộ gia đình vào triển vọng kinh tế."
+  },
+  "investment_share_fdi": {
+    "group": "trade",
+    "label": "Cơ cấu vốn đầu tư — Khu vực FDI",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 18.1,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ câu 'Vốn đầu tư thực hiện toàn xã hội...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO — đây là vốn FDI ĐÃ GIẢI NGÂN tính theo % tổng vốn đầu tư toàn xã hội, KHÁC với chỉ báo fdi_disbursed (giá trị tuyệt đối tỷ USD, lũy kế riêng) và fdi_registered_usd_bn (vốn ĐĂNG KÝ, chưa giải ngân) — 3 góc nhìn bổ sung cho nhau. Tham chiếu hiển thị, KHÔNG tính vào Scorecard 6 nhóm.",
+    "impact": "Tỷ trọng FDI trong tổng vốn đầu tư phản ánh mức độ nền kinh tế phụ thuộc vào dòng vốn nước ngoài để tăng trưởng — tỷ trọng cao có lợi cho việc chuyển giao công nghệ/xuất khẩu nhưng cũng nhạy cảm hơn với rủi ro dòng vốn ngoại đảo chiều (thuế quan, cạnh tranh thu hút FDI khu vực)."
+  },
+  "fdi_registered_usd_bn": {
+    "group": "trade",
+    "label": "FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-H1",
+        "value": 34.65,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Tự động trích từ Thông cáo báo chí KT-XH quý mới nhất của NSO — vốn FDI ĐĂNG KÝ (cam kết, CHƯA giải ngân), gồm cấp phép mới + điều chỉnh tăng vốn + góp vốn mua cổ phần. Số liệu LŨY KẾ theo kỳ báo cáo. Khác fdi_disbursed (vốn đã thực sự giải ngân) — vốn đăng ký là chỉ báo SỚM (leading) cho xu hướng FDI giải ngân các kỳ tới.",
+    "impact": "FDI đăng ký tăng mạnh là tín hiệu SỚM và tích cực về niềm tin của nhà đầu tư nước ngoài vào triển vọng kinh tế Việt Nam — thường đi trước xu hướng FDI giải ngân thực tế vài quý đến vài năm (thời gian triển khai dự án)."
+  },
+  "fii_net_flow_hose": {
+    "group": "trade",
+    "label": "Khối ngoại mua/bán ròng HOSE (theo phiên)",
+    "unit": "tỷ VND",
+    "good_direction": "higher",
+    "auto_source": "cafef_ajax",
+    "series": [
+      {
+        "period": "2026-07-10",
+        "value": 1369.1,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=13/07/2026"
+      }
+    ],
+    "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
+    "impact": "Khối ngoại mua ròng liên tục là tín hiệu tích cực về niềm tin nhà đầu tư nước ngoài vào thị trường Việt Nam — bán ròng kéo dài (đặc biệt khi đi kèm tỷ giá USD/VND chịu áp lực) là dấu hiệu dòng vốn ngoại đang rút ra, có thể làm giảm thanh khoản và định giá chung của thị trường."
+  },
+  "tin_phieu_days_since_issuance": {
+    "group": "monetary",
+    "label": "Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản)",
+    "unit": "ngày",
+    "good_direction": "lower",
+    "auto_source": "sbv_table",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 256,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+      }
+    ],
+    "note": "Auto-scrape sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn — kênh HÚT thanh khoản, ĐỐI LẬP với OMO (omo_rate_7d, kênh BƠM). Giá trị CÀNG THẤP nghĩa là NHNN vừa mới hút thanh khoản gần đây (thị trường có thể đang dư thừa vốn); giá trị CÀNG CAO nghĩa là đã lâu không hút (nhất quán với môi trường thanh khoản CĂNG THẲNG hiện tại — không có nhu cầu hút bớt). Đây KHÔNG phải chuỗi khối lượng/lãi suất tín phiếu (trang chỉ có thông báo chào bán, không phải kết quả trúng thầu đáng tin cậy để tự động trích số).",
+    "impact": "Đây là mặt THỨ HAI của bức tranh thanh khoản, đối lập với OMO: OMO đo lường BƠM tiền, chỉ báo này đo lường HÚT tiền. Nếu số ngày này đang tăng liên tục (không có tín phiếu mới) trong khi lãi suất huy động/liên ngân hàng vẫn cao, đó là bằng chứng thanh khoản đang CĂNG THẲNG THỰC SỰ (NHNN không cần/không thể hút bớt vì hệ thống không dư vốn) — nhất quán 2 chiều với các chỉ báo lãi suất khác, không mâu thuẫn."
   }
 }
