@@ -103,7 +103,33 @@ def fetch_usdvnd_current():
         return None, None
 
 
+def fetch_vnindex_pe_pb_24hmoney():
+    """24hmoney.vn/indices/vn-index — trang Nuxt SPA, nhưng dữ liệu P/E và P/B (cấp CHỈ SỐ, không
+    phải từng mã) đã được server render sẵn dạng JS object literal trong <script> window.__NUXT__,
+    y hệt cách vietnambiz nhúng __NEXT_DATA__ đang dùng ở các chỉ báo khác trong file này — không
+    cần render JS. Cụ thể dạng: keyStatistic:{pb:2.08,pe:13.53,avg_volume:...}. Trả (pe, pb, url)
+    hoặc (None, None, None) nếu lỗi/đổi cấu trúc."""
+    url = "https://24hmoney.vn/indices/vn-index"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m = re.search(r"keyStatistic:\{pb:([\d.]+),pe:([\d.]+)", r.text)
+        if m:
+            return float(m.group(2)), float(m.group(1)), url
+        print("  [WARN] 24hmoney vn-index: không tìm thấy 'keyStatistic{pb,pe}' — trang có thể đã đổi cấu trúc.")
+        return None, None, None
+    except Exception as e:
+        print(f"  [WARN] 24hmoney VN-Index P/E-P/B fetch thất bại: {e}")
+        return None, None, None
+
+
 def fetch_vnindex_pe_current():
+    # Nguồn chính: 24hmoney.vn (cùng nguồn với bảng lãi suất huy động đã dùng trong file này, cũng
+    # cho luôn P/B — xem fetch_vnindex_pe_pb_24hmoney()). worldperatio.com giữ làm fallback nếu
+    # 24hmoney lỗi/đổi cấu trúc (theo đúng pattern fallback đang dùng cho fetch_rf_vietnam()).
+    pe, pb, src = fetch_vnindex_pe_pb_24hmoney()
+    if pe:
+        return pe, src
     try:
         r = requests.get("https://worldperatio.com/area/vietnam/", headers={"User-Agent": UA}, timeout=20)
         r.raise_for_status()
@@ -118,6 +144,13 @@ def fetch_vnindex_pe_current():
     except Exception as e:
         print(f"  [WARN] VN-Index P/E fetch thất bại: {e}")
         return None, None
+
+
+def fetch_vnindex_pb_current():
+    pe, pb, src = fetch_vnindex_pe_pb_24hmoney()
+    if pb:
+        return pb, src
+    return None, None
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -563,11 +596,16 @@ def update_vimo_raw():
         _append_point(raw, "usdvnd", period_now, v, src)
         print(f"  -> {period_now}: {v}")
 
-    print("[VN-Index P/E]")
-    v, src = fetch_vnindex_pe_current()
-    if v:
-        _append_point(raw, "vnindex_pe", period_now, v, src)
-        print(f"  -> {period_now}: {v}")
+    print("[VN-Index P/E & P/B]")
+    pe, pb, src = fetch_vnindex_pe_pb_24hmoney()
+    if not pe:  # 24hmoney lỗi/đổi cấu trúc -> fallback P/E riêng qua worldperatio.com (không có P/B)
+        pe, src = fetch_vnindex_pe_current()
+    if pe:
+        _append_point(raw, "vnindex_pe", period_now, pe, src)
+        print(f"  -> P/E {period_now}: {pe}")
+    if pb:
+        _append_point(raw, "vnindex_pb", period_now, pb, src)
+        print(f"  -> P/B {period_now}: {pb}")
 
     print("[World Bank — China GDP growth]")
     pts = fetch_worldbank("NY.GDP.MKTP.KD.ZG", "CN", n=8)

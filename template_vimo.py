@@ -12,7 +12,12 @@ Dữ liệu THÔ nằm ở data/vimo_raw.json (được fetch_macro_data.py cậ
 toán/trình bày (trend, scorecard, ERP, ma trận quyết định, PDF, JSON dashboard), KHÔNG tự fetch
 dữ liệu thô.
 
-KHÔNG có Excel (theo yêu cầu user — chỉ Excel cho các sector template theo ticker).
+Excel lịch sử chỉ số theo thời gian: Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx (xem
+update_excel_history_vimo()) — mỗi hàng 1 chỉ báo, mỗi cột 1 kỳ báo cáo, TÁCH RIÊNG SHEET theo tần
+suất cập nhật (Theo năm/Theo quý/Theo tháng/Theo ngày/Lũy kế H1-9M-FY) để append cột mới không bao
+giờ ảnh hưởng tới vị trí ô của sheet khác hay cột cũ (an toàn cho công thức/biểu đồ user tự gắn
+vào file). Tự tích lũy qua từng lần Action chạy (KHÔNG phải Excel model định giá kiểu sector
+template theo ticker — chỉ là log lịch sử số liệu thô).
 
 Giai đoạn 1 (skeleton sơ bộ, theo chỉ đạo user "hoàn thiện khung trước, tinh chỉnh sau"): một số
 chỉ báo (PMI, lãi suất liên ngân hàng, tín dụng, M2, dự trữ ngoại hối, dòng tiền khối ngoại/margin)
@@ -35,6 +40,9 @@ import requests
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+import openpyxl
+from openpyxl.utils import get_column_letter
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -155,13 +163,24 @@ GROUP_LABELS = {
 
 # Ánh xạ 8 nhóm dữ liệu (vimo_raw.json) -> 5 nhóm Scorecard Vĩ Mô theo đúng Chương 4.1/6.1 tài
 # liệu hướng dẫn (KHÔNG trùng 1-1 với 8 nhóm dữ liệu — vd tỷ giá thuộc "monetary" trong dữ liệu
-# nhưng thuộc "Bên ngoài" trong scorecard, theo đúng cách tài liệu phân loại).
+# nhưng thuộc "Tỷ giá & Dòng vốn ngoại" trong scorecard, theo đúng cách tài liệu phân loại).
+#
+# Lịch sử thay đổi (theo phản hồi user, xem trao đổi 2026-07-13):
+# - Bỏ nhóm "Tâm lý thị trường" (trước đây chỉ có vnindex_pe, luôn 0 phiếu) — đây là tín hiệu ĐỊNH
+#   GIÁ, không phải "tâm lý" theo nghĩa phân tích kỹ thuật, và đã có chỗ riêng ở marketValuation.
+# - Tách "Bên ngoài" (8 chỉ báo khác bản chất, gộp thành 1 phiếu bầu trung bình dễ thiên kiến)
+#   thành 2 nhóm độc lập theo cơ chế tác động: (1) tỷ giá/dòng vốn ngoại, (2) thương mại/hàng hóa.
+# - Thêm deposit_rate_12m_market_avg (lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG ~38 NH qua 24hmoney,
+#   xem fetch_market_deposit_rate_12m() trong fetch_macro_data.py) vào "Lạm phát & Lãi suất" — trước
+#   đây nhóm này chỉ có cpi_yoy thực sự có phiếu (core_inflation/refinancing_rate/interbank_rate_3m
+#   hiếm khi đủ dữ liệu tính trend), nên KHÔNG phản ánh áp lực lãi suất thị trường THẬT (~6-9%,
+#   cao hơn nhiều lãi suất điều hành/liên ngân hàng ổn định thấp).
 SCORECARD_GROUPS = {
     "Tăng trưởng": ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth", "unemployment_rate"],
-    "Lạm phát & Lãi suất": ["cpi_yoy", "core_inflation", "refinancing_rate", "interbank_rate_3m"],
+    "Lạm phát & Lãi suất": ["cpi_yoy", "core_inflation", "refinancing_rate", "interbank_rate_3m", "deposit_rate_12m_market_avg"],
     "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves", "omo_rate_7d"],
-    "Bên ngoài": ["trade_balance", "export_growth", "fdi_disbursed", "usdvnd", "fed_funds_rate", "brent_oil", "dxy_proxy", "china_gdp_growth"],
-    "Tâm lý thị trường": ["vnindex_pe"],
+    "Tỷ giá & Dòng vốn ngoại": ["usdvnd", "dxy_proxy", "fed_funds_rate", "fdi_disbursed"],
+    "Thương mại & Hàng hóa": ["trade_balance", "export_growth", "brent_oil", "china_gdp_growth"],
 }
 
 
@@ -268,11 +287,14 @@ def calc_scorecard(raw, trends):
 # ĐỊNH GIÁ THỊ TRƯỜNG — ERP = E/P (từ VN-Index P/E) - Rf (Chương 5.2/6.1)
 # ══════════════════════════════════════════════════════════════════════════
 def calc_market_valuation(raw, rf):
-    # VN-Index P/B ĐÃ LOẠI KHỎI phạm vi (theo quyết định user — không phải tiêu chí chính, và
-    # không tìm được nguồn API tự động cho riêng cấp độ CHỈ SỐ, chỉ có API cấp từng công ty —
-    # xem lịch sử trao đổi/git log). Chỉ còn P/E làm cơ sở tính ERP.
+    # ERP dùng P/E (Earnings Yield - Rf) làm căn cứ chính, KHÔNG đổi công thức/nhãn định giá hiện
+    # có (tránh phình phạm vi quyết định phân bổ vốn). P/B (2026-07: nâng cấp lại — nguồn 24hmoney.
+    # vn/indices/vn-index cấp CHỈ SỐ, xem fetch_vnindex_pe_pb_24hmoney trong fetch_macro_data.py)
+    # chỉ hiển thị THÊM để đối chiếu chéo, không tính vào ERP/quyết định.
     pe_series = raw["vnindex_pe"]["series"]
     pe = pe_series[-1]["value"] if pe_series else None
+    pb_series = raw.get("vnindex_pb", {}).get("series", [])
+    pb = pb_series[-1]["value"] if pb_series else None
     erp = None
     valuation_label = "Không xác định"
     if pe and pe > 0:
@@ -285,8 +307,9 @@ def calc_market_valuation(raw, rf):
         else:
             valuation_label = "Hợp lý"
     return {
-        "pe": pe, "rf": rf, "erp": erp, "valuation_label": valuation_label,
+        "pe": pe, "pb": pb, "rf": rf, "erp": erp, "valuation_label": valuation_label,
         "pe_source": pe_series[-1]["source_url"] if pe_series else None,
+        "pb_source": pb_series[-1]["source_url"] if pb_series else None,
     }
 
 
@@ -492,7 +515,8 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
     para2 = " ".join(para2_parts)
 
     if valuation.get("erp") is not None:
-        para3 = (f"Về định giá, VN-Index đang giao dịch ở P/E {valuation['pe']:.2f}x, tương ứng ERP (lợi suất thu nhập trừ "
+        pb_clause = f", P/B {valuation['pb']:.2f}x" if valuation.get("pb") is not None else ""
+        para3 = (f"Về định giá, VN-Index đang giao dịch ở P/E {valuation['pe']:.2f}x{pb_clause}, tương ứng ERP (lợi suất thu nhập trừ "
                  f"lãi suất phi rủi ro) {valuation['erp']*100:.2f}% — mức định giá được xếp loại \"{valuation['valuation_label']}\". "
                  f"Kết hợp Scorecard vĩ mô ({scorecard_total:+d}/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là "
                  f"\"{decision_label}\": {decision_text}")
@@ -952,6 +976,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "bank_page": "Trang NH chính thức (tự động)",
                          "news_rss": "RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)",
                          "market_table": "24hmoney.vn (bảng đa ngân hàng, tự động)",
+                         "24hmoney_scrape": "24hmoney.vn (chỉ số P/E-P/B, tự động)",
                          "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
             # value_arrow = chiều số liệu THẬT (↑/↓/→), judgment_label = đánh giá tốt lên/xấu đi
@@ -1027,12 +1052,163 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
             "group": ind["group"], "label": ind["label"], "unit": ind["unit"],
             "goodDirection": ind["good_direction"], "autoSource": ind["auto_source"],
             "series": ind["series"], "trend": t, "note": ind.get("note"),
+            "impact": ind.get("impact"),
         }
     json_path = os.path.join(PROJECT_ROOT, "data", "vimo.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"  [OK] JSON: {json_path}")
     return json_path
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# EXCEL LỊCH SỬ CHỈ SỐ THEO THỜI GIAN — mỗi hàng 1 chỉ báo, mỗi cột 1 kỳ báo cáo. TÁCH RIÊNG
+# THEO SHEET theo đơn vị tần suất cập nhật (năm/quý/tháng/ngày/lũy kế H1-9M-FY) — theo đúng yêu
+# cầu user (2026-07-13): mỗi nhóm tần suất nằm ở 1 sheet riêng, để khi có kỳ mới (tháng mới, quý
+# mới...) chỉ APPEND CỘT MỚI Ở CUỐI sheet đó, không bao giờ chèn/di chuyển cột của sheet khác hay
+# cột cũ trong CHÍNH sheet đó — vị trí ô luôn ổn định qua từng lần Action chạy (an toàn nếu user
+# tự gắn công thức/biểu đồ tham chiếu ô cố định vào file). Vì mỗi sheet chỉ chứa 1 định dạng kỳ
+# báo cáo duy nhất và các kỳ luôn phát sinh theo đúng trình tự thời gian thật (Action luôn fetch
+# kỳ "hiện tại"), append-ở-cuối tự động = đúng thứ tự thời gian, KHÔNG cần sắp xếp lại cột.
+# ══════════════════════════════════════════════════════════════════════════
+_PERIOD_SHEET_PATTERNS = [
+    (re.compile(r"^\d{4}-Q[1-4]$"), "Theo_Quy"),
+    (re.compile(r"^\d{4}-\d{2}-\d{2}$"), "Theo_Ngay"),
+    (re.compile(r"^\d{4}-\d{2}$"), "Theo_Thang"),
+    (re.compile(r"^\d{4}-(H[12]|9M|FY)$"), "Luy_Ke"),
+    (re.compile(r"^\d{4}$"), "Theo_Nam"),
+]
+_SHEET_TITLES = {
+    "Theo_Nam": "Theo năm", "Theo_Quy": "Theo quý", "Theo_Thang": "Theo tháng",
+    "Theo_Ngay": "Theo ngày", "Luy_Ke": "Lũy kế (H1-9M-FY)", "Khac": "Khác",
+}
+
+
+def _classify_period_sheet(period):
+    period = str(period)
+    for pattern, sheet_name in _PERIOD_SHEET_PATTERNS:
+        if pattern.match(period):
+            return sheet_name
+    return "Khac"  # định dạng kỳ lạ/chưa gặp — vẫn ghi được, không crash, chỉ gom vào 1 sheet riêng
+
+
+_LUY_KE_RANK = {"H1": 1, "9M": 1.5, "H2": 2, "FY": 3}
+
+
+def _period_sort_key(period):
+    """Parse 1 chuỗi kỳ báo cáo thành tuple có thể sort đúng thời gian thật — CHỈ dùng để sắp xếp
+    các cột MỚI trong 1 lần ghi (chưa từng có vị trí cột trước đó), KHÔNG dùng để di chuyển cột đã
+    tồn tại (xem ghi chú trong update_excel_history_vimo về lý do không sắp xếp lại cột cũ)."""
+    m = re.match(r"^(\d{4})-Q([1-4])$", period)
+    if m:
+        return (int(m.group(1)), int(m.group(2)))
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", period)
+    if m:
+        return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    m = re.match(r"^(\d{4})-(\d{2})$", period)
+    if m:
+        return (int(m.group(1)), int(m.group(2)))
+    m = re.match(r"^(\d{4})-(H1|H2|9M|FY)$", period)
+    if m:
+        return (int(m.group(1)), _LUY_KE_RANK[m.group(2)])
+    m = re.match(r"^(\d{4})$", period)
+    if m:
+        return (int(m.group(1)),)
+    return (9999,)  # định dạng lạ (sheet "Khac") — không parse được, giữ nguyên thứ tự gặp
+
+
+def update_excel_history_vimo(raw, out_dir):
+    xlsx_path = os.path.join(out_dir, "VIMO_Lich_Su_Chi_So.xlsx")
+    indicator_keys = [k for k in raw.keys() if k != "_meta"]
+
+    if os.path.exists(xlsx_path):
+        wb = openpyxl.load_workbook(xlsx_path)
+    else:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)  # xóa sheet mặc định trống — sheet thật sẽ được tạo theo nhu cầu bên dưới
+
+    sheet_state = {}  # sheet_name -> [ws, existing_rows{label: row}, existing_cols{period: col}]
+    # points_by_sheet[sheet_name][label] = (unit, [(period, val), ...]) — gom TRƯỚC, ghi cột SAU,
+    # để có thể sắp xếp các cột MỚI (chưa từng có trong file) theo đúng thời gian thật trước khi
+    # gán số cột — tránh tình trạng cột bị lệch thứ tự chỉ vì thứ tự xử lý chỉ báo trong dict.
+    points_by_sheet = {}
+    for key in indicator_keys:
+        ind = raw[key]
+        series = ind.get("series", [])
+        if not series:
+            continue
+        label, unit = ind["label"], ind["unit"]
+        for pt in series:
+            period, val = pt.get("period"), pt.get("value")
+            if period is None or val is None:
+                continue
+            sheet_name = _classify_period_sheet(period)
+            points_by_sheet.setdefault(sheet_name, {}).setdefault(label, (unit, []))[1].append((str(period), val))
+
+    def _get_sheet_state(sheet_name):
+        if sheet_name in sheet_state:
+            return sheet_state[sheet_name]
+        # Khớp theo TIÊU ĐỀ sheet thật (vd "Theo quý"), KHÔNG phải internal key ("Theo_Quy") — 2
+        # chuỗi này khác nhau, nếu so sai sẽ không bao giờ tìm thấy sheet đã tồn tại và tạo trùng
+        # sheet mới mỗi lần chạy (openpyxl tự thêm hậu tố "1", "2"... khi trùng tiêu đề).
+        title = _SHEET_TITLES.get(sheet_name, sheet_name)
+        if title in wb.sheetnames:
+            ws = wb[title]
+        else:
+            ws = wb.create_sheet(title=title)
+            ws.cell(row=1, column=1, value="Chỉ báo")
+            ws.cell(row=1, column=2, value="Đơn vị")
+        existing_rows = {ws.cell(row=r, column=1).value: r for r in range(2, ws.max_row + 1)
+                          if ws.cell(row=r, column=1).value}
+        existing_cols = {str(ws.cell(row=1, column=c).value): c for c in range(3, ws.max_column + 1)
+                          if ws.cell(row=1, column=c).value}
+        state = [ws, existing_rows, existing_cols]
+        sheet_state[sheet_name] = state
+        return state
+
+    for sheet_name, by_label in points_by_sheet.items():
+        ws, existing_rows, existing_cols = _get_sheet_state(sheet_name)
+
+        # Xác định TOÀN BỘ các period sẽ cần ghi trong lần chạy này cho sheet này, tách ra period
+        # nào MỚI (chưa có cột) — chỉ nhóm MỚI này mới được sắp xếp theo thời gian trước khi gán
+        # cột; các cột đã tồn tại giữ NGUYÊN vị trí (không bao giờ di chuyển).
+        needed_periods = set()
+        for unit, points in by_label.values():
+            for period, _ in points:
+                needed_periods.add(period)
+        new_periods = sorted((p for p in needed_periods if p not in existing_cols), key=_period_sort_key)
+        next_col = ws.max_column + 1 if ws.max_column >= 3 else 3
+        for period in new_periods:
+            existing_cols[period] = next_col
+            ws.cell(row=1, column=next_col, value=period)
+            next_col += 1
+
+        for label, (unit, points) in by_label.items():
+            if label not in existing_rows:
+                # Hàng mới trong sheet này (sheet mới tạo, HOẶC chỉ báo mới lần đầu xuất hiện ở tần
+                # suất này) -> backfill TOÀN BỘ lịch sử sẵn có của chỉ báo trong sheet này.
+                r = max(existing_rows.values(), default=1) + 1
+                existing_rows[label] = r
+                ws.cell(row=r, column=1, value=label)
+                ws.cell(row=r, column=2, value=unit)
+                for period, val in points:
+                    ws.cell(row=r, column=existing_cols[period], value=val)
+            else:
+                # Hàng đã tồn tại -> chỉ ghi/ghi đè điểm MỚI NHẤT của tần suất này (không đụng các
+                # cột lịch sử cũ hơn đã ghi từ các lần chạy trước).
+                period, val = points[-1]
+                ws.cell(row=existing_rows[label], column=existing_cols[period], value=val)
+
+    for ws in wb.worksheets:
+        ws.column_dimensions["A"].width = 50
+        ws.column_dimensions["B"].width = 10
+        for c in range(3, ws.max_column + 1):
+            ws.column_dimensions[get_column_letter(c)].width = 12
+        ws.freeze_panes = "C2"
+
+    wb.save(xlsx_path)
+    print(f"  [OK] Excel lịch sử: {xlsx_path} ({len(wb.sheetnames)} sheet: {', '.join(wb.sheetnames)})")
+    return xlsx_path
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -1116,6 +1292,9 @@ def run_vimo_analysis():
 
     print("[INFO] Saving JSON dashboard...")
     save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis)
+
+    print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
+    update_excel_history_vimo(raw, out_dir)
 
     for p in charts.values():
         try:

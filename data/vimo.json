@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1f2yFMfN8kpMwyze_w1DDsE9ybKqAsALB/view?usp=drivesdk",
-  "lastUpdated": "2026-07-12 15:06",
+  "gdrivePdfUrl": null,
+  "lastUpdated": "2026-07-13 10:57",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -85,20 +85,33 @@
           }
         ]
       },
-      "Bên ngoài": {
-        "score": -1,
-        "nVotes": 4,
+      "Tỷ giá & Dòng vốn ngoại": {
+        "score": 0,
+        "nVotes": 2,
         "detail": [
           {
-            "indicator": "trade_balance",
-            "label": "Cán cân thương mại (lũy kế)",
-            "vote": -1,
-            "arrow": "▼",
-            "judgment_label": "Xấu đi"
+            "indicator": "dxy_proxy",
+            "label": "Chỉ số USD (DTWEXBGS, thay thế DXY)",
+            "vote": 1,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên"
           },
           {
             "indicator": "fdi_disbursed",
             "label": "FDI giải ngân (lũy kế)",
+            "vote": -1,
+            "arrow": "▼",
+            "judgment_label": "Xấu đi"
+          }
+        ]
+      },
+      "Thương mại & Hàng hóa": {
+        "score": -1,
+        "nVotes": 2,
+        "detail": [
+          {
+            "indicator": "trade_balance",
+            "label": "Cán cân thương mại (lũy kế)",
             "vote": -1,
             "arrow": "▼",
             "judgment_label": "Xấu đi"
@@ -109,30 +122,20 @@
             "vote": -1,
             "arrow": "▼",
             "judgment_label": "Xấu đi"
-          },
-          {
-            "indicator": "dxy_proxy",
-            "label": "Chỉ số USD (DTWEXBGS, thay thế DXY)",
-            "vote": 1,
-            "arrow": "▲",
-            "judgment_label": "Tốt lên"
           }
         ]
-      },
-      "Tâm lý thị trường": {
-        "score": 0,
-        "nVotes": 0,
-        "detail": []
       }
     },
     "total": 2
   },
   "marketValuation": {
-    "pe": 15.43,
-    "rf": 0.045,
-    "erp": 0.019808813998703823,
+    "pe": 13.53,
+    "pb": 2.08,
+    "rf": 0.04537,
+    "erp": 0.028539830007390986,
     "valuation_label": "Hợp lý",
-    "pe_source": "https://worldperatio.com/area/vietnam/"
+    "pe_source": "https://24hmoney.vn/indices/vn-index",
+    "pb_source": "https://24hmoney.vn/indices/vn-index"
   },
   "decision": {
     "label": "Duy trì, chọn lọc",
@@ -147,10 +150,10 @@
       "clarity_pct": 64.3,
       "clarity_detail": "9/14 chỉ báo có xu hướng rõ đang tốt lên (64%), 5/14 đang xấu đi."
     },
-    "overview": "TÓM TẮT: Chưa đủ lịch sử để xác định xu hướng theo thời gian — Chưa có đủ lịch sử Scorecard cách đây khoảng 1 tháng/1 quý/đầu năm để so sánh xu hướng đáng tin cậy — hệ thống sẽ tự tích lũy qua các lần cập nhật tiếp theo. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 9/14 chỉ báo có xu hướng rõ đang tốt lên (64%), 5/14 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Duy trì, chọn lọc\".\n\nScorecard Vĩ Mô tổng hợp đạt +2/5 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lạm phát & Lãi suất và Thanh khoản. Ngược lại, nhóm Bên ngoài đang là điểm nghẽn, kéo lùi điểm tổng. Riêng nhóm Tâm lý thị trường chưa có đủ chỉ báo có xu hướng rõ để tính điểm, nên tạm giữ 0 theo quy ước thận trọng (không suy diễn khi thiếu dữ liệu).\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 %; (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %; (3) Doanh số bán lẻ (YoY) đạt 14.80 %; (4) CPI (YoY) đạt 4.69 %; (5) Tăng trưởng tín dụng (YoY) đạt 5.96 %; (6) Dự trữ ngoại hối đạt 85.58 tỷ USD; (7) Nợ công / GDP đạt 32.86 %; (8) Tỷ lệ thất nghiệp đạt 2.21 %; (9) Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm. Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) PMI sản xuất (S&P Global) đạt 51.80 điểm; (2) Tăng trưởng cung tiền M2 (YoY) đạt 5.86 %; (3) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD; (4) FDI giải ngân (lũy kế) đạt 5.41 tỷ USD; (5) Giá dầu Brent đạt 69.56 USD/thùng.\n\nVề định giá, VN-Index đang giao dịch ở P/E 15.43x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 1.98% — mức định giá được xếp loại \"Hợp lý\". Kết hợp Scorecard vĩ mô (+2/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.",
+    "overview": "TÓM TẮT: Chưa đủ lịch sử để xác định xu hướng theo thời gian — Chưa có đủ lịch sử Scorecard cách đây khoảng 1 tháng/1 quý/đầu năm để so sánh xu hướng đáng tin cậy — hệ thống sẽ tự tích lũy qua các lần cập nhật tiếp theo. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 9/14 chỉ báo có xu hướng rõ đang tốt lên (64%), 5/14 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Duy trì, chọn lọc\".\n\nScorecard Vĩ Mô tổng hợp đạt +2/5 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lạm phát & Lãi suất và Thanh khoản. Ngược lại, nhóm Thương mại & Hàng hóa đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Tỷ giá & Dòng vốn ngoại giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 %; (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %; (3) Doanh số bán lẻ (YoY) đạt 14.80 %; (4) CPI (YoY) đạt 4.69 %; (5) Tăng trưởng tín dụng (YoY) đạt 5.96 %; (6) Dự trữ ngoại hối đạt 85.58 tỷ USD; (7) Nợ công / GDP đạt 32.86 %; (8) Tỷ lệ thất nghiệp đạt 2.21 %; (9) Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm. Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) PMI sản xuất (S&P Global) đạt 51.80 điểm; (2) Tăng trưởng cung tiền M2 (YoY) đạt 5.86 %; (3) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD; (4) FDI giải ngân (lũy kế) đạt 5.41 tỷ USD; (5) Giá dầu Brent đạt 69.56 USD/thùng.\n\nVề định giá, VN-Index đang giao dịch ở P/E 13.53x, P/B 2.08x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 2.85% — mức định giá được xếp loại \"Hợp lý\". Kết hợp Scorecard vĩ mô (+2/5) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.",
     "economy_impact": "Về tăng trưởng và lạm phát: Tăng trưởng GDP (YoY) đạt 8.39 %, tốt lên; Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 %, tốt lên; PMI sản xuất (S&P Global) đạt 51.80 điểm, xấu đi; Doanh số bán lẻ (YoY) đạt 14.80 %, tốt lên. Theo NSO, động lực tăng trưởng GDP 2026-Q2 chủ yếu đến từ khu vực Công nghiệp-Xây dựng (đóng góp 50.07% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, tư nhân và FDI — tăng 15.20% (2026-H1), vượt xa tốc độ tăng tiêu dùng cuối cùng, cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. Ở chiều giá cả, CPI (YoY) đạt 4.69 %, tốt lên.\n\nVề thanh khoản hệ thống: lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 %. Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 4.68% so với 9 tháng 9.26%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 %; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 %; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 %.\n\nLƯU Ý QUAN TRỌNG — không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, tín dụng vượt huy động khoảng 1,48 lần) và báo chí tài chính (bài gần nhất ghi nhận, 2026-07): một số ngân hàng đã phải chào lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) lên tới 9.0%/năm cho khoản tiền gửi lớn (200 triệu - 1 tỷ đồng trở lên) để bù đắp khoảng cách này. Bảng lãi suất ONLINE công khai đa ngân hàng (2026-07, 24hmoney.vn) cũng cho thấy mặt bằng thị trường rộng hơn nhiều: mức cao nhất 7.80%/năm, trung bình 6.17%/năm kỳ hạn 12 tháng — cao hơn hẳn mức ~5,9% của riêng nhóm Big4 nêu trên. Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh khoản để đáp ứng nhu cầu tín dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.\n\nVề thương mại và dòng vốn: Xuất khẩu (YoY) đạt 28.09 %; Nhập khẩu (YoY) đạt 45.19 %; Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD, xấu đi; FDI giải ngân (lũy kế) đạt 5.41 tỷ USD, xấu đi. Tốc độ tăng nhập khẩu đang cao hơn xuất khẩu, cho thấy áp lực thu hẹp cán cân thương mại nếu xu hướng này kéo dài. Về đầu tư công, Thu ngân sách (YoY) đạt 20.91 %; Chi ngân sách (YoY) đạt -8.16 %; Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 13.90 % — mức độ giải ngân thực tế quyết định hiệu ứng lan tỏa tới các ngành xây dựng, vật liệu, hạ tầng.\n\nVề lao động, Tỷ lệ thất nghiệp ở mức 2.21 %. Áp lực từ bên ngoài: Lãi suất Fed (FEDFUNDS) đạt 3.63 %, ổn định; Giá dầu Brent đạt 69.56 USD/thùng, xấu đi; Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.69 điểm, tốt lên; Tăng trưởng GDP Trung Quốc đạt 4.96 %, ổn định. Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là một trong các đối tác thương mại lớn nhất.",
-    "market_impact": "Với Scorecard vĩ mô +2/5 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Hợp lý\", khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 1.98%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ bù đắp rủi ro này tương đối mỏng — nếu lãi suất huy động/trái phiếu tiếp tục tăng, sức hấp dẫn tương đối của cổ phiếu so với kênh tiền gửi/trái phiếu sẽ giảm thêm. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (9.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng.",
-    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: PMI sản xuất (S&P Global), Tăng trưởng cung tiền M2 (YoY), Cán cân thương mại (lũy kế), FDI giải ngân (lũy kế) và Giá dầu Brent.\n- Nhóm Tâm lý thị trường hiện chưa đủ chỉ báo có xu hướng rõ để đưa vào Scorecard — cần bổ sung nguồn dữ liệu hoặc theo dõi thủ công.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
+    "market_impact": "Với Scorecard vĩ mô +2/5 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Hợp lý\", khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 2.85%, trên nền lãi suất phi rủi ro tham chiếu 4.54%. Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái phiếu ở mức lãi suất hiện tại. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (9.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng.",
+    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: PMI sản xuất (S&P Global), Tăng trưởng cung tiền M2 (YoY), FDI giải ngân (lũy kế), Cán cân thương mại (lũy kế) và Giá dầu Brent.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
   },
   "indicators": {
     "gdp_growth": {
@@ -229,7 +232,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "Q1/2026 báo cáo NSO ghi chú đã điều chỉnh lại số liệu 2025 (vd Q1-Q3/2025 sau điều chỉnh: 7.05/8.16/8.25%) — bảng trên dùng số liệu GỐC công bố tại thời điểm mỗi quý (theo đúng báo cáo gốc từng kỳ), không dùng số đã revise để nhất quán nguồn."
+      "note": "Q1/2026 báo cáo NSO ghi chú đã điều chỉnh lại số liệu 2025 (vd Q1-Q3/2025 sau điều chỉnh: 7.05/8.16/8.25%) — bảng trên dùng số liệu GỐC công bố tại thời điểm mỗi quý (theo đúng báo cáo gốc từng kỳ), không dùng số đã revise để nhất quán nguồn.",
+      "impact": "Thước đo tổng quát nhất sức khỏe nền kinh tế — GDP tăng nhanh thường kéo theo nhu cầu tiêu dùng, đầu tư và lợi nhuận doanh nghiệp tăng, hỗ trợ định giá cổ phiếu; cần đối chiếu với chất lượng tăng trưởng (đến từ đầu tư/xuất khẩu hay tiêu dùng nội địa) để tránh ảo tưởng về tính bền vững."
     },
     "iip_growth": {
       "group": "growth",
@@ -322,7 +326,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "Nâng cấp lên nso.gov.vn/iip-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ (2026-05, SSI) sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới."
+      "note": "Nâng cấp lên nso.gov.vn/iip-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ (2026-05, SSI) sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới.",
+      "impact": "IIP phản ánh trực tiếp sức khỏe khu vực sản xuất — công nghiệp chế biến chế tạo tăng tốc thường báo hiệu đơn hàng xuất khẩu và nhu cầu nội địa đang cải thiện, có lợi cho nhóm cổ phiếu khu công nghiệp, logistics, vật liệu."
     },
     "pmi_manufacturing": {
       "group": "growth",
@@ -375,7 +380,8 @@
         "judgment_label": "Xấu đi",
         "judgment_color": "#ef4444"
       },
-      "note": ">50 = mở rộng, <50 = thu hẹp. Nguồn duy nhất đáng tin cậy là S&P Global (không có API miễn phí) — tự động lấy điểm MỚI NHẤT qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài), các điểm lịch sử phía trên vẫn giữ nguyên vì đã nghiên cứu thủ công trước đó."
+      "note": ">50 = mở rộng, <50 = thu hẹp. Nguồn duy nhất đáng tin cậy là S&P Global (không có API miễn phí) — tự động lấy điểm MỚI NHẤT qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài), các điểm lịch sử phía trên vẫn giữ nguyên vì đã nghiên cứu thủ công trước đó.",
+      "impact": "PMI trên 50 nghĩa là số doanh nghiệp mở rộng sản xuất nhiều hơn số thu hẹp — đây là chỉ báo SỚM (leading) về đơn hàng mới/tồn kho, thường đi trước số liệu IIP và xuất khẩu chính thức vài tháng."
     },
     "retail_sales_growth": {
       "group": "growth",
@@ -411,7 +417,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "Tự động cập nhật điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài theo thời gian)."
+      "note": "Tự động cập nhật điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài theo thời gian).",
+      "impact": "Đo sức cầu tiêu dùng nội địa — tăng trưởng cao hỗ trợ nhóm bán lẻ, hàng tiêu dùng; nếu đi kèm lạm phát cao thì một phần mức tăng đến từ giá chứ không phải sản lượng tiêu thụ thực."
     },
     "cpi_yoy": {
       "group": "inflation",
@@ -504,7 +511,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "Ngưỡng mục tiêu NHNN: dưới 4-5%. Nâng cấp lên nso.gov.vn/cpi-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới."
+      "note": "Ngưỡng mục tiêu NHNN: dưới 4-5%. Nâng cấp lên nso.gov.vn/cpi-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới.",
+      "impact": "CPI vượt mục tiêu NHNN (~4-4,5%) thường buộc nhà điều hành thắt chặt tiền tệ (tăng lãi suất/hạn chế cung tiền), bào mòn sức mua và có thể ảnh hưởng tiêu cực đến định giá nhóm cổ phiếu tăng trưởng."
     },
     "core_inflation": {
       "group": "inflation",
@@ -519,7 +527,8 @@
         "label": "no_data",
         "arrow": "—"
       },
-      "note": "Đã khảo sát nso.gov.vn/cong-nghiep/, nso.gov.vn/cpi-vi/, data.vietnambiz.vn — không tìm thấy nguồn 'lạm phát cơ bản' (core, loại trừ lương thực/năng lượng) tách riêng dạng scrape được. VietnamBiz có 'Tỷ lệ lạm phát (Average CPI YoY)' nhưng đó là CPI BÌNH QUÂN, khác khái niệm core — không map nhầm. Cần bổ sung khi tinh chỉnh."
+      "note": "Đã khảo sát nso.gov.vn/cong-nghiep/, nso.gov.vn/cpi-vi/, data.vietnambiz.vn — không tìm thấy nguồn 'lạm phát cơ bản' (core, loại trừ lương thực/năng lượng) tách riêng dạng scrape được. VietnamBiz có 'Tỷ lệ lạm phát (Average CPI YoY)' nhưng đó là CPI BÌNH QUÂN, khác khái niệm core — không map nhầm. Cần bổ sung khi tinh chỉnh.",
+      "impact": "Core inflation loại trừ biến động giá lương thực/năng lượng — phản ánh áp lực giá mang tính CƠ CẤU, bền vững hơn CPI tổng, là căn cứ đáng tin cậy hơn để NHNN quyết định lãi suất điều hành dài hạn."
     },
     "refinancing_rate": {
       "group": "monetary",
@@ -543,7 +552,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật."
+      "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật.",
+      "impact": "Lãi suất điều hành thấp là công cụ NHNN dùng để nới lỏng thanh khoản hệ thống — nhưng mức thấp này KHÔNG đảm bảo chi phí vốn thực tế của doanh nghiệp/dân cư cũng thấp tương ứng, do độ trễ truyền dẫn và áp lực huy động vốn thực tế của từng ngân hàng: hãy đọc cùng deposit_rate_12m_market_avg/deposit_rate_negotiated_max để thấy đúng mức lãi suất mà nền kinh tế đang thực sự phải trả."
     },
     "interbank_rate_3m": {
       "group": "monetary",
@@ -579,7 +589,8 @@
         "judgment_label": "Ổn định",
         "judgment_color": "#f59e0b"
       },
-      "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy)."
+      "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).",
+      "impact": "Lãi suất liên ngân hàng tăng cao là dấu hiệu sớm các NHTM đang thiếu vốn khả dụng (thị trường 2) — khi kéo dài, áp lực này truyền dẫn sang lãi suất huy động thị trường 1, đẩy chi phí vốn vay của doanh nghiệp/dân cư lên cao, không phải tín hiệu tích cực về lợi suất cho người gửi tiền."
     },
     "interbank_rate_on": {
       "group": "monetary",
@@ -603,7 +614,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm)."
+      "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
+      "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — độ dốc giữa các kỳ hạn (đặc biệt O/N so với kỳ hạn dài) cho biết áp lực thanh khoản đang tập trung ở tầm nhìn ngắn hay dài hạn; đường cong dốc lên kéo dài là tín hiệu chi phí vốn toàn hệ thống đang tăng, không phải cơ hội lợi suất."
     },
     "interbank_rate_1w": {
       "group": "monetary",
@@ -627,7 +639,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
+      "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — dùng so sánh chéo với các kỳ hạn khác để đánh giá áp lực chi phí vốn hệ thống đang tập trung ở tầm nhìn ngắn hay dài hạn."
     },
     "interbank_rate_2w": {
       "group": "monetary",
@@ -651,7 +664,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
+      "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — dùng so sánh chéo với các kỳ hạn khác để đánh giá áp lực chi phí vốn hệ thống đang tập trung ở tầm nhìn ngắn hay dài hạn."
     },
     "interbank_rate_1m": {
       "group": "monetary",
@@ -675,7 +689,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
+      "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — dùng so sánh chéo với các kỳ hạn khác để đánh giá áp lực chi phí vốn hệ thống đang tập trung ở tầm nhìn ngắn hay dài hạn."
     },
     "interbank_rate_6m": {
       "group": "monetary",
@@ -699,7 +714,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
+      "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — kỳ hạn dài hơn phản ánh kỳ vọng chi phí vốn trung hạn của hệ thống, mức càng cao càng cho thấy thị trường dự phóng thanh khoản còn căng thẳng lâu dài."
     },
     "interbank_rate_9m": {
       "group": "monetary",
@@ -723,7 +739,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn."
+      "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
+      "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — kỳ hạn dài nhất trong nhóm theo dõi; mức cao ở đầu xa đường cong là tín hiệu thị trường không kỳ vọng chi phí vốn hạ nhiệt sớm."
     },
     "omo_rate_7d": {
       "group": "monetary",
@@ -747,7 +764,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy)."
+      "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy).",
+      "impact": "Lãi suất OMO là công cụ NHNN bơm/hút thanh khoản NGẮN HẠN qua thị trường mở (thị trường 2) — không phải công cụ thay đổi cung tiền M2 dài hạn; bản thân mức lãi suất OMO thấp không có nghĩa chi phí vốn thị trường 1 (doanh nghiệp/dân cư) đang thấp, vì độ truyền dẫn có độ trễ và không 1-1."
     },
     "deposit_rate_12m_vcb": {
       "group": "monetary",
@@ -771,7 +789,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Nguồn: API JSON thật của Vietcombank (vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal, field tenor='12-months'/currencyCode='VND'/tenorType='Savings') — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. 'lower=better' mang tính quy ước (giống các lãi suất khác trong dashboard) — thực ra lãi suất huy động tăng có thể là tín hiệu TỐT (thu hút tiết kiệm) hoặc XẤU (ngân hàng cạnh tranh thanh khoản), không kết luận một chiều — CHỈ BÁO THAM CHIẾU, không tính vào Scorecard 5 nhóm. Đã khảo sát nhưng KHÔNG tìm được nguồn ổn định cho lãi suất cho vay SXKD/mua nhà của VCB (không có endpoint tương ứng)."
+      "note": "Nguồn: API JSON thật của Vietcombank (vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal, field tenor='12-months'/currencyCode='VND'/tenorType='Savings') — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. 'lower=better' mang tính quy ước (giống các lãi suất khác trong dashboard) — thực ra lãi suất huy động tăng có thể là tín hiệu TỐT (thu hút tiết kiệm) hoặc XẤU (ngân hàng cạnh tranh thanh khoản), không kết luận một chiều — CHỈ BÁO THAM CHIẾU, không tính vào Scorecard 5 nhóm. Đã khảo sát nhưng KHÔNG tìm được nguồn ổn định cho lãi suất cho vay SXKD/mua nhà của VCB (không có endpoint tương ứng).",
+      "impact": "Lãi suất niêm yết CHÍNH THỨC của nhóm ngân hàng lớn (Big4) — CHỈ phản ánh một phần nhỏ, thấp hơn hẳn mặt bằng chi phí huy động vốn thực tế toàn thị trường (xem deposit_rate_12m_market_avg/market_max/negotiated_max) — nếu chỉ nhìn con số này sẽ đánh giá thấp áp lực chi phí vốn thực sự mà nền kinh tế đang gánh."
     },
     "deposit_rate_12m_ctg": {
       "group": "monetary",
@@ -795,7 +814,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Nguồn: bảng HTML thật tại vietinbank.vn/lai-suat-khcn (dòng '12 tháng' chính xác, không nhầm với 'Từ 11 đến dưới 12 tháng'/'Trên 12 đến 13 tháng') — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Lãi suất cho vay SXKD/mua nhà của VietinBank chỉ tìm thấy trong văn bản quảng cáo/khuyến mãi (không phải bảng số liệu ổn định) — không đủ tin cậy để tự động hóa, bỏ qua."
+      "note": "Nguồn: bảng HTML thật tại vietinbank.vn/lai-suat-khcn (dòng '12 tháng' chính xác, không nhầm với 'Từ 11 đến dưới 12 tháng'/'Trên 12 đến 13 tháng') — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Lãi suất cho vay SXKD/mua nhà của VietinBank chỉ tìm thấy trong văn bản quảng cáo/khuyến mãi (không phải bảng số liệu ổn định) — không đủ tin cậy để tự động hóa, bỏ qua.",
+      "impact": "Lãi suất niêm yết CHÍNH THỨC của nhóm ngân hàng lớn (Big4) — CHỈ phản ánh một phần nhỏ, thấp hơn hẳn mặt bằng chi phí huy động vốn thực tế toàn thị trường (xem deposit_rate_12m_market_avg/market_max/negotiated_max) — nếu chỉ nhìn con số này sẽ đánh giá thấp áp lực chi phí vốn thực sự mà nền kinh tế đang gánh."
     },
     "deposit_rate_12m_nab": {
       "group": "monetary",
@@ -819,7 +839,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Nguồn: bảng HTML thật tại namabank.com.vn/lai-suat-tien-gui-vnd-2 (dòng '12 tháng, 365 ngày', cột lãi cuối kỳ) — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Đại diện nhóm ngân hàng nhỏ theo yêu cầu user — Techcombank (nhóm vừa), MBBank (nhóm vừa), VietABank (nhóm nhỏ) đều KHÔNG tìm được nguồn scrape ổn định (JS-render hoặc không tìm ra đúng trang) nên chưa có đại diện nhóm vừa trong so sánh này."
+      "note": "Nguồn: bảng HTML thật tại namabank.com.vn/lai-suat-tien-gui-vnd-2 (dòng '12 tháng, 365 ngày', cột lãi cuối kỳ) — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Đại diện nhóm ngân hàng nhỏ theo yêu cầu user — Techcombank (nhóm vừa), MBBank (nhóm vừa), VietABank (nhóm nhỏ) đều KHÔNG tìm được nguồn scrape ổn định (JS-render hoặc không tìm ra đúng trang) nên chưa có đại diện nhóm vừa trong so sánh này.",
+      "impact": "Đại diện nhóm ngân hàng cổ phần nhỏ — niêm yết cao hơn Big4, là tín hiệu sớm cho thấy áp lực chi phí huy động vốn đang lan rộng ra ngoài nhóm ngân hàng lớn, kéo mặt bằng lãi suất cho vay chung của nền kinh tế lên theo."
     },
     "credit_growth": {
       "group": "monetary",
@@ -907,7 +928,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "NHNN đặt mục tiêu ~15% cho 2026. Nâng cấp lên sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt (biểu đồ 'Tổng cộng' theo tháng, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi SBV khi fetch_macro_data.py chạy lần tới."
+      "note": "NHNN đặt mục tiêu ~15% cho 2026. Nâng cấp lên sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt (biểu đồ 'Tổng cộng' theo tháng, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi SBV khi fetch_macro_data.py chạy lần tới.",
+      "impact": "Tín dụng tăng nhanh hơn huy động buộc hệ thống ngân hàng tăng lãi suất huy động/vay mượn liên ngân hàng để bù đắp thanh khoản — hệ quả trực tiếp là lãi suất CHO VAY doanh nghiệp/dân cư bị đẩy lên cao, làm tăng chi phí vốn và bào mòn biên lợi nhuận trên diện rộng nếu kéo dài."
     },
     "m2_growth": {
       "group": "monetary",
@@ -943,7 +965,8 @@
         "judgment_label": "Xấu đi",
         "judgment_color": "#ef4444"
       },
-      "note": "Điểm 2024 là seed thủ công cũ (tự tính từ mức M2 cuối 2023/2024 theo tradingeconomics.com). Từ nay nâng cấp lên nguồn tự động data.vietnambiz.vn/currency-interest-rate (__NEXT_DATA__ JSON, có độ trễ công bố 1-3 tháng) — các điểm mới sẽ tự tích lũy theo tháng."
+      "note": "Điểm 2024 là seed thủ công cũ (tự tính từ mức M2 cuối 2023/2024 theo tradingeconomics.com). Từ nay nâng cấp lên nguồn tự động data.vietnambiz.vn/currency-interest-rate (__NEXT_DATA__ JSON, có độ trễ công bố 1-3 tháng) — các điểm mới sẽ tự tích lũy theo tháng.",
+      "impact": "Cung tiền M2 tăng chậm hơn tín dụng là dấu hiệu thanh khoản hệ thống đang thắt chặt dần — có thể gây áp lực tăng lãi suất và hạn chế dòng vốn chảy vào tài sản rủi ro (cổ phiếu, bất động sản)."
     },
     "deposit_growth": {
       "group": "monetary",
@@ -967,7 +990,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "QUAN TRỌNG để đối chiếu với credit_growth: khi tín dụng tăng NHANH HƠN huy động vốn, hệ thống ngân hàng phải cạnh tranh huy động mạnh hơn để bù đắp — biểu hiện qua lãi suất huy động THỰC TẾ/THỎA THUẬN thường cao hơn hẳn biểu niêm yết công khai (xem deposit_rate_negotiated_max). Theo NSO (nso.gov.vn, báo cáo KT-XH Quý II & 6T/2026, https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/): tính đến 26/6/2026, huy động vốn TCTD tăng 5,02% trong khi tín dụng nền kinh tế tăng 7,41% (cùng thước đo YTD) — tín dụng vượt huy động ~1,48 lần, xác nhận độc lập với DSC Research (báo cáo T6/2026: 'tín dụng tăng gấp gần 1,5 lần tốc độ huy động vốn') và VnExpress (15/6/2026: tín dụng +6,38% YTD vs huy động +4,3% YTD, nguồn: https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html). Nguồn auto-update (data.vietnambiz.vn) là chuỗi YoY, khác thước đo YTD của 3 nguồn trên — không cộng gộp trực tiếp, chỉ dùng để theo dõi XU HƯỚNG khoảng cách qua các kỳ."
+      "note": "QUAN TRỌNG để đối chiếu với credit_growth: khi tín dụng tăng NHANH HƠN huy động vốn, hệ thống ngân hàng phải cạnh tranh huy động mạnh hơn để bù đắp — biểu hiện qua lãi suất huy động THỰC TẾ/THỎA THUẬN thường cao hơn hẳn biểu niêm yết công khai (xem deposit_rate_negotiated_max). Theo NSO (nso.gov.vn, báo cáo KT-XH Quý II & 6T/2026, https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/): tính đến 26/6/2026, huy động vốn TCTD tăng 5,02% trong khi tín dụng nền kinh tế tăng 7,41% (cùng thước đo YTD) — tín dụng vượt huy động ~1,48 lần, xác nhận độc lập với DSC Research (báo cáo T6/2026: 'tín dụng tăng gấp gần 1,5 lần tốc độ huy động vốn') và VnExpress (15/6/2026: tín dụng +6,38% YTD vs huy động +4,3% YTD, nguồn: https://vnexpress.net/lai-suat-thoa-thuan-cham-moc-9-mot-nam-5094761.html). Nguồn auto-update (data.vietnambiz.vn) là chuỗi YoY, khác thước đo YTD của 3 nguồn trên — không cộng gộp trực tiếp, chỉ dùng để theo dõi XU HƯỚNG khoảng cách qua các kỳ.",
+      "impact": "Huy động vốn tăng chậm hơn tín dụng (thực tế: theo NSO tín dụng +7,41% YTD trong khi huy động chỉ +5,02% YTD) buộc ngân hàng phải tăng lãi suất huy động/thỏa thuận ngầm để hút vốn — đây là NGUYÊN NHÂN GỐC khiến chi phí vốn toàn nền kinh tế hiện đang ở mức cao, không phải diễn biến ngẫu nhiên."
     },
     "deposit_rate_12m_market_max": {
       "group": "monetary",
@@ -991,7 +1015,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max."
+      "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max.",
+      "impact": "Mức lãi suất cao nhất trong bảng niêm yết online đa ngân hàng — cho thấy MẶT BẰNG LÃI SUẤT ĐANG Ở NGƯỠNG RẤT CAO tại nhóm NHTM cổ phần vừa/nhỏ, kéo theo lãi suất cho vay tương ứng cao hơn hẳn Big4 — đây là áp lực chi phí vốn thực sự mà một bộ phận lớn doanh nghiệp/dân cư đang phải gánh, không phải cơ hội lợi suất cho người gửi tiền."
     },
     "deposit_rate_12m_market_avg": {
       "group": "monetary",
@@ -1015,7 +1040,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Auto-scrape cùng nguồn/thời điểm với deposit_rate_12m_market_max (24hmoney.vn) — giá trị trung bình cộng của ~38 ngân hàng, đại diện MẶT BẰNG CHUNG thị trường tốt hơn con số của riêng nhóm Big4."
+      "note": "Auto-scrape cùng nguồn/thời điểm với deposit_rate_12m_market_max (24hmoney.vn) — giá trị trung bình cộng của ~38 ngân hàng, đại diện MẶT BẰNG CHUNG thị trường tốt hơn con số của riêng nhóm Big4.",
+      "impact": "LƯU Ý CÁCH ĐỌC: đây KHÔNG phải để tính '(lãi suất - CPI) = lợi suất thực hấp dẫn hơn cho người gửi tiền'. Ý nghĩa đúng là MẶT BẰNG LÃI SUẤT HUY ĐỘNG BÌNH QUÂN TOÀN THỊ TRƯỜNG (~38 NH) hiện đang ở mức RẤT CAO — kéo theo lãi suất CHO VAY tương ứng cao hơn 4-6 điểm % — tạo ÁP LỰC CHI PHÍ VỐN LỚN lên toàn bộ doanh nghiệp và nền kinh tế: biên lợi nhuận bị bào mòn, khả năng trả nợ khó khăn hơn, đặc biệt ở các ngành đòn bẩy tài chính cao (bất động sản, xây dựng). Chỉ báo này phản ánh đúng áp lực đó hơn nhiều so với lãi suất điều hành/liên ngân hàng vốn đã ổn định thấp."
     },
     "deposit_rate_negotiated_max": {
       "group": "monetary",
@@ -1051,7 +1077,8 @@
         "judgment_label": "Ổn định",
         "judgment_color": "#f59e0b"
       },
-      "note": "Bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, KHÔNG có biểu niêm yết công khai để scrape trực tiếp — thay vào đó fetch_negotiated_deposit_rate_news() quét RSS tin tức (CafeF, VietStock) mỗi lần Action chạy, tự động bắt các bài viết mới có tiêu đề chứa 'lãi suất' + từ khóa đặc trưng ('thỏa thuận'/'chạm mốc'/'vượt trần'/'ngầm') và trích % NGAY TRONG TIÊU ĐỀ (không đọc/suy diễn nội dung bài, giảm rủi ro trích sai). Phần lớn các lần chạy sẽ không tìm thấy tin mới (bình thường, đây là tin hiếm/sự kiện) — điểm dữ liệu chỉ được thêm khi có tin thật khớp. Điểm seed 2026-06 (VnExpress, 15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường."
+      "note": "Bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, KHÔNG có biểu niêm yết công khai để scrape trực tiếp — thay vào đó fetch_negotiated_deposit_rate_news() quét RSS tin tức (CafeF, VietStock) mỗi lần Action chạy, tự động bắt các bài viết mới có tiêu đề chứa 'lãi suất' + từ khóa đặc trưng ('thỏa thuận'/'chạm mốc'/'vượt trần'/'ngầm') và trích % NGAY TRONG TIÊU ĐỀ (không đọc/suy diễn nội dung bài, giảm rủi ro trích sai). Phần lớn các lần chạy sẽ không tìm thấy tin mới (bình thường, đây là tin hiếm/sự kiện) — điểm dữ liệu chỉ được thêm khi có tin thật khớp. Điểm seed 2026-06 (VnExpress, 15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường.",
+      "impact": "LƯU Ý CÁCH ĐỌC: không phải tín hiệu 'lợi suất tiết kiệm hấp dẫn' — khi lãi suất THỎA THUẬN (ngoài biểu niêm yết) vượt xa mức công bố chính thức (hiện ~9%/năm so với ~5,9% của Big4), đây là bằng chứng RÕ RÀNG NHẤT rằng nền lãi suất thực tế đang rất cao và hệ thống ngân hàng phải trả giá đắt để giữ chân dòng tiền — chi phí này sẽ sớm chuyển tiếp thành lãi suất cho vay cao hơn, khiến toàn bộ doanh nghiệp/nền kinh tế phải gồng mình chịu đựng chi phí vốn đắt đỏ."
     },
     "gdp_industry_contribution": {
       "group": "growth",
@@ -1075,7 +1102,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO (chưa có auto-scrape ổn định cho báo cáo dạng 'bai-top', xem ghi chú kiến trúc). Quý II/2026: khu vực Công nghiệp-Xây dựng tăng 10,51% YoY, đóng góp 50,07% vào tăng trưởng GDP chung (8,39%) — ĐỘNG LỰC CHÍNH. Trong đó riêng ngành CHẾ BIẾN, CHẾ TẠO tăng trưởng 6 tháng đạt 11,4%, đóng góp 8,9 điểm phần trăm vào mức tăng IIP chung — là động lực lớn nhất trong nội bộ khu vực này. Khu vực Dịch vụ tăng 7,87%, đóng góp 44,28%; Nông-Lâm-Thủy sản tăng 4,06%, đóng góp 5,65%. Nguồn: NSO, mục 1 'Tốc độ tăng tổng sản phẩm trong nước'."
+      "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO (chưa có auto-scrape ổn định cho báo cáo dạng 'bai-top', xem ghi chú kiến trúc). Quý II/2026: khu vực Công nghiệp-Xây dựng tăng 10,51% YoY, đóng góp 50,07% vào tăng trưởng GDP chung (8,39%) — ĐỘNG LỰC CHÍNH. Trong đó riêng ngành CHẾ BIẾN, CHẾ TẠO tăng trưởng 6 tháng đạt 11,4%, đóng góp 8,9 điểm phần trăm vào mức tăng IIP chung — là động lực lớn nhất trong nội bộ khu vực này. Khu vực Dịch vụ tăng 7,87%, đóng góp 44,28%; Nông-Lâm-Thủy sản tăng 4,06%, đóng góp 5,65%. Nguồn: NSO, mục 1 'Tốc độ tăng tổng sản phẩm trong nước'.",
+      "impact": "Tỷ trọng đóng góp của khu vực Công nghiệp-Xây dựng cao cho thấy động lực tăng trưởng đến từ sản xuất/xuất khẩu hơn là tiêu dùng nội địa — có lợi cho nhóm xuất khẩu, KCN, vật liệu nhưng cũng dễ tổn thương hơn trước cú sốc thương mại/thuế quan từ bên ngoài."
     },
     "gdp_investment_growth": {
       "group": "growth",
@@ -1099,7 +1127,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO. Về SỬ DỤNG GDP 6 tháng đầu năm 2026 (mục 1 báo cáo NSO): tích lũy tài sản (đầu tư — gồm cả đầu tư công, tư nhân, FDI) tăng 15,20% so với cùng kỳ — CAO HƠN NHIỀU tốc độ tăng tiêu dùng cuối cùng (8,15%) và gần bằng tốc độ tăng xuất khẩu hàng hóa & dịch vụ (20,18%). Cho thấy tăng trưởng GDP 6 tháng đầu 2026 được dẫn dắt chủ yếu bởi ĐẦU TƯ và XUẤT KHẨU, không phải bởi cầu tiêu dùng nội địa — nhất quán với việc khu vực Công nghiệp-Xây dựng (thâm dụng vốn, xuất khẩu) đóng góp áp đảo vào tăng trưởng (xem gdp_industry_contribution)."
+      "note": "MANUAL, cập nhật thủ công theo báo cáo KT-XH quý của NSO. Về SỬ DỤNG GDP 6 tháng đầu năm 2026 (mục 1 báo cáo NSO): tích lũy tài sản (đầu tư — gồm cả đầu tư công, tư nhân, FDI) tăng 15,20% so với cùng kỳ — CAO HƠN NHIỀU tốc độ tăng tiêu dùng cuối cùng (8,15%) và gần bằng tốc độ tăng xuất khẩu hàng hóa & dịch vụ (20,18%). Cho thấy tăng trưởng GDP 6 tháng đầu 2026 được dẫn dắt chủ yếu bởi ĐẦU TƯ và XUẤT KHẨU, không phải bởi cầu tiêu dùng nội địa — nhất quán với việc khu vực Công nghiệp-Xây dựng (thâm dụng vốn, xuất khẩu) đóng góp áp đảo vào tăng trưởng (xem gdp_industry_contribution).",
+      "impact": "Đầu tư (gồm đầu tư công, tư nhân, FDI) tăng nhanh hơn tiêu dùng cho thấy tăng trưởng đang được dẫn dắt bởi phía cung/vốn hơn cầu tiêu dùng nội địa — bền vững hơn về dài hạn nhưng nhạy cảm hơn với chi phí vốn (lãi suất) và tâm lý doanh nghiệp/nhà đầu tư."
     },
     "usdvnd": {
       "group": "monetary",
@@ -1115,18 +1144,18 @@
         },
         {
           "period": "2026-07",
-          "value": 26214.47,
+          "value": 26191.27,
           "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
         }
       ],
       "trend": {
-        "latest": 26214.47,
+        "latest": 26191.27,
         "latest_period": "2026-07",
         "latest_source": "https://api.exchangerate-api.com/v4/latest/USD",
         "n_points": 2,
         "prior": 26270,
         "prior_period": "2025-08",
-        "delta": -55.53,
+        "delta": -78.73,
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -1135,7 +1164,8 @@
         "judgment_label": "Ổn định",
         "judgment_color": "#f59e0b"
       },
-      "note": "'lower=better' theo nghĩa VND ít mất giá hơn (áp lực tỷ giá giảm). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới sẽ tự APPEND mỗi lần Action chạy qua fetch_macro_data.py."
+      "note": "'lower=better' theo nghĩa VND ít mất giá hơn (áp lực tỷ giá giảm). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới sẽ tự APPEND mỗi lần Action chạy qua fetch_macro_data.py.",
+      "impact": "VND mất giá (tỷ giá tăng) làm tăng chi phí nhập khẩu nguyên liệu/trả nợ nước ngoài (áp lực lạm phát chi phí đẩy) nhưng có lợi tương đối cho nhóm xuất khẩu (dệt may, thủy sản, gỗ) nhờ tăng sức cạnh tranh giá."
     },
     "export_growth": {
       "group": "trade",
@@ -1159,7 +1189,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Tự động cập nhật điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài theo thời gian). Tách riêng khỏi trade_balance (vốn là số LŨY KẾ) — đây là tốc độ tăng trưởng YoY theo tháng."
+      "note": "Tự động cập nhật điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài theo thời gian). Tách riêng khỏi trade_balance (vốn là số LŨY KẾ) — đây là tốc độ tăng trưởng YoY theo tháng.",
+      "impact": "Xuất khẩu tăng trưởng cao phản ánh sức cạnh tranh và nhu cầu từ các đối tác thương mại lớn (Mỹ, EU, Trung Quốc) — cần theo dõi cùng import_growth và trade_balance để tránh đọc sai bối cảnh (xuất khẩu tăng nhưng nhập khẩu tăng nhanh hơn vẫn có thể dẫn tới nhập siêu)."
     },
     "import_growth": {
       "group": "trade",
@@ -1183,7 +1214,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "LƯU Ý: 'higher=better' mang tính quy ước, không hoàn toàn đúng — nhập khẩu tăng có thể là tín hiệu TỐT (nhu cầu nguyên liệu sản xuất/đầu tư tăng) hoặc XẤU (nhập siêu, áp lực tỷ giá) tùy so sánh với tốc độ xuất khẩu. Nên đọc CÙNG export_growth và trade_balance để đánh giá đúng bối cảnh, không đọc riêng lẻ. Tự động cập nhật qua data.vietnambiz.vn."
+      "note": "LƯU Ý: 'higher=better' mang tính quy ước, không hoàn toàn đúng — nhập khẩu tăng có thể là tín hiệu TỐT (nhu cầu nguyên liệu sản xuất/đầu tư tăng) hoặc XẤU (nhập siêu, áp lực tỷ giá) tùy so sánh với tốc độ xuất khẩu. Nên đọc CÙNG export_growth và trade_balance để đánh giá đúng bối cảnh, không đọc riêng lẻ. Tự động cập nhật qua data.vietnambiz.vn.",
+      "impact": "Nhập khẩu tăng có thể là tín hiệu TỐT (nhu cầu nguyên liệu/máy móc phục vụ sản xuất, đầu tư mở rộng) hoặc XẤU (nhập siêu, áp lực tỷ giá) tùy tốc độ so với xuất khẩu — không nên đọc riêng lẻ."
     },
     "trade_balance": {
       "group": "trade",
@@ -1265,7 +1297,8 @@
         "judgment_label": "Xấu đi",
         "judgment_color": "#ef4444"
       },
-      "note": "Số liệu là LŨY KẾ theo từng kỳ báo cáo (Q1 riêng lẻ, hoặc lũy kế H1/9M/FY) — KHÔNG phải chuỗi quý độc lập cộng dồn được, xem note_period từng điểm. Q1/2026 chuyển sang thâm hụt — điểm cần chú ý trong đánh giá xu hướng."
+      "note": "Số liệu là LŨY KẾ theo từng kỳ báo cáo (Q1 riêng lẻ, hoặc lũy kế H1/9M/FY) — KHÔNG phải chuỗi quý độc lập cộng dồn được, xem note_period từng điểm. Q1/2026 chuyển sang thâm hụt — điểm cần chú ý trong đánh giá xu hướng.",
+      "impact": "Nhập siêu kéo dài làm giảm nguồn cung ngoại tệ, gây áp lực lên tỷ giá USD/VND và dự trữ ngoại hối — ảnh hưởng trực tiếp tới chi phí nhập khẩu nguyên liệu và khả năng can thiệp bình ổn tỷ giá của NHNN."
     },
     "fdi_disbursed": {
       "group": "trade",
@@ -1347,7 +1380,8 @@
         "judgment_label": "Xấu đi",
         "judgment_color": "#ef4444"
       },
-      "note": "Cùng đặc điểm lũy kế như trade_balance — xem note_period từng điểm."
+      "note": "Cùng đặc điểm lũy kế như trade_balance — xem note_period từng điểm.",
+      "impact": "FDI giải ngân chậm lại là tín hiệu cảnh báo dòng vốn ngoại dài hạn có thể đang thận trọng hơn (rủi ro thuế quan, cạnh tranh thu hút đầu tư trong khu vực) — ảnh hưởng tới nguồn cung ngoại tệ và động lực tăng trưởng khu vực công nghiệp-xây dựng trong trung hạn."
     },
     "forex_reserves": {
       "group": "trade",
@@ -1415,7 +1449,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "World Bank API (FI.RES.TOTL.CD, 'Total reserves' — bao gồm vàng, quy đổi USD) — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy. SBV không công bố dự trữ ngoại hối trực tiếp/đều đặn nên đây là nguồn thay thế đáng tin cậy nhất tìm được."
+      "note": "World Bank API (FI.RES.TOTL.CD, 'Total reserves' — bao gồm vàng, quy đổi USD) — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy. SBV không công bố dự trữ ngoại hối trực tiếp/đều đặn nên đây là nguồn thay thế đáng tin cậy nhất tìm được.",
+      "impact": "Dự trữ ngoại hối là bộ đệm để NHNN can thiệp bình ổn tỷ giá khi cần — mức dự trữ dồi dào giúp hấp thụ cú sốc bên ngoài (Fed tăng lãi suất, dòng vốn ngoại rút ròng) tốt hơn mà không cần phá giá VND mạnh."
     },
     "public_debt_gdp": {
       "group": "fiscal",
@@ -1483,7 +1518,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "IMF DataMapper API — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy (imf.org/external/datamapper/api/v1/GG_DEBT_GDP/VNM)."
+      "note": "IMF DataMapper API — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy (imf.org/external/datamapper/api/v1/GG_DEBT_GDP/VNM).",
+      "impact": "Nợ công/GDP thấp và giảm dần cho thấy dư địa tài khóa còn nhiều để Chính phủ đẩy mạnh chi tiêu/đầu tư công kích thích tăng trưởng khi cần, mà không tạo áp lực lên xếp hạng tín nhiệm quốc gia."
     },
     "budget_revenue_growth": {
       "group": "fiscal",
@@ -1507,7 +1543,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài). CHỈ tham chiếu hiển thị — chưa đưa vào Scorecard 5 nhóm vì tài liệu hướng dẫn gốc (Chương 4.1/6.1) không có nhóm 'Tài khóa' riêng, cùng cách xử lý với public_debt_gdp."
+      "note": "Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài). CHỈ tham chiếu hiển thị — chưa đưa vào Scorecard 5 nhóm vì tài liệu hướng dẫn gốc (Chương 4.1/6.1) không có nhóm 'Tài khóa' riêng, cùng cách xử lý với public_debt_gdp.",
+      "impact": "Thu ngân sách tăng nhanh (thường đi cùng tăng trưởng kinh tế/xuất nhập khẩu) tạo dư địa để Chính phủ tăng chi đầu tư công mà không phải tăng vay nợ."
     },
     "budget_expenditure_growth": {
       "group": "fiscal",
@@ -1531,7 +1568,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "LƯU Ý: hướng 'tốt' không rõ ràng như các chỉ báo khác — chi ngân sách tăng có thể là tích cực (kích thích tăng trưởng, đẩy mạnh đầu tư công) hoặc tiêu cực (rủi ro thâm hụt) tùy bối cảnh, không mang tính kết luận một chiều như nhãn 'higher=tốt' ngụ ý. Tự động lấy điểm mới nhất qua data.vietnambiz.vn. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm."
+      "note": "LƯU Ý: hướng 'tốt' không rõ ràng như các chỉ báo khác — chi ngân sách tăng có thể là tích cực (kích thích tăng trưởng, đẩy mạnh đầu tư công) hoặc tiêu cực (rủi ro thâm hụt) tùy bối cảnh, không mang tính kết luận một chiều như nhãn 'higher=tốt' ngụ ý. Tự động lấy điểm mới nhất qua data.vietnambiz.vn. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm.",
+      "impact": "Chi ngân sách tăng có thể là tích cực (kích thích tăng trưởng qua đầu tư công) hoặc tiêu cực (rủi ro thâm hụt) tùy cấu phần chi đầu tư hay chi thường xuyên — không mang tính kết luận một chiều."
     },
     "public_investment_growth": {
       "group": "fiscal",
@@ -1555,7 +1593,8 @@
         "arrow": "—",
         "is_improving": null
       },
-      "note": "Theo tài liệu hướng dẫn gốc (Chương 5.4): đẩy mạnh giải ngân đầu tư công là một trong các động lực/cơ hội chính cho TTCK Việt Nam. Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm (không có nhóm 'Tài khóa' riêng theo khung gốc)."
+      "note": "Theo tài liệu hướng dẫn gốc (Chương 5.4): đẩy mạnh giải ngân đầu tư công là một trong các động lực/cơ hội chính cho TTCK Việt Nam. Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm (không có nhóm 'Tài khóa' riêng theo khung gốc).",
+      "impact": "Giải ngân đầu tư công là một trong các động lực chính cho nhóm cổ phiếu xây dựng, vật liệu, hạ tầng — tốc độ giải ngân THỰC TẾ (không chỉ kế hoạch) mới quyết định mức độ lan tỏa tới các ngành này."
     },
     "unemployment_rate": {
       "group": "labor",
@@ -1628,7 +1667,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "Tỷ lệ thất nghiệp trong độ tuổi lao động (GSO/NSO methodology) — khác phương pháp ILO-modeled của World Bank (World Bank annual series thấp hơn đáng kể, dùng làm đối chiếu năm, không trộn chung chuỗi)."
+      "note": "Tỷ lệ thất nghiệp trong độ tuổi lao động (GSO/NSO methodology) — khác phương pháp ILO-modeled của World Bank (World Bank annual series thấp hơn đáng kể, dùng làm đối chiếu năm, không trộn chung chuỗi).",
+      "impact": "Tỷ lệ thất nghiệp thấp phản ánh thị trường lao động khỏe mạnh, hỗ trợ thu nhập và sức mua tiêu dùng — cần đối chiếu với tăng trưởng tiền lương thực tế để đánh giá đúng chất lượng việc làm."
     },
     "fed_funds_rate": {
       "group": "external",
@@ -1716,7 +1756,8 @@
         "judgment_label": "Ổn định",
         "judgment_color": "#f59e0b"
       },
-      "note": "FRED API (series FEDFUNDS, effective federal funds rate, giá trị tháng đầu quý) — tự động cập nhật mỗi lần Action chạy nếu có FRED_API_KEY."
+      "note": "FRED API (series FEDFUNDS, effective federal funds rate, giá trị tháng đầu quý) — tự động cập nhật mỗi lần Action chạy nếu có FRED_API_KEY.",
+      "impact": "Lãi suất Fed cao/neo lâu khiến dòng vốn toàn cầu có xu hướng ở lại USD (lợi suất cao, rủi ro thấp) thay vì chảy vào thị trường mới nổi như Việt Nam — gây áp lực lên tỷ giá USD/VND và dòng vốn ngoại vào TTCK."
     },
     "brent_oil": {
       "group": "external",
@@ -1804,7 +1845,8 @@
         "judgment_label": "Xấu đi",
         "judgment_color": "#ef4444"
       },
-      "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu."
+      "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu.",
+      "impact": "Giá dầu tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng; đồng thời làm tăng chi phí nhập khẩu xăng dầu tinh chế của Việt Nam (nước nhập khẩu ròng), góp phần vào lạm phát chi phí đẩy."
     },
     "dxy_proxy": {
       "group": "external",
@@ -1887,7 +1929,8 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "FRED không có ICE DXY công khai miễn phí — dùng DTWEXBGS (Trade Weighted Dollar Index: Broad) làm chỉ báo thay thế tương đương về mặt kinh tế, KHÔNG cùng thang điểm số với DXY thông thường (DXY thường ~100-110, DTWEXBGS ~120-130) — chỉ so sánh XU HƯỚNG, không so sánh trực tiếp giá trị tuyệt đối."
+      "note": "FRED không có ICE DXY công khai miễn phí — dùng DTWEXBGS (Trade Weighted Dollar Index: Broad) làm chỉ báo thay thế tương đương về mặt kinh tế, KHÔNG cùng thang điểm số với DXY thông thường (DXY thường ~100-110, DTWEXBGS ~120-130) — chỉ so sánh XU HƯỚNG, không so sánh trực tiếp giá trị tuyệt đối.",
+      "impact": "Đồng USD mạnh lên (DXY/DTWEXBGS tăng) thường đi kèm áp lực mất giá lên các đồng tiền mới nổi bao gồm VND, và khiến dòng vốn ngoại có xu hướng rút khỏi thị trường cận biên/mới nổi để quay về tài sản USD."
     },
     "china_gdp_growth": {
       "group": "external",
@@ -1955,31 +1998,58 @@
         "judgment_label": "Ổn định",
         "judgment_color": "#f59e0b"
       },
-      "note": "World Bank API — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy."
+      "note": "World Bank API — dữ liệu THEO NĂM, tự động cập nhật mỗi lần Action chạy.",
+      "impact": "Trung Quốc là một trong các đối tác thương mại lớn nhất của Việt Nam — tăng trưởng GDP Trung Quốc chậm lại làm giảm nhu cầu nhập khẩu nguyên liệu/hàng hóa từ Việt Nam, đồng thời có thể gia tăng cạnh tranh hàng giá rẻ Trung Quốc tại thị trường nội địa và các thị trường xuất khẩu chung."
     },
     "vnindex_pe": {
       "group": "market",
       "label": "VN-Index P/E",
       "unit": "x",
       "goodDirection": "lower",
-      "autoSource": "pe_ratio_api",
+      "autoSource": "24hmoney_scrape",
       "series": [
         {
           "period": "2026-07",
-          "value": 15.43,
-          "source_url": "https://worldperatio.com/area/vietnam/"
+          "value": 13.53,
+          "source_url": "https://24hmoney.vn/indices/vn-index"
         }
       ],
       "trend": {
-        "latest": 15.43,
+        "latest": 13.53,
         "latest_period": "2026-07",
-        "latest_source": "https://worldperatio.com/area/vietnam/",
+        "latest_source": "https://24hmoney.vn/indices/vn-index",
         "n_points": 1,
         "label": "insufficient",
         "arrow": "—",
         "is_improving": null
       },
-      "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế) — khớp số liệu tài liệu hướng dẫn gốc (15,43 lần, 10/7/2026). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. LƯU Ý: user cung cấp ảnh chụp biểu đồ P/E-TTM VNINDEX từ Vietcap (12/7/2026) cho số KHÁC — 13.7 (Mean 14.5, +1SD 17.1, +2SD 19.8, -1SD 11.9, -2SD 9.2) — chênh lệch với worldperatio.com (15.43) do khác phương pháp tính (cách xác định TTM, cách xử lý cổ phiếu lỗ/outlier trong rổ chỉ số...). Không tự ý đổi nguồn auto — ghi chú lại để biết có 2 số liệu tham chiếu khác nhau, không phải lỗi dữ liệu."
+      "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. NÂNG CẤP (2026-07): nguồn chính chuyển sang 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} nhúng sẵn trong window.__NUXT__, không cần render JS) — worldperatio.com giữ làm fallback nếu 24hmoney lỗi. Điểm seed 15.43 phía trên lấy từ worldperatio.com; từ lần Action kế tiếp sẽ là số 24hmoney (gần với số Vietcap P/E-TTM 13.7 mà user từng đối chiếu hơn — 2 nguồn khác phương pháp tính TTM/xử lý outlier, không phải lỗi dữ liệu).",
+      "impact": "VN-Index P/E thấp hơn nghĩa là nhà đầu tư đang trả giá thấp hơn cho mỗi đồng lợi nhuận doanh nghiệp — thị trường rẻ hơn tương đối. So sánh Earnings Yield (nghịch đảo P/E) với lãi suất huy động/TPCP mới cho biết dòng tiền có nên ở lại cổ phiếu hay chuyển sang tiền gửi/trái phiếu (xem thêm ERP trong khối Định giá thị trường)."
+    },
+    "vnindex_pb": {
+      "group": "market",
+      "label": "VN-Index P/B",
+      "unit": "x",
+      "goodDirection": "lower",
+      "autoSource": "24hmoney_scrape",
+      "series": [
+        {
+          "period": "2026-07",
+          "value": 2.08,
+          "source_url": "https://24hmoney.vn/indices/vn-index"
+        }
+      ],
+      "trend": {
+        "latest": 2.08,
+        "latest_period": "2026-07",
+        "latest_source": "https://24hmoney.vn/indices/vn-index",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Auto-scrape 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} nhúng trong window.__NUXT__) — cùng lần fetch với vnindex_pe. Trước đây P/B bị loại khỏi phạm vi vì không tìm được nguồn API cấp CHỈ SỐ (chỉ có API cấp từng mã) — 24hmoney cung cấp trực tiếp P/B cấp chỉ số nên bổ sung lại theo yêu cầu user.",
+      "impact": "P/B cho biết thị giá đang cao/thấp hơn bao nhiêu lần so với giá trị sổ sách của toàn bộ doanh nghiệp niêm yết — hữu ích để đối chiếu chéo với P/E (vd P/E thấp nhưng P/B cao có thể do ROE đang ở đỉnh chu kỳ, không hẳn là rẻ bền vững)."
     }
   }
 }

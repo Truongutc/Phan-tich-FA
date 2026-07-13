@@ -27,6 +27,7 @@ const SOURCE_LABELS = {
     bank_page: 'Trang NH chính thức (tự động)',
     news_rss: 'RSS tin tức CafeF/VietStock (tự động, chỉ khi có tin mới)',
     market_table: '24hmoney.vn (bảng đa ngân hàng, tự động)',
+    '24hmoney_scrape': '24hmoney.vn (chỉ số P/E-P/B, tự động)',
     manual: 'Nghiên cứu thủ công',
 };
 
@@ -154,6 +155,8 @@ function renderDecision(decision, total) {
 function renderValuation(val) {
     if (!val) return;
     document.getElementById('val-pe').textContent = val.pe ? `${formatNumber(val.pe)}x` : '-';
+    const pbEl = document.getElementById('val-pb');
+    if (pbEl) pbEl.textContent = val.pb ? `${formatNumber(val.pb)}x` : '-';
     document.getElementById('val-rf').textContent = val.rf ? `${(val.rf * 100).toFixed(2)}%` : '-';
     document.getElementById('val-erp').textContent = val.erp !== null && val.erp !== undefined ? `${(val.erp * 100).toFixed(2)}%` : '-';
     const labelEl = document.getElementById('val-label');
@@ -198,7 +201,8 @@ function renderIndicatorGroups(indicators) {
                 <div class="ind-value">${t.latest !== null && t.latest !== undefined ? formatNumber(t.latest) : '-'} <span style="font-size:0.5em;color:var(--text-muted)">${ind.unit}</span></div>
                 <div class="ind-meta">Kỳ: ${t.latest_period || '—'} · Nguồn: ${SOURCE_LABELS[ind.autoSource] || ind.autoSource}</div>
                 ${hasChart ? `<div class="ind-chart"><canvas id="${canvasId}"></canvas></div>` : ''}
-                ${ind.note ? `<div class="ind-note">${ind.note}</div>` : ''}
+                ${ind.impact ? `<div class="ind-note">${ind.impact}</div>` : ''}
+                ${ind.note ? `<div class="ind-source-note">${ind.note}</div>` : ''}
             `;
             grid.appendChild(card);
 
