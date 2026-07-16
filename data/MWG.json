@@ -2,11 +2,16 @@
   "ticker": "MWG",
   "companyName": "CTCP Đầu tư Thế Giới Di Động",
   "sector": "Bán lẻ",
-  "currentPrice": 78900.0,
-  "marketCap": 115983000000000.0,
+  "currentPrice": 76800.0,
+  "marketCap": 112896000000000.0,
   "shares": 1470000000.0,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1lT0XrxJ-9B27xws5LbYd_G2gVt1FefMC/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1jYTgiohFccQX5gBrC1K4_jeNTPVtgBp8/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1NuBcD3wFQZe4YN_2e20y977EGjGkdMEm/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1pR4ojp50uuFmITxbyAJg1ezp-RpjMt2d/view?usp=drivesdk",
+  "betaRfCache": {
+    "beta": 1.128,
+    "rf": 0.045,
+    "fetchedAt": "2026-07-15 14:49"
+  },
   "data": {
     "years": [
       2021,
@@ -24,9 +29,9 @@
       118279.8,
       134341.2,
       155928.1,
-      193094.5,
-      221613.2,
-      242275.6
+      194783.9,
+      227337.7,
+      248264.9
     ],
     "npat": [
       4898.9,
@@ -34,9 +39,9 @@
       167.7,
       3721.9,
       7033.7,
-      11109.6,
-      13777.6,
-      16253.2
+      11206.2,
+      14133.5,
+      16655.0
     ],
     "eps": [
       6871.0,
@@ -44,9 +49,9 @@
       115.0,
       2546.0,
       4785.0,
-      7558.0,
-      9373.0,
-      11057.0
+      7623.0,
+      9615.0,
+      11330.0
     ],
     "equity": [
       20378.2,
@@ -54,9 +59,9 @@
       23359.6,
       28121.6,
       33176.1,
-      41015.6,
-      50701.6,
-      62128.0
+      41083.6,
+      51019.8,
+      62728.6
     ]
   },
   "segments": {
@@ -67,51 +72,51 @@
       "Khac"
     ],
     "storeCountNow": {
-      "TGDD": 1012,
-      "DMX": 2004,
-      "BHX": 3051,
-      "AnKhang": 416,
+      "TGDD": 1008,
+      "DMX": 2005,
+      "BHX": 3191,
+      "AnKhang": 415,
       "AvaKids": 95,
-      "EraBlue": 245
+      "EraBlue": 80
     },
     "revenueForecast": {
       "TGDD": [
-        42862.4,
-        41874.1,
-        41452.0
+        43631.9,
+        43181.8,
+        42744.8
       ],
       "DMX": [
-        87100.3,
-        89651.8,
-        92341.3
+        89028.0,
+        93164.9,
+        95959.9
       ],
       "BHX": [
-        61127.5,
-        84449.3,
-        101912.6
+        60620.8,
+        85028.1,
+        102611.1
       ],
       "Khac": [
-        4419.9,
-        5638.0,
-        6569.7
+        4481.9,
+        5962.9,
+        6949.1
       ]
     },
     "efficiencyNow": {
-      "TGDD": 3.518,
-      "DMX": 3.619,
-      "BHX": 1.53,
-      "Khac": 0.491
+      "TGDD": 3.642,
+      "DMX": 3.759,
+      "BHX": 1.54,
+      "Khac": 0.52
     },
     "storeCountForecast": {
       "TGDD": [
-        1002,
-        992,
-        982
+        998,
+        988,
+        978
       ],
       "DMX": [
-        2004,
-        2004,
-        2004
+        2005,
+        2005,
+        2005
       ],
       "BHX": [
         3559,
@@ -119,9 +124,9 @@
         4759
       ],
       "Khac": [
-        811,
-        911,
-        1011
+        810,
+        910,
+        1010
       ]
     },
     "monthly": {
@@ -214,7 +219,8 @@
         "T2-26",
         "T3-26",
         "T4-26",
-        "T5-26"
+        "T5-26",
+        "T6-26"
       ],
       "storeCount": {
         "TGDD": [
@@ -306,7 +312,8 @@
           1014,
           1014,
           1012,
-          1012
+          1012,
+          1008
         ],
         "DMX": [
           764,
@@ -397,7 +404,8 @@
           2008,
           2006,
           2005,
-          2004
+          2004,
+          2005
         ],
         "BHX": [
           421,
@@ -488,7 +496,8 @@
           2758,
           2839,
           2962,
-          3051
+          3051,
+          3191
         ],
         "Khac": [
           null,
@@ -579,7 +588,8 @@
           995,
           621,
           559,
-          756
+          756,
+          590
         ]
       },
       "efficiency": {
@@ -672,7 +682,8 @@
           3.636,
           3.23,
           3.618,
-          3.705
+          3.705,
+          3.604
         ],
         "DMX": [
           8.517,
@@ -763,7 +774,8 @@
           3.721,
           3.309,
           3.7,
-          3.85
+          3.85,
+          3.728
         ],
         "BHX": [
           1.492,
@@ -854,7 +866,8 @@
           1.676,
           1.446,
           1.549,
-          1.595
+          1.595,
+          1.477
         ],
         "Khac": [
           null,
@@ -945,7 +958,8 @@
           0.324,
           0.461,
           0.572,
-          0.441
+          0.441,
+          0.547
         ]
       }
     }
@@ -1290,8 +1304,8 @@
     }
   ],
   "thesis": [
-    "MWG dẫn đầu bán lẻ đa ngành VN với 6,823 cửa hàng (TGDĐ/ĐMX dẫn đầu ICT, BHX dẫn đầu FMCG hiện đại), tận dụng quy mô đàm phán giá tốt với NCC.",
-    "BHX có lãi từ 2023, đang tăng tốc mở rộng (+492 CH trong 5T2026), SSSG cao nhất công ty — dư địa tăng trưởng dài hạn lớn.",
+    "MWG dẫn đầu bán lẻ đa ngành VN với 6,794 cửa hàng (TGDĐ/ĐMX dẫn đầu ICT, BHX dẫn đầu FMCG hiện đại), tận dụng quy mô đàm phán giá tốt với NCC.",
+    "BHX có lãi từ 2023, đang tăng tốc mở rộng (+632 CH trong 5T2026), SSSG cao nhất công ty — dư địa tăng trưởng dài hạn lớn.",
     "Doanh thu 5T2026 đạt 79,159 tỷ (+29,3% svck), SSSG TGDĐ/ĐMX ~33% nhờ chu kỳ phục hồi sức mua và nâng cấp thiết bị ICT."
   ],
   "risks": [
@@ -1354,14 +1368,14 @@
     }
   ],
   "valuation": {
-    "bear": 69707.0,
-    "base": 99466.0,
-    "bull": 129355.0,
+    "bear": 71526.0,
+    "base": 100242.0,
+    "bull": 130468.0,
     "methods": {
-      "pe": 123195.0,
-      "pb": 104632.0,
-      "ri": 77452.0,
-      "ps_pe": 84379.0
+      "pe": 124255.0,
+      "pb": 104805.0,
+      "ri": 79473.0,
+      "ps_pe": 85113.0
     },
     "weights": {
       "PE": 0.25,
@@ -1370,15 +1384,15 @@
       "PS_PE": 0.35
     },
     "recommendation": "MUA",
-    "upsidePct": 26.1,
+    "upsidePct": 30.5,
     "coe": 13.6,
     "peMedian": 16.3,
     "pbMedian": 3.75
   },
   "comments": {
-    "businessModel": "MWG vận hành 3 chuỗi bán lẻ chính: TGDĐ+ĐMX (3,016 cửa hàng, ICT/điện máy, đã bão hòa) và BHX (3,051 cửa hàng, FMCG, tăng trưởng nhanh nhất, có lãi từ 2023). Mô hình dựa trên quy mô mạng lưới để tối ưu chi phí vận hành/mua hàng.",
-    "financialPerformance": "Doanh thu 2026E dự phóng 193,094 tỷ (+23.8% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,110 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
-    "valuationText": "Giá mục tiêu 99,466 VND (upside +26.1%) theo mô hình 4 phương pháp (P/E 25%, P/B 30%, RI 10%, P/S+P/E theo từng mảng 35%). Khuyến nghị MUA."
+    "businessModel": "MWG vận hành 3 chuỗi bán lẻ chính: TGDĐ+ĐMX (3,013 cửa hàng, ICT/điện máy, đã bão hòa) và BHX (3,191 cửa hàng, FMCG, tăng trưởng nhanh nhất, có lãi từ 2023). Mô hình dựa trên quy mô mạng lưới để tối ưu chi phí vận hành/mua hàng.",
+    "financialPerformance": "Doanh thu 2026E dự phóng 194,784 tỷ (+24.9% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,206 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
+    "valuationText": "Giá mục tiêu 100,242 VND (upside +30.5%) theo mô hình 4 phương pháp (P/E 25%, P/B 30%, RI 10%, P/S+P/E theo từng mảng 35%). Khuyến nghị MUA."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -1414,7 +1428,7 @@
     25.48,
     21.6,
     16.75,
-    14.21
+    13.83
   ],
   "pb_quarters": [
     5.16,
@@ -1448,7 +1462,7 @@
     4.2,
     4.02,
     3.6,
-    3.28
+    3.2
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -1511,9 +1525,9 @@
       0.0072,
       0.1324,
       0.212,
-      0.2709,
-      0.2717,
-      0.2616
+      0.2728,
+      0.277,
+      0.2655
     ],
     "net_margin": [
       0.0398,
@@ -1525,5 +1539,6 @@
       0.0622,
       0.0671
     ]
-  }
+  },
+  "lastUpdated": "2026-07-15 14:49"
 }
