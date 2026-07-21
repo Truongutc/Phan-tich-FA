@@ -2,15 +2,15 @@
   "ticker": "MWG",
   "companyName": "CTCP Đầu tư Thế Giới Di Động",
   "sector": "Bán lẻ",
-  "currentPrice": 76800.0,
-  "marketCap": 112896000000000.0,
+  "currentPrice": 75200.0,
+  "marketCap": 110544000000000.0,
   "shares": 1470000000.0,
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1NuBcD3wFQZe4YN_2e20y977EGjGkdMEm/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1pR4ojp50uuFmITxbyAJg1ezp-RpjMt2d/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1-jEEStSmnsGPZhPkDObdjqLFGIZ79K0j/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1UWGJkUsLzeKlRse8UTgypU1YSqdynPDK/view?usp=drivesdk",
   "betaRfCache": {
-    "beta": 1.128,
+    "beta": 1.1226,
     "rf": 0.045,
-    "fetchedAt": "2026-07-15 14:49"
+    "fetchedAt": "2026-07-21 06:30"
   },
   "data": {
     "years": [
@@ -1368,13 +1368,13 @@
     }
   ],
   "valuation": {
-    "bear": 71526.0,
-    "base": 100242.0,
-    "bull": 130468.0,
+    "bear": 71725.0,
+    "base": 100016.0,
+    "bull": 129427.0,
     "methods": {
-      "pe": 124255.0,
+      "pe": 123264.0,
       "pb": 104805.0,
-      "ri": 79473.0,
+      "ri": 79694.0,
       "ps_pe": 85113.0
     },
     "weights": {
@@ -1384,15 +1384,15 @@
       "PS_PE": 0.35
     },
     "recommendation": "MUA",
-    "upsidePct": 30.5,
-    "coe": 13.6,
-    "peMedian": 16.3,
+    "upsidePct": 33.0,
+    "coe": 13.57,
+    "peMedian": 16.17,
     "pbMedian": 3.75
   },
   "comments": {
     "businessModel": "MWG vận hành 3 chuỗi bán lẻ chính: TGDĐ+ĐMX (3,013 cửa hàng, ICT/điện máy, đã bão hòa) và BHX (3,191 cửa hàng, FMCG, tăng trưởng nhanh nhất, có lãi từ 2023). Mô hình dựa trên quy mô mạng lưới để tối ưu chi phí vận hành/mua hàng.",
     "financialPerformance": "Doanh thu 2026E dự phóng 194,784 tỷ (+24.9% YoY), biên LNG duy trì 20.8%, LNST Cổ đông mẹ 11,206 tỷ. Đòn bẩy thấp, Net Debt âm (net cash), xu hướng cải thiện nhờ FCF chuyển dương khi BHX hoà vốn.",
-    "valuationText": "Giá mục tiêu 100,242 VND (upside +30.5%) theo mô hình 4 phương pháp (P/E 25%, P/B 30%, RI 10%, P/S+P/E theo từng mảng 35%). Khuyến nghị MUA."
+    "valuationText": "Giá mục tiêu 100,016 VND (upside +33.0%) theo mô hình 4 phương pháp (P/E 25%, P/B 30%, RI 10%, P/S+P/E theo từng mảng 35%). Khuyến nghị MUA."
   },
   "pe_hist": [],
   "pb_hist": [],
@@ -1428,7 +1428,8 @@
     25.48,
     21.6,
     16.75,
-    13.83
+    13.83,
+    13.55
   ],
   "pb_quarters": [
     5.16,
@@ -1462,7 +1463,8 @@
     4.2,
     4.02,
     3.6,
-    3.2
+    3.2,
+    3.14
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -1496,7 +1498,8 @@
     "2025-Q2",
     "2025-Q3",
     "2025-Q4",
-    "2026-Q1"
+    "2026-Q1",
+    "2026-Q2"
   ],
   "ratios": {
     "gpm": [
@@ -1540,5 +1543,5 @@
       0.0671
     ]
   },
-  "lastUpdated": "2026-07-15 14:49"
+  "lastUpdated": "2026-07-21 06:30"
 }
