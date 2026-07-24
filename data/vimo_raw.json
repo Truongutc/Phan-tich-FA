@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-13 11:59",
+    "last_auto_update": "2026-07-23 09:12",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -16,6 +16,12 @@
         "total": 0,
         "valuation_label": "Hợp lý",
         "decision_label": "Phòng thủ, giữ tiền mặt"
+      },
+      {
+        "date": "2026-07-23",
+        "total": 0,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Mua từ từ, phân kỳ"
       }
     ]
   },
@@ -74,7 +80,7 @@
       {
         "period": "2026-Q2",
         "value": 8.39,
-        "source_url": "https://vneconomy.vn/quy-12026-nen-kinh-te-vuot-qua-con-gio-nguoc.htm"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Q1/2026 báo cáo NSO ghi chú đã điều chỉnh lại số liệu 2025 (vd Q1-Q3/2025 sau điều chỉnh: 7.05/8.16/8.25%) — bảng trên dùng số liệu GỐC công bố tại thời điểm mỗi quý (theo đúng báo cáo gốc từng kỳ), không dùng số đã revise để nhất quán nguồn.",
@@ -161,35 +167,640 @@
     "label": "PMI sản xuất (S&P Global)",
     "unit": "điểm",
     "good_direction": "higher",
-    "auto_source": "vietnambiz",
+    "auto_source": "vbma",
     "series": [
+      {
+        "period": "2016-01",
+        "value": 51.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-02",
+        "value": 50.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-03",
+        "value": 50.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-04",
+        "value": 52.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-05",
+        "value": 52.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-06",
+        "value": 52.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-07",
+        "value": 51.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-08",
+        "value": 52.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-09",
+        "value": 52.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-10",
+        "value": 51.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-11",
+        "value": 54.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2016-12",
+        "value": 52.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-01",
+        "value": 51.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-02",
+        "value": 54.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-03",
+        "value": 54.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-04",
+        "value": 54.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-05",
+        "value": 51.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-06",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-07",
+        "value": 51.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-08",
+        "value": 51.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-09",
+        "value": 53.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-10",
+        "value": 51.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-11",
+        "value": 51.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2017-12",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-01",
+        "value": 53.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-02",
+        "value": 53.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-03",
+        "value": 51.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-04",
+        "value": 52.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-05",
+        "value": 53.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-06",
+        "value": 55.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-07",
+        "value": 54.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-08",
+        "value": 53.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-09",
+        "value": 51.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-10",
+        "value": 53.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-11",
+        "value": 56.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2018-12",
+        "value": 53.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-01",
+        "value": 51.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-02",
+        "value": 51.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-03",
+        "value": 51.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-04",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-05",
+        "value": 52.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-06",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-07",
+        "value": 52.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-08",
+        "value": 51.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-09",
+        "value": 50.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-10",
+        "value": 50.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-11",
+        "value": 51.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2019-12",
+        "value": 50.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-01",
+        "value": 50.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-02",
+        "value": 50.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-03",
+        "value": 41.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-04",
+        "value": 32.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-05",
+        "value": 42.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-06",
+        "value": 51.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-07",
+        "value": 47.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-08",
+        "value": 45.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-09",
+        "value": 52.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-10",
+        "value": 51.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-11",
+        "value": 49.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2020-12",
+        "value": 51.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-01",
+        "value": 51.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-02",
+        "value": 51.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-03",
+        "value": 53.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-04",
+        "value": 54.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-05",
+        "value": 53.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-06",
+        "value": 44.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-07",
+        "value": 45.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-08",
+        "value": 40.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-09",
+        "value": 40.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-10",
+        "value": 52.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-11",
+        "value": 52.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2021-12",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-01",
+        "value": 53.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-02",
+        "value": 54.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-03",
+        "value": 51.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-04",
+        "value": 51.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-05",
+        "value": 54.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-06",
+        "value": 54.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-07",
+        "value": 51.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-08",
+        "value": 52.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-09",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-10",
+        "value": 50.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-11",
+        "value": 47.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2022-12",
+        "value": 46.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-01",
+        "value": 47.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-02",
+        "value": 51.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-03",
+        "value": 47.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-04",
+        "value": 46.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-05",
+        "value": 45.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-06",
+        "value": 46.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-07",
+        "value": 48.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-08",
+        "value": 50.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-09",
+        "value": 49.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-10",
+        "value": 49.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-11",
+        "value": 47.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2023-12",
+        "value": 48.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-01",
+        "value": 50.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-02",
+        "value": 50.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-03",
+        "value": 49.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-04",
+        "value": 50.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-05",
+        "value": 50.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-06",
+        "value": 54.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-07",
+        "value": 54.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-08",
+        "value": 52.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-09",
+        "value": 47.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-10",
+        "value": 51.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-11",
+        "value": 50.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2024-12",
+        "value": 49.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-01",
+        "value": 48.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-02",
+        "value": 49.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-03",
+        "value": 50.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-04",
+        "value": 45.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-05",
+        "value": 49.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-06",
+        "value": 48.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-07",
+        "value": 52.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-08",
+        "value": 50.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-09",
+        "value": 50.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-10",
+        "value": 54.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2025-11",
+        "value": 53.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
       {
         "period": "2025-12",
         "value": 53.0,
-        "source_url": "https://www.pmi.spglobal.com/Public/Home/PressRelease/df50fdf031594c39921fc6de264c6a51"
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2026-01",
+        "value": 52.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
+      },
+      {
+        "period": "2026-02",
+        "value": 54.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
       },
       {
         "period": "2026-03",
-        "value": 54.2,
-        "source_url": "https://www.pmi.spglobal.com/"
+        "value": 51.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
       },
       {
         "period": "2026-04",
         "value": 50.5,
-        "source_url": "https://www.vietnam-briefing.com/news/vietnam-manufacturing-tracker.html/"
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
       },
       {
         "period": "2026-05",
         "value": 52.8,
-        "source_url": "https://en.vietnamplus.vn/manufacturing-sector-ends-first-half-of-2026-with-firm-growth-as-pmi-holds-above-no-change-mark-post347589.vnp"
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
       },
       {
         "period": "2026-06",
         "value": 51.8,
-        "source_url": "https://data.vietnambiz.vn/macro-economic"
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
       }
     ],
-    "note": ">50 = mở rộng, <50 = thu hẹp. Nguồn duy nhất đáng tin cậy là S&P Global (không có API miễn phí) — tự động lấy điểm MỚI NHẤT qua data.vietnambiz.vn mỗi lần Action chạy (tích lũy dần thành chuỗi dài), các điểm lịch sử phía trên vẫn giữ nguyên vì đã nghiên cứu thủ công trước đó.",
+    "note": ">50 = mở rộng, <50 = thu hẹp. Nâng cấp 2026-07-23 sang vbma.org.vn/vi/market-data/gdp-growth (bảng PMI theo tháng, khớp giá trị chính xác với các điểm S&P Global/VietnamBiz đã có ở T4-T6/2026) — có sẵn lịch sử từ T1/2016, tự động backfill toàn bộ khi chạy fetch_vbma_pmi(), thay cho cách tích lũy 1 điểm/lần chạy qua VietnamBiz trước đây.",
     "impact": "PMI trên 50 nghĩa là số doanh nghiệp mở rộng sản xuất nhiều hơn số thu hẹp — đây là chỉ báo SỚM (leading) về đơn hàng mới/tồn kho, thường đi trước số liệu IIP và xuất khẩu chính thức vài tháng."
   },
   "retail_sales_growth": {
@@ -218,75 +829,400 @@
     "label": "CPI (YoY)",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "nso_chart_embed",
+    "auto_source": "vbma",
     "series": [
+      {
+        "period": "2020-01",
+        "value": 6.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 5.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": 4.87,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": 2.93,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": 2.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": 3.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": 3.39,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": 3.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": 2.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": 2.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": 1.48,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": 0.19,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": -0.97,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": 0.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 1.16,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 2.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 2.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": 2.41,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 2.64,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 2.82,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": 2.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": 1.77,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": 2.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": 1.81,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": 1.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": 1.42,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": 2.41,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 2.64,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 2.86,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 3.37,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 3.14,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 2.89,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 3.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 4.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 4.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": 4.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 4.89,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": 4.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": 3.35,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": 2.81,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": 2.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": 2.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": 2.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": 2.96,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 3.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 3.59,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 3.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 3.58,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 3.37,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 3.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 3.97,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 4.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 4.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 4.34,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 4.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": 3.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": 2.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": 2.89,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": 2.77,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": 2.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": 3.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": 2.91,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": 3.13,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": 3.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": 3.24,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
       {
         "period": "2025-06",
         "value": 3.57,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2025-07",
         "value": 3.19,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2025-08",
         "value": 3.24,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2025-09",
         "value": 3.38,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2025-10",
         "value": 3.25,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2025-11",
         "value": 3.58,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2025-12",
         "value": 3.48,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2026-01",
         "value": 2.53,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2026-02",
         "value": 3.35,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2026-03",
         "value": 4.65,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2026-04",
         "value": 5.46,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2026-05",
         "value": 5.6,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       },
       {
         "period": "2026-06",
         "value": 4.69,
-        "source_url": "https://www.nso.gov.vn/cpi-vi/"
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       }
     ],
-    "note": "Ngưỡng mục tiêu NHNN: dưới 4-5%. Nâng cấp lên nso.gov.vn/cpi-vi/ (biểu đồ chuyên đề, đầy đủ 13 tháng gần nhất, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi NSO khi fetch_macro_data.py chạy lần tới.",
+    "note": "Ngưỡng mục tiêu NHNN: dưới 4-5%. Nâng cấp 2026-07-23 sang vbma.org.vn/vi/market-data/cpi (khớp giá trị chính xác với nso.gov.vn/cpi-vi/, vd T6/2026: 4.69%) — có sẵn lịch sử từ T1/2020 (dài hơn cửa sổ ~13 tháng của biểu đồ nhúng NSO), tự động backfill toàn bộ khi chạy fetch_vbma_cpi_yoy().",
     "impact": "CPI vượt mục tiêu NHNN (~4-4,5%) thường buộc nhà điều hành thắt chặt tiền tệ (tăng lãi suất/hạn chế cung tiền), bào mòn sức mua và có thể ảnh hưởng tiêu cực đến định giá nhóm cổ phiếu tăng trưởng."
   },
   "core_inflation": {
@@ -294,10 +1230,2406 @@
     "label": "Lạm phát cơ bản (YoY)",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "manual",
-    "series": [],
-    "note": "Đã khảo sát nso.gov.vn/cong-nghiep/, nso.gov.vn/cpi-vi/, data.vietnambiz.vn — không tìm thấy nguồn 'lạm phát cơ bản' (core, loại trừ lương thực/năng lượng) tách riêng dạng scrape được. VietnamBiz có 'Tỷ lệ lạm phát (Average CPI YoY)' nhưng đó là CPI BÌNH QUÂN, khác khái niệm core — không map nhầm. Cần bổ sung khi tinh chỉnh.",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2020-01",
+        "value": 3.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 2.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": 2.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": 2.71,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": 2.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": 2.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": 2.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": 2.16,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": 1.97,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": 1.88,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": 1.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": 0.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": 0.49,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": 0.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 0.73,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 0.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 1.13,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": 1.14,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 0.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": 0.74,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": 0.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": 0.58,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": 0.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": 0.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": 1.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 1.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 1.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 1.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 2.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 3.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 3.82,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 4.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 4.81,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": 4.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 5.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": 4.96,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": 4.88,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": 4.56,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": 4.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": 4.33,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": 4.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": 4.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 3.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 3.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 3.15,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 2.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 2.72,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 2.96,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 2.76,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 2.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 2.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 2.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 2.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": 2.53,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": 2.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": 2.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": 2.77,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": 2.85,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": 3.07,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": 2.87,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": 3.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": 3.14,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": 3.33,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-06",
+        "value": 3.46,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-07",
+        "value": 3.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-08",
+        "value": 3.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-09",
+        "value": 3.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-10",
+        "value": 3.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-11",
+        "value": 3.28,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-12",
+        "value": 3.27,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-01",
+        "value": 3.19,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-02",
+        "value": 3.74,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-03",
+        "value": 3.96,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-04",
+        "value": 4.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-05",
+        "value": 4.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-06",
+        "value": 4.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      }
+    ],
+    "note": "Đã khảo sát nso.gov.vn/cong-nghiep/, nso.gov.vn/cpi-vi/, data.vietnambiz.vn — không tìm thấy nguồn 'lạm phát cơ bản' tách riêng dạng scrape được. Nâng cấp 2026-07-23: tìm thấy tại vbma.org.vn/vi/market-data/cpi (cùng file CSV với cpi_yoy, dòng 'Lạm phát cơ bản') — đầy đủ lịch sử THEO THÁNG từ T1/2020, tự động backfill toàn bộ khi chạy fetch_vbma_core_inflation().",
     "impact": "Core inflation loại trừ biến động giá lương thực/năng lượng — phản ánh áp lực giá mang tính CƠ CẤU, bền vững hơn CPI tổng, là căn cứ đáng tin cậy hơn để NHNN quyết định lãi suất điều hành dài hạn."
+  },
+  "cpi_contrib_food": {
+    "group": "inflation",
+    "label": "Đóng góp vào CPI — Thực phẩm",
+    "unit": "điểm % CPI",
+    "good_direction": "lower",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2020-01",
+        "value": 3.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 3.13,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": 3.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": 3.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": 4.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": 4.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": 3.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": 3.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": 3.62,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": 3.19,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": 2.23,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": 0.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": 0.35,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": 0.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 0.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": -0.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 0.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 0.39,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": 0.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": 0.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": -0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": 0.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": -0.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": -0.07,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": 0.34,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 0.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 0.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 0.76,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 1.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 1.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 1.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 1.72,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 1.76,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": 1.75,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 2.04,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": 1.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": 1.33,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": 1.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": 1.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": 1.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": 1.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": 0.78,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 0.96,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 0.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 1.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 0.77,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 1.42,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 1.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 1.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 1.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 1.56,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 1.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": 1.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": 1.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": 1.49,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": 1.38,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": 1.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": 1.48,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": 1.04,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": 1.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": 1.37,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": 1.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-06",
+        "value": 1.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-07",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-08",
+        "value": 0.87,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-09",
+        "value": 0.69,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-10",
+        "value": 0.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-11",
+        "value": 1.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-12",
+        "value": 1.41,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-01",
+        "value": 1.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-02",
+        "value": 1.77,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-03",
+        "value": 1.58,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-04",
+        "value": 1.75,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-05",
+        "value": 1.69,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-06",
+        "value": 1.64,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23 — 'kết cấu CPI': số ĐIỂM PHẦN TRĂM mà nhóm hàng Thực phẩm đóng góp vào mức tăng CPI chung (YoY), KHÔNG PHẢI % tăng giá riêng nhóm này. Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020. Tổng 5 nhóm (food/housing_utilities/healthcare/transport/other) ≈ cpi_yoy cùng kỳ.",
+    "impact": "Khi nhóm Thực phẩm đóng góp phần lớn vào lạm phát tổng, áp lực giá thường mang tính MÙA VỤ/CUNG (thời tiết, dịch bệnh gia súc) hơn là do tổng cầu — ít đáng lo về mặt chính sách tiền tệ hơn so với lạm phát lan rộng sang nhiều nhóm hàng."
+  },
+  "cpi_contrib_housing_utilities": {
+    "group": "inflation",
+    "label": "Đóng góp vào CPI — Nhà, điện, nước",
+    "unit": "điểm % CPI",
+    "good_direction": "lower",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2020-01",
+        "value": 1.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 1.04,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": 0.84,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": 0.27,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": 0.07,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": 0.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": 0.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": 0.13,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": 0.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": 0.04,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": -0.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": 0.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 0.15,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 0.52,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 0.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": 0.76,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 0.84,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 0.82,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": 0.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": 0.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": 0.28,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": 0.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": 0.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": 0.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": 0.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 0.51,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 0.41,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 0.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 0.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 0.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 0.83,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 1.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 1.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": 1.34,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 1.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": 1.48,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": 1.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": 1.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": 1.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": 1.24,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": 1.34,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 1.38,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 1.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 1.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 1.07,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 1.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 0.93,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 0.92,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 1.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 1.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 1.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 1.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": 0.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": 0.82,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": 0.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": 0.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": 0.97,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": 0.93,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": 0.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": 1.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": 1.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": 1.15,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-06",
+        "value": 1.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-07",
+        "value": 1.33,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-08",
+        "value": 1.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-09",
+        "value": 1.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-10",
+        "value": 1.27,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-11",
+        "value": 1.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-12",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-01",
+        "value": 1.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-02",
+        "value": 1.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-03",
+        "value": 1.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-04",
+        "value": 1.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-05",
+        "value": 1.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-06",
+        "value": 1.35,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23 — xem note cpi_contrib_food (cùng khái niệm 'kết cấu CPI', khác nhóm hàng). Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
+    "impact": "Nhóm Nhà ở/điện/nước đóng góp lớn vào lạm phát thường phản ánh chi phí năng lượng/giá thuê nhà tăng — mang tính CẤU TRÚC hơn (khó đảo ngược nhanh), đáng chú ý hơn cho quyết định lãi suất điều hành so với cú sốc giá thực phẩm tạm thời."
+  },
+  "cpi_contrib_healthcare": {
+    "group": "inflation",
+    "label": "Đóng góp vào CPI — Y tế",
+    "unit": "điểm % CPI",
+    "good_direction": "lower",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2020-01",
+        "value": 0.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": 0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 0.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 0.35,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 0.35,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 0.35,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 0.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 0.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 0.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 0.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": 0.28,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": 0.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": 0.76,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": 0.78,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": 0.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": 0.73,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": 0.73,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-06",
+        "value": 0.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-07",
+        "value": 0.69,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-08",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-09",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-10",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-11",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-12",
+        "value": 0.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-01",
+        "value": 0.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-02",
+        "value": 0.04,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-03",
+        "value": 0.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-04",
+        "value": 0.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-05",
+        "value": 0.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-06",
+        "value": 0.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23 — xem note cpi_contrib_food (cùng khái niệm 'kết cấu CPI', khác nhóm hàng). Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
+    "impact": "Đóng góp của nhóm Y tế vào CPI thường biến động theo điều chỉnh giá dịch vụ y tế do Nhà nước quản lý (không theo cung-cầu thị trường) — tăng đột biến thường phản ánh một đợt điều chỉnh giá viện phí/BHYT cụ thể, không phải xu hướng lạm phát chung."
+  },
+  "cpi_contrib_transport": {
+    "group": "inflation",
+    "label": "Đóng góp vào CPI — Vận tải",
+    "unit": "điểm % CPI",
+    "good_direction": "lower",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2020-01",
+        "value": 0.73,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": -0.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": -1.89,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": -2.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": -1.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": -1.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": -1.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": -1.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": -1.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": -1.28,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": -1.13,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": -0.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": -0.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 0.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 1.71,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 2.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": 1.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 1.34,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 1.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": 1.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": 1.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": 2.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": 1.53,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": 1.41,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": 1.49,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": 1.77,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 1.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 1.78,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 2.07,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 1.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 0.86,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 0.65,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 0.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": -0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 0.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": -0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": -0.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": -0.38,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": -0.86,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": -1.16,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": -0.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": -0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 0.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 0.38,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 0.16,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 0.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 0.15,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 0.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 0.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 0.41,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 0.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 0.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 0.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": -0.14,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": -0.52,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": -0.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": -0.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": -0.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": -0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": -0.27,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": -0.39,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": -0.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": -0.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-06",
+        "value": -0.18,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-07",
+        "value": -0.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-08",
+        "value": -0.19,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-09",
+        "value": 0.14,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-10",
+        "value": 0.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-11",
+        "value": 0.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-12",
+        "value": -0.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-01",
+        "value": -0.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-02",
+        "value": -0.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-03",
+        "value": 1.05,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-04",
+        "value": 1.07,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-05",
+        "value": 1.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-06",
+        "value": 0.51,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23 — xem note cpi_contrib_food (cùng khái niệm 'kết cấu CPI', khác nhóm hàng). Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
+    "impact": "Đóng góp của nhóm Vận tải vào CPI biến động chặt theo giá xăng dầu thế giới — tăng/giảm đột ngột ở nhóm này thường là dấu hiệu SỚM phản ánh biến động giá dầu Brent trước khi lan sang chi phí sản xuất-vận chuyển của các ngành khác."
+  },
+  "cpi_contrib_other": {
+    "group": "inflation",
+    "label": "Đóng góp vào CPI — Khác",
+    "unit": "điểm % CPI",
+    "good_direction": "lower",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2020-01",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-02",
+        "value": 0.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-03",
+        "value": 0.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-04",
+        "value": 0.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-05",
+        "value": 0.34,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-06",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-07",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-08",
+        "value": 0.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-09",
+        "value": 0.37,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-10",
+        "value": 0.42,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-11",
+        "value": 0.39,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2020-12",
+        "value": 0.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-01",
+        "value": 0.33,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-02",
+        "value": 0.46,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-03",
+        "value": 0.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-04",
+        "value": 0.28,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-05",
+        "value": 0.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-06",
+        "value": 0.25,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-07",
+        "value": 0.28,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-08",
+        "value": 0.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-09",
+        "value": -0.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-10",
+        "value": -0.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-11",
+        "value": -0.16,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2021-12",
+        "value": -0.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-01",
+        "value": -0.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-02",
+        "value": -0.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-03",
+        "value": -0.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-04",
+        "value": 0.14,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-05",
+        "value": 0.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-06",
+        "value": 0.23,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-07",
+        "value": 0.43,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-08",
+        "value": 0.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-09",
+        "value": 1.21,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-10",
+        "value": 1.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-11",
+        "value": 1.37,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2022-12",
+        "value": 1.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-01",
+        "value": 1.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-02",
+        "value": 1.37,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-03",
+        "value": 1.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-04",
+        "value": 0.96,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-05",
+        "value": 0.85,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-06",
+        "value": 0.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-07",
+        "value": 0.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-08",
+        "value": 0.84,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-09",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-10",
+        "value": 0.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-11",
+        "value": 1.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2023-12",
+        "value": 0.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-01",
+        "value": 0.89,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-02",
+        "value": 1.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-03",
+        "value": 1.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-04",
+        "value": 1.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-05",
+        "value": 1.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-06",
+        "value": 0.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-07",
+        "value": 1.01,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-08",
+        "value": 0.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-09",
+        "value": 0.56,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-10",
+        "value": 0.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-11",
+        "value": 0.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2024-12",
+        "value": 0.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-01",
+        "value": 0.49,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-02",
+        "value": 0.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-03",
+        "value": 0.45,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-04",
+        "value": 0.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-05",
+        "value": 0.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-06",
+        "value": 0.68,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-07",
+        "value": 0.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-08",
+        "value": 0.56,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-09",
+        "value": 0.58,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-10",
+        "value": 0.59,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-11",
+        "value": 0.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2025-12",
+        "value": 0.59,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-01",
+        "value": 0.57,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-02",
+        "value": 0.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-03",
+        "value": 0.86,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-04",
+        "value": 1.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-05",
+        "value": 1.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      },
+      {
+        "period": "2026-06",
+        "value": 1.12,
+        "source_url": "https://vbma.org.vn/vi/market-data/cpi"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23 — phần còn lại (may mặc, giáo dục, văn hóa-giải trí, đồ uống-thuốc lá...) gộp chung, xem note cpi_contrib_food. Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
+    "impact": "Nếu nhóm 'Khác' (vốn đa dạng ngành hàng) đóng góp tăng đồng loạt, đó là dấu hiệu lạm phát đã LAN RỘNG ra ngoài các nhóm nhạy giá thông thường (thực phẩm, năng lượng) — đáng lo ngại hơn về mặt chính sách so với lạm phát tập trung ở 1-2 nhóm."
   },
   "refinancing_rate": {
     "group": "monetary",
@@ -329,7 +3661,7 @@
       },
       {
         "period": "2026-07",
-        "value": 7.18,
+        "value": 7.99,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -345,7 +3677,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 4.28,
+        "value": 3.54,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -361,7 +3693,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 4.92,
+        "value": 4.33,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -377,7 +3709,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 5.5,
+        "value": 5.37,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -393,7 +3725,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 6.5,
+        "value": 6.93,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -409,7 +3741,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 7.2,
+        "value": 8.25,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -441,7 +3773,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 0.0,
+        "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
       }
     ],
@@ -567,25 +3899,961 @@
     "note": "NHNN đặt mục tiêu ~15% cho 2026. Nâng cấp lên sbv.gov.vn/vi/du-no-tin-dung-doi-voi-nen-kt-dttktt (biểu đồ 'Tổng cộng' theo tháng, tự động cập nhật mỗi lần Action chạy) — điểm seed cũ phía trên sẽ bị GHI ĐÈ bởi chuỗi SBV khi fetch_macro_data.py chạy lần tới.",
     "impact": "Tín dụng tăng nhanh hơn huy động buộc hệ thống ngân hàng tăng lãi suất huy động/vay mượn liên ngân hàng để bù đắp thanh khoản — hệ quả trực tiếp là lãi suất CHO VAY doanh nghiệp/dân cư bị đẩy lên cao, làm tăng chi phí vốn và bào mòn biên lợi nhuận trên diện rộng nếu kéo dài."
   },
+  "credit_balance_total": {
+    "group": "monetary",
+    "label": "Tổng dư nợ tín dụng toàn nền kinh tế",
+    "unit": "tỷ VND",
+    "good_direction": "higher",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2018-01",
+        "value": 6390566.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-02",
+        "value": 6416397.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-03",
+        "value": 6555278.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-04",
+        "value": 6654158.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-05",
+        "value": 6723248.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-06",
+        "value": 6827140.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-07",
+        "value": 6842262.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-08",
+        "value": 6900174.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-09",
+        "value": 6985654.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-10",
+        "value": 7038597.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-11",
+        "value": 7111011.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2018-12",
+        "value": 7211175.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-01",
+        "value": 7348531.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-02",
+        "value": 7288020.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-03",
+        "value": 7437086.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-04",
+        "value": 7532976.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-05",
+        "value": 7628015.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-06",
+        "value": 7742083.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-07",
+        "value": 7750773.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-08",
+        "value": 7799732.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-09",
+        "value": 7888910.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-10",
+        "value": 7934649.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-11",
+        "value": 8004063.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2019-12",
+        "value": 8195393.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-01",
+        "value": 8203403.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-02",
+        "value": 8209360.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-03",
+        "value": 8302412.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-04",
+        "value": 8311303.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-05",
+        "value": 8359045.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-06",
+        "value": 8494504.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-07",
+        "value": 8527386.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-08",
+        "value": 8590818.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-09",
+        "value": 8694050.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-10",
+        "value": 8752023.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-11",
+        "value": 8884819.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2020-12",
+        "value": 9192566.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-01",
+        "value": 9262423.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-02",
+        "value": 9253071.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-03",
+        "value": 9463868.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-04",
+        "value": 9575526.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-05",
+        "value": 9647847.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-06",
+        "value": 9784937.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-07",
+        "value": 9828832.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-08",
+        "value": 9877343.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-09",
+        "value": 9917032.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-10",
+        "value": 9998175.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-11",
+        "value": 10185807.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2021-12",
+        "value": 10444078.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-01",
+        "value": 10721070.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-02",
+        "value": 10721070.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-03",
+        "value": 11067407.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-04",
+        "value": 11198988.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-05",
+        "value": 11288629.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-06",
+        "value": 11428653.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-07",
+        "value": 11440720.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-08",
+        "value": 11485303.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-09",
+        "value": 11597310.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-10",
+        "value": 11657007.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-11",
+        "value": 11697617.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2022-12",
+        "value": 11924434.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-01",
+        "value": 11936635.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-02",
+        "value": 12026335.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-03",
+        "value": 12231724.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-04",
+        "value": 12285210.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-05",
+        "value": 12314064.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-06",
+        "value": 12487913.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-07",
+        "value": 12466239.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-08",
+        "value": 12588305.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-09",
+        "value": 12754669.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-10",
+        "value": 12808476.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-11",
+        "value": 13019794.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2023-12",
+        "value": 13568978.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-01",
+        "value": 13476198.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-02",
+        "value": 13467585.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-03",
+        "value": 13761416.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-04",
+        "value": 13842169.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-05",
+        "value": 14034014.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-06",
+        "value": 14396262.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-07",
+        "value": 14373407.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-08",
+        "value": 14561482.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-09",
+        "value": 14805563.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-10",
+        "value": 14945582.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-11",
+        "value": 15176471.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2024-12",
+        "value": 15616214.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-01",
+        "value": 15701965.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-02",
+        "value": 15735537.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-03",
+        "value": 16226458.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-04",
+        "value": 16446560.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-05",
+        "value": 16665442.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-06",
+        "value": 17163138.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-10",
+        "value": 18007537.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-11",
+        "value": 18247613.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2025-12",
+        "value": 18815882.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2026-01",
+        "value": 18815882.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2026-02",
+        "value": 19186249.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2026-03",
+        "value": 19186824.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2026-04",
+        "value": 19447521.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      },
+      {
+        "period": "2026-05",
+        "value": 19703851.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/credit"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23, bổ sung góc nhìn QUY MÔ tuyệt đối cho credit_growth (vốn chỉ có %). Nguồn vbma.org.vn/vi/market-data/credit (bảng dư nợ theo ngành, cột 'Tổng dư nợ') — có sẵn lịch sử từ T1/2018, tự động backfill toàn bộ khi chạy fetch_vbma_credit_balance().",
+    "impact": "Quy mô dư nợ tuyệt đối cho biết mức độ đòn bẩy tín dụng thực tế của nền kinh tế — cùng một mức tăng trưởng % nhưng trên nền dư nợ càng lớn thì áp lực thanh khoản hệ thống ngân hàng và rủi ro tập trung càng cao."
+  },
   "m2_growth": {
     "group": "monetary",
     "label": "Tăng trưởng cung tiền M2 (YoY)",
     "unit": "%",
     "good_direction": "higher",
-    "auto_source": "vietnambiz",
+    "auto_source": "vbma",
     "series": [
       {
-        "period": "2024",
+        "period": "2018-12",
+        "value": 12.44,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-01",
+        "value": 14.36,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-02",
+        "value": 11.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-03",
+        "value": 11.23,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-04",
+        "value": 10.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-05",
+        "value": 10.84,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-06",
+        "value": 11.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-07",
+        "value": 11.51,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-08",
+        "value": 11.93,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-09",
+        "value": 12.88,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-10",
+        "value": 12.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-11",
+        "value": 13.39,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2019-12",
+        "value": 14.78,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-01",
+        "value": 13.38,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-02",
+        "value": 13.82,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-03",
+        "value": 13.48,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-04",
+        "value": 12.92,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-05",
+        "value": 12.58,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-06",
+        "value": 12.69,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-07",
+        "value": 13.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-08",
+        "value": 13.74,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-09",
+        "value": 13.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-10",
+        "value": 13.98,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-11",
+        "value": 14.16,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2020-12",
+        "value": 14.53,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-01",
+        "value": 13.42,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-02",
+        "value": 14.57,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-03",
+        "value": 14.82,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-04",
+        "value": 15.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-05",
+        "value": 14.92,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-06",
+        "value": 13.75,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-07",
+        "value": 13.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-08",
+        "value": 12.74,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-09",
+        "value": 12.13,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-10",
+        "value": 11.69,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-11",
+        "value": 11.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2021-12",
+        "value": 10.66,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-01",
+        "value": 12.67,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-02",
+        "value": 11.58,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-03",
+        "value": 12.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-04",
+        "value": 11.29,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-05",
+        "value": 10.27,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-06",
+        "value": 9.97,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-07",
+        "value": 8.95,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-08",
+        "value": 7.86,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-09",
+        "value": 7.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-10",
+        "value": 7.03,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-11",
+        "value": 6.42,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2022-12",
+        "value": 6.15,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-01",
+        "value": 4.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-02",
+        "value": 4.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-03",
+        "value": 3.97,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-04",
+        "value": 4.32,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-05",
+        "value": 4.84,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-06",
+        "value": 6.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-07",
+        "value": 5.88,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-08",
+        "value": 7.56,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-09",
+        "value": 8.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-10",
+        "value": 9.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-11",
+        "value": 10.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2023-12",
+        "value": 12.46,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-01",
+        "value": 11.57,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-02",
+        "value": 11.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-03",
+        "value": 11.08,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-04",
+        "value": 10.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-05",
+        "value": 11.11,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-06",
+        "value": 11.92,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-07",
+        "value": 12.02,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-08",
+        "value": 12.55,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-09",
+        "value": 12.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-10",
+        "value": 13.49,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-11",
+        "value": 12.69,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2024-12",
         "value": 11.97,
-        "source_url": "https://tradingeconomics.com/vietnam/money-supply-m2"
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-01",
+        "value": 13.61,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-02",
+        "value": 14.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-03",
+        "value": 15.22,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-04",
+        "value": 16.87,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-05",
+        "value": 17.63,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-06",
+        "value": 18.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-07",
+        "value": 18.79,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-08",
+        "value": 18.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-09",
+        "value": 17.89,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-10",
+        "value": 9.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-11",
+        "value": 9.46,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2025-12",
+        "value": 8.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2026-01",
+        "value": 7.71,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2026-02",
+        "value": 8.17,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2026-03",
+        "value": 6.42,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
       },
       {
         "period": "2026-04",
         "value": 5.86,
-        "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
       }
     ],
-    "note": "Điểm 2024 là seed thủ công cũ (tự tính từ mức M2 cuối 2023/2024 theo tradingeconomics.com). Từ nay nâng cấp lên nguồn tự động data.vietnambiz.vn/currency-interest-rate (__NEXT_DATA__ JSON, có độ trễ công bố 1-3 tháng) — các điểm mới sẽ tự tích lũy theo tháng.",
+    "note": "Nâng cấp 2026-07-23 sang vbma.org.vn/vi/market-data/money-supply (Hiệp hội Thị trường Trái phiếu VN) — file CSV tĩnh có TOÀN BỘ lịch sử % YoY theo tháng từ T12/2018, không cần tích lũy từng điểm/lần chạy như nguồn VietnamBiz cũ. Điểm '2024' phía trên là seed thủ công cũ, sẽ bị thay thế hoàn toàn khi chạy fetch_vbma_money_supply() lần tới.",
     "impact": "Cung tiền M2 tăng chậm hơn tín dụng là dấu hiệu thanh khoản hệ thống đang thắt chặt dần — có thể gây áp lực tăng lãi suất và hạn chế dòng vốn chảy vào tài sản rủi ro (cổ phiếu, bất động sản)."
   },
   "deposit_growth": {
@@ -597,6 +4865,11 @@
     "series": [
       {
         "period": "2026-04",
+        "value": 10.76,
+        "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
+      },
+      {
+        "period": "2026-05",
         "value": 10.76,
         "source_url": "https://data.vietnambiz.vn/currency-interest-rate"
       }
@@ -703,7 +4976,7 @@
       },
       {
         "period": "2026-07",
-        "value": 26191.27,
+        "value": 26266.67,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -1014,13 +5287,104 @@
     "auto_source": "vietnambiz",
     "series": [
       {
+        "period": "2026-01",
+        "value": -39.93,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2026-02",
+        "value": -7.75,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2026-03",
+        "value": 53.47,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2026-04",
+        "value": 12.27,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2026-05",
+        "value": 10.06,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
         "period": "2026-06",
-        "value": 13.9,
-        "source_url": "https://data.vietnambiz.vn/macro-economic"
+        "value": 11.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
       }
     ],
-    "note": "Theo tài liệu hướng dẫn gốc (Chương 5.4): đẩy mạnh giải ngân đầu tư công là một trong các động lực/cơ hội chính cho TTCK Việt Nam. Tự động lấy điểm mới nhất qua data.vietnambiz.vn mỗi lần Action chạy. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm (không có nhóm 'Tài khóa' riêng theo khung gốc).",
+    "note": "Theo tài liệu hướng dẫn gốc (Chương 5.4): đẩy mạnh giải ngân đầu tư công là một trong các động lực/cơ hội chính cho TTCK Việt Nam. Nâng cấp 2026-07-23: bổ sung vbma.org.vn/vi/market-data/states-budget (fetch_vbma_public_investment_growth, dòng '% yoy' của giải ngân đầu tư công lũy kế) — cho ra nhiều điểm/tháng trong năm hiện tại thay vì tích lũy 1 điểm/lần chạy như VietnamBiz, nhưng VBMA chỉ có cửa sổ trượt 2 năm gần nhất nên KHÔNG thay thế được lịch sử xa hơn; VietnamBiz vẫn chạy song song để đối chiếu. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm (không có nhóm 'Tài khóa' riêng theo khung gốc).",
     "impact": "Giải ngân đầu tư công là một trong các động lực chính cho nhóm cổ phiếu xây dựng, vật liệu, hạ tầng — tốc độ giải ngân THỰC TẾ (không chỉ kế hoạch) mới quyết định mức độ lan tỏa tới các ngành này."
+  },
+  "budget_deficit_pct_gdp": {
+    "group": "fiscal",
+    "label": "Thâm hụt/thặng dư ngân sách (%GDP)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "vbma",
+    "series": [
+      {
+        "period": "2015",
+        "value": -6.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2016",
+        "value": -3.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2017",
+        "value": -1.23,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2018",
+        "value": -0.93,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2019",
+        "value": -3.26,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2020",
+        "value": -3.64,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2021",
+        "value": -4.09,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2022",
+        "value": -2.31,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2023",
+        "value": -3.48,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2024",
+        "value": -3.54,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      },
+      {
+        "period": "2025",
+        "value": 1.94,
+        "source_url": "https://vbma.org.vn/vi/market-data/states-budget"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-23, bổ sung cho budget_revenue_growth/budget_expenditure_growth (vốn chỉ đo tốc độ tăng riêng lẻ, không cho biết CÂN ĐỐI tổng thể). Nguồn vbma.org.vn/vi/market-data/states-budget (bảng thu-chi theo năm, dòng '% GDP') — dữ liệu THEO NĂM (không phải quý/tháng) từ 2015, âm = thâm hụt, dương = thặng dư. Tham chiếu hiển thị, không tính vào Scorecard 5 nhóm.",
+    "impact": "Thâm hụt ngân sách kéo dài buộc Chính phủ tăng phát hành trái phiếu (đẩy lãi suất trái phiếu/vay mượn chung lên) hoặc cắt giảm chi đầu tư công — cả hai đều gián tiếp ảnh hưởng tới chi phí vốn và động lực tăng trưởng của nền kinh tế."
   },
   "unemployment_rate": {
     "group": "labor",
@@ -1346,7 +5710,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 13.53,
+        "value": 12.23,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -1362,7 +5726,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 2.08,
+        "value": 1.9,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -1379,7 +5743,7 @@
       {
         "period": "2026-H1",
         "value": 10.61,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO (fetch_nso_gdp_structure_report() trong fetch_macro_data.py). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm) — KHÔNG phải chuỗi quý độc lập cộng dồn được. Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm — đây là chỉ số CƠ CẤU, không có hướng 'tốt/xấu' cố định.",
@@ -1395,7 +5759,7 @@
       {
         "period": "2026-H1",
         "value": 37.66,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -1411,7 +5775,7 @@
       {
         "period": "2026-H1",
         "value": 43.52,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -1427,7 +5791,7 @@
       {
         "period": "2026-H1",
         "value": 8.21,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo. Tham chiếu hiển thị (thành phần thứ 4 của biểu đồ miền cơ cấu GDP, cộng đủ 100% cùng 3 khu vực kinh tế), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -1489,12 +5853,102 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2025-01",
+        "value": 4.3,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-02",
+        "value": 6.9,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-03",
+        "value": 11.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-04",
+        "value": 13.8,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-05",
+        "value": 18.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-06",
+        "value": 21.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-07",
+        "value": 24.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-08",
+        "value": 26.1,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-09",
+        "value": 28.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-10",
+        "value": 31.5,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-11",
+        "value": 33.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2025-12",
+        "value": 38.4,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2026-01",
+        "value": 2.6,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2026-02",
+        "value": 6.0,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2026-03",
+        "value": 15.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2026-04",
+        "value": 18.2,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2026-05",
+        "value": 24.81,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
+        "period": "2026-06",
+        "value": 34.7,
+        "source_url": "https://vbma.org.vn/vi/market-data/fdi"
+      },
+      {
         "period": "2026-H1",
         "value": 34.65,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
-    "note": "Tự động trích từ Thông cáo báo chí KT-XH quý mới nhất của NSO — vốn FDI ĐĂNG KÝ (cam kết, CHƯA giải ngân), gồm cấp phép mới + điều chỉnh tăng vốn + góp vốn mua cổ phần. Số liệu LŨY KẾ theo kỳ báo cáo. Khác fdi_disbursed (vốn đã thực sự giải ngân) — vốn đăng ký là chỉ báo SỚM (leading) cho xu hướng FDI giải ngân các kỳ tới.",
+    "note": "Tự động trích từ Thông cáo báo chí KT-XH quý mới nhất của NSO — vốn FDI ĐĂNG KÝ (cam kết, CHƯA giải ngân), gồm cấp phép mới + điều chỉnh tăng vốn + góp vốn mua cổ phần. Số liệu LŨY KẾ theo kỳ báo cáo. Khác fdi_disbursed (vốn đã thực sự giải ngân) — vốn đăng ký là chỉ báo SỚM (leading) cho xu hướng FDI giải ngân các kỳ tới. Nâng cấp 2026-07-23: bổ sung vbma.org.vn/vi/market-data/fdi (fetch_vbma_fdi_registered, lũy kế từ đầu năm THEO THÁNG, cửa sổ trượt 2 năm) chạy song song với NSO để có tần suất dày hơn (theo tháng thay vì theo quý/H1) — 2 nguồn dùng định dạng kỳ khác nhau ('2026-06' tháng vs '2026-H1' lũy kế nửa năm) nên cùng tồn tại trong 1 chuỗi, không thay thế lẫn nhau.",
     "impact": "FDI đăng ký tăng mạnh là tín hiệu SỚM và tích cực về niềm tin của nhà đầu tư nước ngoài vào triển vọng kinh tế Việt Nam — thường đi trước xu hướng FDI giải ngân thực tế vài quý đến vài năm (thời gian triển khai dự án)."
   },
   "fii_net_flow_hose": {
@@ -1508,6 +5962,11 @@
         "period": "2026-07-10",
         "value": 1369.1,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=13/07/2026"
+      },
+      {
+        "period": "2026-07-22",
+        "value": -1941.03,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=23/07/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -1522,7 +5981,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 256,
+        "value": 266,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],

@@ -60,6 +60,47 @@ def _append_point(raw, key, period, value, source_url):
         series.append({"period": period, "value": value, "source_url": source_url})
 
 
+def _period_sort_key(period):
+    """Khoá sắp xếp thời gian cho các định dạng period KHÁC NHAU cùng tồn tại trong 1 series
+    (vd fdi_registered_usd_bn/public_investment_growth trộn 'YYYY-MM' theo tháng từ VBMA với
+    'YYYY-Qn'/'YYYY-Hn'/'YYYY-9M'/'YYYY-FY' lũy kế theo quý từ NSO/VietnamBiz). Trả (year, month,
+    subrank) — subrank tách các kỳ cùng tháng cuối cùng của 1 khoảng lũy kế (vd FY đứng sau 9M)."""
+    m = re.match(r"(\d{4})-(\d{2})$", period)
+    if m:
+        return (int(m.group(1)), int(m.group(2)), 0)
+    m = re.match(r"(\d{4})-Q(\d)$", period)
+    if m:
+        return (int(m.group(1)), int(m.group(2)) * 3, 1)
+    m = re.match(r"(\d{4})-H(\d)$", period)
+    if m:
+        return (int(m.group(1)), int(m.group(2)) * 6, 2)
+    m = re.match(r"(\d{4})-9M$", period)
+    if m:
+        return (int(m.group(1)), 9, 3)
+    m = re.match(r"(\d{4})-FY$", period)
+    if m:
+        return (int(m.group(1)), 12, 4)
+    m = re.match(r"(\d{4})$", period)
+    if m:
+        return (int(m.group(1)), 12, 5)
+    return (0, 0, 0)
+
+
+def _merge_vbma_points(raw, key, points, source_url):
+    """Trộn danh sách [(period, value), ...] từ VBMA vào raw[key]['series'] vốn có thể đã chứa
+    các điểm period KHÁC ĐỊNH DẠNG (quý/nửa năm/lũy kế) từ nguồn khác (NSO/VietnamBiz) — khác
+    _append_point() (chỉ so khớp điểm CUỐI), hàm này: (1) xoá điểm cũ có period trùng CHÍNH XÁC
+    với điểm mới (tránh trùng lặp), (2) thêm toàn bộ điểm mới, (3) sắp xếp lại theo thời gian
+    thực sự qua _period_sort_key() (tránh chuỗi bị đảo lộn thứ tự khi trộn 2 định dạng kỳ)."""
+    if not points:
+        return
+    new_periods = {p for p, _ in points}
+    series = raw[key]["series"]
+    series[:] = [pt for pt in series if pt["period"] not in new_periods]
+    series.extend({"period": p, "value": v, "source_url": source_url} for p, v in points)
+    series.sort(key=lambda pt: _period_sort_key(pt["period"]))
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # NGUỒN 1: API thật, KHÔNG cần key
 # ══════════════════════════════════════════════════════════════════════════
@@ -274,12 +315,16 @@ def fetch_nso_gdp_structure_report():
     LƯU Ý: đây là số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm), KHÔNG phải chuỗi quý
     độc lập — xem _nso_cumulative_period(). Trả dict hoặc {} nếu thất bại/chưa có bài mới."""
     try:
-        r = requests.get("https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/",
+        # NSO đổi URL scheme khoảng T2/2026: báo cáo mới nằm dưới /bai-top/YYYY/MM/... (liệt kê
+        # tại trang danh mục /bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), KHÁC path
+        # /du-lieu-va-so-lieu-thong-ke/ dùng cho các báo cáo cũ hơn (T1/2026 trở về trước) — giữ
+        # cả 2 pattern để không mất khả năng lùi lịch sử nếu cần.
+        r = requests.get("https://www.nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/",
                           headers={"User-Agent": UA}, timeout=20, verify=False)
         r.raise_for_status()
         links = re.findall(
-            r'href="(https://www\.nso\.gov\.vn/du-lieu-va-so-lieu-thong-ke/\d{4}/\d{2}/'
-            r'[^"]*thong-cao-bao-chi[^"]*)"', r.text)
+            r'href="(https://www\.nso\.gov\.vn/(?:bai-top|du-lieu-va-so-lieu-thong-ke)/\d{4}/\d{2}/'
+            r'[^"]*(?:bao-cao-tinh-hinh-kinh-te-xa-hoi|thong-cao-bao-chi)[^"]*)"', r.text)
         if not links:
             print("  [INFO] NSO (VN): chưa tìm thấy bài thông cáo báo chí mới trên trang danh sách.")
             return {}
@@ -292,6 +337,16 @@ def fetch_nso_gdp_structure_report():
         text = re.sub(r"\s+", " ", text)
 
         out = {"source_url": latest_url}
+
+        m0 = re.search(
+            r"Tổng sản phẩm trong nước \(GDP\) quý ([IVX]+)/(\d{4})[^.]*?"
+            r"tốc độ tăng ước đạt ([\d,]+)% so với cùng kỳ năm trước", text)
+        if m0:
+            roman_to_int = {"I": 1, "II": 2, "III": 3, "IV": 4}
+            q = roman_to_int.get(m0.group(1))
+            if q:
+                out["gdp_growth_period"] = f"{m0.group(2)}-Q{q}"
+                out["gdp_growth"] = float(m0.group(3).replace(",", "."))
 
         m = re.search(
             r"Về cơ cấu nền kinh tế ([^,]+?), khu vực nông, lâm nghiệp và thủy sản chiếm tỷ trọng "
@@ -375,6 +430,365 @@ def fetch_sbv_credit_growth():
         return [(_nso_period_to_iso(lb), float(v)) for lb, v in zip(labels, values)]
     except Exception as e:
         print(f"  [WARN] SBV credit growth thất bại: {e}")
+        return []
+
+
+def _fetch_vbma_csv_text(url):
+    """Tải 1 file CSV tĩnh của vbma.org.vn và decode đúng chuẩn (UTF-16LE có BOM, server không
+    khai báo charset — Content-Type trả về application/octet-stream) — dùng chung cho mọi hàm
+    fetch_vbma_*. Trả str (đã bỏ BOM) hoặc None nếu lỗi."""
+    r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+    r.raise_for_status()
+    return r.content.decode("utf-16-le").lstrip("﻿")
+
+
+def _parse_vbma_wide_row(text, row_label):
+    """Parse 1 dòng dữ liệu trong file CSV 'wide' của VBMA (dòng 1 = header các kỳ, các dòng
+    sau = 1 chỉ báo/dòng, cột đầu là tên chỉ báo). Trả list [(header_raw, value), ...] khớp
+    đúng dòng có nhãn == row_label (so khớp chính xác sau khi strip VÀ bỏ dấu ngoặc kép bao
+    ngoài — nhãn có dấu phẩy như '"Nhà, điện, nước"' bị bọc quote dù file là TSV), bỏ ô rỗng.
+    Trả [] nếu không tìm thấy dòng hoặc file rỗng."""
+    lines = text.splitlines()
+    if len(lines) < 2:
+        return []
+    headers = [h.strip() for h in lines[0].split("\t")]
+    for line in lines[1:]:
+        cols = line.split("\t")
+        if not cols or cols[0].strip().strip('"') != row_label:
+            continue
+        out = []
+        for h, v in zip(headers[1:], cols[1:]):
+            v = v.strip()
+            if not v:
+                continue
+            out.append((h, v))
+        return out
+    return []
+
+
+def _vbma_num(raw):
+    """'"19,818,534"' / '5.86%' / '-3.54' -> float. Bỏ dấu ngoặc kép bao ngoài (một số bảng
+    dạng số tuyệt đối lớn có dấu phẩy ngăn cách nghìn được bọc trong "..." dù file là TSV),
+    dấu phẩy ngăn cách nghìn, và ký hiệu %."""
+    return float(raw.strip().strip('"').replace(",", "").replace("%", "").strip())
+
+
+def fetch_vbma_money_supply():
+    """vbma.org.vn/vi/market-data/money-supply — Hiệp hội Thị trường Trái phiếu VN nhúng bảng
+    CUNG TIỀN M2 THEO THÁNG dưới dạng file tĩnh (không cần đăng nhập/API key/JS render):
+    https://vbma.org.vn/csv/markets/tables/vi/tong_cung_tien_theo_thang.csv — trả về TOÀN BỘ
+    lịch sử (T12/2018 → hiện tại, mới nhất T4/2026 tính đến 2026-07-23) thay vì chỉ 1 điểm/lần
+    chạy như VietnamBiz cũ (xem note cũ trong vimo_raw.json['m2_growth']). Cột: kỳ (Txx yyyy),
+    M2 (tỷ VND), % MoM, % YoY, % YTD, Tiền gửi TCKT, Tiền gửi dân cư — file là TSV mã hoá
+    UTF-16LE có BOM (Content-Type trả về là application/octet-stream, không tự declare charset
+    nên PHẢI decode thủ công, không dùng r.text). Trả list [(period_iso, yoy_value), ...] mới
+    nhất đứng cuối, hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/tables/vi/tong_cung_tien_theo_thang.csv"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        text = r.content.decode("utf-16-le").lstrip("﻿")
+        lines = text.splitlines()
+        if len(lines) < 2:
+            print("  [WARN] VBMA cung tiền M2: file rỗng hoặc đổi cấu trúc.")
+            return []
+        out = []
+        for line in lines[1:]:
+            cols = line.split("\t")
+            if len(cols) < 4:
+                continue
+            m = re.match(r"T(\d{1,2})\s+(\d{4})", cols[0].strip())
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            yoy = cols[3].strip().rstrip("%")
+            try:
+                out.append((period, round(float(yoy), 2)))
+            except ValueError:
+                continue
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA cung tiền M2 thất bại: {e}")
+        return []
+
+
+def fetch_vbma_cpi_yoy():
+    """vbma.org.vn/vi/market-data/cpi — file 'wide' (1 dòng/chỉ báo, cột = kỳ) chứa CPI YoY THEO
+    THÁNG từ T1/2020 (dài hơn nhiều so với cửa sổ ~13 điểm của biểu đồ nhúng NSO hiện dùng), mới
+    nhất T6/2026 tính đến 2026-07-23, khớp giá trị với nso.gov.vn (4.69%) — xác nhận đáng tin cậy.
+    Trả list [(period_iso, value), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/lam_phat_so_voi_cung_ky_nam_truoc.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        pairs = _parse_vbma_wide_row(text, "Lạm phát danh nghĩa (so với cùng kì)")
+        out = []
+        for header, val in pairs:
+            m = re.match(r"T(\d{1,2})\s+(\d{4})", header)
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            out.append((period, round(_vbma_num(val), 2)))
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA CPI YoY thất bại: {e}")
+        return []
+
+
+def fetch_vbma_core_inflation():
+    """vbma.org.vn/vi/market-data/cpi — CÙNG FILE với fetch_vbma_cpi_yoy() (lam_phat_so_voi_
+    cung_ky_nam_truoc.csv), khác dòng: 'Lạm phát cơ bản' — chỉ báo MỚI, lấp khoảng trống
+    core_inflation (trước nay để trống hoàn toàn vì không tìm được nguồn scrape được, xem note
+    cũ trong vimo_raw.json — đã khảo sát nso.gov.vn/cong-nghiep/, cpi-vi/, VietnamBiz không ra).
+    Theo tháng từ T1/2020. Trả list [(period_iso, value), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/lam_phat_so_voi_cung_ky_nam_truoc.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        pairs = _parse_vbma_wide_row(text, "Lạm phát cơ bản")
+        out = []
+        for header, val in pairs:
+            m = re.match(r"T(\d{1,2})\s+(\d{4})", header)
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            out.append((period, round(_vbma_num(val), 2)))
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA lạm phát cơ bản thất bại: {e}")
+        return []
+
+
+# Tên nhóm hàng trong dong_gop_vao_lam_phat.csv (VBMA) -> hậu tố key trong vimo_raw.json. File
+# này cho ĐIỂM PHẦN TRĂM mỗi nhóm hàng ĐÓNG GÓP vào mức tăng CPI chung (so với cùng kỳ), KHÁC
+# cpi_yoy (chỉ số tổng) — đây là phần "kết cấu" (decomposition) mà cpi_yoy không thể hiện được.
+VBMA_CPI_CONTRIB_GROUPS = {
+    "Thực phẩm": "food",
+    "Nhà, điện, nước": "housing_utilities",
+    "Y tế": "healthcare",
+    "Vận tải": "transport",
+    "Khác": "other",
+}
+
+
+def fetch_vbma_cpi_contribution():
+    """vbma.org.vn/vi/market-data/cpi — dong_gop_vao_lam_phat.csv: ĐÓNG GÓP (điểm %) của 5 nhóm
+    hàng chính vào mức tăng CPI chung theo tháng, từ T1/2020 — đây là 'KẾT CẤU CPI' (decomposition)
+    mà cpi_yoy (chỉ số tổng hợp) không cho thấy được: vd CPI tăng chủ yếu do nhóm nào kéo. Trả
+    dict {suffix: [(period_iso, value), ...]} theo VBMA_CPI_CONTRIB_GROUPS, hoặc {} nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/dong_gop_vao_lam_phat.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        out = {}
+        for label, suffix in VBMA_CPI_CONTRIB_GROUPS.items():
+            pairs = _parse_vbma_wide_row(text, label)
+            pts = []
+            for header, val in pairs:
+                m = re.match(r"T(\d{1,2})\s+(\d{4})", header)
+                if not m:
+                    continue
+                period = f"{m.group(2)}-{int(m.group(1)):02d}"
+                pts.append((period, round(_vbma_num(val), 2)))
+            pts.sort(key=lambda t: t[0])
+            if pts:
+                out[suffix] = pts
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA đóng góp vào lạm phát thất bại: {e}")
+        return {}
+
+
+def fetch_vbma_gdp_growth():
+    """vbma.org.vn/vi/market-data/gdp-growth — file 'wide' chứa TỐC ĐỘ TĂNG TRƯỞNG GDP THỰC TẾ
+    THEO QUÝ từ Q1/2015 (dài hơn nhiều so với nguồn tin tức lẻ tẻ hiện dùng), mới nhất Q2/2026
+    (8.4%, khớp với điểm 2026-Q2=8.39 đang có trong vimo_raw.json). Trả list
+    [(period_iso 'YYYY-Qn', value), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/toc_do_tang_truong_gdp_thuc_te_(quy).csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        pairs = _parse_vbma_wide_row(text, "Tốc độ tăng trưởng GDP thực tế (quý)")
+        out = []
+        for header, val in pairs:
+            m = re.match(r"Q(\d)\s+(\d{4})", header)
+            if not m:
+                continue
+            period = f"{m.group(2)}-Q{m.group(1)}"
+            out.append((period, round(_vbma_num(val), 2)))
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA GDP growth thất bại: {e}")
+        return []
+
+
+def fetch_vbma_pmi():
+    """vbma.org.vn/vi/market-data/gdp-growth (cùng trang GDP, biểu đồ PMI riêng) — file 'wide'
+    chứa PMI SẢN XUẤT THEO THÁNG từ 1/2016 (dài hơn nhiều so với VietnamBiz hiện dùng, mới tích
+    lũy được 5 điểm), mới nhất T6/2026 = 51.8 (khớp VietnamBiz). Header dạng 'D/M/YYYY' (D luôn
+    =1, ví dụ '1/6/2026' = tháng 6/2026). Trả list [(period_iso, value), ...] hoặc [] nếu thất
+    bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/pmi.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        pairs = _parse_vbma_wide_row(text, "PMI")
+        out = []
+        for header, val in pairs:
+            m = re.match(r"\d{1,2}/(\d{1,2})/(\d{4})", header)
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            out.append((period, round(_vbma_num(val), 2)))
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA PMI thất bại: {e}")
+        return []
+
+
+def fetch_vbma_credit_balance():
+    """vbma.org.vn/vi/market-data/credit — bảng chi tiết DƯ NỢ TÍN DỤNG TOÀN NỀN KINH TẾ theo
+    tháng (cột 'Tổng dư nợ', tỷ VND) — chỉ báo MỚI, bổ sung cho credit_growth (%, đã có từ SBV)
+    một góc nhìn về QUY MÔ tuyệt đối. Trả list [(period_iso, value_ty_vnd), ...] hoặc [] nếu
+    thất bại."""
+    url = "https://vbma.org.vn/csv/markets/tables/vi/du_no_tin_dung_theo_nganh_nghe.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        lines = text.splitlines()
+        if len(lines) < 2:
+            print("  [WARN] VBMA dư nợ tín dụng: file rỗng hoặc đổi cấu trúc.")
+            return []
+        out = []
+        for line in lines[1:]:
+            cols = line.split("\t")
+            if len(cols) < 2:
+                continue
+            m = re.match(r"T(\d{1,2})\s+(\d{4})", cols[0].strip())
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            try:
+                out.append((period, round(_vbma_num(cols[1]), 0)))
+            except ValueError:
+                continue
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA dư nợ tín dụng thất bại: {e}")
+        return []
+
+
+def _fetch_vbma_rolling_yearly_chart(url, value_row_regex, unit_scale=1.0):
+    """Nhiều biểu đồ VBMA (FDI đăng ký, giải ngân đầu tư công...) dùng CHUNG 1 layout: header
+    T1..T12, các dòng '2025_'/'2026_' là giá trị LŨY KẾ TỪ ĐẦU NĂM theo tháng (chỉ 2 năm gần
+    nhất — cửa sổ trượt, KHÔNG có lịch sử xa hơn), dòng cuối '% <năm sau>/<năm trước>' là YoY —
+    hàm này lấy các dòng năm (khớp regex '^(\\d{4})_?$') và trả
+    {period_iso 'YYYY-MM': value_luy_ke}. Dùng value_row_regex để chọn đúng dòng (vd r'^\\d{4}_?$'
+    cho giá trị tuyệt đối, hoặc r'^%\\s' cho dòng YoY)."""
+    text = _fetch_vbma_csv_text(url)
+    lines = text.splitlines()
+    if len(lines) < 2:
+        return {}
+    headers = [h.strip() for h in lines[0].split("\t")]
+    out = {}
+    for line in lines[1:]:
+        cols = line.split("\t")
+        if not cols:
+            continue
+        label = cols[0].strip()
+        if not re.match(value_row_regex, label):
+            continue
+        year_m = re.match(r"(\d{4})", label)
+        if not year_m:
+            continue
+        year = year_m.group(1)
+        for h, v in zip(headers[1:], cols[1:]):
+            v = v.strip()
+            if not v:
+                continue
+            hm = re.match(r"T(\d{1,2})", h)
+            if not hm:
+                continue
+            period = f"{year}-{int(hm.group(1)):02d}"
+            try:
+                out[period] = round(_vbma_num(v) * unit_scale, 4)
+            except ValueError:
+                continue
+    return out
+
+
+def fetch_vbma_fdi_registered():
+    """vbma.org.vn/vi/market-data/fdi — FDI ĐĂNG KÝ lũy kế theo tháng (tỷ USD), chỉ báo MỚI
+    (chưa có trong vimo_raw.json — trước nay chỉ theo dõi FDI GIẢI NGÂN). Cửa sổ trượt 2 năm gần
+    nhất (không có lịch sử xa hơn qua nguồn này). Trả list [(period_iso 'YYYY-MM', value), ...]
+    hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/fdi_dang_ky.csv"
+    try:
+        data = _fetch_vbma_rolling_yearly_chart(url, r"^\d{4}_?$")
+        return sorted(data.items())
+    except Exception as e:
+        print(f"  [WARN] VBMA FDI đăng ký thất bại: {e}")
+        return []
+
+
+def fetch_vbma_public_investment_growth():
+    """vbma.org.vn/vi/market-data/states-budget — GIẢI NGÂN ĐẦU TƯ CÔNG, dòng '% yoy' cho tăng
+    trưởng lũy kế so với cùng kỳ theo tháng (chỉ có năm hiện tại so với năm trước trong cửa sổ
+    trượt 2 năm) — dùng để BỔ SUNG cho public_investment_growth (hiện chỉ có 1 điểm/lần chạy từ
+    VietnamBiz), KHÔNG thay thế lịch sử cũ vì cửa sổ này không lùi xa được. Trả list
+    [(period_iso 'YYYY-MM', value_pct), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/chi_dau_tu_cong.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        lines = text.splitlines()
+        if len(lines) < 2:
+            return []
+        headers = [h.strip() for h in lines[0].split("\t")]
+        out = []
+        # Dòng '% yoy' so sánh năm SAU (mới nhất) với năm trước đó -> gán period theo năm mới nhất
+        year_rows = [l.split("\t")[0].strip() for l in lines[1:] if re.match(r"^\d{4}_?$", l.split("\t")[0].strip())]
+        latest_year = max(int(y.rstrip("_")) for y in year_rows) if year_rows else None
+        for line in lines[1:]:
+            cols = line.split("\t")
+            if not cols or cols[0].strip() != "% yoy" or latest_year is None:
+                continue
+            for h, v in zip(headers[1:], cols[1:]):
+                v = v.strip()
+                if not v:
+                    continue
+                hm = re.match(r"T(\d{1,2})", h)
+                if not hm:
+                    continue
+                period = f"{latest_year}-{int(hm.group(1)):02d}"
+                try:
+                    out.append((period, round(_vbma_num(v), 2)))
+                except ValueError:
+                    continue
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA tăng trưởng đầu tư công thất bại: {e}")
+        return []
+
+
+def fetch_vbma_budget_deficit_pct_gdp():
+    """vbma.org.vn/vi/market-data/states-budget — bảng thu/chi ngân sách THEO NĂM từ 2015, dòng
+    '% GDP' = thặng dư(+)/thâm hụt(-) ngân sách tính theo %GDP mỗi năm — chỉ báo MỚI (chưa có
+    trong vimo_raw.json). Trả list [(year_str, value_pct), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/charts/vi/thu_chi_ns_theo_nam.csv"
+    try:
+        text = _fetch_vbma_csv_text(url)
+        pairs = _parse_vbma_wide_row(text, "% GDP")
+        out = []
+        for header, val in pairs:
+            m = re.match(r"12T\s+(\d{4})", header)
+            if not m:
+                continue
+            out.append((m.group(1), round(_vbma_num(val), 2)))
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA thâm hụt ngân sách/GDP thất bại: {e}")
         return []
 
 
@@ -541,11 +955,11 @@ def fetch_nab_deposit_rate_12m():
 
 
 # VietnamBiz's Vietnamese "title" field -> indicator key trong vimo_raw.json. CHỈ map các chỉ
-# báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (PMI, bán lẻ — trước đây "manual" chỉ 1 điểm) —
-# không map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy
-# hơn nguồn tổng hợp lại của bên thứ ba, dù VietnamBiz cũng có các chỉ báo đó làm đối chiếu.
+# báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (bán lẻ — trước đây "manual" chỉ 1 điểm) — không
+# map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy hơn
+# nguồn tổng hợp lại của bên thứ ba, dù VietnamBiz cũng có các chỉ báo đó làm đối chiếu. PMI
+# cũng đã chuyển sang fetch_vbma_pmi() (full lịch sử từ 2016) nên bỏ khỏi map này.
 VIETNAMBIZ_TITLE_MAP = {
-    "PMI": "pmi_manufacturing",
     "Bán lẻ HH&DV (YoY)": "retail_sales_growth",
     "Thu ngân sách (YoY)": "budget_revenue_growth",
     "Chi ngân sách (YoY)": "budget_expenditure_growth",
@@ -593,7 +1007,8 @@ def fetch_vietnambiz_macro():
 
 VIETNAMBIZ_RATE_TITLE_MAP = {
     "Tăng trưởng huy động (YoY)": "deposit_growth",
-    "Tăng trưởng cung tiền M2 (YoY)": "m2_growth",
+    # m2_growth: chuyển sang fetch_vbma_money_supply() — VBMA có cả lịch sử theo tháng từ
+    # T12/2018, không cần tích lũy từng điểm/lần chạy như VietnamBiz nữa.
 }
 
 
@@ -804,6 +1219,14 @@ def update_vimo_raw():
 
     print("[NSO (VN) — cơ cấu GDP theo khu vực & cơ cấu vốn đầu tư theo thành phần (lũy kế)]")
     gdp_struct = fetch_nso_gdp_structure_report()
+    if gdp_struct.get("gdp_growth_period"):
+        # Trích trực tiếp câu "tốc độ tăng ước đạt X% so với cùng kỳ" từ CHÍNH bài báo cáo NSO
+        # (nguồn GỐC, số liệu công bố tại thời điểm ra báo cáo) — chính xác hơn today_q (đoán
+        # theo ngày hệ thống) của fetch_nso_latest_report() phía trên, và không có vấn đề "số đã
+        # revise" như bảng sống của VBMA (xem note gdp_growth trong vimo_raw.json).
+        _append_point(raw, "gdp_growth", gdp_struct["gdp_growth_period"], gdp_struct["gdp_growth"],
+                       gdp_struct["source_url"])
+        print(f"  -> gdp_growth {gdp_struct['gdp_growth_period']}: {gdp_struct['gdp_growth']} (nguồn NSO VN, thay cho fallback tin tức)")
     if gdp_struct.get("period"):
         period = gdp_struct["period"]
         src = gdp_struct["source_url"]
@@ -820,15 +1243,46 @@ def update_vimo_raw():
     else:
         print("  [INFO] Chưa trích được cơ cấu GDP/đầu tư kỳ này — giữ nguyên seed cũ.")
 
-    print("[NSO — biểu đồ chuyên đề CPI (nso.gov.vn/cpi-vi/, chi tiết THEO THÁNG)]")
-    pts = fetch_nso_chart_embed("cpi")
+    print("[VBMA — CPI YoY theo tháng (toàn bộ lịch sử từ T1/2020)]")
+    pts = fetch_vbma_cpi_yoy()
     if pts:
         raw["cpi_yoy"]["series"] = [
-            {"period": _nso_period_to_iso(p), "value": v,
-             "source_url": "https://www.nso.gov.vn/cpi-vi/"}
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/cpi"}
             for p, v in pts
         ]
-        print(f"  -> {len(pts)} điểm (thay thế chuỗi theo quý cũ bằng chuỗi theo tháng)")
+        print(f"  -> {len(pts)} điểm")
+    else:
+        print("[NSO — biểu đồ chuyên đề CPI (nso.gov.vn/cpi-vi/, chi tiết THEO THÁNG) — fallback]")
+        pts = fetch_nso_chart_embed("cpi")
+        if pts:
+            raw["cpi_yoy"]["series"] = [
+                {"period": _nso_period_to_iso(p), "value": v,
+                 "source_url": "https://www.nso.gov.vn/cpi-vi/"}
+                for p, v in pts
+            ]
+            print(f"  -> {len(pts)} điểm (thay thế chuỗi theo quý cũ bằng chuỗi theo tháng)")
+
+    print("[VBMA — Lạm phát cơ bản theo tháng (toàn bộ lịch sử từ T1/2020)]")
+    pts = fetch_vbma_core_inflation()
+    if pts:
+        raw["core_inflation"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/cpi"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VBMA — Kết cấu CPI: đóng góp từng nhóm hàng vào lạm phát chung theo tháng]")
+    contrib = fetch_vbma_cpi_contribution()
+    for suffix, pts in contrib.items():
+        key = f"cpi_contrib_{suffix}"
+        raw[key]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/cpi"}
+            for p, v in pts
+        ]
+        print(f"  -> {key}: {len(pts)} điểm")
 
     print("[NSO — biểu đồ chuyên đề IIP (nso.gov.vn/iip-vi/, chi tiết THEO THÁNG)]")
     pts = fetch_nso_chart_embed("index-of-industrial-production")
@@ -850,17 +1304,69 @@ def update_vimo_raw():
         ]
         print(f"  -> {len(pts)} điểm")
 
-    print("[VietnamBiz — PMI & Bán lẻ (đối chiếu, tích lũy theo lần chạy)]")
+    print("[VBMA — Tổng dư nợ tín dụng toàn nền kinh tế theo tháng (toàn bộ lịch sử từ T1/2018)]")
+    pts = fetch_vbma_credit_balance()
+    if pts:
+        raw["credit_balance_total"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/credit"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VietnamBiz — Bán lẻ (đối chiếu, tích lũy theo lần chạy)]")
     vnb = fetch_vietnambiz_macro()
     for key, (period, value) in vnb.items():
         _append_point(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
         print(f"  -> {key} {period}: {value}")
 
-    print("[VietnamBiz — Tăng trưởng huy động & M2 (đối chiếu credit_growth, tích lũy theo lần chạy)]")
+    print("[VBMA — PMI sản xuất theo tháng (toàn bộ lịch sử từ T1/2016)]")
+    pts = fetch_vbma_pmi()
+    if pts:
+        raw["pmi_manufacturing"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VBMA — FDI đăng ký lũy kế theo tháng (bổ sung fdi_registered_usd_bn, cửa sổ trượt 2 năm)]")
+    pts = fetch_vbma_fdi_registered()
+    _merge_vbma_points(raw, "fdi_registered_usd_bn", pts, "https://vbma.org.vn/vi/market-data/fdi")
+    if pts:
+        print(f"  -> {len(pts)} điểm ({pts[0][0]}..{pts[-1][0]})")
+
+    print("[VBMA — Giải ngân đầu tư công %YoY theo tháng (bổ sung public_investment_growth, cửa sổ trượt 2 năm)]")
+    pts = fetch_vbma_public_investment_growth()
+    _merge_vbma_points(raw, "public_investment_growth", pts, "https://vbma.org.vn/vi/market-data/states-budget")
+    if pts:
+        print(f"  -> {len(pts)} điểm ({pts[0][0]}..{pts[-1][0]})")
+
+    print("[VBMA — Thâm hụt/thặng dư ngân sách %GDP theo năm (toàn bộ lịch sử từ 2015)]")
+    pts = fetch_vbma_budget_deficit_pct_gdp()
+    if pts:
+        raw["budget_deficit_pct_gdp"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/states-budget"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VietnamBiz — Tăng trưởng huy động (đối chiếu credit_growth, tích lũy theo lần chạy)]")
     vnb_rates = fetch_vietnambiz_rates()
     for key, (period, value) in vnb_rates.items():
         _append_point(raw, key, period, value, "https://data.vietnambiz.vn/currency-interest-rate")
         print(f"  -> {key} {period}: {value}")
+
+    print("[VBMA — Cung tiền M2 tăng trưởng YoY theo tháng (toàn bộ lịch sử từ T12/2018)]")
+    pts = fetch_vbma_money_supply()
+    if pts:
+        raw["m2_growth"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/money-supply"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
 
     print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3 tháng (tích lũy theo lần chạy)]")
     rates = fetch_sbv_interest_rates()
