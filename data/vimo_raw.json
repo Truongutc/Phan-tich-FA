@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-24 13:35",
+    "last_auto_update": "2026-07-24 10:36",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -1668,7 +1668,7 @@
       },
       {
         "period": "2026-07",
-        "value": 8.04,
+        "value": 7.63,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1684,7 +1684,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 3.33,
+        "value": 2.97,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1700,7 +1700,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 4.1,
+        "value": 3.81,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1716,7 +1716,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 5.5,
+        "value": 5.6,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1732,7 +1732,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 7.07,
+        "value": 6.65,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1748,7 +1748,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 8.15,
+        "value": 7.8,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -2961,31 +2961,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-06-26",
-        "value": 70.16,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-06-29",
-        "value": 71.59,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-06-30",
-        "value": 70.46,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-07-01",
-        "value": 69.24,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-07-02",
-        "value": 68.53,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
         "period": "2026-07-03",
         "value": 68.68,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
@@ -3019,6 +2994,31 @@
         "period": "2026-07-13",
         "value": 81.62,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 83.69,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 83.08,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 81.23,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 85.01,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 86.99,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
       }
     ],
     "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu.",
@@ -3031,31 +3031,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-06-25",
-        "value": 121.06,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-06-26",
-        "value": 120.89,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-06-29",
-        "value": 120.95,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-06-30",
-        "value": 120.92,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-07-01",
-        "value": 121.15,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
       {
         "period": "2026-07-02",
         "value": 120.69,
@@ -3084,6 +3059,31 @@
       {
         "period": "2026-07-10",
         "value": 120.5,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 120.74,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 120.47,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 120.31,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 120.33,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 120.53,
         "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       }
     ],
