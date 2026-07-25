@@ -653,7 +653,8 @@ def _calc_risk_compensation(raw, rf, earnings_yield):
 # tiền & Tâm lý" (khối ngoại/margin) CHƯA có nguồn dữ liệu tự động trong Giai đoạn 1 — ghi chú
 # rõ, không tự bịa số dòng tiền.
 # ══════════════════════════════════════════════════════════════════════════
-def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai_suat_veto=False):
+def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai_suat_veto=False,
+                          trend_label=None, high_risk=False):
     """scorecard_total ở đây là ĐIỂM ĐÃ CÓ TRỌNG SỐ (weighted) — xem run_vimo_analysis(): nhóm
     Lãi suất cộng thêm 1 lần nữa (hiệu lực x2) trước khi truyền vào đây.
 
@@ -670,11 +671,39 @@ def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai
     trọng CAO" nghe quá mạnh so với mức rủi ro thực tế đang có. Hạ 1 bậc nhãn xuống "Nên mua vào"
     (khuyến nghị giải ngân, KHÔNG chỉ định mức tỷ trọng) cho MỌI trường hợp Rẻ mà macro CHƯA thật
     sự tốt (kể cả khi lai_suat_veto chặn dù tổng điểm đã dương) — "tăng tỷ trọng lớn"/"Mua mạnh"
-    CHỈ dành riêng cho macro tốt THẬT SỰ (không bị lãi suất phủ quyết)."""
+    CHỈ dành riêng cho macro tốt THẬT SỰ (không bị lãi suất phủ quyết).
+
+    NÂNG CẤP TIẾP (user, cùng ngày 2026-07-25): bổ sung tiêu chí XU HƯỚNG (trend_label từ
+    calc_overall_verdict — "Đang cải thiện"/"Đang xấu đi"/khác) và MỨC ĐỘ RỦI RO (high_risk —
+    nhiều nhóm Scorecard cùng Xấu) vào ma trận, theo đúng logic 7 bậc user đưa ra:
+      Rẻ + đã ĐẢO CHIỀU được XÁC NHẬN (macro tốt + trend đang cải thiện) => Mua mạnh (mạnh nhất)
+      Rẻ + macro tốt nhưng CHƯA xác nhận xu hướng cải thiện liên tục    => Mua tỷ trọng cao
+      Rẻ + macro xấu                                                    => Nên mua vào (1 phần)
+      Hợp lý + trend đang cải thiện                                     => Tăng tỷ trọng vừa phải
+      Hợp lý + macro tốt (nhưng chưa rõ xu hướng cải thiện)             => Duy trì, chọn lọc
+      Hợp lý + macro xấu                                                => Giải ngân một phần (tỷ trọng thấp)
+      Đắt + macro tốt                                                   => Giảm tỷ trọng, chờ điều chỉnh (giữ nguyên)
+      Đắt + macro xấu + NHIỀU rủi ro đồng thời (high_risk)              => Clear toàn bộ (mạnh nhất, MỚI)
+      Đắt + macro xấu + đang XẤU ĐI (trend worsening)                   => Nên bán ra (MỚI)
+      Đắt + macro xấu (baseline, chưa tới 2 mức trên)                   => Giảm vốn mạnh (giữ nguyên)
+    "Đã đảo chiều xác nhận" ưu tiên cao hơn "chỉ đang cải thiện" vì đòi hỏi CẢ 2 điều kiện cùng lúc
+    (mức điểm ĐANG dương + hướng đi ĐANG tốt lên) — chỉ 1 trong 2 (vd đang cải thiện nhưng vẫn âm
+    điểm, hoặc dương điểm nhưng đang chững/xấu đi) thì chưa đủ để coi là "xác nhận qua đáy"."""
     macro_good = scorecard_total > 0
+    macro_improving = trend_label == "Đang cải thiện"
+    macro_worsening = trend_label == "Đang xấu đi"
+    confirmed_reversal = macro_good and macro_improving
+
     if valuation_label == "Rẻ/Hấp dẫn":
+        if confirmed_reversal and not lai_suat_veto:
+            return ("Mua mạnh",
+                    "Vĩ mô đã ĐẢO CHIỀU được XÁC NHẬN (Scorecard đang dương điểm VÀ đang cải thiện so với kỳ trước) "
+                    "+ định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu lớn, ưu tiên ngành hưởng lợi từ vĩ mô.")
         if macro_good and not lai_suat_veto:
-            return "Mua mạnh", "Vĩ mô đã qua giai đoạn bất lợi + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu, ưu tiên ngành hưởng lợi từ vĩ mô."
+            return ("Mua tỷ trọng cao",
+                    "Vĩ mô đã qua giai đoạn bất lợi (Scorecard dương) + định giá rẻ, nhưng CHƯA đủ xác nhận xu hướng "
+                    "cải thiện liên tục — mua vào tỷ trọng lớn hơn, ưu tiên ngành hưởng lợi từ vĩ mô, chưa dốc toàn "
+                    "lực như khi có xác nhận đảo chiều rõ ràng.")
         if macro_good and lai_suat_veto:
             return ("Nên mua vào",
                     "Vĩ mô tổng thể đã qua bất lợi + định giá rẻ, NHƯNG lãi suất (yếu tố dẫn dắt tăng trưởng tương lai) "
@@ -683,8 +712,20 @@ def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai
     elif valuation_label == "Đắt/Kém hấp dẫn":
         if macro_good:
             return "Giảm tỷ trọng, chờ điều chỉnh", "Vĩ mô tốt nhưng định giá đã đắt — chốt lời một phần, chờ cơ hội mua lại giá tốt hơn."
+        if high_risk:
+            return ("Clear toàn bộ",
+                    "Định giá đắt + vĩ mô xấu với NHIỀU nhóm rủi ro cùng lúc (xem chi tiết Scorecard) — nên thoát HẲN "
+                    "vị thế cổ phiếu, ưu tiên tuyệt đối an toàn vốn cho tới khi rủi ro giảm bớt.")
+        if macro_worsening:
+            return ("Nên bán ra",
+                    "Định giá đắt và vĩ mô đang XẤU ĐI (so với kỳ trước) — nên bán ra, giảm tỷ trọng, chờ định giá "
+                    "hoặc vĩ mô cải thiện rõ ràng hơn trước khi cân nhắc mua lại.")
         return "Giảm vốn mạnh", "Vĩ mô xấu + định giá đắt — cắt giảm tỷ trọng cổ phiếu, ưu tiên tiền mặt."
     else:  # Hợp lý
+        if macro_improving:
+            return ("Tăng tỷ trọng vừa phải",
+                    "Định giá hợp lý và vĩ mô đang CẢI THIỆN so với kỳ trước — có thể tăng tỷ trọng cổ phiếu vừa "
+                    "phải, chọn lọc theo ngành hưởng lợi từ xu hướng cải thiện.")
         if macro_good:
             return "Duy trì, chọn lọc", "Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt."
         return "Giải ngân một phần", "Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn."
@@ -1198,12 +1239,22 @@ INTERBANK_HISTORY_TENORS = [
 ]
 
 
+_WEEKLY_PERIOD_RE = re.compile(r"^\d{4}-W\d{2}$")
+
+
 def build_interbank_6m_history_chart(out_dir, raw):
     """1 line chart nhiều dòng: lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng THEO THỜI GIAN, vẽ
     TOÀN BỘ lịch sử sẵn có mỗi kỳ hạn (không giới hạn min_points=4 như build_charts_vimo()) — thay
     cho chart so sánh ngân hàng cũ (đã gỡ bỏ theo yêu cầu user 2026-07-13, xem cùng thay đổi ở
-    app_vimo.js). Trả path hoặc None nếu không kỳ hạn nào có dữ liệu."""
-    series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", []) if p.get("value") is not None])
+    app_vimo.js). CHỈ lấy điểm period dạng TUẦN ('YYYY-Wnn') — bỏ điểm THÁNG cũ còn sót lại từ
+    trước khi đổi sang _current_period_weekly() (2026-07-24): trộn chung 2 định dạng kỳ khác nhau
+    (tháng vs tuần) trên CÙNG 1 trục thời gian khiến chart bị kéo phẳng/sai lệch trực quan (user
+    2026-07-25 phản ánh: "tôi không cần phải kéo ngang như thế, tôi cần mỗi điểm trên biểu đồ là
+    đại diện cho giá trị lãi suất đó tại tuần đó") — điểm THÁNG cũ vẫn giữ nguyên trong
+    vimo_raw.json (không xóa dữ liệu), chỉ loại khỏi chart NÀY. Trả path hoặc None nếu không kỳ
+    hạn nào có dữ liệu tuần."""
+    series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", [])
+                                        if p.get("value") is not None and _WEEKLY_PERIOD_RE.match(p["period"])])
                         for key, label, color in INTERBANK_HISTORY_TENORS]
     all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s})
     if not all_periods:
@@ -1849,6 +1900,24 @@ def run_vimo_analysis():
     print(f"  P/E={valuation['pe']} | ERP={valuation['erp']*100:.2f}%" if valuation['erp'] is not None else "  P/E/ERP: N/A")
     print(f"  => {valuation['valuation_label']}")
 
+    # Tính XU HƯỚNG (verdict) TRƯỚC ma trận quyết định — user (2026-07-25) yêu cầu ma trận phân
+    # biệt "vĩ mô tốt lên" (trend đang cải thiện) khỏi "vĩ mô đã đảo chiều được XÁC NHẬN" (macro
+    # tốt + trend đang cải thiện cùng lúc), nên cần trend_label sẵn sàng trước khi gọi
+    # calc_decision_matrix(). scorecard_history dùng để so sánh vẫn là history TRƯỚC lần chạy này
+    # (đọc 1 lần, entry hôm nay chỉ ghi vào raw sau khi đã tính xong verdict — xem bên dưới).
+    print("[INFO] Đánh giá tổng thể (xu hướng + mức độ đồng thuận)...")
+    scorecard_history = raw.get("_meta", {}).get("scorecard_history", [])
+    verdict = calc_overall_verdict(scorecard_total, trends, scorecard_history)
+    print(f"  Xu hướng: {verdict['trend_label']} {verdict['trend_arrow']}")
+    print(f"  Mức độ rõ ràng: {verdict['clarity_label']}")
+
+    # "Nhiều rủi ro đồng thời" (high_risk) — user: "định giá cao + vĩ mô xấu VÀ NHIỀU RỦI RO = clear
+    # toàn bộ", khác mức độ với chỉ "vĩ mô xấu" thường. Đo bằng số nhóm Scorecard đang -1 Xấu — từ
+    # NỬA tổng số nhóm trở lên (vd >=3/6) coi là rủi ro lan rộng, không chỉ khoanh vùng 1-2 nhóm.
+    n_neg_groups = sum(1 for g in scorecard.values() if g["score"] == -1)
+    high_risk = n_neg_groups >= (len(SCORECARD_GROUPS) + 1) // 2
+    print(f"  Số nhóm Xấu: {n_neg_groups}/{len(SCORECARD_GROUPS)} -> high_risk={high_risk}")
+
     # Lãi suất được cộng THÊM 1 LẦN NỮA (hiệu lực x2) khi tính quyết định phân bổ vốn — KHÔNG
     # đổi scorecard_total "thô" hiển thị/theo dõi lịch sử phía trên (giữ nguyên tính liên tục so
     # sánh xu hướng qua các kỳ). Nếu nhóm Lãi suất đang -1 Xấu, chặn hẳn "Bung vốn mạnh" (xem
@@ -1857,7 +1926,8 @@ def run_vimo_analysis():
     decision_score = scorecard_total + lai_suat_score
     decision_label, decision_text = calc_decision_matrix(
         decision_score, valuation["valuation_label"],
-        lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1))
+        lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1),
+        trend_label=verdict["trend_label"], high_risk=high_risk)
     print(f"[INFO] Ma trận quyết định (ex-VIN): {decision_label} — {decision_text} (điểm quyết định có trọng số: {decision_score:+d})")
 
     # 2 QUYẾT ĐỊNH SONG SONG — user (2026-07-25): "chia ra 2 quyết định: nếu nhìn vào VN-Index thì
@@ -1873,16 +1943,11 @@ def run_vimo_analysis():
         print(f"  => {valuation_headline['valuation_label']}")
         decision_label_headline, decision_text_headline = calc_decision_matrix(
             decision_score, valuation_headline["valuation_label"],
-            lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1))
+            lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1),
+            trend_label=verdict["trend_label"], high_risk=high_risk)
         print(f"[INFO] Ma trận quyết định (headline): {decision_label_headline} — {decision_text_headline}")
     else:
         print("  [INFO] Chưa có dữ liệu headline P/E-P/B (vnindex_pe_headline) — bỏ qua đối chiếu song song.")
-
-    print("[INFO] Đánh giá tổng thể (xu hướng + mức độ đồng thuận)...")
-    scorecard_history = raw.get("_meta", {}).get("scorecard_history", [])
-    verdict = calc_overall_verdict(scorecard_total, trends, scorecard_history)
-    print(f"  Xu hướng: {verdict['trend_label']} {verdict['trend_arrow']}")
-    print(f"  Mức độ rõ ràng: {verdict['clarity_label']}")
     today_str_iso = datetime.datetime.now().strftime("%Y-%m-%d")
     today_entry = {
         "date": today_str_iso, "total": scorecard_total,

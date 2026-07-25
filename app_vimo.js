@@ -105,8 +105,13 @@ function renderVerdict(verdict, decision) {
 
     if (decision) {
         // NÂNG CẤP 2026-07-25: khớp nhãn mới của calc_decision_matrix() (định giá dẫn dắt mức độ
-        // giải ngân — "Mua mạnh"/"Mua tỷ trọng cao"/"Giải ngân một phần" đều là mua, chỉ khác mức độ).
-        const decisionColor = ['Mua mạnh', 'Nên mua vào', 'Duy trì, chọn lọc', 'Giải ngân một phần'].includes(decision.label) ? '#10b981' : '#ef4444';
+        // giải ngân — "Mua mạnh"/"Mua tỷ trọng cao"/"Tăng tỷ trọng vừa phải"/"Nên mua vào"/"Duy
+        // trì, chọn lọc"/"Giải ngân một phần" đều là mua/giữ, chỉ khác mức độ. "Mua tỷ trọng cao"
+        // thiếu trong danh sách gốc (bug) — bổ sung cùng lúc thêm nhãn mới "Tăng tỷ trọng vừa
+        // phải"/"Nên bán ra"/"Clear toàn bộ" (2 cái sau là bán, rơi vào nhánh đỏ mặc định).
+        const BUY_HOLD_LABELS = ['Mua mạnh', 'Mua tỷ trọng cao', 'Tăng tỷ trọng vừa phải',
+            'Nên mua vào', 'Duy trì, chọn lọc', 'Giải ngân một phần'];
+        const decisionColor = BUY_HOLD_LABELS.includes(decision.label) ? '#10b981' : '#ef4444';
         decisionEl.textContent = decision.label;
         decisionEl.style.color = decisionColor;
     }
@@ -608,13 +613,18 @@ const INTERBANK_HISTORY_TENORS = [
     ['interbank_rate_6m', '6 Tháng', '#3b82f6'],
 ];
 
+const WEEKLY_PERIOD_RE = /^\d{4}-W\d{2}$/;
+
 function renderInterbank6mHistoryChart(grid, indicators) {
     // Hợp nhất TOÀN BỘ period của cả 3 kỳ hạn thành 1 trục thời gian chung — các kỳ hạn được cào
     // cùng 1 lần fetch_sbv_interest_rates() mỗi Action nên thường trùng period, nhưng hợp nhất
     // (thay vì chỉ lấy period của 1 kỳ hạn) để không mất điểm nếu có kỳ hạn nào lệch lịch sử.
+    // CHỈ lấy period dạng TUẦN — bỏ điểm THÁNG cũ còn sót lại trước khi đổi sang tuần
+    // (2026-07-24): trộn chung tháng+tuần trên 1 trục khiến chart bị kéo phẳng sai (user
+    // 2026-07-25). Khớp với build_interbank_6m_history_chart() trong template_vimo.py (PDF).
     const seriesByTenor = INTERBANK_HISTORY_TENORS.map(([key, tenorLabel, color]) => [
         tenorLabel, color,
-        ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
+        ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined && WEEKLY_PERIOD_RE.test(p.period)),
     ]);
     const allPeriods = [...new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period)))].sort();
     if (!allPeriods.length) return;
