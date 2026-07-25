@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-25 10:09",
+    "last_auto_update": "2026-07-25 12:24",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -37,9 +37,9 @@
       },
       {
         "date": "2026-07-25",
-        "total": -1,
+        "total": -2,
         "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Mua tỷ trọng cao"
+        "decision_label": "Nên mua vào"
       }
     ]
   },
@@ -1655,6 +1655,11 @@
         "period": "2026-07",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật.",
@@ -1676,6 +1681,11 @@
         "period": "2026-07",
         "value": 7.63,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 7.63,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).",
@@ -1690,6 +1700,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 2.97,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
         "value": 2.97,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -1708,6 +1723,11 @@
         "period": "2026-07",
         "value": 3.81,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 3.81,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1722,6 +1742,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 5.6,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
         "value": 5.6,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -1740,6 +1765,11 @@
         "period": "2026-07",
         "value": 6.65,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 6.65,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1754,6 +1784,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 7.8,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
         "value": 7.8,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -1772,6 +1807,11 @@
         "period": "2026-07",
         "value": 9.26,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 9.26,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1786,6 +1826,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+      },
+      {
+        "period": "2026-W30",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
       }
@@ -3468,6 +3513,11 @@
       {
         "period": "2026-07",
         "value": 267,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+      },
+      {
+        "period": "2026-W30",
+        "value": 268,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],

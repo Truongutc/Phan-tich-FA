@@ -106,7 +106,7 @@ function renderVerdict(verdict, decision) {
     if (decision) {
         // NÂNG CẤP 2026-07-25: khớp nhãn mới của calc_decision_matrix() (định giá dẫn dắt mức độ
         // giải ngân — "Mua mạnh"/"Mua tỷ trọng cao"/"Giải ngân một phần" đều là mua, chỉ khác mức độ).
-        const decisionColor = ['Mua mạnh', 'Mua tỷ trọng cao', 'Duy trì, chọn lọc', 'Giải ngân một phần'].includes(decision.label) ? '#10b981' : '#ef4444';
+        const decisionColor = ['Mua mạnh', 'Nên mua vào', 'Duy trì, chọn lọc', 'Giải ngân một phần'].includes(decision.label) ? '#10b981' : '#ef4444';
         decisionEl.textContent = decision.label;
         decisionEl.style.color = decisionColor;
     }

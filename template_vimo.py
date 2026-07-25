@@ -664,18 +664,22 @@ def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai
     Nghĩa là: định giá Rẻ/Hợp lý đã đủ để giải ngân (không còn "Phòng thủ, giữ tiền mặt" toàn bộ
     khi macro xấu + định giá hợp lý như bản cũ) — macro xấu chỉ hãm bớt TỶ TRỌNG, không chặn
     hoàn toàn việc mua; macro TỐT (đã qua giai đoạn bất lợi) là điều kiện DUY NHẤT để nâng "Rẻ"
-    lên mức mạnh nhất "Mua mạnh". lai_suat_veto=True (nhóm Lãi suất -1 Xấu) hãm bớt 1 bậc riêng
-    dù tổng điểm macro đã dương — lãi suất là yếu tố dẫn dắt tăng trưởng TƯƠNG LAI nên có quyền
-    phủ quyết mức mạnh nhất độc lập với điểm tổng."""
+    lên mức mạnh nhất "Mua mạnh".
+    SỬA LẠI CÙNG NGÀY (phản hồi tiếp theo): bản đầu dùng nhãn "Mua tỷ trọng cao" cho Rẻ+macro xấu
+    — user chỉ ra Scorecard đang -1/6 (nhiều nhóm Xấu: Thanh khoản/Tỷ giá/Thương mại) nên "tỷ
+    trọng CAO" nghe quá mạnh so với mức rủi ro thực tế đang có. Hạ 1 bậc nhãn xuống "Nên mua vào"
+    (khuyến nghị giải ngân, KHÔNG chỉ định mức tỷ trọng) cho MỌI trường hợp Rẻ mà macro CHƯA thật
+    sự tốt (kể cả khi lai_suat_veto chặn dù tổng điểm đã dương) — "tăng tỷ trọng lớn"/"Mua mạnh"
+    CHỈ dành riêng cho macro tốt THẬT SỰ (không bị lãi suất phủ quyết)."""
     macro_good = scorecard_total > 0
     if valuation_label == "Rẻ/Hấp dẫn":
         if macro_good and not lai_suat_veto:
             return "Mua mạnh", "Vĩ mô đã qua giai đoạn bất lợi + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu, ưu tiên ngành hưởng lợi từ vĩ mô."
         if macro_good and lai_suat_veto:
-            return ("Mua tỷ trọng cao",
+            return ("Nên mua vào",
                     "Vĩ mô tổng thể đã qua bất lợi + định giá rẻ, NHƯNG lãi suất (yếu tố dẫn dắt tăng trưởng tương lai) "
-                    "vẫn đang xấu — chưa dốc toàn lực, giải ngân tỷ trọng cao nhưng giữ lại phần dự phòng cho tới khi áp lực lãi suất hạ nhiệt.")
-        return "Mua tỷ trọng cao", "Định giá đã đủ rẻ để bù đắp rủi ro dù vĩ mô còn bất lợi — giải ngân tỷ trọng cao, chưa cần đợi vĩ mô xác nhận hoàn toàn."
+                    "vẫn đang xấu — nên mua vào nhưng CHƯA tăng tỷ trọng lớn cho tới khi áp lực lãi suất hạ nhiệt.")
+        return "Nên mua vào", "Định giá đã đủ rẻ để bù đắp rủi ro, NHƯNG vĩ mô còn nhiều điểm xấu (xem Scorecard) — nên mua vào từng phần, CHƯA tăng tỷ trọng lớn cho tới khi các yếu tố bất lợi về vĩ mô qua đi."
     elif valuation_label == "Đắt/Kém hấp dẫn":
         if macro_good:
             return "Giảm tỷ trọng, chờ điều chỉnh", "Vĩ mô tốt nhưng định giá đã đắt — chốt lời một phần, chờ cơ hội mua lại giá tốt hơn."
@@ -1441,6 +1445,10 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     t_sum = Table(summary_data, colWidths=[42 * mm, 42 * mm, 32 * mm, 55 * mm])
     t_sum.setStyle(tbl_style())
     story.append(t_sum)
+    story.append(Paragraph(
+        "<i>Lưu ý: ERP ở bảng trên = Earnings Yield (1/P·E) trừ Rf thực tế — KHÁC với \"ERP Việt Nam\" "
+        "trong box CAPM bên dưới (hằng số giả định ~7% dùng riêng cho mô hình CAPM/Gordon Growth), "
+        "2 con số phục vụ 2 mục đích khác nhau.</i>", small_st))
     story.append(Spacer(1, 6))
     story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn (ex-VIN):</b> {decision_text}", body_st))
 
