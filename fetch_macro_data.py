@@ -22,6 +22,8 @@ if hasattr(sys.stderr, "reconfigure"):
 import re
 import json
 import datetime
+import subprocess
+import statistics
 import requests
 import urllib3
 
@@ -47,6 +49,19 @@ def save_raw(data):
 def _current_period(dt=None):
     dt = dt or datetime.date.today()
     return dt.strftime("%Y-%m")
+
+
+def _current_period_weekly(dt=None):
+    """Kỳ THEO TUẦN (ISO week, 'YYYY-Www') — dùng riêng cho nhóm lãi suất liên ngân hàng/huy động
+    (user 2026-07-24: các số liệu này Action chạy hằng ngày/tuần nhưng trước đó dùng chung
+    _current_period() theo THÁNG nên mỗi tháng chỉ có 1 điểm, biểu đồ lịch sử gần như không tích
+    lũy được gì dù chạy nhiều lần — đổi sang tuần để mỗi lần chạy cách nhau ≥1 tuần đều tạo điểm
+    mới thay vì ghi đè điểm THÁNG cũ). Điểm THÁNG cũ đã có trong vimo_raw.json vẫn giữ nguyên làm
+    mốc lịch sử xa hơn — _append_point() so khớp chuỗi period nên tự động thêm điểm mới (không
+    khớp định dạng cũ) thay vì ghi đè, không cần migrate dữ liệu cũ."""
+    dt = dt or datetime.date.today()
+    iso_year, iso_week, _ = dt.isocalendar()
+    return f"{iso_year}-W{iso_week:02d}"
 
 
 def _append_point(raw, key, period, value, source_url):
@@ -166,6 +181,48 @@ def fetch_fii_net_flow():
     except Exception as e:
         print(f"  [WARN] FII (khối ngoại HOSE) thất bại: {e}")
         return None, None, None
+
+
+VNINDEX_NONVIN_URL = ("https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/"
+                       "Output/finance/VNINDEX_NONVIN.json")
+
+
+def fetch_vnindex_nonvin_data():
+    """GitHub PUBLIC repo Truongutc/AIC---chart-nganh (dự án khác của user, chia sẻ 2026-07-25) —
+    file Output/finance/VNINDEX_NONVIN.json là dữ liệu P/E, P/B, ROE của TOÀN BỘ thị trường sau
+    khi LOẠI BỎ họ VIN (VIC/VHM/VRE/VPL, xem sector_groups.json['VNINDEX_NONVIN']['exclude']) —
+    user (2026-07-25) yêu cầu dùng dữ liệu này thay vì P/E/P/B HEADLINE (có VIN) để tính toán,
+    vì VIN chiếm tỷ trọng lớn + định giá bất thường làm méo mó P/E/P/B chung của VN-Index (xác
+    nhận bằng số liệu thật: 24/07/2026 P/E headline ~12.4x nhưng ex-VIN chỉ 10.4x, P/B 1.92x vs
+    1.62x — chênh lệch đáng kể). File public, không cần token/xác thực.
+    Trả dict {"pe": float, "pb": float, "roe": float (quý gần nhất), "date": "YYYY-MM-DD",
+    "daily": {"dates":[...], "pe":[...], "pb":[...]}, "quarterly": {"labels":[...], "roe":[...],
+    "yoy_lnst_growth":[...]}}} hoặc None nếu lỗi."""
+    try:
+        r = requests.get(VNINDEX_NONVIN_URL, timeout=20)
+        r.raise_for_status()
+        payload = r.json()
+        daily = payload.get("daily", {})
+        dates, pe_list, pb_list = daily.get("dates", []), daily.get("pe", []), daily.get("pb", [])
+        # Lấy điểm GẦN NHẤT có đủ cả P/E lẫn P/B (vài ngày cuối có thể null nếu báo cáo tài chính
+        # quý mới nhất chưa cập nhật đủ cho toàn bộ universe).
+        latest_pe = latest_pb = latest_date = None
+        for i in range(len(dates) - 1, -1, -1):
+            if pe_list[i] is not None and pb_list[i] is not None:
+                latest_pe, latest_pb, latest_date = pe_list[i], pb_list[i], dates[i]
+                break
+        if latest_pe is None:
+            print("  [WARN] VNINDEX_NONVIN: không tìm thấy điểm P/E+P/B hợp lệ nào.")
+            return None
+        q = payload.get("quarterly", {})
+        latest_roe = q["roe"][-1] if q.get("roe") else None
+        return {
+            "pe": latest_pe, "pb": latest_pb, "roe": latest_roe, "date": latest_date,
+            "daily": daily, "quarterly": q,
+        }
+    except Exception as e:
+        print(f"  [WARN] VNINDEX_NONVIN (GitHub) thất bại: {e}")
+        return None
 
 
 def fetch_vnindex_pe_pb_24hmoney():
@@ -1079,6 +1136,145 @@ def fetch_market_deposit_rate_12m():
         return None, None, 0
 
 
+VNINDEX_VALUATION_HISTORY_PATH = os.path.join(PROJECT_ROOT, "data", "vnindex_valuation_history.json")
+
+
+def fetch_vietcap_index_valuation(val_type):
+    """trading.vietcap.com.vn/iq — API NỘI BỘ (không phải trang HTML, xem
+    .agents/skills/giaodichvietcap/SKILL.md) cấp lịch sử P/E hoặc P/B THEO NGÀY của VN-Index từ
+    22/04/2009 (~4300 điểm), kèm SẴN dải thống kê trung bình/±1SD/±2SD do chính Vietcap tính trên
+    toàn bộ lịch sử — user (2026-07-25) yêu cầu dựng biểu đồ so sánh định giá VN-Index theo thời
+    gian, và sau khi kiểm chứng bằng chính dữ liệu này phát hiện mô hình CAPM lý thuyết (P/B hợp
+    lý theo ROE/COE) đặt ngưỡng THẤP HƠN CẢ ĐÁY của 3 đợt khủng hoảng gần nhất (COVID 3/2020, bear
+    2022, sốc thuế quan 4/2025) — nên chuyển sang dùng dải thống kê THỰC TẾ này làm chuẩn tham
+    chiếu chính, đáng tin cậy hơn vì đã qua kiểm chứng lịch sử thay vì mô hình chưa backtest.
+    val_type: 'PE' hoặc 'PB'. Trả dict {"values": [{"date","value"}...], "average", "plusOneSD",
+    "plusTwoSD", "minusOneSD", "minusTwoSD"} hoặc None nếu lỗi."""
+    try:
+        s = requests.Session()
+        s.headers.update({
+            "User-Agent": UA,
+            "Accept": "application/json, text/plain, */*",
+            "Referer": "https://trading.vietcap.com.vn/",
+        })
+        s.get("https://trading.vietcap.com.vn/iq/market?tab=information", timeout=15)
+        url = "https://trading.vietcap.com.vn/api/iq-insight-service/v1/market-watch/index-valuation"
+        r = s.get(url, params={"type": val_type, "comGroupCode": "VNINDEX", "timeFrame": "ALL"}, timeout=20)
+        r.raise_for_status()
+        payload = r.json()
+        if not payload.get("successful"):
+            print(f"  [WARN] Vietcap IQ {val_type}: API trả successful=false — {payload.get('msg')}")
+            return None
+        return payload["data"]
+    except Exception as e:
+        print(f"  [WARN] Vietcap IQ {val_type} thất bại: {e}")
+        return None
+
+
+def update_vnindex_valuation_history(nonvin_data=None):
+    """Fetch lại TOÀN BỘ lịch sử P/E + P/B VN-Index HEADLINE (có VIN) từ Vietcap IQ, GHÉP THÊM
+    lịch sử ex-VIN (nonvin_data, từ fetch_vnindex_nonvin_data() — GitHub Truongutc/AIC---chart-
+    nganh, đã fetch sẵn ở bước trước để tránh gọi API 2 lần) nếu có, rồi ghi đè
+    data/vnindex_valuation_history.json — file RIÊNG (không gộp vào vimo_raw.json) vì đây là
+    time-series DÀY ĐẶC theo ngày (~4300-6300 điểm/chỉ báo), khác hẳn cấu trúc chỉ báo thưa của
+    vimo_raw.json; ghi đè toàn bộ mỗi lần chạy (không tích lũy dần) vì cả 2 nguồn đều trả về TRỌN
+    VẸN lịch sử mỗi lần gọi, không cần merge thủ công. Làm tròn 4 chữ số thập phân + KHÔNG indent
+    để giảm dung lượng file/git diff mỗi lần chạy. Trả True nếu lấy được ít nhất 1 chuỗi bất kỳ."""
+    def _round_data(data):
+        if not data:
+            return None
+        data = dict(data)
+        data["values"] = [{"date": p["date"], "value": round(p["value"], 4)} for p in data.get("values", [])]
+        for k in ("average", "plusOneSD", "plusTwoSD", "minusOneSD", "minusTwoSD"):
+            if data.get(k) is not None:
+                data[k] = round(data[k], 4)
+        return data
+
+    def _build_exvin_data(dates, raw_values):
+        # Vietcap trả sẵn dải average/±1SD/±2SD cho headline — ex-VIN không có nguồn nào tính sẵn
+        # nên tự tính bằng statistics.mean/stdev trên TOÀN BỘ lịch sử ex-VIN, CÙNG công thức/quy
+        # ước với Vietcap (mean ± n*sample_stdev) để 4 biểu đồ so sánh được với nhau (user
+        # 2026-07-25: yêu cầu 4 biểu đồ riêng, mỗi cái tự so với dải/ngưỡng của chính nó).
+        values = [{"date": d, "value": round(v, 4)} for d, v in zip(dates, raw_values) if v is not None]
+        if len(values) < 2:
+            return None
+        nums = [p["value"] for p in values]
+        avg = statistics.mean(nums)
+        sd = statistics.stdev(nums)
+        return {
+            "values": values,
+            "average": round(avg, 4), "plusOneSD": round(avg + sd, 4), "minusOneSD": round(avg - sd, 4),
+            "plusTwoSD": round(avg + 2 * sd, 4), "minusTwoSD": round(avg - 2 * sd, 4),
+        }
+
+    pe_data = _round_data(fetch_vietcap_index_valuation("PE"))
+    pb_data = _round_data(fetch_vietcap_index_valuation("PB"))
+
+    pe_exvin = pb_exvin = None
+    if nonvin_data and nonvin_data.get("daily"):
+        daily = nonvin_data["daily"]
+        pe_exvin = _build_exvin_data(daily["dates"], daily["pe"])
+        pb_exvin = _build_exvin_data(daily["dates"], daily["pb"])
+
+    if not pe_data and not pb_data and not pe_exvin and not pb_exvin:
+        return False
+    out = {
+        "_meta": {"source": "trading.vietcap.com.vn (Vietcap IQ) + GitHub Truongutc/AIC---chart-nganh (ex-VIN)",
+                  "updated_at": _current_period_weekly()},
+        "pe": pe_data,
+        "pb": pb_data,
+        "pe_exvin": pe_exvin,
+        "pb_exvin": pb_exvin,
+    }
+    with open(VNINDEX_VALUATION_HISTORY_PATH, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
+    return True
+
+
+def fetch_tcbs_ipower_max_rate():
+    """tcbs.com.vn/ca-nhan/san-pham/ipower/ — trang HTML tĩnh THẬT (server-render, không cần JS)
+    của sản phẩm 'Tài khoản Nhân lãi' iPower (TCBS/Techcombank). Lãi suất linh hoạt theo số dư +
+    giá trị giao dịch lũy kế tháng, MỨC CAO NHẤT quảng cáo ('lên đến X%/năm') — user (2026-07-24)
+    yêu cầu lấy mức CAO NHẤT vì đây là kênh 'gửi tiền' thay thế ngoài ngân hàng truyền thống, khi
+    hệ thống ngân hàng căng thanh khoản/huy động khó thì TCBS phải tăng lãi suất iPower để cạnh
+    tranh hút tiền — mức này HẠ xuống nghĩa là áp lực huy động bên ngoài đã dịu bớt. Trang có ghi
+    rõ ngày hiệu lực biểu lãi suất ('Hiệu lực từ ngày DD/MM/YYYY') — dùng làm period thay vì ngày
+    fetch (biểu lãi suất có thể đã áp dụng từ trước ngày Action chạy). Trả (rate, period_iso,
+    source_url) hoặc (None, None, None) nếu lỗi/không tìm thấy.
+
+    NGOẠI LỆ so với các hàm fetch_* khác trong file này: tcbs.com.vn chặn `requests` bằng
+    TLS-fingerprint-based bot detection (đã xác nhận: cùng User-Agent/header y hệt trình duyệt
+    nhưng `requests` luôn nhận 403, trong khi `curl` hệt vậy lại trả 200 — khác chữ ký bắt tay
+    TLS/JA3 giữa 2 thư viện, KHÔNG phải do thiếu header) — gọi `curl` qua subprocess thay vì
+    `requests.get()`. GitHub Actions runner (ubuntu-latest) có sẵn curl, không cần cài thêm gì."""
+    url = "https://www.tcbs.com.vn/ca-nhan/san-pham/ipower/"
+    try:
+        proc = subprocess.run(
+            ["curl", "-sL", "-A", UA, "--max-time", "20", url],
+            capture_output=True, timeout=25)
+        if proc.returncode != 0 or not proc.stdout:
+            print(f"  [WARN] TCBS iPower: curl thất bại (rc={proc.returncode}).")
+            return None, None, None
+        html = proc.stdout.decode("utf-8", errors="replace")
+        text = re.sub(r"<[^>]+>", " ", html)
+        text = re.sub(r"&nbsp;", " ", text)
+        text = re.sub(r"\s+", " ", text)
+        m = re.search(r"lên đến\s*([\d,\.]+)\s*%\s*/\s*năm", text)
+        if not m:
+            print("  [WARN] TCBS iPower: không tìm thấy 'lên đến X%/năm' — trang có thể đã đổi cấu trúc.")
+            return None, None, None
+        rate = float(m.group(1).replace(",", "."))
+        period = _current_period_weekly()
+        m2 = re.search(r"Hiệu lực từ ngày (\d{2})/(\d{2})/(\d{4})", text)
+        if m2:
+            eff_date = datetime.date(int(m2.group(3)), int(m2.group(2)), int(m2.group(1)))
+            period = _current_period_weekly(eff_date)
+        return rate, period, url
+    except Exception as e:
+        print(f"  [WARN] TCBS iPower thất bại: {e}")
+        return None, None, None
+
+
 # Lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) không có API/trang công bố chính thức nào —
 # chỉ xuất hiện rải rác trong tin tức khi báo chí phát hiện/phỏng vấn. RSS_NEWS_FEEDS là các
 # nguồn tin thật, tần suất cao, đã xác nhận hoạt động (không phải trang search JS-rendered).
@@ -1154,16 +1350,44 @@ def update_vimo_raw():
         _append_point(raw, "fii_net_flow_hose", date_iso, net_ty_vnd, src)
         print(f"  -> {date_iso}: {net_ty_vnd:+.2f} tỷ VND ({'mua ròng' if net_ty_vnd > 0 else 'bán ròng'})")
 
-    print("[VN-Index P/E & P/B]")
-    pe, pb, src = fetch_vnindex_pe_pb_24hmoney()
-    if not pe:  # 24hmoney lỗi/đổi cấu trúc -> fallback P/E riêng qua worldperatio.com (không có P/B)
-        pe, src = fetch_vnindex_pe_current()
+    print("[VN-Index P/E & P/B — ƯU TIÊN ex-VIN (loại VIC/VHM/VRE/VPL, ít méo mó hơn headline)]")
+    nonvin = fetch_vnindex_nonvin_data()
+    if nonvin:
+        pe, pb, src = nonvin["pe"], nonvin["pb"], VNINDEX_NONVIN_URL
+        print(f"  -> ex-VIN {nonvin['date']}: P/E={pe:.2f} P/B={pb:.2f} ROE(quý gần nhất)={nonvin.get('roe')}")
+    else:
+        # Fallback headline (CÓ VIN) nếu repo GitHub kia lỗi/không truy cập được — vẫn hơn không
+        # có gì, nhưng đã méo mó hơn (xem note trong vimo_raw.json).
+        pe, pb, src = fetch_vnindex_pe_pb_24hmoney()
+        if not pe:
+            pe, src = fetch_vnindex_pe_current()
+            pb = None
+        if pe:
+            print(f"  -> [FALLBACK headline, có VIN] P/E={pe}")
     if pe:
         _append_point(raw, "vnindex_pe", period_now, pe, src)
-        print(f"  -> P/E {period_now}: {pe}")
     if pb:
         _append_point(raw, "vnindex_pb", period_now, pb, src)
-        print(f"  -> P/B {period_now}: {pb}")
+
+    # LUÔN fetch headline (CÓ VIN) riêng, dù ex-VIN đã lấy được — để có cặp P/E, P/B SONG SONG
+    # (headline vs ex-VIN) cho 2 quyết định phân bổ vốn độc lập (user 2026-07-25: "chia ra 2
+    # quyết định: nếu nhìn vào VN-Index thì quyết định là gì, nếu nhìn theo VN-Index no VIN thì
+    # quyết định là gì"). Khác khối trên (chỉ fetch headline làm FALLBACK khi ex-VIN lỗi).
+    print("[VN-Index P/E & P/B — headline (CÓ VIN, để so sánh song song với ex-VIN)]")
+    pe_head, pb_head, src_head = fetch_vnindex_pe_pb_24hmoney()
+    if not pe_head:
+        pe_head, src_head = fetch_vnindex_pe_current()
+    if pe_head:
+        _append_point(raw, "vnindex_pe_headline", period_now, pe_head, src_head)
+        print(f"  -> headline {period_now}: P/E={pe_head}")
+    if pb_head:
+        _append_point(raw, "vnindex_pb_headline", period_now, pb_head, src_head)
+
+    print("[Vietcap IQ — lịch sử P/E & P/B VN-Index headline theo ngày (~17 năm, kèm dải ±1SD/±2SD)]")
+    if update_vnindex_valuation_history(nonvin):
+        print(f"  -> đã ghi {VNINDEX_VALUATION_HISTORY_PATH}")
+    else:
+        print("  [WARN] Không lấy được lịch sử P/E/P/B từ Vietcap IQ — giữ nguyên file cũ (nếu có).")
 
     print("[World Bank — China GDP growth]")
     pts = fetch_worldbank("NY.GDP.MKTP.KD.ZG", "CN", n=8)
@@ -1368,47 +1592,58 @@ def update_vimo_raw():
         ]
         print(f"  -> {len(pts)} điểm")
 
-    print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3 tháng (tích lũy theo lần chạy)]")
+    # Nhóm lãi suất (SBV/huy động/OMO/tín phiếu) dùng kỳ THEO TUẦN (không phải period_now theo
+    # tháng ở trên) — user (2026-07-24) chỉ ra chạy nhiều lần/tháng vẫn chỉ ra 1 điểm, biểu đồ lịch
+    # sử liên ngân hàng gần như không tích lũy được gì. Xem _current_period_weekly().
+    period_now_weekly = _current_period_weekly()
+
+    print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3 tháng (tích lũy theo TUẦN)]")
     rates = fetch_sbv_interest_rates()
     for key, value in rates.items():
-        _append_point(raw, key, period_now, value, "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1")
-        print(f"  -> {key} {period_now}: {value}")
+        _append_point(raw, key, period_now_weekly, value, "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1")
+        print(f"  -> {key} {period_now_weekly}: {value}")
 
-    print("[SBV — lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản thị trường 2, tích lũy theo lần chạy)]")
+    print("[SBV — lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản thị trường 2, tích lũy theo TUẦN)]")
     omo = fetch_sbv_omo_rate()
     for key, value in omo.items():
-        _append_point(raw, key, period_now,
+        _append_point(raw, key, period_now_weekly,
                        value, "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F")
-        print(f"  -> {key} {period_now}: {value}")
+        print(f"  -> {key} {period_now_weekly}: {value}")
 
-    print("[SBV — tín phiếu NHNN (hút thanh khoản thị trường 2, đối lập OMO — 2 chiều bơm/hút)]")
+    print("[SBV — tín phiếu NHNN (hút thanh khoản thị trường 2, đối lập OMO — 2 chiều bơm/hút, tích lũy theo TUẦN)]")
     days_since, last_date, src = fetch_sbv_tin_phieu_days_since()
     if days_since is not None:
-        _append_point(raw, "tin_phieu_days_since_issuance", period_now, days_since, src)
-        print(f"  -> {period_now}: {days_since} ngày kể từ lần chào bán tín phiếu gần nhất ({last_date})")
+        _append_point(raw, "tin_phieu_days_since_issuance", period_now_weekly, days_since, src)
+        print(f"  -> {period_now_weekly}: {days_since} ngày kể từ lần chào bán tín phiếu gần nhất ({last_date})")
 
-    print("[Ngân hàng — lãi suất huy động 12 tháng: VCB / VietinBank / NamABank (tích lũy theo lần chạy)]")
+    print("[Ngân hàng — lãi suất huy động 12 tháng: VCB / VietinBank / NamABank (tích lũy theo TUẦN)]")
     v = fetch_vcb_deposit_rate_12m()
     if v is not None:
-        _append_point(raw, "deposit_rate_12m_vcb", period_now, v,
+        _append_point(raw, "deposit_rate_12m_vcb", period_now_weekly, v,
                        "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal")
-        print(f"  -> VCB {period_now}: {v}")
+        print(f"  -> VCB {period_now_weekly}: {v}")
     v = fetch_ctg_deposit_rate_12m()
     if v is not None:
-        _append_point(raw, "deposit_rate_12m_ctg", period_now, v, "https://www.vietinbank.vn/lai-suat-khcn")
-        print(f"  -> VietinBank {period_now}: {v}")
+        _append_point(raw, "deposit_rate_12m_ctg", period_now_weekly, v, "https://www.vietinbank.vn/lai-suat-khcn")
+        print(f"  -> VietinBank {period_now_weekly}: {v}")
     v = fetch_nab_deposit_rate_12m()
     if v is not None:
-        _append_point(raw, "deposit_rate_12m_nab", period_now, v, "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2")
-        print(f"  -> NamABank {period_now}: {v}")
+        _append_point(raw, "deposit_rate_12m_nab", period_now_weekly, v, "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2")
+        print(f"  -> NamABank {period_now_weekly}: {v}")
 
-    print("[24hmoney — lãi suất huy động online 12 tháng, mặt bằng toàn thị trường (~38 NH, tích lũy theo lần chạy)]")
+    print("[24hmoney — lãi suất huy động online 12 tháng, mặt bằng toàn thị trường (~38 NH, tích lũy theo TUẦN)]")
     max_r, avg_r, n = fetch_market_deposit_rate_12m()
     if max_r is not None:
         src = "https://24hmoney.vn/lai-suat-gui-ngan-hang"
-        _append_point(raw, "deposit_rate_12m_market_max", period_now, max_r, src)
-        _append_point(raw, "deposit_rate_12m_market_avg", period_now, avg_r, src)
-        print(f"  -> {period_now}: max={max_r}% avg={avg_r}% (n={n} ngân hàng)")
+        _append_point(raw, "deposit_rate_12m_market_max", period_now_weekly, max_r, src)
+        _append_point(raw, "deposit_rate_12m_market_avg", period_now_weekly, avg_r, src)
+        print(f"  -> {period_now_weekly}: max={max_r}% avg={avg_r}% (n={n} ngân hàng)")
+
+    print("[TCBS — lãi suất iPower cao nhất (kênh gửi tiền thay thế, tích lũy theo TUẦN)]")
+    tcbs_rate, tcbs_period, tcbs_src = fetch_tcbs_ipower_max_rate()
+    if tcbs_rate is not None:
+        _append_point(raw, "deposit_rate_tcbs_ipower_max", tcbs_period, tcbs_rate, tcbs_src)
+        print(f"  -> {tcbs_period}: {tcbs_rate}%")
 
     print("[RSS tin tức — lãi suất huy động THỎA THUẬN (quét CafeF/VietStock, chỉ ghi khi có tin mới khớp)]")
     hit = fetch_negotiated_deposit_rate_news()

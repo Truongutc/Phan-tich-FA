@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-24 13:35",
+    "last_auto_update": "2026-07-25 09:49",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -34,6 +34,12 @@
         "total": 1,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Bung vốn mạnh"
+      },
+      {
+        "date": "2026-07-25",
+        "total": -1,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Mua tỷ trọng cao"
       }
     ]
   },
@@ -1649,6 +1655,11 @@
         "period": "2026-07",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật.",
@@ -1670,6 +1681,11 @@
         "period": "2026-07",
         "value": 8.04,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 7.63,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).",
@@ -1685,6 +1701,11 @@
       {
         "period": "2026-07",
         "value": 3.33,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 2.97,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1702,6 +1723,11 @@
         "period": "2026-07",
         "value": 4.1,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 3.81,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1717,6 +1743,11 @@
       {
         "period": "2026-07",
         "value": 5.5,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 5.6,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1734,6 +1765,11 @@
         "period": "2026-07",
         "value": 7.07,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 6.65,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1750,6 +1786,11 @@
         "period": "2026-07",
         "value": 8.15,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
+        "value": 7.8,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1764,6 +1805,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 9.26,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W30",
         "value": 9.26,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -1782,6 +1828,11 @@
         "period": "2026-07",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+      },
+      {
+        "period": "2026-W30",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
       }
     ],
     "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy).",
@@ -1796,6 +1847,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 5.9,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+      },
+      {
+        "period": "2026-W30",
         "value": 5.9,
         "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
       }
@@ -1814,6 +1870,11 @@
         "period": "2026-07",
         "value": 5.9,
         "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
+      },
+      {
+        "period": "2026-W30",
+        "value": 5.9,
+        "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
       }
     ],
     "note": "Nguồn: bảng HTML thật tại vietinbank.vn/lai-suat-khcn (dòng '12 tháng' chính xác, không nhầm với 'Từ 11 đến dưới 12 tháng'/'Trên 12 đến 13 tháng') — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Lãi suất cho vay SXKD/mua nhà của VietinBank chỉ tìm thấy trong văn bản quảng cáo/khuyến mãi (không phải bảng số liệu ổn định) — không đủ tin cậy để tự động hóa, bỏ qua.",
@@ -1828,6 +1889,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 6.2,
+        "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
+      },
+      {
+        "period": "2026-W30",
         "value": 6.2,
         "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
       }
@@ -2394,6 +2460,11 @@
         "period": "2026-07",
         "value": 7.8,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W30",
+        "value": 7.8,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
     "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max.",
@@ -2408,6 +2479,11 @@
     "series": [
       {
         "period": "2026-07",
+        "value": 6.17,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W30",
         "value": 6.17,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
@@ -2435,6 +2511,22 @@
     ],
     "note": "Bản chất là thỏa thuận ngầm giữa khách hàng và nhân viên chi nhánh, KHÔNG có biểu niêm yết công khai để scrape trực tiếp — thay vào đó fetch_negotiated_deposit_rate_news() quét RSS tin tức (CafeF, VietStock) mỗi lần Action chạy, tự động bắt các bài viết mới có tiêu đề chứa 'lãi suất' + từ khóa đặc trưng ('thỏa thuận'/'chạm mốc'/'vượt trần'/'ngầm') và trích % NGAY TRONG TIÊU ĐỀ (không đọc/suy diễn nội dung bài, giảm rủi ro trích sai). Phần lớn các lần chạy sẽ không tìm thấy tin mới (bình thường, đây là tin hiếm/sự kiện) — điểm dữ liệu chỉ được thêm khi có tin thật khớp. Điểm seed 2026-06 (VnExpress, 15/6-cuối 6/2026): mức 9%/năm áp dụng cho khoản tiền gửi từ 1 tỷ đồng trở lên qua thỏa thuận với nhân viên chi nhánh; Cake trả tới 8,9%/năm (gửi từ 200 triệu đồng); VPBank 8,6%; Sacombank từng trả 8,8% cuối tháng 6. So sánh: biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn (VCB/VietinBank) chỉ ~5,9%/năm (xem deposit_rate_12m_vcb/ctg) — CHÊNH LỆCH ~3 điểm % cho thấy áp lực thanh khoản thực tế của hệ thống ngân hàng LỚN HƠN NHIỀU so với những gì biểu lãi suất công khai thể hiện. Đối chiếu thêm bảng lãi suất ONLINE đa ngân hàng (24hmoney.vn/lai-suat-gui-ngan-hang, tháng 07/2026): nhiều NHTM đã niêm yết CÔNG KHAI mức 6,8-7,8%/năm kỳ hạn 12 tháng (SHB 7,8%, Saigonbank 7,2%, PGBank/OCB/Sacombank ~7,0%) — cao hơn đáng kể mức 5,9% của riêng nhóm Big4 mà dashboard này đang theo dõi, cho thấy nhóm Big4 không đại diện đầy đủ mặt bằng lãi suất toàn thị trường.",
     "impact": "LƯU Ý CÁCH ĐỌC: không phải tín hiệu 'lợi suất tiết kiệm hấp dẫn' — khi lãi suất THỎA THUẬN (ngoài biểu niêm yết) vượt xa mức công bố chính thức (hiện ~9%/năm so với ~5,9% của Big4), đây là bằng chứng RÕ RÀNG NHẤT rằng nền lãi suất thực tế đang rất cao và hệ thống ngân hàng phải trả giá đắt để giữ chân dòng tiền — chi phí này sẽ sớm chuyển tiếp thành lãi suất cho vay cao hơn, khiến toàn bộ doanh nghiệp/nền kinh tế phải gồng mình chịu đựng chi phí vốn đắt đỏ."
+  },
+  "deposit_rate_tcbs_ipower_max": {
+    "group": "monetary",
+    "label": "Lãi suất iPower TCBS (cao nhất)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "tcbs_scrape",
+    "series": [
+      {
+        "period": "2026-W28",
+        "value": 9.0,
+        "source_url": "https://www.tcbs.com.vn/ca-nhan/san-pham/ipower/"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-24 (user đề xuất) — tcbs.com.vn/ca-nhan/san-pham/ipower/, sản phẩm 'Tài khoản Nhân lãi' của TCBS, lấy MỨC CAO NHẤT quảng cáo ('lên đến X%/năm', áp dụng khi số dư ≥15 tỷ VÀ giá trị giao dịch lũy kế tháng ≥15 tỷ). Đây là kênh 'gửi tiền' thay thế ngoài hệ thống ngân hàng truyền thống — khi thanh khoản hệ thống căng, TCBS phải tăng lãi suất này để cạnh tranh hút tiền, nên nó phản ánh mặt bằng lãi suất huy động THẬT ngoài thị trường, đáng tin cậy/ổn định hơn deposit_rate_negotiated_max (chỉ có khi báo chí đưa tin) vì TCBS công bố công khai + có ghi rõ ngày hiệu lực, lấy được mỗi lần Action chạy. Period dùng NGÀY HIỆU LỰC ghi trên trang (không phải ngày fetch) — xem fetch_tcbs_ipower_max_rate(). LƯU Ý KỸ THUẬT: tcbs.com.vn chặn thư viện `requests` bằng TLS-fingerprint (403 dù header giống hệt trình duyệt), phải gọi qua `curl` subprocess — ngoại lệ duy nhất trong toàn bộ fetch_macro_data.py.",
+    "impact": "TCBS hạ mức lãi suất iPower cao nhất đồng nghĩa áp lực huy động/thanh khoản bên ngoài hệ thống ngân hàng đã dịu bớt — kênh thay thế này không còn cần trả lãi cao để cạnh tranh hút tiền nữa. Ngược lại, mức này tăng lên là tín hiệu SỚM cho thấy căng thẳng thanh khoản đang lan rộng ra ngoài hệ thống ngân hàng truyền thống."
   },
   "gdp_industry_contribution": {
     "group": "growth",
@@ -2482,7 +2574,7 @@
       },
       {
         "period": "2026-07",
-        "value": 26250.54,
+        "value": 26278.14,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -3143,35 +3235,67 @@
   },
   "vnindex_pe": {
     "group": "market",
-    "label": "VN-Index P/E",
+    "label": "VN-Index P/E (ex-VIN)",
     "unit": "x",
     "good_direction": "lower",
-    "auto_source": "24hmoney_scrape",
+    "auto_source": "github_exvin",
     "series": [
       {
         "period": "2026-07",
-        "value": 12.48,
-        "source_url": "https://24hmoney.vn/indices/vn-index"
+        "value": 10.435985515184644,
+        "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
-    "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. NÂNG CẤP (2026-07): nguồn chính chuyển sang 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} nhúng sẵn trong window.__NUXT__, không cần render JS) — worldperatio.com giữ làm fallback nếu 24hmoney lỗi. Điểm seed 15.43 phía trên lấy từ worldperatio.com; từ lần Action kế tiếp sẽ là số 24hmoney (gần với số Vietcap P/E-TTM 13.7 mà user từng đối chiếu hơn — 2 nguồn khác phương pháp tính TTM/xử lý outlier, không phải lỗi dữ liệu).",
+    "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. NÂNG CẤP 2026-07-25 (theo yêu cầu user): nguồn CHÍNH chuyển sang fetch_vnindex_nonvin_data() — file Output/finance/VNINDEX_NONVIN.json từ repo GitHub public Truongutc/AIC---chart-nganh (dự án khác của user), là P/E VN-Index sau khi LOẠI BỎ họ VIN (VIC/VHM/VRE/VPL) — VIN chiếm tỷ trọng lớn + định giá bất thường làm méo mó P/E headline (xác nhận: 24/07/2026 ex-VIN 10.44x vs headline 12.38x, chênh ~2 điểm). 24hmoney.vn/indices/vn-index (CÓ VIN) giữ làm fallback nếu repo GitHub kia không truy cập được — điểm 2026-07=12.38 phía trên là từ fallback trước khi nâng cấp, các điểm mới sẽ là số ex-VIN.",
     "impact": "VN-Index P/E thấp hơn nghĩa là nhà đầu tư đang trả giá thấp hơn cho mỗi đồng lợi nhuận doanh nghiệp — thị trường rẻ hơn tương đối. So sánh Earnings Yield (nghịch đảo P/E) với lãi suất huy động/TPCP mới cho biết dòng tiền có nên ở lại cổ phiếu hay chuyển sang tiền gửi/trái phiếu (xem thêm ERP trong khối Định giá thị trường)."
   },
   "vnindex_pb": {
     "group": "market",
-    "label": "VN-Index P/B",
+    "label": "VN-Index P/B (ex-VIN)",
+    "unit": "x",
+    "good_direction": "lower",
+    "auto_source": "github_exvin",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 1.6210011407863132,
+        "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
+      }
+    ],
+    "note": "NÂNG CẤP 2026-07-25: cùng nguồn/lý do với vnindex_pe — xem fetch_vnindex_nonvin_data(), P/B sau khi loại họ VIN (24/07/2026: ex-VIN 1.62x vs headline 1.92x). 24hmoney.vn/indices/vn-index (CÓ VIN) giữ làm fallback.",
+    "impact": "P/B cho biết thị giá đang cao/thấp hơn bao nhiêu lần so với giá trị sổ sách của toàn bộ doanh nghiệp niêm yết — hữu ích để đối chiếu chéo với P/E (vd P/E thấp nhưng P/B cao có thể do ROE đang ở đỉnh chu kỳ, không hẳn là rẻ bền vững)."
+  },
+  "vnindex_pe_headline": {
+    "group": "market",
+    "label": "VN-Index P/E (headline, có VIN)",
     "unit": "x",
     "good_direction": "lower",
     "auto_source": "24hmoney_scrape",
     "series": [
       {
         "period": "2026-07",
-        "value": 1.94,
+        "value": 12.38,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
-    "note": "Auto-scrape 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} nhúng trong window.__NUXT__) — cùng lần fetch với vnindex_pe. Trước đây P/B bị loại khỏi phạm vi vì không tìm được nguồn API cấp CHỈ SỐ (chỉ có API cấp từng mã) — 24hmoney cung cấp trực tiếp P/B cấp chỉ số nên bổ sung lại theo yêu cầu user.",
-    "impact": "P/B cho biết thị giá đang cao/thấp hơn bao nhiêu lần so với giá trị sổ sách của toàn bộ doanh nghiệp niêm yết — hữu ích để đối chiếu chéo với P/E (vd P/E thấp nhưng P/B cao có thể do ROE đang ở đỉnh chu kỳ, không hẳn là rẻ bền vững)."
+    "note": "Chỉ báo mới 2026-07-25 — P/E VN-Index THẬT (bao gồm cả họ VIN: VIC/VHM/VRE/VPL), fetch SONG SONG với vnindex_pe (ex-VIN) để có 2 quyết định phân bổ vốn độc lập đối chiếu nhau (user 2026-07-25). Nguồn: 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} trong window.__NUXT__).",
+    "impact": "So sánh với vnindex_pe (ex-VIN): chênh lệch lớn giữa 2 số cho biết mức độ VIN đang kéo méo định giá chung của thị trường lên/xuống."
+  },
+  "vnindex_pb_headline": {
+    "group": "market",
+    "label": "VN-Index P/B (headline, có VIN)",
+    "unit": "x",
+    "good_direction": "lower",
+    "auto_source": "24hmoney_scrape",
+    "series": [
+      {
+        "period": "2026-07",
+        "value": 1.92,
+        "source_url": "https://24hmoney.vn/indices/vn-index"
+      }
+    ],
+    "note": "Chỉ báo mới 2026-07-25 — xem note vnindex_pe_headline (cùng lý do/nguồn, P/B thay vì P/E).",
+    "impact": "So sánh với vnindex_pb (ex-VIN): chênh lệch lớn giữa 2 số cho biết mức độ VIN đang kéo méo định giá chung của thị trường lên/xuống."
   },
   "gdp_share_agri": {
     "group": "growth",
@@ -3417,6 +3541,11 @@
         "period": "2026-07-23",
         "value": -491.72,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=24/07/2026"
+      },
+      {
+        "period": "2026-07-24",
+        "value": -1328.11,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=25/07/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -3432,6 +3561,11 @@
       {
         "period": "2026-07",
         "value": 267,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+      },
+      {
+        "period": "2026-W30",
+        "value": 268,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],

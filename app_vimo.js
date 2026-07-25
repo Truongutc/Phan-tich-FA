@@ -56,7 +56,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderDecision(data.decision, data.scorecard.total);
     renderSynthesis(data.synthesis);
     renderValuation(data.marketValuation);
+    renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decision, data.decisionHeadline);
     renderIndicatorGroups(data.indicators);
+
+    // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
+    // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
+    // (2026-07-25) yêu cầu đưa lên web, đặt ngay dưới Scorecard, dạng ngang/rộng nhất có thể,
+    // có nút xem toàn màn hình + khung thời gian lọc.
+    const valHist = await fetch('data/vnindex_valuation_history.json').then(r => r.ok ? r.json() : null).catch(() => null);
+    if (valHist) renderVnindexValuationHistory(valHist, data.marketValuation);
 });
 
 function renderSynthesis(synthesis) {
@@ -96,7 +104,9 @@ function renderVerdict(verdict, decision) {
     clarityEl.style.color = clarityColor;
 
     if (decision) {
-        const decisionColor = ['Bung vốn mạnh', 'Duy trì, chọn lọc', 'Mua từ từ, phân kỳ'].includes(decision.label) ? '#10b981' : '#ef4444';
+        // NÂNG CẤP 2026-07-25: khớp nhãn mới của calc_decision_matrix() (định giá dẫn dắt mức độ
+        // giải ngân — "Mua mạnh"/"Mua tỷ trọng cao"/"Giải ngân một phần" đều là mua, chỉ khác mức độ).
+        const decisionColor = ['Mua mạnh', 'Mua tỷ trọng cao', 'Duy trì, chọn lọc', 'Giải ngân một phần'].includes(decision.label) ? '#10b981' : '#ef4444';
         decisionEl.textContent = decision.label;
         decisionEl.style.color = decisionColor;
     }
@@ -191,6 +201,216 @@ function renderValuation(val) {
     } else if (banner) {
         banner.style.display = 'none';
     }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SO SÁNH 2 QUYẾT ĐỊNH — headline (có VIN) vs ex-VIN (user 2026-07-25: "chia ra 2 quyết định:
+// nếu nhìn vào VN-Index thì quyết định là gì... nếu nhìn theo VN-Index no VIN thì quyết định là gì").
+// ═══════════════════════════════════════════════════════════
+function renderVnindexCompare(valExvin, valHeadline, decisionExvin, decisionHeadline) {
+    const card = document.getElementById('vnindex-compare-card');
+    if (!valHeadline || !decisionHeadline) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    const fmtX = (v) => v !== null && v !== undefined ? `${formatNumber(v)}x` : '-';
+    const rows = [
+        { label: 'VN-Index (headline, có VIN)', pe: valHeadline.pe, pb: valHeadline.pb, valLabel: valHeadline.valuation_label, decLabel: decisionHeadline.label },
+        { label: 'VN-Index ex-VIN (loại VIC/VHM/VRE/VPL)', pe: valExvin.pe, pb: valExvin.pb, valLabel: valExvin.valuation_label, decLabel: decisionExvin.label },
+    ];
+    const valColor = (l) => l === 'Rẻ/Hấp dẫn' ? '#10b981' : l === 'Đắt/Kém hấp dẫn' ? '#ef4444' : '#f59e0b';
+
+    document.getElementById('vnindex-compare-table').innerHTML = `
+        <table style="width:100%;border-collapse:collapse;font-size:0.88em">
+            <thead><tr style="border-bottom:1px solid var(--border-color,#1f2937)">
+                <th style="text-align:left;padding:6px 8px">Góc nhìn</th>
+                <th style="padding:6px 8px">P/E</th>
+                <th style="padding:6px 8px">P/B</th>
+                <th style="padding:6px 8px">Đánh giá định giá</th>
+                <th style="padding:6px 8px">Khuyến nghị</th>
+            </tr></thead>
+            <tbody>
+                ${rows.map(r => `
+                    <tr>
+                        <td style="padding:6px 8px">${r.label}</td>
+                        <td style="text-align:center;padding:6px 8px">${fmtX(r.pe)}</td>
+                        <td style="text-align:center;padding:6px 8px">${fmtX(r.pb)}</td>
+                        <td style="text-align:center;padding:6px 8px;color:${valColor(r.valLabel)};font-weight:700">${r.valLabel || '-'}</td>
+                        <td style="text-align:center;padding:6px 8px;font-weight:700">${r.decLabel || '-'}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    const warnEl = document.getElementById('vnindex-compare-warning');
+    if (decisionExvin.label !== decisionHeadline.label) {
+        warnEl.style.display = '';
+        warnEl.textContent = `⚠ 2 góc nhìn cho khuyến nghị KHÁC NHAU — VIN (VIC/VHM/VRE/VPL) đang làm lệch kết luận định giá chung của thị trường một cách đáng kể.`;
+    } else {
+        warnEl.style.display = 'none';
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ĐỊNH GIÁ VN-INDEX THEO THỜI GIAN — P/E & P/B lịch sử ~17 năm (Vietcap IQ headline + GitHub
+// ex-VIN) vs dải thống kê + ngưỡng hấp dẫn — 4 biểu đồ RIÊNG (headline/ex-VIN x P/E/P/B), mỗi
+// biểu đồ có nút xem toàn màn hình + khung thời gian lọc, tooltip hiện giá trị theo ngày khi rê
+// chuột (user 2026-07-25).
+// ═══════════════════════════════════════════════════════════
+const VALHIST_RANGES = [
+    { key: '1Y', label: '1 năm', days: 365 },
+    { key: '3Y', label: '3 năm', days: 365 * 3 },
+    { key: '5Y', label: '5 năm', days: 365 * 5 },
+    { key: '10Y', label: '10 năm', days: 365 * 10 },
+    { key: 'ALL', label: 'Toàn bộ', days: null },
+];
+const VALHIST_MAX_POINTS = 1000; // giảm mẫu (decimate) khi khung thời gian dài để chart mượt
+
+// 4 biểu đồ RIÊNG (user 2026-07-25): mỗi cái 1 canvas id + key dữ liệu riêng trong
+// data/vnindex_valuation_history.json (pe/pe_exvin/pb/pb_exvin — xem
+// update_vnindex_valuation_history() trong fetch_macro_data.py, ex-VIN có dải ±SD tự tính bằng
+// statistics.mean/stdev vì GitHub ex-VIN không có sẵn như Vietcap).
+const VALHIST_CHARTS_SPEC = [
+    { dataKey: 'pe', canvasId: 'chart-vnindex-pe-history', unit: 'P/E', kind: 'pe' },
+    { dataKey: 'pe_exvin', canvasId: 'chart-vnindex-pe-exvin-history', unit: 'P/E', kind: 'pe' },
+    { dataKey: 'pb', canvasId: 'chart-vnindex-pb-history', unit: 'P/B', kind: 'pb' },
+    { dataKey: 'pb_exvin', canvasId: 'chart-vnindex-pb-exvin-history', unit: 'P/B', kind: 'pb' },
+];
+let valHistCharts = {};
+let valHistData = null; // {pe, pe_exvin, pb, pb_exvin} gốc, giữ lại để đổi khung thời gian không cần fetch lại
+
+function decimate(arr, maxPoints) {
+    if (arr.length <= maxPoints) return arr;
+    const step = Math.ceil(arr.length / maxPoints);
+    const out = [];
+    for (let i = 0; i < arr.length; i += step) out.push(arr[i]);
+    if (out[out.length - 1] !== arr[arr.length - 1]) out.push(arr[arr.length - 1]); // luôn giữ điểm mới nhất
+    return out;
+}
+
+function renderVnindexValuationHistory(hist, marketValuation) {
+    if (!hist || VALHIST_CHARTS_SPEC.every(s => !hist[s.dataKey])) return;
+    valHistData = hist;
+    document.getElementById('vnindex-valhist-card').style.display = '';
+
+    // Nút khung thời gian
+    const btnWrap = document.getElementById('vnindex-valhist-range-btns');
+    btnWrap.innerHTML = VALHIST_RANGES.map((r, i) =>
+        `<button class="vimo-range-btn${i === VALHIST_RANGES.length - 1 ? ' active' : ''}" data-range="${r.key}">${r.label}</button>`
+    ).join('');
+    btnWrap.querySelectorAll('.vimo-range-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btnWrap.querySelectorAll('.vimo-range-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            drawValHistCharts(btn.dataset.range, marketValuation);
+        });
+    });
+
+    // Nút toàn màn hình — Fullscreen API trên chính khung chứa chart. Icon/nhãn ĐỔI RÕ RÀNG giữa
+    // "⛶ Mở rộng" và "✕ Đóng" theo trạng thái (user 2026-07-25: "có nút để close biểu đồ" — dùng
+    // lại đúng 1 nút thay vì thêm nút riêng, nhưng phải rõ ràng là nút ĐÓNG khi đang toàn màn hình).
+    document.querySelectorAll('#vnindex-valhist-card .vimo-fullscreen-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const el = document.getElementById(btn.dataset.target);
+            if (!document.fullscreenElement) el.requestFullscreen?.();
+            else document.exitFullscreen?.();
+        });
+    });
+    document.addEventListener('fullscreenchange', () => {
+        document.querySelectorAll('#vnindex-valhist-card .vimo-fullscreen-btn').forEach(btn => {
+            const isFs = document.fullscreenElement && document.fullscreenElement.id === btn.dataset.target;
+            btn.textContent = isFs ? '✕' : '⛶';
+            btn.title = isFs ? 'Đóng toàn màn hình' : 'Xem toàn màn hình';
+        });
+        setTimeout(() => Object.values(valHistCharts).forEach(c => c?.resize()), 50);
+    });
+
+    drawValHistCharts('ALL', marketValuation);
+}
+
+function filterByRange(values, days) {
+    if (!days) return values;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    return values.filter(p => p.date >= cutoffStr);
+}
+
+function drawValHistCharts(rangeKey, marketValuation) {
+    const range = VALHIST_RANGES.find(r => r.key === rangeKey) || VALHIST_RANGES[VALHIST_RANGES.length - 1];
+    const rf = marketValuation && marketValuation.rf;
+    const capm = marketValuation && marketValuation.capm_valuation;
+
+    const peExtra = [];
+    if (rf) {
+        peExtra.push({ label: `P/E hoà vốn (2×Rf ${(rf * 100).toFixed(2)}%)`, value: 1 / (2 * rf), color: '#8b5cf6' });
+        peExtra.push({ label: `P/E trung tính (1.5×Rf ${(rf * 100).toFixed(2)}%)`, value: 1 / (1.5 * rf), color: '#f97316' });
+    }
+    const pbExtra = [];
+    if (capm && capm.justified_pb) {
+        pbExtra.push({ label: 'P/B hợp lý (CAPM)', value: capm.justified_pb, color: '#8b5cf6' });
+    }
+
+    VALHIST_CHARTS_SPEC.forEach(spec => {
+        const data = valHistData[spec.dataKey];
+        if (!data || !data.values) return;
+        const filtered = decimate(filterByRange(data.values, range.days), VALHIST_MAX_POINTS);
+        const extraLines = spec.kind === 'pe' ? peExtra : pbExtra;
+        valHistCharts[spec.dataKey] = drawOneValHistChart(
+            spec.canvasId, valHistCharts[spec.dataKey], filtered, data, spec.unit, '#3b82f6', extraLines);
+    });
+}
+
+function drawOneValHistChart(canvasId, existingChart, points, bandData, unitLabel, lineColor, extraLines) {
+    if (existingChart) existingChart.destroy();
+    const labels = points.map(p => p.date);
+    const bandSpecs = [
+        ['average', 'Trung bình', '#f59e0b', [6, 3]],
+        ['plusOneSD', '+1SD', '#ef4444', [2, 2]],
+        ['minusOneSD', '-1SD', '#10b981', [2, 2]],
+        ['plusTwoSD', '+2SD', '#ef4444', [1, 3]],
+        ['minusTwoSD', '-2SD', '#10b981', [1, 3]],
+    ];
+    const datasets = [{
+        label: `${unitLabel} VN-Index`, data: points.map(p => p.value),
+        borderColor: lineColor, backgroundColor: lineColor + '10', fill: false,
+        tension: 0, pointRadius: 0, borderWidth: 1.4,
+    }];
+    bandSpecs.forEach(([key, label, color, dash]) => {
+        if (bandData[key] === undefined || bandData[key] === null) return;
+        datasets.push({
+            label: `${label} (${bandData[key].toFixed(2)})`, data: labels.map(() => bandData[key]),
+            borderColor: color, borderDash: dash, borderWidth: 1, pointRadius: 0, fill: false,
+        });
+    });
+    (extraLines || []).forEach(l => {
+        datasets.push({
+            label: `${l.label} (${l.value.toFixed(2)})`, data: labels.map(() => l.value),
+            borderColor: l.color, borderWidth: 2, pointRadius: 0, fill: false,
+        });
+    });
+
+    const ctx = document.getElementById(canvasId);
+    return new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 9 }, color: '#8892a4' } },
+                tooltip: {
+                    callbacks: {
+                        title: (items) => items[0] ? `Ngày: ${items[0].label}` : '',
+                    },
+                },
+            },
+            scales: {
+                x: { ticks: { color: '#545f74', font: { size: 8 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
+                y: { ticks: { color: '#545f74', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            },
+        },
+    });
 }
 
 // ═══════════════════════════════════════════════════════════

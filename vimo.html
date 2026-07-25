@@ -80,6 +80,33 @@
         .vimo-synthesis-text .impact-block { margin-bottom: 14px; }
         .vimo-synthesis-text .impact-block h5 { font-size: 1em; color: #93c5fd; margin: 0 0 4px; font-weight: 700; }
         .vimo-synthesis-text .impact-block p { margin: 0; }
+
+        .vimo-valhist-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .vimo-range-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .vimo-range-btn {
+            background: var(--bg-card-hover, #1f2937); border: 1px solid var(--border-color, #1f2937);
+            color: var(--text-muted, #8892a4); font-size: 0.78em; padding: 5px 12px; border-radius: 20px;
+            cursor: pointer; font-weight: 600; transition: all 0.15s;
+        }
+        .vimo-range-btn:hover { color: #fff; border-color: #60a5fa; }
+        .vimo-range-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+        .vimo-valhist-chart-wrap { position: relative; margin-top: 14px; width: 100%; }
+        .vimo-valhist-chart-wrap .vimo-chart-canvas-box { height: 340px; width: 100%; }
+        .vimo-valhist-chart-wrap:fullscreen { background: #0b1120; padding: 24px; display: flex; flex-direction: column; }
+        .vimo-valhist-chart-wrap:fullscreen .vimo-chart-canvas-box { height: calc(100vh - 90px); flex: 1; }
+        .vimo-fullscreen-btn {
+            position: absolute; top: -34px; right: 0; background: var(--bg-card-hover, #1f2937);
+            border: 1px solid var(--border-color, #1f2937); color: var(--text-muted, #8892a4);
+            font-size: 1.05em; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+        }
+        .vimo-fullscreen-btn:hover { color: #fff; border-color: #60a5fa; }
+        .vimo-valhist-chart-wrap:fullscreen .vimo-fullscreen-btn {
+            top: 12px; right: 12px; z-index: 5; font-size: 1.3em; padding: 6px 14px;
+            background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fff;
+        }
+        .vimo-valhist-chart-wrap:fullscreen .vimo-fullscreen-btn:hover { background: rgba(239, 68, 68, 0.3); }
+        .vimo-chart-title { font-size: 0.92em; font-weight: 600; color: var(--text-main, #f3f4f6); margin: 18px 0 0; }
+        .vimo-chart-title:first-child { margin-top: 0; }
     </style>
 </head>
 <body>
@@ -151,6 +178,43 @@
                 <div class="decision-label" id="decision-label"></div>
                 <div id="decision-text"></div>
             </div>
+        </div>
+
+        <!-- So sánh 2 quyết định: VN-Index headline (có VIN) vs ex-VIN -->
+        <div class="card margin-top-20" id="vnindex-compare-card" style="display:none">
+            <h3 class="border-blue">🔍 So sánh 2 góc nhìn định giá — có/không VIN</h3>
+            <div id="vnindex-compare-table"></div>
+            <p id="vnindex-compare-warning" style="display:none;color:#f59e0b;font-size:0.85em;margin-top:8px"></p>
+        </div>
+
+        <!-- Định giá VN-Index theo thời gian: P/E, P/B lịch sử ~17 năm vs dải thống kê/ngưỡng hấp dẫn —
+             4 biểu đồ riêng: headline/ex-VIN x P/E/P/B (user 2026-07-25) -->
+        <div class="card margin-top-20" id="vnindex-valhist-card" style="display:none">
+            <div class="vimo-valhist-header">
+                <h3 class="border-blue" style="margin:0">📐 Định giá VN-Index theo thời gian (P/E &amp; P/B)</h3>
+                <div class="vimo-range-btns" id="vnindex-valhist-range-btns"></div>
+            </div>
+            <p class="vimo-chart-title">P/E VN-Index (headline, có VIN) vs dải thống kê &amp; 1.5×/2× lợi suất TPCP</p>
+            <div class="vimo-valhist-chart-wrap" id="vnindex-pe-wrap">
+                <button class="vimo-fullscreen-btn" data-target="vnindex-pe-wrap" title="Xem toàn màn hình">⛶</button>
+                <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pe-history"></canvas></div>
+            </div>
+            <p class="vimo-chart-title">P/E VN-Index ex-VIN (loại VIC/VHM/VRE/VPL) vs dải thống kê &amp; 1.5×/2× lợi suất TPCP</p>
+            <div class="vimo-valhist-chart-wrap" id="vnindex-pe-exvin-wrap">
+                <button class="vimo-fullscreen-btn" data-target="vnindex-pe-exvin-wrap" title="Xem toàn màn hình">⛶</button>
+                <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pe-exvin-history"></canvas></div>
+            </div>
+            <p class="vimo-chart-title">P/B VN-Index (headline, có VIN) vs dải thống kê &amp; P/B hợp lý (CAPM)</p>
+            <div class="vimo-valhist-chart-wrap" id="vnindex-pb-wrap">
+                <button class="vimo-fullscreen-btn" data-target="vnindex-pb-wrap" title="Xem toàn màn hình">⛶</button>
+                <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pb-history"></canvas></div>
+            </div>
+            <p class="vimo-chart-title">P/B VN-Index ex-VIN (loại VIC/VHM/VRE/VPL) vs dải thống kê &amp; P/B hợp lý (CAPM)</p>
+            <div class="vimo-valhist-chart-wrap" id="vnindex-pb-exvin-wrap">
+                <button class="vimo-fullscreen-btn" data-target="vnindex-pb-exvin-wrap" title="Xem toàn màn hình">⛶</button>
+                <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pb-exvin-history"></canvas></div>
+            </div>
+            <p class="ind-source-note" style="margin-top:10px">Nguồn headline: trading.vietcap.com.vn (Vietcap IQ), từ 22/04/2009. Nguồn ex-VIN: GitHub Truongutc/AIC---chart-nganh (loại VIC/VHM/VRE/VPL). Dải trung bình/±1SD/±2SD tính trên toàn bộ lịch sử của từng chuỗi. Rê chuột vào biểu đồ để xem giá trị tại từng ngày.</p>
         </div>
 
         <!-- Tổng hợp phân tích đa chỉ số -->

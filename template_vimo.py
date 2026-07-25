@@ -182,7 +182,13 @@ SCORECARD_GROUPS = {
     "Tăng trưởng": ["gdp_growth", "iip_growth", "pmi_manufacturing", "retail_sales_growth", "unemployment_rate"],
     "Lạm phát": ["cpi_yoy", "core_inflation"],
     "Lãi suất": ["refinancing_rate", "interbank_rate_3m", "deposit_rate_12m_market_avg"],
-    "Thanh khoản": ["credit_growth", "m2_growth", "forex_reserves", "omo_rate_7d"],
+    # credit_growth ĐÃ BỎ khỏi nhóm này (2026-07-24, theo phản hồi user): tín dụng tăng KHÔNG phải
+    # bằng chứng thanh khoản dồi dào — ngược lại, tín dụng tăng nhanh hơn huy động là NGUYÊN NHÂN
+    # gây căng thanh khoản (xem note/impact của credit_growth). Đếm "tín dụng tăng = +1 tốt" cho
+    # nhóm Thanh khoản là sai chiều, che mất tín hiệu căng thẳng thật (đường cong liên ngân hàng
+    # dốc lên, NHNN chỉ bơm không hút tín phiếu suốt nhiều tháng). credit_growth vẫn hiển thị đầy
+    # đủ trong báo cáo, chỉ không góp phiếu ở đây nữa (giống nhiều chỉ báo tham chiếu khác).
+    "Thanh khoản": ["m2_growth", "forex_reserves", "omo_rate_7d"],
     "Tỷ giá & Dòng vốn ngoại": ["usdvnd", "dxy_proxy", "fed_funds_rate", "fdi_disbursed",
                                  "fdi_registered_usd_bn", "fii_net_flow_hose"],
     "Thương mại & Hàng hóa": ["trade_balance", "export_growth", "brent_oil", "china_gdp_growth"],
@@ -270,12 +276,40 @@ def _interbank_vs_deposit_level_vote(raw, trends):
             "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
 
 
+# So lãi suất iPower TCBS (mức CAO NHẤT quảng cáo — kênh 'gửi tiền' thay thế ngoài ngân hàng
+# truyền thống) với huy động niêm yết Big4 cùng kỳ hạn gần nhất — user (2026-07-24): "khi thanh
+# khoản căng cứng, lãi suất huy động lên cao thì chính sách tiền gửi của TCBS cũng tăng theo...
+# khi nào TCBS hạ mức này thì đồng nghĩa áp lực lãi suất bên ngoài đã qua đi". Đáng tin cậy hơn
+# deposit_rate_negotiated_max (tin tức, thưa) vì TCBS công bố công khai + có ngày hiệu lực rõ,
+# lấy được MỖI LẦN Action chạy (dùng chung ngưỡng DEPOSIT_RATE_GAP_CEILING với gap huy động thật).
+def _tcbs_ipower_gap_level_vote(raw, trends):
+    tcbs = trends.get("deposit_rate_tcbs_ipower_max", {}).get("latest")
+    listed = trends.get("deposit_rate_12m_vcb", {}).get("latest")
+    if tcbs is None or listed is None:
+        return None
+    gap = tcbs - listed
+    vote = -1 if gap > DEPOSIT_RATE_GAP_CEILING else 1
+    label = f"Lãi suất iPower TCBS ({tcbs:.2f}%) so với huy động niêm yết 12 tháng ({listed:.2f}%)"
+    judgment_label = ("cao hơn niêm yết nhiều, thị trường đói vốn" if vote < 0
+                       else "chênh lệch trong khung an toàn")
+    return {"indicator": "tcbs_ipower_gap", "label": label, "vote": vote,
+            "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
+
+
 # Các "phiếu mức" cần dữ liệu TỪ NHIỀU CHỈ BÁO cùng lúc (không chỉ 1 chỉ báo tự so với ngưỡng của
 # chính nó như LEVEL_VOTE_FUNCS) — gắn theo TÊN NHÓM Scorecard (LIST vì 1 nhóm có thể có nhiều
-# phép so sánh độc lập), gọi hết trong calc_scorecard.
-GROUP_LEVEL_CHECKS = {"Lãi suất": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote]}
+# phép so sánh độc lập), gọi hết trong calc_scorecard. Gắn vào "Thanh khoản" (KHÔNG PHẢI "Lãi
+# suất" như trước 2026-07-24): 2 phép so sánh này đo TRỰC TIẾP mức độ căng thẳng thanh khoản hệ
+# thống (chênh lệch lãi suất huy động thực tế/liên ngân hàng so với niêm yết) — đúng bản chất
+# nhóm "Thanh khoản" hơn là "Lãi suất" (nhóm này giờ chỉ còn phản ánh MỨC lãi suất chính thức/
+# thị trường, không lẫn tín hiệu căng thẳng). User (2026-07-24) chỉ ra nhóm Thanh khoản trước đó
+# báo "+1 Tốt" trong khi đường cong liên ngân hàng dốc lên và NHNN chỉ bơm không hút — sửa cả
+# việc phân nhóm chỉ báo (ở đây) VÀ việc credit_growth bị tính sai chiều (xem SCORECARD_GROUPS).
+GROUP_LEVEL_CHECKS = {"Thanh khoản": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote,
+                                        _tcbs_ipower_gap_level_vote]}
 SHORT_LABEL["deposit_rate_gap"] = "Ngân hàng"
 SHORT_LABEL["interbank_vs_deposit"] = "Liên ngân hàng"
+SHORT_LABEL["tcbs_ipower_gap"] = "iPower TCBS"
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -368,7 +402,7 @@ def calc_scorecard(raw, trends):
             if t and t.get("is_improving") is not None:
                 votes.append(1 if t["is_improving"] else -1)
                 detail.append({"indicator": k, "label": raw[k]["label"], "vote": votes[-1],
-                                "arrow": t["arrow"], "judgment_label": t["judgment_label"]})
+                                "arrow": t["arrow"], "judgment_label": t["judgment_label"], "kind": "trend"})
             level_func = LEVEL_VOTE_FUNCS.get(k)
             if level_func and t and t.get("latest") is not None:
                 level_vote = level_func(t["latest"])
@@ -378,10 +412,12 @@ def calc_scorecard(raw, trends):
                         "indicator": k, "label": f"{raw[k]['label']} (so với mục tiêu)",
                         "vote": level_vote, "arrow": "⚠" if level_vote < 0 else "✓",
                         "judgment_label": "Vượt mục tiêu" if level_vote < 0 else "Trong mục tiêu",
+                        "kind": "level",
                     })
         for group_level_check in GROUP_LEVEL_CHECKS.get(group_name, []):
             group_vote = group_level_check(raw, trends)
             if group_vote:
+                group_vote.setdefault("kind", "level")
                 votes.append(group_vote["vote"])
                 detail.append(group_vote)
         if not votes:
@@ -389,6 +425,14 @@ def calc_scorecard(raw, trends):
         else:
             avg = sum(votes) / len(votes)
             score = 1 if avg > 0.2 else (-1 if avg < -0.2 else 0)
+            # CHẶN "Tốt" giả: nếu có BẤT KỲ phiếu MỨC nào cho thấy đang VI PHẠM ngưỡng mục tiêu
+            # chính thức (vd CPI vượt 4,5%, huy động vượt khung cho phép), nhóm KHÔNG được lên
+            # +1 "Tốt" dù trung bình xu hướng dương — "đang cải thiện từ mức xấu" KHÁC "đang ở mức
+            # tốt" (user 2026-07-24: "CPI vượt ngưỡng... đang tốt dần lên thôi" không nên đọc thành
+            # "được kiểm soát trong ngưỡng rồi"). Chỉ HẠ điểm, không có chiều ngược lại (phiếu mức
+            # tốt không ép nhóm phải dương nếu các chỉ báo khác đang xấu đi thật).
+            if score == 1 and any(d["vote"] == -1 and d.get("kind") == "level" for d in detail):
+                score = 0
         scorecard[group_name] = {"score": score, "detail": detail, "n_votes": len(votes),
                                   "reason": _scorecard_group_reason(detail, raw, trends)}
     total = sum(g["score"] for g in scorecard.values())
@@ -431,33 +475,129 @@ def _scorecard_group_reason(detail, raw, trends):
 # ══════════════════════════════════════════════════════════════════════════
 # ĐỊNH GIÁ THỊ TRƯỜNG — ERP = E/P (từ VN-Index P/E) - Rf (Chương 5.2/6.1)
 # ══════════════════════════════════════════════════════════════════════════
+# Nhãn "risk_compensation['label']" (khung 4 bậc, có so với lãi suất huy động THỊ TRƯỜNG THẬT,
+# xem _calc_risk_compensation) -> valuation_label (nhãn hiển thị đầu báo cáo + đưa vào Ma trận
+# quyết định). TRƯỚC 2026-07-25: valuation_label tự tính riêng bằng ngưỡng ERP>3%/<1% (chỉ so
+# Rf TPCP LÝ THUYẾT) — độc lập với risk_compensation nên có thể ra 2 kết luận MÂU THUẪN NHAU
+# trong cùng báo cáo (vd ERP=3.51%>3% -> "Rẻ/Hấp dẫn" nhưng risk_compensation cùng lúc kết luận
+# "Bù đắp tối thiểu, CHƯA có biên an toàn" vì so với lãi suất gửi tiết kiệm thực tế thì chưa đạt
+# 1,5 lần). User (2026-07-25) chỉ thẳng: "rẻ thì rẻ thật nhưng hấp dẫn ở đâu?" — hợp nhất về 1
+# nguồn sự thật duy nhất (risk_compensation, khung nghiêm ngặt hơn vì có thêm mốc so sánh thực
+# tế), tránh đọc 2 kết luận khác nhau cho cùng 1 con số ERP.
+_RISK_COMP_TO_VALUATION_LABEL = {
+    "Bù đắp tốt": "Rẻ/Hấp dẫn",
+    "Bù đắp khá (so TPCP), chưa đủ so với gửi tiết kiệm thực tế": "Hợp lý",
+    "Bù đắp tối thiểu, chưa có biên an toàn": "Hợp lý",
+    "KHÔNG đủ bù đắp rủi ro": "Đắt/Kém hấp dẫn",
+}
+
+
+def _calc_valuation_from_pepb(raw, rf, pe, pb, pe_source, pb_source):
+    """Lõi tính toán định giá (ERP/risk_compensation/CAPM) DÙNG CHUNG cho cả headline (có VIN) VÀ
+    ex-VIN — tách riêng để calc_market_valuation() gọi 2 lần với 2 cặp P/E-P/B khác nhau (user
+    2026-07-25: '2 quyết định... nếu nhìn vào VN-Index thì sao, nếu nhìn theo VN-Index no VIN
+    thì sao'), tránh lặp code."""
+    erp = None
+    earnings_yield = None
+    valuation_label = "Không xác định"
+    risk_compensation = None
+    if pe and pe > 0:
+        earnings_yield = 1 / pe
+        erp = earnings_yield - rf
+        risk_compensation = _calc_risk_compensation(raw, rf, earnings_yield)
+        valuation_label = _RISK_COMP_TO_VALUATION_LABEL.get(risk_compensation["label"], "Hợp lý")
+    return {
+        "pe": pe, "pb": pb, "rf": rf, "erp": erp, "valuation_label": valuation_label,
+        "pe_source": pe_source, "pb_source": pb_source,
+        "risk_compensation": risk_compensation,
+        "capm_valuation": _calc_capm_valuation(pe, pb, rf),
+    }
+
+
 def calc_market_valuation(raw, rf):
     # ERP dùng P/E (Earnings Yield - Rf) làm căn cứ chính, KHÔNG đổi công thức/nhãn định giá hiện
     # có (tránh phình phạm vi quyết định phân bổ vốn). P/B (2026-07: nâng cấp lại — nguồn 24hmoney.
     # vn/indices/vn-index cấp CHỈ SỐ, xem fetch_vnindex_pe_pb_24hmoney trong fetch_macro_data.py)
     # chỉ hiển thị THÊM để đối chiếu chéo, không tính vào ERP/quyết định.
+    # NÂNG CẤP 2026-07-25: pe/pb ở đây là ex-VIN (nguồn chính, xem vnindex_pe/vnindex_pb trong
+    # vimo_raw.json) — dùng cho quyết định "chính". calc_market_valuation_headline() bên dưới
+    # tính SONG SONG bằng cặp headline (có VIN) để đối chiếu, không thay thế cái này.
     pe_series = raw["vnindex_pe"]["series"]
     pe = pe_series[-1]["value"] if pe_series else None
     pb_series = raw.get("vnindex_pb", {}).get("series", [])
     pb = pb_series[-1]["value"] if pb_series else None
-    erp = None
-    earnings_yield = None
-    valuation_label = "Không xác định"
-    if pe and pe > 0:
-        earnings_yield = 1 / pe
-        erp = earnings_yield - rf
-        if erp > 0.03:
-            valuation_label = "Rẻ/Hấp dẫn"
-        elif erp < 0.01:
-            valuation_label = "Đắt/Kém hấp dẫn"
-        else:
-            valuation_label = "Hợp lý"
-    return {
-        "pe": pe, "pb": pb, "rf": rf, "erp": erp, "valuation_label": valuation_label,
-        "pe_source": pe_series[-1]["source_url"] if pe_series else None,
-        "pb_source": pb_series[-1]["source_url"] if pb_series else None,
-        "risk_compensation": _calc_risk_compensation(raw, rf, earnings_yield),
-    }
+    return _calc_valuation_from_pepb(
+        raw, rf, pe, pb,
+        pe_series[-1]["source_url"] if pe_series else None,
+        pb_series[-1]["source_url"] if pb_series else None)
+
+
+def calc_market_valuation_headline(raw, rf):
+    """Y HỆT calc_market_valuation() nhưng dùng cặp P/E-P/B HEADLINE (có VIN — vnindex_pe_headline/
+    vnindex_pb_headline) thay vì ex-VIN — cho "quyết định thứ 2" đối chiếu song song (user
+    2026-07-25). Trả None nếu chưa có dữ liệu headline (vd lần chạy đầu trước khi nâng cấp)."""
+    pe_series = raw.get("vnindex_pe_headline", {}).get("series", [])
+    pe = pe_series[-1]["value"] if pe_series else None
+    pb_series = raw.get("vnindex_pb_headline", {}).get("series", [])
+    pb = pb_series[-1]["value"] if pb_series else None
+    if pe is None:
+        return None
+    return _calc_valuation_from_pepb(
+        raw, rf, pe, pb,
+        pe_series[-1]["source_url"] if pe_series else None,
+        pb_series[-1]["source_url"] if pb_series else None)
+
+
+# ROE VN-Index = P/B ÷ P/E (đồng nhất thức: P/B = P/E × ROE => ROE = P/B/P/E) so với CHI PHÍ VỐN
+# CHỦ SỞ HỮU (COE) theo CAPM — user (2026-07-25) yêu cầu, dùng β=1 (định giá CẢ INDEX, không phải
+# 1 mã riêng lẻ, nên so với chính nó β=1) và ERP Việt Nam ~7% (mức thường thấy trong các mô hình
+# CAPM cho thị trường frontier, KHÁC ERP=E/Y-Rf đang dùng cho risk_compensation ở trên — 2 khái
+# niệm khác nhau, xem ERP_COUNTRY_VIETNAM). KHÔNG cộng thêm phần bù rủi ro "đặc thù/Frontier" (α)
+# như mô hình định giá 1 cổ phiếu đơn lẻ (vd MWG) — theo thảo luận với user: α đó dùng để bù rủi ro
+# RIÊNG của 1 mã/ngành, đã bị triệt tiêu khi phân tán qua cả trăm mã trong 1 INDEX; rủi ro QUỐC GIA
+# (Frontier) không mất đi khi phân tán nhưng ĐÃ nằm sẵn trong ERP_COUNTRY_VIETNAM=7% (đó chính là lý
+# do ERP Việt Nam cao hơn thị trường phát triển ~4.5-5%) — cộng thêm α nữa sẽ tính trùng rủi ro quốc
+# gia 2 lần. Justified P/B dùng công thức Residual Income CÓ TĂNG TRƯỞNG (Gordon Growth):
+# P/B hợp lý = (ROE-g)/(COE-g). NÂNG CẤP 2026-07-25: bản đầu dùng g=0 (không tăng trưởng) cho ra
+# P/B hợp lý ~1.35x — user kiểm chứng bằng dữ liệu P/B lịch sử THẬT (Vietcap IQ, 2009-2026) và chỉ
+# ra mức này THẤP HƠN CẢ ĐÁY của 3 đợt khủng hoảng gần nhất (COVID 3/2020: 1.51x; bear 2022: 1.47x;
+# sốc thuế quan 4/2025: 1.41x — thấp nhất từ 2015) — nghĩa là khung g=0 không bao giờ đạt được trong
+# thực tế 10 năm qua, VÔ DỤNG để phân biệt rẻ/đắt. Nguyên nhân: bỏ qua tăng trưởng thật của ROE Việt
+# Nam (tái đầu tư vào nền kinh tế đang tăng trưởng) — công thức (ROE-g)/(COE-g) rất nhạy với g khi
+# (COE-g) nhỏ. GROWTH_VNINDEX_LONG_TERM=5% (mức tăng trưởng dài hạn user chọn) đưa P/B hợp lý lên
+# ~1.61x — vẫn cho thấy đang đắt hơn (~19% so với 1.92x thực tế) nhưng ở mức HỢP LÝ hơn nhiều so với
+# vùng P/B lịch sử (đáy khủng hoảng 1.41-1.51x, trung vị 17 năm ~1.94x). VẪN CHỈ HIỂN THỊ THAM KHẢO
+# (không đưa vào valuation_label/Ma trận quyết định) vì g vẫn là giả định chủ quan, nhạy cảm.
+ERP_COUNTRY_VIETNAM = 0.07
+VNINDEX_BETA = 1.0
+GROWTH_VNINDEX_LONG_TERM = 0.05
+
+
+def _calc_capm_valuation(pe, pb, rf):
+    if not pe or pe <= 0 or not pb or pb <= 0 or rf is None:
+        return None
+    roe = pb / pe
+    coe = rf + VNINDEX_BETA * ERP_COUNTRY_VIETNAM
+    g = GROWTH_VNINDEX_LONG_TERM
+    if coe <= g:
+        return None
+    justified_pb = (roe - g) / (coe - g)
+    if justified_pb <= 0:
+        return None
+    premium_pct = pb / justified_pb - 1
+    if premium_pct > 0.15:
+        label, color = "Đắt hơn nhiều so với P/B hợp lý (CAPM)", "bad"
+    elif premium_pct < -0.15:
+        label, color = "Rẻ hơn nhiều so với P/B hợp lý (CAPM)", "good"
+    else:
+        label, color = "Quanh vùng P/B hợp lý (CAPM)", "warn"
+    text = (f"ROE VN-Index (P/B÷P/E) = {roe*100:.2f}%. Chi phí vốn chủ sở hữu CAPM "
+            f"(Rf {rf*100:.2f}% + β{VNINDEX_BETA:.1f}×ERP Việt Nam {ERP_COUNTRY_VIETNAM*100:.1f}%) = {coe*100:.2f}%. "
+            f"P/B hợp lý (Gordon Growth, g={g*100:.0f}%) = (ROE-g)/(COE-g) = {justified_pb:.2f}x, so với P/B thực tế {pb:.2f}x "
+            f"=> {'cao hơn' if premium_pct >= 0 else 'thấp hơn'} {abs(premium_pct)*100:.1f}%. "
+            f"=> {label}.")
+    return {"roe": roe, "coe": coe, "justified_pb": justified_pb, "premium_pct": premium_pct,
+            "label": label, "color": color, "text": text}
 
 
 # Bù đắp rủi ro cổ phiếu vs kênh an toàn hơn (user 2026-07-13: "PE PB nêu ra cho có thì để làm gì —
@@ -513,22 +653,37 @@ def _calc_risk_compensation(raw, rf, earnings_yield):
 # tiền & Tâm lý" (khối ngoại/margin) CHƯA có nguồn dữ liệu tự động trong Giai đoạn 1 — ghi chú
 # rõ, không tự bịa số dòng tiền.
 # ══════════════════════════════════════════════════════════════════════════
-def calc_decision_matrix(scorecard_total, valuation_label):
+def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai_suat_veto=False):
+    """scorecard_total ở đây là ĐIỂM ĐÃ CÓ TRỌNG SỐ (weighted) — xem run_vimo_analysis(): nhóm
+    Lãi suất cộng thêm 1 lần nữa (hiệu lực x2) trước khi truyền vào đây.
+
+    NÂNG CẤP 2026-07-25 (theo yêu cầu user): đổi triết lý từ "vĩ mô là CỔNG CHÍNH, định giá chỉ
+    tinh chỉnh bên trong" sang "ĐỊNH GIÁ dẫn dắt MỨC ĐỘ giải ngân, vĩ mô là ĐIỀU KIỆN để lên mức
+    mạnh nhất". Nguyên văn user: "nếu định giá hợp lý thì có thể giải ngân mua 1 phần, khi rẻ thì
+    mua tỷ trọng cao, khi các yếu tố bất lợi về vĩ mô đều qua đi thì MỚI được hiện là mua mạnh".
+    Nghĩa là: định giá Rẻ/Hợp lý đã đủ để giải ngân (không còn "Phòng thủ, giữ tiền mặt" toàn bộ
+    khi macro xấu + định giá hợp lý như bản cũ) — macro xấu chỉ hãm bớt TỶ TRỌNG, không chặn
+    hoàn toàn việc mua; macro TỐT (đã qua giai đoạn bất lợi) là điều kiện DUY NHẤT để nâng "Rẻ"
+    lên mức mạnh nhất "Mua mạnh". lai_suat_veto=True (nhóm Lãi suất -1 Xấu) hãm bớt 1 bậc riêng
+    dù tổng điểm macro đã dương — lãi suất là yếu tố dẫn dắt tăng trưởng TƯƠNG LAI nên có quyền
+    phủ quyết mức mạnh nhất độc lập với điểm tổng."""
     macro_good = scorecard_total > 0
-    if macro_good:
-        if valuation_label == "Rẻ/Hấp dẫn":
-            return "Bung vốn mạnh", "Vĩ mô tốt + định giá rẻ — tăng tỷ trọng cổ phiếu, ưu tiên ngành hưởng lợi từ vĩ mô."
-        elif valuation_label == "Đắt/Kém hấp dẫn":
+    if valuation_label == "Rẻ/Hấp dẫn":
+        if macro_good and not lai_suat_veto:
+            return "Mua mạnh", "Vĩ mô đã qua giai đoạn bất lợi + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu, ưu tiên ngành hưởng lợi từ vĩ mô."
+        if macro_good and lai_suat_veto:
+            return ("Mua tỷ trọng cao",
+                    "Vĩ mô tổng thể đã qua bất lợi + định giá rẻ, NHƯNG lãi suất (yếu tố dẫn dắt tăng trưởng tương lai) "
+                    "vẫn đang xấu — chưa dốc toàn lực, giải ngân tỷ trọng cao nhưng giữ lại phần dự phòng cho tới khi áp lực lãi suất hạ nhiệt.")
+        return "Mua tỷ trọng cao", "Định giá đã đủ rẻ để bù đắp rủi ro dù vĩ mô còn bất lợi — giải ngân tỷ trọng cao, chưa cần đợi vĩ mô xác nhận hoàn toàn."
+    elif valuation_label == "Đắt/Kém hấp dẫn":
+        if macro_good:
             return "Giảm tỷ trọng, chờ điều chỉnh", "Vĩ mô tốt nhưng định giá đã đắt — chốt lời một phần, chờ cơ hội mua lại giá tốt hơn."
-        else:
+        return "Giảm vốn mạnh", "Vĩ mô xấu + định giá đắt — cắt giảm tỷ trọng cổ phiếu, ưu tiên tiền mặt."
+    else:  # Hợp lý
+        if macro_good:
             return "Duy trì, chọn lọc", "Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt."
-    else:
-        if valuation_label == "Rẻ/Hấp dẫn":
-            return "Mua từ từ, phân kỳ", "Vĩ mô xấu nhưng định giá đã rẻ — mua tích lũy dần, tỷ trọng nhỏ, chiến lược dài hạn."
-        elif valuation_label == "Đắt/Kém hấp dẫn":
-            return "Giảm vốn mạnh", "Vĩ mô xấu + định giá đắt — cắt giảm tỷ trọng cổ phiếu, ưu tiên tiền mặt."
-        else:
-            return "Phòng thủ, giữ tiền mặt", "Vĩ mô xấu, định giá hợp lý — ưu tiên bảo toàn vốn, tăng tỷ trọng tiền mặt/tài sản phòng thủ."
+        return "Giải ngân một phần", "Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn."
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -643,13 +798,48 @@ def _vn_join(items):
     return ", ".join(items[:-1]) + " và " + items[-1]
 
 
+def _fmt_period_vn(period):
+    """Chuyển nhãn kỳ nội bộ (vd '2026-06', '2026-Q2', '2026-H1', '2026-9M', '2026-FY', '2026')
+    thành dạng ngắn gọn dễ đọc để chèn vào câu văn tổng hợp — GIÚP người đọc biết số liệu đang
+    trích dẫn là CỦA KỲ NÀO, tránh hiểu nhầm số liệu là 'hiện tại' khi thực ra có thể đã vài
+    tháng/quý trước (user 2026-07-24: đọc phần Tổng hợp không biết số liệu cập nhật ngày nào)."""
+    if not period:
+        return None
+    m = re.match(r"^(\d{4})-W(\d{2})$", period)
+    if m:
+        return f"Tuần {int(m.group(2))}/{m.group(1)}"
+    m = re.match(r"^(\d{4})-(\d{2})$", period)
+    if m:
+        return f"T{int(m.group(2))}/{m.group(1)}"
+    m = re.match(r"^(\d{4})-Q(\d)$", period)
+    if m:
+        return f"Q{m.group(2)}/{m.group(1)}"
+    m = re.match(r"^(\d{4})-H(\d)$", period)
+    if m:
+        return f"6T đầu {m.group(1)}" if m.group(2) == "1" else f"6T cuối {m.group(1)}"
+    m = re.match(r"^(\d{4})-9M$", period)
+    if m:
+        return f"9T đầu {m.group(1)}"
+    m = re.match(r"^(\d{4})-FY$", period)
+    if m:
+        return f"cả năm {m.group(1)}"
+    m = re.match(r"^(\d{4})$", period)
+    if m:
+        return m.group(1)
+    return period
+
+
 def _indicator_txt(raw, trends, key):
-    """Trả (label, value_text, judgment_label) cho 1 chỉ báo nếu có dữ liệu, else None."""
+    """Trả (label, value_text, judgment_label) cho 1 chỉ báo nếu có dữ liệu, else None. value_text
+    LUÔN kèm kỳ báo cáo (vd '8.39% (kỳ Q2/2026)') để người đọc biết số liệu mới tới đâu, không lầm
+    tưởng mọi số liệu đều là 'hiện tại' khi các chỉ báo có độ trễ công bố khác nhau."""
     ind = raw.get(key)
     t = trends.get(key, {})
     if not ind or t.get("latest") is None:
         return None
-    val_txt = f"{t['latest']:.2f} {ind['unit']}"
+    period_label = _fmt_period_vn(t.get("latest_period"))
+    period_clause = f" (kỳ {period_label})" if period_label else ""
+    val_txt = f"{t['latest']:.2f} {ind['unit']}{period_clause}"
     return ind["label"], val_txt, t.get("judgment_label")
 
 
@@ -703,7 +893,9 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
         t = trends.get(key, {})
         if t.get("latest") is None:
             continue
-        item_txt = f"{ind['label']} đạt {t['latest']:.2f} {ind['unit']}"
+        period_label = _fmt_period_vn(t.get("latest_period"))
+        period_clause = f" (kỳ {period_label})" if period_label else ""
+        item_txt = f"{ind['label']} đạt {t['latest']:.2f} {ind['unit']}{period_clause}"
         if t.get("judgment_label") == "Tốt lên":
             positives.append(item_txt)
         elif t.get("judgment_label") == "Xấu đi":
@@ -1029,6 +1221,92 @@ def build_interbank_6m_history_chart(out_dir, raw):
     return path
 
 
+VNINDEX_VALUATION_HISTORY_PATH = os.path.join(PROJECT_ROOT, "data", "vnindex_valuation_history.json")
+
+
+def build_vnindex_valuation_history_charts(out_dir, rf, capm):
+    """4 biểu đồ lịch sử ĐỊNH GIÁ VN-Index THEO NGÀY (~17 năm, nguồn Vietcap IQ cho headline —
+    fetch_vietcap_index_valuation() — và GitHub Truongutc/AIC---chart-nganh cho ex-VIN —
+    fetch_vnindex_nonvin_data(), dự án khác của user), TÁCH RIÊNG theo yêu cầu user (2026-07-25:
+    "4 biểu đồ... đều có so sánh tương quan với các dữ liệu kia") — mỗi biểu đồ 1 chuỗi, tự so
+    với dải thống kê VÀ ngưỡng hấp dẫn CỦA CHÍNH CHUỖI ĐÓ (headline dùng dải Vietcap tính sẵn,
+    ex-VIN dùng dải tự tính bằng statistics.mean/stdev — xem update_vnindex_valuation_history()):
+    (1) P/E VN-Index headline (có VIN) vs dải thống kê headline + 1.5×/2× Rf.
+    (2) P/E VN-Index ex-VIN (loại VIC/VHM/VRE/VPL) vs dải thống kê ex-VIN + 1.5×/2× Rf.
+    (3) P/B VN-Index headline vs dải thống kê headline + P/B hợp lý (CAPM).
+    (4) P/B VN-Index ex-VIN vs dải thống kê ex-VIN + P/B hợp lý (CAPM) — CAPM giờ tính từ ROE/P-B
+        ex-VIN (nguồn chính cho vnindex_pe/pb) nên đây là cặp NHẤT QUÁN nhất để đối chiếu.
+    Trả dict {"pe": path, "pe_exvin": path, "pb": path, "pb_exvin": path} — key nào không dựng
+    được thì giá trị None."""
+    if not os.path.exists(VNINDEX_VALUATION_HISTORY_PATH):
+        return {}
+    try:
+        with open(VNINDEX_VALUATION_HISTORY_PATH, encoding="utf-8") as f:
+            hist = json.load(f)
+    except Exception:
+        return {}
+
+    def _plot_one(data, unit_label, title, filename, extra_lines=None):
+        if not data or not data.get("values"):
+            return None
+        dates = [datetime.datetime.strptime(p["date"], "%Y-%m-%d") for p in data["values"]]
+        values = [p["value"] for p in data["values"]]
+        fig, ax = plt.subplots(figsize=(7.5, 3.6))
+        ax.plot(dates, values, color="#3b82f6", linewidth=1.1, label=f"{unit_label} VN-Index")
+        band_specs = [
+            ("average", "Trung bình lịch sử", "#f59e0b", "--"),
+            ("plusOneSD", "+1SD", "#ef4444", ":"),
+            ("minusOneSD", "-1SD", "#10b981", ":"),
+            ("plusTwoSD", "+2SD", "#ef4444", "-."),
+            ("minusTwoSD", "-2SD", "#10b981", "-."),
+        ]
+        for key, label, color, ls in band_specs:
+            v = data.get(key)
+            if v is not None:
+                ax.axhline(v, color=color, linestyle=ls, linewidth=1, alpha=0.8, label=f"{label} ({v:.2f})")
+        for extra_label, extra_val, extra_color, extra_ls in (extra_lines or []):
+            ax.axhline(extra_val, color=extra_color, linestyle=extra_ls, linewidth=1.6,
+                       label=f"{extra_label} ({extra_val:.2f})")
+        ax.set_title(title, fontsize=11, fontweight="bold")
+        ax.tick_params(axis="x", labelsize=8)
+        ax.grid(alpha=0.25)
+        ax.legend(fontsize=7, loc="upper left", ncol=2)
+        fig.tight_layout()
+        path = os.path.join(out_dir, filename)
+        fig.savefig(path, dpi=130)
+        plt.close(fig)
+        return path
+
+    pe_extra = []
+    if rf and rf > 0:
+        # 2x Rf = ngưỡng "bù đắp tốt" trong risk_compensation, 1.5x Rf = ngưỡng "trung tính" (mốc
+        # giữa "bù đắp tối thiểu" và "không đủ bù đắp") — user (2026-07-25) yêu cầu thêm để phân
+        # biệt vùng hấp dẫn/trung tính/đắt trên cùng biểu đồ, khớp đúng 2 ngưỡng đã dùng trong
+        # _calc_risk_compensation (hurdle_1_5x_bond/hurdle_2x_bond).
+        pe_extra.append((f"P/E hoà vốn (E/Y=2×Rf {rf*100:.2f}%) — hấp dẫn",
+                          1 / (2 * rf), "#8b5cf6", "-"))
+        pe_extra.append((f"P/E trung tính (E/Y=1.5×Rf {rf*100:.2f}%)",
+                          1 / (1.5 * rf), "#f97316", "--"))
+    pb_extra = []
+    if capm and capm.get("justified_pb"):
+        pb_extra.append(("P/B hợp lý (CAPM, Gordon Growth)", capm["justified_pb"], "#8b5cf6", "-"))
+
+    paths = {}
+    paths["pe"] = _plot_one(hist.get("pe"), "P/E",
+                             "P/E VN-Index (headline, có VIN) vs dải thống kê & 1.5×/2× lợi suất TPCP",
+                             "vimo_vnindex_pe_history.png", pe_extra)
+    paths["pe_exvin"] = _plot_one(hist.get("pe_exvin"), "P/E",
+                                   "P/E VN-Index ex-VIN (loại VIC/VHM/VRE/VPL) vs dải thống kê & 1.5×/2× lợi suất TPCP",
+                                   "vimo_vnindex_pe_exvin_history.png", pe_extra)
+    paths["pb"] = _plot_one(hist.get("pb"), "P/B",
+                             "P/B VN-Index (headline, có VIN) vs dải thống kê & P/B hợp lý (CAPM)",
+                             "vimo_vnindex_pb_history.png", pb_extra)
+    paths["pb_exvin"] = _plot_one(hist.get("pb_exvin"), "P/B",
+                                   "P/B VN-Index ex-VIN (loại VIC/VHM/VRE/VPL) vs dải thống kê & P/B hợp lý (CAPM)",
+                                   "vimo_vnindex_pb_exvin_history.png", pb_extra)
+    return paths
+
+
 # Biểu đồ miền (stacked area) DÙNG CHUNG cho cơ cấu GDP theo khu vực VÀ cơ cấu vốn đầu tư theo
 # thành phần (user 2026-07-13, khớp renderStackedAreaChart() trong app_vimo.js) — mỗi kỳ báo cáo
 # LŨY KẾ (Q1/6 tháng/9 tháng/cả năm) là 1 điểm trên trục X, các thành phần % cộng lại ~100%.
@@ -1115,7 +1393,8 @@ def build_interbank_curve_chart(out_dir, raw):
 # PDF
 # ══════════════════════════════════════════════════════════════════════════
 def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label,
-                    decision_text, charts, synthesis, verdict):
+                    decision_text, charts, synthesis, verdict,
+                    valuation_headline=None, decision_label_headline=None, decision_text_headline=None):
     doc = SimpleDocTemplate(pdf_path, pagesize=A4, rightMargin=15 * mm, leftMargin=15 * mm,
                              topMargin=15 * mm, bottomMargin=15 * mm)
     styles = getSampleStyleSheet()
@@ -1155,7 +1434,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Spacer(1, 8))
 
     summary_data = [
-        ["Scorecard Vĩ Mô (tổng)", "Định giá thị trường", "ERP", "Khuyến nghị"],
+        ["Scorecard Vĩ Mô (tổng)", "Định giá (ex-VIN)", "ERP (ex-VIN)", "Khuyến nghị (ex-VIN)"],
         [f"{scorecard_total:+d} / {len(SCORECARD_GROUPS)}", valuation["valuation_label"],
          f"{valuation['erp']*100:.2f}%" if valuation["erp"] is not None else "N/A", decision_label],
     ]
@@ -1163,10 +1442,46 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     t_sum.setStyle(tbl_style())
     story.append(t_sum)
     story.append(Spacer(1, 6))
-    story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn:</b> {decision_text}", body_st))
+    story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn (ex-VIN):</b> {decision_text}", body_st))
+
+    # 2 QUYẾT ĐỊNH SONG SONG — user (2026-07-25): so sánh trực tiếp góc nhìn headline (có VIN) vs
+    # ex-VIN (loại VIC/VHM/VRE/VPL), cùng 1 bảng để thấy ngay chênh lệch kết luận nếu có.
+    if valuation_headline and decision_label_headline:
+        pe_h, pe_e = valuation_headline.get("pe"), valuation.get("pe")
+        pb_h, pb_e = valuation_headline.get("pb"), valuation.get("pb")
+        compare_data = [
+            ["Góc nhìn", "P/E", "P/B", "Đánh giá định giá", "Khuyến nghị"],
+            ["VN-Index (headline, có VIN)", f"{pe_h:.2f}x" if pe_h else "N/A",
+             f"{pb_h:.2f}x" if pb_h else "N/A", valuation_headline["valuation_label"], decision_label_headline],
+            ["VN-Index ex-VIN (loại VIC/VHM/VRE/VPL)", f"{pe_e:.2f}x" if pe_e else "N/A",
+             f"{pb_e:.2f}x" if pb_e else "N/A", valuation["valuation_label"], decision_label],
+        ]
+        t_compare = Table(compare_data, colWidths=[62 * mm, 20 * mm, 20 * mm, 30 * mm, 39 * mm])
+        t_compare.setStyle(tbl_style())
+        story.append(Spacer(1, 8))
+        story.append(Paragraph("<b>🔍 So sánh 2 góc nhìn định giá — có/không VIN:</b>", body_st))
+        story.append(t_compare)
+        if decision_label != decision_label_headline:
+            story.append(Paragraph(
+                f"⚠ 2 góc nhìn cho khuyến nghị KHÁC NHAU — VIN (VIC/VHM/VRE/VPL) đang làm lệch "
+                f"kết luận định giá chung của thị trường một cách đáng kể.", body_st))
+
     rc = valuation.get("risk_compensation")
     if rc:
-        story.append(Paragraph(f"<b>⚖️ Bù đắp rủi ro cổ phiếu: {rc['label']}</b> — {rc['text']}", body_st))
+        story.append(Spacer(1, 6))
+        story.append(Paragraph(f"<b>⚖️ Bù đắp rủi ro cổ phiếu (ex-VIN): {rc['label']}</b> — {rc['text']}", body_st))
+    capm = valuation.get("capm_valuation")
+    if capm:
+        story.append(Paragraph(f"<b>📐 P/B hợp lý theo CAPM (ex-VIN): {capm['label']}</b> — {capm['text']}", body_st))
+    if "vnindex_pe_history" in charts:
+        story.append(Spacer(1, 6))
+        story.append(Image(charts["vnindex_pe_history"], width=170 * mm, height=76 * mm))
+    if "vnindex_pe_exvin_history" in charts:
+        story.append(Image(charts["vnindex_pe_exvin_history"], width=170 * mm, height=76 * mm))
+    if "vnindex_pb_history" in charts:
+        story.append(Image(charts["vnindex_pb_history"], width=170 * mm, height=76 * mm))
+    if "vnindex_pb_exvin_history" in charts:
+        story.append(Image(charts["vnindex_pb_exvin_history"], width=170 * mm, height=76 * mm))
     story.append(Spacer(1, 10))
 
     # ── Banner "Đánh giá tổng thể" — trả lời trực tiếp: đang tốt lên/xấu đi (xu hướng theo thời
@@ -1246,7 +1561,8 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                          "market_table": "24hmoney.vn (bảng đa ngân hàng, tự động)",
                          "24hmoney_scrape": "24hmoney.vn (chỉ số P/E-P/B, tự động)",
                          "cafef_ajax": "cafef.vn (khối ngoại HOSE, tự động)",
-                         "manual": "Nghiên cứu thủ công"}.get(ind["auto_source"], ind["auto_source"])
+                         "manual": "Nghiên cứu thủ công",
+                         "vbma": "vbma.org.vn (CSV tĩnh, tự động)"}.get(ind["auto_source"], ind["auto_source"])
             val_txt = f"{t['latest']:.2f} {ind['unit']}" if t.get("latest") is not None else "N/A"
             # value_arrow = chiều số liệu THẬT (↑/↓/→), judgment_label = đánh giá tốt lên/xấu đi
             # riêng biệt (vd Nợ công/GDP giảm ↓ nhưng đánh giá là "Tốt lên") — TRÁNH nhầm 2 khái
@@ -1304,7 +1620,8 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 # JSON EXPORT
 # ══════════════════════════════════════════════════════════════════════════
 def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
-                    synthesis, pdf_url=None):
+                    synthesis, pdf_url=None,
+                    valuation_headline=None, decision_label_headline=None, decision_text_headline=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -1316,6 +1633,9 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         },
         "marketValuation": valuation,
         "decision": {"label": decision_label, "text": decision_text},
+        "marketValuationHeadline": valuation_headline,
+        "decisionHeadline": ({"label": decision_label_headline, "text": decision_text_headline}
+                              if decision_label_headline else None),
         "synthesis": synthesis,
         "indicators": {},
     }
@@ -1349,13 +1669,14 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
 _PERIOD_SHEET_PATTERNS = [
     (re.compile(r"^\d{4}-Q[1-4]$"), "Theo_Quy"),
     (re.compile(r"^\d{4}-\d{2}-\d{2}$"), "Theo_Ngay"),
+    (re.compile(r"^\d{4}-W\d{2}$"), "Theo_Tuan"),
     (re.compile(r"^\d{4}-\d{2}$"), "Theo_Thang"),
     (re.compile(r"^\d{4}-(H[12]|9M|FY)$"), "Luy_Ke"),
     (re.compile(r"^\d{4}$"), "Theo_Nam"),
 ]
 _SHEET_TITLES = {
     "Theo_Nam": "Theo năm", "Theo_Quy": "Theo quý", "Theo_Thang": "Theo tháng",
-    "Theo_Ngay": "Theo ngày", "Luy_Ke": "Lũy kế (H1-9M-FY)", "Khac": "Khác",
+    "Theo_Tuan": "Theo tuần", "Theo_Ngay": "Theo ngày", "Luy_Ke": "Lũy kế (H1-9M-FY)", "Khac": "Khác",
 }
 
 
@@ -1515,13 +1836,39 @@ def run_vimo_analysis():
         print(f"  {gname}: {g['score']:+d} ({g['n_votes']} phiếu bầu)")
     print(f"  => TỔNG SCORECARD: {scorecard_total:+d} / {len(SCORECARD_GROUPS)}")
 
-    print("[INFO] Tính định giá thị trường (P/E, ERP)...")
+    print("[INFO] Tính định giá thị trường (P/E, ERP) — ex-VIN (nguồn chính)...")
     valuation = calc_market_valuation(raw, rf)
     print(f"  P/E={valuation['pe']} | ERP={valuation['erp']*100:.2f}%" if valuation['erp'] is not None else "  P/E/ERP: N/A")
     print(f"  => {valuation['valuation_label']}")
 
-    decision_label, decision_text = calc_decision_matrix(scorecard_total, valuation["valuation_label"])
-    print(f"[INFO] Ma trận quyết định: {decision_label} — {decision_text}")
+    # Lãi suất được cộng THÊM 1 LẦN NỮA (hiệu lực x2) khi tính quyết định phân bổ vốn — KHÔNG
+    # đổi scorecard_total "thô" hiển thị/theo dõi lịch sử phía trên (giữ nguyên tính liên tục so
+    # sánh xu hướng qua các kỳ). Nếu nhóm Lãi suất đang -1 Xấu, chặn hẳn "Bung vốn mạnh" (xem
+    # calc_decision_matrix) — theo phản hồi user (2026-07-25): lãi suất là yếu tố then chốt nhất.
+    lai_suat_score = scorecard.get("Lãi suất", {}).get("score", 0)
+    decision_score = scorecard_total + lai_suat_score
+    decision_label, decision_text = calc_decision_matrix(
+        decision_score, valuation["valuation_label"],
+        lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1))
+    print(f"[INFO] Ma trận quyết định (ex-VIN): {decision_label} — {decision_text} (điểm quyết định có trọng số: {decision_score:+d})")
+
+    # 2 QUYẾT ĐỊNH SONG SONG — user (2026-07-25): "chia ra 2 quyết định: nếu nhìn vào VN-Index thì
+    # quyết định là gì, định giá hấp dẫn không. Nếu nhìn theo VN-Index no VIN thì quyết định là
+    # gì". Cùng scorecard_total/lai_suat_score (vĩ mô không đổi theo góc nhìn định giá) nhưng
+    # valuation_label khác nhau -> decision_label có thể khác nhau giữa 2 góc nhìn.
+    print("[INFO] Tính định giá thị trường — headline (có VIN, đối chiếu song song)...")
+    valuation_headline = calc_market_valuation_headline(raw, rf)
+    decision_label_headline = decision_text_headline = None
+    if valuation_headline:
+        print(f"  P/E={valuation_headline['pe']} | ERP={valuation_headline['erp']*100:.2f}%"
+              if valuation_headline['erp'] is not None else "  P/E/ERP: N/A")
+        print(f"  => {valuation_headline['valuation_label']}")
+        decision_label_headline, decision_text_headline = calc_decision_matrix(
+            decision_score, valuation_headline["valuation_label"],
+            lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1))
+        print(f"[INFO] Ma trận quyết định (headline): {decision_label_headline} — {decision_text_headline}")
+    else:
+        print("  [INFO] Chưa có dữ liệu headline P/E-P/B (vnindex_pe_headline) — bỏ qua đối chiếu song song.")
 
     print("[INFO] Đánh giá tổng thể (xu hướng + mức độ đồng thuận)...")
     scorecard_history = raw.get("_meta", {}).get("scorecard_history", [])
@@ -1565,17 +1912,30 @@ def run_vimo_analysis():
         "Cơ cấu vốn đầu tư thực hiện toàn xã hội theo thành phần (%)", "vimo_investment_structure.png")
     if investment_structure_chart:
         charts["investment_structure"] = investment_structure_chart
+    valhist_charts = build_vnindex_valuation_history_charts(out_dir, rf, valuation.get("capm_valuation"))
+    if valhist_charts.get("pe"):
+        charts["vnindex_pe_history"] = valhist_charts["pe"]
+    if valhist_charts.get("pe_exvin"):
+        charts["vnindex_pe_exvin_history"] = valhist_charts["pe_exvin"]
+    if valhist_charts.get("pb"):
+        charts["vnindex_pb_history"] = valhist_charts["pb"]
+    if valhist_charts.get("pb_exvin"):
+        charts["vnindex_pb_exvin_history"] = valhist_charts["pb_exvin"]
     print(f"  -> {len(charts)} charts")
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d")
     pdf_path = os.path.join(out_dir, f"VIMO_Report_{date_str}.pdf")
     print("[INFO] Building PDF...")
     build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
-                    charts, synthesis, verdict)
+                    charts, synthesis, verdict,
+                    valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
+                    decision_text_headline=decision_text_headline)
     print(f"  [OK] PDF: {pdf_path}")
 
     print("[INFO] Saving JSON dashboard...")
-    save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis)
+    save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis,
+                    valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
+                    decision_text_headline=decision_text_headline)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)
