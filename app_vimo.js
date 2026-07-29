@@ -29,6 +29,8 @@ const SOURCE_LABELS = {
     market_table: '24hmoney.vn (bảng đa ngân hàng, tự động)',
     '24hmoney_scrape': '24hmoney.vn (chỉ số P/E-P/B, tự động)',
     cafef_ajax: 'cafef.vn (khối ngoại HOSE, tự động)',
+    vira: 'vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động)',
+    derived: 'Tính từ chuỗi lũy kế đã có (phái sinh, không phải nguồn ngoài)',
     manual: 'Nghiên cứu thủ công',
 };
 
@@ -484,6 +486,7 @@ function renderIndicatorGroups(indicators) {
         if (grp === 'monetary') {
             renderInterbankCurveChart(grid, indicators);
             renderInterbank6mHistoryChart(grid, indicators);
+            renderBondYieldHistoryChart(grid, indicators);
         }
         if (grp === 'growth') {
             renderStackedAreaChart(grid, indicators, {
@@ -602,13 +605,18 @@ function renderInterbankCurveChart(grid, indicators) {
     chartInstances.push(chart);
 }
 
-// Lãi suất liên ngân hàng — O/N, 1 tháng, 6 tháng THEO THỜI GIAN, cùng 1 chart đường nhiều dòng
-// (không giới hạn số điểm tối thiểu như renderIndicatorGroups() ở trên) để càng nhiều Action chạy
-// càng tích lũy được chuỗi dài, thay cho chart so sánh ngân hàng cũ (đã gỡ bỏ theo yêu cầu user).
-// Theo yêu cầu user (2026-07-13): thêm O/N và 1 tháng vào chung biểu đồ 6 tháng để so sánh nhiều
-// kỳ hạn trên cùng 1 trục thời gian (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn).
+// Lãi suất liên ngân hàng — O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng THEO THỜI GIAN, cùng 1 chart
+// đường nhiều dòng (không giới hạn số điểm tối thiểu như renderIndicatorGroups() ở trên) để càng
+// nhiều Action chạy càng tích lũy được chuỗi dài, thay cho chart so sánh ngân hàng cũ (đã gỡ bỏ
+// theo yêu cầu user). Theo yêu cầu user (2026-07-13): thêm O/N và 1 tháng vào chung biểu đồ 6
+// tháng để so sánh nhiều kỳ hạn trên cùng 1 trục thời gian (giống kiểu trình bày tham khảo từ
+// vimo.cuthongthai.vn). Thêm 1W/2W (2026-07-28, nguồn VIRA — xem fetch_vira_bulletin() trong
+// fetch_macro_data.py): ON/1W/2W/1M giờ có chuỗi NGÀY thật (không còn snapshot theo tuần/tháng
+// của SBV) nên đủ điểm để thấy xu hướng ngay; 6M vẫn thưa (nguồn SBV, tích lũy theo tuần).
 const INTERBANK_HISTORY_TENORS = [
     ['interbank_rate_on', 'O/N', '#f59e0b'],
+    ['interbank_rate_1w', '1 Tuần', '#ef4444'],
+    ['interbank_rate_2w', '2 Tuần', '#10b981'],
     ['interbank_rate_1m', '1 Tháng', '#a78bfa'],
     ['interbank_rate_6m', '6 Tháng', '#3b82f6'],
 ];
@@ -633,13 +641,61 @@ function renderInterbank6mHistoryChart(grid, indicators) {
     card.className = 'vimo-indicator-card';
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
-        <div class="ind-header"><span class="ind-name">📈 Lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng theo thời gian</span></div>
+        <div class="ind-header"><span class="ind-name">📈 Lãi suất liên ngân hàng O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng theo thời gian</span></div>
         <div class="ind-chart" style="height:220px"><canvas id="chart-interbank-6m-history"></canvas></div>
-        <div class="ind-note">Nguồn: sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).</div>
+        <div class="ind-note">Nguồn: O/N, 1 tuần, 2 tuần, 1 tháng — vira.org.vn (bản tin ngày, tự động, chuỗi theo NGÀY thật). 6 tháng — sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động, tích lũy theo tuần).</div>
     `;
     grid.appendChild(card);
 
     const ctx = card.querySelector('#chart-interbank-6m-history');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: seriesByTenor.map(([tenorLabel, color, s]) => {
+                const byPeriod = Object.fromEntries(s.map(p => [p.period, p.value]));
+                return {
+                    label: tenorLabel, data: allPeriods.map(p => byPeriod[p] ?? null),
+                    borderColor: color, backgroundColor: color + '15', fill: false,
+                    tension: 0.25, pointRadius: 3, spanGaps: true,
+                };
+            }),
+        },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: true, labels: { boxWidth: 12 } } } },
+    });
+    chartInstances.push(chart);
+}
+
+// Lợi suất TPCP thứ cấp 3Y/5Y/7Y/10Y/15Y theo thời gian — chỉ báo MỚI (2026-07-28, nguồn VIRA,
+// xem fetch_vira_bulletin() trong fetch_macro_data.py), cùng kiểu trình bày với chart lãi suất
+// liên ngân hàng ở trên để so sánh 2 đường cong chi phí vốn (liên ngân hàng vs TPCP Chính phủ).
+const BOND_YIELD_TENORS = [
+    ['govt_bond_yield_3y', '3 Năm', '#f59e0b'],
+    ['govt_bond_yield_5y', '5 Năm', '#ef4444'],
+    ['govt_bond_yield_7y', '7 Năm', '#10b981'],
+    ['govt_bond_yield_10y', '10 Năm', '#a78bfa'],
+    ['govt_bond_yield_15y', '15 Năm', '#3b82f6'],
+];
+
+function renderBondYieldHistoryChart(grid, indicators) {
+    const seriesByTenor = BOND_YIELD_TENORS.map(([key, tenorLabel, color]) => [
+        tenorLabel, color,
+        ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
+    ]);
+    const allPeriods = [...new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period)))].sort();
+    if (!allPeriods.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">📈 Lợi suất TPCP thứ cấp 3-5-7-10-15 năm theo thời gian</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="chart-bond-yield-history"></canvas></div>
+        <div class="ind-note">Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). Lợi suất giao dịch thứ cấp, không phải lãi suất trúng thầu sơ cấp KBNN.</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-bond-yield-history');
     const chart = new Chart(ctx, {
         type: 'line',
         data: {

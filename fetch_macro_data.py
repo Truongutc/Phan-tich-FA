@@ -20,8 +20,10 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import re
+import glob
 import json
 import datetime
+import unicodedata
 import subprocess
 import statistics
 import requests
@@ -360,6 +362,23 @@ def _nso_cumulative_period(phrase, fallback_year=None):
     return f"{year}-FY"  # không khớp mẫu nào đã biết -> coi là lũy kế cả năm (an toàn hơn báo lỗi)
 
 
+# Chữ số đếm tháng kiểu "Tính chung {N} tháng đầu năm..." trong báo cáo NSO — dùng để suy ra
+# THÁNG báo cáo đang nói tới (xem public_investment_disbursement_rate_pct trong
+# fetch_nso_gdp_structure_report()) mà không cần regex riêng từng dạng "tháng Tư"/"tháng 4".
+def _vn_number(s):
+    """Số kiểu VN dùng '.' làm phân cách NGHÌN và ',' làm phân cách THẬP PHÂN (vd '1.100,1' = 1100.1)
+    — PHẢI xoá dấu chấm trước rồi mới đổi dấu phẩy, khác hẳn '.replace(",", ".")' đơn giản (sẽ vỡ
+    với số ≥1000, vd '1.100,1'.replace(",",".") ra '1.100.1' không parse được thành float)."""
+    return float(s.replace(".", "").replace(",", "."))
+
+
+_VN_MONTH_COUNT_WORDS = {
+    "một": 1, "hai": 2, "ba": 3, "bốn": 4, "năm": 5, "sáu": 6, "bảy": 7,
+    "tám": 8, "chín": 9, "mười": 10, "mười một": 11, "mười hai": 12,
+    "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "11": 11,
+}
+
+
 def fetch_nso_gdp_structure_report():
     """Tự động tìm bài 'Thông cáo báo chí về tình hình kinh tế-xã hội' MỚI NHẤT (tiếng Việt) trên
     nso.gov.vn/du-lieu-va-so-lieu-thong-ke/ (index Việt — KHÁC index tiếng Anh đã dùng ở
@@ -391,6 +410,11 @@ def fetch_nso_gdp_structure_report():
         r2.raise_for_status()
         text = re.sub(r"<[^>]+>", " ", r2.text)
         text = re.sub(r"&#\d+;", " ", text)
+        # NSO đôi khi ghi dấu thanh điệu kiểu TỔ HỢP (vd "quý" = q+u+y+dấu-sắc-rời U+0301) thay vì
+        # ký tự ĐÃ GHÉP SẴN ("ý" = U+00FD) NGAY TRONG CÙNG 1 TRANG — phát hiện khi debug regex
+        # "quý III/2026..." không khớp dù mắt thường thấy giống hệt chữ đã gõ. Chuẩn hoá NFC trước
+        # khi regex để tránh lặp lại lỗi này ở các cụm từ khác.
+        text = unicodedata.normalize("NFC", text)
         text = re.sub(r"\s+", " ", text)
 
         out = {"source_url": latest_url}
@@ -431,6 +455,47 @@ def fetch_nso_gdp_structure_report():
             r"Tổng vốn đầu tư nước ngoài đăng ký vào Việt Nam.*?đạt ([\d,]+) tỷ USD, tăng ([\d,]+)%", text)
         if m3:
             out["fdi_registered_usd_bn"] = float(m3.group(1).replace(",", "."))
+
+        # Vốn đầu tư thực hiện TOÀN XÃ HỘI theo GIÁ TRỊ TUYỆT ĐỐI (nghìn tỷ đồng), RIÊNG TỪNG QUÝ
+        # (không phải lũy kế) — khác hẳn m/m2 ở trên (đó là % TĂNG TRƯỞNG và % CƠ CẤU). User
+        # (2026-07-28): "% cơ cấu không biết đầu tư toàn xã hội giai đoạn này có mạnh hơn trước
+        # không — cần thêm cột giá trị thực tế". Câu có 2 dạng: "Vốn đầu tư thực hiện toàn xã hội
+        # quý N/YYYY theo giá hiện hành ước đạt X nghìn tỷ đồng, tăng Y%" (báo cáo Q1 độc lập, hoặc
+        # câu ĐẦU trong báo cáo Q3+9M/Q4+FY) HOẶC nằm trong ngoặc đơn giữa câu lũy kế nửa năm (báo
+        # cáo Q2+H1): "...(quý II/YYYY theo giá hiện hành ước đạt X nghìn tỷ đồng, tăng Y%)..." — cả
+        # 2 dạng đều khớp cùng 1 regex vì không yêu cầu cụm dẫn "Vốn đầu tư..." đứng NGAY TRƯỚC "quý".
+        m5 = re.search(
+            r"qu[ýy]\s*([IVX]+)\s*/\s*(\d{4})[^.]{0,40}theo gi[áa] hi[ệe]n h[àa]nh [ưu][ớo]c đạt"
+            r"\s*([\d.,]+)\s*ngh[ìi]n tỷ đồng,\s*tăng\s*([\d.,]+)%", text)
+        if m5:
+            roman_to_int2 = {"I": 1, "II": 2, "III": 3, "IV": 4}
+            q2 = roman_to_int2.get(m5.group(1))
+            if q2:
+                out["investment_value_total_social_period"] = f"{int(m5.group(2)):04d}-Q{q2}"
+                out["investment_value_total_social"] = _vn_number(m5.group(3))
+
+        # Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) — CHỈ có ở báo cáo THÁNG (Q/6T/
+        # 9T/cả năm không có câu này, xem note của public_investment_disbursement_rate trong
+        # vimo_raw.json) nên latest_url ở trên đôi khi là báo cáo quý -> m4/m4b không khớp, bỏ
+        # qua nhẹ nhàng (đã đúng ý, không phải lỗi). "Tính chung N tháng đầu năm" luôn nêu số tháng
+        # bằng SỐ hoặc CHỮ (vd "bốn tháng", "mười một tháng") -> tự suy ra tháng báo cáo từ N, thay
+        # vì phải regex riêng cụm "tháng Tư"/"tháng 4"/"tháng Mười Một" (nhiều biến thể hơn).
+        m4 = re.search(
+            r"Tính chung (\S+(?:\s+một)?) tháng (?:đầu )?năm (\d{4}), vốn đầu tư thực hiện từ nguồn "
+            r"ngân sách Nhà nước ước đạt ([\d.,]+) nghìn tỷ đồng, bằng ([\d.,]+)% kế hoạch năm", text)
+        m4b = None if m4 else re.search(
+            r"Vốn đầu tư thực hiện từ nguồn ngân sách Nhà nước tháng 01/(\d{4}) ước đạt ([\d.,]+) nghìn "
+            r"tỷ đồng, bằng ([\d.,]+)% kế hoạch năm", text)
+        if m4:
+            month = _VN_MONTH_COUNT_WORDS.get(m4.group(1).lower())
+            if month:
+                out["public_investment_disbursement_period"] = f"{int(m4.group(2)):04d}-{month:02d}"
+                out["public_investment_disbursement_value_ty"] = _vn_number(m4.group(3))
+                out["public_investment_disbursement_rate_pct"] = _vn_number(m4.group(4))
+        elif m4b:
+            out["public_investment_disbursement_period"] = f"{int(m4b.group(1)):04d}-01"
+            out["public_investment_disbursement_value_ty"] = _vn_number(m4b.group(2))
+            out["public_investment_disbursement_rate_pct"] = _vn_number(m4b.group(3))
 
         return out
     except Exception as e:
@@ -920,6 +985,78 @@ def fetch_sbv_omo_rate():
         return {}
 
 
+VIRA_BULLETIN_URL_TMPL = ("https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/"
+                           "Ban-tin-Kinh-te-Tai-chinh-ngay-{d:02d}-{m:02d}-{y}-.html")
+
+
+def fetch_vira_bulletin(lookback_days=10):
+    """vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam) — bản tin Kinh tế - Tài
+    chính NGÀY, HTML tĩnh (không cần đăng nhập, xác nhận qua khảo sát thủ công 2026-07-28). VIRA
+    KHÔNG ra bản tin mỗi ngày (nghỉ cuối tuần + thỉnh thoảng bỏ ngày) và mỗi bản tin ghi số liệu
+    của PHIÊN TRƯỚC (vd bản tin đăng 28/07 ghi "Ngày 27/07") — nên quét lùi lookback_days ngày lịch
+    theo URL, còn NGÀY THẬT của số liệu lấy từ chính cụm "Ngày DD/MM" trong text, không suy từ
+    ngày URL. Mỗi bản tin cho: (1) lãi suất liên ngân hàng VND kỳ hạn ON/1W/2W/1M — đối chiếu
+    fetch_sbv_interest_rates() vốn chỉ có snapshot theo TUẦN/THÁNG (user 2026-07-28: "cần dữ liệu
+    cập nhật để nhìn xu hướng" — VIRA cho lịch sử NGÀY thật, dùng THAY THẾ 4 kỳ hạn này, KHÔNG cộng
+    dồn chung SBV vì khác phương pháp gộp, trộn sẽ ra biểu đồ răng cưa); (2) lợi suất TPCP thứ cấp
+    3Y/5Y/7Y/10Y/15Y (chỉ báo MỚI, chưa có nguồn nào khác đang theo dõi); (3) NHNN bơm ròng/hút
+    ròng qua OMO kênh cầm cố (tỷ đồng, chỉ báo MỚI — dấu ÂM = hút ròng, DƯƠNG = bơm ròng).
+    Trả list[dict] mỗi phần tử {"date": "YYYY-MM-DD", "source_url": ..., rồi các field nào tìm
+    được trong: interbank_on/1w/2w/1m, bond_3y/5y/7y/10y/15y, omo_net} — field nào không tìm thấy
+    (bản tin đổi cấu trúc/thiếu đoạn) thì bị bỏ qua, không lỗi. Bản tin nào không tồn tại (404/302,
+    ngày nghỉ) cũng bỏ qua lặng lẽ."""
+    import html as htmlmod
+    results = []
+    today = datetime.date.today()
+    for i in range(lookback_days):
+        d = today - datetime.timedelta(days=i)
+        url = VIRA_BULLETIN_URL_TMPL.format(d=d.day, m=d.month, y=d.year)
+        try:
+            r = requests.get(url, headers={"User-Agent": UA}, timeout=15)
+            if r.status_code != 200:
+                continue
+            text = re.sub(r"<script.*?</script>", " ", r.text, flags=re.S)
+            text = re.sub(r"<style.*?</style>", " ", text, flags=re.S)
+            text = re.sub(r"<[^>]+>", " ", text)
+            text = htmlmod.unescape(text)
+            text = re.sub(r"\s+", " ", text)
+
+            m_date = re.search(r"Ng[àa]y\s*(\d{1,2})/(\d{1,2}),\s*l[ãa]i suất b[ìi]nh qu[âa]n LNH VND", text)
+            if not m_date:
+                continue
+            day, month = int(m_date.group(1)), int(m_date.group(2))
+            year = d.year - 1 if (month == 12 and d.month == 1) else d.year
+            entry = {"date": f"{year:04d}-{month:02d}-{day:02d}", "source_url": url}
+
+            m_rates = re.search(
+                r"ON\s*([\d,]+)%;\s*1W\s*([\d,]+)%;\s*2W\s*([\d,]+)%\s*v[àa]\s*1M\s*([\d,]+)%", text)
+            if m_rates:
+                entry["interbank_on"] = float(m_rates.group(1).replace(",", "."))
+                entry["interbank_1w"] = float(m_rates.group(2).replace(",", "."))
+                entry["interbank_2w"] = float(m_rates.group(3).replace(",", "."))
+                entry["interbank_1m"] = float(m_rates.group(4).replace(",", "."))
+
+            m_bond = re.search(
+                r"3Y\s*([\d,]+)%;\s*5Y\s*([\d,]+)%;\s*7Y\s*([\d,]+)%;\s*10Y\s*([\d,]+)%;\s*15Y\s*([\d,]+)%", text)
+            if m_bond:
+                entry["bond_3y"] = float(m_bond.group(1).replace(",", "."))
+                entry["bond_5y"] = float(m_bond.group(2).replace(",", "."))
+                entry["bond_7y"] = float(m_bond.group(3).replace(",", "."))
+                entry["bond_10y"] = float(m_bond.group(4).replace(",", "."))
+                entry["bond_15y"] = float(m_bond.group(5).replace(",", "."))
+
+            m_omo = re.search(r"NHNN\s*(h[úu]t r[òo]ng|bơm r[òo]ng)\s*([\d.,]+)\s*tỷ đồng", text)
+            if m_omo:
+                amt = float(m_omo.group(2).replace(".", "").replace(",", "."))
+                entry["omo_net"] = -amt if m_omo.group(1).startswith(("h", "H")) else amt
+
+            if len(entry) > 2:
+                results.append(entry)
+        except Exception as e:
+            print(f"  [WARN] VIRA {d.isoformat()} thất bại: {e}")
+    return results
+
+
 def fetch_sbv_tin_phieu_days_since():
     """sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn — trang THÔNG BÁO BÁN TÍN
     PHIẾU NHNN (kênh HÚT thanh khoản, ĐỐI LẬP với OMO ở fetch_sbv_omo_rate() vốn là kênh BƠM) —
@@ -1328,6 +1465,73 @@ def fetch_negotiated_deposit_rate_news():
     return None
 
 
+# Thư mục CỤC BỘ (ngoài repo, do user tự tải file Excel Tổng cục Hải quan về đặt vào) — CHỈ tồn
+# tại trên máy chạy thủ công, GitHub Action KHÔNG có (Action chỉ checkout đúng repo) nên hàm dưới
+# đây LUÔN bỏ qua nhẹ nhàng khi chạy trên Action, không phải lỗi. User cần tự cập nhật file mới vào
+# thư mục này định kỳ (Action không tự tải được vì đây không phải nguồn web công khai có URL cố
+# định — là file Excel người dùng tự tải từ trang Hải quan/GSO về).
+CUSTOMS_XNK_FOLDER = r"E:\1. Projects\Du lieu xnk"
+
+
+def load_customs_xnk_local():
+    """Đọc file Excel THỦ CÔNG (Tổng cục Hải quan — 'Trị giá và mặt hàng xuất/nhập khẩu sơ bộ các
+    tháng năm YYYY') do user tự tải về CUSTOMS_XNK_FOLDER — file 'V01-*.xls' = xuất khẩu, 'V02-*.xls'
+    = nhập khẩu (V03 = theo nước/khối nước, CHƯA dùng ở đây). Cấu trúc bảng cố định: dòng 0 = tiêu
+    đề có 'năm YYYY', dòng 2 = nhãn kỳ ('Tháng 01', 'Tháng 02', ..., rồi 1 cột lũy kế cuối bảng kiểu
+    '12 tháng'/'6 tháng' — BỎ QUA cột này vì thứ tự chữ 'N tháng' ngược với 'Tháng N' nên không khớp
+    regex, đúng ý), mỗi kỳ chiếm 2 cột (Lượng rồi Trị giá — cột Trị giá luôn NGAY SAU cột Lượng cùng
+    kỳ). Dòng 'Tổng số' = TỔNG GIÁ TRỊ theo TỪNG THÁNG RỜI RẠC (đã kiểm tra thủ công: tháng sau có
+    thể THẤP hơn tháng trước, vd 2025-02 < 2025-01 — KHÔNG PHẢI lũy kế, khác hẳn fdi_disbursed/
+    fdi_registered_usd_bn). Đơn vị gốc 1000 USD -> đổi sang tỷ USD (chia 1e6) cho khớp đơn vị
+    trade_balance đã có. Trả {"export": [(period, gia_tri_ty_usd, ten_file)...], "import": [...]}
+    — rỗng nếu không tìm thấy thư mục/file (không lỗi, không crash pipeline)."""
+    if not os.path.isdir(CUSTOMS_XNK_FOLDER):
+        return {"export": [], "import": []}
+    try:
+        import xlrd
+    except ImportError:
+        print("  [WARN] Thiếu thư viện xlrd (pip install xlrd) — bỏ qua đọc file Hải quan cục bộ.")
+        return {"export": [], "import": []}
+
+    out = {"export": [], "import": []}
+    for prefix, key in [("V01", "export"), ("V02", "import")]:
+        for fpath in sorted(glob.glob(os.path.join(CUSTOMS_XNK_FOLDER, f"{prefix}-*.xls"))):
+            fname = os.path.basename(fpath)
+            try:
+                sh = xlrd.open_workbook(fpath).sheet_by_index(0)
+                year_m = re.search(r"năm\s*(\d{4})", str(sh.cell_value(0, 0)))
+                if not year_m:
+                    print(f"  [WARN] {fname}: không tìm thấy năm ở dòng tiêu đề — bỏ qua.")
+                    continue
+                year = int(year_m.group(1))
+
+                total_row = None
+                for r in range(sh.nrows):
+                    if str(sh.cell_value(r, 0)).strip().lower().startswith("tổng số"):
+                        total_row = r
+                        break
+                if total_row is None:
+                    print(f"  [WARN] {fname}: không tìm thấy dòng 'Tổng số' — bỏ qua.")
+                    continue
+
+                header_row = [str(sh.cell_value(2, c)) for c in range(sh.ncols)]
+                n_points = 0
+                for c in range(1, sh.ncols):
+                    m = re.match(r"Th[áa]ng\s*0?(\d{1,2})\s*$", header_row[c].strip(), re.I)
+                    if not m:
+                        continue
+                    month = int(m.group(1))
+                    value = sh.cell_value(total_row, c + 1)  # cột Trị giá ngay sau cột Lượng
+                    if isinstance(value, (int, float)) and value:
+                        period = f"{year:04d}-{month:02d}"
+                        out[key].append((period, round(value / 1_000_000, 4), fname))
+                        n_points += 1
+                print(f"  -> {fname}: {n_points} tháng")
+            except Exception as e:
+                print(f"  [WARN] Đọc file Hải quan {fname} thất bại: {e}")
+    return out
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════
@@ -1466,6 +1670,14 @@ def update_vimo_raw():
               f"{gdp_struct.get('investment_share_fdi')}%, FDI đăng ký {gdp_struct.get('fdi_registered_usd_bn')} tỷ USD")
     else:
         print("  [INFO] Chưa trích được cơ cấu GDP/đầu tư kỳ này — giữ nguyên seed cũ.")
+    if gdp_struct.get("public_investment_disbursement_period"):
+        p = gdp_struct["public_investment_disbursement_period"]
+        _append_point(raw, "public_investment_disbursement_rate", p,
+                       gdp_struct["public_investment_disbursement_rate_pct"], gdp_struct["source_url"])
+        _append_point(raw, "public_investment_disbursement_value", p,
+                       gdp_struct["public_investment_disbursement_value_ty"], gdp_struct["source_url"])
+        print(f"  -> Giải ngân đầu tư công {p}: {gdp_struct['public_investment_disbursement_value_ty']} nghìn tỷ đồng "
+              f"({gdp_struct['public_investment_disbursement_rate_pct']}% kế hoạch năm)")
 
     print("[VBMA — CPI YoY theo tháng (toàn bộ lịch sử từ T1/2020)]")
     pts = fetch_vbma_cpi_yoy()
@@ -1597,9 +1809,15 @@ def update_vimo_raw():
     # sử liên ngân hàng gần như không tích lũy được gì. Xem _current_period_weekly().
     period_now_weekly = _current_period_weekly()
 
-    print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3 tháng (tích lũy theo TUẦN)]")
+    print("[SBV — lãi suất tái cấp vốn & liên ngân hàng 3/6/9 tháng (tích lũy theo TUẦN)]")
     rates = fetch_sbv_interest_rates()
+    # on/1w/2w/1m ĐÃ CHUYỂN sang nguồn VIRA (dưới đây, tích lũy theo NGÀY thật thay vì snapshot
+    # theo tuần) — bỏ qua ở đây để tránh trộn 2 phương pháp gộp khác nhau vào cùng 1 series.
+    _SKIP_TENORS_NOW_FROM_VIRA = {"interbank_rate_on", "interbank_rate_1w",
+                                    "interbank_rate_2w", "interbank_rate_1m"}
     for key, value in rates.items():
+        if key in _SKIP_TENORS_NOW_FROM_VIRA:
+            continue
         _append_point(raw, key, period_now_weekly, value, "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1")
         print(f"  -> {key} {period_now_weekly}: {value}")
 
@@ -1609,6 +1827,31 @@ def update_vimo_raw():
         _append_point(raw, key, period_now_weekly,
                        value, "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F")
         print(f"  -> {key} {period_now_weekly}: {value}")
+
+    print("[VIRA — lãi suất liên ngân hàng ON/1W/2W/1M + lợi suất TPCP thứ cấp + OMO bơm/hút ròng (tích lũy theo NGÀY thật)]")
+    # sort tăng dần theo ngày TRƯỚC khi append — fetch_vira_bulletin() quét lùi (mới nhất trước),
+    # trong khi _append_point() chỉ nối vào CUỐI series (không tự sort như _merge_vbma_points).
+    vira_entries = sorted(fetch_vira_bulletin(), key=lambda e: e["date"])
+    VIRA_KEY_MAP = {
+        "interbank_on": "interbank_rate_on", "interbank_1w": "interbank_rate_1w",
+        "interbank_2w": "interbank_rate_2w", "interbank_1m": "interbank_rate_1m",
+        "bond_3y": "govt_bond_yield_3y", "bond_5y": "govt_bond_yield_5y",
+        "bond_7y": "govt_bond_yield_7y", "bond_10y": "govt_bond_yield_10y",
+        "bond_15y": "govt_bond_yield_15y", "omo_net": "omo_net_operation",
+    }
+    # _append_point() chỉ so khớp điểm CUỐI series — không đủ ở đây vì lookback_days quét lùi ~10
+    # ngày MỖI LẦN chạy nên phần lớn ngày đã có sẵn từ lần chạy trước (không nằm ở cuối series do
+    # thứ tự append). Tự kiểm tra period đã tồn tại (ở BẤT KỲ đâu trong series) trước khi thêm, để
+    # chạy lại nhiều lần/tuần không bị nhân đôi điểm.
+    for entry in vira_entries:
+        for field, raw_key in VIRA_KEY_MAP.items():
+            if field not in entry:
+                continue
+            existing_periods = {pt["period"] for pt in raw[raw_key]["series"]}
+            if entry["date"] in existing_periods:
+                continue
+            _append_point(raw, raw_key, entry["date"], entry[field], entry["source_url"])
+        print(f"  -> {entry['date']}: {', '.join(f'{k}={v}' for k, v in entry.items() if k not in ('date', 'source_url'))}")
 
     print("[SBV — tín phiếu NHNN (hút thanh khoản thị trường 2, đối lập OMO — 2 chiều bơm/hút, tích lũy theo TUẦN)]")
     days_since, last_date, src = fetch_sbv_tin_phieu_days_since()
@@ -1653,6 +1896,22 @@ def update_vimo_raw():
         print(f"  -> {period}: {value}% — \"{title}\"")
     else:
         print("  -> Không có tin mới khớp từ khóa (bình thường, đây là tin hiếm)")
+
+    print("[Hải quan — Xuất/nhập khẩu theo tháng (file Excel cục bộ, CHỈ có khi chạy thủ công trên máy có sẵn thư mục)]")
+    xnk = load_customs_xnk_local()
+    if xnk["export"] or xnk["import"]:
+        for period, value, fname in xnk["export"]:
+            _append_point(raw, "export_value_monthly", period, value, fname)
+        for period, value, fname in xnk["import"]:
+            _append_point(raw, "import_value_monthly", period, value, fname)
+        export_by_period = {p: v for p, v, _ in xnk["export"]}
+        import_by_period = {p: v for p, v, _ in xnk["import"]}
+        for period in sorted(set(export_by_period) & set(import_by_period)):
+            balance = round(export_by_period[period] - import_by_period[period], 4)
+            _append_point(raw, "trade_balance_monthly", period, balance, "Hải quan (V01+V02, tính từ xuất trừ nhập)")
+        print(f"  -> {len(xnk['export'])} tháng xuất khẩu, {len(xnk['import'])} tháng nhập khẩu")
+    else:
+        print("  [INFO] Không tìm thấy thư mục/file Hải quan cục bộ — bỏ qua (bình thường khi chạy trên GitHub Action).")
 
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     save_raw(raw)

@@ -1231,11 +1231,24 @@ def build_charts_vimo(out_dir, raw, min_points=4):
 
 
 # Kỳ hạn hiển thị trong chart lịch sử liên ngân hàng — khớp INTERBANK_HISTORY_TENORS trong
-# app_vimo.js (user yêu cầu 2026-07-13: gộp O/N + 1 tháng vào chung chart 6 tháng theo thời gian).
+# app_vimo.js (user yêu cầu 2026-07-13: gộp O/N + 1 tháng vào chung chart 6 tháng theo thời gian;
+# 2026-07-28: thêm 1W/2W — nguồn VIRA daily, xem fetch_vira_bulletin() trong fetch_macro_data.py).
 INTERBANK_HISTORY_TENORS = [
     ("interbank_rate_on", "O/N", "#f59e0b"),
+    ("interbank_rate_1w", "1 Tuần", "#ef4444"),
+    ("interbank_rate_2w", "2 Tuần", "#10b981"),
     ("interbank_rate_1m", "1 Tháng", "#a78bfa"),
     ("interbank_rate_6m", "6 Tháng", "#3b82f6"),
+]
+
+# Đường cong lợi suất TPCP thứ cấp theo thời gian — chỉ báo MỚI (2026-07-28, nguồn VIRA), khớp
+# BOND_YIELD_TENORS trong app_vimo.js.
+BOND_YIELD_TENORS = [
+    ("govt_bond_yield_3y", "3 Năm", "#f59e0b"),
+    ("govt_bond_yield_5y", "5 Năm", "#ef4444"),
+    ("govt_bond_yield_7y", "7 Năm", "#10b981"),
+    ("govt_bond_yield_10y", "10 Năm", "#a78bfa"),
+    ("govt_bond_yield_15y", "15 Năm", "#3b82f6"),
 ]
 
 
@@ -1265,12 +1278,38 @@ def build_interbank_6m_history_chart(out_dir, raw):
         by_period = {p["period"]: p["value"] for p in s}
         values = [by_period.get(period, float("nan")) for period in all_periods]  # NaN = có khoảng trống, khớp spanGaps ở app_vimo.js
         ax.plot(all_periods, values, marker="o", color=color, linewidth=2, label=label)
-    ax.set_title("Lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng theo thời gian (%)", fontsize=11, fontweight="bold")
+    ax.set_title("Lãi suất liên ngân hàng O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng theo thời gian (%)", fontsize=11, fontweight="bold")
     ax.tick_params(axis="x", rotation=45, labelsize=8)
     ax.grid(alpha=0.25)
     ax.legend(fontsize=8)
     fig.tight_layout()
     path = os.path.join(out_dir, "vimo_interbank_rate_6m_history.png")
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+    return path
+
+
+def build_bond_yield_history_chart(out_dir, raw):
+    """1 line chart nhiều dòng: lợi suất TPCP thứ cấp 3-5-7-10-15 năm THEO THỜI GIAN — cùng kiểu
+    trình bày với build_interbank_6m_history_chart() ở trên (chỉ báo MỚI, 2026-07-28, nguồn VIRA).
+    Trả path hoặc None nếu không kỳ hạn nào có dữ liệu."""
+    series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", []) if p.get("value") is not None])
+                        for key, label, color in BOND_YIELD_TENORS]
+    all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s})
+    if not all_periods:
+        return None
+
+    fig, ax = plt.subplots(figsize=(7.5, 3.4))
+    for label, color, s in series_by_tenor:
+        by_period = {p["period"]: p["value"] for p in s}
+        values = [by_period.get(period, float("nan")) for period in all_periods]
+        ax.plot(all_periods, values, marker="o", color=color, linewidth=2, label=label)
+    ax.set_title("Lợi suất TPCP thứ cấp 3-5-7-10-15 năm theo thời gian (%)", fontsize=11, fontweight="bold")
+    ax.tick_params(axis="x", rotation=45, labelsize=8)
+    ax.grid(alpha=0.25)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    path = os.path.join(out_dir, "vimo_bond_yield_history.png")
     fig.savefig(path, dpi=130)
     plt.close(fig)
     return path
@@ -1640,8 +1679,12 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
             story.append(Image(charts["interbank_curve"], width=140 * mm, height=63 * mm))
             story.append(Spacer(1, 4))
         if grp == "monetary" and "interbank_6m_history" in charts:
-            story.append(Paragraph("Lãi suất liên ngân hàng kỳ hạn 6 tháng theo thời gian:", small_st))
+            story.append(Paragraph("Lãi suất liên ngân hàng O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng theo thời gian:", small_st))
             story.append(Image(charts["interbank_6m_history"], width=140 * mm, height=63 * mm))
+            story.append(Spacer(1, 4))
+        if grp == "monetary" and "bond_yield_history" in charts:
+            story.append(Paragraph("Lợi suất TPCP thứ cấp 3-5-7-10-15 năm theo thời gian:", small_st))
+            story.append(Image(charts["bond_yield_history"], width=140 * mm, height=63 * mm))
         if grp == "growth" and "gdp_structure" in charts:
             story.append(Paragraph("Cơ cấu GDP theo khu vực kinh tế (lũy kế theo kỳ báo cáo):", small_st))
             story.append(Image(charts["gdp_structure"], width=140 * mm, height=67 * mm))
@@ -1867,6 +1910,220 @@ def update_excel_history_vimo(raw, out_dir):
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# CHỈ BÁO PHÁI SINH (derived) — tính RA từ chuỗi LŨY KẾ đã có trong vimo_raw.json, KHÔNG fetch gì
+# mới. CỐ Ý KHÔNG ghi các key này vào vimo_raw.json (save_vimo_raw) — file đó là DỮ LIỆU THÔ, theo
+# đúng _meta.description ("KHÔNG phải kết quả tính toán") — chỉ merge vào bản `raw` TRONG BỘ NHỚ ở
+# run_vimo_analysis() (sau khi đã save_vimo_raw(raw) xong) để tái sử dụng MIỄN PHÍ toàn bộ cơ chế
+# generic đã có (auto card+chart ở app_vimo.js, cột Excel theo _classify_period_sheet(), mục lục
+# JSON indicators) mà không cần viết thêm chart/Excel riêng — y hệt cách 1 chỉ báo raw bình thường
+# được xử lý, chỉ khác ở chỗ không persist xuống đĩa. User (2026-07-28) yêu cầu: "FDI giải ngân...
+# là số lũy kế, khó so sánh giữa các kỳ — tạo biểu đồ giá trị THEO KỲ RỜI RẠC, số kỳ lấy lũy kế trừ
+# đi" — áp dụng chung cho FDI giải ngân (lũy kế theo QUÝ: Q1/H1/9M/FY) và FDI đăng ký (lũy kế theo
+# THÁNG: đã là chuỗi tháng thật, không cần suy luận kỳ).
+def _cumulative_to_discrete(series, cum_periods_in_year_order, relabel=None):
+    """series: list [{period, value, source_url}] LŨY KẾ (reset đầu mỗi năm). cum_periods_in_year_order:
+    thứ tự các nhãn kỳ lũy kế THẬT SỰ xuất hiện trong 1 năm (vd ["Q1","H1","9M","FY"] hoặc
+    ["01",.., "12"]) — kỳ đầu tiên trong danh sách lấy nguyên giá trị, các kỳ sau = kỳ này trừ kỳ
+    liền trước NẾU CẢ HAI đều có mặt trong CÙNG năm đó (thiếu 1 trong 2 thì bỏ qua, không suy đoán).
+    relabel: dict đổi nhãn kỳ GỐC (vd 'H1') sang nhãn kỳ RỜI RẠC hiển thị (vd 'Q2') trong period
+    output — CẦN đổi cho đúng _classify_period_sheet() ở update_excel_history_vimo() (nhãn 'H1'/'9M'
+    /'FY' bị coi là LŨY KẾ nên sẽ lạc vào sheet "Lũy kế" dù giá trị giờ đã là số RỜI RẠC); None =
+    giữ nguyên nhãn gốc. Trả list [{period, value, source_url}]."""
+    relabel = relabel or {}
+    by_year = {}
+    for pt in series:
+        period = pt.get("period", "")
+        m = re.match(r"^(\d{4})-(.+)$", str(period))
+        if not m:
+            continue
+        year, sub = m.group(1), m.group(2)
+        if sub in cum_periods_in_year_order:
+            by_year.setdefault(year, {})[sub] = pt
+    out = []
+    for year in sorted(by_year):
+        points = by_year[year]
+        prev_val = None
+        gap_subs = []  # các kỳ THIẾU liên tiếp kể từ mốc lũy kế hợp lệ gần nhất
+        for sub in cum_periods_in_year_order:
+            pt = points.get(sub)
+            if pt is None or pt.get("value") is None:
+                gap_subs.append(sub)
+                continue
+            if prev_val is None:
+                # kỳ đầu tiên có dữ liệu trong năm (bình thường là kỳ đầu năm; nếu KHÔNG phải kỳ
+                # đầu (vd thiếu luôn kỳ đầu) thì đây vẫn là điểm THẬT duy nhất có được, chấp nhận
+                # lấy nguyên giá trị làm mốc khởi đầu chuỗi của năm đó, không suy đoán ngược).
+                value = pt["value"]
+                out.append({"period": f"{year}-{relabel.get(sub, sub)}", "value": value,
+                            "source_url": pt.get("source_url")})
+            elif len(gap_subs) == 0:
+                value = round(pt["value"] - prev_val, 4)
+                out.append({"period": f"{year}-{relabel.get(sub, sub)}", "value": value,
+                            "source_url": pt.get("source_url")})
+            elif len(gap_subs) == 1:
+                # ĐÚNG 1 kỳ liền trước bị thiếu — user (2026-07-28) yêu cầu: coi kỳ thiếu và kỳ hiện
+                # tại "bằng nhau", chia đều (lũy kế hiện tại - lũy kế mốc gần nhất)/2 cho CẢ HAI, để
+                # không mất điểm/không mất thông tin thay vì bỏ trống hoàn toàn — ĐÁNH DẤU rõ là ước
+                # tính (source_url riêng, KHÔNG dùng nguồn thật của điểm lũy kế) để không lẫn với số
+                # thật khi xem lại sau này.
+                half = round((pt["value"] - prev_val) / 2, 4)
+                est_note = (f"ƯỚC TÍNH: chia đều (lũy kế {sub} − lũy kế mốc gần nhất)/2, "
+                            f"vì thiếu lũy kế kỳ liền trước để trừ trực tiếp — xem note chỉ báo.")
+                out.append({"period": f"{year}-{relabel.get(gap_subs[0], gap_subs[0])}",
+                            "value": half, "source_url": est_note})
+                out.append({"period": f"{year}-{relabel.get(sub, sub)}",
+                            "value": half, "source_url": est_note})
+            # >1 kỳ liên tiếp bị thiếu: không đủ tin cậy để chia đều (sai số dồn quá lớn) -> bỏ qua
+            prev_val = pt["value"]
+            gap_subs = []
+    return out
+
+
+def _add_derived_indicators(raw, trends):
+    derived = {
+        "fdi_disbursed_quarterly": {
+            "source_key": "fdi_disbursed", "cum_order": ["Q1", "H1", "9M", "FY"],
+            "relabel": {"H1": "Q2", "9M": "Q3", "FY": "Q4"},
+            "group": "trade", "label": "FDI giải ngân theo quý (rời rạc)", "unit": "tỷ USD",
+            "good_direction": "higher",
+            "note": ("Suy ra từ fdi_disbursed (lũy kế Q1/H1/9M/FY, nso.gov.vn) bằng cách LẤY KỲ SAU "
+                     "TRỪ KỲ LIỀN TRƯỚC trong CÙNG NĂM (Q1 giữ nguyên; Q2=H1-Q1; Q3=9M-H1; Q4=FY-9M) "
+                     "— để so sánh được TỪNG QUÝ riêng lẻ thay vì nhìn đường lũy kế luôn đi lên. Chỉ "
+                     "là PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json (xem _add_derived_indicators)."),
+            "impact": "So được tốc độ giải ngân FDI TỪNG QUÝ riêng biệt thay vì chỉ thấy xu hướng lũy kế luôn tăng.",
+        },
+        "fdi_registered_monthly": {
+            "source_key": "fdi_registered_usd_bn",
+            "cum_order": [f"{m:02d}" for m in range(1, 13)],
+            "group": "trade", "label": "FDI đăng ký theo tháng (rời rạc)", "unit": "tỷ USD",
+            "good_direction": "higher",
+            "note": ("Suy ra từ fdi_registered_usd_bn (lũy kế theo tháng, nso.gov.vn) bằng cách lấy "
+                     "tháng sau trừ tháng liền trước trong CÙNG NĂM (tháng 01 giữ nguyên). Chỉ là "
+                     "PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json."),
+            "impact": "So được dòng vốn FDI đăng ký MỚI trong từng tháng thay vì chỉ thấy tổng lũy kế luôn tăng.",
+        },
+        "public_investment_disbursement_value_monthly": {
+            "source_key": "public_investment_disbursement_value",
+            "cum_order": [f"{m:02d}" for m in range(1, 13)],
+            "group": "fiscal", "label": "Giá trị giải ngân đầu tư công theo tháng (rời rạc)",
+            "unit": "nghìn tỷ đồng", "good_direction": "higher",
+            "note": ("Suy ra từ public_investment_disbursement_value (lũy kế theo tháng, nso.gov.vn) "
+                     "bằng cách lấy tháng sau trừ tháng liền trước trong CÙNG NĂM (tháng 01 giữ "
+                     "nguyên). LƯU Ý: nguồn gốc vốn có khoảng trống ở tháng 3/6/9/12 (báo cáo quý/6 "
+                     "tháng/9 tháng/cả năm không nêu số NSNN theo cách này — đã kiểm tra kỹ cả bản "
+                     "'báo cáo' lẫn 'thông cáo báo chí' của 2024/2025/2026, không bài quý nào có câu "
+                     "này) nên tháng liền SAU khoảng trống (4/7/10/01 năm sau) không có mốc lũy kế "
+                     "liền trước để trừ trực tiếp — 2 tháng này (vd tháng 3+4) ƯỚC TÍNH BẰNG NHAU: "
+                     "= (lũy kế tháng 4 − lũy kế tháng 2)/2 cho cả 2 tháng (theo yêu cầu user "
+                     "2026-07-28, vì Bộ Tài chính có số thật cho các tháng này nhưng NSO không công "
+                     "khai qua kênh đang cào). 2 điểm ước tính này có source_url ghi rõ 'ƯỚC TÍNH' "
+                     "để phân biệt với các điểm còn lại (số thật 100% từ báo cáo tháng NSO). Chỉ là "
+                     "PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json."),
+            "impact": "So được quy mô giải ngân TỪNG THÁNG riêng lẻ thay vì chỉ thấy đường lũy kế luôn đi lên rồi reset đầu năm.",
+        },
+    }
+    for new_key, cfg in derived.items():
+        src = raw.get(cfg["source_key"])
+        if not src:
+            continue
+        points = _cumulative_to_discrete(src["series"], cfg["cum_order"], cfg.get("relabel"))
+        if not points:
+            continue
+        raw[new_key] = {
+            "group": cfg["group"], "label": cfg["label"], "unit": cfg["unit"],
+            "good_direction": cfg["good_direction"], "auto_source": "derived",
+            "series": points, "note": cfg["note"], "impact": cfg["impact"],
+        }
+        trends[new_key] = calc_trend(points, cfg["good_direction"])
+        print(f"  -> {cfg['label']}: {len(points)} điểm")
+
+
+def _fill_disbursement_gaps(raw, trends):
+    """Lấp khoảng trống tháng 3/6/9/12 của CẢ HAI public_investment_disbursement_value (nghìn tỷ)
+    VÀ public_investment_disbursement_rate (%) — CHỈ sửa TRONG BỘ NHỚ (không lưu vimo_raw.json).
+    Bước 1 (giá trị): user (2026-07-28) yêu cầu coi tháng thiếu và tháng liền sau "bằng nhau", chia
+    đều (lũy kế tháng sau − lũy kế tháng trước liền kề)/2 cho cả 2 — CÙNG công thức đã dùng ở
+    _cumulative_to_discrete()/public_investment_disbursement_value_monthly, làm lại ở đây để ghi
+    ĐƯỢC vào chính series gốc (không chỉ bản phái sinh _monthly).
+    Bước 2 (%): user đề xuất suy ngược 'kế hoạch năm' = giá trị ÷ (tỷ lệ/100) rồi áp cho tháng thiếu
+    — kiểm tra bằng số liệu thật cho thấy 'kế hoạch năm' KHÔNG cố định (tăng dần suốt năm do Chính
+    phủ bổ sung/điều chỉnh giữa năm, vd 2025: từ ~861 nghìn tỷ đầu năm lên ~1020 cuối năm) nên NỘI
+    SUY TUYẾN TÍNH kế hoạch giữa 2 mốc THẬT liền kề (đúng 1 tháng cách đều mỗi bên) thay vì dùng
+    nguyên 1 mốc, giảm sai số. Cả 2 bước đều ĐÁNH DẤU rõ nguồn là ước tính."""
+    months_order = [f"{m:02d}" for m in range(1, 13)]
+
+    def _gap_periods(subs_present):
+        """Trả [(gap_sub, prev_sub, next_sub)] cho các kỳ ĐÚNG 1 tháng bị thiếu, có mốc thật 2 bên."""
+        out, prev_sub = [], None
+        for sub in months_order:
+            if sub in subs_present:
+                prev_sub = sub
+                continue
+            next_sub = f"{int(sub) + 1:02d}"
+            if prev_sub is not None and next_sub in subs_present:
+                out.append((sub, prev_sub, next_sub))
+        return out
+
+    value_ind = raw.get("public_investment_disbursement_value")
+    rate_ind = raw.get("public_investment_disbursement_rate")
+    if not value_ind or not rate_ind:
+        return
+
+    value_by_period = {p["period"]: p["value"] for p in value_ind["series"] if p.get("value") is not None}
+    rate_by_period = {p["period"]: p["value"] for p in rate_ind["series"] if p.get("value") is not None}
+
+    by_year_value = {}
+    for period in value_by_period:
+        y, s = period.split("-")
+        by_year_value.setdefault(y, set()).add(s)
+
+    est_value_note = "ƯỚC TÍNH: chia đều (lũy kế tháng sau − lũy kế tháng trước liền kề)/2 — xem note chỉ báo."
+    new_value_points = []
+    for year, subs in by_year_value.items():
+        for gap_sub, prev_sub, next_sub in _gap_periods(subs):
+            p_before, p_after, p_gap = f"{year}-{prev_sub}", f"{year}-{next_sub}", f"{year}-{gap_sub}"
+            half = round((value_by_period[p_after] - value_by_period[p_before]) / 2, 4)
+            est_val = round(value_by_period[p_before] + half, 4)
+            new_value_points.append({"period": p_gap, "value": est_val, "source_url": est_value_note})
+            value_by_period[p_gap] = est_val  # để bước 2 dùng ngay
+
+    if new_value_points:
+        merged_value = value_ind["series"] + new_value_points
+        merged_value.sort(key=lambda p: p["period"])
+        value_ind["series"] = merged_value
+        trends["public_investment_disbursement_value"] = calc_trend(merged_value, value_ind["good_direction"])
+
+    by_year_rate = {}
+    for period in rate_by_period:
+        y, s = period.split("-")
+        by_year_rate.setdefault(y, set()).add(s)
+
+    new_rate_points = []
+    for year, subs in by_year_rate.items():
+        for gap_sub, prev_sub, next_sub in _gap_periods(subs):
+            p_before, p_after, p_gap = f"{year}-{prev_sub}", f"{year}-{next_sub}", f"{year}-{gap_sub}"
+            if p_gap not in value_by_period:
+                continue
+            plan_before = value_by_period[p_before] / (rate_by_period[p_before] / 100)
+            plan_after = value_by_period[p_after] / (rate_by_period[p_after] / 100)
+            plan_interp = (plan_before + plan_after) / 2  # nội suy tuyến tính, gap luôn ở giữa
+            est_rate = round(value_by_period[p_gap] / plan_interp * 100, 2)
+            new_rate_points.append({
+                "period": p_gap, "value": est_rate,
+                "source_url": (f"ƯỚC TÍNH: giá trị ước tính ÷ kế hoạch năm nội suy tuyến tính giữa "
+                               f"{p_before} và {p_after} (kế hoạch năm KHÔNG cố định — xem note chỉ báo)."),
+            })
+
+    if new_rate_points:
+        merged_rate = rate_ind["series"] + new_rate_points
+        merged_rate.sort(key=lambda p: p["period"])
+        rate_ind["series"] = merged_rate
+        trends["public_investment_disbursement_rate"] = calc_trend(merged_rate, rate_ind["good_direction"])
+
+    print(f"  -> Lấp {len(new_value_points)} điểm giá trị + {len(new_rate_points)} điểm % giải ngân bị thiếu (ước tính)")
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════
 def run_vimo_analysis():
@@ -1962,6 +2219,12 @@ def run_vimo_analysis():
     raw.setdefault("_meta", {})["scorecard_history"] = new_history[-60:]
     save_vimo_raw(raw)
 
+    print("[INFO] Lấp khoảng trống giải ngân đầu tư công tháng 3/6/9/12 (ước tính, KHÔNG lưu vào vimo_raw.json)...")
+    _fill_disbursement_gaps(raw, trends)
+
+    print("[INFO] Tính chỉ báo phái sinh (FDI giải ngân/đăng ký theo kỳ rời rạc, KHÔNG lưu vào vimo_raw.json)...")
+    _add_derived_indicators(raw, trends)
+
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
     synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)
     print("  -> Đã sinh phân tích tổng hợp")
@@ -1976,6 +2239,9 @@ def run_vimo_analysis():
     interbank_chart = build_interbank_curve_chart(out_dir, raw)
     if interbank_chart:
         charts["interbank_curve"] = interbank_chart
+    bond_yield_chart = build_bond_yield_history_chart(out_dir, raw)
+    if bond_yield_chart:
+        charts["bond_yield_history"] = bond_yield_chart
     gdp_structure_chart = build_stacked_area_chart(out_dir, raw, GDP_STRUCTURE_KEYS,
                                                     "Cơ cấu GDP theo khu vực kinh tế (%)", "vimo_gdp_structure.png")
     if gdp_structure_chart:

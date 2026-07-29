@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-25 12:24",
+    "last_auto_update": "2026-07-29 08:18",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -40,6 +40,18 @@
         "total": -2,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Nên mua vào"
+      },
+      {
+        "date": "2026-07-28",
+        "total": -2,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Nên mua vào"
+      },
+      {
+        "date": "2026-07-29",
+        "total": 0,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Mua mạnh"
       }
     ]
   },
@@ -1660,6 +1672,11 @@
         "period": "2026-W30",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W31",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật.",
@@ -1686,6 +1703,11 @@
         "period": "2026-W30",
         "value": 7.63,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W31",
+        "value": 7.38,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).",
@@ -1696,17 +1718,67 @@
     "label": "Lãi suất liên ngân hàng qua đêm (O/N)",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "sbv_table",
+    "auto_source": "vira",
     "series": [
       {
-        "period": "2026-07",
-        "value": 2.97,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-08",
+        "value": 5.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
       },
       {
-        "period": "2026-W30",
-        "value": 2.97,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-09",
+        "value": 4.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 3.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 3.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 3.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 3.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 2.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 2.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -1717,17 +1789,67 @@
     "label": "Lãi suất liên ngân hàng 1 tuần",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "sbv_table",
+    "auto_source": "vira",
     "series": [
       {
-        "period": "2026-07",
-        "value": 3.81,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-08",
+        "value": 6.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
       },
       {
-        "period": "2026-W30",
-        "value": 3.81,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-09",
+        "value": 5.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.55,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1738,17 +1860,67 @@
     "label": "Lãi suất liên ngân hàng 2 tuần",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "sbv_table",
+    "auto_source": "vira",
     "series": [
       {
-        "period": "2026-07",
-        "value": 5.6,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-08",
+        "value": 6.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
       },
       {
-        "period": "2026-W30",
+        "period": "2026-07-09",
+        "value": 5.95,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 5.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 5.55,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 5.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 5.75,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 5.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 5.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 5.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 5.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
         "value": 5.6,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 5.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1759,17 +1931,67 @@
     "label": "Lãi suất liên ngân hàng 1 tháng",
     "unit": "%",
     "good_direction": "lower",
-    "auto_source": "sbv_table",
+    "auto_source": "vira",
     "series": [
       {
-        "period": "2026-07",
-        "value": 6.65,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-08",
+        "value": 7.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
       },
       {
-        "period": "2026-W30",
-        "value": 6.65,
-        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+        "period": "2026-07-09",
+        "value": 7.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 7.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 7.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 7.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 7.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 7.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 7.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 7.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 6.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 7.25,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 6.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1791,6 +2013,11 @@
         "period": "2026-W30",
         "value": 7.8,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W31",
+        "value": 7.0,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1810,6 +2037,11 @@
       },
       {
         "period": "2026-W30",
+        "value": 9.26,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W31",
         "value": 9.26,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -1833,6 +2065,11 @@
         "period": "2026-W30",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+      },
+      {
+        "period": "2026-W31",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
       }
     ],
     "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy).",
@@ -1852,6 +2089,11 @@
       },
       {
         "period": "2026-W30",
+        "value": 5.9,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+      },
+      {
+        "period": "2026-W31",
         "value": 5.9,
         "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
       }
@@ -1875,6 +2117,11 @@
         "period": "2026-W30",
         "value": 5.9,
         "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
+      },
+      {
+        "period": "2026-W31",
+        "value": 5.9,
+        "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
       }
     ],
     "note": "Nguồn: bảng HTML thật tại vietinbank.vn/lai-suat-khcn (dòng '12 tháng' chính xác, không nhầm với 'Từ 11 đến dưới 12 tháng'/'Trên 12 đến 13 tháng') — tự động cập nhật + tích lũy mỗi lần Action chạy. CHỈ BÁO THAM CHIẾU, không tính vào Scorecard. Lãi suất cho vay SXKD/mua nhà của VietinBank chỉ tìm thấy trong văn bản quảng cáo/khuyến mãi (không phải bảng số liệu ổn định) — không đủ tin cậy để tự động hóa, bỏ qua.",
@@ -1894,6 +2141,11 @@
       },
       {
         "period": "2026-W30",
+        "value": 6.2,
+        "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
+      },
+      {
+        "period": "2026-W31",
         "value": 6.2,
         "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
       }
@@ -2465,6 +2717,11 @@
         "period": "2026-W30",
         "value": 7.8,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W31",
+        "value": 7.8,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
     "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max.",
@@ -2484,6 +2741,11 @@
       },
       {
         "period": "2026-W30",
+        "value": 6.17,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W31",
         "value": 6.17,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
@@ -2558,7 +2820,7 @@
       },
       {
         "period": "2026-07",
-        "value": 26278.14,
+        "value": 26252.67,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -3226,7 +3488,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 10.435985515184644,
+        "value": 10.380654466754919,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -3242,7 +3504,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 1.6210011407863132,
+        "value": 1.612112285230998,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -3498,6 +3760,16 @@
         "period": "2026-07-24",
         "value": -1328.11,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=25/07/2026"
+      },
+      {
+        "period": "2026-07-27",
+        "value": -741.47,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=28/07/2026"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 920.06,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=29/07/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -3518,6 +3790,11 @@
       {
         "period": "2026-W30",
         "value": 268,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+      },
+      {
+        "period": "2026-W31",
+        "value": 272,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],
@@ -6105,7 +6382,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 12.38,
+        "value": 12.28,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -6121,7 +6398,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 1.92,
+        "value": 1.91,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -6143,5 +6420,1313 @@
     ],
     "note": "Chỉ báo mới 2026-07-24 (user đề xuất) — tcbs.com.vn/ca-nhan/san-pham/ipower/, sản phẩm 'Tài khoản Nhân lãi' của TCBS, lấy MỨC CAO NHẤT quảng cáo ('lên đến X%/năm', áp dụng khi số dư ≥15 tỷ VÀ giá trị giao dịch lũy kế tháng ≥15 tỷ). Đây là kênh 'gửi tiền' thay thế ngoài hệ thống ngân hàng truyền thống — khi thanh khoản hệ thống căng, TCBS phải tăng lãi suất này để cạnh tranh hút tiền, nên nó phản ánh mặt bằng lãi suất huy động THẬT ngoài thị trường, đáng tin cậy/ổn định hơn deposit_rate_negotiated_max (chỉ có khi báo chí đưa tin) vì TCBS công bố công khai + có ghi rõ ngày hiệu lực, lấy được mỗi lần Action chạy. Period dùng NGÀY HIỆU LỰC ghi trên trang (không phải ngày fetch) — xem fetch_tcbs_ipower_max_rate(). LƯU Ý KỸ THUẬT: tcbs.com.vn chặn thư viện `requests` bằng TLS-fingerprint (403 dù header giống hệt trình duyệt), phải gọi qua `curl` subprocess — ngoại lệ duy nhất trong toàn bộ fetch_macro_data.py.",
     "impact": "TCBS hạ mức lãi suất iPower cao nhất đồng nghĩa áp lực huy động/thanh khoản bên ngoài hệ thống ngân hàng đã dịu bớt — kênh thay thế này không còn cần trả lãi cao để cạnh tranh hút tiền nữa. Ngược lại, mức này tăng lên là tín hiệu SỚM cho thấy căng thẳng thanh khoản đang lan rộng ra ngoài hệ thống ngân hàng truyền thống."
+  },
+  "govt_bond_yield_3y": {
+    "group": "monetary",
+    "label": "Lợi suất TPCP thứ cấp 3 năm",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "vira",
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": 3.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 3.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 3.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 3.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 3.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 3.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 3.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 3.59,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 3.63,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 3.63,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 3.64,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 3.64,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      }
+    ],
+    "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
+    "impact": "Lợi suất TPCP tăng đồng nghĩa chi phí vay vốn của Chính phủ tăng, thường đi kèm kỳ vọng lạm phát/lãi suất điều hành tăng hoặc thanh khoản hệ thống ngân hàng bớt dư thừa (ngân hàng đòi lợi suất cao hơn mới chịu nắm giữ TPCP thay vì cho vay/gửi liên ngân hàng)."
+  },
+  "govt_bond_yield_5y": {
+    "group": "monetary",
+    "label": "Lợi suất TPCP thứ cấp 5 năm",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "vira",
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.22,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      }
+    ],
+    "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
+    "impact": "Lợi suất TPCP tăng đồng nghĩa chi phí vay vốn của Chính phủ tăng, thường đi kèm kỳ vọng lạm phát/lãi suất điều hành tăng hoặc thanh khoản hệ thống ngân hàng bớt dư thừa (ngân hàng đòi lợi suất cao hơn mới chịu nắm giữ TPCP thay vì cho vay/gửi liên ngân hàng)."
+  },
+  "govt_bond_yield_7y": {
+    "group": "monetary",
+    "label": "Lợi suất TPCP thứ cấp 7 năm",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "vira",
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": 4.26,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.26,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      }
+    ],
+    "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
+    "impact": "Lợi suất TPCP tăng đồng nghĩa chi phí vay vốn của Chính phủ tăng, thường đi kèm kỳ vọng lạm phát/lãi suất điều hành tăng hoặc thanh khoản hệ thống ngân hàng bớt dư thừa (ngân hàng đòi lợi suất cao hơn mới chịu nắm giữ TPCP thay vì cho vay/gửi liên ngân hàng)."
+  },
+  "govt_bond_yield_10y": {
+    "group": "monetary",
+    "label": "Lợi suất TPCP thứ cấp 10 năm",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "vira",
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      }
+    ],
+    "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
+    "impact": "Lợi suất TPCP tăng đồng nghĩa chi phí vay vốn của Chính phủ tăng, thường đi kèm kỳ vọng lạm phát/lãi suất điều hành tăng hoặc thanh khoản hệ thống ngân hàng bớt dư thừa (ngân hàng đòi lợi suất cao hơn mới chịu nắm giữ TPCP thay vì cho vay/gửi liên ngân hàng)."
+  },
+  "govt_bond_yield_15y": {
+    "group": "monetary",
+    "label": "Lợi suất TPCP thứ cấp 15 năm",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "vira",
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      }
+    ],
+    "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
+    "impact": "Lợi suất TPCP tăng đồng nghĩa chi phí vay vốn của Chính phủ tăng, thường đi kèm kỳ vọng lạm phát/lãi suất điều hành tăng hoặc thanh khoản hệ thống ngân hàng bớt dư thừa (ngân hàng đòi lợi suất cao hơn mới chịu nắm giữ TPCP thay vì cho vay/gửi liên ngân hàng)."
+  },
+  "omo_net_operation": {
+    "group": "monetary",
+    "label": "NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "vira",
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": -1438.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+      },
+      {
+        "period": "2026-07-09",
+        "value": -6521.45,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+      },
+      {
+        "period": "2026-07-13",
+        "value": -11729.43,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+      },
+      {
+        "period": "2026-07-14",
+        "value": -3481.23,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+      },
+      {
+        "period": "2026-07-15",
+        "value": -2561.86,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+      },
+      {
+        "period": "2026-07-16",
+        "value": -2149.07,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+      },
+      {
+        "period": "2026-07-20",
+        "value": -4569.67,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+      },
+      {
+        "period": "2026-07-21",
+        "value": -5812.08,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+      },
+      {
+        "period": "2026-07-22",
+        "value": -13102.13,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+      },
+      {
+        "period": "2026-07-23",
+        "value": -3660.43,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+      },
+      {
+        "period": "2026-07-27",
+        "value": -14187.42,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": -1961.37,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      }
+    ],
+    "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
+    "impact": "Bơm ròng liên tục = NHNN đang chủ động hỗ trợ thanh khoản hệ thống (dễ thở hơn cho lãi suất liên ngân hàng); hút ròng liên tục/kéo dài kèm lãi suất liên ngân hàng tăng là tín hiệu thanh khoản hệ thống đang căng, cần theo dõi cùng đường cong VNIBOR."
+  },
+  "public_investment_disbursement_rate": {
+    "group": "fiscal",
+    "label": "Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2024-01",
+        "value": 4.4,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-01-nam-2024/"
+      },
+      {
+        "period": "2024-02",
+        "value": 8.4,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/02/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-02-nam-2024/"
+      },
+      {
+        "period": "2024-04",
+        "value": 20.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tu-va-4-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-05",
+        "value": 26.6,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/05/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-5-va-5-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-07",
+        "value": 40.6,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2024/"
+      },
+      {
+        "period": "2024-08",
+        "value": 47.8,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2024/"
+      },
+      {
+        "period": "2024-10",
+        "value": 64.3,
+        "source_url": "https://www.nso.gov.vn/tin-tuc-thong-ke/2024/11/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-va-10-thang-nam-2024/"
+      },
+      {
+        "period": "2024-11",
+        "value": 73.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/12/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-mot-va-11-thang-nam-2024/"
+      },
+      {
+        "period": "2025-01",
+        "value": 4.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/02/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-mot-nam-2025/"
+      },
+      {
+        "period": "2025-02",
+        "value": 8.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-hai-va-02-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-04",
+        "value": 18.6,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/05/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tu-va-4-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-05",
+        "value": 24.3,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-nam-va-5-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-07",
+        "value": 40.7,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/08/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2025/"
+      },
+      {
+        "period": "2025-08",
+        "value": 48.3,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2025/"
+      },
+      {
+        "period": "2025-10",
+        "value": 63.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/11/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-va-10-thang-nam-2025/"
+      },
+      {
+        "period": "2025-11",
+        "value": 72.2,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/12/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-mot-va-11-thang-nam-2025/"
+      },
+      {
+        "period": "2026-01",
+        "value": 4.8,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/02/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-mot-nam-2026/"
+      },
+      {
+        "period": "2026-02",
+        "value": 9.4,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-hai-nam-2026/"
+      },
+      {
+        "period": "2026-04",
+        "value": 19.7,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/05/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tu-va-4-thang-dau-nam-2026/"
+      },
+      {
+        "period": "2026-05",
+        "value": 24.0,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-nam-va-5-thang-dau-nam-2025-2/"
+      },
+      {
+        "period": "2026-06",
+        "value": 35.5,
+        "source_url": "https://tapchikinhtetaichinh.vn/infographic-giai-ngan-von-dau-tu-cong-6-thang-dau-nam-2026-dat-356-935-1-ty-dong-162556.html"
+      }
+    ],
+    "note": "Vốn đầu tư THỰC HIỆN từ nguồn NGÂN SÁCH NHÀ NƯỚC (không phải toàn xã hội) LŨY KẾ từ đầu năm, tính theo % KẾ HOẠCH NĂM Quốc hội/Chính phủ giao — nguồn nso.gov.vn (báo cáo KT-XH hàng THÁNG, câu 'Tính chung N tháng đầu năm..., vốn đầu tư thực hiện từ nguồn ngân sách Nhà nước ước đạt..., bằng X% kế hoạch năm'). CHỈ có ở báo cáo THÁNG (không có ở báo cáo QUÝ/6 THÁNG/9 THÁNG/CẢ NĂM — các báo cáo đó trình bày đầu tư công theo cơ cấu % tổng vốn toàn xã hội, khác hẳn ý nghĩa với chỉ báo này) — nên chuỗi có KHOẢNG TRỐNG đều đặn ở các tháng 3/6/9/12 mỗi năm, KHÔNG phải lỗi/thiếu dữ liệu. Reset về gần 0 mỗi tháng 1 (lũy kế tính lại từ đầu năm) — giống quy ước fdi_registered_usd_bn. CẬP NHẬT 2026-07-28: pipeline giờ TỰ ĐỘNG lấp khoảng trống tháng 3/6/9/12 bằng số ƯỚC TÍNH (chia đều lũy kế cho giá trị; nội suy kế hoạch năm cho %) ngay khi hiển thị — xem _fill_disbursement_gaps() trong template_vimo.py. Các điểm ước tính có source_url bắt đầu bằng \"ƯỚC TÍNH:\" để phân biệt.",
+    "impact": "Giải ngân nhanh hơn cùng kỳ năm trước (đường cong nằm TRÊN năm trước ở cùng thời điểm) là tín hiệu đầu tư công — vốn kích thích tăng trưởng qua kênh chi tiêu Chính phủ (hạ tầng, xây dựng) — đang được đẩy mạnh; giải ngân chậm hơn (như 6 tháng đầu 2026: tăng 12,7% so với cùng kỳ, THẤP hơn nhiều mức tăng 22,6% của cùng kỳ 2025) là tín hiệu động lực tăng trưởng từ đầu tư công đang yếu đi, cần bù đắp bởi khu vực tư nhân/FDI."
+  },
+  "export_value_monthly": {
+    "group": "trade",
+    "label": "Kim ngạch xuất khẩu theo tháng",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2025-01",
+        "value": 33.1589,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-02",
+        "value": 31.1671,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-03",
+        "value": 38.5676,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-04",
+        "value": 37.7398,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-05",
+        "value": 39.703,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-06",
+        "value": 39.8379,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-07",
+        "value": 42.4019,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-08",
+        "value": 43.4946,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-09",
+        "value": 42.8774,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-10",
+        "value": 42.1146,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-11",
+        "value": 39.9466,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-12",
+        "value": 44.05,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2026-01",
+        "value": 43.3028,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-02",
+        "value": 33.1894,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-03",
+        "value": 46.5362,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-04",
+        "value": 45.6985,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-05",
+        "value": 46.9994,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-06",
+        "value": 50.7872,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2025-01",
+        "value": 33.1589,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-02",
+        "value": 31.1671,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-03",
+        "value": 38.5676,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-04",
+        "value": 37.7398,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-05",
+        "value": 39.703,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-06",
+        "value": 39.8379,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-07",
+        "value": 42.4019,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-08",
+        "value": 43.4946,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-09",
+        "value": 42.8774,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-10",
+        "value": 42.1146,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-11",
+        "value": 39.9466,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-12",
+        "value": 44.05,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2026-01",
+        "value": 43.3028,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-02",
+        "value": 33.1894,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-03",
+        "value": 46.5362,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-04",
+        "value": 45.6985,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-05",
+        "value": 46.9994,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-06",
+        "value": 50.7872,
+        "source_url": "V01-2026-4.xls"
+      }
+    ],
+    "note": "Nguồn: Tổng cục Hải quan, file Excel 'Trị giá và mặt hàng xuất khẩu sơ bộ các tháng' (dòng 'Tổng số'), user tự tải về thư mục cục bộ ngoài repo — xem load_customs_xnk_local() trong fetch_macro_data.py. CHỈ cập nhật khi chạy pipeline THỦ CÔNG trên máy có sẵn thư mục này VÀ user đã bỏ file mới vào — GitHub Action không tự lấy được (không phải nguồn web có URL cố định). Giá trị THEO THÁNG RỜI RẠC (không phải lũy kế).",
+    "impact": "Xuất khẩu tăng là động lực tăng trưởng GDP qua kênh cầu bên ngoài; cần theo dõi cùng import_value_monthly để thấy cán cân thương mại thực."
+  },
+  "import_value_monthly": {
+    "group": "trade",
+    "label": "Kim ngạch nhập khẩu theo tháng",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2025-01",
+        "value": 30.0605,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-02",
+        "value": 32.7464,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-03",
+        "value": 36.8745,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-04",
+        "value": 36.8375,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-05",
+        "value": 39.0836,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-06",
+        "value": 36.642,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-07",
+        "value": 40.0561,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-08",
+        "value": 39.7902,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-09",
+        "value": 39.9066,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-10",
+        "value": 39.7328,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-11",
+        "value": 38.5895,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-12",
+        "value": 44.6866,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2026-01",
+        "value": 45.2591,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-02",
+        "value": 34.3373,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-03",
+        "value": 47.0865,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-04",
+        "value": 50.6404,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-05",
+        "value": 52.4144,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-06",
+        "value": 53.4317,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2025-01",
+        "value": 30.0605,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-02",
+        "value": 32.7464,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-03",
+        "value": 36.8745,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-04",
+        "value": 36.8375,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-05",
+        "value": 39.0836,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-06",
+        "value": 36.642,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-07",
+        "value": 40.0561,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-08",
+        "value": 39.7902,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-09",
+        "value": 39.9066,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-10",
+        "value": 39.7328,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-11",
+        "value": 38.5895,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-12",
+        "value": 44.6866,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2026-01",
+        "value": 45.2591,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-02",
+        "value": 34.3373,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-03",
+        "value": 47.0865,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-04",
+        "value": 50.6404,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-05",
+        "value": 52.4144,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-06",
+        "value": 53.4317,
+        "source_url": "V02-2026-4.xls"
+      }
+    ],
+    "note": "Nguồn: Tổng cục Hải quan, file Excel 'Trị giá và mặt hàng nhập khẩu sơ bộ các tháng' (dòng 'Tổng số'), user tự tải về thư mục cục bộ ngoài repo — xem load_customs_xnk_local() trong fetch_macro_data.py. CHỈ cập nhật khi chạy pipeline THỦ CÔNG trên máy có sẵn thư mục này VÀ user đã bỏ file mới vào — GitHub Action không tự lấy được. Giá trị THEO THÁNG RỜI RẠC (không phải lũy kế). good_direction='higher' ở đây mang nghĩa THAM CHIẾU quy mô hoạt động thương mại/sản xuất (nhập khẩu nguyên liệu/máy móc phục vụ xuất khẩu), KHÔNG có nghĩa nhập khẩu tăng luôn tốt — xem trade_balance_monthly để đánh giá cán cân.",
+    "impact": "Nhập khẩu tăng nhanh hơn xuất khẩu kéo dài là tín hiệu thâm hụt thương mại nới rộng — xem cùng trade_balance_monthly."
+  },
+  "trade_balance_monthly": {
+    "group": "trade",
+    "label": "Cán cân thương mại theo tháng (Hải quan)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2025-01",
+        "value": 3.0984,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-02",
+        "value": -1.5793,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-03",
+        "value": 1.6931,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-04",
+        "value": 0.9023,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-05",
+        "value": 0.6194,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-06",
+        "value": 3.1959,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-07",
+        "value": 2.3458,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-08",
+        "value": 3.7044,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-09",
+        "value": 2.9708,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-10",
+        "value": 2.3818,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-11",
+        "value": 1.3571,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-12",
+        "value": -0.6366,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-01",
+        "value": -1.9563,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-02",
+        "value": -1.1479,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-03",
+        "value": -0.5503,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-04",
+        "value": -4.9419,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-05",
+        "value": -5.415,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-06",
+        "value": -2.6445,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-01",
+        "value": 3.0984,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-02",
+        "value": -1.5793,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-03",
+        "value": 1.6931,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-04",
+        "value": 0.9023,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-05",
+        "value": 0.6194,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-06",
+        "value": 3.1959,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-07",
+        "value": 2.3458,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-08",
+        "value": 3.7044,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-09",
+        "value": 2.9708,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-10",
+        "value": 2.3818,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-11",
+        "value": 1.3571,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-12",
+        "value": -0.6366,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-01",
+        "value": -1.9563,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-02",
+        "value": -1.1479,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-03",
+        "value": -0.5503,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-04",
+        "value": -4.9419,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-05",
+        "value": -5.415,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-06",
+        "value": -2.6445,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      }
+    ],
+    "note": "Tính = export_value_monthly - import_value_monthly (cùng nguồn Hải quan, cùng tháng) — KHÔNG lấy trực tiếp từ báo cáo nào. Bổ sung cho trade_balance (NSO, lũy kế Q1/H1/9M/FY, thưa) bằng chuỗi THEO THÁNG dày hơn — 2 chỉ báo có thể lệch nhẹ do phương pháp thống kê khác nhau giữa Hải quan và NSO (thời điểm ghi nhận, phạm vi hàng hóa).",
+    "impact": "Dương = xuất siêu (hỗ trợ VND, tăng dự trữ ngoại hối); âm kéo dài = nhập siêu, áp lực lên tỷ giá."
+  },
+  "public_investment_disbursement_value": {
+    "group": "fiscal",
+    "label": "Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm)",
+    "unit": "nghìn tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2024-01",
+        "value": 31.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-01-nam-2024/"
+      },
+      {
+        "period": "2024-02",
+        "value": 59.8,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/02/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-02-nam-2024/"
+      },
+      {
+        "period": "2024-04",
+        "value": 142.8,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tu-va-4-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-05",
+        "value": 190.6,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/05/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-5-va-5-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-07",
+        "value": 301.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2024/"
+      },
+      {
+        "period": "2024-08",
+        "value": 363.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2024/"
+      },
+      {
+        "period": "2024-10",
+        "value": 495.9,
+        "source_url": "https://www.nso.gov.vn/tin-tuc-thong-ke/2024/11/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-va-10-thang-nam-2024/"
+      },
+      {
+        "period": "2024-11",
+        "value": 572.0,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/12/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-mot-va-11-thang-nam-2024/"
+      },
+      {
+        "period": "2025-01",
+        "value": 35.4,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/02/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-mot-nam-2025/"
+      },
+      {
+        "period": "2025-02",
+        "value": 73.2,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-hai-va-02-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-04",
+        "value": 165.6,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/05/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tu-va-4-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-05",
+        "value": 221.8,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-nam-va-5-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-07",
+        "value": 378.3,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/08/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2025/"
+      },
+      {
+        "period": "2025-08",
+        "value": 463.2,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2025/"
+      },
+      {
+        "period": "2025-10",
+        "value": 640.2,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/11/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-va-10-thang-nam-2025/"
+      },
+      {
+        "period": "2025-11",
+        "value": 736.4,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/12/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-muoi-mot-va-11-thang-nam-2025/"
+      },
+      {
+        "period": "2026-01",
+        "value": 43.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/02/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-mot-nam-2026/"
+      },
+      {
+        "period": "2026-02",
+        "value": 83.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-hai-nam-2026/"
+      },
+      {
+        "period": "2026-04",
+        "value": 187.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/05/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tu-va-4-thang-dau-nam-2026/"
+      },
+      {
+        "period": "2026-05",
+        "value": 254.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-nam-va-5-thang-dau-nam-2025-2/"
+      },
+      {
+        "period": "2026-06",
+        "value": 356.9351,
+        "source_url": "https://tapchikinhtetaichinh.vn/infographic-giai-ngan-von-dau-tu-cong-6-thang-dau-nam-2026-dat-356-935-1-ty-dong-162556.html"
+      }
+    ],
+    "note": "Giá trị TUYỆT ĐỐI (nghìn tỷ đồng — 1 nghìn tỷ = 1.000 tỷ, để đối chiếu với báo chí hay nêu đơn vị 'tỷ đồng') của vốn đầu tư THỰC HIỆN từ nguồn NGÂN SÁCH NHÀ NƯỚC, LŨY KẾ từ đầu năm — cùng nguồn/cùng đoạn văn với public_investment_disbursement_rate (chỉ khác là lấy số TUYỆT ĐỐI thay vì %). Cùng lý do có khoảng trống ở tháng 3/6/9/12 mỗi năm (báo cáo quý/6 tháng/9 tháng/cả năm không nêu số NSNN riêng theo cách này, chỉ báo cáo THÁNG mới có). Reset về gần 0 mỗi tháng 1. CẬP NHẬT 2026-07-28: pipeline giờ TỰ ĐỘNG lấp khoảng trống tháng 3/6/9/12 bằng số ƯỚC TÍNH (chia đều lũy kế cho giá trị; nội suy kế hoạch năm cho %) ngay khi hiển thị — xem _fill_disbursement_gaps() trong template_vimo.py. Các điểm ước tính có source_url bắt đầu bằng \"ƯỚC TÍNH:\" để phân biệt.",
+    "impact": "Theo dõi cùng public_investment_disbursement_rate: chỉ báo này cho biết QUY MÔ tuyệt đối (bao nhiêu tiền đã bơm ra nền kinh tế qua kênh đầu tư công), còn chỉ báo % kế hoạch năm cho biết TỐC ĐỘ so với mục tiêu Chính phủ giao."
+  },
+  "govt_bond_auction_value_monthly": {
+    "group": "monetary",
+    "label": "KBNN huy động qua đấu thầu TPCP theo tháng (sơ cấp, HNX)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "series": [
+      {
+        "period": "2026-06",
+        "value": 23375.0,
+        "source_url": "https://tapchikinhtetaichinh.vn/infographic-thang-6-2026-huy-dong-23-375-ty-dong-qua-dau-thau-trai-phieu-chinh-phu-162671.html"
+      }
+    ],
+    "note": "Tổng giá trị TRÚNG THẦU trái phiếu Chính phủ do Kho bạc Nhà nước phát hành qua HNX trong tháng — THỊ TRƯỜNG SƠ CẤP (Chính phủ vay mới), khác hẳn govt_bond_yield_* (lợi suất giao dịch THỨ CẤP, từ VIRA). Nguồn: tapchikinhtetaichinh.vn (infographic tháng, trích từ số liệu HNX/KBNN) — CHƯA có cơ chế tự động tìm bài mới mỗi tháng (URL có ID bài viết không đoán được), user cần tự cung cấp link bài infographic tháng mới khi có.",
+    "impact": "Huy động sơ cấp tăng mạnh có thể là tín hiệu Chính phủ đẩy nhanh vay nợ để tài trợ đầu tư công/bù đắp bội chi; theo dõi cùng public_investment_disbursement_value để thấy dòng tiền có thực sự chảy ra nền kinh tế qua giải ngân hay không."
+  },
+  "investment_value_total_social": {
+    "group": "growth",
+    "label": "Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành)",
+    "unit": "nghìn tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2024-Q1",
+        "value": 613.9,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2024/"
+      },
+      {
+        "period": "2024-Q2",
+        "value": 834.3,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-Q3",
+        "value": 966.7,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2024/"
+      },
+      {
+        "period": "2024-Q4",
+        "value": 1274.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2024/"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 666.5,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2025/"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 921.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-6-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 1100.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2025/"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 1445.9,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2025/"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 744.7,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2026/"
+      },
+      {
+        "period": "2026-Q2",
+        "value": 1059.5,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+      }
+    ],
+    "note": "Giá trị TUYỆT ĐỐI (không phải %) của TỔNG vốn đầu tư toàn xã hội (Nhà nước + ngoài Nhà nước + FDI cộng lại), THEO GIÁ HIỆN HÀNH, riêng từng quý (không phải lũy kế) — cùng nguồn/cùng đoạn văn với investment_share_state/private/fdi (chỉ khác là lấy số tuyệt đối thay vì % cơ cấu). User (2026-07-28): '% cơ cấu không diễn tả được liệu đầu tư toàn xã hội giai đoạn này có MẠNH HƠN giai đoạn trước không (vd tỷ trọng Nhà nước giảm có thể do Nhà nước giảm HOẶC do tư nhân tăng nhanh hơn, không phân biệt được) — cần thêm cột giá trị thực tế' để bổ sung góc nhìn về QUY MÔ tuyệt đối/động lực tăng trưởng, dùng chung với biểu đồ % cơ cấu.",
+    "impact": "Theo dõi CÙNG investment_share_*: chỉ báo % cho biết CƠ CẤU (khu vực nào chiếm ưu thế), chỉ báo này cho biết QUY MÔ/ĐỘNG LỰC tăng trưởng thực (đầu tư toàn xã hội đang mở rộng hay thu hẹp so với cùng kỳ)."
   }
 }
