@@ -5,8 +5,8 @@
   "currentPrice": 23600,
   "marketCap": 199295884201600,
   "shares": 8444740856,
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1BPgdZrqoHdFs4lUHuu1wKDFl1TBCUSNe/view?usp=drivesdk",
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1IbSFlPw9X-FH59yLNnERnBm8_DOuaUOB/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/111IQIU8d248qXhEZ_h6qs5M2Vmal31_X/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1QTHt1kyd5pRTlVRohewbK8Tunrqu0Mrd/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
   "productionEstimateCache": {
     "year": 2026,
     "quarter": 2,
@@ -14,7 +14,7 @@
     "hrcKt": 1900.0,
     "xdKt": 1300.0,
     "source": "OFFICIAL",
-    "fetchedAt": "2026-07-11 17:31"
+    "fetchedAt": "2026-07-29 05:30"
   },
   "currentQuarterProduction": {
     "label": "2026Q2",
@@ -22,10 +22,19 @@
     "totalKt": 3500.0,
     "hrcKt": 1900.0,
     "xdKt": 1300.0,
-    "monthsKnown": [],
+    "monthsKnown": [
+      {
+        "month": 6,
+        "volumeKt": 1110.0,
+        "hrcKt": 702.0,
+        "xdKt": 408.0,
+        "url": "https://dautucophieu.net/cap-nhat-co-phieu-hpg-q2-2026-san-luong-tieu-thu-tang-manh-30-svck-sat-voi-du-bao/",
+        "date": "10/07/2026"
+      }
+    ],
     "note": "Đã có số liệu CHÍNH THỨC 2026Q2: Tổng 3500 nghìn tấn (HRC 1900 + XD 1300 nghìn tấn) — nguồn: https://cafef.vn/hoa-phat-san-xuat-luong-thep-tho-tang-48-trong-quy-2-2026-188260708165136651.chn (08/07/2026)."
   },
-  "lastUpdated": "2026-07-11 17:31",
+  "lastUpdated": "2026-07-29 05:30",
   "data": {
     "years": [
       2021,
@@ -948,7 +957,8 @@
     16.2,
     14.5,
     13.9,
-    9.2
+    9.0,
+    8.4
   ],
   "pb_quarters": [
     1.64,
@@ -982,7 +992,8 @@
     1.79,
     1.67,
     1.67,
-    1.39
+    1.37,
+    1.28
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -1016,6 +1027,7 @@
     "2025-Q2",
     "2025-Q3",
     "2025-Q4",
-    "2026-Q1"
+    "2026-Q1",
+    "2026-Q2"
   ]
 }
