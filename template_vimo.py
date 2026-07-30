@@ -1272,7 +1272,10 @@ def build_interbank_6m_history_chart(out_dir, raw):
     series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", [])
                                         if p.get("value") is not None and _INTERBANK_HISTORY_PERIOD_RE.match(p["period"])])
                         for key, label, color in INTERBANK_HISTORY_TENORS]
-    all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s})
+    # _period_sort_key() (không phải sorted() mặc định) — period ở đây TRỘN 2 định dạng (ngày từ
+    # VIRA + tuần từ SBV), sort chuỗi mặc định đẩy "2026-W30" ra cuối trục dù thực ra nằm GIỮA
+    # khoảng ngày đã có (user 2026-07-30 phát hiện qua bản web, cùng lỗi bên app_vimo.js).
+    all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s}, key=_period_sort_key)
     if not all_periods:
         return None
 
@@ -1298,7 +1301,7 @@ def build_bond_yield_history_chart(out_dir, raw):
     Trả path hoặc None nếu không kỳ hạn nào có dữ liệu."""
     series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", []) if p.get("value") is not None])
                         for key, label, color in BOND_YIELD_TENORS]
-    all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s})
+    all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s}, key=_period_sort_key)
     if not all_periods:
         return None
 
@@ -1808,6 +1811,14 @@ def _period_sort_key(period):
     m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", period)
     if m:
         return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    m = re.match(r"^(\d{4})-W(\d{2})$", period)
+    if m:
+        # Quy về tuple (năm, tháng, ngày) của thứ Hai đầu tuần ISO đó — để so sánh được với period
+        # dạng NGÀY khi 2 định dạng trộn chung 1 trục (vd chart lãi suất liên ngân hàng: ON/1W/2W/
+        # 1M dạng ngày từ VIRA + 6M dạng tuần từ SBV — user 2026-07-30 phát hiện "2026-W30" bị đẩy
+        # ra cuối trục dù thực ra nằm GIỮA khoảng ngày đã có, vì trước đây rơi vào nhánh (9999,)).
+        monday = datetime.date.fromisocalendar(int(m.group(1)), int(m.group(2)), 1)
+        return (monday.year, monday.month, monday.day)
     m = re.match(r"^(\d{4})-(\d{2})$", period)
     if m:
         return (int(m.group(1)), int(m.group(2)))

@@ -516,21 +516,38 @@ function renderIndicatorGroups(indicators) {
     });
 }
 
-// So sánh 2 chuỗi period THEO THỜI GIAN THẬT — CẦN THIẾT cho các kỳ lũy kế kiểu Q1/H1/9M/FY (sort
-// chuỗi mặc định cho ra "H1" < "Q1" < "FY" < "9M" theo abc, SAI thứ tự thời gian thật trong năm —
-// phát hiện khi cơ cấu GDP có ≥2 điểm/năm, xem _period_sort_key() tương đương bên template_vimo.py).
-const _PERIOD_SUB_RANK = { Q1: 1, H1: 2, "9M": 3, FY: 4 };
+// So sánh 2 chuỗi period THEO THỜI GIAN THẬT — quy hết về 1 mốc thời gian (ms) để so sánh được
+// GIỮA NHIỀU ĐỊNH DẠNG KHÁC NHAU trộn chung 1 trục (vd chart lãi suất liên ngân hàng: ON/1W/2W/1M
+// dạng NGÀY "YYYY-MM-DD" từ VIRA + 6M dạng TUẦN "YYYY-Www" từ SBV — user 2026-07-30 phát hiện
+// "2026-W30"/"2026-W31" (thực ra RƠI VÀO GIỮA khoảng ngày đã có, ~20/7-2/8) bị chuỗi sort mặc định
+// đẩy ra CUỐI trục vì 'W' > các chữ số, tạo khoảng trống giả ở bên phải). Cũng xử lý luôn Q1/H1/
+// 9M/FY (sort chuỗi mặc định ra "H1" < "Q1" < "FY" < "9M" theo abc, sai thứ tự thời gian thật).
 function _periodSortKey(period) {
-    const m = /^(\d{4})-(Q1|H1|9M|FY)$/.exec(period);
-    if (m) return [parseInt(m[1], 10), _PERIOD_SUB_RANK[m[2]]];
-    return [period, 0]; // định dạng khác (ngày/tuần/tháng) — chuỗi ISO đã tự sort đúng theo abc
+    let m;
+    if ((m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(period))) {
+        return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+    }
+    if ((m = /^(\d{4})-W(\d{2})$/.exec(period))) {
+        // Monday cua ISO week do (thuat toan chuan: 4/1 luon nam trong tuan 1)
+        const jan4 = Date.UTC(+m[1], 0, 4);
+        const jan4Dow = (new Date(jan4).getUTCDay() + 6) % 7; // Mon=0..Sun=6
+        const week1Monday = jan4 - jan4Dow * 86400000;
+        return week1Monday + (+m[2] - 1) * 7 * 86400000;
+    }
+    if ((m = /^(\d{4})-(Q1|H1|9M|FY)$/.exec(period))) {
+        const monthEnd = { Q1: 2, H1: 5, "9M": 8, FY: 11 }[m[2]]; // thang cuoi ky (0-based)
+        return Date.UTC(+m[1], monthEnd + 1, 0); // ngay cuoi thang do
+    }
+    if ((m = /^(\d{4})-(\d{2})$/.exec(period))) {
+        return Date.UTC(+m[1], +m[2] - 1, 1);
+    }
+    if ((m = /^(\d{4})$/.exec(period))) {
+        return Date.UTC(+m[1], 0, 1);
+    }
+    return NaN; // dinh dang la -> giu nguyen vi tri gap duoc (Array.sort coi NaN so sanh khong on dinh, chap nhan)
 }
 function _sortPeriods(periods) {
-    return [...periods].sort((a, b) => {
-        const ka = _periodSortKey(a), kb = _periodSortKey(b);
-        if (ka[0] !== kb[0]) return ka[0] < kb[0] ? -1 : 1;
-        return ka[1] - kb[1];
-    });
+    return [...periods].sort((a, b) => _periodSortKey(a) - _periodSortKey(b));
 }
 
 // Biểu đồ miền (stacked area) DÙNG CHUNG cho cơ cấu GDP theo khu vực VÀ cơ cấu vốn đầu tư theo
@@ -652,7 +669,7 @@ function renderInterbank6mHistoryChart(grid, indicators) {
         tenorLabel, color,
         ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined && INTERBANK_HISTORY_PERIOD_RE.test(p.period)),
     ]);
-    const allPeriods = [...new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period)))].sort();
+    const allPeriods = _sortPeriods(new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period))));
     if (!allPeriods.length) return;
 
     const card = document.createElement('div');
@@ -700,7 +717,7 @@ function renderBondYieldHistoryChart(grid, indicators) {
         tenorLabel, color,
         ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
     ]);
-    const allPeriods = [...new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period)))].sort();
+    const allPeriods = _sortPeriods(new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period))));
     if (!allPeriods.length) return;
 
     const card = document.createElement('div');
