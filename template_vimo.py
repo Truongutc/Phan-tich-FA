@@ -1410,7 +1410,9 @@ def build_vnindex_valuation_history_charts(out_dir, rf, capm):
 def build_stacked_area_chart(out_dir, raw, keys, title, filename):
     series_by_key = [(label, color, [p for p in raw.get(key, {}).get("series", []) if p.get("value") is not None])
                       for key, label, color in keys]
-    all_periods = sorted({p["period"] for _, _, s in series_by_key for p in s})
+    # _period_sort_key() (không phải sort() mặc định) — chuỗi Q1/H1/9M/FY sort abc SAI thứ tự thời
+    # gian thật trong năm ("H1" < "Q1" < "FY" < "9M"), phát hiện khi cơ cấu GDP có ≥2 điểm/năm.
+    all_periods = sorted({p["period"] for _, _, s in series_by_key for p in s}, key=_period_sort_key)
     if not all_periods:
         return None
 
@@ -2041,6 +2043,47 @@ def _add_derived_indicators(raw, trends):
         print(f"  -> {cfg['label']}: {len(points)} điểm")
 
 
+def _add_customs_yoy_growth(raw, trends):
+    """Tính export_growth_customs/import_growth_customs (YoY %) từ export_value_monthly/
+    import_value_monthly (Hải quan, theo tháng — xem load_customs_xnk_local() trong
+    fetch_macro_data.py) — CHỈ tính được cho tháng nào có ĐỦ CẢ tháng hiện tại VÀ CÙNG THÁNG năm
+    trước (vd 2026-01 cần có 2025-01). Đặt tên KHÁC export_growth/import_growth (nguồn vietnambiz,
+    chỉ 1 điểm, vẫn giữ nguyên cho Scorecard) để không đụng vào wiring SCORECARD_GROUPS đang dùng
+    key đó — chỉ là chỉ báo THAM KHẢO thêm, tần suất dày hơn nhiều. Phái sinh tính toán, KHÔNG lưu
+    vào vimo_raw.json."""
+    for src_key, new_key, label in [
+        ("export_value_monthly", "export_growth_customs", "Xuất khẩu YoY (Hải quan, theo tháng)"),
+        ("import_value_monthly", "import_growth_customs", "Nhập khẩu YoY (Hải quan, theo tháng)"),
+    ]:
+        src = raw.get(src_key)
+        if not src:
+            continue
+        by_period = {p["period"]: p["value"] for p in src["series"] if p.get("value") is not None}
+        points = []
+        for period in sorted(by_period):
+            year, month = period.split("-")
+            prior_period = f"{int(year) - 1}-{month}"
+            if prior_period in by_period and by_period[prior_period]:
+                yoy = round((by_period[period] / by_period[prior_period] - 1) * 100, 2)
+                points.append({"period": period, "value": yoy,
+                               "source_url": next(p["source_url"] for p in src["series"] if p["period"] == period)})
+        if not points:
+            continue
+        raw[new_key] = {
+            "group": "trade", "label": label, "unit": "%", "good_direction": "higher",
+            "auto_source": "derived",
+            "series": points,
+            "note": (f"Suy ra từ {src_key} (Hải quan, xem load_customs_xnk_local() trong "
+                     f"fetch_macro_data.py) bằng cách so cùng tháng năm trước (YoY) — CHỈ tính được "
+                     f"khi có đủ dữ liệu 2 năm liên tiếp cho cùng tháng đó. Phái sinh tính toán, "
+                     f"KHÔNG lưu vào vimo_raw.json — KHÔNG dùng để tính Scorecard (khác "
+                     f"{src_key.split('_')[0]}_growth đang dùng cho Scorecard, nguồn vietnambiz)."),
+            "impact": "Đối chiếu tần suất dày hơn (theo tháng, có đủ lịch sử) với chỉ báo cùng tên nguồn vietnambiz (thưa hơn).",
+        }
+        trends[new_key] = calc_trend(points, "higher")
+        print(f"  -> {label}: {len(points)} điểm")
+
+
 def _fill_disbursement_gaps(raw, trends):
     """Lấp khoảng trống tháng 3/6/9/12 của CẢ HAI public_investment_disbursement_value (nghìn tỷ)
     VÀ public_investment_disbursement_rate (%) — CHỈ sửa TRONG BỘ NHỚ (không lưu vimo_raw.json).
@@ -2227,6 +2270,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính chỉ báo phái sinh (FDI giải ngân/đăng ký theo kỳ rời rạc, KHÔNG lưu vào vimo_raw.json)...")
     _add_derived_indicators(raw, trends)
+
+    print("[INFO] Tính XK/NK YoY theo tháng từ Hải quan (KHÔNG lưu vào vimo_raw.json)...")
+    _add_customs_yoy_growth(raw, trends)
 
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
     synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)

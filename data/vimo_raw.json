@@ -3525,9 +3525,54 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2024-Q1",
+        "value": 11.77,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2024/"
+      },
+      {
+        "period": "2024-H1",
+        "value": 11.55,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-9M",
+        "value": 11.64,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2024/"
+      },
+      {
+        "period": "2024-FY",
+        "value": 11.86,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2024/"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 11.56,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2025/"
+      },
+      {
+        "period": "2025-H1",
+        "value": 11.28,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-6-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-9M",
+        "value": 11.3,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2025/"
+      },
+      {
+        "period": "2025-FY",
+        "value": 11.64,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2025/"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 10.89,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2026/"
+      },
+      {
         "period": "2026-H1",
         "value": 10.61,
-        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO (fetch_nso_gdp_structure_report() trong fetch_macro_data.py). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm) — KHÔNG phải chuỗi quý độc lập cộng dồn được. Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm — đây là chỉ số CƠ CẤU, không có hướng 'tốt/xấu' cố định.",
@@ -3541,9 +3586,54 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2024-Q1",
+        "value": 35.73,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2024/"
+      },
+      {
+        "period": "2024-H1",
+        "value": 36.44,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-9M",
+        "value": 37.1,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2024/"
+      },
+      {
+        "period": "2024-FY",
+        "value": 37.64,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2024/"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 36.31,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2025/"
+      },
+      {
+        "period": "2025-H1",
+        "value": 36.96,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-6-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-9M",
+        "value": 37.58,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2025/"
+      },
+      {
+        "period": "2025-FY",
+        "value": 37.65,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2025/"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 37.15,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2026/"
+      },
+      {
         "period": "2026-H1",
         "value": 37.66,
-        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -3557,9 +3647,54 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2024-Q1",
+        "value": 43.48,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2024/"
+      },
+      {
+        "period": "2024-H1",
+        "value": 43.35,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-9M",
+        "value": 42.8,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2024/"
+      },
+      {
+        "period": "2024-FY",
+        "value": 42.36,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2024/"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 43.44,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2025/"
+      },
+      {
+        "period": "2025-H1",
+        "value": 43.4,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-6-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-9M",
+        "value": 42.92,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2025/"
+      },
+      {
+        "period": "2025-FY",
+        "value": 42.75,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2025/"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 43.45,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2026/"
+      },
+      {
         "period": "2026-H1",
         "value": 43.52,
-        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -3573,9 +3708,54 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2024-Q1",
+        "value": 9.02,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/03/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2024/"
+      },
+      {
+        "period": "2024-H1",
+        "value": 8.66,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2024/06/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2024/"
+      },
+      {
+        "period": "2024-9M",
+        "value": 8.46,
+        "source_url": "https://www.nso.gov.vn/bai-top/2024/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2024/"
+      },
+      {
+        "period": "2024-FY",
+        "value": 8.14,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2024/"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 8.69,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2025/"
+      },
+      {
+        "period": "2025-H1",
+        "value": 8.36,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-6-thang-dau-nam-2025/"
+      },
+      {
+        "period": "2025-9M",
+        "value": 8.2,
+        "source_url": "https://www.nso.gov.vn/bai-top/2025/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2025/"
+      },
+      {
+        "period": "2025-FY",
+        "value": 7.96,
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/01/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iv-va-nam-2025/"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 8.51,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/04/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-i-nam-2026/"
+      },
+      {
         "period": "2026-H1",
         "value": 8.21,
-        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo. Tham chiếu hiển thị (thành phần thứ 4 của biểu đồ miền cơ cấu GDP, cộng đủ 100% cùng 3 khu vực kinh tế), KHÔNG tính vào Scorecard 6 nhóm.",

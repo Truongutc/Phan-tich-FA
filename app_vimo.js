@@ -516,6 +516,23 @@ function renderIndicatorGroups(indicators) {
     });
 }
 
+// So sánh 2 chuỗi period THEO THỜI GIAN THẬT — CẦN THIẾT cho các kỳ lũy kế kiểu Q1/H1/9M/FY (sort
+// chuỗi mặc định cho ra "H1" < "Q1" < "FY" < "9M" theo abc, SAI thứ tự thời gian thật trong năm —
+// phát hiện khi cơ cấu GDP có ≥2 điểm/năm, xem _period_sort_key() tương đương bên template_vimo.py).
+const _PERIOD_SUB_RANK = { Q1: 1, H1: 2, "9M": 3, FY: 4 };
+function _periodSortKey(period) {
+    const m = /^(\d{4})-(Q1|H1|9M|FY)$/.exec(period);
+    if (m) return [parseInt(m[1], 10), _PERIOD_SUB_RANK[m[2]]];
+    return [period, 0]; // định dạng khác (ngày/tuần/tháng) — chuỗi ISO đã tự sort đúng theo abc
+}
+function _sortPeriods(periods) {
+    return [...periods].sort((a, b) => {
+        const ka = _periodSortKey(a), kb = _periodSortKey(b);
+        if (ka[0] !== kb[0]) return ka[0] < kb[0] ? -1 : 1;
+        return ka[1] - kb[1];
+    });
+}
+
 // Biểu đồ miền (stacked area) DÙNG CHUNG cho cơ cấu GDP theo khu vực VÀ cơ cấu vốn đầu tư theo
 // thành phần (user 2026-07-13) — mỗi kỳ báo cáo là 1 điểm trên trục X, các thành phần % cộng lại
 // ~100%. Vẽ được ngay cả khi mới có 1 điểm (sẽ dài dần mỗi lần Action chạy, giống các chart khác).
@@ -523,7 +540,7 @@ function renderStackedAreaChart(grid, indicators, { title, keys, canvasId, note 
     const seriesByKey = keys.map(([key, label, color]) => [
         label, color, ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
     ]);
-    const allPeriods = [...new Set(seriesByKey.flatMap(([, , s]) => s.map(p => p.period)))].sort();
+    const allPeriods = _sortPeriods(new Set(seriesByKey.flatMap(([, , s]) => s.map(p => p.period))));
     if (!allPeriods.length) return;
 
     const card = document.createElement('div');
