@@ -3769,6 +3769,51 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2024-Q1",
+        "value": 26.5,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/03/VN.-T3.2024-1-6_5.-DT-XNK-CPI.jpg"
+      },
+      {
+        "period": "2024-H1",
+        "value": 27.02,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/06/VN.-T6.20241-6_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2024-9M",
+        "value": 27.5,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/10/VN.-T9.20241-6_5.-DT-XNK-CPI-1.png"
+      },
+      {
+        "period": "2024-FY",
+        "value": 27.61,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/12/VN.-T12.2024-final_5.-Thuong-mai.png"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 27.64,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/04/VN.-T3.2025-_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2025-H1",
+        "value": 28.0,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/07/VN.-T6.2025_5.-DT-XNK-CPI-1.png"
+      },
+      {
+        "period": "2025-9M",
+        "value": 29.55,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/10/VN.-T9.2025-1-6_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2025-FY",
+        "value": 29.72,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2026/01/VN.-T12.2025-4.1_5.-Thuong-mai.png"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 27.82,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2026/04/VN.-T3.2026_5.-DT-XNK-CPI.png"
+      },
+      {
         "period": "2026-H1",
         "value": 28.1,
         "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
@@ -3785,6 +3830,51 @@
     "auto_source": "nso_scrape",
     "series": [
       {
+        "period": "2024-Q1",
+        "value": 55.5,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/03/VN.-T3.2024-1-6_5.-DT-XNK-CPI.jpg"
+      },
+      {
+        "period": "2024-H1",
+        "value": 55.1,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/06/VN.-T6.20241-6_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2024-9M",
+        "value": 55.31,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/10/VN.-T9.20241-6_5.-DT-XNK-CPI-1.png"
+      },
+      {
+        "period": "2024-FY",
+        "value": 55.91,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/12/VN.-T12.2024-final_5.-Thuong-mai.png"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 54.24,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/04/VN.-T3.2025-_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2025-H1",
+        "value": 53.95,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/07/VN.-T6.2025_5.-DT-XNK-CPI-1.png"
+      },
+      {
+        "period": "2025-9M",
+        "value": 53.35,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/10/VN.-T9.2025-1-6_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2025-FY",
+        "value": 53.9,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2026/01/VN.-T12.2025-4.1_5.-Thuong-mai.png"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 54.04,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2026/04/VN.-T3.2026_5.-DT-XNK-CPI.png"
+      },
+      {
         "period": "2026-H1",
         "value": 53.8,
         "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
@@ -3800,6 +3890,51 @@
     "good_direction": "higher",
     "auto_source": "nso_scrape",
     "series": [
+      {
+        "period": "2024-Q1",
+        "value": 18.0,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/03/VN.-T3.2024-1-6_5.-DT-XNK-CPI.jpg"
+      },
+      {
+        "period": "2024-H1",
+        "value": 17.89,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/06/VN.-T6.20241-6_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2024-9M",
+        "value": 17.19,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/10/VN.-T9.20241-6_5.-DT-XNK-CPI-1.png"
+      },
+      {
+        "period": "2024-FY",
+        "value": 16.48,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2024/12/VN.-T12.2024-final_5.-Thuong-mai.png"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 18.12,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/04/VN.-T3.2025-_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2025-H1",
+        "value": 18.04,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/07/VN.-T6.2025_5.-DT-XNK-CPI-1.png"
+      },
+      {
+        "period": "2025-9M",
+        "value": 17.1,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2025/10/VN.-T9.2025-1-6_5.-DT-XNK-CPI.png"
+      },
+      {
+        "period": "2025-FY",
+        "value": 16.38,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2026/01/VN.-T12.2025-4.1_5.-Thuong-mai.png"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 18.14,
+        "source_url": "https://www.nso.gov.vn/wp-content/uploads/2026/04/VN.-T3.2026_5.-DT-XNK-CPI.png"
+      },
       {
         "period": "2026-H1",
         "value": 18.1,
