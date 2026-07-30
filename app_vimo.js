@@ -621,18 +621,19 @@ const INTERBANK_HISTORY_TENORS = [
     ['interbank_rate_6m', '6 Tháng', '#3b82f6'],
 ];
 
-const WEEKLY_PERIOD_RE = /^\d{4}-W\d{2}$/;
+// Khớp CHÍNH XÁC 2 định dạng period hợp lệ cho chart này: tuần "YYYY-Www" (SBV, dùng cho 6M/9M/3M)
+// và ngày "YYYY-MM-DD" (VIRA, dùng cho ON/1W/2W/1M từ 2026-07-28) — KHÔNG khớp định dạng tháng cũ
+// "YYYY-MM" (7 ký tự, không có cụm ngày thứ 2) vốn là điểm lũy kế/snapshot cũ còn sót lại trước khi
+// đổi sang tuần, trộn chung sẽ khiến trục thời gian bị kéo phẳng sai (user 2026-07-25).
+const INTERBANK_HISTORY_PERIOD_RE = /^\d{4}-(W\d{2}|\d{2}-\d{2})$/;
 
 function renderInterbank6mHistoryChart(grid, indicators) {
-    // Hợp nhất TOÀN BỘ period của cả 3 kỳ hạn thành 1 trục thời gian chung — các kỳ hạn được cào
-    // cùng 1 lần fetch_sbv_interest_rates() mỗi Action nên thường trùng period, nhưng hợp nhất
-    // (thay vì chỉ lấy period của 1 kỳ hạn) để không mất điểm nếu có kỳ hạn nào lệch lịch sử.
-    // CHỈ lấy period dạng TUẦN — bỏ điểm THÁNG cũ còn sót lại trước khi đổi sang tuần
-    // (2026-07-24): trộn chung tháng+tuần trên 1 trục khiến chart bị kéo phẳng sai (user
-    // 2026-07-25). Khớp với build_interbank_6m_history_chart() trong template_vimo.py (PDF).
+    // Hợp nhất TOÀN BỘ period của cả 5 kỳ hạn thành 1 trục thời gian chung — hợp nhất (thay vì chỉ
+    // lấy period của 1 kỳ hạn) để không mất điểm nếu có kỳ hạn nào lệch lịch sử. Khớp với
+    // build_interbank_6m_history_chart() trong template_vimo.py (PDF).
     const seriesByTenor = INTERBANK_HISTORY_TENORS.map(([key, tenorLabel, color]) => [
         tenorLabel, color,
-        ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined && WEEKLY_PERIOD_RE.test(p.period)),
+        ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined && INTERBANK_HISTORY_PERIOD_RE.test(p.period)),
     ]);
     const allPeriods = [...new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period)))].sort();
     if (!allPeriods.length) return;

@@ -1252,22 +1252,25 @@ BOND_YIELD_TENORS = [
 ]
 
 
-_WEEKLY_PERIOD_RE = re.compile(r"^\d{4}-W\d{2}$")
+# Khớp 2 định dạng period hợp lệ cho chart này: tuần "YYYY-Www" (SBV, dùng cho 6M/9M/3M) và ngày
+# "YYYY-MM-DD" (VIRA, dùng cho ON/1W/2W/1M từ 2026-07-28) — KHÔNG khớp định dạng tháng cũ "YYYY-MM"
+# (7 ký tự) vốn là điểm lũy kế/snapshot cũ còn sót lại trước khi đổi sang tuần, trộn chung sẽ khiến
+# trục thời gian bị kéo phẳng sai (user 2026-07-25).
+_INTERBANK_HISTORY_PERIOD_RE = re.compile(r"^\d{4}-(W\d{2}|\d{2}-\d{2})$")
 
 
 def build_interbank_6m_history_chart(out_dir, raw):
-    """1 line chart nhiều dòng: lãi suất liên ngân hàng O/N, 1 tháng, 6 tháng THEO THỜI GIAN, vẽ
-    TOÀN BỘ lịch sử sẵn có mỗi kỳ hạn (không giới hạn min_points=4 như build_charts_vimo()) — thay
-    cho chart so sánh ngân hàng cũ (đã gỡ bỏ theo yêu cầu user 2026-07-13, xem cùng thay đổi ở
-    app_vimo.js). CHỈ lấy điểm period dạng TUẦN ('YYYY-Wnn') — bỏ điểm THÁNG cũ còn sót lại từ
-    trước khi đổi sang _current_period_weekly() (2026-07-24): trộn chung 2 định dạng kỳ khác nhau
-    (tháng vs tuần) trên CÙNG 1 trục thời gian khiến chart bị kéo phẳng/sai lệch trực quan (user
-    2026-07-25 phản ánh: "tôi không cần phải kéo ngang như thế, tôi cần mỗi điểm trên biểu đồ là
-    đại diện cho giá trị lãi suất đó tại tuần đó") — điểm THÁNG cũ vẫn giữ nguyên trong
-    vimo_raw.json (không xóa dữ liệu), chỉ loại khỏi chart NÀY. Trả path hoặc None nếu không kỳ
-    hạn nào có dữ liệu tuần."""
+    """1 line chart nhiều dòng: lãi suất liên ngân hàng O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng THEO
+    THỜI GIAN, vẽ TOÀN BỘ lịch sử sẵn có mỗi kỳ hạn (không giới hạn min_points=4 như
+    build_charts_vimo()) — thay cho chart so sánh ngân hàng cũ (đã gỡ bỏ theo yêu cầu user
+    2026-07-13, xem cùng thay đổi ở app_vimo.js). CHỈ lấy điểm period dạng TUẦN hoặc NGÀY (xem
+    _INTERBANK_HISTORY_PERIOD_RE) — bỏ điểm THÁNG cũ còn sót lại từ trước khi đổi sang
+    _current_period_weekly() (2026-07-24): trộn chung nhiều định dạng kỳ khác nhau trên CÙNG 1 trục
+    thời gian khiến chart bị kéo phẳng/sai lệch trực quan (user 2026-07-25). Điểm THÁNG cũ vẫn giữ
+    nguyên trong vimo_raw.json (không xóa dữ liệu), chỉ loại khỏi chart NÀY. Trả path hoặc None nếu
+    không kỳ hạn nào có dữ liệu."""
     series_by_tenor = [(label, color, [p for p in raw.get(key, {}).get("series", [])
-                                        if p.get("value") is not None and _WEEKLY_PERIOD_RE.match(p["period"])])
+                                        if p.get("value") is not None and _INTERBANK_HISTORY_PERIOD_RE.match(p["period"])])
                         for key, label, color in INTERBANK_HISTORY_TENORS]
     all_periods = sorted({p["period"] for _, _, s in series_by_tenor for p in s})
     if not all_periods:
