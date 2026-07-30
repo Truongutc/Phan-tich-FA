@@ -274,7 +274,7 @@
       },
       {
         "heading": "Thanh khoản hệ thống & Lãi suất chính thức (OMO/VNIBOR/niêm yết Big4)",
-        "text": "Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 % (kỳ Tuần 31/2026). Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 2.20% so với 9 tháng 9.26%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong 272 ngày gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra). Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 % (kỳ Tuần 31/2026), ổn định; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 % (kỳ Tuần 31/2026), ổn định; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 % (kỳ Tuần 31/2026), ổn định."
+        "text": "Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 % (kỳ 2026-07-27). Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 2.20% so với 9 tháng 9.26%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong 272 ngày gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra). Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 % (kỳ Tuần 31/2026), ổn định; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 % (kỳ Tuần 31/2026), ổn định; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 % (kỳ Tuần 31/2026), ổn định."
       },
       {
         "heading": "⚠️ Lãi suất THỰC TẾ thị trường (khác biểu niêm yết)",
@@ -2534,32 +2534,74 @@
       "label": "Lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản)",
       "unit": "%",
       "goodDirection": "lower",
-      "autoSource": "sbv_table",
+      "autoSource": "vira",
       "series": [
         {
-          "period": "2026-07",
+          "period": "2026-07-08",
           "value": 4.5,
-          "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
         },
         {
-          "period": "2026-W30",
+          "period": "2026-07-09",
           "value": 4.5,
-          "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
         },
         {
-          "period": "2026-W31",
+          "period": "2026-07-13",
           "value": 4.5,
-          "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F"
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+        },
+        {
+          "period": "2026-07-14",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+        },
+        {
+          "period": "2026-07-15",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+        },
+        {
+          "period": "2026-07-16",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+        },
+        {
+          "period": "2026-07-20",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+        },
+        {
+          "period": "2026-07-21",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+        },
+        {
+          "period": "2026-07-22",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+        },
+        {
+          "period": "2026-07-23",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+        },
+        {
+          "period": "2026-07-27",
+          "value": 4.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
         }
       ],
       "trend": {
         "latest": 4.5,
-        "latest_period": "2026-W31",
-        "latest_source": "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F",
-        "n_points": 3,
+        "latest_period": "2026-07-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html",
+        "n_points": 11,
         "prior": 4.5,
-        "prior_period": "2026-W30",
+        "prior_period": "2026-07-23",
         "delta": 0.0,
+        "delta_vs_4back": 0.0,
+        "far_period": "2026-07-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -2568,7 +2610,7 @@
         "judgment_label": "Ổn định",
         "judgment_color": "#f59e0b"
       },
-      "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy).",
+      "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy). CAP NHAT 2026-07-30: chuyen nguon tu SBV (tuan, snapshot) sang VIRA (ngay that, xem fetch_vira_bulletin trong fetch_macro_data.py) de dong bo voi cac chi bao lai suat khac, tranh tron dinh dang tuan/ngay gay sai truc thoi gian.",
       "impact": "Lãi suất OMO là công cụ NHNN bơm/hút thanh khoản NGẮN HẠN qua thị trường mở (thị trường 2) — không phải công cụ thay đổi cung tiền M2 dài hạn; bản thân mức lãi suất OMO thấp không có nghĩa chi phí vốn thị trường 1 (doanh nghiệp/dân cư) đang thấp, vì độ truyền dẫn có độ trễ và không 1-1."
     },
     "deposit_rate_12m_vcb": {

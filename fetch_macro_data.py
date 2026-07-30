@@ -1050,6 +1050,10 @@ def fetch_vira_bulletin(lookback_days=10):
                 amt = float(m_omo.group(2).replace(".", "").replace(",", "."))
                 entry["omo_net"] = -amt if m_omo.group(1).startswith(("h", "H")) else amt
 
+            m_omo_rate = re.search(r"lãi suất đều ở mức ([\d,]+)%", text)
+            if m_omo_rate:
+                entry["omo_rate"] = float(m_omo_rate.group(1).replace(",", "."))
+
             if len(entry) > 2:
                 results.append(entry)
         except Exception as e:
@@ -1821,12 +1825,9 @@ def update_vimo_raw():
         _append_point(raw, key, period_now_weekly, value, "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1")
         print(f"  -> {key} {period_now_weekly}: {value}")
 
-    print("[SBV — lãi suất OMO kỳ hạn 7 ngày (bơm thanh khoản thị trường 2, tích lũy theo TUẦN)]")
-    omo = fetch_sbv_omo_rate()
-    for key, value in omo.items():
-        _append_point(raw, key, period_now_weekly,
-                       value, "https://www.sbv.gov.vn/vi/web/sbv_portal/nghi%E1%BB%87p-v%E1%BB%A5-th%E1%BB%8B-tr%C6%B0%E1%BB%9Dng-m%E1%BB%9F")
-        print(f"  -> {key} {period_now_weekly}: {value}")
+    # omo_rate_7d ĐÃ CHUYỂN sang nguồn VIRA (dưới đây, tích lũy theo NGÀY thật) — cùng lý do với
+    # on/1w/2w/1m ở trên, tránh trộn 2 phương pháp gộp khác nhau (tuần vs ngày) vào cùng 1 series.
+    # fetch_sbv_omo_rate() không còn được gọi ở đây nữa (giữ nguyên hàm để tham khảo/dự phòng).
 
     print("[VIRA — lãi suất liên ngân hàng ON/1W/2W/1M + lợi suất TPCP thứ cấp + OMO bơm/hút ròng (tích lũy theo NGÀY thật)]")
     # sort tăng dần theo ngày TRƯỚC khi append — fetch_vira_bulletin() quét lùi (mới nhất trước),
@@ -1838,6 +1839,7 @@ def update_vimo_raw():
         "bond_3y": "govt_bond_yield_3y", "bond_5y": "govt_bond_yield_5y",
         "bond_7y": "govt_bond_yield_7y", "bond_10y": "govt_bond_yield_10y",
         "bond_15y": "govt_bond_yield_15y", "omo_net": "omo_net_operation",
+        "omo_rate": "omo_rate_7d",
     }
     # _append_point() chỉ so khớp điểm CUỐI series — không đủ ở đây vì lookback_days quét lùi ~10
     # ngày MỖI LẦN chạy nên phần lớn ngày đã có sẵn từ lần chạy trước (không nằm ở cuối series do
