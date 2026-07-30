@@ -31,6 +31,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Tesseract OCR (+ gói ngôn ngữ Việt) — đọc số liệu cơ cấu vốn đầu tư từ ẢNH infographic
+      # NSO (nso.gov.vn/do-hoa-thong-tin), không có ở dạng text — xem
+      # fetch_nso_infographic_investment() trong fetch_macro_data.py.
+      - name: Install Tesseract OCR (tiếng Việt)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-vie
+
       - name: Fetch dữ liệu vĩ mô mới nhất (World Bank/IMF/FRED/FX/NSO)
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}

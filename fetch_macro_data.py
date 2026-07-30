@@ -534,6 +534,161 @@ def _nso_period_to_iso(label):
     return label
 
 
+def _strip_diacritics(s):
+    """Bỏ dấu tiếng Việt (NFD rồi loại combining marks) — dùng để so khớp NHÃN chữ trong text OCR
+    (OCR đọc dấu tiếng Việt không ổn định, dễ rớt/nhầm dấu) — KHÔNG áp dụng cho việc parse SỐ (số
+    không có dấu nên không ảnh hưởng)."""
+    import unicodedata as _ud
+    return "".join(c for c in _ud.normalize("NFD", s) if _ud.category(c) != "Mn")
+
+
+def _ocr_number_after_label(text_nodiacritic, label_nodiacritic, window=60):
+    """Tìm số kiểu VN (chấm=nghìn, phẩy=thập phân, hoặc chỉ có phẩy nếu <1000) xuất hiện trong
+    khoảng `window` ký tự SAU nhãn (đã bỏ dấu) — dùng cho text OCR vốn mất định dạng dòng/cột gốc
+    của ảnh nên không thể regex theo cấu trúc câu như văn bản thật. Khoảng trắng GIỮA các từ trong
+    nhãn được coi là LINH HOẠT (\\s+, khớp cả xuống dòng) vì OCR đọc panel dạng thẻ/hộp thường tách
+    dòng khác với văn bản gốc. Trả float hoặc None."""
+    label_pattern = re.escape(label_nodiacritic).replace(r"\ ", r"\s+")
+    m_label = re.search(label_pattern, text_nodiacritic)
+    if not m_label:
+        return None
+    window_text = text_nodiacritic[m_label.end():m_label.end() + window]
+    m = re.search(r"(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d+)?)", window_text)
+    if not m:
+        return None
+    raw_num = m.group(1)
+    # Số VN: neu co ca '.' lan ',' thi '.'=nghin, ','=thap phan; neu chi co 1 loai dau phan cach,
+    # gia dinh la thap phan (khop cach OCR/anh infographic dang bieu dien, vd "744,7" hoac "1.451,3")
+    if "." in raw_num and "," in raw_num:
+        return float(raw_num.replace(".", "").replace(",", "."))
+    if "," in raw_num:
+        return float(raw_num.replace(",", "."))
+    if "." in raw_num:
+        # chi co dau cham: co the la phan cach nghin (vd "1.451") HOAC thap phan kieu US - uu tien
+        # nghin neu >=4 chu so nguyen truoc dau cham cuoi, it gap trong bo so nay nen coi la nghin
+        return float(raw_num.replace(".", ""))
+    return float(raw_num)
+
+
+NSO_INFOGRAPHIC_LISTING_URL = "https://www.nso.gov.vn/do-hoa-thong-tin/"
+
+
+def fetch_nso_infographic_investment():
+    """Đọc cơ cấu vốn đầu tư TOÀN XÃ HỘI (Nhà nước/Ngoài NN/FDI) từ ẢNH infographic quý của NSO
+    (nso.gov.vn/do-hoa-thong-tin) — CHỈ CÓ Ở DẠNG ẢNH, không có text tương ứng ở bất kỳ bài báo cáo
+    nào khác đã khảo sát (xem note của investment_share_state trong vimo_raw.json). User (2026-07-30)
+    tự tìm 9 bài infographic + tôi đọc số bằng mắt (vision) để backfill lịch sử — hàm này TỰ ĐỘNG
+    HÓA việc đó bằng OCR (tesseract, cần cài tesseract-ocr + tesseract-ocr-vie, xem
+    update_vimo.yml) cho các kỳ SAU này. RỦI RO ĐÃ BIẾT (user chấp nhận 2026-07-30): OCR ảnh
+    infographic nhiều màu/font trang trí có thể đọc sai số — hàm này tự KIỂM TRA CHÉO (state% +
+    private% + fdi% phải ~100, tổng 3 giá trị tuyệt đối phải ~bằng Tổng số đọc được) và BỎ QUA
+    (trả None) nếu không khớp, thay vì ghi số có thể sai vào dữ liệu.
+
+    Quy trình: (1) quét trang danh mục lấy link infographic MỚI NHẤT có chữ 'quy' trong URL (chỉ
+    báo cáo quý mới có cơ cấu đầu tư, báo cáo tháng thì không); (2) tải TẤT CẢ ảnh panel trong bài
+    đó (KHÔNG cố định theo tên file/số thứ tự panel — đã xác nhận thủ công tên file 'DT-XNK-CPI'
+    đôi khi bị gán NHẦM ảnh ở 1 số bài "final" cuối năm); (3) OCR từng ảnh, panel nào có cụm
+    'Vốn đầu tư thực hiện toàn xã hội' mới là panel đúng; (4) trích Tổng số/Nhà nước/Ngoài NN/FDI
+    bằng cách tìm số xuất hiện GẦN SAU mỗi nhãn (text OCR mất cấu trúc dòng/cột gốc nên không
+    regex theo câu được như văn bản thật).
+
+    Trả {"period": "YYYY-Qn", "state_pct":.., "private_pct":.., "fdi_pct":.., "source_url": ...}
+    hoặc None nếu bất kỳ bước nào thất bại/không đủ tin cậy (không lỗi, không crash pipeline)."""
+    try:
+        import pytesseract
+        from PIL import Image
+        import io
+    except ImportError:
+        print("  [WARN] Thiếu pytesseract/Pillow (pip install pytesseract Pillow) — bỏ qua OCR infographic NSO.")
+        return None
+
+    try:
+        r = requests.get(NSO_INFOGRAPHIC_LISTING_URL, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r.raise_for_status()
+        links = re.findall(r'href="(https://www\.nso\.gov\.vn/[^"]*infographic[^"]*)"', r.text)
+        # chỉ bài QUÝ (có "quy" trong slug URL) mới có cơ cấu đầu tư — báo cáo THÁNG không có mục này
+        quarterly_links = [u for u in dict.fromkeys(links) if "quy" in u.lower()]
+        if not quarterly_links:
+            print("  [INFO] NSO infographic: không tìm thấy bài quý nào trên trang danh mục.")
+            return None
+        # link đầu tiên trong danh sách là MỚI NHẤT (trang liệt kê theo thứ tự đăng, mới nhất trước)
+        article_url = quarterly_links[0]
+
+        r2 = requests.get(article_url, headers={"User-Agent": UA}, timeout=20, verify=False)
+        r2.raise_for_status()
+        panel_urls = re.findall(r'data-orig-src="(https://www\.nso\.gov\.vn/wp-content/uploads/[^"]+\.(?:png|jpg|jpeg))"', r2.text)
+        if not panel_urls:
+            print(f"  [WARN] NSO infographic {article_url}: không tìm thấy ảnh panel nào.")
+            return None
+
+        # \s+ giữa các từ (KHÔNG dùng literal " ") vì OCR panel dạng thẻ/hộp thường tách dòng khác
+        # hẳn văn bản gốc — cùng lý do với _ocr_number_after_label().
+        anchor_pattern = re.escape(_strip_diacritics("Vốn đầu tư thực hiện toàn xã hội").lower()).replace(r"\ ", r"\s+")
+        target_text = None
+        for panel_url in panel_urls:
+            try:
+                img_r = requests.get(panel_url, headers={"User-Agent": UA}, timeout=30, verify=False)
+                img_r.raise_for_status()
+                img = Image.open(io.BytesIO(img_r.content))
+                ocr_text = pytesseract.image_to_string(img, lang="vie+eng")
+            except Exception as e:
+                print(f"  [WARN] OCR panel {panel_url} thất bại: {e}")
+                continue
+            ocr_nodiacritic = re.sub(r"\s+", " ", _strip_diacritics(ocr_text).lower())
+            if re.search(anchor_pattern, ocr_nodiacritic):
+                target_text = ocr_nodiacritic
+                print(f"  -> Panel đúng: {panel_url}")
+                break
+
+        if target_text is None:
+            print(f"  [WARN] NSO infographic {article_url}: không panel nào OCR ra đúng cụm 'Vốn đầu tư thực hiện toàn xã hội'.")
+            return None
+
+        total = _ocr_number_after_label(target_text, "tong so")
+        state = _ocr_number_after_label(target_text, "nha nuoc")
+        private = _ocr_number_after_label(target_text, "ngoai nn")
+        fdi = _ocr_number_after_label(target_text, "fdi")
+        if None in (total, state, private, fdi) or total <= 0:
+            print(f"  [WARN] NSO infographic {article_url}: OCR thiếu 1 trong 4 số (Tổng/Nhà nước/Ngoài NN/FDI).")
+            return None
+
+        # KIỂM TRA CHÉO trước khi tin OCR — sai số cho phép 3% (làm tròn ảnh + OCR)
+        sum_parts = state + private + fdi
+        if abs(sum_parts - total) / total > 0.03:
+            print(f"  [WARN] NSO infographic {article_url}: tổng 3 phần ({sum_parts}) lệch quá 3% so với Tổng số OCR ({total}) — bỏ qua, nghi OCR sai.")
+            return None
+
+        # suy ra kỳ báo cáo (Q1/H1/9M/FY) từ chính URL bài viết (không suy từ OCR — URL đáng tin hơn)
+        year_m = re.search(r"/(\d{4})/\d{2}/", article_url)
+        if not year_m:
+            return None
+        year = year_m.group(1)
+        slug = article_url.lower()
+        period = None
+        if "quy-i-nam" in slug or re.search(r"quy-i-\d{4}", slug):
+            period = f"{year}-Q1"
+        elif "sau-thang" in slug or "6-thang" in slug:
+            period = f"{year}-H1"
+        elif "chin-thang" in slug or "9-thang" in slug:
+            period = f"{year}-9M"
+        elif "va-nam" in slug:
+            period = f"{year}-FY"
+        if period is None:
+            print(f"  [WARN] NSO infographic {article_url}: không suy được kỳ báo cáo từ URL.")
+            return None
+
+        return {
+            "period": period,
+            "state_pct": round(state / total * 100, 2),
+            "private_pct": round(private / total * 100, 2),
+            "fdi_pct": round(fdi / total * 100, 2),
+            "source_url": article_url,
+        }
+    except Exception as e:
+        print(f"  [WARN] NSO infographic OCR thất bại: {e}")
+        return None
+
+
 def fetch_sbv_credit_growth():
     """sbv.gov.vn nhúng thẳng mảng JS 'const tongCong = [...]' (tăng trưởng tín dụng TỔNG theo
     tháng, %) cùng 'const labels = [...]' trên trang dư nợ tín dụng — không cần API key, không
@@ -1682,6 +1837,16 @@ def update_vimo_raw():
                        gdp_struct["public_investment_disbursement_value_ty"], gdp_struct["source_url"])
         print(f"  -> Giải ngân đầu tư công {p}: {gdp_struct['public_investment_disbursement_value_ty']} nghìn tỷ đồng "
               f"({gdp_struct['public_investment_disbursement_rate_pct']}% kế hoạch năm)")
+
+    print("[NSO — cơ cấu vốn đầu tư qua OCR ảnh infographic (dữ liệu CHỈ có ở dạng ảnh, xem fetch_nso_infographic_investment)]")
+    ocr_inv = fetch_nso_infographic_investment()
+    if ocr_inv:
+        _append_point(raw, "investment_share_state", ocr_inv["period"], ocr_inv["state_pct"], ocr_inv["source_url"])
+        _append_point(raw, "investment_share_private", ocr_inv["period"], ocr_inv["private_pct"], ocr_inv["source_url"])
+        _append_point(raw, "investment_share_fdi", ocr_inv["period"], ocr_inv["fdi_pct"], ocr_inv["source_url"])
+        print(f"  -> {ocr_inv['period']}: Nhà nước {ocr_inv['state_pct']}% / Ngoài NN {ocr_inv['private_pct']}% / FDI {ocr_inv['fdi_pct']}%")
+    else:
+        print("  [INFO] Không lấy được cơ cấu đầu tư qua OCR kỳ này (bình thường nếu chưa có bài quý mới, hoặc kiểm tra chéo không khớp).")
 
     print("[VBMA — CPI YoY theo tháng (toàn bộ lịch sử từ T1/2020)]")
     pts = fetch_vbma_cpi_yoy()

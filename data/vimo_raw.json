@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-29 08:18",
+    "last_auto_update": "2026-07-30 13:58",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -55,9 +55,9 @@
       },
       {
         "date": "2026-07-30",
-        "total": 0,
+        "total": -3,
         "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Mua tỷ trọng cao"
+        "decision_label": "Nên mua vào"
       }
     ]
   },
@@ -1712,7 +1712,7 @@
       },
       {
         "period": "2026-W31",
-        "value": 7.38,
+        "value": 8.01,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1785,6 +1785,11 @@
         "period": "2026-07-28",
         "value": 2.2,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 1.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -1856,6 +1861,11 @@
         "period": "2026-07-28",
         "value": 4.55,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1927,6 +1937,11 @@
         "period": "2026-07-28",
         "value": 5.3,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 5.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1998,6 +2013,11 @@
         "period": "2026-07-28",
         "value": 6.9,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 6.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -2022,7 +2042,7 @@
       },
       {
         "period": "2026-W31",
-        "value": 7.0,
+        "value": 8.48,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -2116,6 +2136,16 @@
         "period": "2026-07-27",
         "value": 4.5,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy). CAP NHAT 2026-07-30: chuyen nguon tu SBV (tuan, snapshot) sang VIRA (ngay that, xem fetch_vira_bulletin trong fetch_macro_data.py) de dong bo voi cac chi bao lai suat khac, tranh tron dinh dang tuan/ngay gay sai truc thoi gian.",
@@ -2866,7 +2896,7 @@
       },
       {
         "period": "2026-07",
-        "value": 26252.67,
+        "value": 26254,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -3534,7 +3564,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 10.380654466754919,
+        "value": 10.659212278592303,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -3550,7 +3580,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 1.612112285230998,
+        "value": 1.6553722234216286,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -3612,7 +3642,7 @@
       {
         "period": "2026-H1",
         "value": 10.61,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO (fetch_nso_gdp_structure_report() trong fetch_macro_data.py). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm) — KHÔNG phải chuỗi quý độc lập cộng dồn được. Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm — đây là chỉ số CƠ CẤU, không có hướng 'tốt/xấu' cố định.",
@@ -3673,7 +3703,7 @@
       {
         "period": "2026-H1",
         "value": 37.66,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -3734,7 +3764,7 @@
       {
         "period": "2026-H1",
         "value": 43.52,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm). Tham chiếu hiển thị (biểu đồ miền cơ cấu GDP theo khu vực), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -3795,7 +3825,7 @@
       {
         "period": "2026-H1",
         "value": 8.21,
-        "source_url": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2026/07/thong-cao-bao-chi-ve-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/07/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-ii-va-sau-thang-dau-nam-2026/"
       }
     ],
     "note": "Tự động trích từ câu 'Về cơ cấu nền kinh tế...' trong Thông cáo báo chí KT-XH quý mới nhất của NSO. Số liệu LŨY KẾ theo kỳ báo cáo. Tham chiếu hiển thị (thành phần thứ 4 của biểu đồ miền cơ cấu GDP, cộng đủ 100% cùng 3 khu vực kinh tế), KHÔNG tính vào Scorecard 6 nhóm.",
@@ -4131,6 +4161,11 @@
         "period": "2026-07-28",
         "value": 920.06,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=29/07/2026"
+      },
+      {
+        "period": "2026-07-29",
+        "value": -85.26,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=30/07/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -4155,7 +4190,7 @@
       },
       {
         "period": "2026-W31",
-        "value": 272,
+        "value": 273,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],
@@ -6743,7 +6778,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 12.28,
+        "value": 12.43,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -6759,7 +6794,7 @@
     "series": [
       {
         "period": "2026-07",
-        "value": 1.91,
+        "value": 1.94,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -6848,6 +6883,11 @@
         "period": "2026-07-28",
         "value": 3.64,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 3.64,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -6919,6 +6959,11 @@
         "period": "2026-07-28",
         "value": 4.21,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -6990,6 +7035,11 @@
         "period": "2026-07-28",
         "value": 4.27,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7061,6 +7111,11 @@
         "period": "2026-07-28",
         "value": 4.41,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7132,6 +7187,11 @@
         "period": "2026-07-28",
         "value": 4.57,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7203,6 +7263,11 @@
         "period": "2026-07-28",
         "value": -1961.37,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 283.71,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
       }
     ],
     "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
@@ -7331,6 +7396,96 @@
     "good_direction": "higher",
     "auto_source": "manual",
     "series": [
+      {
+        "period": "2025-01",
+        "value": 33.1589,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-02",
+        "value": 31.1671,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-03",
+        "value": 38.5676,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-04",
+        "value": 37.7398,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-05",
+        "value": 39.703,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-06",
+        "value": 39.8379,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-07",
+        "value": 42.4019,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-08",
+        "value": 43.4946,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-09",
+        "value": 42.8774,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-10",
+        "value": 42.1146,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-11",
+        "value": 39.9466,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2025-12",
+        "value": 44.05,
+        "source_url": "V01-2025-13.xls"
+      },
+      {
+        "period": "2026-01",
+        "value": 43.3028,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-02",
+        "value": 33.1894,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-03",
+        "value": 46.5362,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-04",
+        "value": 45.6985,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-05",
+        "value": 46.9994,
+        "source_url": "V01-2026-4.xls"
+      },
+      {
+        "period": "2026-06",
+        "value": 50.7872,
+        "source_url": "V01-2026-4.xls"
+      },
       {
         "period": "2025-01",
         "value": 33.1589,
@@ -7701,6 +7856,96 @@
         "period": "2026-06",
         "value": 53.4317,
         "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2025-01",
+        "value": 30.0605,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-02",
+        "value": 32.7464,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-03",
+        "value": 36.8745,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-04",
+        "value": 36.8375,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-05",
+        "value": 39.0836,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-06",
+        "value": 36.642,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-07",
+        "value": 40.0561,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-08",
+        "value": 39.7902,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-09",
+        "value": 39.9066,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-10",
+        "value": 39.7328,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-11",
+        "value": 38.5895,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2025-12",
+        "value": 44.6866,
+        "source_url": "V02-2025-12.xls"
+      },
+      {
+        "period": "2026-01",
+        "value": 45.2591,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-02",
+        "value": 34.3373,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-03",
+        "value": 47.0865,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-04",
+        "value": 50.6404,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-05",
+        "value": 52.4144,
+        "source_url": "V02-2026-4.xls"
+      },
+      {
+        "period": "2026-06",
+        "value": 53.4317,
+        "source_url": "V02-2026-4.xls"
       }
     ],
     "note": "Nguồn: Tổng cục Hải quan, file Excel 'Trị giá và mặt hàng nhập khẩu sơ bộ các tháng' (dòng 'Tổng số'), user tự tải về thư mục cục bộ ngoài repo — xem load_customs_xnk_local() trong fetch_macro_data.py. CHỈ cập nhật khi chạy pipeline THỦ CÔNG trên máy có sẵn thư mục này VÀ user đã bỏ file mới vào — GitHub Action không tự lấy được. Giá trị THEO THÁNG RỜI RẠC (không phải lũy kế). good_direction='higher' ở đây mang nghĩa THAM CHIẾU quy mô hoạt động thương mại/sản xuất (nhập khẩu nguyên liệu/máy móc phục vụ xuất khẩu), KHÔNG có nghĩa nhập khẩu tăng luôn tốt — xem trade_balance_monthly để đánh giá cán cân.",
@@ -7713,6 +7958,96 @@
     "good_direction": "higher",
     "auto_source": "manual",
     "series": [
+      {
+        "period": "2025-01",
+        "value": 3.0984,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-02",
+        "value": -1.5793,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-03",
+        "value": 1.6931,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-04",
+        "value": 0.9023,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-05",
+        "value": 0.6194,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-06",
+        "value": 3.1959,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-07",
+        "value": 2.3458,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-08",
+        "value": 3.7044,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-09",
+        "value": 2.9708,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-10",
+        "value": 2.3818,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-11",
+        "value": 1.3571,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2025-12",
+        "value": -0.6366,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-01",
+        "value": -1.9563,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-02",
+        "value": -1.1479,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-03",
+        "value": -0.5503,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-04",
+        "value": -4.9419,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-05",
+        "value": -5.415,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
+      {
+        "period": "2026-06",
+        "value": -2.6445,
+        "source_url": "Hải quan (V01+V02, tính từ xuất trừ nhập)"
+      },
       {
         "period": "2025-01",
         "value": 3.0984,
