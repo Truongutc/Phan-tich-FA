@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderValuation(data.marketValuation);
     renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decision, data.decisionHeadline);
     renderIndicatorGroups(data.indicators);
+    renderInternationalSection(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -437,6 +438,52 @@ function drawOneValHistChart(canvasId, existingChart, points, bandData, unitLabe
 // ═══════════════════════════════════════════════════════════
 // INDICATOR GROUPS
 // ═══════════════════════════════════════════════════════════
+// Render 1 card chỉ báo GENERIC (giá trị mới nhất + đánh giá tốt/xấu + sparkline nếu ≥4 điểm) —
+// dùng chung cho cả nhóm chỉ báo Việt Nam (renderIndicatorGroups) VÀ cụm Dữ liệu Quốc tế
+// (renderInternationalSection) để không lặp lại logic.
+function _renderGenericIndicatorCard(grid, key, ind) {
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    const t = ind.trend || {};
+    const hasChart = (ind.series || []).filter(p => p.value !== null && p.value !== undefined).length >= 4;
+    const judgColor = t.judgment_color || '#94a3b8';
+    const canvasId = `chart-${key}`;
+
+    card.innerHTML = `
+        <div class="ind-header">
+            <span class="ind-name">${ind.label}</span>
+            ${t.judgment_label ? `<span class="ind-judgment" style="background:${judgColor}22;color:${judgColor}">${t.value_arrow || ''} ${t.judgment_label}</span>` : ''}
+        </div>
+        <div class="ind-value">${t.latest !== null && t.latest !== undefined ? formatNumber(t.latest) : '-'} <span style="font-size:0.5em;color:var(--text-muted)">${ind.unit}</span></div>
+        <div class="ind-meta">Kỳ: ${t.latest_period || '—'} · Nguồn: ${SOURCE_LABELS[ind.autoSource] || ind.autoSource}</div>
+        ${hasChart ? `<div class="ind-chart"><canvas id="${canvasId}"></canvas></div>` : ''}
+        ${ind.impact ? `<div class="ind-note">${ind.impact}</div>` : ''}
+        ${ind.note ? `<div class="ind-source-note">${ind.note}</div>` : ''}
+    `;
+    grid.appendChild(card);
+
+    if (hasChart) {
+        const valid = ind.series.filter(p => p.value !== null && p.value !== undefined);
+        const ctx = card.querySelector(`#${canvasId}`);
+        const improving = ind.goodDirection === 'higher'
+            ? valid[valid.length - 1].value >= valid[0].value
+            : valid[valid.length - 1].value <= valid[0].value;
+        const color = improving ? '#10b981' : '#ef4444';
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: valid.map(p => p.period),
+                datasets: [{
+                    data: valid.map(p => p.value), borderColor: color,
+                    backgroundColor: color + '15', fill: true, tension: 0.25, pointRadius: 2,
+                }],
+            },
+            options: CHART_DEFAULTS,
+        });
+        chartInstances.push(chart);
+    }
+}
+
 function renderIndicatorGroups(indicators) {
     chartInstances.forEach(c => c.destroy());
     chartInstances = [];
@@ -454,48 +501,7 @@ function renderIndicatorGroups(indicators) {
         container.appendChild(section);
         const grid = section.querySelector(`#grid-${grp}`);
 
-        entries.forEach(([key, ind]) => {
-            const card = document.createElement('div');
-            card.className = 'vimo-indicator-card';
-            const t = ind.trend || {};
-            const hasChart = (ind.series || []).filter(p => p.value !== null && p.value !== undefined).length >= 4;
-            const judgColor = t.judgment_color || '#94a3b8';
-            const canvasId = `chart-${key}`;
-
-            card.innerHTML = `
-                <div class="ind-header">
-                    <span class="ind-name">${ind.label}</span>
-                    ${t.judgment_label ? `<span class="ind-judgment" style="background:${judgColor}22;color:${judgColor}">${t.value_arrow || ''} ${t.judgment_label}</span>` : ''}
-                </div>
-                <div class="ind-value">${t.latest !== null && t.latest !== undefined ? formatNumber(t.latest) : '-'} <span style="font-size:0.5em;color:var(--text-muted)">${ind.unit}</span></div>
-                <div class="ind-meta">Kỳ: ${t.latest_period || '—'} · Nguồn: ${SOURCE_LABELS[ind.autoSource] || ind.autoSource}</div>
-                ${hasChart ? `<div class="ind-chart"><canvas id="${canvasId}"></canvas></div>` : ''}
-                ${ind.impact ? `<div class="ind-note">${ind.impact}</div>` : ''}
-                ${ind.note ? `<div class="ind-source-note">${ind.note}</div>` : ''}
-            `;
-            grid.appendChild(card);
-
-            if (hasChart) {
-                const valid = ind.series.filter(p => p.value !== null && p.value !== undefined);
-                const ctx = card.querySelector(`#${canvasId}`);
-                const improving = ind.goodDirection === 'higher'
-                    ? valid[valid.length - 1].value >= valid[0].value
-                    : valid[valid.length - 1].value <= valid[0].value;
-                const color = improving ? '#10b981' : '#ef4444';
-                const chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: valid.map(p => p.period),
-                        datasets: [{
-                            data: valid.map(p => p.value), borderColor: color,
-                            backgroundColor: color + '15', fill: true, tension: 0.25, pointRadius: 2,
-                        }],
-                    },
-                    options: CHART_DEFAULTS,
-                });
-                chartInstances.push(chart);
-            }
-        });
+        entries.forEach(([key, ind]) => _renderGenericIndicatorCard(grid, key, ind));
 
         if (grp === 'monetary') {
             renderInterbankCurveChart(grid, indicators);
@@ -796,4 +802,164 @@ function renderBondYieldHistoryChart(grid, indicators) {
         plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
+}
+
+// Phiên bản TỔNG QUÁT của renderInterbank6mHistoryChart/renderBondYieldHistoryChart ở trên — dùng
+// cho đường cong lợi suất TPCP Mỹ (renderInternationalSection). 2 hàm VN phía trên GIỮ NGUYÊN
+// không đụng vào (đã ổn định, tránh rủi ro regression); hàm này viết mới để dùng lại logic hợp
+// nhất period + autoSkip trục X + datalabels điểm cuối cho các chart nhiều kỳ hạn khác trong
+// tương lai mà không phải chép lại.
+function renderMultiTenorHistoryChart(grid, indicators, tenors, canvasId, title, note, periodFilterRe) {
+    const seriesByTenor = tenors.map(([key, tenorLabel, color]) => [
+        tenorLabel, color,
+        ((indicators[key] || {}).series || []).filter(p =>
+            p.value !== null && p.value !== undefined && (!periodFilterRe || periodFilterRe.test(p.period))),
+    ]);
+    const allPeriods = _sortPeriods(new Set(seriesByTenor.flatMap(([, , s]) => s.map(p => p.period))));
+    if (!allPeriods.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">${title}</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="${canvasId}"></canvas></div>
+        <div class="ind-note">${note}</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector(`#${canvasId}`);
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: seriesByTenor.map(([tenorLabel, color, s]) => {
+                const byPeriod = Object.fromEntries(s.map(p => [p.period, p.value]));
+                return {
+                    label: tenorLabel, data: allPeriods.map(p => byPeriod[p] ?? null),
+                    borderColor: color, backgroundColor: color + '15', fill: false,
+                    tension: 0.25, pointRadius: 3, spanGaps: true,
+                };
+            }),
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: true, labels: { boxWidth: 12 } },
+                datalabels: _endpointDatalabelsConfig(2),
+            },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+const US_YIELD_TENORS = [
+    ['us_yield_3m', '3 Tháng', '#f59e0b'], ['us_yield_1y', '1 Năm', '#ef4444'],
+    ['us_yield_2y', '2 Năm', '#10b981'], ['us_yield_5y', '5 Năm', '#a78bfa'],
+    ['us_10y_yield', '10 Năm', '#3b82f6'], ['us_yield_30y', '30 Năm', '#ec4899'],
+];
+
+// Spread 10Y-2Y / 10Y-3M — 2 chỉ báo đảo ngược đường cong lợi suất kinh điển (âm = đảo ngược,
+// cảnh báo suy thoái Mỹ), tính sẵn trong template_vimo.py (_add_us_yield_curve_spread, phái sinh
+// KHÔNG lưu vimo_raw.json). Vẽ thêm 1 đường "0" phẳng làm mốc tham chiếu — không cần plugin
+// annotation, chỉ cần 1 dataset toàn giá trị 0 vẽ nét đứt màu xám.
+function renderUsYieldSpreadChart(grid, indicators) {
+    const SPREAD_KEYS = [
+        ['us_yield_spread_10y2y', '10 Năm - 2 Năm', '#3b82f6'],
+        ['us_yield_spread_10y3m', '10 Năm - 3 Tháng', '#f59e0b'],
+    ];
+    const seriesByKey = SPREAD_KEYS.map(([key, label, color]) => [
+        label, color, ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
+    ]);
+    const allPeriods = _sortPeriods(new Set(seriesByKey.flatMap(([, , s]) => s.map(p => p.period))));
+    if (!allPeriods.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">⚠️ Spread lợi suất TPCP Mỹ (10Y-2Y, 10Y-3M) — cảnh báo đảo ngược đường cong</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="chart-us-yield-spread"></canvas></div>
+        <div class="ind-note">Nguồn: fred.stlouisfed.org (tính từ lợi suất TPCP các kỳ hạn, hàng ngày). Spread ÂM (đường xuống dưới mốc "0" nét đứt) = đường cong ĐẢO NGƯỢC — tín hiệu cảnh báo suy thoái Mỹ được thị trường toàn cầu theo dõi sát nhất.</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-us-yield-spread');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: [
+                ...seriesByKey.map(([label, color, s]) => {
+                    const byPeriod = Object.fromEntries(s.map(p => [p.period, p.value]));
+                    return {
+                        label, data: allPeriods.map(p => byPeriod[p] ?? null),
+                        borderColor: color, backgroundColor: color + '15', fill: false,
+                        tension: 0.25, pointRadius: 3, spanGaps: true,
+                    };
+                }),
+                {
+                    label: 'Mốc 0 (ranh giới đảo ngược)', data: allPeriods.map(() => 0),
+                    borderColor: '#94a3b8', borderDash: [6, 4], pointRadius: 0, borderWidth: 1.5, fill: false,
+                },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: true, labels: { boxWidth: 12 } },
+                datalabels: _endpointDatalabelsConfig(2),
+            },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// ═══════════════════════════════════════════════════════════
+// DỮ LIỆU QUỐC TẾ — Mỹ / Châu Âu / Trung Quốc (user 2026-07-31: đối chiếu vĩ mô VN với 3 thị
+// trường lớn). Đặt Ở CUỐI TRANG, cụm riêng theo thị trường — KHÔNG trộn vào GROUP_ORDER/
+// renderIndicatorGroups() ở trên (group intl_us/intl_eu/intl_cn cố tình KHÔNG có trong
+// GROUP_ORDER nên vòng lặp renderIndicatorGroups() tự động bỏ qua, không cần thay đổi gì ở đó).
+// ═══════════════════════════════════════════════════════════
+const INTL_MARKETS = [
+    ['intl_us', '🇺🇸 Mỹ (Hoa Kỳ)'],
+    ['intl_eu', '🇪🇺 Châu Âu (Eurozone)'],
+    ['intl_cn', '🇨🇳 Trung Quốc'],
+];
+
+function renderInternationalSection(indicators) {
+    const container = document.getElementById('international-section-container');
+    container.innerHTML = '';
+
+    const hasAnyIntlData = INTL_MARKETS.some(([grp]) =>
+        Object.values(indicators).some(ind => ind.group === grp));
+    if (!hasAnyIntlData) return;
+
+    const header = document.createElement('div');
+    header.innerHTML = `<div class="vimo-group-header"><h3>🌍 Dữ liệu Quốc tế — Đối chiếu xu hướng chính sách tiền tệ & vĩ mô toàn cầu</h3></div>`;
+    container.appendChild(header);
+
+    INTL_MARKETS.forEach(([grp, label]) => {
+        const entries = Object.entries(indicators).filter(([, ind]) => ind.group === grp);
+        if (!entries.length) return;
+
+        const section = document.createElement('div');
+        section.innerHTML = `<div class="vimo-group-header"><h3>${label}</h3></div>
+            <div class="vimo-indicator-grid" id="grid-${grp}"></div>`;
+        container.appendChild(section);
+        const grid = section.querySelector(`#grid-${grp}`);
+
+        entries.forEach(([key, ind]) => _renderGenericIndicatorCard(grid, key, ind));
+
+        if (grp === 'intl_us') {
+            renderMultiTenorHistoryChart(grid, indicators, US_YIELD_TENORS, 'chart-us-yield-curve',
+                '📈 Đường cong lợi suất TPCP Mỹ theo thời gian (3 tháng — 30 năm)',
+                'Nguồn: fred.stlouisfed.org (Treasury Constant Maturity Rate, theo ngày).', null);
+            renderUsYieldSpreadChart(grid, indicators);
+        }
+    });
 }

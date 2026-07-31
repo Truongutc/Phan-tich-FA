@@ -280,7 +280,10 @@ def fetch_vnindex_pb_current():
 # ══════════════════════════════════════════════════════════════════════════
 # NGUỒN 2: FRED (cần API key — tự skip nếu thiếu)
 # ══════════════════════════════════════════════════════════════════════════
-def fetch_fred(series_id, n=12):
+def fetch_fred(series_id, n=12, units=None):
+    """units=None -> giá trị gốc. units="pc1" -> %YoY (FRED tự tính "Percent Change from Year
+    Ago"). units="chg" -> thay đổi tuyệt đối so kỳ liền trước ("Change"). Dùng để lấy thẳng
+    CPI/PCE YoY% hoặc số việc làm tăng/giảm trong tháng mà không cần tự viết derived-diff."""
     api_key = os.environ.get("FRED_API_KEY")
     if not api_key:
         print(f"  [SKIP] FRED {series_id}: thiếu biến môi trường FRED_API_KEY, bỏ qua.")
@@ -288,6 +291,8 @@ def fetch_fred(series_id, n=12):
     try:
         url = (f"https://api.stlouisfed.org/fred/series/observations?series_id={series_id}"
                f"&api_key={api_key}&file_type=json&sort_order=desc&limit={n}")
+        if units:
+            url += f"&units={units}"
         r = requests.get(url, timeout=20)
         r.raise_for_status()
         out = [(o["date"], round(float(o["value"]), 2))
@@ -1798,18 +1803,69 @@ def update_vimo_raw():
             ]
             print(f"  -> {key}: {len(pts)} điểm")
 
-    print("[FRED — Lãi suất NHTW lớn + lợi suất TPCP 10 năm toàn cầu (đối chiếu xu hướng chính sách tiền tệ thế giới)]")
-    # User (2026-07-31) gửi chart TradingView so sánh lãi suất Fed/ECB/BOJ/BOE — bổ sung tương tự
-    # bằng FRED (đã có sẵn hạ tầng fetch_fred(), chỉ cần thêm series_id). ECBDFR/IUDSOIA/
-    # IRSTCI01JPM156N là lãi suất THỊ TRƯỜNG bám sát chính sách điều hành (không phải luôn là con
-    # số "lãi suất điều hành" chính thức 1-1, xem note từng chỉ báo trong vimo_raw.json để rõ bản
-    # chất — tránh hiểu nhầm khi so sánh trực tiếp với fed_funds_rate).
-    for key, sid in {
-        "ecb_deposit_rate": "ECBDFR", "boe_sonia_rate": "IUDSOIA", "boj_interbank_rate": "IRSTCI01JPM156N",
-        "us_10y_yield": "DGS10", "germany_10y_yield": "IRLTLT01DEM156N",
-        "japan_10y_yield": "IRLTLT01JPM156N", "uk_10y_yield": "IRLTLT01GBM156N",
-    }.items():
-        pts = fetch_fred(sid, n=24)
+    # "Dữ liệu Quốc tế" — Mỹ/Eurozone/Trung Quốc (user 2026-07-31: đối chiếu vĩ mô VN với 3 thị
+    # trường lớn, xem toàn cầu đang hành động như nào; ban đầu chỉ có 7 chỉ báo lãi suất/lợi suất
+    # NHTW lớn — nay mở rộng đủ bộ: việc làm, thất nghiệp, CPI/lõi, PCE/lõi (chỉ Mỹ — Eurozone/TQ
+    # không công bố PCE), GDP, sản xuất công nghiệp, đường cong lợi suất). units=pc1/chg (xem
+    # fetch_fred()) lấy thẳng %YoY / thay đổi kỳ mà không cần tự tính derived-diff.
+    print("[FRED — Quốc tế: Mỹ (việc làm, CPI/PCE, GDP, sản xuất CN, đường cong lợi suất)]")
+    for key, sid, units in [
+        ("us_unemployment_rate", "UNRATE", None),
+        ("us_nonfarm_payrolls_change", "PAYEMS", "chg"),
+        ("us_cpi_yoy", "CPIAUCSL", "pc1"),
+        ("us_core_cpi_yoy", "CPILFESL", "pc1"),
+        ("us_pce_yoy", "PCEPI", "pc1"),
+        ("us_core_pce_yoy", "PCEPILFE", "pc1"),
+        ("us_gdp_growth", "A191RL1Q225SBEA", None),
+        ("us_industrial_production_yoy", "INDPRO", "pc1"),
+        ("us_10y_yield", "DGS10", None),
+        ("us_yield_3m", "DGS3MO", None), ("us_yield_1y", "DGS1", None),
+        ("us_yield_2y", "DGS2", None), ("us_yield_5y", "DGS5", None), ("us_yield_30y", "DGS30", None),
+    ]:
+        pts = fetch_fred(sid, n=24, units=units)
+        if pts:
+            raw[key]["series"] = [
+                {"period": d, "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
+                for d, v in sorted(pts)
+            ]
+            print(f"  -> {key}: {len(pts)} điểm")
+
+    print("[FRED — Quốc tế: Eurozone (thất nghiệp, CPI/lõi, GDP, sản xuất CN, ECB, lợi suất Đức)]")
+    for key, sid, units in [
+        ("eu_unemployment_rate", "LRHUTTTTEZM156S", None),
+        ("eu_cpi_yoy", "CPALTT01EZM659N", None),
+        ("eu_core_cpi_yoy", "CPGRLE01EZM659N", None),
+        ("eu_gdp_growth", "NAEXKP01EZQ657S", None),
+        ("eu_industrial_production_yoy", "EA19PRINTO01GYSAM", None),
+        ("ecb_deposit_rate", "ECBDFR", None),
+        ("germany_10y_yield", "IRLTLT01DEM156N", None),
+        ("boe_sonia_rate", "IUDSOIA", None),
+        ("uk_10y_yield", "IRLTLT01GBM156N", None),
+        ("boj_interbank_rate", "IRSTCI01JPM156N", None),
+        ("japan_10y_yield", "IRLTLT01JPM156N", None),
+    ]:
+        pts = fetch_fred(sid, n=24, units=units)
+        if pts:
+            raw[key]["series"] = [
+                {"period": d, "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
+                for d, v in sorted(pts)
+            ]
+            print(f"  -> {key}: {len(pts)} điểm")
+
+    # CPGRLE01EZM659N/EA19PRINTO01GYSAM/NAEXKP01EZQ657S/CHNPRINTO01GYSAM/NAEXKP01CNQ657S/
+    # INTDSRCNM193N: quy ước đặt tên OECD MEI qua FRED, độ tin cậy THẤP HƠN các ID còn lại (chưa
+    # xác minh trực tiếp được do rate-limit khi kiểm tra) — fetch_fred() fail-safe (trả [] nếu ID
+    # sai), nên rủi ro cao nhất chỉ là chỉ báo đó RỖNG, không crash. Nếu rỗng sau khi Action chạy
+    # thật (có FRED_API_KEY) cần rà lại ID cụ thể.
+    print("[FRED — Quốc tế: Trung Quốc (CPI, sản xuất CN, GDP quý, lãi suất NHTW proxy, lợi suất 10Y)]")
+    for key, sid, units in [
+        ("cn_cpi_yoy", "CPALTT01CNM659N", None),
+        ("cn_industrial_production_yoy", "CHNPRINTO01GYSAM", None),
+        ("cn_gdp_growth_quarterly", "NAEXKP01CNQ657S", None),
+        ("cn_central_bank_rate", "INTDSRCNM193N", None),
+        ("cn_10y_yield", "IRLTLT01CNM156N", None),
+    ]:
+        pts = fetch_fred(sid, n=24, units=units)
         if pts:
             raw[key]["series"] = [
                 {"period": d, "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}

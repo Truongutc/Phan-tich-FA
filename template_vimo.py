@@ -159,6 +159,9 @@ GROUP_LABELS = {
     "labor": "Lao động",
     "external": "Áp lực bên ngoài",
     "market": "Thị trường chứng khoán",
+    "intl_us": "Quốc tế — Mỹ",
+    "intl_eu": "Quốc tế — Châu Âu",
+    "intl_cn": "Quốc tế — Trung Quốc",
 }
 
 # Ánh xạ 8 nhóm dữ liệu (vimo_raw.json) -> 6 nhóm Scorecard Vĩ Mô theo đúng Chương 4.1/6.1 tài
@@ -1645,7 +1648,8 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 
     # ── Từng nhóm chỉ báo chi tiết + chart ──
     story.append(Paragraph("3. Chi tiết theo từng nhóm chỉ báo (Chương 3)", h1_st))
-    groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market"]
+    groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market",
+                    "intl_us", "intl_eu", "intl_cn"]
     for grp in groups_order:
         keys = [k for k, v in raw.items() if k != "_meta" and v["group"] == grp]
         if not keys:
@@ -2095,6 +2099,48 @@ def _add_customs_yoy_growth(raw, trends):
         print(f"  -> {label}: {len(points)} điểm")
 
 
+def _add_us_yield_curve_spread(raw, trends):
+    """Tính spread đường cong lợi suất TPCP Mỹ 10Y-2Y và 10Y-3M — 2 chỉ báo đảo ngược đường cong
+    kinh điển (spread ÂM = đảo ngược, tín hiệu cảnh báo suy thoái Mỹ được thị trường toàn cầu theo
+    dõi sát nhất). Chỉ làm cho Mỹ vì FRED có đủ chuỗi ngày tin cậy cho mọi kỳ hạn (DGS*) — Đức/
+    Nhật/Anh/Trung Quốc không có bộ kỳ hạn đầy đủ tương đương. Phái sinh tính toán, KHÔNG lưu vào
+    vimo_raw.json (theo đúng quy ước _add_derived_indicators/_add_customs_yoy_growth)."""
+    pairs = [
+        ("us_yield_spread_10y2y", "us_yield_2y", "2 năm"),
+        ("us_yield_spread_10y3m", "us_yield_3m", "3 tháng"),
+    ]
+    long_key = "us_10y_yield"
+    long_src = raw.get(long_key)
+    if not long_src:
+        return
+    long_by_period = {p["period"]: p["value"] for p in long_src["series"] if p.get("value") is not None}
+    for new_key, short_key, short_label in pairs:
+        short_src = raw.get(short_key)
+        if not short_src:
+            continue
+        short_by_period = {p["period"]: p["value"] for p in short_src["series"] if p.get("value") is not None}
+        common_periods = sorted(set(long_by_period) & set(short_by_period))
+        if not common_periods:
+            continue
+        points = [{"period": p, "value": round(long_by_period[p] - short_by_period[p], 4),
+                   "source_url": "https://fred.stlouisfed.org/series/T10Y2Y" if short_key == "us_yield_2y"
+                                 else "https://fred.stlouisfed.org/series/T10Y3M"}
+                  for p in common_periods]
+        raw[new_key] = {
+            "group": "intl_us", "label": f"Spread lợi suất TPCP Mỹ 10 năm - {short_label}",
+            "unit": "điểm %", "good_direction": "higher", "auto_source": "derived",
+            "series": points,
+            "note": (f"= us_10y_yield − {short_key} (khớp theo period NGÀY, cả 2 đều từ FRED). Spread "
+                     f"ÂM (đường cong đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin "
+                     f"cậy — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-"
+                     f"vài năm. good_direction=higher vì spread dương (đường cong bình thường, dốc "
+                     f"lên) là trạng thái lành mạnh. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."),
+            "impact": "Đường cong lợi suất Mỹ đảo ngược kéo dài là tín hiệu cảnh báo suy thoái Mỹ sớm nhất được thị trường toàn cầu theo dõi — ảnh hưởng khẩu vị rủi ro chung, gián tiếp tác động dòng vốn ngoại vào TTCK Việt Nam.",
+        }
+        trends[new_key] = calc_trend(points, "higher")
+        print(f"  -> Spread 10Y-{short_label}: {len(points)} điểm")
+
+
 def _fill_disbursement_gaps(raw, trends):
     """Lấp khoảng trống tháng 3/6/9/12 của CẢ HAI public_investment_disbursement_value (nghìn tỷ)
     VÀ public_investment_disbursement_rate (%) — CHỈ sửa TRONG BỘ NHỚ (không lưu vimo_raw.json).
@@ -2284,6 +2330,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính XK/NK YoY theo tháng từ Hải quan (KHÔNG lưu vào vimo_raw.json)...")
     _add_customs_yoy_growth(raw, trends)
+
+    print("[INFO] Tính spread đường cong lợi suất TPCP Mỹ 10Y-2Y / 10Y-3M (KHÔNG lưu vào vimo_raw.json)...")
+    _add_us_yield_curve_spread(raw, trends)
 
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
     synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)

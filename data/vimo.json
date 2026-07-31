@@ -4123,7 +4123,7 @@
       "impact": "Tỷ lệ thất nghiệp thấp phản ánh thị trường lao động khỏe mạnh, hỗ trợ thu nhập và sức mua tiêu dùng — cần đối chiếu với tăng trưởng tiền lương thực tế để đánh giá đúng chất lượng việc làm."
     },
     "fed_funds_rate": {
-      "group": "external",
+      "group": "intl_us",
       "label": "Lãi suất Fed (FEDFUNDS)",
       "unit": "%",
       "goodDirection": "lower",
@@ -4385,7 +4385,7 @@
       "impact": "Đồng USD mạnh lên (DXY/DTWEXBGS tăng) thường đi kèm áp lực mất giá lên các đồng tiền mới nổi bao gồm VND, và khiến dòng vốn ngoại có xu hướng rút khỏi thị trường cận biên/mới nổi để quay về tài sản USD."
     },
     "china_gdp_growth": {
-      "group": "external",
+      "group": "intl_cn",
       "label": "Tăng trưởng GDP Trung Quốc",
       "unit": "%",
       "goodDirection": "higher",
@@ -10337,7 +10337,7 @@
       "impact": "Theo dõi CÙNG omo_net_operation và đường cong lãi suất liên ngân hàng: số dư lưu hành tăng đều + lãi suất liên ngân hàng tăng là tín hiệu thanh khoản hệ thống đang căng thẳng kéo dài, không phải hiện tượng nhất thời."
     },
     "ecb_deposit_rate": {
-      "group": "external",
+      "group": "intl_eu",
       "label": "Lãi suất tiền gửi ECB (Eurozone)",
       "unit": "%",
       "goodDirection": "lower",
@@ -10353,7 +10353,7 @@
       "impact": "ECB tăng/giảm lãi suất ảnh hưởng chênh lệch lãi suất USD/EUR, dòng vốn toàn cầu, gián tiếp tác động tỷ giá VND qua kênh USD."
     },
     "boe_sonia_rate": {
-      "group": "external",
+      "group": "intl_eu",
       "label": "Lãi suất SONIA (Anh, bám sát Bank Rate BOE)",
       "unit": "%",
       "goodDirection": "lower",
@@ -10369,7 +10369,7 @@
       "impact": "Phản ánh xu hướng thắt chặt/nới lỏng của BOE, 1 trong 4 NHTW lớn ảnh hưởng dòng vốn toàn cầu."
     },
     "boj_interbank_rate": {
-      "group": "external",
+      "group": "intl_eu",
       "label": "Lãi suất liên ngân hàng qua đêm Nhật Bản",
       "unit": "%",
       "goodDirection": "lower",
@@ -10385,7 +10385,7 @@
       "impact": "BOJ thoát chính sách lãi suất âm/thắt chặt là sự kiện lớn cho dòng vốn carry-trade JPY toàn cầu, có thể gây biến động thị trường mới nổi."
     },
     "us_10y_yield": {
-      "group": "external",
+      "group": "intl_us",
       "label": "Lợi suất TPCP Mỹ kỳ hạn 10 năm",
       "unit": "%",
       "goodDirection": "lower",
@@ -10401,7 +10401,7 @@
       "impact": "Lợi suất Mỹ tăng thường kéo dòng vốn về Mỹ (USD mạnh lên), gây áp lực lên tỷ giá và định giá cổ phiếu các thị trường mới nổi trong đó có Việt Nam."
     },
     "germany_10y_yield": {
-      "group": "external",
+      "group": "intl_eu",
       "label": "Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone)",
       "unit": "%",
       "goodDirection": "lower",
@@ -10417,7 +10417,7 @@
       "impact": "Đối chiếu chi phí vốn Eurozone so với Mỹ/Nhật — chênh lệch lợi suất Đức-Mỹ là chỉ báo dòng vốn USD/EUR quan trọng."
     },
     "japan_10y_yield": {
-      "group": "external",
+      "group": "intl_eu",
       "label": "Lợi suất TPCP Nhật kỳ hạn 10 năm",
       "unit": "%",
       "goodDirection": "lower",
@@ -10433,7 +10433,7 @@
       "impact": "Lợi suất Nhật tăng làm giảm sức hấp dẫn của carry-trade vay JPY đầu tư tài sản rủi ro khác — có thể gây rút vốn khỏi thị trường mới nổi khi carry-trade đảo chiều."
     },
     "uk_10y_yield": {
-      "group": "external",
+      "group": "intl_eu",
       "label": "Lợi suất TPCP Anh kỳ hạn 10 năm",
       "unit": "%",
       "goodDirection": "lower",
@@ -10447,6 +10447,374 @@
       },
       "note": "OECD Long-term interest rates cho Anh (FRED series IRLTLT01GBM156N) — Gilt (TPCP Anh) 10 năm, cùng nhóm 4 thị trường phát triển lớn (Mỹ/Eurozone/Nhật/Anh) theo dõi xu hướng chính sách tiền tệ toàn cầu.",
       "impact": "Phản ánh áp lực lạm phát/chính sách tiền tệ Anh — 1 trong 4 thị trường lãi suất lớn quyết định xu hướng dòng vốn toàn cầu."
+    },
+    "us_unemployment_rate": {
+      "group": "intl_us",
+      "label": "Tỷ lệ thất nghiệp Mỹ",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Unemployment Rate (FRED series UNRATE) — 1 trong 2 chỉ tiêu thuộc \"dual mandate\" của Fed (cùng lạm phát), quyết định trực tiếp hướng đi lãi suất Fed.",
+      "impact": "Thất nghiệp tăng thường khiến Fed nghiêng về nới lỏng (hạ lãi suất) — tác động dòng vốn toàn cầu và tỷ giá USD/VND."
+    },
+    "us_nonfarm_payrolls_change": {
+      "group": "intl_us",
+      "label": "Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng)",
+      "unit": "nghìn người",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Non-farm Payrolls — lấy từ FRED series PAYEMS (Total Nonfarm Employment) với units=chg (FRED tự tính thay đổi tuyệt đối so tháng liền trước) — đúng con số \"Non-Farm Payrolls\" thị trường theo dõi mỗi đầu tháng.",
+      "impact": "Báo cáo việc làm là dữ liệu Fed theo dõi sát nhất để quyết định lãi suất — số liệu mạnh/yếu bất ngờ thường gây biến động mạnh USD, lợi suất TPCP, và gián tiếp dòng vốn ngoại vào TTCK Việt Nam."
+    },
+    "us_cpi_yoy": {
+      "group": "intl_us",
+      "label": "CPI Mỹ (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Consumer Price Index, All Items (FRED series CPIAUCSL, units=pc1 — FRED tự tính %YoY từ chỉ số gốc).",
+      "impact": "CPI Mỹ là dữ liệu lạm phát được thị trường toàn cầu theo dõi sát nhất — quyết định kỳ vọng lãi suất Fed, qua đó ảnh hưởng USD/DXY và dòng vốn vào thị trường mới nổi."
+    },
+    "us_core_cpi_yoy": {
+      "group": "intl_us",
+      "label": "CPI lõi Mỹ (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "CPI Less Food and Energy (FRED series CPILFESL, units=pc1) — loại bỏ biến động giá thực phẩm/năng lượng, phản ánh xu hướng lạm phát nền tảng.",
+      "impact": "Fed thường coi trọng CPI lõi hơn CPI headline khi quyết định lãi suất do ít nhiễu bởi cú sốc giá năng lượng/thực phẩm tạm thời."
+    },
+    "us_pce_yoy": {
+      "group": "intl_us",
+      "label": "PCE Mỹ (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Personal Consumption Expenditures Price Index (FRED series PCEPI, units=pc1) — thước đo lạm phát Fed dùng CHÍNH THỨC cho mục tiêu 2% (khác CPI của Bộ Lao động).",
+      "impact": "PCE là thước đo Fed thực sự dùng để họp chính sách — quan trọng hơn CPI khi dự đoán quyết định lãi suất Fed."
+    },
+    "us_core_pce_yoy": {
+      "group": "intl_us",
+      "label": "PCE lõi Mỹ (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Core PCE Price Index (FRED series PCEPILFE, units=pc1) — thước đo lạm phát QUAN TRỌNG NHẤT với Fed, mục tiêu chính thức 2%/năm.",
+      "impact": "Chỉ số lạm phát Fed theo dõi sát nhất khi quyết định giữ/tăng/giảm lãi suất — lệch mục tiêu 2% càng xa, Fed càng khó nới lỏng."
+    },
+    "us_gdp_growth": {
+      "group": "intl_us",
+      "label": "Tăng trưởng GDP Mỹ (QoQ, theo năm)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Real GDP, % Change from Preceding Period, SAAR (FRED series A191RL1Q225SBEA) — tốc độ tăng trưởng quý, đã điều chỉnh mùa vụ và quy đổi ra tốc độ năm.",
+      "impact": "Kinh tế Mỹ tăng trưởng chậm lại/suy thoái ảnh hưởng nhu cầu nhập khẩu toàn cầu (trong đó có hàng Việt Nam xuất sang Mỹ) và tâm lý rủi ro chung của thị trường tài chính."
+    },
+    "us_industrial_production_yoy": {
+      "group": "intl_us",
+      "label": "Chỉ số sản xuất công nghiệp Mỹ (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Industrial Production Index (FRED series INDPRO, units=pc1).",
+      "impact": "Phản ánh sức khỏe khu vực sản xuất Mỹ — chậm lại thường báo hiệu nhu cầu nhập khẩu linh kiện/hàng hóa trung gian từ Việt Nam có thể suy yếu theo."
+    },
+    "us_yield_3m": {
+      "group": "intl_us",
+      "label": "Lợi suất TPCP Mỹ kỳ hạn 3 tháng",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "3-Month Treasury Constant Maturity Rate (FRED series DGS3MO) — đầu ngắn đường cong lợi suất, dùng tính spread 10Y-3M (1 trong 2 chỉ báo đảo ngược đường cong kinh điển).",
+      "impact": "Kết hợp với lợi suất 10 năm để tính spread 10Y-3M — spread âm (đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy."
+    },
+    "us_yield_1y": {
+      "group": "intl_us",
+      "label": "Lợi suất TPCP Mỹ kỳ hạn 1 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "1-Year Treasury Constant Maturity Rate (FRED series DGS1) — điểm giữa đường cong, tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
+      "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
+    },
+    "us_yield_2y": {
+      "group": "intl_us",
+      "label": "Lợi suất TPCP Mỹ kỳ hạn 2 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "2-Year Treasury Constant Maturity Rate (FRED series DGS2) — dùng tính spread 10Y-2Y, chỉ báo đảo ngược đường cong ĐƯỢC THEO DÕI NHIỀU NHẤT bởi thị trường tài chính toàn cầu.",
+      "impact": "Spread 10Y-2Y âm (đảo ngược) là tín hiệu cảnh báo suy thoái kinh điển nhất — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm."
+    },
+    "us_yield_5y": {
+      "group": "intl_us",
+      "label": "Lợi suất TPCP Mỹ kỳ hạn 5 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
+      "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
+    },
+    "us_yield_30y": {
+      "group": "intl_us",
+      "label": "Lợi suất TPCP Mỹ kỳ hạn 30 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "30-Year Treasury Constant Maturity Rate (FRED series DGS30) — đầu dài nhất đường cong lợi suất.",
+      "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ, phản ánh kỳ vọng lạm phát/tăng trưởng dài hạn."
+    },
+    "eu_unemployment_rate": {
+      "group": "intl_eu",
+      "label": "Tỷ lệ thất nghiệp Eurozone",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Harmonized Unemployment Rate, Euro Area (FRED series LRHUTTTTEZM156S, OECD).",
+      "impact": "Thất nghiệp Eurozone tăng gây áp lực ECB nới lỏng chính sách — ảnh hưởng tỷ giá EUR/USD và dòng vốn toàn cầu."
+    },
+    "eu_cpi_yoy": {
+      "group": "intl_eu",
+      "label": "CPI (HICP) Eurozone (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Harmonized Index of Consumer Prices, Euro Area, YoY (FRED series CPALTT01EZM659N, OECD MEI).",
+      "impact": "Lạm phát Eurozone quyết định hướng đi lãi suất ECB — ảnh hưởng chênh lệch lãi suất USD/EUR và dòng vốn toàn cầu."
+    },
+    "eu_core_cpi_yoy": {
+      "group": "intl_eu",
+      "label": "CPI lõi Eurozone (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "HICP loại trừ thực phẩm & năng lượng, Euro Area, YoY (FRED series CPGRLE01EZM659N, OECD MEI) — ID ít phổ biến hơn nhóm chỉ báo Mỹ, CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra; fetch_fred() fail-safe nên nếu sai chỉ báo này sẽ RỖNG chứ không lỗi pipeline — cần rà lại nếu vẫn rỗng sau khi Action chạy thật.",
+      "impact": "ECB quan tâm lạm phát lõi hơn headline khi quyết định lãi suất, tương tự cách Fed dùng CPI lõi."
+    },
+    "eu_gdp_growth": {
+      "group": "intl_eu",
+      "label": "Tăng trưởng GDP Eurozone (QoQ)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Real GDP growth rate, Euro Area, quý (FRED series NAEXKP01EZQ657S, OECD MEI) — ID CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra, fail-safe nếu sai.",
+      "impact": "Eurozone là 1 trong 3 đối tác thương mại lớn của Việt Nam (EU) — tăng trưởng chậm lại ảnh hưởng nhu cầu nhập khẩu hàng Việt Nam."
+    },
+    "eu_industrial_production_yoy": {
+      "group": "intl_eu",
+      "label": "Chỉ số sản xuất công nghiệp Eurozone (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Industrial Production, Euro Area 19, YoY (FRED series EA19PRINTO01GYSAM, OECD MEI) — ID CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra, fail-safe nếu sai.",
+      "impact": "Phản ánh sức khỏe khu vực sản xuất châu Âu — liên quan trực tiếp đơn hàng xuất khẩu Việt Nam sang EU."
+    },
+    "cn_cpi_yoy": {
+      "group": "intl_cn",
+      "label": "CPI Trung Quốc (YoY)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Consumer Price Index, China, YoY (FRED series CPALTT01CNM659N, OECD MEI).",
+      "impact": "Trung Quốc là đối tác thương mại lớn nhất của Việt Nam — lạm phát/giảm phát TQ ảnh hưởng giá hàng hóa nhập khẩu và cạnh tranh xuất khẩu của Việt Nam."
+    },
+    "cn_industrial_production_yoy": {
+      "group": "intl_cn",
+      "label": "Chỉ số sản xuất công nghiệp Trung Quốc (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Industrial Production, China, YoY (FRED series CHNPRINTO01GYSAM, OECD MEI) — ID CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra, fail-safe nếu sai.",
+      "impact": "Sản xuất công nghiệp TQ chậm lại ảnh hưởng giá hàng hóa/nguyên liệu đầu vào toàn cầu và chuỗi cung ứng liên quan Việt Nam."
+    },
+    "cn_gdp_growth_quarterly": {
+      "group": "intl_cn",
+      "label": "Tăng trưởng GDP Trung Quốc theo quý (YoY)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Real GDP growth rate, China, quý (FRED series NAEXKP01CNQ657S, OECD MEI) — bổ sung tần suất QUÝ, đi kèm china_gdp_growth hiện có (World Bank, theo NĂM, vẫn giữ nguyên cho Scorecard) để nhìn xu hướng gần hơn. ID CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra, fail-safe nếu sai.",
+      "impact": "Tăng trưởng TQ chậm lại là rủi ro lớn cho kinh tế Việt Nam qua kênh thương mại (TQ là đối tác XNK lớn nhất) và dòng vốn khu vực."
+    },
+    "cn_central_bank_rate": {
+      "group": "intl_cn",
+      "label": "Lãi suất NHTW Trung Quốc (PBOC, proxy)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Discount Rate, China, IMF IFS (FRED series INTDSRCNM193N) — TRUNG QUỐC KHÔNG có 1 lãi suất điều hành chuẩn hoá quốc tế đơn giản như Fed Funds/ECB Deposit Rate (PBOC điều hành qua nhiều công cụ: LPR, MLF, lãi suất chiết khấu...) — đây là PROXY, tương tự cách xử lý boj_interbank_rate/boe_sonia_rate, không phải con số LPR chính thức PBOC công bố hàng tháng.",
+      "impact": "PBOC nới lỏng/thắt chặt ảnh hưởng dòng vốn nhân dân tệ, gián tiếp tác động khu vực Đông Nam Á trong đó có Việt Nam."
+    },
+    "cn_10y_yield": {
+      "group": "intl_cn",
+      "label": "Lợi suất TPCP Trung Quốc kỳ hạn 10 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "OECD Long-term interest rates cho Trung Quốc (FRED series IRLTLT01CNM156N) — cùng họ ID đã dùng thành công cho Đức/Nhật/Anh (IRLTLT01{mã nước}M156N).",
+      "impact": "Chi phí vốn dài hạn của Chính phủ Trung Quốc — đối chiếu xu hướng chính sách tiền tệ TQ so với Mỹ/Eurozone/Nhật."
     },
     "fdi_disbursed_quarterly": {
       "group": "trade",
