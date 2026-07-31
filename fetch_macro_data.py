@@ -1155,11 +1155,14 @@ def fetch_vira_bulletin(lookback_days=10):
     cập nhật để nhìn xu hướng" — VIRA cho lịch sử NGÀY thật, dùng THAY THẾ 4 kỳ hạn này, KHÔNG cộng
     dồn chung SBV vì khác phương pháp gộp, trộn sẽ ra biểu đồ răng cưa); (2) lợi suất TPCP thứ cấp
     3Y/5Y/7Y/10Y/15Y (chỉ báo MỚI, chưa có nguồn nào khác đang theo dõi); (3) NHNN bơm ròng/hút
-    ròng qua OMO kênh cầm cố (tỷ đồng, chỉ báo MỚI — dấu ÂM = hút ròng, DƯƠNG = bơm ròng).
+    ròng qua OMO kênh cầm cố (tỷ đồng, chỉ báo MỚI — dấu ÂM = hút ròng, DƯƠNG = bơm ròng); (4) lãi
+    suất OMO kỳ hạn 7 ngày (thay thế snapshot tuần từ SBV, cùng lý do (1)); (5) số dư OMO đang LƯU
+    HÀNH trên kênh cầm cố (tỷ đồng, chỉ báo MỚI — user 2026-07-30 chỉ ra bản tin có luôn số này,
+    khác omo_net_operation là DÒNG CHẢY ròng/ngày, đây là TỒN KHO lũy kế tại thời điểm đó).
     Trả list[dict] mỗi phần tử {"date": "YYYY-MM-DD", "source_url": ..., rồi các field nào tìm
-    được trong: interbank_on/1w/2w/1m, bond_3y/5y/7y/10y/15y, omo_net} — field nào không tìm thấy
-    (bản tin đổi cấu trúc/thiếu đoạn) thì bị bỏ qua, không lỗi. Bản tin nào không tồn tại (404/302,
-    ngày nghỉ) cũng bỏ qua lặng lẽ."""
+    được trong: interbank_on/1w/2w/1m, bond_3y/5y/7y/10y/15y, omo_net, omo_rate, omo_outstanding}
+    — field nào không tìm thấy (bản tin đổi cấu trúc/thiếu đoạn) thì bị bỏ qua, không lỗi. Bản tin
+    nào không tồn tại (404/302, ngày nghỉ) cũng bỏ qua lặng lẽ."""
     import html as htmlmod
     results = []
     today = datetime.date.today()
@@ -1208,6 +1211,10 @@ def fetch_vira_bulletin(lookback_days=10):
             m_omo_rate = re.search(r"lãi suất đều ở mức ([\d,]+)%", text)
             if m_omo_rate:
                 entry["omo_rate"] = float(m_omo_rate.group(1).replace(",", "."))
+
+            m_outstanding = re.search(r"C[óo]\s*([\d.,]+)\s*tỷ đồng lưu hành trên kênh cầm cố", text)
+            if m_outstanding:
+                entry["omo_outstanding"] = _vn_number(m_outstanding.group(1))
 
             if len(entry) > 2:
                 results.append(entry)
@@ -2004,12 +2011,13 @@ def update_vimo_raw():
         "bond_3y": "govt_bond_yield_3y", "bond_5y": "govt_bond_yield_5y",
         "bond_7y": "govt_bond_yield_7y", "bond_10y": "govt_bond_yield_10y",
         "bond_15y": "govt_bond_yield_15y", "omo_net": "omo_net_operation",
-        "omo_rate": "omo_rate_7d",
+        "omo_rate": "omo_rate_7d", "omo_outstanding": "omo_outstanding_balance",
     }
     # _append_point() chỉ so khớp điểm CUỐI series — không đủ ở đây vì lookback_days quét lùi ~10
     # ngày MỖI LẦN chạy nên phần lớn ngày đã có sẵn từ lần chạy trước (không nằm ở cuối series do
     # thứ tự append). Tự kiểm tra period đã tồn tại (ở BẤT KỲ đâu trong series) trước khi thêm, để
     # chạy lại nhiều lần/tuần không bị nhân đôi điểm.
+    _vira_touched_keys = set()
     for entry in vira_entries:
         for field, raw_key in VIRA_KEY_MAP.items():
             if field not in entry:
@@ -2018,7 +2026,14 @@ def update_vimo_raw():
             if entry["date"] in existing_periods:
                 continue
             _append_point(raw, raw_key, entry["date"], entry[field], entry["source_url"])
+            _vira_touched_keys.add(raw_key)
         print(f"  -> {entry['date']}: {', '.join(f'{k}={v}' for k, v in entry.items() if k not in ('date', 'source_url'))}")
+    # lookback_days quét lùi ~10 ngày NÊN CÓ THỂ lấp được 1 ngày CŨ HƠN điểm mới nhất đã lưu (vd
+    # bản tin ra trễ, hoặc lần chạy trước bị lỗi) — _append_point() chỉ nối vào CUỐI nên điểm lấp
+    # trễ đó sẽ nằm SAI VỊ TRÍ (sau các ngày mới hơn) nếu không sort lại. Sort lại period dạng
+    # "YYYY-MM-DD" (so sánh chuỗi = so sánh thời gian, an toàn) cho mọi key vừa được VIRA ghi thêm.
+    for raw_key in _vira_touched_keys:
+        raw[raw_key]["series"].sort(key=lambda pt: pt["period"])
 
     print("[SBV — tín phiếu NHNN (hút thanh khoản thị trường 2, đối lập OMO — 2 chiều bơm/hút, tích lũy theo TUẦN)]")
     days_since, last_date, src = fetch_sbv_tin_phieu_days_since()
