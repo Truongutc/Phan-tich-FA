@@ -15,6 +15,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.2">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script>
+        // Plugin tự đăng ký global cho MỌI chart — mặc định TẮT, chỉ bật thủ công ở các
+        // biểu đồ lớn (interbank/bond yield history, GDP-đầu tư cơ cấu, đường cong VNIBOR)
+        // để tránh rối mắt các card chỉ báo nhỏ tự sinh (renderIndicatorGroups).
+        if (window.Chart && window.ChartDataLabels) {
+            Chart.defaults.plugins.datalabels = { display: false };
+        }
+    </script>
 
     <style>
         .vimo-score-grid {

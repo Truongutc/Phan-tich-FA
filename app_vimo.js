@@ -38,10 +38,24 @@ const CHART_DEFAULTS = {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-        x: { ticks: { color: '#545f74', font: { size: 8 }, maxRotation: 45 }, grid: { display: false } },
-        y: { ticks: { color: '#545f74', font: { size: 8 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        x: { ticks: { color: '#9aa5bd', font: { size: 9 }, maxRotation: 45 }, grid: { display: false } },
+        y: { ticks: { color: '#9aa5bd', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
     },
 };
+
+// Cấu hình chartjs-plugin-datalabels dùng chung cho các chart NHIỀU đường + NHIỀU điểm/ngày
+// (interbank/bond yield history) — chỉ hiện số ở điểm CUỐI mỗi đường (giá trị mới nhất) để tránh
+// rối mắt khi có 15-20+ điểm x nhiều kỳ hạn chồng lên nhau; vẫn cho biết "số giá trị" ngay trên
+// biểu đồ như yêu cầu, thay vì phải rê chuột xem tooltip.
+function _endpointDatalabelsConfig(decimals) {
+    return {
+        display: (ctx) => ctx.dataset.data.slice(ctx.dataIndex + 1).every(v => v === null || v === undefined)
+            && (ctx.dataset.data[ctx.dataIndex] !== null && ctx.dataset.data[ctx.dataIndex] !== undefined),
+        color: (ctx) => ctx.dataset.borderColor, font: { size: 9, weight: '600' },
+        anchor: 'end', align: 'right', offset: 4, clip: false,
+        formatter: (v) => (v === null || v === undefined) ? '' : v.toFixed(decimals),
+    };
+}
 
 let chartInstances = [];
 
@@ -413,8 +427,8 @@ function drawOneValHistChart(canvasId, existingChart, points, bandData, unitLabe
                 },
             },
             scales: {
-                x: { ticks: { color: '#545f74', font: { size: 8 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
-                y: { ticks: { color: '#545f74', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                x: { ticks: { color: '#9aa5bd', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
+                y: { ticks: { color: '#9aa5bd', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
             },
         },
     });
@@ -586,9 +600,17 @@ function renderStackedAreaChart(grid, indicators, { title, keys, canvasId, note 
         },
         options: {
             ...CHART_DEFAULTS,
-            plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
+            plugins: {
+                legend: { display: true, labels: { boxWidth: 12 } },
+                datalabels: {
+                    display: true, color: '#e5e9f0', font: { size: 8, weight: '600' },
+                    anchor: 'center', align: 'center',
+                    formatter: (v) => (v === null || v === undefined) ? '' : v.toFixed(1),
+                },
+            },
             scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, stacked: true, min: 0, max: 100 } },
         },
+        plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
 }
@@ -634,7 +656,18 @@ function renderInterbankCurveChart(grid, indicators) {
                 fill: true, tension: 0.25, pointRadius: 3,
             }],
         },
-        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    display: true, color: '#c9d2e3', font: { size: 9, weight: '600' },
+                    anchor: 'end', align: 'top',
+                    formatter: (v) => (v === null || v === undefined) ? '' : v.toFixed(2),
+                },
+            },
+        },
+        plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
 }
@@ -696,7 +729,15 @@ function renderInterbank6mHistoryChart(grid, indicators) {
                 };
             }),
         },
-        options: { ...CHART_DEFAULTS, plugins: { legend: { display: true, labels: { boxWidth: 12 } } } },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: true, labels: { boxWidth: 12 } },
+                datalabels: _endpointDatalabelsConfig(2),
+            },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+        },
+        plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
 }
@@ -744,7 +785,15 @@ function renderBondYieldHistoryChart(grid, indicators) {
                 };
             }),
         },
-        options: { ...CHART_DEFAULTS, plugins: { legend: { display: true, labels: { boxWidth: 12 } } } },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: true, labels: { boxWidth: 12 } },
+                datalabels: _endpointDatalabelsConfig(2),
+            },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+        },
+        plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
 }
