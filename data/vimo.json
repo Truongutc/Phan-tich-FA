@@ -204,29 +204,29 @@
   "marketValuation": {
     "pe": 10.728874927222238,
     "pb": 1.6661908102494352,
-    "rf": 0.045410000000000006,
-    "erp": 0.04779641789408064,
+    "rf": 0.04537,
+    "erp": 0.04783641789408064,
     "valuation_label": "Rẻ/Hấp dẫn",
     "pe_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
     "pb_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
     "risk_compensation": {
       "earnings_yield": 0.09320641789408064,
       "deposit_rf": 0.0617,
-      "hurdle_1_5x_bond": 0.06811500000000001,
-      "hurdle_2x_bond": 0.09082000000000001,
+      "hurdle_1_5x_bond": 0.068055,
+      "hurdle_2x_bond": 0.09074,
       "hurdle_1_5x_deposit": 0.09255,
       "label": "Bù đắp tốt",
       "color": "good",
-      "text": "Earnings Yield (1/P·E) hiện 9.32%. So với lãi suất TPCP 10 năm (4.54%): ĐẠT mức 1,5 lần (6.81%), ĐẠT mức 2 lần (9.08%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): ĐẠT mức 1,5 lần (9.25%). => Bù đắp tốt."
+      "text": "Earnings Yield (1/P·E) hiện 9.32%. So với lãi suất TPCP 10 năm (4.54%): ĐẠT mức 1,5 lần (6.81%), ĐẠT mức 2 lần (9.07%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): ĐẠT mức 1,5 lần (9.25%). => Bù đắp tốt."
     },
     "capm_valuation": {
       "roe": 0.1552996769513857,
-      "coe": 0.11541000000000001,
-      "justified_pb": 1.6098406505333385,
-      "premium_pct": 0.03500356367409907,
+      "coe": 0.11537,
+      "justified_pb": 1.6108257144161802,
+      "premium_pct": 0.03437063075028024,
       "label": "Quanh vùng P/B hợp lý (CAPM)",
       "color": "warn",
-      "text": "ROE VN-Index (P/B÷P/E) = 15.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.54% + β1.0×ERP Việt Nam 7.0%) = 11.54%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.61x, so với P/B thực tế 1.67x => cao hơn 3.5%. => Quanh vùng P/B hợp lý (CAPM)."
+      "text": "ROE VN-Index (P/B÷P/E) = 15.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.54% + β1.0×ERP Việt Nam 7.0%) = 11.54%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.61x, so với P/B thực tế 1.67x => cao hơn 3.4%. => Quanh vùng P/B hợp lý (CAPM)."
     }
   },
   "decision": {
@@ -236,29 +236,29 @@
   "marketValuationHeadline": {
     "pe": 12.38,
     "pb": 1.98,
-    "rf": 0.045410000000000006,
-    "erp": 0.03536544426494345,
+    "rf": 0.04537,
+    "erp": 0.03540544426494346,
     "valuation_label": "Hợp lý",
     "pe_source": "https://24hmoney.vn/indices/vn-index",
     "pb_source": "https://24hmoney.vn/indices/vn-index",
     "risk_compensation": {
       "earnings_yield": 0.08077544426494346,
       "deposit_rf": 0.0617,
-      "hurdle_1_5x_bond": 0.06811500000000001,
-      "hurdle_2x_bond": 0.09082000000000001,
+      "hurdle_1_5x_bond": 0.068055,
+      "hurdle_2x_bond": 0.09074,
       "hurdle_1_5x_deposit": 0.09255,
       "label": "Bù đắp tối thiểu, chưa có biên an toàn",
       "color": "warn",
-      "text": "Earnings Yield (1/P·E) hiện 8.08%. So với lãi suất TPCP 10 năm (4.54%): ĐẠT mức 1,5 lần (6.81%), CHƯA đạt mức 2 lần (9.08%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): CHƯA đạt mức 1,5 lần (9.25%). => Bù đắp tối thiểu, chưa có biên an toàn."
+      "text": "Earnings Yield (1/P·E) hiện 8.08%. So với lãi suất TPCP 10 năm (4.54%): ĐẠT mức 1,5 lần (6.81%), CHƯA đạt mức 2 lần (9.07%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): CHƯA đạt mức 1,5 lần (9.25%). => Bù đắp tối thiểu, chưa có biên an toàn."
     },
     "capm_valuation": {
       "roe": 0.15993537964458804,
-      "coe": 0.11541000000000001,
-      "justified_pb": 1.6807121180949094,
-      "premium_pct": 0.17807206759735505,
+      "coe": 0.11537,
+      "justified_pb": 1.6817405483339152,
+      "premium_pct": 0.1773516443791332,
       "label": "Đắt hơn nhiều so với P/B hợp lý (CAPM)",
       "color": "bad",
-      "text": "ROE VN-Index (P/B÷P/E) = 15.99%. Chi phí vốn chủ sở hữu CAPM (Rf 4.54% + β1.0×ERP Việt Nam 7.0%) = 11.54%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.68x, so với P/B thực tế 1.98x => cao hơn 17.8%. => Đắt hơn nhiều so với P/B hợp lý (CAPM)."
+      "text": "ROE VN-Index (P/B÷P/E) = 15.99%. Chi phí vốn chủ sở hữu CAPM (Rf 4.54% + β1.0×ERP Việt Nam 7.0%) = 11.54%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.68x, so với P/B thực tế 1.98x => cao hơn 17.7%. => Đắt hơn nhiều so với P/B hợp lý (CAPM)."
     }
   },
   "decisionHeadline": {
@@ -10335,6 +10335,118 @@
       },
       "note": "Tổng khối lượng OMO (kênh cầm cố/mua kỳ hạn) đang LƯU HÀNH — TỒN KHO thanh khoản NHNN đã bơm ra thị trường qua kênh này TẠI THỜI ĐIỂM đó, khác omo_net_operation (DÒNG CHẢY ròng bơm/hút MỖI NGÀY — chênh lệch trúng thầu/đáo hạn). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). good_direction='lower' mang tính THAM KHẢO: số dư lưu hành cao kéo dài phản ánh NHNN phải bơm thanh khoản LIÊN TỤC để bù đắp thiếu hụt hệ thống (thanh khoản căng), KHÔNG có nghĩa số dư thấp luôn tốt hơn (có thể chỉ đơn giản là ít nhu cầu vay mượn hơn).",
       "impact": "Theo dõi CÙNG omo_net_operation và đường cong lãi suất liên ngân hàng: số dư lưu hành tăng đều + lãi suất liên ngân hàng tăng là tín hiệu thanh khoản hệ thống đang căng thẳng kéo dài, không phải hiện tượng nhất thời."
+    },
+    "ecb_deposit_rate": {
+      "group": "external",
+      "label": "Lãi suất tiền gửi ECB (Eurozone)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "ECB Deposit Facility Rate (FRED series ECBDFR) — lãi suất NHTW Châu Âu trả cho tiền gửi qua đêm của ngân hàng thương mại, ĐANG LÀ lãi suất điều hành THỰC TẾ quan trọng nhất của ECB từ sau khủng hoảng 2008 (khác Main Refinancing Rate truyền thống) — dùng để đối chiếu xu hướng chính sách tiền tệ Eurozone với Fed.",
+      "impact": "ECB tăng/giảm lãi suất ảnh hưởng chênh lệch lãi suất USD/EUR, dòng vốn toàn cầu, gián tiếp tác động tỷ giá VND qua kênh USD."
+    },
+    "boe_sonia_rate": {
+      "group": "external",
+      "label": "Lãi suất SONIA (Anh, bám sát Bank Rate BOE)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Sterling Overnight Index Average (FRED series IUDSOIA) — lãi suất THỊ TRƯỜNG qua đêm bám rất sát Bank Rate chính thức của Bank of England (không phải chính Bank Rate, nhưng chênh lệch thường dưới 0,1 điểm %) — dùng làm đại diện xu hướng chính sách tiền tệ Anh khi FRED không có series Bank Rate chính thức trực tiếp.",
+      "impact": "Phản ánh xu hướng thắt chặt/nới lỏng của BOE, 1 trong 4 NHTW lớn ảnh hưởng dòng vốn toàn cầu."
+    },
+    "boj_interbank_rate": {
+      "group": "external",
+      "label": "Lãi suất liên ngân hàng qua đêm Nhật Bản",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "Immediate Rates: Call Money/Interbank Rate cho Nhật Bản (FRED series IRSTCI01JPM156N) — lãi suất THỊ TRƯỜNG LIÊN NGÂN HÀNG bám sát mục tiêu chính sách của BOJ, KHÔNG PHẢI chính lãi suất điều hành chính thức BOJ công bố (BOJ neo lãi suất âm/gần 0 nhiều năm, chỉ mới thoát âm gần đây — số liệu này giúp thấy rõ thời điểm BOJ thực sự bắt đầu tăng lãi suất).",
+      "impact": "BOJ thoát chính sách lãi suất âm/thắt chặt là sự kiện lớn cho dòng vốn carry-trade JPY toàn cầu, có thể gây biến động thị trường mới nổi."
+    },
+    "us_10y_yield": {
+      "group": "external",
+      "label": "Lợi suất TPCP Mỹ kỳ hạn 10 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "10-Year Treasury Constant Maturity Rate (FRED series DGS10) — lãi suất phi rủi ro tham chiếu toàn cầu, ảnh hưởng định giá mọi tài sản rủi ro (kể cả VN-Index) qua kênh chi phí vốn.",
+      "impact": "Lợi suất Mỹ tăng thường kéo dòng vốn về Mỹ (USD mạnh lên), gây áp lực lên tỷ giá và định giá cổ phiếu các thị trường mới nổi trong đó có Việt Nam."
+    },
+    "germany_10y_yield": {
+      "group": "external",
+      "label": "Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "OECD Long-term interest rates cho Đức (FRED series IRLTLT01DEM156N) — TPCP Đức (Bund) là chuẩn tham chiếu lợi suất phi rủi ro của cả khối Eurozone (tương tự vai trò Treasury với Mỹ).",
+      "impact": "Đối chiếu chi phí vốn Eurozone so với Mỹ/Nhật — chênh lệch lợi suất Đức-Mỹ là chỉ báo dòng vốn USD/EUR quan trọng."
+    },
+    "japan_10y_yield": {
+      "group": "external",
+      "label": "Lợi suất TPCP Nhật kỳ hạn 10 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "OECD Long-term interest rates cho Nhật Bản (FRED series IRLTLT01JPM156N) — Nhật giữ lợi suất cực thấp/gần 0 suốt nhiều năm (Yield Curve Control), nên xu hướng tăng gần đây là tín hiệu chính sách rất đáng chú ý.",
+      "impact": "Lợi suất Nhật tăng làm giảm sức hấp dẫn của carry-trade vay JPY đầu tư tài sản rủi ro khác — có thể gây rút vốn khỏi thị trường mới nổi khi carry-trade đảo chiều."
+    },
+    "uk_10y_yield": {
+      "group": "external",
+      "label": "Lợi suất TPCP Anh kỳ hạn 10 năm",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "fred",
+      "series": [],
+      "trend": {
+        "latest": null,
+        "n_points": 0,
+        "label": "no_data",
+        "arrow": "—"
+      },
+      "note": "OECD Long-term interest rates cho Anh (FRED series IRLTLT01GBM156N) — Gilt (TPCP Anh) 10 năm, cùng nhóm 4 thị trường phát triển lớn (Mỹ/Eurozone/Nhật/Anh) theo dõi xu hướng chính sách tiền tệ toàn cầu.",
+      "impact": "Phản ánh áp lực lạm phát/chính sách tiền tệ Anh — 1 trong 4 thị trường lãi suất lớn quyết định xu hướng dòng vốn toàn cầu."
     },
     "fdi_disbursed_quarterly": {
       "group": "trade",

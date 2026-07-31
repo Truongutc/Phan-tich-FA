@@ -1798,6 +1798,25 @@ def update_vimo_raw():
             ]
             print(f"  -> {key}: {len(pts)} điểm")
 
+    print("[FRED — Lãi suất NHTW lớn + lợi suất TPCP 10 năm toàn cầu (đối chiếu xu hướng chính sách tiền tệ thế giới)]")
+    # User (2026-07-31) gửi chart TradingView so sánh lãi suất Fed/ECB/BOJ/BOE — bổ sung tương tự
+    # bằng FRED (đã có sẵn hạ tầng fetch_fred(), chỉ cần thêm series_id). ECBDFR/IUDSOIA/
+    # IRSTCI01JPM156N là lãi suất THỊ TRƯỜNG bám sát chính sách điều hành (không phải luôn là con
+    # số "lãi suất điều hành" chính thức 1-1, xem note từng chỉ báo trong vimo_raw.json để rõ bản
+    # chất — tránh hiểu nhầm khi so sánh trực tiếp với fed_funds_rate).
+    for key, sid in {
+        "ecb_deposit_rate": "ECBDFR", "boe_sonia_rate": "IUDSOIA", "boj_interbank_rate": "IRSTCI01JPM156N",
+        "us_10y_yield": "DGS10", "germany_10y_yield": "IRLTLT01DEM156N",
+        "japan_10y_yield": "IRLTLT01JPM156N", "uk_10y_yield": "IRLTLT01GBM156N",
+    }.items():
+        pts = fetch_fred(sid, n=24)
+        if pts:
+            raw[key]["series"] = [
+                {"period": d, "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
+                for d, v in sorted(pts)
+            ]
+            print(f"  -> {key}: {len(pts)} điểm")
+
     print("[NSO — báo cáo kinh tế-xã hội mới nhất]")
     nso = fetch_nso_latest_report()
     if nso:
