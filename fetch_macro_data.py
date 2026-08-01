@@ -1773,6 +1773,17 @@ def update_vimo_raw():
         ]
         print(f"  -> {len(pts)} điểm")
 
+    print("[World Bank — Vietnam nominal GDP (theo năm, dùng tính tỷ lệ Tín dụng/GDP)]")
+    pts = fetch_worldbank("NY.GDP.MKTP.CN", "VN", n=10)
+    if pts:
+        # World Bank trả VND thô — quy đổi tỷ VND cho khớp đơn vị credit_balance_total (cùng tỷ VND)
+        raw["nominal_gdp_annual"]["series"] = [
+            {"period": y, "value": round(v / 1e9, 2),
+             "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"}
+            for y, v in sorted(pts)
+        ]
+        print(f"  -> {len(pts)} điểm")
+
     print("[World Bank — Vietnam forex reserves]")
     pts = fetch_worldbank("FI.RES.TOTL.CD", "VN", n=8)
     if pts:

@@ -15047,5 +15047,66 @@
     ],
     "note": "Discount Rate, China, IMF IFS (FRED series INTDSRCNM193N) — TRUNG QUỐC KHÔNG có 1 lãi suất điều hành chuẩn hoá quốc tế đơn giản như Fed Funds/ECB Deposit Rate (PBOC điều hành qua nhiều công cụ: LPR, MLF, lãi suất chiết khấu...) — đây là PROXY, tương tự cách xử lý boj_interbank_rate/boe_sonia_rate, không phải con số LPR chính thức PBOC công bố hàng tháng.",
     "impact": "PBOC nới lỏng/thắt chặt ảnh hưởng dòng vốn nhân dân tệ, gián tiếp tác động khu vực Đông Nam Á trong đó có Việt Nam."
+  },
+  "nominal_gdp_annual": {
+    "group": "growth",
+    "label": "GDP danh nghĩa Việt Nam (theo năm)",
+    "unit": "tỷ VND",
+    "good_direction": "higher",
+    "auto_source": "worldbank",
+    "series": [
+      {
+        "period": "2016",
+        "value": 5639401.0,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2017",
+        "value": 6293904.55,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2018",
+        "value": 7009042.13,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2019",
+        "value": 7707200.29,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2020",
+        "value": 8044385.73,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2021",
+        "value": 8487475.6,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2022",
+        "value": 9621371.82,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2023",
+        "value": 10319058.87,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2024",
+        "value": 11510328.92,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      },
+      {
+        "period": "2025",
+        "value": 12847571.22,
+        "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+      }
+    ],
+    "note": "World Bank API (indicator NY.GDP.MKTP.CN — GDP, current LCU, quy đổi tỷ VND) — GDP DANH NGHĨA theo năm, dùng làm mẫu số tính tỷ lệ Tín dụng/GDP (credit_to_gdp_ratio, phái sinh, xem _add_credit_derived_indicators() trong template_vimo.py). Dùng GDP danh nghĩa (không phải GDP thực/giá so sánh) vì credit_balance_total cũng tính theo giá trị danh nghĩa (VND hiện hành) — chia tín dụng danh nghĩa cho GDP thực sẽ lệch do khác gốc giá so sánh, đây là quy ước chuẩn quốc tế (BIS/IMF) khi tính chỉ báo Credit-to-GDP.",
+    "impact": "GDP danh nghĩa tăng chậm hơn tín dụng khiến tỷ lệ đòn bẩy tín dụng/GDP tăng nhanh — rủi ro bong bóng tài sản/nợ xấu tích lũy trong dài hạn nếu kéo dài (kinh nghiệm nhiều cuộc khủng hoảng tài chính khu vực)."
   }
 }

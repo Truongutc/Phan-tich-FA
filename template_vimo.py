@@ -2133,6 +2133,80 @@ def _add_customs_yoy_growth(raw, trends):
         print(f"  -> {label}: {len(points)} điểm")
 
 
+def _add_credit_derived_indicators(raw, trends):
+    """Từ credit_balance_total (dư nợ tín dụng tuyệt đối, theo tháng, vbma) suy ra 2 chỉ báo mới
+    (user 2026-08-01):
+    1. credit_growth_yoy_monthly — tăng trưởng SO CÙNG KỲ năm trước theo tháng (YoY thật) — KHÁC
+       credit_growth hiện có (nguồn SBV, thực chất là "so với đầu năm", RESET về ~0-1% mỗi tháng 1
+       rồi cộng dồn tới tháng 12 — xem chuỗi 2025-06=9.91%...2025-12=19.07%, 2026-01=1.19%, không
+       phải YoY thật). credit_growth_yoy_monthly tính trực tiếp period/period cùng tháng năm trước,
+       không reset theo năm, đúng nghĩa "so cùng kỳ" user yêu cầu.
+    2. credit_to_gdp_ratio — dư nợ tín dụng / GDP danh nghĩa (nominal_gdp_annual, World Bank, theo
+       NĂM) x100, khớp GDP theo NĂM gần nhất có sẵn <= năm của tháng tín dụng (GDP thường công bố
+       trễ hơn tín dụng vài tháng-1 năm). Chỉ báo đòn bẩy tín dụng kinh điển (BIS/IMF) — tỷ lệ tăng
+       nhanh là dấu hiệu cảnh báo rủi ro tích lũy (bong bóng tài sản/nợ xấu).
+    Cả 2 đều PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng cho Scorecard (đã có
+    credit_growth nguồn SBV cho vai trò đó)."""
+    credit = raw.get("credit_balance_total")
+    if not credit:
+        return
+    credit_by_period = {p["period"]: p["value"] for p in credit["series"] if p.get("value") is not None}
+
+    # 1. YoY thật theo tháng
+    yoy_points = []
+    for period in sorted(credit_by_period):
+        year, month = period.split("-")
+        prior_period = f"{int(year) - 1}-{month}"
+        if prior_period in credit_by_period and credit_by_period[prior_period]:
+            yoy = round((credit_by_period[period] / credit_by_period[prior_period] - 1) * 100, 2)
+            yoy_points.append({"period": period, "value": yoy, "source_url": "https://vbma.org.vn/vi/market-data/credit"})
+    if yoy_points:
+        raw["credit_growth_yoy_monthly"] = {
+            "group": "monetary", "label": "Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng)",
+            "unit": "%", "good_direction": "higher", "auto_source": "derived",
+            "series": yoy_points,
+            "note": ("Suy ra từ credit_balance_total (dư nợ tuyệt đối theo tháng, vbma.org.vn) bằng "
+                     "cách so CÙNG THÁNG năm trước (YoY thật) — KHÁC credit_growth (nguồn SBV, thực "
+                     "chất là tăng trưởng SO VỚI ĐẦU NĂM, reset về gần 0% mỗi tháng 1 rồi cộng dồn "
+                     "tới tháng 12, không phải YoY thật). Phái sinh tính toán, KHÔNG lưu vào "
+                     "vimo_raw.json — KHÔNG dùng để tính Scorecard (đã có credit_growth cho vai trò đó)."),
+            "impact": "So được tốc độ tăng dư nợ THEO ĐÚNG NGHĨA cùng kỳ năm trước, không bị ảnh hưởng bởi hiệu ứng reset đầu năm của số liệu SBV công bố.",
+        }
+        trends["credit_growth_yoy_monthly"] = calc_trend(yoy_points, "higher")
+        print(f"  -> Tăng trưởng dư nợ tín dụng YoY (theo tháng): {len(yoy_points)} điểm")
+
+    # 2. Tín dụng / GDP danh nghĩa
+    gdp = raw.get("nominal_gdp_annual")
+    if gdp:
+        gdp_by_year = {p["period"]: p["value"] for p in gdp["series"] if p.get("value") is not None}
+        if gdp_by_year:
+            available_years = sorted(int(y) for y in gdp_by_year)
+            ratio_points = []
+            for period in sorted(credit_by_period):
+                year = int(period.split("-")[0])
+                usable_years = [y for y in available_years if y <= year]
+                gdp_year = max(usable_years) if usable_years else min(available_years)
+                gdp_value = gdp_by_year[str(gdp_year)]
+                if gdp_value:
+                    ratio = round(credit_by_period[period] / gdp_value * 100, 2)
+                    ratio_points.append({"period": period, "value": ratio,
+                                          "source_url": "https://vbma.org.vn/vi/market-data/credit"})
+            if ratio_points:
+                raw["credit_to_gdp_ratio"] = {
+                    "group": "monetary", "label": "Tỷ lệ Tín dụng / GDP danh nghĩa", "unit": "%",
+                    "good_direction": "lower", "auto_source": "derived",
+                    "series": ratio_points,
+                    "note": ("= credit_balance_total (vbma, theo tháng) / nominal_gdp_annual (World "
+                             "Bank, theo NĂM gần nhất có sẵn) x100 — GDP năm nào chưa công bố thì "
+                             "dùng năm gần nhất trước đó (GDP thường công bố trễ hơn tín dụng). Chỉ "
+                             "báo đòn bẩy tín dụng kinh điển BIS/IMF. Phái sinh tính toán, KHÔNG lưu "
+                             "vào vimo_raw.json, KHÔNG dùng để tính Scorecard."),
+                    "impact": "Tỷ lệ Tín dụng/GDP tăng nhanh và bền vững (credit boom) là 1 trong các chỉ báo cảnh báo sớm khủng hoảng tài chính được BIS/IMF theo dõi sát nhất — cùng một mức tăng trưởng tín dụng % nhưng nếu tỷ lệ này đã cao/tăng nhanh thì rủi ro tích lũy lớn hơn nhiều.",
+                }
+                trends["credit_to_gdp_ratio"] = calc_trend(ratio_points, "lower")
+                print(f"  -> Tỷ lệ Tín dụng/GDP danh nghĩa: {len(ratio_points)} điểm")
+
+
 def _add_us_yield_curve_spread(raw, trends):
     """Tính spread đường cong lợi suất TPCP Mỹ 10Y-2Y và 10Y-3M — 2 chỉ báo đảo ngược đường cong
     kinh điển (spread ÂM = đảo ngược, tín hiệu cảnh báo suy thoái Mỹ được thị trường toàn cầu theo
@@ -2367,6 +2441,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính spread đường cong lợi suất TPCP Mỹ 10Y-2Y / 10Y-3M (KHÔNG lưu vào vimo_raw.json)...")
     _add_us_yield_curve_spread(raw, trends)
+
+    print("[INFO] Tính tăng trưởng dư nợ tín dụng YoY (theo tháng) + tỷ lệ Tín dụng/GDP (KHÔNG lưu vào vimo_raw.json)...")
+    _add_credit_derived_indicators(raw, trends)
 
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
     synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)

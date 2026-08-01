@@ -196,29 +196,29 @@
   "marketValuation": {
     "pe": 10.739684161369565,
     "pb": 1.6678694808206072,
-    "rf": 0.045,
-    "erp": 0.04811260787323528,
+    "rf": 0.04537,
+    "erp": 0.047742607873235275,
     "valuation_label": "Rẻ/Hấp dẫn",
     "pe_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
     "pb_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
     "risk_compensation": {
       "earnings_yield": 0.09311260787323528,
       "deposit_rf": 0.0617,
-      "hurdle_1_5x_bond": 0.0675,
-      "hurdle_2x_bond": 0.09,
+      "hurdle_1_5x_bond": 0.068055,
+      "hurdle_2x_bond": 0.09074,
       "hurdle_1_5x_deposit": 0.09255,
       "label": "Bù đắp tốt",
       "color": "good",
-      "text": "Earnings Yield (1/P·E) hiện 9.31%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), ĐẠT mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): ĐẠT mức 1,5 lần (9.25%). => Bù đắp tốt."
+      "text": "Earnings Yield (1/P·E) hiện 9.31%. So với lãi suất TPCP 10 năm (4.54%): ĐẠT mức 1,5 lần (6.81%), ĐẠT mức 2 lần (9.07%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): ĐẠT mức 1,5 lần (9.25%). => Bù đắp tốt."
     },
     "capm_valuation": {
       "roe": 0.1552996769513857,
-      "coe": 0.115,
-      "justified_pb": 1.6199950300213182,
-      "premium_pct": 0.029552220785923566,
+      "coe": 0.11537,
+      "justified_pb": 1.6108257144161802,
+      "premium_pct": 0.03541274881193557,
       "label": "Quanh vùng P/B hợp lý (CAPM)",
       "color": "warn",
-      "text": "ROE VN-Index (P/B÷P/E) = 15.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.62x, so với P/B thực tế 1.67x => cao hơn 3.0%. => Quanh vùng P/B hợp lý (CAPM)."
+      "text": "ROE VN-Index (P/B÷P/E) = 15.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.54% + β1.0×ERP Việt Nam 7.0%) = 11.54%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.61x, so với P/B thực tế 1.67x => cao hơn 3.5%. => Quanh vùng P/B hợp lý (CAPM)."
     }
   },
   "decision": {
@@ -228,29 +228,29 @@
   "marketValuationHeadline": {
     "pe": 11.77,
     "pb": 1.93,
-    "rf": 0.045,
-    "erp": 0.03996176720475786,
+    "rf": 0.04537,
+    "erp": 0.039591767204757856,
     "valuation_label": "Hợp lý",
     "pe_source": "https://24hmoney.vn/indices/vn-index",
     "pb_source": "https://24hmoney.vn/indices/vn-index",
     "risk_compensation": {
       "earnings_yield": 0.08496176720475786,
       "deposit_rf": 0.0617,
-      "hurdle_1_5x_bond": 0.0675,
-      "hurdle_2x_bond": 0.09,
+      "hurdle_1_5x_bond": 0.068055,
+      "hurdle_2x_bond": 0.09074,
       "hurdle_1_5x_deposit": 0.09255,
       "label": "Bù đắp tối thiểu, chưa có biên an toàn",
       "color": "warn",
-      "text": "Earnings Yield (1/P·E) hiện 8.50%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): CHƯA đạt mức 1,5 lần (9.25%). => Bù đắp tối thiểu, chưa có biên an toàn."
+      "text": "Earnings Yield (1/P·E) hiện 8.50%. So với lãi suất TPCP 10 năm (4.54%): ĐẠT mức 1,5 lần (6.81%), CHƯA đạt mức 2 lần (9.07%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.17%): CHƯA đạt mức 1,5 lần (9.25%). => Bù đắp tối thiểu, chưa có biên an toàn."
     },
     "capm_valuation": {
       "roe": 0.16397621070518267,
-      "coe": 0.115,
-      "justified_pb": 1.753480164695118,
-      "premium_pct": 0.10066828177413334,
+      "coe": 0.11537,
+      "justified_pb": 1.743555311384162,
+      "premium_pct": 0.10693362430115538,
       "label": "Quanh vùng P/B hợp lý (CAPM)",
       "color": "warn",
-      "text": "ROE VN-Index (P/B÷P/E) = 16.40%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.75x, so với P/B thực tế 1.93x => cao hơn 10.1%. => Quanh vùng P/B hợp lý (CAPM)."
+      "text": "ROE VN-Index (P/B÷P/E) = 16.40%. Chi phí vốn chủ sở hữu CAPM (Rf 4.54% + β1.0×ERP Việt Nam 7.0%) = 11.54%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.74x, so với P/B thực tế 1.93x => cao hơn 10.7%. => Quanh vùng P/B hợp lý (CAPM)."
     }
   },
   "decisionHeadline": {
@@ -275,10 +275,10 @@
         "available": true
       },
       "clarity_label": "Sáng — đa số chỉ báo đồng thuận tích cực",
-      "clarity_pct": 73.7,
-      "clarity_detail": "42/57 chỉ báo có xu hướng rõ đang tốt lên (74%), 15/57 đang xấu đi."
+      "clarity_pct": 74.1,
+      "clarity_detail": "43/58 chỉ báo có xu hướng rõ đang tốt lên (74%), 15/58 đang xấu đi."
     },
-    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang cải thiện ▲ — So với tuần trước (2026-07-25): -2/6 → +1/6 ▲. So với tháng trước (2026-07-12): +2/6 → +1/6 ▼. Bức tranh tổng thể hiện ở mức \"Sáng — đa số chỉ báo đồng thuận tích cực\" — 42/57 chỉ báo có xu hướng rõ đang tốt lên (74%), 15/57 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Mua mạnh\".\n\nScorecard Vĩ Mô tổng hợp đạt +1/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng và Lãi suất. Ngược lại, nhóm Thanh khoản đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Lạm phát, Tỷ giá & Dòng vốn ngoại và Thương mại & Hàng hóa giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026); (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 % (kỳ T6/2026); (3) Doanh số bán lẻ (YoY) đạt 14.80 % (kỳ T6/2026); (4) CPI (YoY) đạt 4.69 % (kỳ T6/2026); (5) Lạm phát cơ bản (YoY) đạt 4.50 % (kỳ T6/2026); (6) Lãi suất liên ngân hàng 3 tháng đạt 7.34 % (kỳ Tuần 31/2026); (7) Lãi suất liên ngân hàng qua đêm (O/N) đạt 0.70 % (kỳ 2026-07-30); (8) Lãi suất liên ngân hàng 1 tuần đạt 4.50 % (kỳ 2026-07-30); (9) Lãi suất liên ngân hàng 2 tuần đạt 5.50 % (kỳ 2026-07-30); (10) Lãi suất liên ngân hàng 6 tháng đạt 7.22 % (kỳ Tuần 31/2026); (11) Tăng trưởng tín dụng (YoY) đạt 5.96 % (kỳ T5/2026); (12) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025); (13) Nợ công / GDP đạt 32.86 % (kỳ 2024); (14) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 11.70 % (kỳ T6/2026); (15) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026); (16) Giá dầu Brent đạt 91.82 USD/thùng (kỳ 2026-07-27); (17) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026); (18) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026); (19) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt 678.77 tỷ VND (kỳ 2026-07-30); (20) Tổng dư nợ tín dụng toàn nền kinh tế đạt 19703851.00 tỷ VND (kỳ T5/2026); (21) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025); (22) Đóng góp vào CPI — Thực phẩm đạt 1.64 điểm % CPI (kỳ T6/2026); (23) Đóng góp vào CPI — Nhà, điện, nước đạt 1.35 điểm % CPI (kỳ T6/2026); (24) Đóng góp vào CPI — Vận tải đạt 0.51 điểm % CPI (kỳ T6/2026); (25) VN-Index P/E (headline, có VIN) đạt 11.77 x (kỳ T8/2026); (26) VN-Index P/B (headline, có VIN) đạt 1.93 x (kỳ T8/2026); (27) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt 4900.21 tỷ đồng (kỳ 2026-07-30); (28) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 35.50 % (kỳ T6/2026); (29) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026); (30) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026); (31) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026); (32) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 356.94 nghìn tỷ đồng (kỳ T6/2026); (33) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026); (34) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 2.97 % (kỳ 2026-06-01); (35) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.80 % (kỳ 2026-06-01); (36) Tỷ lệ thất nghiệp Mỹ đạt 4.20 % (kỳ 2026-06-01); (37) CPI Mỹ (YoY) đạt 3.46 % (kỳ 2026-06-01); (38) CPI lõi Mỹ (YoY) đạt 2.57 % (kỳ 2026-06-01); (39) PCE Mỹ (YoY) đạt 3.67 % (kỳ 2026-06-01); (40) PCE lõi Mỹ (YoY) đạt 3.29 % (kỳ 2026-06-01); (41) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01); (42) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01); (43) FDI đăng ký theo tháng (rời rạc) đạt 9.89 tỷ USD (kỳ T6/2026); (44) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 102.84 nghìn tỷ đồng (kỳ T6/2026); (45) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026); (46) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026); (47) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.86 điểm % (kỳ 2026-07-30). Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) PMI sản xuất (S&P Global) đạt 51.80 điểm (kỳ T6/2026); (2) Tăng trưởng cung tiền M2 (YoY) đạt 5.86 % (kỳ T4/2026); (3) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026); (4) FDI giải ngân (lũy kế) đạt 5.41 tỷ USD (kỳ Q1/2026); (5) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026); (6) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026); (7) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026); (8) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 275.00 ngày (kỳ Tuần 31/2026); (9) Đóng góp vào CPI — Khác đạt 1.12 điểm % CPI (kỳ T6/2026); (10) Số dư OMO đang lưu hành (kênh cầm cố) đạt 149242.55 tỷ đồng (kỳ 2026-07-30); (11) Lãi suất liên ngân hàng qua đêm Nhật Bản đạt 0.84 % (kỳ 2026-06-01); (12) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.67 % (kỳ 2026-06-01); (13) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt 57.00 nghìn người (kỳ 2026-06-01); (14) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01); (15) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.14 % (kỳ 2026-06-01); (16) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 10.74x, P/B 1.67x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.81% — mức định giá được xếp loại \"Rẻ/Hấp dẫn\". Kết hợp Scorecard vĩ mô (+1/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Mua mạnh\": Vĩ mô đã ĐẢO CHIỀU được XÁC NHẬN (Scorecard đang dương điểm VÀ đang cải thiện so với kỳ trước) + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu lớn, ưu tiên ngành hưởng lợi từ vĩ mô.",
+    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang cải thiện ▲ — So với tuần trước (2026-07-25): -2/6 → +1/6 ▲. So với tháng trước (2026-07-12): +2/6 → +1/6 ▼. Bức tranh tổng thể hiện ở mức \"Sáng — đa số chỉ báo đồng thuận tích cực\" — 43/58 chỉ báo có xu hướng rõ đang tốt lên (74%), 15/58 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Mua mạnh\".\n\nScorecard Vĩ Mô tổng hợp đạt +1/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng và Lãi suất. Ngược lại, nhóm Thanh khoản đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Lạm phát, Tỷ giá & Dòng vốn ngoại và Thương mại & Hàng hóa giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026); (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 12.70 % (kỳ T6/2026); (3) Doanh số bán lẻ (YoY) đạt 14.80 % (kỳ T6/2026); (4) CPI (YoY) đạt 4.69 % (kỳ T6/2026); (5) Lạm phát cơ bản (YoY) đạt 4.50 % (kỳ T6/2026); (6) Lãi suất liên ngân hàng 3 tháng đạt 7.34 % (kỳ Tuần 31/2026); (7) Lãi suất liên ngân hàng qua đêm (O/N) đạt 0.70 % (kỳ 2026-07-30); (8) Lãi suất liên ngân hàng 1 tuần đạt 4.50 % (kỳ 2026-07-30); (9) Lãi suất liên ngân hàng 2 tuần đạt 5.50 % (kỳ 2026-07-30); (10) Lãi suất liên ngân hàng 6 tháng đạt 7.22 % (kỳ Tuần 31/2026); (11) Tăng trưởng tín dụng (YoY) đạt 5.96 % (kỳ T5/2026); (12) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025); (13) Nợ công / GDP đạt 32.86 % (kỳ 2024); (14) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 11.70 % (kỳ T6/2026); (15) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026); (16) Giá dầu Brent đạt 91.82 USD/thùng (kỳ 2026-07-27); (17) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026); (18) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026); (19) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt 678.77 tỷ VND (kỳ 2026-07-30); (20) Tổng dư nợ tín dụng toàn nền kinh tế đạt 19703851.00 tỷ VND (kỳ T5/2026); (21) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025); (22) Đóng góp vào CPI — Thực phẩm đạt 1.64 điểm % CPI (kỳ T6/2026); (23) Đóng góp vào CPI — Nhà, điện, nước đạt 1.35 điểm % CPI (kỳ T6/2026); (24) Đóng góp vào CPI — Vận tải đạt 0.51 điểm % CPI (kỳ T6/2026); (25) VN-Index P/E (headline, có VIN) đạt 11.77 x (kỳ T8/2026); (26) VN-Index P/B (headline, có VIN) đạt 1.93 x (kỳ T8/2026); (27) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt 4900.21 tỷ đồng (kỳ 2026-07-30); (28) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 35.50 % (kỳ T6/2026); (29) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026); (30) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026); (31) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026); (32) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 356.94 nghìn tỷ đồng (kỳ T6/2026); (33) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026); (34) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 2.97 % (kỳ 2026-06-01); (35) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.80 % (kỳ 2026-06-01); (36) Tỷ lệ thất nghiệp Mỹ đạt 4.20 % (kỳ 2026-06-01); (37) CPI Mỹ (YoY) đạt 3.46 % (kỳ 2026-06-01); (38) CPI lõi Mỹ (YoY) đạt 2.57 % (kỳ 2026-06-01); (39) PCE Mỹ (YoY) đạt 3.67 % (kỳ 2026-06-01); (40) PCE lõi Mỹ (YoY) đạt 3.29 % (kỳ 2026-06-01); (41) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01); (42) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01); (43) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025); (44) FDI đăng ký theo tháng (rời rạc) đạt 9.89 tỷ USD (kỳ T6/2026); (45) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 102.84 nghìn tỷ đồng (kỳ T6/2026); (46) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026); (47) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026); (48) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.86 điểm % (kỳ 2026-07-30). Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) PMI sản xuất (S&P Global) đạt 51.80 điểm (kỳ T6/2026); (2) Tăng trưởng cung tiền M2 (YoY) đạt 5.86 % (kỳ T4/2026); (3) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026); (4) FDI giải ngân (lũy kế) đạt 5.41 tỷ USD (kỳ Q1/2026); (5) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026); (6) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026); (7) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026); (8) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 275.00 ngày (kỳ Tuần 31/2026); (9) Đóng góp vào CPI — Khác đạt 1.12 điểm % CPI (kỳ T6/2026); (10) Số dư OMO đang lưu hành (kênh cầm cố) đạt 149242.55 tỷ đồng (kỳ 2026-07-30); (11) Lãi suất liên ngân hàng qua đêm Nhật Bản đạt 0.84 % (kỳ 2026-06-01); (12) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.67 % (kỳ 2026-06-01); (13) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt 57.00 nghìn người (kỳ 2026-06-01); (14) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01); (15) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.14 % (kỳ 2026-06-01); (16) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026); (17) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 153.37 % (kỳ T5/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 10.74x, P/B 1.67x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.77% — mức định giá được xếp loại \"Rẻ/Hấp dẫn\". Kết hợp Scorecard vĩ mô (+1/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Mua mạnh\": Vĩ mô đã ĐẢO CHIỀU được XÁC NHẬN (Scorecard đang dương điểm VÀ đang cải thiện so với kỳ trước) + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu lớn, ưu tiên ngành hưởng lợi từ vĩ mô.",
     "economy_impact": [
       {
         "heading": "Tăng trưởng & Lạm phát",
@@ -301,7 +301,7 @@
         "text": "Về lao động, Tỷ lệ thất nghiệp ở mức 2.21 % (kỳ Q1/2026). Áp lực từ bên ngoài: Lãi suất Fed (FEDFUNDS) đạt 3.63 % (kỳ 2026-06-01), ổn định; Giá dầu Brent đạt 91.82 USD/thùng (kỳ 2026-07-27), tốt lên; Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 120.71 điểm (kỳ 2026-07-24), ổn định; Tăng trưởng GDP Trung Quốc đạt 4.96 % (kỳ 2025), ổn định. Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là một trong các đối tác thương mại lớn nhất."
       }
     ],
-    "market_impact": "Với Scorecard vĩ mô +1/6 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Rẻ/Hấp dẫn\", khuyến nghị phân bổ vốn hiện tại là \"Mua mạnh\": Vĩ mô đã ĐẢO CHIỀU được XÁC NHẬN (Scorecard đang dương điểm VÀ đang cải thiện so với kỳ trước) + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu lớn, ưu tiên ngành hưởng lợi từ vĩ mô.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 4.81%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái phiếu ở mức lãi suất hiện tại. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (9.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent hạ nhiệt hỗ trợ biên lợi nhuận nhóm vận tải, nhựa, phân bón (chi phí đầu vào giảm), nhưng bất lợi cho nhóm khai thác/dầu khí thượng nguồn.",
+    "market_impact": "Với Scorecard vĩ mô +1/6 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Rẻ/Hấp dẫn\", khuyến nghị phân bổ vốn hiện tại là \"Mua mạnh\": Vĩ mô đã ĐẢO CHIỀU được XÁC NHẬN (Scorecard đang dương điểm VÀ đang cải thiện so với kỳ trước) + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu lớn, ưu tiên ngành hưởng lợi từ vĩ mô.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 4.77%, trên nền lãi suất phi rủi ro tham chiếu 4.54%. Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái phiếu ở mức lãi suất hiện tại. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (9.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent hạ nhiệt hỗ trợ biên lợi nhuận nhóm vận tải, nhựa, phân bón (chi phí đầu vào giảm), nhưng bất lợi cho nhóm khai thác/dầu khí thượng nguồn.",
     "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: PMI sản xuất (S&P Global), Tăng trưởng cung tiền M2 (YoY), FDI giải ngân (lũy kế) và Cán cân thương mại (lũy kế).\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
   },
   "indicators": {
@@ -17084,6 +17084,85 @@
       "note": "Discount Rate, China, IMF IFS (FRED series INTDSRCNM193N) — TRUNG QUỐC KHÔNG có 1 lãi suất điều hành chuẩn hoá quốc tế đơn giản như Fed Funds/ECB Deposit Rate (PBOC điều hành qua nhiều công cụ: LPR, MLF, lãi suất chiết khấu...) — đây là PROXY, tương tự cách xử lý boj_interbank_rate/boe_sonia_rate, không phải con số LPR chính thức PBOC công bố hàng tháng.",
       "impact": "PBOC nới lỏng/thắt chặt ảnh hưởng dòng vốn nhân dân tệ, gián tiếp tác động khu vực Đông Nam Á trong đó có Việt Nam."
     },
+    "nominal_gdp_annual": {
+      "group": "growth",
+      "label": "GDP danh nghĩa Việt Nam (theo năm)",
+      "unit": "tỷ VND",
+      "goodDirection": "higher",
+      "autoSource": "worldbank",
+      "series": [
+        {
+          "period": "2016",
+          "value": 5639401.0,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2017",
+          "value": 6293904.55,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2018",
+          "value": 7009042.13,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2019",
+          "value": 7707200.29,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2020",
+          "value": 8044385.73,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2021",
+          "value": 8487475.6,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2022",
+          "value": 9621371.82,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2023",
+          "value": 10319058.87,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2024",
+          "value": 11510328.92,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        },
+        {
+          "period": "2025",
+          "value": 12847571.22,
+          "source_url": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN"
+        }
+      ],
+      "trend": {
+        "latest": 12847571.22,
+        "latest_period": "2025",
+        "latest_source": "https://api.worldbank.org/v2/country/vn/indicator/NY.GDP.MKTP.CN",
+        "n_points": 10,
+        "prior": 11510328.92,
+        "prior_period": "2024",
+        "delta": 1337242.3,
+        "delta_vs_4back": 4360095.62,
+        "far_period": "2021",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "World Bank API (indicator NY.GDP.MKTP.CN — GDP, current LCU, quy đổi tỷ VND) — GDP DANH NGHĨA theo năm, dùng làm mẫu số tính tỷ lệ Tín dụng/GDP (credit_to_gdp_ratio, phái sinh, xem _add_credit_derived_indicators() trong template_vimo.py). Dùng GDP danh nghĩa (không phải GDP thực/giá so sánh) vì credit_balance_total cũng tính theo giá trị danh nghĩa (VND hiện hành) — chia tín dụng danh nghĩa cho GDP thực sẽ lệch do khác gốc giá so sánh, đây là quy ước chuẩn quốc tế (BIS/IMF) khi tính chỉ báo Credit-to-GDP.",
+      "impact": "GDP danh nghĩa tăng chậm hơn tín dụng khiến tỷ lệ đòn bẩy tín dụng/GDP tăng nhanh — rủi ro bong bóng tài sản/nợ xấu tích lũy trong dài hạn nếu kéo dài (kinh nghiệm nhiều cuộc khủng hoảng tài chính khu vực)."
+    },
     "fdi_disbursed_quarterly": {
       "group": "trade",
       "label": "FDI giải ngân theo quý (rời rạc)",
@@ -17851,6 +17930,984 @@
       },
       "note": "= us_10y_yield − us_yield_3m (khớp theo period NGÀY, cả 2 đều từ FRED). Spread ÂM (đường cong đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm. good_direction=higher vì spread dương (đường cong bình thường, dốc lên) là trạng thái lành mạnh. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
       "impact": "Đường cong lợi suất Mỹ đảo ngược kéo dài là tín hiệu cảnh báo suy thoái Mỹ sớm nhất được thị trường toàn cầu theo dõi — ảnh hưởng khẩu vị rủi ro chung, gián tiếp tác động dòng vốn ngoại vào TTCK Việt Nam."
+    },
+    "credit_growth_yoy_monthly": {
+      "group": "monetary",
+      "label": "Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2019-01",
+          "value": 14.99,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-02",
+          "value": 13.58,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-03",
+          "value": 13.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-04",
+          "value": 13.21,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-05",
+          "value": 13.46,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-06",
+          "value": 13.4,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-07",
+          "value": 13.28,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-08",
+          "value": 13.04,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-09",
+          "value": 12.93,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-10",
+          "value": 12.73,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-11",
+          "value": 12.56,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-12",
+          "value": 13.65,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-01",
+          "value": 11.63,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-02",
+          "value": 12.64,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-03",
+          "value": 11.64,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-04",
+          "value": 10.33,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-05",
+          "value": 9.58,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-06",
+          "value": 9.72,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-07",
+          "value": 10.02,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-08",
+          "value": 10.14,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-09",
+          "value": 10.21,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-10",
+          "value": 10.3,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-11",
+          "value": 11.0,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-12",
+          "value": 12.17,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-01",
+          "value": 12.91,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-02",
+          "value": 12.71,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-03",
+          "value": 13.99,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-04",
+          "value": 15.21,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-05",
+          "value": 15.42,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-06",
+          "value": 15.19,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-07",
+          "value": 15.26,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-08",
+          "value": 14.98,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-09",
+          "value": 14.07,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-10",
+          "value": 14.24,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-11",
+          "value": 14.64,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-12",
+          "value": 13.61,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-01",
+          "value": 15.75,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-02",
+          "value": 15.86,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-03",
+          "value": 16.94,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-04",
+          "value": 16.95,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-05",
+          "value": 17.01,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-06",
+          "value": 16.8,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-07",
+          "value": 16.4,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-08",
+          "value": 16.28,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-09",
+          "value": 16.94,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-10",
+          "value": 16.59,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-11",
+          "value": 14.84,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-12",
+          "value": 14.17,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-01",
+          "value": 11.34,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-02",
+          "value": 12.17,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-03",
+          "value": 10.52,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-04",
+          "value": 9.7,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-05",
+          "value": 9.08,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-06",
+          "value": 9.27,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-07",
+          "value": 8.96,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-08",
+          "value": 9.6,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-09",
+          "value": 9.98,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-10",
+          "value": 9.88,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-11",
+          "value": 11.3,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-12",
+          "value": 13.79,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-01",
+          "value": 12.9,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-02",
+          "value": 11.98,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-03",
+          "value": 12.51,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-04",
+          "value": 12.67,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-05",
+          "value": 13.97,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-06",
+          "value": 15.28,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-07",
+          "value": 15.3,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-08",
+          "value": 15.67,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-09",
+          "value": 16.08,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-10",
+          "value": 16.69,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-11",
+          "value": 16.56,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-12",
+          "value": 15.09,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-01",
+          "value": 16.52,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-02",
+          "value": 16.84,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-03",
+          "value": 17.91,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-04",
+          "value": 18.81,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-05",
+          "value": 18.75,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-06",
+          "value": 19.22,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-10",
+          "value": 20.49,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-11",
+          "value": 20.24,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-12",
+          "value": 20.49,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-01",
+          "value": 19.83,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-02",
+          "value": 21.93,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-03",
+          "value": 18.24,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-04",
+          "value": 18.25,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-05",
+          "value": 18.23,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        }
+      ],
+      "trend": {
+        "latest": 18.23,
+        "latest_period": "2026-05",
+        "latest_source": "https://vbma.org.vn/vi/market-data/credit",
+        "n_points": 86,
+        "prior": 18.25,
+        "prior_period": "2026-04",
+        "delta": -0.02,
+        "delta_vs_4back": -1.6,
+        "far_period": "2026-01",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
+      },
+      "note": "Suy ra từ credit_balance_total (dư nợ tuyệt đối theo tháng, vbma.org.vn) bằng cách so CÙNG THÁNG năm trước (YoY thật) — KHÁC credit_growth (nguồn SBV, thực chất là tăng trưởng SO VỚI ĐẦU NĂM, reset về gần 0% mỗi tháng 1 rồi cộng dồn tới tháng 12, không phải YoY thật). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — KHÔNG dùng để tính Scorecard (đã có credit_growth cho vai trò đó).",
+      "impact": "So được tốc độ tăng dư nợ THEO ĐÚNG NGHĨA cùng kỳ năm trước, không bị ảnh hưởng bởi hiệu ứng reset đầu năm của số liệu SBV công bố."
+    },
+    "credit_to_gdp_ratio": {
+      "group": "monetary",
+      "label": "Tỷ lệ Tín dụng / GDP danh nghĩa",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2018-01",
+          "value": 91.18,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-02",
+          "value": 91.54,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-03",
+          "value": 93.53,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-04",
+          "value": 94.94,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-05",
+          "value": 95.92,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-06",
+          "value": 97.4,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-07",
+          "value": 97.62,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-08",
+          "value": 98.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-09",
+          "value": 99.67,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-10",
+          "value": 100.42,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-11",
+          "value": 101.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2018-12",
+          "value": 102.88,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-01",
+          "value": 95.35,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-02",
+          "value": 94.56,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-03",
+          "value": 96.5,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-04",
+          "value": 97.74,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-05",
+          "value": 98.97,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-06",
+          "value": 100.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-07",
+          "value": 100.57,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-08",
+          "value": 101.2,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-09",
+          "value": 102.36,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-10",
+          "value": 102.95,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-11",
+          "value": 103.85,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2019-12",
+          "value": 106.33,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-01",
+          "value": 101.98,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-02",
+          "value": 102.05,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-03",
+          "value": 103.21,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-04",
+          "value": 103.32,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-05",
+          "value": 103.91,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-06",
+          "value": 105.6,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-07",
+          "value": 106.0,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-08",
+          "value": 106.79,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-09",
+          "value": 108.08,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-10",
+          "value": 108.8,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-11",
+          "value": 110.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2020-12",
+          "value": 114.27,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-01",
+          "value": 109.13,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-02",
+          "value": 109.02,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-03",
+          "value": 111.5,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-04",
+          "value": 112.82,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-05",
+          "value": 113.67,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-06",
+          "value": 115.29,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-07",
+          "value": 115.8,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-08",
+          "value": 116.38,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-09",
+          "value": 116.84,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-10",
+          "value": 117.8,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-11",
+          "value": 120.01,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2021-12",
+          "value": 123.05,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-01",
+          "value": 111.43,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-02",
+          "value": 111.43,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-03",
+          "value": 115.03,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-04",
+          "value": 116.4,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-05",
+          "value": 117.33,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-06",
+          "value": 118.78,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-07",
+          "value": 118.91,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-08",
+          "value": 119.37,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-09",
+          "value": 120.54,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-10",
+          "value": 121.16,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-11",
+          "value": 121.58,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2022-12",
+          "value": 123.94,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-01",
+          "value": 115.68,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-02",
+          "value": 116.54,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-03",
+          "value": 118.54,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-04",
+          "value": 119.05,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-05",
+          "value": 119.33,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-06",
+          "value": 121.02,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-07",
+          "value": 120.81,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-08",
+          "value": 121.99,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-09",
+          "value": 123.6,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-10",
+          "value": 124.12,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-11",
+          "value": 126.17,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2023-12",
+          "value": 131.49,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-01",
+          "value": 117.08,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-02",
+          "value": 117.0,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-03",
+          "value": 119.56,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-04",
+          "value": 120.26,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-05",
+          "value": 121.93,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-06",
+          "value": 125.07,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-07",
+          "value": 124.87,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-08",
+          "value": 126.51,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-09",
+          "value": 128.63,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-10",
+          "value": 129.84,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-11",
+          "value": 131.85,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2024-12",
+          "value": 135.67,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-01",
+          "value": 122.22,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-02",
+          "value": 122.48,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-03",
+          "value": 126.3,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-04",
+          "value": 128.01,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-05",
+          "value": 129.72,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-06",
+          "value": 133.59,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-10",
+          "value": 140.16,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-11",
+          "value": 142.03,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2025-12",
+          "value": 146.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-01",
+          "value": 146.45,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-02",
+          "value": 149.34,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-03",
+          "value": 149.34,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-04",
+          "value": 151.37,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        },
+        {
+          "period": "2026-05",
+          "value": 153.37,
+          "source_url": "https://vbma.org.vn/vi/market-data/credit"
+        }
+      ],
+      "trend": {
+        "latest": 153.37,
+        "latest_period": "2026-05",
+        "latest_source": "https://vbma.org.vn/vi/market-data/credit",
+        "n_points": 98,
+        "prior": 151.37,
+        "prior_period": "2026-04",
+        "delta": 2.0,
+        "delta_vs_4back": 6.92,
+        "far_period": "2026-01",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
+      },
+      "note": "= credit_balance_total (vbma, theo tháng) / nominal_gdp_annual (World Bank, theo NĂM gần nhất có sẵn) x100 — GDP năm nào chưa công bố thì dùng năm gần nhất trước đó (GDP thường công bố trễ hơn tín dụng). Chỉ báo đòn bẩy tín dụng kinh điển BIS/IMF. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng để tính Scorecard.",
+      "impact": "Tỷ lệ Tín dụng/GDP tăng nhanh và bền vững (credit boom) là 1 trong các chỉ báo cảnh báo sớm khủng hoảng tài chính được BIS/IMF theo dõi sát nhất — cùng một mức tăng trưởng tín dụng % nhưng nếu tỷ lệ này đã cao/tăng nhanh thì rủi ro tích lũy lớn hơn nhiều."
     }
   }
 }
