@@ -766,7 +766,10 @@ def calc_overall_verdict(scorecard_total, trends, scorecard_history):
     raw['_meta']['scorecard_history'] TRƯỚC KHI ghi thêm điểm của lần chạy hiện tại. So sánh xu
     hướng theo mốc thời gian THẬT (tháng trước ~30 ngày, quý trước ~90 ngày, đầu năm) — KHÔNG so
     với "entry gần nhất" (vô nghĩa nếu Action chạy nhiều lần gần nhau trong cùng ngày/tuần). Trả
-    dict {trend_label, trend_arrow, trend_detail, clarity_label, clarity_pct, clarity_detail}."""
+    dict {trend_label, trend_arrow, trend_detail, trend_week, trend_month, clarity_label,
+    clarity_pct, clarity_detail}. trend_week/trend_month là 2 dòng ĐỘC LẬP {label, arrow, detail,
+    available} để dashboard hiển thị riêng (user 2026-08-01), tách biệt trend_label/trend_arrow
+    "chính" (ưu tiên tuần > tháng > quý > đầu năm, vẫn dùng cho PDF/ma trận quyết định/headline)."""
     now = datetime.datetime.now()
     year_start = datetime.datetime(now.year, 1, 1)
     # entry_week: Action cập nhật theo LỊCH TUẦN (update_vimo.yml, cron thứ Sáu hàng tuần) — user
@@ -791,6 +794,28 @@ def calc_overall_verdict(scorecard_total, trends, scorecard_history):
         diff = scorecard_total - entry["total"]
         arrow = "▲" if diff > 0 else ("▼" if diff < 0 else "→")
         return f"{label} ({entry['date']}): {entry['total']:+d}/{n_groups} → {scorecard_total:+d}/{n_groups} {arrow}"
+
+    def _trend_from_entry(entry):
+        """Trả {label, arrow, detail, available} cho 1 mốc so sánh RIÊNG (tuần/tháng) — dùng để
+        hiển thị 2 DÒNG ĐỘC LẬP trên dashboard (user 2026-08-01: "tôi muốn 2 dòng: so với tuần
+        trước và so với tháng trước"), tách biệt khỏi trend_label/trend_arrow "chính" (vẫn ưu tiên
+        tuần > tháng > quý > đầu năm, dùng cho PDF/ma trận quyết định/headline — KHÔNG đổi để
+        tránh ảnh hưởng các chỗ khác đang phụ thuộc)."""
+        if not entry:
+            return {"label": "Chưa đủ lịch sử", "arrow": "—",
+                    "detail": "Chưa có đủ lịch sử Scorecard ở mốc này để so sánh.", "available": False}
+        diff = scorecard_total - entry["total"]
+        if diff > 0:
+            label, arrow = "Đang cải thiện", "▲"
+        elif diff < 0:
+            label, arrow = "Đang xấu đi", "▼"
+        else:
+            label, arrow = "Đi ngang, chưa có chuyển biến rõ", "→"
+        detail = (f"({entry['date']}): {entry['total']:+d}/{n_groups} → {scorecard_total:+d}/{n_groups} {arrow}")
+        return {"label": label, "arrow": arrow, "detail": detail, "available": True}
+
+    trend_week = _trend_from_entry(entry_week)
+    trend_month = _trend_from_entry(entry_month)
 
     comparisons = [c for c in [
         _cmp_txt("So với tuần trước", entry_week),
@@ -834,6 +859,7 @@ def calc_overall_verdict(scorecard_total, trends, scorecard_history):
 
     return {
         "trend_label": trend_label, "trend_arrow": trend_arrow, "trend_detail": trend_detail,
+        "trend_week": trend_week, "trend_month": trend_month,
         "clarity_label": clarity_label, "clarity_pct": clarity_pct, "clarity_detail": clarity_detail,
     }
 

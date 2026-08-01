@@ -106,14 +106,20 @@ function renderSynthesis(synthesis) {
 // bức tranh rõ ràng hay xám/hỗn hợp (mức đồng thuận giữa các chỉ báo), có phù hợp đầu tư không.
 function renderVerdict(verdict, decision) {
     if (!verdict) return;
-    const trendEl = document.getElementById('verdict-trend');
     const clarityEl = document.getElementById('verdict-clarity');
     const decisionEl = document.getElementById('verdict-decision');
     const detailEl = document.getElementById('verdict-detail');
 
-    const trendColor = verdict.trend_arrow === '▲' ? '#10b981' : (verdict.trend_arrow === '▼' ? '#ef4444' : '#f59e0b');
-    trendEl.textContent = `${verdict.trend_arrow} ${verdict.trend_label}`;
-    trendEl.style.color = trendColor;
+    // 2 dòng ĐỘC LẬP so tuần trước / so tháng trước (user 2026-08-01) — mỗi dòng tự tính
+    // tốt lên/xấu đi riêng theo đúng mốc của nó, xem trend_week/trend_month trong
+    // calc_overall_verdict() (template_vimo.py).
+    const _trendColor = (arrow) => arrow === '▲' ? '#10b981' : (arrow === '▼' ? '#ef4444' : '#f59e0b');
+    [['verdict-trend-week', verdict.trend_week], ['verdict-trend-month', verdict.trend_month]].forEach(([id, t]) => {
+        const el = document.getElementById(id);
+        if (!el || !t) return;
+        el.textContent = `${t.arrow} ${t.label}`;
+        el.style.color = _trendColor(t.arrow);
+    });
 
     const clarityColor = (verdict.clarity_label || '').includes('Sáng') ? '#10b981'
         : (verdict.clarity_label || '').includes('Tối') ? '#ef4444' : '#f59e0b';

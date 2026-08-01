@@ -1830,11 +1830,13 @@ def update_vimo_raw():
             ]
             print(f"  -> {key}: {len(pts)} điểm")
 
-    print("[FRED — Quốc tế: Eurozone (thất nghiệp, CPI/lõi, GDP, sản xuất CN, ECB, lợi suất Đức)]")
+    print("[FRED — Quốc tế: Eurozone (thất nghiệp, CPI, GDP, sản xuất CN, ECB, lợi suất Đức)]")
+    # eu_core_cpi_yoy ĐÃ BỎ (2026-08-01, theo yêu cầu user "dữ liệu cũ không còn hoạt động thì bỏ,
+    # vì nó đâu có tác dụng gì đâu") — CPGRLE01EZM659N và mọi biến thể OECD MEI thử qua đều bị
+    # discontinued từ 2023-01 trên FRED, không có nguồn thay thế nào còn sống.
     for key, sid, units in [
         ("eu_unemployment_rate", "LRHUTTTTEZM156S", None),
         ("eu_cpi_yoy", "CP0000EZ19M086NEST", "pc1"),
-        ("eu_core_cpi_yoy", "CPGRLE01EZM659N", None),
         ("eu_gdp_growth", "NAEXKP01EZQ657S", None),
         ("eu_industrial_production_yoy", "EA19PRINTO01GYSAM", None),
         ("ecb_deposit_rate", "ECBDFR", None),
@@ -1852,18 +1854,14 @@ def update_vimo_raw():
             ]
             print(f"  -> {key}: {len(pts)} điểm")
 
-    # CPGRLE01EZM659N/EA19PRINTO01GYSAM/NAEXKP01EZQ657S/CHNPRINTO01GYSAM/NAEXKP01CNQ657S/
-    # INTDSRCNM193N: quy ước đặt tên OECD MEI qua FRED, độ tin cậy THẤP HƠN các ID còn lại (chưa
-    # xác minh trực tiếp được do rate-limit khi kiểm tra) — fetch_fred() fail-safe (trả [] nếu ID
-    # sai), nên rủi ro cao nhất chỉ là chỉ báo đó RỖNG, không crash. Nếu rỗng sau khi Action chạy
-    # thật (có FRED_API_KEY) cần rà lại ID cụ thể.
-    print("[FRED — Quốc tế: Trung Quốc (CPI, sản xuất CN, GDP quý, lãi suất NHTW proxy, lợi suất 10Y)]")
+    # cn_industrial_production_yoy/cn_gdp_growth_quarterly/cn_10y_yield ĐÃ BỎ (2026-08-01, theo
+    # yêu cầu user "dữ liệu cũ không còn hoạt động thì bỏ") — CHNPRINTO01GYSAM/NAEXKP01CNQ657S/
+    # IRLTLT01CNM156N và mọi biến thể thử qua đều 404/không tồn tại trên FRED, không có nguồn thay
+    # thế nào còn sống (khác Đức/Nhật/Anh vẫn dùng tốt cùng họ ID IRLTLT01*M156N).
+    print("[FRED — Quốc tế: Trung Quốc (CPI, lãi suất NHTW proxy)]")
     for key, sid, units in [
         ("cn_cpi_yoy", "CPALTT01CNM659N", None),
-        ("cn_industrial_production_yoy", "CHNPRINTO01GYSAM", None),
-        ("cn_gdp_growth_quarterly", "NAEXKP01CNQ657S", None),
         ("cn_central_bank_rate", "INTDSRCNM193N", None),
-        ("cn_10y_yield", "IRLTLT01CNM156N", None),
     ]:
         pts = fetch_fred(sid, n=24, units=units)
         if pts:

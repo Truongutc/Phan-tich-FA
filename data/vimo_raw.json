@@ -14524,16 +14524,6 @@
     "note": "Harmonized Index of Consumer Prices, Euro Area 19, Index (FRED series CP0000EZ19M086NEST, units=pc1 để FRED tự tính %YoY) — ID cũ CPALTT01EZM659N đã bị FRED trả về lỗi (không còn tồn tại), đã đổi sang ID này sau khi xác minh trực tiếp có dữ liệu đến 2026-06.",
     "impact": "Lạm phát Eurozone quyết định hướng đi lãi suất ECB — ảnh hưởng chênh lệch lãi suất USD/EUR và dòng vốn toàn cầu."
   },
-  "eu_core_cpi_yoy": {
-    "group": "intl_eu",
-    "label": "CPI lõi Eurozone (YoY)",
-    "unit": "%",
-    "good_direction": "lower",
-    "auto_source": "fred",
-    "series": [],
-    "note": "Core CPI ex food-energy, Euro Area (CPGRLE01EZM659N và các biến thể EA19CPGRLE01*) đã NGỪNG cập nhật trên FRED từ 2023-01 (chuỗi OECD MEI cũ bị discontinued) — chưa tìm được nguồn FRED còn hoạt động thay thế. fetch_fred() fail-safe nên chỉ báo này sẽ luôn rỗng cho tới khi tìm được nguồn khác.",
-    "impact": "ECB quan tâm lạm phát lõi hơn headline khi quyết định lãi suất, tương tự cách Fed dùng CPI lõi."
-  },
   "eu_gdp_growth": {
     "group": "intl_eu",
     "label": "Tăng trưởng GDP Eurozone (QoQ)",
@@ -14927,26 +14917,6 @@
     "note": "Consumer Price Index, China, YoY (FRED series CPALTT01CNM659N, OECD MEI).",
     "impact": "Trung Quốc là đối tác thương mại lớn nhất của Việt Nam — lạm phát/giảm phát TQ ảnh hưởng giá hàng hóa nhập khẩu và cạnh tranh xuất khẩu của Việt Nam."
   },
-  "cn_industrial_production_yoy": {
-    "group": "intl_cn",
-    "label": "Chỉ số sản xuất công nghiệp Trung Quốc (YoY)",
-    "unit": "%",
-    "good_direction": "higher",
-    "auto_source": "fred",
-    "series": [],
-    "note": "Không tìm được series FRED còn hoạt động cho sản xuất công nghiệp Trung Quốc (đã thử CHNPRINTO01GYSAM và nhiều biến thể khác, tất cả 404/không tồn tại). Chỉ báo này sẽ luôn rỗng cho tới khi tìm được nguồn khác.",
-    "impact": "Sản xuất công nghiệp TQ chậm lại ảnh hưởng giá hàng hóa/nguyên liệu đầu vào toàn cầu và chuỗi cung ứng liên quan Việt Nam."
-  },
-  "cn_gdp_growth_quarterly": {
-    "group": "intl_cn",
-    "label": "Tăng trưởng GDP Trung Quốc theo quý (YoY)",
-    "unit": "%",
-    "good_direction": "higher",
-    "auto_source": "fred",
-    "series": [],
-    "note": "Không tìm được series GDP tăng trưởng theo quý còn hoạt động của FRED cho Trung Quốc (NAEXKP01CNQ657S trả 404; CHNGDPNQDSMEI là GDP danh nghĩa mức tuyệt đối, đã ngừng cập nhật từ 2023-07, không dùng được) — dùng china_gdp_growth (World Bank, theo NĂM) làm chỉ báo GDP Trung Quốc chính, chỉ báo quý này sẽ luôn rỗng cho tới khi tìm được nguồn khác.",
-    "impact": "Tăng trưởng TQ chậm lại là rủi ro lớn cho kinh tế Việt Nam qua kênh thương mại (TQ là đối tác XNK lớn nhất) và dòng vốn khu vực."
-  },
   "cn_central_bank_rate": {
     "group": "intl_cn",
     "label": "Lãi suất NHTW Trung Quốc (PBOC, proxy)",
@@ -15077,15 +15047,5 @@
     ],
     "note": "Discount Rate, China, IMF IFS (FRED series INTDSRCNM193N) — TRUNG QUỐC KHÔNG có 1 lãi suất điều hành chuẩn hoá quốc tế đơn giản như Fed Funds/ECB Deposit Rate (PBOC điều hành qua nhiều công cụ: LPR, MLF, lãi suất chiết khấu...) — đây là PROXY, tương tự cách xử lý boj_interbank_rate/boe_sonia_rate, không phải con số LPR chính thức PBOC công bố hàng tháng.",
     "impact": "PBOC nới lỏng/thắt chặt ảnh hưởng dòng vốn nhân dân tệ, gián tiếp tác động khu vực Đông Nam Á trong đó có Việt Nam."
-  },
-  "cn_10y_yield": {
-    "group": "intl_cn",
-    "label": "Lợi suất TPCP Trung Quốc kỳ hạn 10 năm",
-    "unit": "%",
-    "good_direction": "lower",
-    "auto_source": "fred",
-    "series": [],
-    "note": "Không tìm được series lợi suất TPCP 10 năm Trung Quốc còn hoạt động trên FRED (IRLTLT01CNM156N và các biến thể khác đều 404/không tồn tại, khác Đức/Nhật/Anh vẫn đang hoạt động tốt với cùng họ ID này). Chỉ báo này sẽ luôn rỗng cho tới khi tìm được nguồn khác.",
-    "impact": "Chi phí vốn dài hạn của Chính phủ Trung Quốc — đối chiếu xu hướng chính sách tiền tệ TQ so với Mỹ/Eurozone/Nhật."
   }
 }
