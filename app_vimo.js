@@ -445,9 +445,15 @@ function _renderGenericIndicatorCard(grid, key, ind) {
     const card = document.createElement('div');
     card.className = 'vimo-indicator-card';
     const t = ind.trend || {};
-    const hasChart = (ind.series || []).filter(p => p.value !== null && p.value !== undefined).length >= 4;
+    const nValid = (ind.series || []).filter(p => p.value !== null && p.value !== undefined).length;
+    const hasChart = nValid >= 4;
     const judgColor = t.judgment_color || '#94a3b8';
     const canvasId = `chart-${key}`;
+
+    // Chuỗi nhiều điểm (vd lạm phát cơ bản backfill từ 2020 = ~78 điểm) khiến nhãn trục X xoay
+    // 45° bị chật/tràn ra ngoài card 320px mặc định (user 2026-08-01: "biểu đồ hẹp quá... rộng
+    // ngang thêm") — card nào ≥20 điểm được nới rộng gấp đôi (span 2 cột) để có chỗ cho nhãn.
+    if (nValid >= 20) card.style.gridColumn = 'span 2';
 
     card.innerHTML = `
         <div class="ind-header">
