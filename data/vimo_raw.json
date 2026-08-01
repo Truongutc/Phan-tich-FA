@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-07-31 08:41",
+    "last_auto_update": "2026-08-01 01:57",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -1724,7 +1724,7 @@
       },
       {
         "period": "2026-W31",
-        "value": 7.31,
+        "value": 7.34,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -1802,6 +1802,11 @@
         "period": "2026-07-29",
         "value": 1.3,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 0.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -1878,6 +1883,11 @@
         "period": "2026-07-29",
         "value": 4.6,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -1954,6 +1964,11 @@
         "period": "2026-07-29",
         "value": 5.7,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 5.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -2030,6 +2045,11 @@
         "period": "2026-07-29",
         "value": 6.9,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 6.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -2054,7 +2074,7 @@
       },
       {
         "period": "2026-W31",
-        "value": 7.3,
+        "value": 7.22,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -2158,6 +2178,11 @@
         "period": "2026-07-29",
         "value": 4.5,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "QUAN TRỌNG — KHÔNG PHẢI cung tiền M2: OMO (Nghiệp vụ thị trường mở) là công cụ NHNN BƠM/HÚT THANH KHOẢN NGẮN HẠN (7/35/63 ngày) tại thị trường LIÊN NGÂN HÀNG (thị trường 2) — mục đích khơi thông tắc nghẽn dòng vốn tức thời giữa các TCTD, KHÔNG làm thay đổi tổng cung tiền dài hạn trong nền kinh tế (đó là vai trò của M2/tín dụng). Tác động lan tỏa dần từ thị trường 2 sang thị trường 1 (lãi suất huy động/cho vay DN & dân cư) qua KÊNH TRUYỀN DẪN lãi suất liên ngân hàng — không tức thời, không trực tiếp 1-1. Theo dõi OMO cùng lúc với lãi suất liên ngân hàng (interbank_rate_3m) để thấy áp lực thanh khoản hệ thống thực sự đang tăng hay giảm. Nguồn: sbv.gov.vn (bảng kết quả đấu thầu OMO, tự động cập nhật + tích lũy mỗi lần Action chạy). CAP NHAT 2026-07-30: chuyen nguon tu SBV (tuan, snapshot) sang VIRA (ngay that, xem fetch_vira_bulletin trong fetch_macro_data.py) de dong bo voi cac chi bao lai suat khac, tranh tron dinh dang tuan/ngay gay sai truc thoi gian.",
@@ -2910,6 +2935,11 @@
         "period": "2026-07",
         "value": 26183.58,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
+      },
+      {
+        "period": "2026-08",
+        "value": 26167.86,
+        "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
     "note": "'lower=better' theo nghĩa VND ít mất giá hơn (áp lực tỷ giá giảm). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới sẽ tự APPEND mỗi lần Action chạy qua fetch_macro_data.py.",
@@ -3387,31 +3417,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-07-03",
-        "value": 68.68,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-07-06",
-        "value": 69.56,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-07-07",
-        "value": 71.78,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-07-08",
-        "value": 76.5,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-07-09",
-        "value": 74.46,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
         "period": "2026-07-10",
         "value": 74.34,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
@@ -3445,6 +3450,31 @@
         "period": "2026-07-20",
         "value": 86.99,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 93.85,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 94.12,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 105.32,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 100.31,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 91.82,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
       }
     ],
     "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu.",
@@ -3457,26 +3487,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-07-02",
-        "value": 120.69,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-07-06",
-        "value": 120.83,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-07-07",
-        "value": 120.81,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-07-08",
-        "value": 121.13,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
       {
         "period": "2026-07-09",
         "value": 120.75,
@@ -3510,6 +3520,31 @@
       {
         "period": "2026-07-17",
         "value": 120.53,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 120.54,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 120.58,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 120.57,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 120.91,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 120.71,
         "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       }
     ],
@@ -3578,6 +3613,11 @@
         "period": "2026-07",
         "value": 10.728874927222238,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
+      },
+      {
+        "period": "2026-08",
+        "value": 10.739684161369565,
+        "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
     "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. NÂNG CẤP 2026-07-25 (theo yêu cầu user): nguồn CHÍNH chuyển sang fetch_vnindex_nonvin_data() — file Output/finance/VNINDEX_NONVIN.json từ repo GitHub public Truongutc/AIC---chart-nganh (dự án khác của user), là P/E VN-Index sau khi LOẠI BỎ họ VIN (VIC/VHM/VRE/VPL) — VIN chiếm tỷ trọng lớn + định giá bất thường làm méo mó P/E headline (xác nhận: 24/07/2026 ex-VIN 10.44x vs headline 12.38x, chênh ~2 điểm). 24hmoney.vn/indices/vn-index (CÓ VIN) giữ làm fallback nếu repo GitHub kia không truy cập được — điểm 2026-07=12.38 phía trên là từ fallback trước khi nâng cấp, các điểm mới sẽ là số ex-VIN.",
@@ -3593,6 +3633,11 @@
       {
         "period": "2026-07",
         "value": 1.6661908102494352,
+        "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
+      },
+      {
+        "period": "2026-08",
+        "value": 1.6678694808206072,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -4181,8 +4226,8 @@
       },
       {
         "period": "2026-07-30",
-        "value": 662.82,
-        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=31/07/2026"
+        "value": 678.77,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=01/08/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -4207,7 +4252,7 @@
       },
       {
         "period": "2026-W31",
-        "value": 274,
+        "value": 275,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],
@@ -6797,6 +6842,11 @@
         "period": "2026-07",
         "value": 12.38,
         "source_url": "https://24hmoney.vn/indices/vn-index"
+      },
+      {
+        "period": "2026-08",
+        "value": 11.77,
+        "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
     "note": "Chỉ báo mới 2026-07-25 — P/E VN-Index THẬT (bao gồm cả họ VIN: VIC/VHM/VRE/VPL), fetch SONG SONG với vnindex_pe (ex-VIN) để có 2 quyết định phân bổ vốn độc lập đối chiếu nhau (user 2026-07-25). Nguồn: 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} trong window.__NUXT__).",
@@ -6812,6 +6862,11 @@
       {
         "period": "2026-07",
         "value": 1.98,
+        "source_url": "https://24hmoney.vn/indices/vn-index"
+      },
+      {
+        "period": "2026-08",
+        "value": 1.93,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -6905,6 +6960,11 @@
         "period": "2026-07-29",
         "value": 3.64,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 3.64,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -6981,6 +7041,11 @@
         "period": "2026-07-29",
         "value": 4.21,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.22,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7057,6 +7122,11 @@
         "period": "2026-07-29",
         "value": 4.27,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7133,6 +7203,11 @@
         "period": "2026-07-29",
         "value": 4.41,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.41,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7209,6 +7284,11 @@
         "period": "2026-07-29",
         "value": 4.57,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -7285,6 +7365,11 @@
         "period": "2026-07-29",
         "value": 283.71,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4900.21,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
@@ -8783,6 +8868,11 @@
         "period": "2026-07-29",
         "value": 144342.34,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 149242.55,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
       }
     ],
     "note": "Tổng khối lượng OMO (kênh cầm cố/mua kỳ hạn) đang LƯU HÀNH — TỒN KHO thanh khoản NHNN đã bơm ra thị trường qua kênh này TẠI THỜI ĐIỂM đó, khác omo_net_operation (DÒNG CHẢY ròng bơm/hút MỖI NGÀY — chênh lệch trúng thầu/đáo hạn). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). good_direction='lower' mang tính THAM KHẢO: số dư lưu hành cao kéo dài phản ánh NHNN phải bơm thanh khoản LIÊN TỤC để bù đắp thiếu hụt hệ thống (thanh khoản căng), KHÔNG có nghĩa số dư thấp luôn tốt hơn (có thể chỉ đơn giản là ít nhu cầu vay mượn hơn).",
@@ -8794,7 +8884,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-07-08",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-11",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-12",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-18",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-19",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-25",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-26",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-07-31",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      }
+    ],
     "note": "ECB Deposit Facility Rate (FRED series ECBDFR) — lãi suất NHTW Châu Âu trả cho tiền gửi qua đêm của ngân hàng thương mại, ĐANG LÀ lãi suất điều hành THỰC TẾ quan trọng nhất của ECB từ sau khủng hoảng 2008 (khác Main Refinancing Rate truyền thống) — dùng để đối chiếu xu hướng chính sách tiền tệ Eurozone với Fed.",
     "impact": "ECB tăng/giảm lãi suất ảnh hưởng chênh lệch lãi suất USD/EUR, dòng vốn toàn cầu, gián tiếp tác động tỷ giá VND qua kênh USD."
   },
@@ -8804,7 +9015,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-26",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-06-29",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-03",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      }
+    ],
     "note": "Sterling Overnight Index Average (FRED series IUDSOIA) — lãi suất THỊ TRƯỜNG qua đêm bám rất sát Bank Rate chính thức của Bank of England (không phải chính Bank Rate, nhưng chênh lệch thường dưới 0,1 điểm %) — dùng làm đại diện xu hướng chính sách tiền tệ Anh khi FRED không có series Bank Rate chính thức trực tiếp.",
     "impact": "Phản ánh xu hướng thắt chặt/nới lỏng của BOE, 1 trong 4 NHTW lớn ảnh hưởng dòng vốn toàn cầu."
   },
@@ -8814,7 +9146,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 0.08,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 0.23,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 0.23,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 0.23,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 0.23,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 0.23,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 0.29,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 0.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 0.56,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 0.73,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 0.73,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 0.73,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 0.73,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 0.73,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 0.84,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      }
+    ],
     "note": "Immediate Rates: Call Money/Interbank Rate cho Nhật Bản (FRED series IRSTCI01JPM156N) — lãi suất THỊ TRƯỜNG LIÊN NGÂN HÀNG bám sát mục tiêu chính sách của BOJ, KHÔNG PHẢI chính lãi suất điều hành chính thức BOJ công bố (BOJ neo lãi suất âm/gần 0 nhiều năm, chỉ mới thoát âm gần đây — số liệu này giúp thấy rõ thời điểm BOJ thực sự bắt đầu tăng lãi suất).",
     "impact": "BOJ thoát chính sách lãi suất âm/thắt chặt là sự kiện lớn cho dòng vốn carry-trade JPY toàn cầu, có thể gây biến động thị trường mới nổi."
   },
@@ -8824,7 +9277,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-29",
+        "value": 4.38,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 4.44,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.48,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 4.49,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 4.48,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 4.55,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 4.56,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.54,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 4.56,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.62,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.58,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.55,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.57,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 4.55,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.6,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.63,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.67,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.71,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 4.69,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.65,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.61,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.67,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.68,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      }
+    ],
     "note": "10-Year Treasury Constant Maturity Rate (FRED series DGS10) — lãi suất phi rủi ro tham chiếu toàn cầu, ảnh hưởng định giá mọi tài sản rủi ro (kể cả VN-Index) qua kênh chi phí vốn.",
     "impact": "Lợi suất Mỹ tăng thường kéo dòng vốn về Mỹ (USD mạnh lên), gây áp lực lên tỷ giá và định giá cổ phiếu các thị trường mới nổi trong đó có Việt Nam."
   },
@@ -8834,7 +9403,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 2.46,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 2.21,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 2.17,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 2.23,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 2.31,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 2.18,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 2.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 2.41,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 2.74,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 2.51,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 2.56,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 2.52,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 2.63,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 2.67,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 2.69,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 2.62,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 2.66,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 2.81,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 2.81,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 2.75,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 2.91,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 3.0,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 3.05,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 2.97,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      }
+    ],
     "note": "OECD Long-term interest rates cho Đức (FRED series IRLTLT01DEM156N) — TPCP Đức (Bund) là chuẩn tham chiếu lợi suất phi rủi ro của cả khối Eurozone (tương tự vai trò Treasury với Mỹ).",
     "impact": "Đối chiếu chi phí vốn Eurozone so với Mỹ/Nhật — chênh lệch lợi suất Đức-Mỹ là chỉ báo dòng vốn USD/EUR quan trọng."
   },
@@ -8844,7 +9534,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 1.04,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 0.89,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 0.85,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 0.94,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 1.05,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 1.09,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 1.25,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 1.37,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 1.49,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 1.31,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 1.5,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 1.42,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 1.54,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 1.6,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 1.65,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 1.66,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 1.8,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 2.06,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 2.24,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 2.11,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 2.35,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 2.52,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 2.65,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 2.67,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      }
+    ],
     "note": "OECD Long-term interest rates cho Nhật Bản (FRED series IRLTLT01JPM156N) — Nhật giữ lợi suất cực thấp/gần 0 suốt nhiều năm (Yield Curve Control), nên xu hướng tăng gần đây là tín hiệu chính sách rất đáng chú ý.",
     "impact": "Lợi suất Nhật tăng làm giảm sức hấp dẫn của carry-trade vay JPY đầu tư tài sản rủi ro khác — có thể gây rút vốn khỏi thị trường mới nổi khi carry-trade đảo chiều."
   },
@@ -8854,7 +9665,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 3.94,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 3.91,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 4.42,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 4.43,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 4.66,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 4.51,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 4.64,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 4.58,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 4.6,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 4.52,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 4.59,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 4.64,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 4.69,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 4.57,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 4.5,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 4.48,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 4.45,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 4.43,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 4.7,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 4.82,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 4.94,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 4.8,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      }
+    ],
     "note": "OECD Long-term interest rates cho Anh (FRED series IRLTLT01GBM156N) — Gilt (TPCP Anh) 10 năm, cùng nhóm 4 thị trường phát triển lớn (Mỹ/Eurozone/Nhật/Anh) theo dõi xu hướng chính sách tiền tệ toàn cầu.",
     "impact": "Phản ánh áp lực lạm phát/chính sách tiền tệ Anh — 1 trong 4 thị trường lãi suất lớn quyết định xu hướng dòng vốn toàn cầu."
   },
@@ -8864,7 +9796,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 4.1,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 4.1,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 4.1,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 4.0,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 4.1,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 4.5,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 4.2,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      }
+    ],
     "note": "Unemployment Rate (FRED series UNRATE) — 1 trong 2 chỉ tiêu thuộc \"dual mandate\" của Fed (cùng lạm phát), quyết định trực tiếp hướng đi lãi suất Fed.",
     "impact": "Thất nghiệp tăng thường khiến Fed nghiêng về nới lỏng (hạ lãi suất) — tác động dòng vốn toàn cầu và tỷ giá USD/VND."
   },
@@ -8874,7 +9922,128 @@
     "unit": "nghìn người",
     "good_direction": "higher",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 53.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 9.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 155.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 33.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 134.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 237.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-01-01",
+        "value": -48.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 42.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 67.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 108.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 13.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-06-01",
+        "value": -20.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 64.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-08-01",
+        "value": -70.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 76.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-10-01",
+        "value": -140.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 41.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2025-12-01",
+        "value": -17.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 160.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-02-01",
+        "value": -156.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 214.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 148.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 129.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 57.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      }
+    ],
     "note": "Non-farm Payrolls — lấy từ FRED series PAYEMS (Total Nonfarm Employment) với units=chg (FRED tự tính thay đổi tuyệt đối so tháng liền trước) — đúng con số \"Non-Farm Payrolls\" thị trường theo dõi mỗi đầu tháng.",
     "impact": "Báo cáo việc làm là dữ liệu Fed theo dõi sát nhất để quyết định lãi suất — số liệu mạnh/yếu bất ngờ thường gây biến động mạnh USD, lợi suất TPCP, và gián tiếp dòng vốn ngoại vào TTCK Việt Nam."
   },
@@ -8884,7 +10053,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 2.94,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 2.61,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 2.43,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 2.58,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 2.72,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 2.87,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 2.99,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 2.8,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 2.38,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 2.33,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 2.38,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 2.68,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 2.74,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 2.94,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 3.02,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 2.7,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 2.65,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 2.39,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 2.43,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 3.29,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 3.78,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 4.17,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 3.46,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      }
+    ],
     "note": "Consumer Price Index, All Items (FRED series CPIAUCSL, units=pc1 — FRED tự tính %YoY từ chỉ số gốc).",
     "impact": "CPI Mỹ là dữ liệu lạm phát được thị trường toàn cầu theo dõi sát nhất — quyết định kỳ vọng lãi suất Fed, qua đó ảnh hưởng USD/DXY và dòng vốn vào thị trường mới nổi."
   },
@@ -8894,7 +10179,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 3.23,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 3.29,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 3.28,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 3.3,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 3.29,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 3.21,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 3.28,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 3.14,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 2.81,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 2.78,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 2.77,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 2.91,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 3.05,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 3.11,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 3.02,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 2.6,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 2.65,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 2.51,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 2.47,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 2.6,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 2.74,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 2.82,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 2.57,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      }
+    ],
     "note": "CPI Less Food and Energy (FRED series CPILFESL, units=pc1) — loại bỏ biến động giá thực phẩm/năng lượng, phản ánh xu hướng lạm phát nền tảng.",
     "impact": "Fed thường coi trọng CPI lõi hơn CPI headline khi quyết định lãi suất do ít nhiễu bởi cú sốc giá năng lượng/thực phẩm tạm thời."
   },
@@ -8904,7 +10305,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 2.59,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 2.41,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 2.26,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 2.48,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 2.59,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 2.73,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 2.61,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 2.71,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 2.36,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 2.28,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 2.46,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 2.59,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 2.61,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 2.75,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 2.79,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 2.71,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 2.82,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 2.88,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 2.88,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 2.87,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 3.54,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 3.79,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 4.08,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 3.67,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      }
+    ],
     "note": "Personal Consumption Expenditures Price Index (FRED series PCEPI, units=pc1) — thước đo lạm phát Fed dùng CHÍNH THỨC cho mục tiêu 2% (khác CPI của Bộ Lao động).",
     "impact": "PCE là thước đo Fed thực sự dùng để họp chính sách — quan trọng hơn CPI khi dự đoán quyết định lãi suất Fed."
   },
@@ -8914,7 +10436,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": 2.81,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 2.87,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 2.84,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 2.99,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 2.98,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 2.99,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 2.78,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 2.97,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 2.67,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 2.61,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 2.78,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 2.81,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 2.86,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 2.91,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 2.83,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 2.75,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 2.83,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 2.97,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 3.1,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 3.05,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 3.25,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 3.32,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 3.42,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 3.29,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      }
+    ],
     "note": "Core PCE Price Index (FRED series PCEPILFE, units=pc1) — thước đo lạm phát QUAN TRỌNG NHẤT với Fed, mục tiêu chính thức 2%/năm.",
     "impact": "Chỉ số lạm phát Fed theo dõi sát nhất khi quyết định giữ/tăng/giảm lãi suất — lệch mục tiêu 2% càng xa, Fed càng khó nới lỏng."
   },
@@ -8924,7 +10567,128 @@
     "unit": "%",
     "good_direction": "higher",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2020-07-01",
+        "value": 34.9,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2020-10-01",
+        "value": 4.6,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2021-01-01",
+        "value": 5.7,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2021-04-01",
+        "value": 7.0,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2021-07-01",
+        "value": 3.3,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2021-10-01",
+        "value": 7.0,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2022-01-01",
+        "value": -1.0,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2022-04-01",
+        "value": 0.6,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2022-07-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2022-10-01",
+        "value": 2.8,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2023-01-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2023-04-01",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2023-07-01",
+        "value": 4.7,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2023-10-01",
+        "value": 3.4,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2024-01-01",
+        "value": 0.8,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2024-04-01",
+        "value": 3.6,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2024-07-01",
+        "value": 3.3,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 1.9,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2025-01-01",
+        "value": -0.6,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 3.8,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 0.5,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 2.1,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 1.5,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      }
+    ],
     "note": "Real GDP, % Change from Preceding Period, SAAR (FRED series A191RL1Q225SBEA) — tốc độ tăng trưởng quý, đã điều chỉnh mùa vụ và quy đổi ra tốc độ năm.",
     "impact": "Kinh tế Mỹ tăng trưởng chậm lại/suy thoái ảnh hưởng nhu cầu nhập khẩu toàn cầu (trong đó có hàng Việt Nam xuất sang Mỹ) và tâm lý rủi ro chung của thị trường tài chính."
   },
@@ -8934,7 +10698,128 @@
     "unit": "%",
     "good_direction": "higher",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2024-07-01",
+        "value": -0.92,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2024-08-01",
+        "value": -0.41,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2024-09-01",
+        "value": -1.2,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2024-10-01",
+        "value": -0.99,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2024-11-01",
+        "value": -1.56,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2024-12-01",
+        "value": -0.27,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 0.85,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 0.81,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 0.58,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 0.88,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 0.1,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 0.58,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 1.92,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 1.19,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 1.86,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 1.76,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 1.75,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 1.16,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-01-01",
+        "value": 0.97,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-02-01",
+        "value": 0.82,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-03-01",
+        "value": 0.57,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 1.28,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-05-01",
+        "value": 1.58,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 1.14,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      }
+    ],
     "note": "Industrial Production Index (FRED series INDPRO, units=pc1).",
     "impact": "Phản ánh sức khỏe khu vực sản xuất Mỹ — chậm lại thường báo hiệu nhu cầu nhập khẩu linh kiện/hàng hóa trung gian từ Việt Nam có thể suy yếu theo."
   },
@@ -8944,7 +10829,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-29",
+        "value": 3.87,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 3.87,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 3.85,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 3.82,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 3.87,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 3.86,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 3.87,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 3.83,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 3.85,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 3.89,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 3.84,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 3.83,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 3.84,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 3.85,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 3.86,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 3.87,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 3.89,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 3.95,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 3.96,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 3.96,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 3.9,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 3.83,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 3.82,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      }
+    ],
     "note": "3-Month Treasury Constant Maturity Rate (FRED series DGS3MO) — đầu ngắn đường cong lợi suất, dùng tính spread 10Y-3M (1 trong 2 chỉ báo đảo ngược đường cong kinh điển).",
     "impact": "Kết hợp với lợi suất 10 năm để tính spread 10Y-3M — spread âm (đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy."
   },
@@ -8954,7 +10955,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-29",
+        "value": 3.97,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 3.98,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.0,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 3.96,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 3.95,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 4.06,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 4.06,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.02,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 4.06,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.12,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.02,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 3.97,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 3.99,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 4.01,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.03,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.08,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.11,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.15,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.09,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.04,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.04,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      }
+    ],
     "note": "1-Year Treasury Constant Maturity Rate (FRED series DGS1) — điểm giữa đường cong, tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
     "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
   },
@@ -8964,7 +11081,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-29",
+        "value": 4.1,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.17,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 4.13,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 4.19,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 4.21,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.16,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 4.21,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.26,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.18,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.13,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.16,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 4.18,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.21,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.26,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.31,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.37,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 4.33,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.31,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.26,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.22,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.23,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      }
+    ],
     "note": "2-Year Treasury Constant Maturity Rate (FRED series DGS2) — dùng tính spread 10Y-2Y, chỉ báo đảo ngược đường cong ĐƯỢC THEO DÕI NHIỀU NHẤT bởi thị trường tài chính toàn cầu.",
     "impact": "Spread 10Y-2Y âm (đảo ngược) là tín hiệu cảnh báo suy thoái kinh điển nhất — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm."
   },
@@ -8974,7 +11207,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-29",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 4.19,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.24,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 4.23,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 4.21,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 4.27,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 4.31,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 4.27,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 4.3,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 4.37,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 4.31,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 4.26,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 4.28,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 4.28,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 4.33,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 4.37,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 4.41,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 4.46,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 4.43,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 4.35,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 4.37,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 4.38,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      }
+    ],
     "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
     "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
   },
@@ -8984,7 +11333,123 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2026-06-29",
+        "value": 4.86,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 4.91,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.97,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 4.98,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 4.99,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 5.05,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 5.06,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 5.05,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 5.06,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 5.1,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 5.08,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 5.08,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 5.09,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 5.06,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 5.11,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 5.13,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 5.15,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 5.17,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 5.16,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 5.12,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 5.09,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 5.2,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 5.21,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      }
+    ],
     "note": "30-Year Treasury Constant Maturity Rate (FRED series DGS30) — đầu dài nhất đường cong lợi suất.",
     "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ, phản ánh kỳ vọng lạm phát/tăng trưởng dài hạn."
   },
@@ -8994,7 +11459,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2021-02-01",
+        "value": 8.2,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-03-01",
+        "value": 8.2,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-04-01",
+        "value": 8.2,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-05-01",
+        "value": 8.0,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-06-01",
+        "value": 7.8,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-07-01",
+        "value": 7.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-08-01",
+        "value": 7.5,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-09-01",
+        "value": 7.4,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-10-01",
+        "value": 7.3,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-11-01",
+        "value": 7.1,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2021-12-01",
+        "value": 7.0,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-01-01",
+        "value": 6.9,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-02-01",
+        "value": 6.8,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-03-01",
+        "value": 6.8,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-04-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-05-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-06-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-07-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-08-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-09-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-10-01",
+        "value": 6.6,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-11-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2022-12-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      },
+      {
+        "period": "2023-01-01",
+        "value": 6.7,
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTEZM156S"
+      }
+    ],
     "note": "Harmonized Unemployment Rate, Euro Area (FRED series LRHUTTTTEZM156S, OECD).",
     "impact": "Thất nghiệp Eurozone tăng gây áp lực ECB nới lỏng chính sách — ảnh hưởng tỷ giá EUR/USD và dòng vốn toàn cầu."
   },
@@ -9024,7 +11610,128 @@
     "unit": "%",
     "good_direction": "higher",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2017-04-01",
+        "value": 0.79,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2017-07-01",
+        "value": 0.79,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2017-10-01",
+        "value": 0.8,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2018-01-01",
+        "value": -0.01,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2018-04-01",
+        "value": 0.54,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2018-07-01",
+        "value": 0.03,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2018-10-01",
+        "value": 0.64,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2019-01-01",
+        "value": 0.63,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2019-04-01",
+        "value": 0.31,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2019-07-01",
+        "value": 0.24,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2019-10-01",
+        "value": -0.01,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2020-01-01",
+        "value": -3.28,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2020-04-01",
+        "value": -11.4,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2020-07-01",
+        "value": 12.14,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2020-10-01",
+        "value": -0.19,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2021-01-01",
+        "value": 0.04,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2021-04-01",
+        "value": 1.93,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2021-07-01",
+        "value": 2.21,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2021-10-01",
+        "value": 0.53,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2022-01-01",
+        "value": 0.73,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2022-04-01",
+        "value": 0.84,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2022-07-01",
+        "value": 0.36,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2022-10-01",
+        "value": -0.11,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      },
+      {
+        "period": "2023-01-01",
+        "value": -0.09,
+        "source_url": "https://fred.stlouisfed.org/series/NAEXKP01EZQ657S"
+      }
+    ],
     "note": "Real GDP growth rate, Euro Area, quý (FRED series NAEXKP01EZQ657S, OECD MEI) — ID CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra, fail-safe nếu sai.",
     "impact": "Eurozone là 1 trong 3 đối tác thương mại lớn của Việt Nam (EU) — tăng trưởng chậm lại ảnh hưởng nhu cầu nhập khẩu hàng Việt Nam."
   },
@@ -9034,7 +11741,128 @@
     "unit": "%",
     "good_direction": "higher",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2021-11-01",
+        "value": 0.96,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2021-12-01",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-01-01",
+        "value": 1.04,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-02-01",
+        "value": 2.69,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-03-01",
+        "value": 1.05,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-04-01",
+        "value": -1.13,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-05-01",
+        "value": 3.15,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-06-01",
+        "value": 3.79,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-07-01",
+        "value": -0.38,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-08-01",
+        "value": 5.95,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-09-01",
+        "value": 5.54,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-10-01",
+        "value": 3.91,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-11-01",
+        "value": 2.84,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2022-12-01",
+        "value": -2.38,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-01-01",
+        "value": 0.28,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-02-01",
+        "value": 1.68,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-03-01",
+        "value": -2.07,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-04-01",
+        "value": 0.0,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-05-01",
+        "value": -2.59,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-06-01",
+        "value": -1.59,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-07-01",
+        "value": -2.08,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-08-01",
+        "value": -5.43,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-09-01",
+        "value": -6.34,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      },
+      {
+        "period": "2023-10-01",
+        "value": -5.69,
+        "source_url": "https://fred.stlouisfed.org/series/EA19PRINTO01GYSAM"
+      }
+    ],
     "note": "Industrial Production, Euro Area 19, YoY (FRED series EA19PRINTO01GYSAM, OECD MEI) — ID CHƯA xác minh trực tiếp được do rate-limit khi kiểm tra, fail-safe nếu sai.",
     "impact": "Phản ánh sức khỏe khu vực sản xuất châu Âu — liên quan trực tiếp đơn hàng xuất khẩu Việt Nam sang EU."
   },
@@ -9044,7 +11872,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2023-05-01",
+        "value": 0.2,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-06-01",
+        "value": 0.0,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-07-01",
+        "value": -0.3,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-08-01",
+        "value": 0.1,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-09-01",
+        "value": 0.0,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-10-01",
+        "value": -0.2,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-11-01",
+        "value": -0.5,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2023-12-01",
+        "value": -0.3,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-01-01",
+        "value": -0.8,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-02-01",
+        "value": 0.7,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-03-01",
+        "value": 0.1,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-04-01",
+        "value": 0.3,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-05-01",
+        "value": 0.3,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-06-01",
+        "value": 0.2,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-07-01",
+        "value": 0.5,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 0.6,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 0.4,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 0.3,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 0.2,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 0.1,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 0.5,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2025-02-01",
+        "value": -0.7,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2025-03-01",
+        "value": -0.1,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      },
+      {
+        "period": "2025-04-01",
+        "value": -0.1,
+        "source_url": "https://fred.stlouisfed.org/series/CPALTT01CNM659N"
+      }
+    ],
     "note": "Consumer Price Index, China, YoY (FRED series CPALTT01CNM659N, OECD MEI).",
     "impact": "Trung Quốc là đối tác thương mại lớn nhất của Việt Nam — lạm phát/giảm phát TQ ảnh hưởng giá hàng hóa nhập khẩu và cạnh tranh xuất khẩu của Việt Nam."
   },
@@ -9074,7 +12023,128 @@
     "unit": "%",
     "good_direction": "lower",
     "auto_source": "fred",
-    "series": [],
+    "series": [
+      {
+        "period": "2023-07-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2023-08-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2023-09-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2023-10-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2023-11-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2023-12-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-01-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-02-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-03-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-04-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-05-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-06-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-07-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-08-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-09-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-10-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-11-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2024-12-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2025-01-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2025-02-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2025-03-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2025-04-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2025-05-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      },
+      {
+        "period": "2025-06-01",
+        "value": 2.9,
+        "source_url": "https://fred.stlouisfed.org/series/INTDSRCNM193N"
+      }
+    ],
     "note": "Discount Rate, China, IMF IFS (FRED series INTDSRCNM193N) — TRUNG QUỐC KHÔNG có 1 lãi suất điều hành chuẩn hoá quốc tế đơn giản như Fed Funds/ECB Deposit Rate (PBOC điều hành qua nhiều công cụ: LPR, MLF, lãi suất chiết khấu...) — đây là PROXY, tương tự cách xử lý boj_interbank_rate/boe_sonia_rate, không phải con số LPR chính thức PBOC công bố hàng tháng.",
     "impact": "PBOC nới lỏng/thắt chặt ảnh hưởng dòng vốn nhân dân tệ, gián tiếp tác động khu vực Đông Nam Á trong đó có Việt Nam."
   },
