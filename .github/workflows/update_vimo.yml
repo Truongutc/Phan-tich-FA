@@ -80,7 +80,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/vimo_raw.json data/vimo.json "Bao cao/VIMO/" 2>/dev/null || true
+          git add data/vimo_raw.json data/vimo.json data/vnindex_valuation_history.json "Bao cao/VIMO/" 2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "Không có thay đổi để commit."
