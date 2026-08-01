@@ -769,6 +769,11 @@ def calc_overall_verdict(scorecard_total, trends, scorecard_history):
     dict {trend_label, trend_arrow, trend_detail, clarity_label, clarity_pct, clarity_detail}."""
     now = datetime.datetime.now()
     year_start = datetime.datetime(now.year, 1, 1)
+    # entry_week: Action cập nhật theo LỊCH TUẦN (update_vimo.yml, cron thứ Sáu hàng tuần) — user
+    # (2026-08-01) yêu cầu thêm mốc so sánh này vì đây mới là chu kỳ cập nhật THẬT, sát hơn "tháng
+    # trước" (~4 chu kỳ trước). Dung sai hẹp (3 ngày) vì lịch chạy đều đặn, entry gần 7 ngày trước
+    # gần như luôn khớp chính xác lần chạy tuần trước.
+    entry_week = _closest_history_entry(scorecard_history, now - datetime.timedelta(days=7), 3)
     entry_month = _closest_history_entry(scorecard_history, now - datetime.timedelta(days=30), 10)
     entry_quarter = _closest_history_entry(scorecard_history, now - datetime.timedelta(days=90), 15)
     entry_ytd = _closest_history_entry(scorecard_history, year_start, 20) if now > year_start else None
@@ -788,14 +793,15 @@ def calc_overall_verdict(scorecard_total, trends, scorecard_history):
         return f"{label} ({entry['date']}): {entry['total']:+d}/{n_groups} → {scorecard_total:+d}/{n_groups} {arrow}"
 
     comparisons = [c for c in [
+        _cmp_txt("So với tuần trước", entry_week),
         _cmp_txt("So với tháng trước", entry_month),
         _cmp_txt("So với quý trước", entry_quarter),
         _cmp_txt("So với đầu năm", entry_ytd),
     ] if c]
 
-    # Xu hướng CHÍNH ưu tiên mốc gần nhất có dữ liệu (tháng trước nhạy nhất với biến động gần
-    # đây; nếu chưa đủ 1 tháng lịch sử thì lùi dần ra quý trước rồi đầu năm).
-    primary_entry = entry_month or entry_quarter or entry_ytd
+    # Xu hướng CHÍNH ưu tiên mốc gần nhất có dữ liệu (tuần trước nhạy nhất vì đúng chu kỳ cập
+    # nhật thật; nếu chưa đủ 1 tuần lịch sử thì lùi dần ra tháng trước rồi quý trước rồi đầu năm).
+    primary_entry = entry_week or entry_month or entry_quarter or entry_ytd
     if primary_entry:
         diff = scorecard_total - primary_entry["total"]
         if diff > 0:
