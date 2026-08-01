@@ -38,7 +38,7 @@ const CHART_DEFAULTS = {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-        x: { ticks: { color: '#9aa5bd', font: { size: 9 }, maxRotation: 45 }, grid: { display: false } },
+        x: { ticks: { color: '#9aa5bd', font: { size: 9 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 8 }, grid: { display: false } },
         y: { ticks: { color: '#9aa5bd', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
     },
 };
