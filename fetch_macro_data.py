@@ -1833,7 +1833,7 @@ def update_vimo_raw():
     print("[FRED — Quốc tế: Eurozone (thất nghiệp, CPI/lõi, GDP, sản xuất CN, ECB, lợi suất Đức)]")
     for key, sid, units in [
         ("eu_unemployment_rate", "LRHUTTTTEZM156S", None),
-        ("eu_cpi_yoy", "CPALTT01EZM659N", None),
+        ("eu_cpi_yoy", "CP0000EZ19M086NEST", "pc1"),
         ("eu_core_cpi_yoy", "CPGRLE01EZM659N", None),
         ("eu_gdp_growth", "NAEXKP01EZQ657S", None),
         ("eu_industrial_production_yoy", "EA19PRINTO01GYSAM", None),

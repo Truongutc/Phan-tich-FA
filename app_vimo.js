@@ -507,6 +507,7 @@ function renderIndicatorGroups(indicators) {
             renderInterbankCurveChart(grid, indicators);
             renderInterbank6mHistoryChart(grid, indicators);
             renderBondYieldHistoryChart(grid, indicators);
+            renderOmoHistoryChart(grid, indicators);
         }
         if (grp === 'growth') {
             renderStackedAreaChart(grid, indicators, {
@@ -798,6 +799,73 @@ function renderBondYieldHistoryChart(grid, indicators) {
                 datalabels: _endpointDatalabelsConfig(2),
             },
             scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// Số dư OMO đang lưu hành (TỒN KHO, kênh cầm cố) + bơm/hút ròng OMO (DÒNG CHẢY/ngày) THEO THỜI
+// GIAN, cùng 1 chart — user (2026-08-01): "cái dữ liệu này quan trọng mà" + muốn xem được vài
+// tháng gần đây thay vì chỉ vài ngày (xem backfill lịch sử VIRA ~120 ngày trong
+// fetch_vira_bulletin()). 2 chỉ báo lệch quy mô rất nhiều (tồn kho ~hàng trăm nghìn tỷ, dòng chảy
+// ~vài nghìn tỷ/ngày) nên dùng 2 TRỤC Y riêng (line tồn kho bên trái, bar dòng chảy bên phải, màu
+// theo dấu bơm/hút) — kiểu trình bày "stock vs flow" kinh điển, không cần thêm plugin ngoài
+// datalabels đã có.
+function renderOmoHistoryChart(grid, indicators) {
+    const outstanding = ((indicators.omo_outstanding_balance || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const net = ((indicators.omo_net_operation || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const allPeriods = _sortPeriods(new Set([...outstanding, ...net].map(p => p.period)));
+    if (!allPeriods.length) return;
+
+    const outstandingByPeriod = Object.fromEntries(outstanding.map(p => [p.period, p.value]));
+    const netByPeriod = Object.fromEntries(net.map(p => [p.period, p.value]));
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">📈 Số dư OMO đang lưu hành (kênh cầm cố) & Bơm/hút ròng OMO theo thời gian</span></div>
+        <div class="ind-chart" style="height:220px"><canvas id="chart-omo-history"></canvas></div>
+        <div class="ind-note">Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). Đường (trục trái) = tồn kho lưu hành; cột (trục phải) = dòng chảy ròng/ngày (xanh = bơm ròng, đỏ = hút ròng).</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-omo-history');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: [
+                {
+                    type: 'bar', label: 'Bơm/hút ròng OMO (phải)', yAxisID: 'y1',
+                    data: allPeriods.map(p => netByPeriod[p] ?? null),
+                    backgroundColor: allPeriods.map(p => (netByPeriod[p] ?? 0) >= 0 ? '#10b98188' : '#ef444488'),
+                    borderWidth: 0, order: 2,
+                    datalabels: { ..._endpointDatalabelsConfig(0), color: '#c9d2e3' },
+                },
+                {
+                    type: 'line', label: 'Số dư lưu hành (trái)', yAxisID: 'y',
+                    data: allPeriods.map(p => outstandingByPeriod[p] ?? null),
+                    borderColor: '#3b82f6', backgroundColor: '#3b82f615', fill: true,
+                    tension: 0.25, pointRadius: 2, spanGaps: true, order: 1,
+                    datalabels: _endpointDatalabelsConfig(0),
+                },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: true, labels: { boxWidth: 12 } },
+            },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Tồn kho (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'Bơm/hút ròng (tỷ đồng/ngày)', color: '#9aa5bd', font: { size: 9 } } },
+            },
         },
         plugins: [ChartDataLabels],
     });
