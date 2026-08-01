@@ -654,7 +654,7 @@ function renderInterbankCurveChart(grid, indicators) {
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">📈 Đường cong lãi suất liên ngân hàng VNIBOR theo kỳ hạn</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="chart-interbank-curve"></canvas></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-interbank-curve"></canvas></div>
         <div class="ind-note">Nguồn: sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động cập nhật).</div>
     `;
     grid.appendChild(card);
@@ -723,7 +723,7 @@ function renderInterbank6mHistoryChart(grid, indicators) {
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">📈 Lãi suất liên ngân hàng O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng theo thời gian</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="chart-interbank-6m-history"></canvas></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-interbank-6m-history"></canvas></div>
         <div class="ind-note">Nguồn: O/N, 1 tuần, 2 tuần, 1 tháng — vira.org.vn (bản tin ngày, tự động, chuỗi theo NGÀY thật). 6 tháng — sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động, tích lũy theo tuần).</div>
     `;
     grid.appendChild(card);
@@ -779,7 +779,7 @@ function renderBondYieldHistoryChart(grid, indicators) {
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">📈 Lợi suất TPCP thứ cấp 3-5-7-10-15 năm theo thời gian</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="chart-bond-yield-history"></canvas></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-bond-yield-history"></canvas></div>
         <div class="ind-note">Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). Lợi suất giao dịch thứ cấp, không phải lãi suất trúng thầu sơ cấp KBNN.</div>
     `;
     grid.appendChild(card);
@@ -834,7 +834,7 @@ function renderOmoHistoryChart(grid, indicators) {
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">📈 Số dư OMO đang lưu hành (kênh cầm cố) & Bơm/hút ròng OMO theo thời gian</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="chart-omo-history"></canvas></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-omo-history"></canvas></div>
         <div class="ind-note">Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). Đường (trục trái) = tồn kho lưu hành; cột (trục phải) = dòng chảy ròng/ngày (xanh = bơm ròng, đỏ = hút ròng).</div>
     `;
     grid.appendChild(card);
@@ -897,7 +897,7 @@ function renderMultiTenorHistoryChart(grid, indicators, tenors, canvasId, title,
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">${title}</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="${canvasId}"></canvas></div>
+        <div class="ind-chart" style="height:320px"><canvas id="${canvasId}"></canvas></div>
         <div class="ind-note">${note}</div>
     `;
     grid.appendChild(card);
@@ -955,7 +955,7 @@ function renderUsYieldSpreadChart(grid, indicators) {
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">⚠️ Spread lợi suất TPCP Mỹ (10Y-2Y, 10Y-3M) — cảnh báo đảo ngược đường cong</span></div>
-        <div class="ind-chart" style="height:220px"><canvas id="chart-us-yield-spread"></canvas></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-us-yield-spread"></canvas></div>
         <div class="ind-note">Nguồn: fred.stlouisfed.org (tính từ lợi suất TPCP các kỳ hạn, hàng ngày). Spread ÂM (đường xuống dưới mốc "0" nét đứt) = đường cong ĐẢO NGƯỢC — tín hiệu cảnh báo suy thoái Mỹ được thị trường toàn cầu theo dõi sát nhất.</div>
     `;
     grid.appendChild(card);
