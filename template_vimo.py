@@ -161,6 +161,8 @@ GROUP_LABELS = {
     "market": "Thị trường chứng khoán",
     "intl_us": "Quốc tế — Mỹ",
     "intl_eu": "Quốc tế — Châu Âu",
+    "intl_uk": "Quốc tế — Anh",
+    "intl_jp": "Quốc tế — Nhật Bản",
     "intl_cn": "Quốc tế — Trung Quốc",
 }
 
@@ -1649,7 +1651,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     # ── Từng nhóm chỉ báo chi tiết + chart ──
     story.append(Paragraph("3. Chi tiết theo từng nhóm chỉ báo (Chương 3)", h1_st))
     groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market",
-                    "intl_us", "intl_eu", "intl_cn"]
+                    "intl_us", "intl_eu", "intl_uk", "intl_jp", "intl_cn"]
     for grp in groups_order:
         keys = [k for k, v in raw.items() if k != "_meta" and v["group"] == grp]
         if not keys:

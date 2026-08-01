@@ -928,6 +928,8 @@ function renderUsYieldSpreadChart(grid, indicators) {
 const INTL_MARKETS = [
     ['intl_us', '🇺🇸 Mỹ (Hoa Kỳ)'],
     ['intl_eu', '🇪🇺 Châu Âu (Eurozone)'],
+    ['intl_uk', '🇬🇧 Anh (Vương quốc Anh)'],
+    ['intl_jp', '🇯🇵 Nhật Bản'],
     ['intl_cn', '🇨🇳 Trung Quốc'],
 ];
 

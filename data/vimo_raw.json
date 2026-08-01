@@ -64,6 +64,12 @@
         "total": 1,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Mua tỷ trọng cao"
+      },
+      {
+        "date": "2026-08-01",
+        "total": 1,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Mua tỷ trọng cao"
       }
     ]
   },
@@ -8793,7 +8799,7 @@
     "impact": "ECB tăng/giảm lãi suất ảnh hưởng chênh lệch lãi suất USD/EUR, dòng vốn toàn cầu, gián tiếp tác động tỷ giá VND qua kênh USD."
   },
   "boe_sonia_rate": {
-    "group": "intl_eu",
+    "group": "intl_uk",
     "label": "Lãi suất SONIA (Anh, bám sát Bank Rate BOE)",
     "unit": "%",
     "good_direction": "lower",
@@ -8803,7 +8809,7 @@
     "impact": "Phản ánh xu hướng thắt chặt/nới lỏng của BOE, 1 trong 4 NHTW lớn ảnh hưởng dòng vốn toàn cầu."
   },
   "boj_interbank_rate": {
-    "group": "intl_eu",
+    "group": "intl_jp",
     "label": "Lãi suất liên ngân hàng qua đêm Nhật Bản",
     "unit": "%",
     "good_direction": "lower",
@@ -8833,7 +8839,7 @@
     "impact": "Đối chiếu chi phí vốn Eurozone so với Mỹ/Nhật — chênh lệch lợi suất Đức-Mỹ là chỉ báo dòng vốn USD/EUR quan trọng."
   },
   "japan_10y_yield": {
-    "group": "intl_eu",
+    "group": "intl_jp",
     "label": "Lợi suất TPCP Nhật kỳ hạn 10 năm",
     "unit": "%",
     "good_direction": "lower",
@@ -8843,7 +8849,7 @@
     "impact": "Lợi suất Nhật tăng làm giảm sức hấp dẫn của carry-trade vay JPY đầu tư tài sản rủi ro khác — có thể gây rút vốn khỏi thị trường mới nổi khi carry-trade đảo chiều."
   },
   "uk_10y_yield": {
-    "group": "intl_eu",
+    "group": "intl_uk",
     "label": "Lợi suất TPCP Anh kỳ hạn 10 năm",
     "unit": "%",
     "good_direction": "lower",
