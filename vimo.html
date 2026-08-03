@@ -61,6 +61,19 @@
             border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08);
         }
         .vimo-decision-banner .decision-label { font-size: 1.15em; font-weight: 700; margin-bottom: 6px; }
+        .monitoring-table-scroll { overflow-x: auto; margin-top: 12px; }
+        .monitoring-table { border-collapse: collapse; width: 100%; font-size: 0.82em; white-space: nowrap; }
+        .monitoring-table th, .monitoring-table td { padding: 7px 10px; text-align: center; }
+        .monitoring-table thead th {
+            position: sticky; top: 0; background: var(--bg-card, #111827); color: var(--text-muted, #9ca3af);
+            font-weight: 600; font-size: 0.9em; z-index: 1;
+        }
+        .monitoring-table tbody th {
+            position: sticky; left: 0; background: var(--bg-card, #111827); text-align: left;
+            font-weight: 600; z-index: 1; padding-right: 16px;
+        }
+        .monitoring-table tbody td { font-weight: 600; color: #0b1220; }
+        .monitoring-table tbody td.na { color: var(--text-muted, #6b7280); background: transparent !important; font-weight: 400; }
         .vimo-indicator-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -193,6 +206,15 @@
             </div>
         </div>
 
+        <!-- Bảng giám sát chỉ số vĩ mô hàng tháng (heatmap) -->
+        <div class="card margin-top-20" id="monitoring-table-card" style="display:none">
+            <h3 class="border-blue">🗓️ Bảng giám sát các chỉ số vĩ mô hàng tháng</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="monitoring-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">Màu theo THANG RIÊNG của từng hàng (min-max trong cửa sổ hiển thị) — xanh = giá trị tốt hơn (theo chiều tốt/xấu của từng chỉ báo), đỏ = xấu hơn. Chỉ hiện chỉ báo có đủ dữ liệu (≥6/13 tháng) trong cửa sổ.</p>
+        </div>
+
         <!-- So sánh 2 quyết định: VN-Index headline (có VIN) vs ex-VIN -->
         <div class="card margin-top-20" id="vnindex-compare-card" style="display:none">
             <h3 class="border-blue">🔍 So sánh 2 góc nhìn định giá — có/không VIN</h3>
@@ -305,7 +327,7 @@
     </footer>
 
 </div>
-<script src="app_vimo.js?v=6"></script>
+<script src="app_vimo.js?v=7"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

@@ -1769,7 +1769,8 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 # ══════════════════════════════════════════════════════════════════════════
 def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
                     synthesis, pdf_url=None,
-                    valuation_headline=None, decision_label_headline=None, decision_text_headline=None):
+                    valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
+                    monitoring_table=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -1785,6 +1786,7 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         "decisionHeadline": ({"label": decision_label_headline, "text": decision_text_headline}
                               if decision_label_headline else None),
         "synthesis": synthesis,
+        "monitoringTable": monitoring_table,
         "indicators": {},
     }
     for key, ind in raw.items():
@@ -2239,6 +2241,64 @@ def _add_credit_derived_indicators(raw, trends):
                 print(f"  -> Tỷ lệ Tín dụng/GDP danh nghĩa: {len(ratio_points)} điểm")
 
 
+# Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
+# kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
+# Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
+# thẳng hàng được) — PHẢI gọi _build_monitoring_table() SAU KHI đã chạy các hàm phái sinh
+# (_add_customs_yoy_growth, _add_credit_derived_indicators...) vì nhiều dòng lấy từ chỉ báo phái
+# sinh (không có trong vimo_raw.json, chỉ có trong `raw` lúc đang chạy).
+_MONITORING_TABLE_ROWS = [
+    ("iip_growth", "Sản xuất công nghiệp (IIP, YoY)"),
+    ("pmi_manufacturing", "PMI sản xuất"),
+    ("retail_sales_growth", "Doanh số bán lẻ (YoY)"),
+    ("export_growth_customs", "Xuất khẩu hàng hóa (YoY)"),
+    ("import_growth_customs", "Nhập khẩu hàng hóa (YoY)"),
+    ("cpi_yoy", "CPI (YoY)"),
+    ("core_inflation", "Lạm phát cơ bản (YoY)"),
+    ("credit_growth_yoy_monthly", "Tăng trưởng tín dụng (YoY)"),
+    ("deposit_growth_yoy_monthly", "Tăng trưởng huy động (YoY)"),
+    ("m2_growth", "Tăng trưởng cung tiền M2 (YoY)"),
+    ("public_investment_disbursement_rate", "Tỷ lệ giải ngân đầu tư công (lũy kế, %KH năm)"),
+]
+_MONITORING_TABLE_MONTHLY_RE = re.compile(r"^\d{4}-\d{2}$")
+
+
+def _build_monitoring_table(raw, n_months=13):
+    """Bảng giám sát chỉ số vĩ mô hàng tháng (heatmap, user 2026-08-03) — lấy N tháng gần nhất
+    (hợp nhất từ mọi chỉ báo trong _MONITORING_TABLE_ROWS), mỗi hàng chỉ đưa vào bảng nếu có ĐỦ
+    dữ liệu trong cửa sổ đó (>=6/13 điểm) để tránh hàng gần như trống làm rối bảng — vd
+    retail_sales_growth hiện chỉ có 2 điểm (nguồn vietnambiz, tích lũy chậm) sẽ tự động bị loại,
+    không cần hardcode danh sách loại trừ, tự động xuất hiện lại khi đủ dữ liệu về sau. Trả
+    {"periods": [...], "rows": [{"key","label","unit","goodDirection","values":[v_hoặc_None]}]}
+    hoặc None nếu không có chỉ báo nào đủ điều kiện."""
+    all_periods = set()
+    for key, _ in _MONITORING_TABLE_ROWS:
+        ind = raw.get(key)
+        if not ind:
+            continue
+        for p in ind["series"]:
+            if _MONITORING_TABLE_MONTHLY_RE.match(p["period"]):
+                all_periods.add(p["period"])
+    periods = sorted(all_periods)[-n_months:]
+    if not periods:
+        return None
+
+    rows = []
+    for key, label in _MONITORING_TABLE_ROWS:
+        ind = raw.get(key)
+        if not ind:
+            continue
+        by_period = {p["period"]: p["value"] for p in ind["series"] if p.get("value") is not None}
+        values = [by_period.get(p) for p in periods]
+        if sum(1 for v in values if v is not None) < 6:
+            continue
+        rows.append({"key": key, "label": label, "unit": ind["unit"],
+                     "goodDirection": ind["good_direction"], "values": values})
+    if not rows:
+        return None
+    return {"periods": periods, "rows": rows}
+
+
 def _add_us_yield_curve_spread(raw, trends):
     """Tính spread đường cong lợi suất TPCP Mỹ 10Y-2Y và 10Y-3M — 2 chỉ báo đảo ngược đường cong
     kinh điển (spread ÂM = đảo ngược, tín hiệu cảnh báo suy thoái Mỹ được thị trường toàn cầu theo
@@ -2477,6 +2537,13 @@ def run_vimo_analysis():
     print("[INFO] Tính tăng trưởng dư nợ tín dụng YoY (theo tháng) + tỷ lệ Tín dụng/GDP (KHÔNG lưu vào vimo_raw.json)...")
     _add_credit_derived_indicators(raw, trends)
 
+    print("[INFO] Dựng bảng giám sát chỉ số vĩ mô hàng tháng (heatmap)...")
+    monitoring_table = _build_monitoring_table(raw)
+    if monitoring_table:
+        print(f"  -> {len(monitoring_table['rows'])} hàng x {len(monitoring_table['periods'])} tháng")
+    else:
+        print("  -> Chưa đủ dữ liệu tháng để dựng bảng.")
+
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
     synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)
     print("  -> Đã sinh phân tích tổng hợp")
@@ -2526,7 +2593,7 @@ def run_vimo_analysis():
     print("[INFO] Saving JSON dashboard...")
     save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
-                    decision_text_headline=decision_text_headline)
+                    decision_text_headline=decision_text_headline, monitoring_table=monitoring_table)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)

@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderVerdict(data.synthesis && data.synthesis.verdict, data.decision);
     renderScorecard(data.scorecard);
     renderDecision(data.decision, data.scorecard.total);
+    renderMonitoringTable(data.monitoringTable);
     renderSynthesis(data.synthesis);
     renderValuation(data.marketValuation);
     renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decision, data.decisionHeadline);
@@ -197,6 +198,52 @@ function renderDecision(decision, total) {
     label.textContent = `🎯 ${decision.label}`;
     label.style.color = color;
     text.textContent = decision.text;
+}
+
+// Bảng giám sát chỉ số vĩ mô hàng tháng (heatmap, user 2026-08-03) — table dựng sẵn trong
+// _build_monitoring_table() (template_vimo.py): mỗi hàng 1 chỉ báo THEO THÁNG, cột là N tháng gần
+// nhất. Màu ô = thang RIÊNG của từng hàng (min-max trong cửa sổ hiển thị, không so giữa các hàng
+// khác nhau vì đơn vị/độ lớn khác nhau) — đảo chiều theo goodDirection để "xanh" LUÔN nghĩa là
+// tốt hơn dù chỉ báo higher-is-good hay lower-is-good.
+function _periodToShortLabel(period) {
+    const m = /^(\d{4})-(\d{2})$/.exec(period);
+    if (!m) return period;
+    return `T${+m[2]}-${m[1].slice(2)}`;
+}
+
+function renderMonitoringTable(table) {
+    const card = document.getElementById('monitoring-table-card');
+    if (!table || !table.rows || !table.rows.length) return;
+    card.style.display = 'block';
+
+    const el = document.getElementById('monitoring-table');
+    const periods = table.periods;
+    const thead = `<thead><tr><th>Chỉ báo</th>${periods.map(p => `<th>${_periodToShortLabel(p)}</th>`).join('')}</tr></thead>`;
+
+    const tbody = table.rows.map(row => {
+        const present = row.values.filter(v => v !== null && v !== undefined);
+        const lo = Math.min(...present), hi = Math.max(...present);
+        const cells = row.values.map(v => {
+            if (v === null || v === undefined) return `<td class="na">—</td>`;
+            let g = hi === lo ? 0.5 : (v - lo) / (hi - lo);
+            if (row.goodDirection === 'lower') g = 1 - g;
+            const bg = _heatmapColor(g);
+            return `<td style="background:${bg}">${formatNumber(v)}${row.unit === '%' ? '%' : ''}</td>`;
+        }).join('');
+        return `<tr><th title="${row.key}">${row.label}</th>${cells}</tr>`;
+    }).join('');
+
+    el.innerHTML = thead + `<tbody>${tbody}</tbody>`;
+}
+
+function _heatmapColor(g) {
+    // g=0 -> đỏ (#ef4444), g=1 -> xanh (#10b981) — lerp RGB tuyến tính, alpha cố định để chữ tối
+    // (color:#0b1220 trong CSS) vẫn đọc được trên cả 2 đầu dải màu.
+    const red = [239, 68, 68], green = [16, 185, 129];
+    const r = Math.round(red[0] + (green[0] - red[0]) * g);
+    const gr = Math.round(red[1] + (green[1] - red[1]) * g);
+    const b = Math.round(red[2] + (green[2] - red[2]) * g);
+    return `rgba(${r},${gr},${b},0.55)`;
 }
 
 // ═══════════════════════════════════════════════════════════
