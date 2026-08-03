@@ -6109,8 +6109,8 @@
   },
   "cpi_contrib_food": {
     "group": "inflation",
-    "label": "Đóng góp vào CPI — Thực phẩm",
-    "unit": "điểm % CPI",
+    "label": "Đóng góp vào lạm phát — nhóm Thực phẩm",
+    "unit": "điểm %",
     "good_direction": "lower",
     "auto_source": "vbma",
     "series": [
@@ -6505,13 +6505,13 @@
         "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       }
     ],
-    "note": "Chỉ báo mới 2026-07-23 — 'kết cấu CPI': số ĐIỂM PHẦN TRĂM mà nhóm hàng Thực phẩm đóng góp vào mức tăng CPI chung (YoY), KHÔNG PHẢI % tăng giá riêng nhóm này. Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020. Tổng 5 nhóm (food/housing_utilities/healthcare/transport/other) ≈ cpi_yoy cùng kỳ.",
-    "impact": "Khi nhóm Thực phẩm đóng góp phần lớn vào lạm phát tổng, áp lực giá thường mang tính MÙA VỤ/CUNG (thời tiết, dịch bệnh gia súc) hơn là do tổng cầu — ít đáng lo về mặt chính sách tiền tệ hơn so với lạm phát lan rộng sang nhiều nhóm hàng."
+    "note": "vbma.org.vn/vi/market-data/cpi — dong_gop_vao_lam_phat.csv: ĐIỂM PHẦN TRĂM nhóm \"Thực phẩm\" đóng góp vào mức tăng CPI CHUNG (YoY) — KHÁC với %YoY của riêng nhóm đó (vd nhóm chiếm tỷ trọng nhỏ trong rổ CPI dù bản thân tăng giá mạnh vẫn đóng góp ít điểm %). 5 nhóm cộng lại ≈ cpi_yoy (chỉ số tổng hợp). Tự động backfill toàn bộ lịch sử từ T1/2020 khi chạy fetch_vbma_cpi_contribution().",
+    "impact": "Cho biết CPI tăng/giảm chủ yếu do nhóm Thực phẩm kéo hay không — khác góc nhìn với chỉ số CPI tổng hợp không tách được nguyên nhân."
   },
   "cpi_contrib_housing_utilities": {
     "group": "inflation",
-    "label": "Đóng góp vào CPI — Nhà, điện, nước",
-    "unit": "điểm % CPI",
+    "label": "Đóng góp vào lạm phát — nhóm Nhà, điện, nước",
+    "unit": "điểm %",
     "good_direction": "lower",
     "auto_source": "vbma",
     "series": [
@@ -6906,13 +6906,13 @@
         "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       }
     ],
-    "note": "Chỉ báo mới 2026-07-23 — xem note cpi_contrib_food (cùng khái niệm 'kết cấu CPI', khác nhóm hàng). Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
-    "impact": "Nhóm Nhà ở/điện/nước đóng góp lớn vào lạm phát thường phản ánh chi phí năng lượng/giá thuê nhà tăng — mang tính CẤU TRÚC hơn (khó đảo ngược nhanh), đáng chú ý hơn cho quyết định lãi suất điều hành so với cú sốc giá thực phẩm tạm thời."
+    "note": "vbma.org.vn/vi/market-data/cpi — dong_gop_vao_lam_phat.csv: ĐIỂM PHẦN TRĂM nhóm \"Nhà, điện, nước\" đóng góp vào mức tăng CPI CHUNG (YoY) — KHÁC với %YoY của riêng nhóm đó (vd nhóm chiếm tỷ trọng nhỏ trong rổ CPI dù bản thân tăng giá mạnh vẫn đóng góp ít điểm %). 5 nhóm cộng lại ≈ cpi_yoy (chỉ số tổng hợp). Tự động backfill toàn bộ lịch sử từ T1/2020 khi chạy fetch_vbma_cpi_contribution().",
+    "impact": "Cho biết CPI tăng/giảm chủ yếu do nhóm Nhà, điện, nước kéo hay không — khác góc nhìn với chỉ số CPI tổng hợp không tách được nguyên nhân."
   },
   "cpi_contrib_healthcare": {
     "group": "inflation",
-    "label": "Đóng góp vào CPI — Y tế",
-    "unit": "điểm % CPI",
+    "label": "Đóng góp vào lạm phát — nhóm Y tế",
+    "unit": "điểm %",
     "good_direction": "lower",
     "auto_source": "vbma",
     "series": [
@@ -7307,13 +7307,13 @@
         "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       }
     ],
-    "note": "Chỉ báo mới 2026-07-23 — xem note cpi_contrib_food (cùng khái niệm 'kết cấu CPI', khác nhóm hàng). Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
-    "impact": "Đóng góp của nhóm Y tế vào CPI thường biến động theo điều chỉnh giá dịch vụ y tế do Nhà nước quản lý (không theo cung-cầu thị trường) — tăng đột biến thường phản ánh một đợt điều chỉnh giá viện phí/BHYT cụ thể, không phải xu hướng lạm phát chung."
+    "note": "vbma.org.vn/vi/market-data/cpi — dong_gop_vao_lam_phat.csv: ĐIỂM PHẦN TRĂM nhóm \"Y tế\" đóng góp vào mức tăng CPI CHUNG (YoY) — KHÁC với %YoY của riêng nhóm đó (vd nhóm chiếm tỷ trọng nhỏ trong rổ CPI dù bản thân tăng giá mạnh vẫn đóng góp ít điểm %). 5 nhóm cộng lại ≈ cpi_yoy (chỉ số tổng hợp). Tự động backfill toàn bộ lịch sử từ T1/2020 khi chạy fetch_vbma_cpi_contribution().",
+    "impact": "Cho biết CPI tăng/giảm chủ yếu do nhóm Y tế kéo hay không — khác góc nhìn với chỉ số CPI tổng hợp không tách được nguyên nhân."
   },
   "cpi_contrib_transport": {
     "group": "inflation",
-    "label": "Đóng góp vào CPI — Vận tải",
-    "unit": "điểm % CPI",
+    "label": "Đóng góp vào lạm phát — nhóm Vận tải",
+    "unit": "điểm %",
     "good_direction": "lower",
     "auto_source": "vbma",
     "series": [
@@ -7708,13 +7708,13 @@
         "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       }
     ],
-    "note": "Chỉ báo mới 2026-07-23 — xem note cpi_contrib_food (cùng khái niệm 'kết cấu CPI', khác nhóm hàng). Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
-    "impact": "Đóng góp của nhóm Vận tải vào CPI biến động chặt theo giá xăng dầu thế giới — tăng/giảm đột ngột ở nhóm này thường là dấu hiệu SỚM phản ánh biến động giá dầu Brent trước khi lan sang chi phí sản xuất-vận chuyển của các ngành khác."
+    "note": "vbma.org.vn/vi/market-data/cpi — dong_gop_vao_lam_phat.csv: ĐIỂM PHẦN TRĂM nhóm \"Vận tải\" đóng góp vào mức tăng CPI CHUNG (YoY) — KHÁC với %YoY của riêng nhóm đó (vd nhóm chiếm tỷ trọng nhỏ trong rổ CPI dù bản thân tăng giá mạnh vẫn đóng góp ít điểm %). 5 nhóm cộng lại ≈ cpi_yoy (chỉ số tổng hợp). Tự động backfill toàn bộ lịch sử từ T1/2020 khi chạy fetch_vbma_cpi_contribution().",
+    "impact": "Cho biết CPI tăng/giảm chủ yếu do nhóm Vận tải kéo hay không — khác góc nhìn với chỉ số CPI tổng hợp không tách được nguyên nhân."
   },
   "cpi_contrib_other": {
     "group": "inflation",
-    "label": "Đóng góp vào CPI — Khác",
-    "unit": "điểm % CPI",
+    "label": "Đóng góp vào lạm phát — nhóm Khác",
+    "unit": "điểm %",
     "good_direction": "lower",
     "auto_source": "vbma",
     "series": [
@@ -8109,8 +8109,8 @@
         "source_url": "https://vbma.org.vn/vi/market-data/cpi"
       }
     ],
-    "note": "Chỉ báo mới 2026-07-23 — phần còn lại (may mặc, giáo dục, văn hóa-giải trí, đồ uống-thuốc lá...) gộp chung, xem note cpi_contrib_food. Nguồn vbma.org.vn/vi/market-data/cpi (dong_gop_vao_lam_phat.csv), theo tháng từ T1/2020.",
-    "impact": "Nếu nhóm 'Khác' (vốn đa dạng ngành hàng) đóng góp tăng đồng loạt, đó là dấu hiệu lạm phát đã LAN RỘNG ra ngoài các nhóm nhạy giá thông thường (thực phẩm, năng lượng) — đáng lo ngại hơn về mặt chính sách so với lạm phát tập trung ở 1-2 nhóm."
+    "note": "vbma.org.vn/vi/market-data/cpi — dong_gop_vao_lam_phat.csv: ĐIỂM PHẦN TRĂM nhóm \"Khác\" đóng góp vào mức tăng CPI CHUNG (YoY) — KHÁC với %YoY của riêng nhóm đó (vd nhóm chiếm tỷ trọng nhỏ trong rổ CPI dù bản thân tăng giá mạnh vẫn đóng góp ít điểm %). 5 nhóm cộng lại ≈ cpi_yoy (chỉ số tổng hợp). Tự động backfill toàn bộ lịch sử từ T1/2020 khi chạy fetch_vbma_cpi_contribution().",
+    "impact": "Cho biết CPI tăng/giảm chủ yếu do nhóm Khác kéo hay không — khác góc nhìn với chỉ số CPI tổng hợp không tách được nguyên nhân."
   },
   "vnindex_pe_headline": {
     "group": "market",

@@ -2255,6 +2255,14 @@ _MONITORING_TABLE_ROWS = [
     ("import_growth_customs", "Nhập khẩu hàng hóa (YoY)"),
     ("cpi_yoy", "CPI (YoY)"),
     ("core_inflation", "Lạm phát cơ bản (YoY)"),
+    # 5 hàng dưới đây là ĐÓNG GÓP (điểm %) vào CPI chung, KHÔNG phải %YoY riêng nhóm (user
+    # 2026-08-03, đối chiếu ảnh bảng CPI theo nhóm hàng) — nguồn vbma.org.vn/vi/market-data/cpi,
+    # cộng lại ≈ cpi_yoy. Label ghi rõ "đóng góp" để không nhầm với %YoY riêng nhóm.
+    ("cpi_contrib_food", "— Đóng góp: Thực phẩm (điểm %)"),
+    ("cpi_contrib_housing_utilities", "— Đóng góp: Nhà, điện, nước (điểm %)"),
+    ("cpi_contrib_healthcare", "— Đóng góp: Y tế (điểm %)"),
+    ("cpi_contrib_transport", "— Đóng góp: Vận tải (điểm %)"),
+    ("cpi_contrib_other", "— Đóng góp: Khác (điểm %)"),
     ("credit_growth_yoy_monthly", "Tăng trưởng tín dụng (YoY)"),
     ("deposit_growth_yoy_monthly", "Tăng trưởng huy động (YoY)"),
     ("m2_growth", "Tăng trưởng cung tiền M2 (YoY)"),
