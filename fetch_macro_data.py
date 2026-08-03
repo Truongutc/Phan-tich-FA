@@ -795,6 +795,44 @@ def fetch_vbma_money_supply():
         return []
 
 
+def fetch_vbma_deposit_balance():
+    """CÙNG file CSV với fetch_vbma_money_supply() (tong_cung_tien_theo_thang.csv) — user
+    (2026-08-03) chỉ ra data.vietnambiz.vn/currency-interest-rate có "tăng trưởng huy động" nhưng
+    chỉ là snapshot 1 điểm/lần (đã có sẵn ở deposit_growth, nguồn vietnambiz, tích lũy chậm). Phát
+    hiện: file CSV VBMA đang dùng cho M2 CÓ SẴN 2 cột 'Tiền gửi TCKT' + 'Tiền gửi dân cư' (tỷ VND,
+    theo tháng, từ T12/2018) — CỘNG LẠI ra TỔNG HUY ĐỘNG tuyệt đối, cùng chất lượng lịch sử như
+    credit_balance_total, KHÔNG cần fetch thêm nguồn nào khác. Trả list [(period_iso, tong_huy_dong
+    tỷ_vnd), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/tables/vi/tong_cung_tien_theo_thang.csv"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        text = r.content.decode("utf-16-le").lstrip("﻿")
+        lines = text.splitlines()
+        if len(lines) < 2:
+            print("  [WARN] VBMA huy động: file rỗng hoặc đổi cấu trúc.")
+            return []
+        out = []
+        for line in lines[1:]:
+            cols = line.split("\t")
+            if len(cols) < 7:
+                continue
+            m = re.match(r"T(\d{1,2})\s+(\d{4})", cols[0].strip())
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            try:
+                total_deposit = round(_vbma_num(cols[5]) + _vbma_num(cols[6]), 0)
+                out.append((period, total_deposit))
+            except ValueError:
+                continue
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA huy động thất bại: {e}")
+        return []
+
+
 def fetch_vbma_cpi_yoy():
     """vbma.org.vn/vi/market-data/cpi — file 'wide' (1 dòng/chỉ báo, cột = kỳ) chứa CPI YoY THEO
     THÁNG từ T1/2020 (dài hơn nhiều so với cửa sổ ~13 điểm của biểu đồ nhúng NSO hiện dùng), mới
@@ -2006,6 +2044,16 @@ def update_vimo_raw():
         raw["credit_balance_total"]["series"] = [
             {"period": p, "value": v,
              "source_url": "https://vbma.org.vn/vi/market-data/credit"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VBMA — Tổng huy động vốn (Tiền gửi TCKT + dân cư) theo tháng (toàn bộ lịch sử từ T12/2018)]")
+    pts = fetch_vbma_deposit_balance()
+    if pts:
+        raw["deposit_balance_total"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/money-supply"}
             for p, v in pts
         ]
         print(f"  -> {len(pts)} điểm")

@@ -2133,33 +2133,45 @@ def _add_customs_yoy_growth(raw, trends):
         print(f"  -> {label}: {len(points)} điểm")
 
 
+def _yoy_from_level_series(level_by_period, source_url):
+    """Suy ra YoY thật (so CÙNG THÁNG năm trước, KHÔNG reset theo năm) từ 1 chuỗi GIÁ TRỊ TUYỆT
+    ĐỐI theo tháng {period: value} — dùng chung cho credit_growth_yoy_monthly/
+    deposit_growth_yoy_monthly (xem _add_credit_derived_indicators)."""
+    points = []
+    for period in sorted(level_by_period):
+        year, month = period.split("-")
+        prior_period = f"{int(year) - 1}-{month}"
+        if prior_period in level_by_period and level_by_period[prior_period]:
+            yoy = round((level_by_period[period] / level_by_period[prior_period] - 1) * 100, 2)
+            points.append({"period": period, "value": yoy, "source_url": source_url})
+    return points
+
+
 def _add_credit_derived_indicators(raw, trends):
-    """Từ credit_balance_total (dư nợ tín dụng tuyệt đối, theo tháng, vbma) suy ra 2 chỉ báo mới
-    (user 2026-08-01):
+    """Từ credit_balance_total/deposit_balance_total (giá trị tuyệt đối, theo tháng, vbma) suy ra
+    các chỉ báo mới (user 2026-08-01/2026-08-03):
     1. credit_growth_yoy_monthly — tăng trưởng SO CÙNG KỲ năm trước theo tháng (YoY thật) — KHÁC
        credit_growth hiện có (nguồn SBV, thực chất là "so với đầu năm", RESET về ~0-1% mỗi tháng 1
        rồi cộng dồn tới tháng 12 — xem chuỗi 2025-06=9.91%...2025-12=19.07%, 2026-01=1.19%, không
        phải YoY thật). credit_growth_yoy_monthly tính trực tiếp period/period cùng tháng năm trước,
        không reset theo năm, đúng nghĩa "so cùng kỳ" user yêu cầu.
-    2. credit_to_gdp_ratio — dư nợ tín dụng / GDP danh nghĩa (nominal_gdp_annual, World Bank, theo
+    2. deposit_growth_yoy_monthly — CÙNG PHƯƠNG PHÁP, từ deposit_balance_total (= Tiền gửi TCKT +
+       Tiền gửi dân cư, CÙNG file CSV VBMA đang dùng cho cung tiền M2) — bổ sung góc nhìn YoY thật
+       cho huy động, đối chiếu deposit_growth hiện có (nguồn vietnambiz, snapshot 1 điểm/lần chạy,
+       user chỉ ra qua data.vietnambiz.vn/currency-interest-rate).
+    3. credit_to_gdp_ratio — dư nợ tín dụng / GDP danh nghĩa (nominal_gdp_annual, World Bank, theo
        NĂM) x100, khớp GDP theo NĂM gần nhất có sẵn <= năm của tháng tín dụng (GDP thường công bố
        trễ hơn tín dụng vài tháng-1 năm). Chỉ báo đòn bẩy tín dụng kinh điển (BIS/IMF) — tỷ lệ tăng
        nhanh là dấu hiệu cảnh báo rủi ro tích lũy (bong bóng tài sản/nợ xấu).
-    Cả 2 đều PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng cho Scorecard (đã có
-    credit_growth nguồn SBV cho vai trò đó)."""
+    Cả 3 đều PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng cho Scorecard (đã có
+    credit_growth/deposit_growth nguồn SBV/vietnambiz cho vai trò đó)."""
     credit = raw.get("credit_balance_total")
     if not credit:
         return
     credit_by_period = {p["period"]: p["value"] for p in credit["series"] if p.get("value") is not None}
 
     # 1. YoY thật theo tháng
-    yoy_points = []
-    for period in sorted(credit_by_period):
-        year, month = period.split("-")
-        prior_period = f"{int(year) - 1}-{month}"
-        if prior_period in credit_by_period and credit_by_period[prior_period]:
-            yoy = round((credit_by_period[period] / credit_by_period[prior_period] - 1) * 100, 2)
-            yoy_points.append({"period": period, "value": yoy, "source_url": "https://vbma.org.vn/vi/market-data/credit"})
+    yoy_points = _yoy_from_level_series(credit_by_period, "https://vbma.org.vn/vi/market-data/credit")
     if yoy_points:
         raw["credit_growth_yoy_monthly"] = {
             "group": "monetary", "label": "Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng)",
@@ -2175,7 +2187,27 @@ def _add_credit_derived_indicators(raw, trends):
         trends["credit_growth_yoy_monthly"] = calc_trend(yoy_points, "higher")
         print(f"  -> Tăng trưởng dư nợ tín dụng YoY (theo tháng): {len(yoy_points)} điểm")
 
-    # 2. Tín dụng / GDP danh nghĩa
+    # 2. Huy động — YoY thật theo tháng (cùng phương pháp, nguồn deposit_balance_total)
+    deposit = raw.get("deposit_balance_total")
+    if deposit:
+        deposit_by_period = {p["period"]: p["value"] for p in deposit["series"] if p.get("value") is not None}
+        deposit_yoy_points = _yoy_from_level_series(deposit_by_period, "https://vbma.org.vn/vi/market-data/money-supply")
+        if deposit_yoy_points:
+            raw["deposit_growth_yoy_monthly"] = {
+                "group": "monetary", "label": "Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng)",
+                "unit": "%", "good_direction": "higher", "auto_source": "derived",
+                "series": deposit_yoy_points,
+                "note": ("Suy ra từ deposit_balance_total (= Tiền gửi TCKT + Tiền gửi dân cư, theo "
+                         "tháng, vbma.org.vn) bằng cách so CÙNG THÁNG năm trước (YoY thật). Đối chiếu "
+                         "deposit_growth (nguồn vietnambiz, chỉ có snapshot 1 điểm/lần Action chạy). "
+                         "Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — KHÔNG dùng để tính "
+                         "Scorecard (đã có deposit_growth cho vai trò đó)."),
+                "impact": "So được tốc độ tăng huy động THẬT theo cùng kỳ, đối chiếu trực tiếp với tăng trưởng tín dụng cùng phương pháp để biết ngân hàng đang cho vay vượt khả năng huy động hay không.",
+            }
+            trends["deposit_growth_yoy_monthly"] = calc_trend(deposit_yoy_points, "higher")
+            print(f"  -> Tăng trưởng huy động vốn YoY (theo tháng): {len(deposit_yoy_points)} điểm")
+
+    # 3. Tín dụng / GDP danh nghĩa
     gdp = raw.get("nominal_gdp_annual")
     if gdp:
         gdp_by_year = {p["period"]: p["value"] for p in gdp["series"] if p.get("value") is not None}

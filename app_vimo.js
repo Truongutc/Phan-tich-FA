@@ -520,16 +520,17 @@ function renderIndicatorGroups(indicators) {
             renderInterbank6mHistoryChart(grid, indicators);
             renderBondYieldHistoryChart(grid, indicators);
             renderOmoHistoryChart(grid, indicators);
-            // Tăng trưởng tín dụng & cung tiền M2 cùng 1 chart (user 2026-08-01, đối chiếu ảnh
-            // tham khảo từ vbma.org.vn/vi/market-data/money-supply) — credit_growth_yoy_monthly
-            // (phái sinh từ credit_balance_total, xem _add_credit_derived_indicators) + m2_growth
-            // (đã có sẵn, VBMA, YoY thật theo tháng từ T12/2018) đều CÙNG PHƯƠNG PHÁP YoY thật nên
-            // so sánh trực tiếp được, không cần fetch gì thêm.
+            // Tăng trưởng tín dụng, cung tiền M2 & huy động cùng 1 chart (user 2026-08-01/08-03,
+            // đối chiếu ảnh tham khảo từ vbma.org.vn/vi/market-data/money-supply +
+            // data.vietnambiz.vn/currency-interest-rate) — credit_growth_yoy_monthly/
+            // deposit_growth_yoy_monthly (phái sinh, xem _add_credit_derived_indicators) + m2_growth
+            // (đã có sẵn, VBMA) đều CÙNG PHƯƠNG PHÁP YoY thật nên so sánh trực tiếp được.
             renderMultiTenorHistoryChart(grid, indicators, [
                 ['credit_growth_yoy_monthly', 'Tăng trưởng tín dụng (YoY)', '#3b82f6'],
                 ['m2_growth', 'Tăng trưởng cung tiền M2 (YoY)', '#a78bfa'],
-            ], 'chart-credit-money-supply', '📈 Tăng trưởng tín dụng & cung tiền M2 theo tháng (so cùng kỳ năm trước)',
-            'Nguồn: vbma.org.vn (cung tiền M2 trực tiếp; tín dụng phái sinh từ dư nợ tuyệt đối vbma.org.vn/vi/market-data/credit) — cả 2 đều YoY thật theo tháng, không phải so với đầu năm.', null);
+                ['deposit_growth_yoy_monthly', 'Tăng trưởng huy động (YoY)', '#f59e0b'],
+            ], 'chart-credit-money-supply', '📈 Tăng trưởng tín dụng, cung tiền M2 & huy động theo tháng (so cùng kỳ năm trước)',
+            'Nguồn: vbma.org.vn (cung tiền M2 trực tiếp; tín dụng/huy động phái sinh từ dư nợ/tiền gửi tuyệt đối) — cả 3 đều YoY thật theo tháng, không phải so với đầu năm.', null);
         }
         if (grp === 'growth') {
             renderStackedAreaChart(grid, indicators, {
