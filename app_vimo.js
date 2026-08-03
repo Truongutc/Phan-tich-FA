@@ -221,8 +221,12 @@ function renderMonitoringTable(table) {
     const thead = `<thead><tr><th>Chỉ báo</th>${periods.map(p => `<th>${_periodToShortLabel(p)}</th>`).join('')}</tr></thead>`;
 
     const tbody = table.rows.map(row => {
-        const present = row.values.filter(v => v !== null && v !== undefined);
-        const lo = Math.min(...present), hi = Math.max(...present);
+        // colorMin/colorMax = min-max của TOÀN BỘ LỊCH SỬ chỉ báo (tính sẵn trong
+        // _build_monitoring_table, template_vimo.py) — KHÔNG dùng min-max của riêng N tháng đang
+        // hiển thị, tránh bóp méo màu khi cửa sổ hiển thị vô tình chỉ toàn giá trị đã cao/thấp
+        // sẵn (user 2026-08-03: tín dụng 18,23% vẫn cao so lịch sử nhưng bị tô đỏ vì cửa sổ hiện
+        // tại chỉ có 18-22%).
+        const lo = row.colorMin, hi = row.colorMax;
         const cells = row.values.map(v => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
             let g = hi === lo ? 0.5 : (v - lo) / (hi - lo);

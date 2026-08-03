@@ -2300,8 +2300,16 @@ def _build_monitoring_table(raw, n_months=13):
         values = [by_period.get(p) for p in periods]
         if sum(1 for v in values if v is not None) < 6:
             continue
+        # Màu tính theo min-max của TOÀN BỘ LỊCH SỬ chỉ báo (colorMin/colorMax), KHÔNG phải chỉ
+        # riêng N tháng đang hiển thị — user (2026-08-03) chỉ ra tín dụng 18,23% (đã là mức cao so
+        # lịch sử) vẫn bị tô đỏ vì cửa sổ hiển thị chỉ có 18-22% (bản thân dải hẹp đã ở mức cao,
+        # điểm thấp nhất trong dải hẹp đó vẫn luôn bị tô đỏ dù cao tuyệt đối). Dùng full-history
+        # cho thang màu tránh bóp méo kiểu này — vd tín dụng full-history 8,96-21,93% thì 18,23%
+        # nằm ở ~72% dải, tô xanh đúng như cảm nhận trực quan.
+        all_vals = [p["value"] for p in ind["series"] if p.get("value") is not None]
         rows.append({"key": key, "label": label, "unit": ind["unit"],
-                     "goodDirection": ind["good_direction"], "values": values})
+                     "goodDirection": ind["good_direction"], "values": values,
+                     "colorMin": min(all_vals), "colorMax": max(all_vals)})
     if not rows:
         return None
     return {"periods": periods, "rows": rows}
