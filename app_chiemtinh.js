@@ -190,22 +190,70 @@ function renderBacktestChart(backtest) {
     vnLine.setData(vnSeries.map(p => ({ time: _d2ts(p.date), value: p.close })));
 
     // Chỉ số áp lực/thuận lợi chiêm tinh (trục trái) — tô XANH khi tăng so với hôm trước, ĐỎ khi
-    // giảm (user yêu cầu, để đối chiếu trực quan với chiều VN-Index).
+    // giảm (user yêu cầu, để đối chiếu trực quan với chiều VN-Index), vẽ dạng ĐƯỜNG liền (không
+    // phải cột) để đọc dễ như biểu đồ dự báo phía trên.
     //
-    // LƯU Ý (lịch sử sửa lỗi 2026-08-04): thử 2 cách trước đều KHÔNG ổn — (a) 2 LineSeries đè
-    // nhau dùng whitespace tạo khoảng trống: Lightweight Charts không cắt line qua whitespace giữa
-    // chừng, mỗi series tự nối thẳng qua chỗ trống thành 2 đường méo mó riêng ("nhìn như 2 đường
-    // chiêm tinh khác nhau" — user phản ánh đúng); (b) tách thành ~830 LineSeries riêng (1 đoạn
-    // tăng/giảm liên tục = 1 series): hình đúng nhưng trang tải chậm hẳn (~17s, quá nhiều series).
-    // FIX ĐÚNG: dùng HistogramSeries (dạng cột) — Lightweight Charts hỗ trợ SẴN màu riêng từng
-    // điểm qua trường `color` ngay trong data point, chỉ cần 1 series, không cần workaround.
-    const histSeries = chart.addHistogramSeries({
-        priceScaleId: 'left', title: '', priceLineVisible: false, lastValueVisible: false, base: 0,
+    // LƯU Ý (lịch sử sửa lỗi 2026-08-04) — 3 cách trước đều không ổn:
+    //  (a) 2 LineSeries đè nhau dùng whitespace tạo khoảng trống: Lightweight Charts không cắt
+    //      line qua whitespace giữa chừng, mỗi series tự nối thẳng qua chỗ trống thành 2 đường
+    //      méo mó riêng ("nhìn như 2 đường chiêm tinh khác nhau" — user phản ánh đúng).
+    //  (b) tách thành ~830 LineSeries riêng (1 đoạn tăng/giảm liên tục = 1 series): hình đúng
+    //      nhưng trang tải chậm hẳn (~17s, quá nhiều series).
+    //  (c) HistogramSeries (dạng cột, native per-point color): nhanh + đúng màu, nhưng user thấy
+    //      dạng cột khó nhìn hơn dạng đường liền như biểu đồ dự báo phía trên.
+    // FIX ĐÚNG: tự vẽ đường bằng 1 <canvas> overlay đặt CHỒNG lên chart (pointer-events:none, chart
+    // gốc vẫn nhận mọi thao tác zoom/pan/crosshair bình thường) — dùng timeToCoordinate/
+    // priceToCoordinate của CHÍNH chart để đồng bộ tọa độ, vẽ lại mỗi khi phạm vi xem đổi (pan/
+    // zoom), chỉ vẽ phần đang hiển thị nên rất nhẹ (không phụ thuộc việc render/số lượng Series).
+    const astroAnchor = chart.addLineSeries({
+        // series "neo" vô hình — chỉ để tra priceToCoordinate đúng theo trục trái, không hiện line thật
+        priceScaleId: 'left', color: 'transparent', lineWidth: 1, lineVisible: false,
+        lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false, title: '',
     });
-    histSeries.setData(astroSeries.map((p, i) => ({
-        time: _d2ts(p.date), value: p.score,
-        color: (i === 0 || p.score >= astroSeries[i - 1].score) ? '#10b981' : '#ef4444',
-    })));
+    astroAnchor.setData(astroSeries.map(p => ({ time: _d2ts(p.date), value: p.score })));
+
+    const astroTimes = astroSeries.map(p => _d2ts(p.date));
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;';
+    container.appendChild(canvas);
+
+    function drawAstroOverlay() {
+        const rect = container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        const range = chart.timeScale().getVisibleRange();
+        if (!range) return;
+        let startIdx = astroTimes.findIndex(t => t >= range.from);
+        if (startIdx === -1) startIdx = astroTimes.length - 1;
+        startIdx = Math.max(0, startIdx - 1);
+        let endIdx = astroTimes.length - 1;
+        for (let i = startIdx; i < astroTimes.length; i++) {
+            if (astroTimes[i] > range.to) { endIdx = i; break; }
+        }
+        endIdx = Math.min(astroTimes.length - 1, endIdx + 1);
+
+        ctx.lineWidth = 1.6;
+        for (let i = startIdx; i < endIdx; i++) {
+            const x1 = chart.timeScale().timeToCoordinate(astroTimes[i]);
+            const y1 = astroAnchor.priceToCoordinate(astroSeries[i].score);
+            const x2 = chart.timeScale().timeToCoordinate(astroTimes[i + 1]);
+            const y2 = astroAnchor.priceToCoordinate(astroSeries[i + 1].score);
+            if (x1 === null || y1 === null || x2 === null || y2 === null) continue;
+            ctx.strokeStyle = astroSeries[i + 1].score >= astroSeries[i].score ? '#10b981' : '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+    }
+    chart.timeScale().subscribeVisibleTimeRangeChange(drawAstroOverlay);
 
     // Mặc định hiển thị ~1 năm gần nhất; cuộn chuột/pinch để zoom ra xa xem hết 10 năm, kéo để pan
     const fromIdx = Math.max(0, astroSeries.length - 366);
@@ -217,6 +265,7 @@ function renderBacktestChart(backtest) {
     const ro = new ResizeObserver(entries => {
         const rect = entries[0].contentRect;
         if (rect.width > 0) chart.resize(rect.width, 420);
+        drawAstroOverlay();
     });
     ro.observe(container);
 }
