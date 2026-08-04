@@ -190,34 +190,22 @@ function renderBacktestChart(backtest) {
     vnLine.setData(vnSeries.map(p => ({ time: _d2ts(p.date), value: p.close })));
 
     // Chỉ số áp lực/thuận lợi chiêm tinh (trục trái) — tô XANH khi tăng so với hôm trước, ĐỎ khi
-    // giảm (user yêu cầu, để đối chiếu trực quan với chiều VN-Index). Lightweight Charts không hỗ
-    // trợ đổi màu giữa chừng 1 LineSeries, nên dùng 2 series đè lên nhau (tăng/giảm) — mỗi ngày
-    // KHÔNG thuộc màu đó chỉ có {time} (whitespace, không có value) để tạo khoảng trống đúng chỗ,
-    // giữ nguyên trọn vẹn hình dạng dữ liệu hàng ngày (không đơn giản hóa mất chi tiết như zigzag).
-    const n = astroSeries.length;
-    const upData = new Array(n), downData = new Array(n);
-    for (let i = 0; i < n; i++) {
-        const t = _d2ts(astroSeries[i].date), v = astroSeries[i].score;
-        const edgeIn = i > 0 ? v >= astroSeries[i - 1].score : null;
-        const edgeOut = i < n - 1 ? astroSeries[i + 1].score >= v : null;
-        const isUp = edgeIn === true || edgeOut === true;
-        const isDown = edgeIn === false || edgeOut === false;
-        upData[i] = isUp ? { time: t, value: v } : { time: t };
-        downData[i] = isDown ? { time: t, value: v } : { time: t };
-    }
-    // title để trống — đây là 2 series KỸ THUẬT hợp lại thành 1 đường liền (xem giải thích ở trên),
-    // không phải 2 chỉ báo khác nhau; đặt title sẽ khiến Lightweight Charts hiện 2 nhãn nổi riêng
-    // biệt, gây hiểu lầm "có 2 đường" (user 2026-08-04 phản ánh đúng điều này).
-    const astroUp = chart.addLineSeries({
-        priceScaleId: 'left', color: '#10b981', lineWidth: 1.5, title: '',
-        lastValueVisible: false, priceLineVisible: false,
+    // giảm (user yêu cầu, để đối chiếu trực quan với chiều VN-Index).
+    //
+    // LƯU Ý (lịch sử sửa lỗi 2026-08-04): thử 2 cách trước đều KHÔNG ổn — (a) 2 LineSeries đè
+    // nhau dùng whitespace tạo khoảng trống: Lightweight Charts không cắt line qua whitespace giữa
+    // chừng, mỗi series tự nối thẳng qua chỗ trống thành 2 đường méo mó riêng ("nhìn như 2 đường
+    // chiêm tinh khác nhau" — user phản ánh đúng); (b) tách thành ~830 LineSeries riêng (1 đoạn
+    // tăng/giảm liên tục = 1 series): hình đúng nhưng trang tải chậm hẳn (~17s, quá nhiều series).
+    // FIX ĐÚNG: dùng HistogramSeries (dạng cột) — Lightweight Charts hỗ trợ SẴN màu riêng từng
+    // điểm qua trường `color` ngay trong data point, chỉ cần 1 series, không cần workaround.
+    const histSeries = chart.addHistogramSeries({
+        priceScaleId: 'left', title: '', priceLineVisible: false, lastValueVisible: false, base: 0,
     });
-    const astroDown = chart.addLineSeries({
-        priceScaleId: 'left', color: '#ef4444', lineWidth: 1.5, title: '',
-        lastValueVisible: false, priceLineVisible: false,
-    });
-    astroUp.setData(upData);
-    astroDown.setData(downData);
+    histSeries.setData(astroSeries.map((p, i) => ({
+        time: _d2ts(p.date), value: p.score,
+        color: (i === 0 || p.score >= astroSeries[i - 1].score) ? '#10b981' : '#ef4444',
+    })));
 
     // Mặc định hiển thị ~1 năm gần nhất; cuộn chuột/pinch để zoom ra xa xem hết 10 năm, kéo để pan
     const fromIdx = Math.max(0, astroSeries.length - 366);
