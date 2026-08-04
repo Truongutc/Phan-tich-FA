@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIC FA — Chiêm Tinh Tài Chính</title>
-    <meta name="description" content="Chiêm tinh Tài chính — vị trí hành tinh, góc chiếu, chu kỳ, nhật/nguyệt thực (tính toán thiên văn thật)">
+    <meta name="description" content="Chiêm tinh Tài chính — vị trí hành tinh, góc chiếu, đánh giá tác động thị trường hiện tại và dự báo giai đoạn tới (tính toán thiên văn thật)">
 
     <link rel="icon" type="image/png" href="app_icon.png">
     <link rel="shortcut icon" type="image/png" href="app_icon.png">
@@ -30,6 +30,9 @@
         .astro-badge.soft { background: #10b98122; color: #10b981; }
         .astro-badge.solar { background: #f59e0b22; color: #f59e0b; }
         .astro-badge.lunar { background: #8b5cf622; color: #8b5cf6; }
+        .astro-sentiment-positive { color: #10b981; font-weight: 600; }
+        .astro-sentiment-negative { color: #ef4444; font-weight: 600; }
+        .astro-sentiment-neutral { color: var(--text-main, #f3f4f6); }
         .astro-cycle-tool { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-top: 12px; }
         .astro-cycle-tool label { display: block; font-size: 0.8em; color: var(--text-muted, #9ca3af); margin-bottom: 4px; }
         .astro-cycle-tool input, .astro-cycle-tool select {
@@ -39,9 +42,9 @@
         .astro-generated-note { font-size: 0.75em; color: var(--text-muted, #6b7280); margin-top: 10px; }
         .astro-section-title { font-size: 0.95em; font-weight: 700; margin: 16px 0 4px; color: var(--text-main, #f3f4f6); }
         .border-purple { border-left-color: #8b5cf6 !important; }
-        .astro-ref-heading { margin: 28px 0 -4px; color: var(--text-muted, #9ca3af); font-size: 1em; font-weight: 700; }
         .astro-line { padding: 8px 0; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.06)); font-size: 0.9em; line-height: 1.6; }
         .astro-line:last-child { border-bottom: none; }
+        .astro-wheel-legend { font-size: 0.78em; color: var(--text-muted, #9ca3af); text-align: center; margin-top: 8px; line-height: 1.8; }
     </style>
 </head>
 <body>
@@ -73,8 +76,8 @@
             <div class="sector-ribbon" style="background:#8b5cf6">CHIÊM TINH TÀI CHÍNH</div>
             <div class="header-main">
                 <div class="header-info">
-                    <h2>Chiêm Tinh Tài Chính — Chu kỳ, Góc chiếu & Nhật/Nguyệt thực</h2>
-                    <p class="subtitle">Vị trí hành tinh và ngày nhật/nguyệt thực TÍNH TOÁN THIÊN VĂN THẬT (thư viện ephem) — cập nhật hàng ngày</p>
+                    <h2>Chiêm Tinh Tài Chính — Diễn biến Hành tinh & Tác động Thị trường</h2>
+                    <p class="subtitle">Vị trí hành tinh, góc chiếu, ngày nhật/nguyệt thực TÍNH TOÁN THIÊN VĂN THẬT (thư viện ephem) — cập nhật hàng ngày</p>
                 </div>
             </div>
             <div class="astro-caveat">
@@ -88,36 +91,48 @@
             <p class="astro-generated-note" id="astro-generated-at"></p>
         </div>
 
-        <!-- Đánh giá hiện tại -->
-        <div class="card margin-top-20" id="assessment-card" style="display:none">
-            <h3 class="border-purple">🧭 Đánh giá Hiện tại — Tác động tới Tài chính & Tâm lý Thị trường</h3>
+        <!-- Kết luận tổng thể -->
+        <div class="card margin-top-20" id="assessment-overall-card" style="display:none">
+            <h3 class="border-purple">🧭 Kết luận Tổng thể</h3>
             <p class="vimo-synthesis-text" id="assessment-overall" style="font-weight:600"></p>
-            <div id="assessment-retrograde"></div>
-            <div id="assessment-aspects"></div>
+            <p class="astro-generated-note" id="astro-sun-moon-today"></p>
+        </div>
+
+        <!-- Biểu đồ sao -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">🌌 Biểu đồ Vị trí Hành tinh (Sơ đồ vòng hoàng đạo)</h3>
+            <p class="vimo-synthesis-text">Sơ đồ đơn giản hóa: vòng ngoài là 12 cung hoàng đạo, mỗi chấm là 1 hành tinh đặt theo kinh độ hoàng đạo hiện tại; đường nối giữa 2 hành tinh là góc chiếu đang hoạt động (đỏ = góc chiếu cứng, xanh = góc chiếu mềm).</p>
+            <div id="astro-wheel-container"></div>
+            <div class="astro-wheel-legend" id="astro-wheel-legend"></div>
+        </div>
+
+        <!-- Vị trí địa tâm -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">📍 Vị trí Địa tâm Hiện tại</h3>
+            <p class="vimo-synthesis-text">"Địa tâm" (geocentric) nghĩa là vị trí hành tinh quan sát TỪ TRÁI ĐẤT (khác vị trí nhật tâm/heliocentric quan sát từ Mặt Trời) — hệ tọa độ chiêm tinh tài chính truyền thống dùng để định thời điểm thị trường.</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-positions-table"></table></div>
+            <div id="assessment-retrograde" style="margin-top:10px"></div>
+        </div>
+
+        <!-- Góc chiếu -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">📐 Góc chiếu (Aspect) Đang Hoạt động</h3>
+            <p class="vimo-synthesis-text" style="font-size:0.85em">"Đang tới" (applying) = orb đang thu hẹp, ảnh hưởng đang mạnh dần tới điểm chính xác; "Đang qua" (separating) = orb đang nới rộng, ảnh hưởng đang nhạt dần — kỹ thuật này lấy theo đúng cách W.D. Gann diễn giải trong "The Tunnel Thru the Air" (vd "Venus applied to a trine of Uranus", "Venus was separating from a conjunction of Mars").</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-current-aspects-table"></table></div>
+            <div id="assessment-aspects" style="margin-top:10px"></div>
         </div>
 
         <!-- Dự báo giai đoạn tới -->
         <div class="card margin-top-20" id="forecast-card" style="display:none">
             <h3 class="border-purple">📅 Dự báo Giai đoạn Tới (90 ngày)</h3>
-            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. Diễn giải kèm theo là cách hiểu PHỔ BIẾN của lý thuyết chiêm tinh tài chính truyền thống, không phải khẳng định chắc chắn.</p>
+            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. <span class="astro-sentiment-positive">Chữ xanh</span> = theo lý thuyết truyền thống thường thuận lợi cho thị trường; <span class="astro-sentiment-negative">chữ đỏ</span> = thường tạo căng thẳng/áp lực giảm; chữ trắng = trung tính/không rõ chiều.</p>
             <div style="overflow-x:auto"><table class="astro-table" id="astro-forecast-table"></table></div>
         </div>
 
-        <!-- Buổi 1 -->
-        <h3 class="astro-ref-heading">📚 Kiến thức tham khảo</h3>
+        <!-- Công cụ tính chu kỳ -->
         <div class="card margin-top-20">
-            <h3 class="border-purple">🪐 Buổi 1 — Kiến thức cơ bản về Chiêm tinh Tài chính</h3>
-            <p class="astro-section-title">Khái niệm cơ bản về hành tinh</p>
-            <p class="vimo-synthesis-text">Mỗi hành tinh trong chiêm tinh tài chính được gán một "chất" ảnh hưởng khác nhau tới thị trường: Mặt Trời — xu hướng chính/niềm tin; Mặt Trăng — tâm lý đám đông, biến động ngắn hạn; Sao Thủy — thông tin, thanh khoản, giao dịch; Sao Kim — giá trị tài sản, hàng tiêu dùng; Sao Hỏa — biến động mạnh, đầu cơ; Sao Mộc — mở rộng, tăng trưởng; Sao Thổ — thắt chặt, kỷ luật, khủng hoảng; Sao Thiên Vương — biến động đột ngột, công nghệ; Sao Hải Vương — bong bóng, ảo tưởng định giá; Sao Diêm Vương — biến đổi cấu trúc dài hạn.</p>
-            <p class="astro-section-title">Khái niệm cơ bản về cung hoàng đạo</p>
-            <p class="vimo-synthesis-text">Vòng hoàng đạo (ecliptic, quỹ đạo biểu kiến Mặt Trời quanh Trái Đất) chia thành 12 cung, mỗi cung 30° — mỗi cung mang 1 yếu tố (Lửa/Đất/Khí/Nước) và 1 tính chất (Khai mở/Cố định/Biến động) quyết định cách năng lượng hành tinh biểu hiện khi đi qua cung đó.</p>
-            <div class="ind-note" id="astro-sun-moon-today" style="margin-top:8px"></div>
-        </div>
-
-        <!-- Buổi 2 -->
-        <div class="card margin-top-20">
-            <h3 class="border-purple">🔁 Buổi 2 — Kiến thức về Chu kỳ</h3>
-            <p class="vimo-synthesis-text">Lý thuyết chu kỳ trong chiêm tinh tài chính cho rằng thị trường lặp lại biến động theo các khoảng thời gian tương đối đều đặn tính từ một mốc quan trọng (thường là đáy/đỉnh lớn) — gồm chu kỳ chính (Major Cycle, dài hạn), chu kỳ sơ cấp (ngắn hơn), và 2 chu kỳ được dùng phổ biến nhất: <b>chu kỳ 50 tuần</b> và <b>chu kỳ 4 năm</b>. Mốc neo (ngày bắt đầu đếm) do người phân tích tự chọn — không có 1 mốc "đúng" duy nhất, nên công cụ dưới đây để bạn tự nhập mốc neo của riêng mình.</p>
+            <h3 class="border-purple">🔁 Công cụ Tính Chu kỳ</h3>
+            <p class="vimo-synthesis-text">Lý thuyết chu kỳ trong chiêm tinh tài chính cho rằng thị trường lặp lại biến động theo các khoảng thời gian tương đối đều đặn tính từ một mốc quan trọng (thường là đáy/đỉnh lớn) — phổ biến nhất là <b>chu kỳ 50 tuần</b> và <b>chu kỳ 4 năm</b>. Mốc neo do bạn tự chọn — không có 1 mốc "đúng" duy nhất.</p>
             <div class="astro-cycle-tool">
                 <div>
                     <label for="cycle-anchor">Ngày mốc (đáy/đỉnh lớn)</label>
@@ -140,27 +155,6 @@
             <div id="cycle-result" style="margin-top:12px"></div>
         </div>
 
-        <!-- Buổi 3 -->
-        <div class="card margin-top-20">
-            <h3 class="border-purple">🌐 Buổi 3 — Chu kỳ và Dấu hiệu Địa tâm</h3>
-            <p class="vimo-synthesis-text">"Địa tâm" (geocentric) nghĩa là vị trí hành tinh quan sát TỪ TRÁI ĐẤT (khác vị trí nhật tâm/heliocentric quan sát từ Mặt Trời) — đây là hệ tọa độ chiêm tinh tài chính truyền thống sử dụng để định thời điểm thị trường.</p>
-            <p class="astro-section-title">Vị trí địa tâm hiện tại</p>
-            <div style="overflow-x:auto"><table class="astro-table" id="astro-positions-table"></table></div>
-            <p class="astro-section-title">Góc chiếu (aspect) đang hoạt động (orb ≤ 3°)</p>
-            <p class="vimo-synthesis-text" style="font-size:0.85em">"Đang tới" (applying) = orb đang thu hẹp, ảnh hưởng đang mạnh dần tới điểm chính xác; "Đang qua" (separating) = orb đang nới rộng, ảnh hưởng đang nhạt dần — kỹ thuật này lấy theo đúng cách W.D. Gann diễn giải trong "The Tunnel Thru the Air" (vd "Venus applied to a trine of Uranus", "Venus was separating from a conjunction of Mars").</p>
-            <div style="overflow-x:auto"><table class="astro-table" id="astro-current-aspects-table"></table></div>
-        </div>
-
-        <div class="card margin-top-20">
-            <h3 class="border-purple">⏱️ Buổi 4 — Phương pháp Super Timing của W.D. Gann</h3>
-            <p class="vimo-synthesis-text">W.D. Gann sử dụng góc chiếu chính xác giữa các hành tinh để tìm "ngày cửa sổ thời gian" (time window) có khả năng đảo chiều thị trường cao hơn — xem bảng "Dự báo Giai đoạn Tới" ở đầu trang (đã gộp cả góc chiếu, nhật/nguyệt thực và ngày hành tinh đổi chiều vào 1 dòng thời gian duy nhất).</p>
-        </div>
-
-        <div class="card margin-top-20">
-            <h3 class="border-purple">🌑 Buổi 5 — Phương pháp Hiện tượng Che khuất (Nhật thực, Nguyệt thực)</h3>
-            <p class="vimo-synthesis-text">Nhiều nhà phân tích chiêm tinh tài chính coi ngày nhật thực/nguyệt thực là các "mốc thời gian động" lớn — thời điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường. Đã gộp vào bảng "Dự báo Giai đoạn Tới" ở đầu trang.</p>
-        </div>
-
     </main>
 
     <footer class="footer">
@@ -168,7 +162,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=2"></script>
+<script src="app_chiemtinh.js?v=3"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

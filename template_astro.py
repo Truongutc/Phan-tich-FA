@@ -64,6 +64,21 @@ ASPECT_TONE = {
 # chiếu chỉ liên quan Mặt Trời/Mặt Trăng/hành tinh nhanh (vốn đổi liên tục, chỉ tạo biến động ngày).
 SLOW_PLANETS = {"Sao Mộc", "Sao Thổ", "Sao Thiên Vương", "Sao Hải Vương", "Sao Diêm Vương"}
 
+# Chiều hướng (sentiment) RULE-BASED cho bảng dự báo (user 2026-08-04: "sự kiện tốt cho thị trường
+# đi lên thì chữ xanh lá, căng thẳng áp lực đi xuống thì chữ đỏ") — theo cách hiểu PHỔ BIẾN của
+# chiêm tinh tài chính: góc chiếu "cứng căng thẳng" (vuông/xung) = negative; góc chiếu "hài hòa"
+# (tam hợp/lục phân) = positive; hợp (conjunction) mang tính khởi đầu trung tính, phụ thuộc 2 hành
+# tinh liên quan nên để neutral; hành tinh BẮT ĐẦU nghịch hành = negative (bất định/rủi ro tăng);
+# hành tinh THUẬN HÀNH TRỞ LẠI = positive (năng lượng dồn nén được giải phóng/rõ ràng trở lại);
+# nhật/nguyệt thực = neutral (tín hiệu BIẾN ĐỘNG MẠNH, không mang tính định hướng tăng/giảm rõ).
+ASPECT_SENTIMENT = {
+    "Hợp (Conjunction)": "neutral",
+    "Vuông (Square)": "negative",
+    "Xung (Opposition)": "negative",
+    "Tam hợp (Trine)": "positive",
+    "Lục phân (Sextile)": "positive",
+}
+
 
 def build_current_assessment(positions, current_aspects):
     """Sinh nhận định RULE-BASED (không AI) về tác động HIỆN TẠI của vị trí/góc chiếu hành tinh
@@ -120,6 +135,7 @@ def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations,
             "date": a["date"], "type": "aspect",
             "title": f"{a['a']} {a['aspect']} {a['b']}",
             "interpretation": f"Liên quan \"{PLANET_MEANING.get(a['a'], '')}\" và \"{PLANET_MEANING.get(a['b'], '')}\" — {desc}.",
+            "sentiment": ASPECT_SENTIMENT.get(a["aspect"], "neutral"),
         })
 
     for e in upcoming_eclipses:
@@ -134,6 +150,7 @@ def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations,
                                 "quanh ngày này." if is_solar else
                                 "Tương tự nhật thực, được coi là mốc thời gian động — thường liên quan tới biến động "
                                 "tâm lý đám đông/thanh khoản ngắn hạn."),
+            "sentiment": "neutral",
         })
 
     for s in retro_stations:
@@ -147,6 +164,7 @@ def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations,
                                 if is_retro_start else
                                 f"Đánh dấu thời điểm năng lượng bị dồn nén trong giai đoạn {s['planet']} nghịch hành "
                                 f"trước đó được GIẢI PHÓNG — thị trường dễ có biến động rõ rệt quanh mốc này."),
+            "sentiment": "negative" if is_retro_start else "positive",
         })
 
     events.sort(key=lambda e: e["date"])

@@ -1,10 +1,11 @@
 /* ════════════════════════════════════════════════════════
    AIC FA SYSTEM — app_chiemtinh.js (Chiêm tinh Tài chính)
    Tải data/astro.json (tính toán thiên văn thật + diễn giải rule-based, xem
-   fetch_astro_data.py/template_astro.py). Trọng tâm trang (user 2026-08-04): "Đánh giá Hiện tại"
-   (tác động tới tài chính/tâm lý thị trường) + "Dự báo Giai đoạn Tới" (dòng thời gian sự kiện sắp
-   tới) — 5 buổi tham khảo (izumi.edu.vn) giữ lại phía dưới làm kiến thức nền. Xem lưu ý quan
-   trọng ở đầu fetch_astro_data.py về bản chất khung lý thuyết này.
+   fetch_astro_data.py/template_astro.py). Trang tập trung vào DỮ LIỆU SỐNG: vị trí hành tinh +
+   góc chiếu hiện tại (kèm diễn giải ngay dưới mỗi bảng), biểu đồ vòng hoàng đạo, và dự báo giai
+   đoạn tới — KHÔNG còn nội dung khung "5 buổi học" tham khảo (user 2026-08-04: bỏ nội dung khóa
+   học, chỉ giữ dữ liệu + diễn giải). Xem lưu ý quan trọng ở đầu fetch_astro_data.py về bản chất
+   khung lý thuyết này.
    ════════════════════════════════════════════════════════ */
 
 'use strict';
@@ -33,60 +34,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (genEl) genEl.textContent = `Dữ liệu thiên văn tính lúc: ${data.generatedAt}`;
 
     renderSunMoonToday(data.positions);
+    renderChartWheel(data.positions, data.currentAspects);
     renderPositionsTable(data.positions);
     renderCurrentAspectsTable(data.currentAspects);
     renderAssessment(data.currentAssessment);
     renderForecastTimeline(data.forecastTimeline);
     initCycleTool();
 });
-
-function renderAssessment(assessment) {
-    const card = document.getElementById('assessment-card');
-    if (!assessment || !card) return;
-    card.style.display = 'block';
-
-    const overallEl = document.getElementById('assessment-overall');
-    if (overallEl) overallEl.textContent = assessment.overallText;
-
-    const retroEl = document.getElementById('assessment-retrograde');
-    if (retroEl) {
-        retroEl.innerHTML = (assessment.retrogradeLines || [])
-            .map(l => `<div class="astro-line">℞ ${l}</div>`).join('');
-    }
-
-    const aspEl = document.getElementById('assessment-aspects');
-    if (aspEl) {
-        aspEl.innerHTML = (assessment.aspectLines || [])
-            .map(l => `<div class="astro-line">🪐 ${l}</div>`).join('');
-    }
-}
-
-function renderForecastTimeline(events) {
-    const card = document.getElementById('forecast-card');
-    const el = document.getElementById('astro-forecast-table');
-    if (!events || !card || !el) return;
-    card.style.display = 'block';
-    if (!events.length) {
-        el.innerHTML = '<tbody><tr><td>Không có sự kiện nào đáng chú ý trong giai đoạn tới.</td></tr></tbody>';
-        return;
-    }
-    const EVENT_BADGE = {
-        aspect: 'hard', solar: 'solar', lunar: 'lunar',
-        station_retrograde: 'hard', station_direct: 'soft',
-    };
-    const EVENT_ICON = {
-        aspect: '🪐', solar: '☀️', lunar: '🌕', station_retrograde: '℞', station_direct: '➡️',
-    };
-    el.innerHTML = `
-        <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Diễn giải (lý thuyết chiêm tinh tài chính)</th></tr></thead>
-        <tbody>${events.map(e => `
-            <tr>
-                <td style="white-space:nowrap">${_fmtDate(e.date)}</td>
-                <td style="white-space:nowrap"><span class="astro-badge ${EVENT_BADGE[e.type] || 'soft'}">${EVENT_ICON[e.type] || ''} ${e.title}</span></td>
-                <td style="font-size:0.92em">${e.interpretation}</td>
-            </tr>
-        `).join('')}</tbody>`;
-}
 
 function renderSunMoonToday(positions) {
     const el = document.getElementById('astro-sun-moon-today');
@@ -125,8 +79,128 @@ function renderCurrentAspectsTable(aspects) {
         `).join('')}</tbody>`;
 }
 
-// Buổi 2 — công cụ tính mốc chu kỳ, THUẦN CLIENT-SIDE (không cần dữ liệu server) vì mốc neo là
-// lựa chọn chủ quan của người phân tích, không có 1 ngày "đúng" duy nhất.
+// Diễn giải rule-based (từ template_astro.py) — phân bổ vào ĐÚNG bảng liên quan: kết luận tổng
+// thể lên đầu trang, dòng nghịch hành xuống dưới bảng vị trí, dòng góc chiếu xuống dưới bảng aspect.
+function renderAssessment(assessment) {
+    if (!assessment) return;
+
+    const overallCard = document.getElementById('assessment-overall-card');
+    const overallEl = document.getElementById('assessment-overall');
+    if (overallCard && overallEl) {
+        overallCard.style.display = 'block';
+        overallEl.textContent = assessment.overallText;
+    }
+
+    const retroEl = document.getElementById('assessment-retrograde');
+    if (retroEl) {
+        retroEl.innerHTML = (assessment.retrogradeLines || []).length
+            ? assessment.retrogradeLines.map(l => `<div class="astro-line">℞ ${l}</div>`).join('')
+            : '<div class="astro-line">Không có hành tinh chính nào đang nghịch hành.</div>';
+    }
+
+    const aspEl = document.getElementById('assessment-aspects');
+    if (aspEl) {
+        aspEl.innerHTML = (assessment.aspectLines || []).length
+            ? `<p class="astro-section-title" style="font-size:0.85em">Diễn biến này nói lên điều gì? (góc chiếu cứng giữa các hành tinh chu kỳ chậm — quan trọng nhất cho xu hướng dài hơi)</p>`
+              + assessment.aspectLines.map(l => `<div class="astro-line">🪐 ${l}</div>`).join('')
+            : '<div class="astro-line">Không có góc chiếu cứng lớn nào giữa các hành tinh chu kỳ chậm hiện tại.</div>';
+    }
+}
+
+const SENTIMENT_CLASS = { positive: 'astro-sentiment-positive', negative: 'astro-sentiment-negative', neutral: 'astro-sentiment-neutral' };
+const SENTIMENT_BADGE = { positive: 'soft', negative: 'hard', neutral: 'solar' };
+const EVENT_ICON = { aspect: '🪐', solar: '☀️', lunar: '🌕', station_retrograde: '℞', station_direct: '➡️' };
+
+function renderForecastTimeline(events) {
+    const card = document.getElementById('forecast-card');
+    const el = document.getElementById('astro-forecast-table');
+    if (!events || !card || !el) return;
+    card.style.display = 'block';
+    if (!events.length) {
+        el.innerHTML = '<tbody><tr><td>Không có sự kiện nào đáng chú ý trong giai đoạn tới.</td></tr></tbody>';
+        return;
+    }
+    el.innerHTML = `
+        <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Diễn giải (lý thuyết chiêm tinh tài chính)</th></tr></thead>
+        <tbody>${events.map(e => {
+            const sentimentClass = SENTIMENT_CLASS[e.sentiment] || 'astro-sentiment-neutral';
+            const badgeClass = SENTIMENT_BADGE[e.sentiment] || 'solar';
+            return `
+            <tr>
+                <td style="white-space:nowrap">${_fmtDate(e.date)}</td>
+                <td style="white-space:nowrap"><span class="astro-badge ${badgeClass}">${EVENT_ICON[e.type] || ''} ${e.title}</span></td>
+                <td style="font-size:0.92em" class="${sentimentClass}">${e.interpretation}</td>
+            </tr>`;
+        }).join('')}</tbody>`;
+}
+
+// Biểu đồ vòng hoàng đạo đơn giản hóa — SVG thuần client-side từ positions/currentAspects đã có
+// sẵn trong data/astro.json, không cần tính toán gì thêm. Quy ước: kinh độ 0° (Bạch Dương) đặt ở
+// đỉnh (12h), tăng dần THEO CHIỀU KIM ĐỒNG HỒ — đây là cách trình bày đơn giản để dễ đọc, KHÔNG
+// nhất thiết khớp quy ước phần mềm chiêm tinh chuyên nghiệp (thường đặt 0° Bạch Dương bên trái,
+// tăng ngược chiều kim đồng hồ theo góc nhìn "từ Trái Đất nhìn lên bầu trời").
+const PLANET_SYMBOL = {
+    'Mặt Trời': '☉', 'Mặt Trăng': '☽', 'Sao Thủy': '☿', 'Sao Kim': '♀', 'Sao Hỏa': '♂',
+    'Sao Mộc': '♃', 'Sao Thổ': '♄', 'Sao Thiên Vương': '♅', 'Sao Hải Vương': '♆', 'Sao Diêm Vương': '♇',
+};
+const PLANET_COLOR = {
+    'Mặt Trời': '#f59e0b', 'Mặt Trăng': '#cbd5e1', 'Sao Thủy': '#22d3ee', 'Sao Kim': '#f472b6',
+    'Sao Hỏa': '#ef4444', 'Sao Mộc': '#a78bfa', 'Sao Thổ': '#94a3b8', 'Sao Thiên Vương': '#34d399',
+    'Sao Hải Vương': '#60a5fa', 'Sao Diêm Vương': '#c084fc',
+};
+const ZODIAC_SYMBOLS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
+
+function renderChartWheel(positions, aspects) {
+    const container = document.getElementById('astro-wheel-container');
+    const legendEl = document.getElementById('astro-wheel-legend');
+    if (!container || !positions || !positions.length) return;
+
+    const size = 500, cx = size / 2, cy = size / 2, outerR = 230, ringR = 205, planetR = 175;
+    const toXY = (lon, r) => {
+        const rad = (lon - 90) * Math.PI / 180;
+        return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+    };
+
+    let svg = `<svg viewBox="0 0 ${size} ${size}" style="width:100%;max-width:480px;display:block;margin:0 auto">`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${outerR}" fill="none" stroke="#374151" stroke-width="1.5"/>`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${ringR}" fill="none" stroke="#374151" stroke-width="1"/>`;
+    for (let i = 0; i < 12; i++) {
+        const [x1, y1] = toXY(i * 30, ringR);
+        const [x2, y2] = toXY(i * 30, outerR);
+        svg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#374151" stroke-width="1"/>`;
+        const [lx, ly] = toXY(i * 30 + 15, (outerR + ringR) / 2);
+        svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="#9ca3af" font-size="15" text-anchor="middle" dominant-baseline="central">${ZODIAC_SYMBOLS[i]}</text>`;
+    }
+    (aspects || []).forEach(a => {
+        const pa = positions.find(p => p.name === a.a);
+        const pb = positions.find(p => p.name === a.b);
+        if (!pa || !pb) return;
+        const [x1, y1] = toXY(pa.lon, planetR);
+        const [x2, y2] = toXY(pb.lon, planetR);
+        const color = _isHardAspect(a.aspect) ? '#ef444499' : '#10b98199';
+        svg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="1.3"/>`;
+    });
+    positions.forEach(p => {
+        const [x, y] = toXY(p.lon, planetR);
+        const color = PLANET_COLOR[p.name] || '#e5e7eb';
+        svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="#0b1220" stroke="${color}" stroke-width="1.5"/>`;
+        svg += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="14" text-anchor="middle" dominant-baseline="central">${PLANET_SYMBOL[p.name] || '?'}</text>`;
+        if (p.retrograde) {
+            svg += `<text x="${(x + 13).toFixed(1)}" y="${(y - 10).toFixed(1)}" fill="#ef4444" font-size="10" text-anchor="middle">℞</text>`;
+        }
+    });
+    svg += `</svg>`;
+    container.innerHTML = svg;
+
+    if (legendEl) {
+        legendEl.innerHTML = Object.entries(PLANET_SYMBOL)
+            .map(([name, sym]) => `<span style="color:${PLANET_COLOR[name]}">${sym} ${name}</span>`)
+            .join(' &nbsp;·&nbsp; ');
+    }
+}
+
+// Công cụ tính mốc chu kỳ, THUẦN CLIENT-SIDE (không cần dữ liệu server) vì mốc neo là lựa chọn
+// chủ quan của người phân tích, không có 1 ngày "đúng" duy nhất.
 function initCycleTool() {
     const lengthSel = document.getElementById('cycle-length');
     const customWrap = document.getElementById('cycle-custom-wrap');
