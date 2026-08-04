@@ -219,7 +219,7 @@ function renderBacktestChart(backtest) {
     canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;';
     container.appendChild(canvas);
 
-    function drawAstroOverlay() {
+    function drawAstroOverlayNow() {
         const rect = container.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         canvas.width = rect.width * dpr;
@@ -254,6 +254,18 @@ function renderBacktestChart(backtest) {
             ctx.lineTo(x2, y2);
             ctx.stroke();
         }
+    }
+
+    // Gộp nhiều lần gọi vẽ lại trong cùng 1 khung hình (rAF) — khi zoom/pan bằng chuột/pinch, chart
+    // bắn RẤT NHIỀU sự kiện subscribeVisibleTimeRangeChange liên tiếp trong lúc đang cử động; nếu
+    // vẽ đồng bộ (synchronous) mỗi lần thì canvas có thể vẽ chậm hơn tốc độ sự kiện dồn tới, gây
+    // cảm giác đường chiêm tinh "thụt lại"/trễ so với chart gốc trong lúc đang zoom/kéo (user phản
+    // ánh 2026-08-04). rAF đảm bảo mỗi khung hình chỉ vẽ ĐÚNG 1 LẦN, luôn dùng trạng thái MỚI NHẤT.
+    let rafScheduled = false;
+    function drawAstroOverlay() {
+        if (rafScheduled) return;
+        rafScheduled = true;
+        requestAnimationFrame(() => { rafScheduled = false; drawAstroOverlayNow(); });
     }
     chart.timeScale().subscribeVisibleTimeRangeChange(drawAstroOverlay);
 
