@@ -272,9 +272,10 @@ def fetch_vnindex_price_history(days_back=380):
         url = "https://trading.vietcap.com.vn/api/iq-insight-service/v1/market-indices/history"
         points = {}
         page = 0
-        while page <= 10:
+        page_size = 200
+        while page <= 40:  # 40*200=8000 phiên, dư sức phủ 10 năm (~2500 phiên)
             r = s.get(url, params={
-                "index": "VNINDEX", "page": page, "size": 100,
+                "index": "VNINDEX", "page": page, "size": page_size,
                 "fromDate": from_date.isoformat(), "toDate": to_date.isoformat(),
             }, timeout=20)
             r.raise_for_status()
@@ -288,7 +289,7 @@ def fetch_vnindex_price_history(days_back=380):
                 d, c = row.get("tradingDate"), row.get("closeIndex")
                 if d and c is not None:
                     points[d] = c
-            if len(content) < 100:
+            if len(content) < page_size:
                 break
             page += 1
         return [{"date": d, "close": points[d]} for d in sorted(points)]
@@ -297,10 +298,11 @@ def fetch_vnindex_price_history(days_back=380):
         return []
 
 
-def build_backtest_data(days_back=365):
+def build_backtest_data(days_back=3650):
     """Ghép chỉ số áp lực/thuận lợi chiêm tinh QUÁ KHỨ với giá đóng cửa VN-Index THẬT cùng khoảng
-    thời gian — user (2026-08-04) muốn tự quan sát trực quan có tương quan hay không. Đây là công
-    cụ KIỂM THỬ/tham khảo cá nhân, KHÔNG phải bằng chứng khoa học đã kiểm chứng."""
+    thời gian — user (2026-08-04, mở rộng lên 10 năm) muốn tự quan sát trực quan có tương quan hay
+    không. Đây là công cụ KIỂM THỬ/tham khảo cá nhân, KHÔNG phải bằng chứng khoa học đã kiểm chứng.
+    days_back=3650 (~10 năm) — Vietcap IQ có dữ liệu VNINDEX từ 2016 trở đi cho endpoint này."""
     return {
         "astro": astro.build_historical_pressure_series(days_back=days_back),
         "vnindex": fetch_vnindex_price_history(days_back=days_back + 5),
@@ -344,7 +346,7 @@ def build_astro_data():
         },
         "currentAssessment": build_current_assessment(positions, current_aspects),
         "forecastTimeline": build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations),
-        "backtest": build_backtest_data(days_back=365),
+        "backtest": build_backtest_data(days_back=3650),
     }
 
     json_path = os.path.join(PROJECT_ROOT, "data", "astro.json")

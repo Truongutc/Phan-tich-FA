@@ -174,14 +174,19 @@ function renderBacktestChart(backtest) {
 
     let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
 
-    // Lưới ngày trục hoành (~mỗi 1 tháng)
+    // Lưới ngày trục hoành — hiển thị tháng/năm (khoảng thời gian dài nhiều năm, chỉ ngày/tháng sẽ
+    // lặp lại mỗi năm và gây nhầm lẫn)
     const totalDays = Math.round(tRange / 86400000) || 1;
     const step = Math.max(Math.round(totalDays / 12), 1);
+    const MONTHS_VN = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
     for (let d = 0; d <= totalDays; d += step) {
         const dt = new Date(t0 + d * 86400000);
         const x = padL + (d / totalDays) * plotW;
+        const label = totalDays > 400
+            ? `${MONTHS_VN[dt.getUTCMonth()]}/${dt.getUTCFullYear()}`
+            : _fmtDate(dt.toISOString().slice(0, 10)).slice(0, 5);
         svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
-        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(dt.toISOString().slice(0, 10)).slice(0, 5)}</text>`;
+        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${label}</text>`;
     }
 
     // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải)
