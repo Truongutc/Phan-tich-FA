@@ -155,7 +155,7 @@ function renderBacktestChart(backtest) {
     // Vẽ theo mật độ pixel/ngày CỐ ĐỊNH (không co giãn theo bề rộng khung) để 10 năm dữ liệu vẫn
     // giãn vừa phải dễ nhìn — khung chỉ hiển thị 1 cửa sổ, kéo ngang (scroll) để xem giai đoạn khác.
     const PX_PER_DAY = 3;
-    const h = 260, padL = 8, padR = 24, padT = 14, padB = 24;
+    const h = 400, padL = 8, padR = 24, padT = 14, padB = 24; // tăng chiều cao (user: nhiều đoạn dít sát nhau, khó nhìn)
 
     const t0 = astroSeries[0].t;
     const t1 = astroSeries[astroSeries.length - 1].t;
@@ -184,6 +184,7 @@ function renderBacktestChart(backtest) {
     const vnPoints = vnSeries.map(p => `${xAt(p.t).toFixed(1)},${yAtVnGlobal(p.v).toFixed(1)}`).join(' ');
 
     let svg = `<svg width="${w}" height="${h}" style="display:block">`;
+    svg += `<defs><clipPath id="astro-backtest-clip"><rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}"/></clipPath></defs>`;
 
     // Lưới ngày trục hoành — hiển thị tháng/năm (khoảng thời gian dài nhiều năm, chỉ ngày/tháng sẽ
     // lặp lại mỗi năm và gây nhầm lẫn); mật độ nhãn ~1 mốc/tháng vì mỗi cửa sổ nhìn chỉ hiện 1 phần
@@ -198,8 +199,10 @@ function renderBacktestChart(backtest) {
 
     // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải) — mỗi
     // đường bọc trong 1 <g> riêng để có thể áp transform autoscale độc lập theo cửa sổ đang xem.
-    svg += `<g id="astro-backtest-line-a"><polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.85"/></g>`;
-    svg += `<g id="astro-backtest-line-v"><polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/></g>`;
+    // clip-path để khi phóng trục VN-Index (zoom slider) vượt khung thì bị cắt gọn tại viền vẽ,
+    // không đè lên nhãn ngày/lưới.
+    svg += `<g id="astro-backtest-line-a" clip-path="url(#astro-backtest-clip)"><polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.85"/></g>`;
+    svg += `<g id="astro-backtest-line-v" clip-path="url(#astro-backtest-clip)"><polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/></g>`;
 
     svg += `</svg>`;
     container.innerHTML = svg;
@@ -219,6 +222,7 @@ function renderBacktestChart(backtest) {
     const meta = {
         astroSeries, vnSeries, t0, totalDays, PX_PER_DAY, padL, padT, plotH,
         globalMinA, globalRangeA, globalMinV, globalRangeV, groupA, groupV, scaleNote,
+        vnZoomFactor: 1,
     };
 
     const doAutoscale = () => _updateBacktestAutoscale(scrollWrap, meta);
@@ -230,6 +234,20 @@ function renderBacktestChart(backtest) {
     });
     window.addEventListener('resize', doAutoscale);
 
+    // Thanh trượt phóng trục giá VN-Index thủ công (user: nhiều đoạn dít sát nhau dù đã autoscale
+    // theo cửa sổ — cho phép phóng thêm theo ý muốn, phóng quanh tâm khung, phần vượt bị clip gọn).
+    const zoomSlider = document.getElementById('vn-zoom-slider');
+    const zoomValueEl = document.getElementById('vn-zoom-value');
+    if (zoomSlider) {
+        zoomSlider.value = '1';
+        if (zoomValueEl) zoomValueEl.textContent = '1.0x';
+        zoomSlider.oninput = () => {
+            meta.vnZoomFactor = parseFloat(zoomSlider.value) || 1;
+            if (zoomValueEl) zoomValueEl.textContent = `${meta.vnZoomFactor.toFixed(1)}x`;
+            doAutoscale();
+        };
+    }
+
     // Mặc định cuộn tới mốc gần nhất (hiện tại); cho phép kéo ngang bằng chuột để xem quá khứ
     scrollWrap.scrollLeft = scrollWrap.scrollWidth;
     _enableDragScroll(scrollWrap);
@@ -240,6 +258,7 @@ function _updateBacktestAutoscale(scrollWrap, meta) {
     const {
         astroSeries, vnSeries, t0, totalDays, PX_PER_DAY, padL, padT, plotH,
         globalMinA, globalRangeA, globalMinV, globalRangeV, groupA, groupV, scaleNote,
+        vnZoomFactor,
     } = meta;
     if (!groupA || !groupV) return;
 
@@ -250,7 +269,7 @@ function _updateBacktestAutoscale(scrollWrap, meta) {
 
     const MARGIN = 0.08; // đệm 8% trên/dưới cho dễ nhìn, tránh đường sát mép
 
-    function applyAxis(series, globalMin, globalRange, group, fmt) {
+    function applyAxis(series, globalMin, globalRange, group, fmt, zoom) {
         const visible = series.filter(p => p.t >= tLeft && p.t <= tRight).map(p => p.v);
         if (!visible.length) return null;
         let localMin = Math.min(...visible), localMax = Math.max(...visible);
@@ -263,19 +282,28 @@ function _updateBacktestAutoscale(scrollWrap, meta) {
         const yG1 = padT + plotH, yG2 = padT; // global y tại globalMin và globalMin+globalRange
         const yL1 = padT + plotH - ((globalMin - localMin) / localRange) * plotH;
         const yL2 = padT + plotH - (((globalMin + globalRange) - localMin) / localRange) * plotH;
-        const a = (yL2 - yL1) / (yG2 - yG1);
-        const b = yL1 - a * yG1;
+        let a = (yL2 - yL1) / (yG2 - yG1);
+        let b = yL1 - a * yG1;
+
+        // Phóng thủ công (zoom slider) quanh TÂM khung vẽ — phần vượt biên bị clip-path cắt gọn.
+        // Kết hợp affine: y_final = center + zoom*(a*yG+b - center) = (zoom*a)*yG + (zoom*b + center*(1-zoom))
+        if (zoom && zoom !== 1) {
+            const center = padT + plotH / 2;
+            b = zoom * b + center * (1 - zoom);
+            a = zoom * a;
+        }
         group.setAttribute('transform', `matrix(1,0,0,${a},0,${b})`);
         return { min: localMin + pad, max: localMax - pad, fmt };
     }
 
-    const rA = applyAxis(astroSeries, globalMinA, globalRangeA, groupA, v => v.toFixed(1));
-    const rV = applyAxis(vnSeries, globalMinV, globalRangeV, groupV, v => v.toFixed(0));
+    const rA = applyAxis(astroSeries, globalMinA, globalRangeA, groupA, v => v.toFixed(1), 1);
+    const rV = applyAxis(vnSeries, globalMinV, globalRangeV, groupV, v => v.toFixed(0), vnZoomFactor || 1);
 
     if (scaleNote) {
         const partsA = rA ? `${rA.fmt(rA.min)} → ${rA.fmt(rA.max)}` : '—';
         const partsV = rV ? `${rV.fmt(rV.min)} → ${rV.fmt(rV.max)}` : '—';
-        scaleNote.innerHTML = `Thang trục <span style="color:#8b5cf6;font-weight:600">tím</span> (đang xem): ${partsA} · Thang trục <span style="color:#e5e7eb;font-weight:600">trắng</span> (điểm VN-Index, đang xem): ${partsV}`;
+        const zoomNote = (vnZoomFactor && vnZoomFactor !== 1) ? ` (đã phóng ${vnZoomFactor.toFixed(1)}x, phần vượt khung bị cắt bớt)` : '';
+        scaleNote.innerHTML = `Thang trục <span style="color:#8b5cf6;font-weight:600">tím</span> (đang xem): ${partsA} · Thang trục <span style="color:#e5e7eb;font-weight:600">trắng</span> (điểm VN-Index, đang xem): ${partsV}${zoomNote}`;
     }
 }
 

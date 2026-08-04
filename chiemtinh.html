@@ -60,6 +60,9 @@
         .astro-scroll-wrap { overflow-x: auto; cursor: grab; border-radius: 8px; user-select: none; }
         .astro-scroll-wrap:active { cursor: grabbing; }
         .astro-scroll-hint { font-size: 0.75em; color: var(--text-muted, #6b7280); margin-top: 4px; }
+        .astro-backtest-controls { display: flex; align-items: center; gap: 10px; margin: 12px 0 8px; font-size: 0.85em; color: var(--text-muted, #9ca3af); }
+        .astro-backtest-controls input[type="range"] { flex: 0 0 220px; accent-color: #8b5cf6; }
+        .astro-backtest-controls span { font-weight: 600; color: var(--text-main, #f3f4f6); min-width: 34px; }
     </style>
 </head>
 <body>
@@ -124,8 +127,13 @@
         <div class="card margin-top-20" id="backtest-card" style="display:none">
             <h3 class="border-purple">🧪 Backtest: Đối chiếu với VN-Index Thật (10 năm qua)</h3>
             <p class="vimo-synthesis-text">Kiểm thử trực quan: đường <span style="color:#e5e7eb;font-weight:600">trắng</span> là VN-Index THẬT (đóng cửa mỗi phiên từ ~2016, nguồn Vietcap), đường <span style="color:#8b5cf6;font-weight:600">tím</span> là chỉ số áp lực/thuận lợi chiêm tinh cùng khoảng thời gian (cách tính giống hệt biểu đồ dự báo phía trên, chỉ khác là tính NGƯỢC cho quá khứ). Tự quan sát 2 đường có xu hướng đi cùng chiều hay không qua nhiều chu kỳ tăng/giảm (2018 lao dốc, 2020 COVID, 2022 bear, 2025+) — đây là công cụ kiểm thử cá nhân, <b>KHÔNG phải bằng chứng khoa học đã kiểm chứng</b>.</p>
+            <div class="astro-backtest-controls">
+                <label for="vn-zoom-slider">↕️ Giãn trục giá VN-Index:</label>
+                <input type="range" id="vn-zoom-slider" min="1" max="8" step="0.5" value="1">
+                <span id="vn-zoom-value">1.0x</span>
+            </div>
             <div class="astro-scroll-wrap" id="astro-backtest-scroll"><div id="astro-backtest-chart-container"></div></div>
-            <p class="astro-scroll-hint">↔️ Kéo ngang (hoặc dùng thanh cuộn) để xem lại các giai đoạn trước — mặc định hiển thị đến thời điểm gần nhất.</p>
+            <p class="astro-scroll-hint">↔️ Kéo ngang (hoặc dùng thanh cuộn) để xem lại các giai đoạn trước — mặc định hiển thị đến thời điểm gần nhất. Trục dọc tự căn theo đúng khoảng đang xem; dùng thanh trượt trên để phóng thêm nếu vẫn thấy các đoạn dít sát nhau.</p>
         </div>
 
         <!-- Biểu đồ sao -->
@@ -201,7 +209,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=10"></script>
+<script src="app_chiemtinh.js?v=11"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>
