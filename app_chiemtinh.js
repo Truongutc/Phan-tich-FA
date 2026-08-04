@@ -144,19 +144,27 @@ function renderPressureChart(series) {
 
 function renderBacktestChart(backtest) {
     const card = document.getElementById('backtest-card');
+    const scrollWrap = document.getElementById('astro-backtest-scroll');
     const container = document.getElementById('astro-backtest-chart-container');
-    if (!card || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
+    if (!card || !scrollWrap || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
     card.style.display = 'block';
 
     const astroSeries = backtest.astro;
     const vnSeries = backtest.vnindex;
 
-    const w = 900, h = 260, padL = 46, padR = 46, padT = 14, padB = 24;
-    const plotW = w - padL - padR, plotH = h - padT - padB;
+    // Vẽ theo mật độ pixel/ngày CỐ ĐỊNH (không co giãn theo bề rộng khung) để 10 năm dữ liệu vẫn
+    // giãn vừa phải dễ nhìn — khung chỉ hiển thị 1 cửa sổ, kéo ngang (scroll) để xem giai đoạn khác.
+    const PX_PER_DAY = 3;
+    const h = 260, padL = 8, padR = 24, padT = 14, padB = 24;
 
     const t0 = new Date(astroSeries[0].date).getTime();
     const t1 = new Date(astroSeries[astroSeries.length - 1].date).getTime();
     const tRange = (t1 - t0) || 1;
+    const totalDays = Math.round(tRange / 86400000) || 1;
+    const plotW = totalDays * PX_PER_DAY;
+    const w = plotW + padL + padR;
+    const plotH = h - padT - padB;
+
     const xAt = dateStr => padL + ((new Date(dateStr).getTime() - t0) / tRange) * plotW;
 
     const astroScores = astroSeries.map(p => p.score);
@@ -172,34 +180,58 @@ function renderBacktestChart(backtest) {
     const astroPoints = astroSeries.map(p => `${xAt(p.date).toFixed(1)},${yAtAstro(p.score).toFixed(1)}`).join(' ');
     const vnPoints = vnSeries.map(p => `${xAt(p.date).toFixed(1)},${yAtVn(p.close).toFixed(1)}`).join(' ');
 
-    let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
+    let svg = `<svg width="${w}" height="${h}" style="display:block">`;
 
     // Lưới ngày trục hoành — hiển thị tháng/năm (khoảng thời gian dài nhiều năm, chỉ ngày/tháng sẽ
-    // lặp lại mỗi năm và gây nhầm lẫn)
-    const totalDays = Math.round(tRange / 86400000) || 1;
-    const step = Math.max(Math.round(totalDays / 12), 1);
+    // lặp lại mỗi năm và gây nhầm lẫn); mật độ nhãn ~1 mốc/tháng vì mỗi cửa sổ nhìn chỉ hiện 1 phần
+    const step = 30; // ~1 mốc/tháng
     const MONTHS_VN = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
     for (let d = 0; d <= totalDays; d += step) {
         const dt = new Date(t0 + d * 86400000);
-        const x = padL + (d / totalDays) * plotW;
-        const label = totalDays > 400
-            ? `${MONTHS_VN[dt.getUTCMonth()]}/${dt.getUTCFullYear()}`
-            : _fmtDate(dt.toISOString().slice(0, 10)).slice(0, 5);
+        const x = padL + d * PX_PER_DAY;
         svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
-        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${label}</text>`;
+        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${MONTHS_VN[dt.getUTCMonth()]}/${dt.getUTCFullYear()}</text>`;
     }
 
     // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải)
-    svg += `<polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.5" opacity="0.85"/>`;
+    svg += `<polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.85"/>`;
     svg += `<polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/>`;
-
-    svg += `<text x="${padL - 6}" y="${padT + 4}" fill="#8b5cf6" font-size="10" text-anchor="end">${maxA.toFixed(1)}</text>`;
-    svg += `<text x="${padL - 6}" y="${(h - padB).toFixed(1)}" fill="#8b5cf6" font-size="10" text-anchor="end">${minA.toFixed(1)}</text>`;
-    svg += `<text x="${w - padR + 6}" y="${padT + 4}" fill="#e5e7eb" font-size="10" text-anchor="start">${maxV.toFixed(0)}</text>`;
-    svg += `<text x="${w - padR + 6}" y="${(h - padB).toFixed(1)}" fill="#e5e7eb" font-size="10" text-anchor="start">${minV.toFixed(0)}</text>`;
 
     svg += `</svg>`;
     container.innerHTML = svg;
+
+    // Chú thích thang đo (nằm ngoài SVG cuộn được, để luôn nhìn thấy dù đang cuộn tới đâu)
+    let scaleNote = document.getElementById('astro-backtest-scale-note');
+    if (!scaleNote) {
+        scaleNote = document.createElement('p');
+        scaleNote.id = 'astro-backtest-scale-note';
+        scaleNote.className = 'astro-generated-note';
+        scrollWrap.insertAdjacentElement('afterend', scaleNote);
+    }
+    scaleNote.innerHTML = `Thang trục <span style="color:#8b5cf6;font-weight:600">tím</span>: ${minA.toFixed(1)} → ${maxA.toFixed(1)} · Thang trục <span style="color:#e5e7eb;font-weight:600">trắng</span> (điểm VN-Index): ${minV.toFixed(0)} → ${maxV.toFixed(0)}`;
+
+    // Mặc định cuộn tới mốc gần nhất (hiện tại); cho phép kéo ngang bằng chuột để xem quá khứ
+    scrollWrap.scrollLeft = scrollWrap.scrollWidth;
+    _enableDragScroll(scrollWrap);
+}
+
+function _enableDragScroll(el) {
+    if (el._dragScrollBound) return;
+    el._dragScrollBound = true;
+    let isDown = false, startX = 0, startScroll = 0;
+    el.addEventListener('pointerdown', e => {
+        isDown = true;
+        startX = e.clientX;
+        startScroll = el.scrollLeft;
+        el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', e => {
+        if (!isDown) return;
+        el.scrollLeft = startScroll - (e.clientX - startX);
+    });
+    const stop = () => { isDown = false; };
+    el.addEventListener('pointerup', stop);
+    el.addEventListener('pointercancel', stop);
 }
 
 function renderSunMoonToday(positions) {
