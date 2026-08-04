@@ -205,12 +205,15 @@ function renderBacktestChart(backtest) {
         upData[i] = isUp ? { time: t, value: v } : { time: t };
         downData[i] = isDown ? { time: t, value: v } : { time: t };
     }
+    // title để trống — đây là 2 series KỸ THUẬT hợp lại thành 1 đường liền (xem giải thích ở trên),
+    // không phải 2 chỉ báo khác nhau; đặt title sẽ khiến Lightweight Charts hiện 2 nhãn nổi riêng
+    // biệt, gây hiểu lầm "có 2 đường" (user 2026-08-04 phản ánh đúng điều này).
     const astroUp = chart.addLineSeries({
-        priceScaleId: 'left', color: '#10b981', lineWidth: 1.5, title: 'Chiêm tinh (tăng)',
+        priceScaleId: 'left', color: '#10b981', lineWidth: 1.5, title: '',
         lastValueVisible: false, priceLineVisible: false,
     });
     const astroDown = chart.addLineSeries({
-        priceScaleId: 'left', color: '#ef4444', lineWidth: 1.5, title: 'Chiêm tinh (giảm)',
+        priceScaleId: 'left', color: '#ef4444', lineWidth: 1.5, title: '',
         lastValueVisible: false, priceLineVisible: false,
     });
     astroUp.setData(upData);
