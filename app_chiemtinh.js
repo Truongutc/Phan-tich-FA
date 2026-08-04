@@ -142,188 +142,92 @@ function renderPressureChart(series) {
     container.innerHTML = svg;
 }
 
+function _d2ts(dateStr) {
+    return Math.floor(new Date(dateStr + 'T00:00:00Z').getTime() / 1000);
+}
+
+// Cấu hình theme dùng chung cho biểu đồ Lightweight Charts (khớp phong cách site tham chiếu
+// aic-proweb.vercel.app — "🌐 Cuộn để zoom", "🖐️ Kéo để pan").
+const LWC_THEME = {
+    layout: { background: { color: 'transparent' }, textColor: '#9ca3af' },
+    grid: { vertLines: { color: 'rgba(255,255,255,0.05)' }, horzLines: { color: 'rgba(255,255,255,0.05)' } },
+    crosshair: { mode: 1 },
+    timeScale: {
+        borderColor: 'rgba(255,255,255,0.12)', timeVisible: false, secondsVisible: false,
+        fixLeftEdge: false, fixRightEdge: false, rightOffset: 5, minBarSpacing: 1,
+    },
+    handleScale: { mouseWheel: true, pinch: true, axisPressedMouseMove: { time: true, price: true } },
+    handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: true },
+};
+
 function renderBacktestChart(backtest) {
     const card = document.getElementById('backtest-card');
-    const scrollWrap = document.getElementById('astro-backtest-scroll');
     const container = document.getElementById('astro-backtest-chart-container');
-    if (!card || !scrollWrap || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
+    if (!card || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
+    if (typeof LightweightCharts === 'undefined') {
+        container.innerHTML = '<div class="astro-generated-note">Không tải được thư viện biểu đồ (lightweight-charts) — kiểm tra kết nối mạng.</div>';
+        card.style.display = 'block';
+        return;
+    }
     card.style.display = 'block';
 
-    const astroSeries = backtest.astro.map(p => ({ t: new Date(p.date).getTime(), v: p.score }));
-    const vnSeries = backtest.vnindex.map(p => ({ t: new Date(p.date).getTime(), v: p.close }));
+    const astroSeries = backtest.astro; // [{date, score}] đủ mỗi ngày lịch, tăng dần theo thời gian
+    const vnSeries = backtest.vnindex;  // [{date, close}] chỉ các phiên giao dịch thật
 
-    // Vẽ theo mật độ pixel/ngày CỐ ĐỊNH (không co giãn theo bề rộng khung) để 10 năm dữ liệu vẫn
-    // giãn vừa phải dễ nhìn — khung chỉ hiển thị 1 cửa sổ, kéo ngang (scroll) để xem giai đoạn khác.
-    const PX_PER_DAY = 3;
-    const h = 400, padL = 8, padR = 24, padT = 14, padB = 24; // tăng chiều cao (user: nhiều đoạn dít sát nhau, khó nhìn)
-
-    const t0 = astroSeries[0].t;
-    const t1 = astroSeries[astroSeries.length - 1].t;
-    const tRange = (t1 - t0) || 1;
-    const totalDays = Math.round(tRange / 86400000) || 1;
-    const plotW = totalDays * PX_PER_DAY;
-    const w = plotW + padL + padR;
-    const plotH = h - padT - padB;
-
-    const xAt = t => padL + ((t - t0) / tRange) * plotW;
-
-    // Vẽ theo thang GLOBAL trước (toàn bộ 10 năm) — sau đó autoscale trục dọc theo cửa sổ đang
-    // xem bằng 1 phép biến đổi tuyến tính (transform) trên nhóm <g>, KHÔNG cần vẽ lại toàn bộ path
-    // mỗi lần cuộn (rẻ hơn nhiều so với rebuild polyline liên tục khi kéo/cuộn).
-    const astroVals = astroSeries.map(p => p.v);
-    const globalMinA = Math.min(...astroVals), globalMaxA = Math.max(...astroVals);
-    const globalRangeA = (globalMaxA - globalMinA) || 1;
-    const yAtAstroGlobal = v => padT + plotH - ((v - globalMinA) / globalRangeA) * plotH;
-
-    const vnVals = vnSeries.map(p => p.v);
-    const globalMinV = Math.min(...vnVals), globalMaxV = Math.max(...vnVals);
-    const globalRangeV = (globalMaxV - globalMinV) || 1;
-    const yAtVnGlobal = v => padT + plotH - ((v - globalMinV) / globalRangeV) * plotH;
-
-    const astroPoints = astroSeries.map(p => `${xAt(p.t).toFixed(1)},${yAtAstroGlobal(p.v).toFixed(1)}`).join(' ');
-    const vnPoints = vnSeries.map(p => `${xAt(p.t).toFixed(1)},${yAtVnGlobal(p.v).toFixed(1)}`).join(' ');
-
-    let svg = `<svg width="${w}" height="${h}" style="display:block">`;
-    svg += `<defs><clipPath id="astro-backtest-clip"><rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}"/></clipPath></defs>`;
-
-    // Lưới ngày trục hoành — hiển thị tháng/năm (khoảng thời gian dài nhiều năm, chỉ ngày/tháng sẽ
-    // lặp lại mỗi năm và gây nhầm lẫn); mật độ nhãn ~1 mốc/tháng vì mỗi cửa sổ nhìn chỉ hiện 1 phần
-    const step = 30; // ~1 mốc/tháng
-    const MONTHS_VN = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-    for (let d = 0; d <= totalDays; d += step) {
-        const dt = new Date(t0 + d * 86400000);
-        const x = padL + d * PX_PER_DAY;
-        svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
-        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${MONTHS_VN[dt.getUTCMonth()]}/${dt.getUTCFullYear()}</text>`;
-    }
-
-    // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải) — mỗi
-    // đường bọc trong 1 <g> riêng để có thể áp transform autoscale độc lập theo cửa sổ đang xem.
-    // clip-path để khi phóng trục VN-Index (zoom slider) vượt khung thì bị cắt gọn tại viền vẽ,
-    // không đè lên nhãn ngày/lưới.
-    svg += `<g id="astro-backtest-line-a" clip-path="url(#astro-backtest-clip)"><polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.85"/></g>`;
-    svg += `<g id="astro-backtest-line-v" clip-path="url(#astro-backtest-clip)"><polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/></g>`;
-
-    svg += `</svg>`;
-    container.innerHTML = svg;
-
-    // Chú thích thang đo (nằm ngoài SVG cuộn được, để luôn nhìn thấy dù đang cuộn tới đâu) — sẽ
-    // cập nhật LIÊN TỤC theo khoảng giá trị của đúng cửa sổ đang xem (xem _updateBacktestAutoscale)
-    let scaleNote = document.getElementById('astro-backtest-scale-note');
-    if (!scaleNote) {
-        scaleNote = document.createElement('p');
-        scaleNote.id = 'astro-backtest-scale-note';
-        scaleNote.className = 'astro-generated-note';
-        scrollWrap.insertAdjacentElement('afterend', scaleNote);
-    }
-
-    const groupA = document.getElementById('astro-backtest-line-a');
-    const groupV = document.getElementById('astro-backtest-line-v');
-    const meta = {
-        astroSeries, vnSeries, t0, totalDays, PX_PER_DAY, padL, padT, plotH,
-        globalMinA, globalRangeA, globalMinV, globalRangeV, groupA, groupV, scaleNote,
-        vnZoomFactor: 1,
-    };
-
-    const doAutoscale = () => _updateBacktestAutoscale(scrollWrap, meta);
-    let rafPending = false;
-    scrollWrap.addEventListener('scroll', () => {
-        if (rafPending) return;
-        rafPending = true;
-        requestAnimationFrame(() => { rafPending = false; doAutoscale(); });
+    const chart = LightweightCharts.createChart(container, {
+        ...LWC_THEME,
+        width: container.clientWidth,
+        height: 420,
+        rightPriceScale: { borderColor: 'rgba(255,255,255,0.12)', autoScale: true, scaleMargins: { top: 0.1, bottom: 0.1 } },
+        leftPriceScale: { visible: true, borderColor: 'rgba(255,255,255,0.12)', autoScale: true, scaleMargins: { top: 0.1, bottom: 0.1 } },
     });
-    window.addEventListener('resize', doAutoscale);
 
-    // Thanh trượt phóng trục giá VN-Index thủ công (user: nhiều đoạn dít sát nhau dù đã autoscale
-    // theo cửa sổ — cho phép phóng thêm theo ý muốn, phóng quanh tâm khung, phần vượt bị clip gọn).
-    const zoomSlider = document.getElementById('vn-zoom-slider');
-    const zoomValueEl = document.getElementById('vn-zoom-value');
-    if (zoomSlider) {
-        zoomSlider.value = '1';
-        if (zoomValueEl) zoomValueEl.textContent = '1.0x';
-        zoomSlider.oninput = () => {
-            meta.vnZoomFactor = parseFloat(zoomSlider.value) || 1;
-            if (zoomValueEl) zoomValueEl.textContent = `${meta.vnZoomFactor.toFixed(1)}x`;
-            doAutoscale();
-        };
-    }
-
-    // Mặc định cuộn tới mốc gần nhất (hiện tại); cho phép kéo ngang bằng chuột để xem quá khứ
-    scrollWrap.scrollLeft = scrollWrap.scrollWidth;
-    _enableDragScroll(scrollWrap);
-    doAutoscale();
-}
-
-function _updateBacktestAutoscale(scrollWrap, meta) {
-    const {
-        astroSeries, vnSeries, t0, totalDays, PX_PER_DAY, padL, padT, plotH,
-        globalMinA, globalRangeA, globalMinV, globalRangeV, groupA, groupV, scaleNote,
-        vnZoomFactor,
-    } = meta;
-    if (!groupA || !groupV) return;
-
-    const viewLeftDay = Math.max(0, (scrollWrap.scrollLeft - padL) / PX_PER_DAY);
-    const viewRightDay = Math.min(totalDays, (scrollWrap.scrollLeft + scrollWrap.clientWidth - padL) / PX_PER_DAY);
-    const tLeft = t0 + viewLeftDay * 86400000;
-    const tRight = t0 + viewRightDay * 86400000;
-
-    const MARGIN = 0.08; // đệm 8% trên/dưới cho dễ nhìn, tránh đường sát mép
-
-    function applyAxis(series, globalMin, globalRange, group, fmt, zoom) {
-        const visible = series.filter(p => p.t >= tLeft && p.t <= tRight).map(p => p.v);
-        if (!visible.length) return null;
-        let localMin = Math.min(...visible), localMax = Math.max(...visible);
-        let localRange = (localMax - localMin) || Math.abs(localMax || 1) * 0.1 || 1;
-        const pad = localRange * MARGIN;
-        localMin -= pad; localMax += pad; localRange = localMax - localMin;
-
-        // y_local là hàm TUYẾN TÍNH của y_global (cả 2 đều affine theo v) — tính hệ số bằng 2 điểm
-        // hiệu chỉnh (v=globalMin và v=globalMin+globalRange) thay vì suy diễn đại số dễ sai sót.
-        const yG1 = padT + plotH, yG2 = padT; // global y tại globalMin và globalMin+globalRange
-        const yL1 = padT + plotH - ((globalMin - localMin) / localRange) * plotH;
-        const yL2 = padT + plotH - (((globalMin + globalRange) - localMin) / localRange) * plotH;
-        let a = (yL2 - yL1) / (yG2 - yG1);
-        let b = yL1 - a * yG1;
-
-        // Phóng thủ công (zoom slider) quanh TÂM khung vẽ — phần vượt biên bị clip-path cắt gọn.
-        // Kết hợp affine: y_final = center + zoom*(a*yG+b - center) = (zoom*a)*yG + (zoom*b + center*(1-zoom))
-        if (zoom && zoom !== 1) {
-            const center = padT + plotH / 2;
-            b = zoom * b + center * (1 - zoom);
-            a = zoom * a;
-        }
-        group.setAttribute('transform', `matrix(1,0,0,${a},0,${b})`);
-        return { min: localMin + pad, max: localMax - pad, fmt };
-    }
-
-    const rA = applyAxis(astroSeries, globalMinA, globalRangeA, groupA, v => v.toFixed(1), 1);
-    const rV = applyAxis(vnSeries, globalMinV, globalRangeV, groupV, v => v.toFixed(0), vnZoomFactor || 1);
-
-    if (scaleNote) {
-        const partsA = rA ? `${rA.fmt(rA.min)} → ${rA.fmt(rA.max)}` : '—';
-        const partsV = rV ? `${rV.fmt(rV.min)} → ${rV.fmt(rV.max)}` : '—';
-        const zoomNote = (vnZoomFactor && vnZoomFactor !== 1) ? ` (đã phóng ${vnZoomFactor.toFixed(1)}x, phần vượt khung bị cắt bớt)` : '';
-        scaleNote.innerHTML = `Thang trục <span style="color:#8b5cf6;font-weight:600">tím</span> (đang xem): ${partsA} · Thang trục <span style="color:#e5e7eb;font-weight:600">trắng</span> (điểm VN-Index, đang xem): ${partsV}${zoomNote}`;
-    }
-}
-
-function _enableDragScroll(el) {
-    if (el._dragScrollBound) return;
-    el._dragScrollBound = true;
-    let isDown = false, startX = 0, startScroll = 0;
-    el.addEventListener('pointerdown', e => {
-        isDown = true;
-        startX = e.clientX;
-        startScroll = el.scrollLeft;
-        el.setPointerCapture(e.pointerId);
+    // VN-Index thật (trục phải, trắng)
+    const vnLine = chart.addLineSeries({
+        priceScaleId: 'right', color: '#e5e7eb', lineWidth: 2, title: 'VN-Index',
+        priceFormat: { type: 'price', precision: 0, minMove: 1 },
     });
-    el.addEventListener('pointermove', e => {
-        if (!isDown) return;
-        el.scrollLeft = startScroll - (e.clientX - startX);
+    vnLine.setData(vnSeries.map(p => ({ time: _d2ts(p.date), value: p.close })));
+
+    // Chỉ số áp lực/thuận lợi chiêm tinh (trục trái) — tô XANH khi tăng so với hôm trước, ĐỎ khi
+    // giảm (user yêu cầu, để đối chiếu trực quan với chiều VN-Index). Lightweight Charts không hỗ
+    // trợ đổi màu giữa chừng 1 LineSeries, nên dùng 2 series đè lên nhau (tăng/giảm) — mỗi ngày
+    // KHÔNG thuộc màu đó chỉ có {time} (whitespace, không có value) để tạo khoảng trống đúng chỗ,
+    // giữ nguyên trọn vẹn hình dạng dữ liệu hàng ngày (không đơn giản hóa mất chi tiết như zigzag).
+    const n = astroSeries.length;
+    const upData = new Array(n), downData = new Array(n);
+    for (let i = 0; i < n; i++) {
+        const t = _d2ts(astroSeries[i].date), v = astroSeries[i].score;
+        const edgeIn = i > 0 ? v >= astroSeries[i - 1].score : null;
+        const edgeOut = i < n - 1 ? astroSeries[i + 1].score >= v : null;
+        const isUp = edgeIn === true || edgeOut === true;
+        const isDown = edgeIn === false || edgeOut === false;
+        upData[i] = isUp ? { time: t, value: v } : { time: t };
+        downData[i] = isDown ? { time: t, value: v } : { time: t };
+    }
+    const astroUp = chart.addLineSeries({
+        priceScaleId: 'left', color: '#10b981', lineWidth: 1.5, title: 'Chiêm tinh (tăng)',
+        lastValueVisible: false, priceLineVisible: false,
     });
-    const stop = () => { isDown = false; };
-    el.addEventListener('pointerup', stop);
-    el.addEventListener('pointercancel', stop);
+    const astroDown = chart.addLineSeries({
+        priceScaleId: 'left', color: '#ef4444', lineWidth: 1.5, title: 'Chiêm tinh (giảm)',
+        lastValueVisible: false, priceLineVisible: false,
+    });
+    astroUp.setData(upData);
+    astroDown.setData(downData);
+
+    // Mặc định hiển thị ~1 năm gần nhất; cuộn chuột/pinch để zoom ra xa xem hết 10 năm, kéo để pan
+    const fromIdx = Math.max(0, astroSeries.length - 366);
+    chart.timeScale().setVisibleRange({
+        from: _d2ts(astroSeries[fromIdx].date),
+        to: _d2ts(astroSeries[astroSeries.length - 1].date),
+    });
+
+    const ro = new ResizeObserver(entries => {
+        const rect = entries[0].contentRect;
+        if (rect.width > 0) chart.resize(rect.width, 420);
+    });
+    ro.observe(container);
 }
 
 function renderSunMoonToday(positions) {
