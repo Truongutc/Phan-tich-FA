@@ -23,7 +23,9 @@ function _fmtDate(iso) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const data = await fetch('data/astro.json').then(r => r.ok ? r.json() : null).catch(() => null);
+    // ?t=... để tránh trình duyệt/CDN cache lại astro.json cũ — file này cập nhật hàng tuần, cache
+    // cứng khiến user thấy dữ liệu backtest lệch ngày dù server đã có bản mới (2026-08-04).
+    const data = await fetch('data/astro.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null);
     if (!data) {
         document.querySelector('main.view').innerHTML =
             '<div class="loading-state card">Chưa có dữ liệu chiêm tinh. Hãy chạy template_astro.py hoặc GitHub Action "Cập nhật Chiêm tinh Tài chính".</div>';
