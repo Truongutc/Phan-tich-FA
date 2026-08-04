@@ -1,46 +1,46 @@
 {
-  "generatedAt": "2026-08-04 02:28 UTC",
+  "generatedAt": "2026-08-04 03:56 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 131.39,
+      "lon": 131.45,
       "sign": "Sư Tử",
-      "degInSign": 11.39,
+      "degInSign": 11.45,
       "retrograde": false
     },
     {
       "name": "Mặt Trăng",
-      "lon": 16.05,
+      "lon": 16.87,
       "sign": "Bạch Dương",
-      "degInSign": 16.05,
+      "degInSign": 16.87,
       "retrograde": false
     },
     {
       "name": "Sao Thủy",
-      "lon": 112.11,
+      "lon": 112.18,
       "sign": "Cự Giải",
-      "degInSign": 22.11,
+      "degInSign": 22.18,
       "retrograde": false
     },
     {
       "name": "Sao Kim",
-      "lon": 176.89,
+      "lon": 176.95,
       "sign": "Xử Nữ",
-      "degInSign": 26.89,
+      "degInSign": 26.95,
       "retrograde": false
     },
     {
       "name": "Sao Hỏa",
-      "lon": 84.79,
+      "lon": 84.83,
       "sign": "Song Tử",
-      "degInSign": 24.79,
+      "degInSign": 24.83,
       "retrograde": false
     },
     {
       "name": "Sao Mộc",
-      "lon": 127.28,
+      "lon": 127.29,
       "sign": "Sư Tử",
-      "degInSign": 7.28,
+      "degInSign": 7.29,
       "retrograde": false
     },
     {
@@ -78,49 +78,56 @@
       "b": "Sao Diêm Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 0.12
+      "orb": 0.12,
+      "applying": false
     },
     {
       "a": "Sao Thiên Vương",
       "b": "Sao Hải Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 0.9
+      "orb": 0.9,
+      "applying": false
     },
     {
       "a": "Sao Thiên Vương",
       "b": "Sao Diêm Vương",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 1.02
-    },
-    {
-      "a": "Mặt Trăng",
-      "b": "Sao Thổ",
-      "aspect": "Hợp (Conjunction)",
-      "angle": 0,
-      "orb": 1.74
+      "orb": 1.02,
+      "applying": false
     },
     {
       "a": "Sao Kim",
       "b": "Sao Hỏa",
       "aspect": "Vuông (Square)",
       "angle": 90,
-      "orb": 2.1
+      "orb": 2.12,
+      "applying": false
     },
     {
       "a": "Sao Mộc",
       "b": "Sao Thiên Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 2.54
+      "orb": 2.55,
+      "applying": false
+    },
+    {
+      "a": "Mặt Trăng",
+      "b": "Sao Thổ",
+      "aspect": "Hợp (Conjunction)",
+      "angle": 0,
+      "orb": 2.56,
+      "applying": false
     },
     {
       "a": "Mặt Trời",
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 2.92
+      "orb": 2.86,
+      "applying": true
     }
   ],
   "upcomingAspects": [
@@ -167,7 +174,7 @@
       "aspect": "Vuông (Square)"
     },
     {
-      "date": "2026-10-11",
+      "date": "2026-10-10",
       "a": "Sao Kim",
       "b": "Sao Hỏa",
       "aspect": "Vuông (Square)"

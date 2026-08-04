@@ -91,10 +91,18 @@ def get_zodiac_sign(lon_deg):
     return ZODIAC_SIGNS[idx], deg_in_sign
 
 
-def find_current_aspects(positions, orb=3.0):
+def find_current_aspects(positions, orb=3.0, when=None, check_applying=True):
     """positions: {tên: kinh độ độ}. Trả list các cặp hành tinh đang trong `orb` độ của 1 trong 5
-    góc chiếu kinh điển, sắp xếp theo orb tăng dần (gần exact nhất trước)."""
+    góc chiếu kinh điển, sắp xếp theo orb tăng dần (gần exact nhất trước). Mỗi kết quả kèm
+    "applying" (True/False) — đọc từ sách "The Tunnel Thru the Air" của W.D. Gann (đoạn Professor
+    Joyful luận giải: "Venus applied to a trine of Uranus" khi orb đang thu hẹp/tiến tới exact,
+    "Venus was separating from a conjunction of Mars" khi orb đang nới rộng/đã qua exact) — đây là
+    kỹ thuật chiêm tinh thật, KHÔNG phải tự suy diễn: applying = ảnh hưởng đang TỚI/mạnh dần,
+    separating = ảnh hưởng đang QUA/nhạt dần."""
     names = list(positions.keys())
+    later_positions = None
+    if check_applying:
+        later_positions = get_planet_positions((when or _utcnow()) + datetime.timedelta(hours=12))
     out = []
     for i in range(len(names)):
         for j in range(i + 1, len(names)):
@@ -105,9 +113,17 @@ def find_current_aspects(positions, orb=3.0):
             for angle, label in ASPECTS.items():
                 gap = abs(diff - angle)
                 if gap <= orb:
+                    applying = None
+                    if check_applying:
+                        a2, b2 = later_positions[names[i]], later_positions[names[j]]
+                        diff2 = abs(a2 - b2) % 360
+                        if diff2 > 180:
+                            diff2 = 360 - diff2
+                        gap2 = abs(diff2 - angle)
+                        applying = gap2 < gap
                     out.append({
                         "a": names[i], "b": names[j], "aspect": label,
-                        "angle": angle, "orb": round(gap, 2),
+                        "angle": angle, "orb": round(gap, 2), "applying": applying,
                     })
                     break
     out.sort(key=lambda x: x["orb"])

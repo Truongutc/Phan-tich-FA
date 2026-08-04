@@ -66,11 +66,12 @@ function renderCurrentAspectsTable(aspects) {
         return;
     }
     el.innerHTML = `
-        <thead><tr><th>Hành tinh 1</th><th>Hành tinh 2</th><th>Góc chiếu</th><th>Orb</th></tr></thead>
+        <thead><tr><th>Hành tinh 1</th><th>Hành tinh 2</th><th>Góc chiếu</th><th>Orb</th><th>Trạng thái</th></tr></thead>
         <tbody>${aspects.map(a => `
             <tr><td>${a.a}</td><td>${a.b}</td>
                 <td><span class="astro-badge ${_isHardAspect(a.aspect) ? 'hard' : 'soft'}">${a.aspect}</span></td>
-                <td class="num">${a.orb.toFixed(2)}°</td></tr>
+                <td class="num">${a.orb.toFixed(2)}°</td>
+                <td>${a.applying === true ? 'Đang tới (applying)' : a.applying === false ? 'Đang qua (separating)' : ''}</td></tr>
         `).join('')}</tbody>`;
 }
 
