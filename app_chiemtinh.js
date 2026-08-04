@@ -149,36 +149,39 @@ function renderBacktestChart(backtest) {
     if (!card || !scrollWrap || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
     card.style.display = 'block';
 
-    const astroSeries = backtest.astro;
-    const vnSeries = backtest.vnindex;
+    const astroSeries = backtest.astro.map(p => ({ t: new Date(p.date).getTime(), v: p.score }));
+    const vnSeries = backtest.vnindex.map(p => ({ t: new Date(p.date).getTime(), v: p.close }));
 
     // Vẽ theo mật độ pixel/ngày CỐ ĐỊNH (không co giãn theo bề rộng khung) để 10 năm dữ liệu vẫn
     // giãn vừa phải dễ nhìn — khung chỉ hiển thị 1 cửa sổ, kéo ngang (scroll) để xem giai đoạn khác.
     const PX_PER_DAY = 3;
     const h = 260, padL = 8, padR = 24, padT = 14, padB = 24;
 
-    const t0 = new Date(astroSeries[0].date).getTime();
-    const t1 = new Date(astroSeries[astroSeries.length - 1].date).getTime();
+    const t0 = astroSeries[0].t;
+    const t1 = astroSeries[astroSeries.length - 1].t;
     const tRange = (t1 - t0) || 1;
     const totalDays = Math.round(tRange / 86400000) || 1;
     const plotW = totalDays * PX_PER_DAY;
     const w = plotW + padL + padR;
     const plotH = h - padT - padB;
 
-    const xAt = dateStr => padL + ((new Date(dateStr).getTime() - t0) / tRange) * plotW;
+    const xAt = t => padL + ((t - t0) / tRange) * plotW;
 
-    const astroScores = astroSeries.map(p => p.score);
-    const minA = Math.min(...astroScores), maxA = Math.max(...astroScores);
-    const rangeA = (maxA - minA) || 1;
-    const yAtAstro = s => padT + plotH - ((s - minA) / rangeA) * plotH;
+    // Vẽ theo thang GLOBAL trước (toàn bộ 10 năm) — sau đó autoscale trục dọc theo cửa sổ đang
+    // xem bằng 1 phép biến đổi tuyến tính (transform) trên nhóm <g>, KHÔNG cần vẽ lại toàn bộ path
+    // mỗi lần cuộn (rẻ hơn nhiều so với rebuild polyline liên tục khi kéo/cuộn).
+    const astroVals = astroSeries.map(p => p.v);
+    const globalMinA = Math.min(...astroVals), globalMaxA = Math.max(...astroVals);
+    const globalRangeA = (globalMaxA - globalMinA) || 1;
+    const yAtAstroGlobal = v => padT + plotH - ((v - globalMinA) / globalRangeA) * plotH;
 
-    const vnCloses = vnSeries.map(p => p.close);
-    const minV = Math.min(...vnCloses), maxV = Math.max(...vnCloses);
-    const rangeV = (maxV - minV) || 1;
-    const yAtVn = c => padT + plotH - ((c - minV) / rangeV) * plotH;
+    const vnVals = vnSeries.map(p => p.v);
+    const globalMinV = Math.min(...vnVals), globalMaxV = Math.max(...vnVals);
+    const globalRangeV = (globalMaxV - globalMinV) || 1;
+    const yAtVnGlobal = v => padT + plotH - ((v - globalMinV) / globalRangeV) * plotH;
 
-    const astroPoints = astroSeries.map(p => `${xAt(p.date).toFixed(1)},${yAtAstro(p.score).toFixed(1)}`).join(' ');
-    const vnPoints = vnSeries.map(p => `${xAt(p.date).toFixed(1)},${yAtVn(p.close).toFixed(1)}`).join(' ');
+    const astroPoints = astroSeries.map(p => `${xAt(p.t).toFixed(1)},${yAtAstroGlobal(p.v).toFixed(1)}`).join(' ');
+    const vnPoints = vnSeries.map(p => `${xAt(p.t).toFixed(1)},${yAtVnGlobal(p.v).toFixed(1)}`).join(' ');
 
     let svg = `<svg width="${w}" height="${h}" style="display:block">`;
 
@@ -193,14 +196,16 @@ function renderBacktestChart(backtest) {
         svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${MONTHS_VN[dt.getUTCMonth()]}/${dt.getUTCFullYear()}</text>`;
     }
 
-    // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải)
-    svg += `<polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.85"/>`;
-    svg += `<polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/>`;
+    // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải) — mỗi
+    // đường bọc trong 1 <g> riêng để có thể áp transform autoscale độc lập theo cửa sổ đang xem.
+    svg += `<g id="astro-backtest-line-a"><polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.85"/></g>`;
+    svg += `<g id="astro-backtest-line-v"><polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/></g>`;
 
     svg += `</svg>`;
     container.innerHTML = svg;
 
-    // Chú thích thang đo (nằm ngoài SVG cuộn được, để luôn nhìn thấy dù đang cuộn tới đâu)
+    // Chú thích thang đo (nằm ngoài SVG cuộn được, để luôn nhìn thấy dù đang cuộn tới đâu) — sẽ
+    // cập nhật LIÊN TỤC theo khoảng giá trị của đúng cửa sổ đang xem (xem _updateBacktestAutoscale)
     let scaleNote = document.getElementById('astro-backtest-scale-note');
     if (!scaleNote) {
         scaleNote = document.createElement('p');
@@ -208,11 +213,70 @@ function renderBacktestChart(backtest) {
         scaleNote.className = 'astro-generated-note';
         scrollWrap.insertAdjacentElement('afterend', scaleNote);
     }
-    scaleNote.innerHTML = `Thang trục <span style="color:#8b5cf6;font-weight:600">tím</span>: ${minA.toFixed(1)} → ${maxA.toFixed(1)} · Thang trục <span style="color:#e5e7eb;font-weight:600">trắng</span> (điểm VN-Index): ${minV.toFixed(0)} → ${maxV.toFixed(0)}`;
+
+    const groupA = document.getElementById('astro-backtest-line-a');
+    const groupV = document.getElementById('astro-backtest-line-v');
+    const meta = {
+        astroSeries, vnSeries, t0, totalDays, PX_PER_DAY, padL, padT, plotH,
+        globalMinA, globalRangeA, globalMinV, globalRangeV, groupA, groupV, scaleNote,
+    };
+
+    const doAutoscale = () => _updateBacktestAutoscale(scrollWrap, meta);
+    let rafPending = false;
+    scrollWrap.addEventListener('scroll', () => {
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(() => { rafPending = false; doAutoscale(); });
+    });
+    window.addEventListener('resize', doAutoscale);
 
     // Mặc định cuộn tới mốc gần nhất (hiện tại); cho phép kéo ngang bằng chuột để xem quá khứ
     scrollWrap.scrollLeft = scrollWrap.scrollWidth;
     _enableDragScroll(scrollWrap);
+    doAutoscale();
+}
+
+function _updateBacktestAutoscale(scrollWrap, meta) {
+    const {
+        astroSeries, vnSeries, t0, totalDays, PX_PER_DAY, padL, padT, plotH,
+        globalMinA, globalRangeA, globalMinV, globalRangeV, groupA, groupV, scaleNote,
+    } = meta;
+    if (!groupA || !groupV) return;
+
+    const viewLeftDay = Math.max(0, (scrollWrap.scrollLeft - padL) / PX_PER_DAY);
+    const viewRightDay = Math.min(totalDays, (scrollWrap.scrollLeft + scrollWrap.clientWidth - padL) / PX_PER_DAY);
+    const tLeft = t0 + viewLeftDay * 86400000;
+    const tRight = t0 + viewRightDay * 86400000;
+
+    const MARGIN = 0.08; // đệm 8% trên/dưới cho dễ nhìn, tránh đường sát mép
+
+    function applyAxis(series, globalMin, globalRange, group, fmt) {
+        const visible = series.filter(p => p.t >= tLeft && p.t <= tRight).map(p => p.v);
+        if (!visible.length) return null;
+        let localMin = Math.min(...visible), localMax = Math.max(...visible);
+        let localRange = (localMax - localMin) || Math.abs(localMax || 1) * 0.1 || 1;
+        const pad = localRange * MARGIN;
+        localMin -= pad; localMax += pad; localRange = localMax - localMin;
+
+        // y_local là hàm TUYẾN TÍNH của y_global (cả 2 đều affine theo v) — tính hệ số bằng 2 điểm
+        // hiệu chỉnh (v=globalMin và v=globalMin+globalRange) thay vì suy diễn đại số dễ sai sót.
+        const yG1 = padT + plotH, yG2 = padT; // global y tại globalMin và globalMin+globalRange
+        const yL1 = padT + plotH - ((globalMin - localMin) / localRange) * plotH;
+        const yL2 = padT + plotH - (((globalMin + globalRange) - localMin) / localRange) * plotH;
+        const a = (yL2 - yL1) / (yG2 - yG1);
+        const b = yL1 - a * yG1;
+        group.setAttribute('transform', `matrix(1,0,0,${a},0,${b})`);
+        return { min: localMin + pad, max: localMax - pad, fmt };
+    }
+
+    const rA = applyAxis(astroSeries, globalMinA, globalRangeA, groupA, v => v.toFixed(1));
+    const rV = applyAxis(vnSeries, globalMinV, globalRangeV, groupV, v => v.toFixed(0));
+
+    if (scaleNote) {
+        const partsA = rA ? `${rA.fmt(rA.min)} → ${rA.fmt(rA.max)}` : '—';
+        const partsV = rV ? `${rV.fmt(rV.min)} → ${rV.fmt(rV.max)}` : '—';
+        scaleNote.innerHTML = `Thang trục <span style="color:#8b5cf6;font-weight:600">tím</span> (đang xem): ${partsA} · Thang trục <span style="color:#e5e7eb;font-weight:600">trắng</span> (điểm VN-Index, đang xem): ${partsV}`;
+    }
 }
 
 function _enableDragScroll(el) {
