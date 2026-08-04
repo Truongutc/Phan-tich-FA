@@ -1,8 +1,10 @@
 /* ════════════════════════════════════════════════════════
    AIC FA SYSTEM — app_chiemtinh.js (Chiêm tinh Tài chính)
-   Tải data/astro.json (tính toán thiên văn thật, xem fetch_astro_data.py/template_astro.py) và
-   render 5 khu vực tương ứng khung 5 buổi tham khảo (izumi.edu.vn) — xem lưu ý quan trọng ở đầu
-   fetch_astro_data.py về bản chất khung lý thuyết này.
+   Tải data/astro.json (tính toán thiên văn thật + diễn giải rule-based, xem
+   fetch_astro_data.py/template_astro.py). Trọng tâm trang (user 2026-08-04): "Đánh giá Hiện tại"
+   (tác động tới tài chính/tâm lý thị trường) + "Dự báo Giai đoạn Tới" (dòng thời gian sự kiện sắp
+   tới) — 5 buổi tham khảo (izumi.edu.vn) giữ lại phía dưới làm kiến thức nền. Xem lưu ý quan
+   trọng ở đầu fetch_astro_data.py về bản chất khung lý thuyết này.
    ════════════════════════════════════════════════════════ */
 
 'use strict';
@@ -33,10 +35,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSunMoonToday(data.positions);
     renderPositionsTable(data.positions);
     renderCurrentAspectsTable(data.currentAspects);
-    renderUpcomingAspectsTable(data.upcomingAspects);
-    renderEclipsesTable(data.upcomingEclipses);
+    renderAssessment(data.currentAssessment);
+    renderForecastTimeline(data.forecastTimeline);
     initCycleTool();
 });
+
+function renderAssessment(assessment) {
+    const card = document.getElementById('assessment-card');
+    if (!assessment || !card) return;
+    card.style.display = 'block';
+
+    const overallEl = document.getElementById('assessment-overall');
+    if (overallEl) overallEl.textContent = assessment.overallText;
+
+    const retroEl = document.getElementById('assessment-retrograde');
+    if (retroEl) {
+        retroEl.innerHTML = (assessment.retrogradeLines || [])
+            .map(l => `<div class="astro-line">℞ ${l}</div>`).join('');
+    }
+
+    const aspEl = document.getElementById('assessment-aspects');
+    if (aspEl) {
+        aspEl.innerHTML = (assessment.aspectLines || [])
+            .map(l => `<div class="astro-line">🪐 ${l}</div>`).join('');
+    }
+}
+
+function renderForecastTimeline(events) {
+    const card = document.getElementById('forecast-card');
+    const el = document.getElementById('astro-forecast-table');
+    if (!events || !card || !el) return;
+    card.style.display = 'block';
+    if (!events.length) {
+        el.innerHTML = '<tbody><tr><td>Không có sự kiện nào đáng chú ý trong giai đoạn tới.</td></tr></tbody>';
+        return;
+    }
+    const EVENT_BADGE = {
+        aspect: 'hard', solar: 'solar', lunar: 'lunar',
+        station_retrograde: 'hard', station_direct: 'soft',
+    };
+    const EVENT_ICON = {
+        aspect: '🪐', solar: '☀️', lunar: '🌕', station_retrograde: '℞', station_direct: '➡️',
+    };
+    el.innerHTML = `
+        <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Diễn giải (lý thuyết chiêm tinh tài chính)</th></tr></thead>
+        <tbody>${events.map(e => `
+            <tr>
+                <td style="white-space:nowrap">${_fmtDate(e.date)}</td>
+                <td style="white-space:nowrap"><span class="astro-badge ${EVENT_BADGE[e.type] || 'soft'}">${EVENT_ICON[e.type] || ''} ${e.title}</span></td>
+                <td style="font-size:0.92em">${e.interpretation}</td>
+            </tr>
+        `).join('')}</tbody>`;
+}
 
 function renderSunMoonToday(positions) {
     const el = document.getElementById('astro-sun-moon-today');
@@ -72,36 +122,6 @@ function renderCurrentAspectsTable(aspects) {
                 <td><span class="astro-badge ${_isHardAspect(a.aspect) ? 'hard' : 'soft'}">${a.aspect}</span></td>
                 <td class="num">${a.orb.toFixed(2)}°</td>
                 <td>${a.applying === true ? 'Đang tới (applying)' : a.applying === false ? 'Đang qua (separating)' : ''}</td></tr>
-        `).join('')}</tbody>`;
-}
-
-function renderUpcomingAspectsTable(aspects) {
-    const el = document.getElementById('astro-upcoming-aspects-table');
-    if (!el) return;
-    if (!aspects || !aspects.length) {
-        el.innerHTML = '<tbody><tr><td>Không có góc chiếu chính xác nào trong 90 ngày tới.</td></tr></tbody>';
-        return;
-    }
-    el.innerHTML = `
-        <thead><tr><th>Ngày (dự kiến)</th><th>Hành tinh 1</th><th>Hành tinh 2</th><th>Góc chiếu</th></tr></thead>
-        <tbody>${aspects.map(a => `
-            <tr><td>${_fmtDate(a.date)}</td><td>${a.a}</td><td>${a.b}</td>
-                <td><span class="astro-badge ${_isHardAspect(a.aspect) ? 'hard' : 'soft'}">${a.aspect}</span></td></tr>
-        `).join('')}</tbody>`;
-}
-
-function renderEclipsesTable(eclipses) {
-    const el = document.getElementById('astro-eclipses-table');
-    if (!el) return;
-    if (!eclipses || !eclipses.length) {
-        el.innerHTML = '<tbody><tr><td>Không có dữ liệu.</td></tr></tbody>';
-        return;
-    }
-    el.innerHTML = `
-        <thead><tr><th>Ngày (UTC)</th><th>Loại hiện tượng</th></tr></thead>
-        <tbody>${eclipses.map(e => `
-            <tr><td>${_fmtDate(e.date)}</td>
-                <td><span class="astro-badge ${e.type}">${e.type === 'solar' ? '☀️ Nhật thực' : '🌕 Nguyệt thực'}</span></td></tr>
         `).join('')}</tbody>`;
 }
 

@@ -39,6 +39,9 @@
         .astro-generated-note { font-size: 0.75em; color: var(--text-muted, #6b7280); margin-top: 10px; }
         .astro-section-title { font-size: 0.95em; font-weight: 700; margin: 16px 0 4px; color: var(--text-main, #f3f4f6); }
         .border-purple { border-left-color: #8b5cf6 !important; }
+        .astro-ref-heading { margin: 28px 0 -4px; color: var(--text-muted, #9ca3af); font-size: 1em; font-weight: 700; }
+        .astro-line { padding: 8px 0; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.06)); font-size: 0.9em; line-height: 1.6; }
+        .astro-line:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -85,7 +88,23 @@
             <p class="astro-generated-note" id="astro-generated-at"></p>
         </div>
 
+        <!-- Đánh giá hiện tại -->
+        <div class="card margin-top-20" id="assessment-card" style="display:none">
+            <h3 class="border-purple">🧭 Đánh giá Hiện tại — Tác động tới Tài chính & Tâm lý Thị trường</h3>
+            <p class="vimo-synthesis-text" id="assessment-overall" style="font-weight:600"></p>
+            <div id="assessment-retrograde"></div>
+            <div id="assessment-aspects"></div>
+        </div>
+
+        <!-- Dự báo giai đoạn tới -->
+        <div class="card margin-top-20" id="forecast-card" style="display:none">
+            <h3 class="border-purple">📅 Dự báo Giai đoạn Tới (90 ngày)</h3>
+            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. Diễn giải kèm theo là cách hiểu PHỔ BIẾN của lý thuyết chiêm tinh tài chính truyền thống, không phải khẳng định chắc chắn.</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-forecast-table"></table></div>
+        </div>
+
         <!-- Buổi 1 -->
+        <h3 class="astro-ref-heading">📚 Kiến thức tham khảo</h3>
         <div class="card margin-top-20">
             <h3 class="border-purple">🪐 Buổi 1 — Kiến thức cơ bản về Chiêm tinh Tài chính</h3>
             <p class="astro-section-title">Khái niệm cơ bản về hành tinh</p>
@@ -132,18 +151,14 @@
             <div style="overflow-x:auto"><table class="astro-table" id="astro-current-aspects-table"></table></div>
         </div>
 
-        <!-- Buổi 4 -->
         <div class="card margin-top-20">
             <h3 class="border-purple">⏱️ Buổi 4 — Phương pháp Super Timing của W.D. Gann</h3>
-            <p class="vimo-synthesis-text">W.D. Gann sử dụng góc chiếu chính xác giữa các hành tinh để tìm "ngày cửa sổ thời gian" (time window) có khả năng đảo chiều thị trường cao hơn. Bảng dưới liệt kê các ngày góc chiếu "cứng" (hợp/vuông/xung — được coi là biến động mạnh hơn góc "mềm") sắp CHÍNH XÁC trong 90 ngày tới, giữa các hành tinh từ Sao Thủy trở ra (không gồm Mặt Trăng do di chuyển quá nhanh, tạo góc chiếu liên tục ít ý nghĩa cho mốc thời gian nhiều ngày). Đây là cách diễn giải PHỔ BIẾN của lý thuyết timing theo góc chiếu — không phải công thức độc quyền của một khóa học cụ thể nào.</p>
-            <div style="overflow-x:auto"><table class="astro-table" id="astro-upcoming-aspects-table"></table></div>
+            <p class="vimo-synthesis-text">W.D. Gann sử dụng góc chiếu chính xác giữa các hành tinh để tìm "ngày cửa sổ thời gian" (time window) có khả năng đảo chiều thị trường cao hơn — xem bảng "Dự báo Giai đoạn Tới" ở đầu trang (đã gộp cả góc chiếu, nhật/nguyệt thực và ngày hành tinh đổi chiều vào 1 dòng thời gian duy nhất).</p>
         </div>
 
-        <!-- Buổi 5 -->
         <div class="card margin-top-20">
             <h3 class="border-purple">🌑 Buổi 5 — Phương pháp Hiện tượng Che khuất (Nhật thực, Nguyệt thực)</h3>
-            <p class="vimo-synthesis-text">Nhiều nhà phân tích chiêm tinh tài chính coi ngày nhật thực/nguyệt thực là các "mốc thời gian động" lớn — thời điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường. Bảng dưới liệt kê ngày nhật thực/nguyệt thực thật trong 12 tháng tới (tính bằng thiên văn học, đã đối chiếu khớp các nhật thực đã biết).</p>
-            <div style="overflow-x:auto"><table class="astro-table" id="astro-eclipses-table"></table></div>
+            <p class="vimo-synthesis-text">Nhiều nhà phân tích chiêm tinh tài chính coi ngày nhật thực/nguyệt thực là các "mốc thời gian động" lớn — thời điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường. Đã gộp vào bảng "Dự báo Giai đoạn Tới" ở đầu trang.</p>
         </div>
 
     </main>
@@ -153,7 +168,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=1"></script>
+<script src="app_chiemtinh.js?v=2"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

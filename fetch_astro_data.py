@@ -230,3 +230,29 @@ def find_upcoming_eclipses(months_ahead=12):
             dedup.append(r)
             seen_pairs.add(pair)
     return dedup
+
+
+def find_retrograde_stations(days_ahead=90, step_hours=12):
+    """Quét phát hiện ngày hành tinh ĐỔI CHIỀU chuyển động biểu kiến — "station retrograde" (bắt
+    đầu nghịch hành) hoặc "station direct" (kết thúc nghịch hành, thuận hành trở lại). Đây là các
+    mốc thời gian được chiêm tinh tài chính coi là QUAN TRỌNG hơn cả giai đoạn nghịch hành đang
+    diễn ra — thời điểm hành tinh "đứng yên" biểu kiến trên bầu trời trong vài ngày. Mặt Trời/Mặt
+    Trăng không có nghịch hành nên không quét. Trả list {date, planet, type} sắp theo thời gian."""
+    names = [n for n in PLANETS if n not in ("Mặt Trời", "Mặt Trăng")]
+    now = _utcnow()
+    steps = int(days_ahead * 24 / step_hours)
+    results = []
+    prev_state = {name: is_retrograde(name, now) for name in names}
+    for step in range(1, steps + 1):
+        t = now + datetime.timedelta(hours=step * step_hours)
+        for name in names:
+            cur_state = is_retrograde(name, t)
+            if cur_state != prev_state[name]:
+                results.append({
+                    "date": t.strftime("%Y-%m-%d"),
+                    "planet": name,
+                    "type": "station_retrograde" if cur_state else "station_direct",
+                })
+            prev_state[name] = cur_state
+    results.sort(key=lambda r: r["date"])
+    return results
