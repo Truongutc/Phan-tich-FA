@@ -100,10 +100,18 @@
 
         <!-- Biểu đồ sao -->
         <div class="card margin-top-20">
-            <h3 class="border-purple">🌌 Biểu đồ Vị trí Hành tinh (Sơ đồ vòng hoàng đạo)</h3>
-            <p class="vimo-synthesis-text">Sơ đồ đơn giản hóa: vòng ngoài là 12 cung hoàng đạo, mỗi chấm là 1 hành tinh đặt theo kinh độ hoàng đạo hiện tại; đường nối giữa 2 hành tinh là góc chiếu đang hoạt động (đỏ = góc chiếu cứng, xanh = góc chiếu mềm).</p>
+            <h3 class="border-purple">🌌 Biểu đồ Vị trí Hành tinh (Sơ đồ vòng hoàng đạo & Nhà)</h3>
+            <p class="vimo-synthesis-text">Sơ đồ đơn giản hóa: vòng ngoài là 12 cung hoàng đạo (cố định), vạch mờ bên trong là 12 Nhà (House, tính theo địa điểm — xem bảng Nhà bên dưới); mỗi chấm là 1 hành tinh đặt theo kinh độ hoàng đạo hiện tại; đường nối giữa 2 hành tinh là góc chiếu đang hoạt động (đỏ = góc chiếu cứng, xanh = góc chiếu mềm).</p>
             <div id="astro-wheel-container"></div>
             <div class="astro-wheel-legend" id="astro-wheel-legend"></div>
+        </div>
+
+        <!-- Nhà (House) -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">🏠 Nhà (House) — Vị trí hành tinh theo địa điểm</h3>
+            <p class="vimo-synthesis-text" id="astro-house-intro"></p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-houses-table"></table></div>
+            <div id="assessment-houses" style="margin-top:10px"></div>
         </div>
 
         <!-- Vị trí địa tâm -->
@@ -162,7 +170,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=3"></script>
+<script src="app_chiemtinh.js?v=4"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

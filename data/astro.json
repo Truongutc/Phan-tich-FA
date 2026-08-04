@@ -1,75 +1,85 @@
 {
-  "generatedAt": "2026-08-04 06:42 UTC",
+  "generatedAt": "2026-08-04 06:53 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 131.56,
+      "lon": 131.57,
       "sign": "Sư Tử",
-      "degInSign": 11.56,
-      "retrograde": false
+      "degInSign": 11.57,
+      "retrograde": false,
+      "house": 9
     },
     {
       "name": "Mặt Trăng",
-      "lon": 18.41,
+      "lon": 18.51,
       "sign": "Bạch Dương",
-      "degInSign": 18.41,
-      "retrograde": false
+      "degInSign": 18.51,
+      "retrograde": false,
+      "house": 5
     },
     {
       "name": "Sao Thủy",
       "lon": 112.31,
       "sign": "Cự Giải",
       "degInSign": 22.31,
-      "retrograde": false
+      "retrograde": false,
+      "house": 8
     },
     {
       "name": "Sao Kim",
-      "lon": 177.07,
+      "lon": 177.08,
       "sign": "Xử Nữ",
-      "degInSign": 27.07,
-      "retrograde": false
+      "degInSign": 27.08,
+      "retrograde": false,
+      "house": 10
     },
     {
       "name": "Sao Hỏa",
       "lon": 84.91,
       "sign": "Song Tử",
       "degInSign": 24.91,
-      "retrograde": false
+      "retrograde": false,
+      "house": 7
     },
     {
       "name": "Sao Mộc",
       "lon": 127.32,
       "sign": "Sư Tử",
       "degInSign": 7.32,
-      "retrograde": false
+      "retrograde": false,
+      "house": 9
     },
     {
       "name": "Sao Thổ",
       "lon": 14.31,
       "sign": "Bạch Dương",
       "degInSign": 14.31,
-      "retrograde": true
+      "retrograde": true,
+      "house": 5
     },
     {
       "name": "Sao Thiên Vương",
       "lon": 64.74,
       "sign": "Song Tử",
       "degInSign": 4.74,
-      "retrograde": false
+      "retrograde": false,
+      "house": 6
     },
     {
       "name": "Sao Hải Vương",
       "lon": 3.84,
       "sign": "Bạch Dương",
       "degInSign": 3.84,
-      "retrograde": true
+      "retrograde": true,
+      "house": 4
     },
     {
       "name": "Sao Diêm Vương",
       "lon": 303.72,
       "sign": "Bảo Bình",
       "degInSign": 3.72,
-      "retrograde": true
+      "retrograde": true,
+      "house": 2
     }
   ],
   "currentAspects": [
@@ -102,7 +112,7 @@
       "b": "Sao Hỏa",
       "aspect": "Vuông (Square)",
       "angle": 90,
-      "orb": 2.16,
+      "orb": 2.17,
       "applying": false
     },
     {
@@ -118,7 +128,7 @@
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 2.75,
+      "orb": 2.74,
       "applying": true
     }
   ],
@@ -222,6 +232,39 @@
       "type": "station_retrograde"
     }
   ],
+  "houses": {
+    "locationName": "Hà Nội",
+    "ascendant": 245.33,
+    "midheaven": 160.47,
+    "cusps": [
+      245.33,
+      275.33,
+      305.33,
+      335.33,
+      5.33,
+      35.33,
+      65.33,
+      95.33,
+      125.33,
+      155.33,
+      185.33,
+      215.33
+    ],
+    "meanings": {
+      "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
+      "2": "Tài sản/Tiền bạc — tài sản hữu hình, giá trị, dòng tiền cá nhân/doanh nghiệp",
+      "3": "Giao tiếp/Thông tin — tin tức, dòng thông tin, giao dịch ngắn hạn",
+      "4": "Gia đình/Nền tảng — bất động sản, nền tảng cơ bản của nền kinh tế",
+      "5": "Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro",
+      "6": "Công việc/Dịch vụ — lao động, năng suất, chi phí vận hành",
+      "7": "Đối tác/Hợp đồng — hợp tác, M&A, đối thủ cạnh tranh, hợp đồng",
+      "8": "Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi",
+      "9": "Mở rộng/Quốc tế — thương mại quốc tế, luật pháp/quy định, triết lý đầu tư",
+      "10": "Sự nghiệp/Vị thế — chính sách, uy tín, vai trò lãnh đạo thị trường",
+      "11": "Cộng đồng/Kỳ vọng — tâm lý đám đông, dòng vốn tổ chức, kỳ vọng tập thể",
+      "12": "Tiềm ẩn/Bí mật — rủi ro ẩn, gian lận, điểm mù hệ thống"
+    }
+  },
   "currentAssessment": {
     "overallText": "Hiện có 3 hành tinh nghịch hành, KHÔNG có góc chiếu cứng lớn nào giữa các hành tinh chu kỳ chậm — biến động (nếu có) nhiều khả năng mang tính ngắn hạn/cục bộ hơn là thay đổi cấu trúc lớn.",
     "retrogradeLines": [
@@ -229,7 +272,13 @@
       "Sao Hải Vương đang nghịch hành: theo lý thuyết chiêm tinh tài chính truyền thống, đây là giai đoạn ảo tưởng định giá/kỳ vọng thị trường dễ bị nhìn lại và điều chỉnh về gần thực tế hơn.",
       "Sao Diêm Vương đang nghịch hành: theo lý thuyết chiêm tinh tài chính truyền thống, đây là giai đoạn thay đổi cấu trúc dài hạn diễn ra âm thầm, ít tạo biến động tức thời rõ rệt."
     ],
-    "aspectLines": []
+    "aspectLines": [],
+    "houseLines": [
+      "Mặt Trăng đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"tâm lý đám đông, biến động ngắn hạn\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
+      "Sao Thủy đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"dòng thông tin, thanh khoản, hoạt động giao dịch\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
+      "Sao Thổ đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
+      "Sao Diêm Vương đang ở Nhà 2 (Tài sản/Tiền bạc — tài sản hữu hình, giá trị, dòng tiền cá nhân/doanh nghiệp) — chủ đề của hành tinh này (\"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\") đang được nhấn mạnh trong lĩnh vực Nhà 2."
+    ]
   },
   "forecastTimeline": [
     {

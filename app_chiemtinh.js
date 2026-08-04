@@ -34,9 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (genEl) genEl.textContent = `Dữ liệu thiên văn tính lúc: ${data.generatedAt}`;
 
     renderSunMoonToday(data.positions);
-    renderChartWheel(data.positions, data.currentAspects);
+    renderChartWheel(data.positions, data.currentAspects, data.houses);
     renderPositionsTable(data.positions);
     renderCurrentAspectsTable(data.currentAspects);
+    renderHousesTable(data.positions, data.houses);
     renderAssessment(data.currentAssessment);
     renderForecastTimeline(data.forecastTimeline);
     initCycleTool();
@@ -55,11 +56,42 @@ function renderPositionsTable(positions) {
     const el = document.getElementById('astro-positions-table');
     if (!el || !positions) return;
     el.innerHTML = `
-        <thead><tr><th>Hành tinh</th><th>Kinh độ hoàng đạo</th><th>Cung hoàng đạo</th><th>Độ trong cung</th><th>Trạng thái</th></tr></thead>
+        <thead><tr><th>Hành tinh</th><th>Kinh độ hoàng đạo</th><th>Cung hoàng đạo</th><th>Độ trong cung</th><th>Nhà</th><th>Trạng thái</th></tr></thead>
         <tbody>${positions.map(p => `
             <tr><td>${p.name}</td><td class="num">${p.lon.toFixed(2)}°</td><td>${p.sign}</td><td class="num">${p.degInSign.toFixed(2)}°</td>
+                <td class="num">${p.house}</td>
                 <td>${p.retrograde ? '<span class="astro-badge hard">℞ Nghịch hành</span>' : ''}</td></tr>
         `).join('')}</tbody>`;
+}
+
+function renderHousesTable(positions, houses) {
+    const introEl = document.getElementById('astro-house-intro');
+    const el = document.getElementById('astro-houses-table');
+    if (!el || !houses) return;
+
+    if (introEl) {
+        introEl.innerHTML = `"Nhà" (House) khác vị trí hành tinh/cung hoàng đạo ở trên — Nhà phụ thuộc 1 ĐỊA ĐIỂM cụ thể trên Trái Đất (dựa trên đường chân trời tại nơi đó lúc quan sát). Địa điểm tham chiếu: <b>${houses.locationName}</b>. Điểm Mọc (Ascendant, khởi đầu Nhà 1): <b>${houses.ascendant.toFixed(1)}°</b> · Thiên Đỉnh (Midheaven): <b>${houses.midheaven.toFixed(1)}°</b>. Hệ Nhà Đều (Equal House — mỗi Nhà đúng 30° từ Ascendant).`;
+    }
+
+    const byHouse = {};
+    positions.forEach(p => {
+        (byHouse[p.house] = byHouse[p.house] || []).push(p.name);
+    });
+
+    const rows = [];
+    for (let h = 1; h <= 12; h++) {
+        const planetsHere = byHouse[h] || [];
+        const highlight = [2, 5, 8].includes(h);
+        rows.push(`
+            <tr${highlight ? ' style="background:rgba(139,92,246,0.06)"' : ''}>
+                <td class="num">${h}${highlight ? ' 💰' : ''}</td>
+                <td>${houses.meanings[h] || houses.meanings[String(h)] || ''}</td>
+                <td>${planetsHere.length ? planetsHere.join(', ') : '—'}</td>
+            </tr>`);
+    }
+    el.innerHTML = `
+        <thead><tr><th>Nhà</th><th>Ý nghĩa (lăng kính tài chính)</th><th>Hành tinh đang trú</th></tr></thead>
+        <tbody>${rows.join('')}</tbody>`;
 }
 
 function renderCurrentAspectsTable(aspects) {
@@ -104,6 +136,14 @@ function renderAssessment(assessment) {
             ? `<p class="astro-section-title" style="font-size:0.85em">Diễn biến này nói lên điều gì? (góc chiếu cứng giữa các hành tinh chu kỳ chậm — quan trọng nhất cho xu hướng dài hơi)</p>`
               + assessment.aspectLines.map(l => `<div class="astro-line">🪐 ${l}</div>`).join('')
             : '<div class="astro-line">Không có góc chiếu cứng lớn nào giữa các hành tinh chu kỳ chậm hiện tại.</div>';
+    }
+
+    const houseEl = document.getElementById('assessment-houses');
+    if (houseEl) {
+        houseEl.innerHTML = (assessment.houseLines || []).length
+            ? `<p class="astro-section-title" style="font-size:0.85em">💰 Hành tinh đang trú tại Nhà tài chính (2, 5, 8) — nói lên điều gì?</p>`
+              + assessment.houseLines.map(l => `<div class="astro-line">🏠 ${l}</div>`).join('')
+            : '<div class="astro-line">Không có hành tinh nào đang ở Nhà 2 (Tiền bạc)/5 (Đầu cơ)/8 (Nợ-Khủng hoảng) hiện tại.</div>';
     }
 }
 
@@ -150,12 +190,12 @@ const PLANET_COLOR = {
 };
 const ZODIAC_SYMBOLS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
 
-function renderChartWheel(positions, aspects) {
+function renderChartWheel(positions, aspects, houses) {
     const container = document.getElementById('astro-wheel-container');
     const legendEl = document.getElementById('astro-wheel-legend');
     if (!container || !positions || !positions.length) return;
 
-    const size = 500, cx = size / 2, cy = size / 2, outerR = 230, ringR = 205, planetR = 175;
+    const size = 500, cx = size / 2, cy = size / 2, outerR = 230, ringR = 205, planetR = 175, houseR = 140;
     const toXY = (lon, r) => {
         const rad = (lon - 90) * Math.PI / 180;
         return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
@@ -170,6 +210,19 @@ function renderChartWheel(positions, aspects) {
         svg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#374151" stroke-width="1"/>`;
         const [lx, ly] = toXY(i * 30 + 15, (outerR + ringR) / 2);
         svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="#9ca3af" font-size="15" text-anchor="middle" dominant-baseline="central">${ZODIAC_SYMBOLS[i]}</text>`;
+    }
+    // 12 vạch Nhà (House) — mờ hơn, xoay theo Ascendant (khác vòng cung hoàng đạo cố định ở trên).
+    if (houses && houses.cusps) {
+        houses.cusps.forEach((cusp, i) => {
+            const [hx1, hy1] = toXY(cusp, 30);
+            const [hx2, hy2] = toXY(cusp, houseR);
+            const financial = [2, 5, 8].includes(i + 1);
+            svg += `<line x1="${hx1.toFixed(1)}" y1="${hy1.toFixed(1)}" x2="${hx2.toFixed(1)}" y2="${hy2.toFixed(1)}" stroke="${financial ? '#8b5cf699' : '#4b556388'}" stroke-width="${financial ? 1.4 : 0.8}" stroke-dasharray="3,3"/>`;
+            const nextCusp = houses.cusps[(i + 1) % 12];
+            const midAngle = cusp + (((nextCusp - cusp + 360) % 360) / 2);
+            const [nx, ny] = toXY(midAngle, houseR + 15);
+            svg += `<text x="${nx.toFixed(1)}" y="${ny.toFixed(1)}" fill="${financial ? '#c4b5fd' : '#6b7280'}" font-size="11" text-anchor="middle" dominant-baseline="central">${i + 1}</text>`;
+        });
     }
     (aspects || []).forEach(a => {
         const pa = positions.find(p => p.name === a.a);

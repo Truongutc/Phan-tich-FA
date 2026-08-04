@@ -21,7 +21,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 FORECAST_DAYS_AHEAD = 90
 
-# Ý nghĩa hành tinh trong chiêm tinh tài chính — khớp nội dung đã viết ở Buổi 1 (chiemtinh.html).
+# Ý nghĩa hành tinh trong chiêm tinh tài chính (hiển thị trong chiemtinh.html).
 PLANET_MEANING = {
     "Mặt Trời": "xu hướng chính, niềm tin thị trường",
     "Mặt Trăng": "tâm lý đám đông, biến động ngắn hạn",
@@ -49,6 +49,28 @@ RETROGRADE_MEANING = {
     "Sao Hải Vương": "ảo tưởng định giá/kỳ vọng thị trường dễ bị nhìn lại và điều chỉnh về gần thực tế hơn",
     "Sao Diêm Vương": "thay đổi cấu trúc dài hạn diễn ra âm thầm, ít tạo biến động tức thời rõ rệt",
 }
+
+# Ý nghĩa 12 Nhà (House) — theo đúng lý thuyết chiêm tinh học kinh điển (nhất quán giữa mọi trường
+# phái phương Tây), diễn giải qua lăng kính tài chính. Nhà PHỤ THUỘC ĐỊA ĐIỂM (xem HOUSE_LOCATION_
+# NAME/HOUSE_LAT/HOUSE_LON trong fetch_astro_data.py — user 2026-08-04 chọn Hà Nội làm chuẩn).
+HOUSE_MEANING = {
+    1: "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
+    2: "Tài sản/Tiền bạc — tài sản hữu hình, giá trị, dòng tiền cá nhân/doanh nghiệp",
+    3: "Giao tiếp/Thông tin — tin tức, dòng thông tin, giao dịch ngắn hạn",
+    4: "Gia đình/Nền tảng — bất động sản, nền tảng cơ bản của nền kinh tế",
+    5: "Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro",
+    6: "Công việc/Dịch vụ — lao động, năng suất, chi phí vận hành",
+    7: "Đối tác/Hợp đồng — hợp tác, M&A, đối thủ cạnh tranh, hợp đồng",
+    8: "Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi",
+    9: "Mở rộng/Quốc tế — thương mại quốc tế, luật pháp/quy định, triết lý đầu tư",
+    10: "Sự nghiệp/Vị thế — chính sách, uy tín, vai trò lãnh đạo thị trường",
+    11: "Cộng đồng/Kỳ vọng — tâm lý đám đông, dòng vốn tổ chức, kỳ vọng tập thể",
+    12: "Tiềm ẩn/Bí mật — rủi ro ẩn, gian lận, điểm mù hệ thống",
+}
+# 3 Nhà được coi là liên quan TRỰC TIẾP NHẤT tới tài chính/đầu cơ trong chiêm tinh tài chính truyền
+# thống — dùng để làm nổi bật trong đánh giá hiện tại (Nhà 2 = tiền bạc, Nhà 5 = đầu cơ, Nhà 8 = nợ/
+# khủng hoảng).
+FINANCIAL_HOUSES = {2, 5, 8}
 
 # (nhãn ngắn, mô tả) cho từng loại góc chiếu — dùng cả cho đánh giá hiện tại lẫn dự báo.
 ASPECT_TONE = {
@@ -117,7 +139,19 @@ def build_current_assessment(positions, current_aspects):
         overall = ("Không có hành tinh nghịch hành hay góc chiếu cứng lớn nào đáng chú ý giữa các hành tinh chu kỳ "
                     "chậm — theo lý thuyết chiêm tinh tài chính, đây được coi là giai đoạn tương đối ổn định/trung tính.")
 
-    return {"overallText": overall, "retrogradeLines": retrograde_lines, "aspectLines": aspect_lines}
+    # Nhà tài chính (2/5/8) đang có hành tinh nào trú ngụ — góc nhìn bổ sung theo địa điểm tham
+    # chiếu (xem HOUSE_LOCATION_NAME trong fetch_astro_data.py).
+    house_lines = []
+    for p in positions:
+        h = p.get("house")
+        if h in FINANCIAL_HOUSES:
+            house_lines.append(
+                f"{p['name']} đang ở Nhà {h} ({HOUSE_MEANING[h]}) — chủ đề của hành tinh này "
+                f"(\"{PLANET_MEANING.get(p['name'], '')}\") đang được nhấn mạnh trong lĩnh vực Nhà {h}."
+            )
+
+    return {"overallText": overall, "retrogradeLines": retrograde_lines, "aspectLines": aspect_lines,
+            "houseLines": house_lines}
 
 
 def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations, days_ahead=FORECAST_DAYS_AHEAD):
@@ -175,10 +209,12 @@ def build_astro_data():
     positions_raw = astro.get_planet_positions()
     signs = {name: astro.get_zodiac_sign(lon) for name, lon in positions_raw.items()}
     retro = {name: astro.is_retrograde(name) for name in positions_raw}
+    house_cusps = astro.get_house_cusps()
+    ascendant, midheaven = astro.get_ascendant_mc()
 
     positions = [
         {"name": name, "lon": lon, "sign": signs[name][0], "degInSign": signs[name][1],
-         "retrograde": retro[name]}
+         "retrograde": retro[name], "house": astro.get_house_of(lon, house_cusps)}
         for name, lon in positions_raw.items()
     ]
     current_aspects = astro.find_current_aspects(positions_raw, orb=3.0)
@@ -193,6 +229,11 @@ def build_astro_data():
         "upcomingAspects": upcoming_aspects,
         "upcomingEclipses": upcoming_eclipses,
         "retroStations": retro_stations,
+        "houses": {
+            "locationName": astro.HOUSE_LOCATION_NAME, "ascendant": round(ascendant, 2),
+            "midheaven": round(midheaven, 2), "cusps": [round(c, 2) for c in house_cusps],
+            "meanings": HOUSE_MEANING,
+        },
         "currentAssessment": build_current_assessment(positions, current_aspects),
         "forecastTimeline": build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations),
     }

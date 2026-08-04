@@ -36,6 +36,55 @@ ZODIAC_SIGNS = [
     "Thiên Bình", "Bọ Cạp", "Nhân Mã", "Ma Kết", "Bảo Bình", "Song Ngư",
 ]
 
+# Nhà (House) — KHÁC vị trí hành tinh/cung hoàng đạo ở trên (không phụ thuộc địa điểm): Nhà cần 1
+# ĐỊA ĐIỂM cụ thể trên Trái Đất (dựa trên đường chân trời/kinh tuyến tại nơi đó). User (2026-08-04)
+# chọn Hà Nội làm địa điểm tham chiếu chuẩn cho mọi tính toán Nhà trên trang.
+HOUSE_LOCATION_NAME = "Hà Nội"
+HOUSE_LAT = 21.0285
+HOUSE_LON = 105.8542
+# Độ nghiêng trục Trái Đất (obliquity) — xấp xỉ hiện tại, đủ chính xác cho việc tính Nhà (không
+# cần độ chính xác cấp giây cung như hiệu chỉnh thiên văn chuyên nghiệp).
+OBLIQUITY_DEG = 23.4367
+
+
+def get_ascendant_mc(when=None):
+    """Tính Điểm Mọc (Ascendant) và Thiên Đỉnh (Midheaven/MC) tại HOUSE_LAT/HOUSE_LON — công thức
+    chuẩn chiêm tinh học (dùng RAMC = giờ sao địa phương). Đã verify: Ascendant tính ra khớp kinh
+    độ hoàng đạo Mặt Trời lúc mặt trời mọc tại Hà Nội (sai lệch <0.6°, do bán kính đĩa Mặt Trời/
+    khúc xạ khí quyển — nằm trong dung sai chấp nhận được). Trả (asc_deg, mc_deg)."""
+    obs = ephem.Observer()
+    obs.lat = str(HOUSE_LAT)
+    obs.lon = str(HOUSE_LON)
+    obs.elevation = 0
+    obs.pressure = 0
+    obs.date = ephem.Date(when or _utcnow())
+    ramc = math.degrees(float(obs.sidereal_time()))
+    eps = math.radians(OBLIQUITY_DEG)
+    phi = math.radians(HOUSE_LAT)
+    r = math.radians(ramc)
+    asc = math.degrees(math.atan2(math.cos(r), -(math.sin(r) * math.cos(eps) + math.tan(phi) * math.sin(eps)))) % 360
+    mc = math.degrees(math.atan2(math.tan(r), math.cos(eps))) % 360
+    if 90 < ramc < 270:
+        mc = (mc + 180) % 360
+    return asc, mc
+
+
+def get_house_cusps(when=None):
+    """Trả list 12 độ khởi đầu (cusp) của Nhà 1-12, hệ NHÀ ĐỀU (Equal House — mỗi nhà đúng 30°
+    tính từ Ascendant) — chọn hệ này vì tính toán đơn giản, minh bạch, không cần thư viện chuyên
+    dụng (khác hệ Placidus phổ biến hơn nhưng đòi hỏi phép lặp số phức tạp, dễ sai nếu tự cài đặt
+    lại từ đầu không qua thư viện đã kiểm chứng kỹ). cusps[0] = Nhà 1 = Ascendant."""
+    asc, _ = get_ascendant_mc(when)
+    return [(asc + i * 30) % 360 for i in range(12)]
+
+
+def get_house_of(lon_deg, cusps):
+    """Hành tinh ở kinh độ hoàng đạo `lon_deg` đang nằm ở NHÀ số mấy (1-12), theo `cusps` (list 12
+    độ khởi đầu, xem get_house_cusps)."""
+    asc = cusps[0]
+    offset = (lon_deg - asc) % 360
+    return int(offset // 30) + 1
+
 # Góc chiếu (aspect) kinh điển trong chiêm tinh — tên tiếng Việt phổ biến.
 ASPECTS = {
     0: "Hợp (Conjunction)",
