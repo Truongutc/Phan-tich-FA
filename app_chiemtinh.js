@@ -55,11 +55,37 @@ function renderVerdictBanner(verdict) {
     if (detailEl) detailEl.textContent = verdict.detail;
 }
 
+function _findPressureTurningPoints(scores, threshold) {
+    // Thuật toán zigzag chuẩn: xác nhận 1 đỉnh/đáy khi đảo chiều đủ lớn (>= threshold)
+    const points = [];
+    let trend = 0; // 0=chưa rõ, 1=đang tăng, -1=đang giảm
+    let extremeIdx = 0;
+    let extremeVal = scores[0];
+    for (let i = 1; i < scores.length; i++) {
+        const v = scores[i];
+        if (trend >= 0 && v >= extremeVal) {
+            extremeVal = v; extremeIdx = i; trend = 1;
+        } else if (trend <= 0 && v <= extremeVal) {
+            extremeVal = v; extremeIdx = i; trend = -1;
+        } else if (trend === 1 && (extremeVal - v) >= threshold) {
+            points.push({ idx: extremeIdx, type: 'peak' });
+            trend = -1; extremeVal = v; extremeIdx = i;
+        } else if (trend === -1 && (v - extremeVal) >= threshold) {
+            points.push({ idx: extremeIdx, type: 'trough' });
+            trend = 1; extremeVal = v; extremeIdx = i;
+        }
+    }
+    if (extremeIdx !== (points.length ? points[points.length - 1].idx : -1)) {
+        points.push({ idx: extremeIdx, type: trend === -1 ? 'trough' : 'peak' });
+    }
+    return points;
+}
+
 function renderPressureChart(series) {
     const container = document.getElementById('astro-pressure-chart-container');
     if (!container || !series || !series.length) return;
 
-    const w = 900, h = 220, padL = 40, padR = 10, padT = 10, padB = 24;
+    const w = 900, h = 250, padL = 40, padR = 10, padT = 26, padB = 24;
     const scores = series.map(p => p.score);
     const minS = Math.min(...scores, 0), maxS = Math.max(...scores, 0);
     const range = (maxS - minS) || 1;
@@ -68,15 +94,22 @@ function renderPressureChart(series) {
     const xAt = i => padL + (i / (series.length - 1)) * plotW;
     const yAt = s => padT + plotH - ((s - minS) / range) * plotH;
     const zeroY = yAt(0);
+    const UP = '#10b981', DOWN = '#ef4444';
 
     const linePoints = series.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p.score).toFixed(1)}`).join(' ');
     const areaPoints = `${padL.toFixed(1)},${zeroY.toFixed(1)} ` + linePoints + ` ${xAt(series.length - 1).toFixed(1)},${zeroY.toFixed(1)}`;
 
     let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
     svg += `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${w - padR}" y2="${zeroY.toFixed(1)}" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,4"/>`;
-    svg += `<polygon points="${areaPoints}" fill="#8b5cf622"/>`;
-    svg += `<polyline points="${linePoints}" fill="none" stroke="#8b5cf6" stroke-width="2"/>`;
-    // Nhãn ngày mỗi ~10 ngày
+    svg += `<polygon points="${areaPoints}" fill="#8b5cf615"/>`;
+
+    // Vẽ từng đoạn line, tô màu theo chiều tăng/giảm so với ngày trước
+    for (let i = 0; i < series.length - 1; i++) {
+        const rising = scores[i + 1] >= scores[i];
+        svg += `<line x1="${xAt(i).toFixed(1)}" y1="${yAt(scores[i]).toFixed(1)}" x2="${xAt(i + 1).toFixed(1)}" y2="${yAt(scores[i + 1]).toFixed(1)}" stroke="${rising ? UP : DOWN}" stroke-width="2.5"/>`;
+    }
+
+    // Lưới ngày trục hoành (mỗi ~10 ngày)
     series.forEach((p, i) => {
         if (i % 10 === 0 || i === series.length - 1) {
             const x = xAt(i);
@@ -84,6 +117,24 @@ function renderPressureChart(series) {
             svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(p.date).slice(0, 5)}</text>`;
         }
     });
+
+    // Đánh dấu ngày tại các đỉnh/đáy đảo chiều đáng kể (lọc nhiễu bằng ngưỡng biên độ)
+    const threshold = Math.max(range * 0.15, 0.5);
+    const turningPoints = _findPressureTurningPoints(scores, threshold);
+    turningPoints.forEach(({ idx, type }) => {
+        const x = xAt(idx), y = yAt(scores[idx]);
+        const isPeak = type === 'peak';
+        const color = isPeak ? UP : DOWN;
+        const label = _fmtDate(series[idx].date);
+        let labelY = isPeak ? y - 12 : y + 20;
+        labelY = Math.min(Math.max(labelY, padT + 8), h - padB - 4);
+        const boxW = label.length * 5.6 + 8;
+        const labelX = Math.min(Math.max(x, padL + boxW / 2), w - padR - boxW / 2);
+        svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${color}" stroke="#111827" stroke-width="1"/>`;
+        svg += `<rect x="${(labelX - boxW / 2).toFixed(1)}" y="${(labelY - 10).toFixed(1)}" width="${boxW.toFixed(1)}" height="13" rx="3" fill="#111827cc"/>`;
+        svg += `<text x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}" fill="${color}" font-size="10" font-weight="600" text-anchor="middle">${label}</text>`;
+    });
+
     svg += `<text x="${padL - 6}" y="${padT + 4}" fill="#9ca3af" font-size="10" text-anchor="end">${maxS.toFixed(1)}</text>`;
     svg += `<text x="${padL - 6}" y="${(h - padB).toFixed(1)}" fill="#9ca3af" font-size="10" text-anchor="end">${minS.toFixed(1)}</text>`;
     svg += `</svg>`;
