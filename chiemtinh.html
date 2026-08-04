@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIC FA — Chiêm Tinh Tài Chính</title>
+    <meta name="description" content="Chiêm tinh Tài chính — vị trí hành tinh, góc chiếu, chu kỳ, nhật/nguyệt thực (tính toán thiên văn thật)">
+
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="shortcut icon" type="image/png" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.2">
+
+    <style>
+        .astro-caveat {
+            background: rgba(245, 158, 11, 0.08); border-left: 4px solid #f59e0b;
+            border-radius: 8px; padding: 12px 16px; font-size: 0.85em; line-height: 1.6;
+            color: var(--text-muted, #9ca3af); margin-top: 10px;
+        }
+        .astro-table { border-collapse: collapse; width: 100%; font-size: 0.88em; margin-top: 10px; }
+        .astro-table th, .astro-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.07)); }
+        .astro-table th { color: var(--text-muted, #9ca3af); font-weight: 600; font-size: 0.9em; }
+        .astro-table td.num { text-align: right; font-family: 'Outfit', sans-serif; }
+        .astro-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.85em; font-weight: 700; }
+        .astro-badge.hard { background: #ef444422; color: #ef4444; }
+        .astro-badge.soft { background: #10b98122; color: #10b981; }
+        .astro-badge.solar { background: #f59e0b22; color: #f59e0b; }
+        .astro-badge.lunar { background: #8b5cf622; color: #8b5cf6; }
+        .astro-cycle-tool { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-top: 12px; }
+        .astro-cycle-tool label { display: block; font-size: 0.8em; color: var(--text-muted, #9ca3af); margin-bottom: 4px; }
+        .astro-cycle-tool input, .astro-cycle-tool select {
+            background: var(--bg-card-hover, #1f2937); border: 1px solid var(--border-color, #333);
+            color: var(--text-main, #f3f4f6); border-radius: 8px; padding: 8px 10px; font-size: 0.9em;
+        }
+        .astro-generated-note { font-size: 0.75em; color: var(--text-muted, #6b7280); margin-top: 10px; }
+        .astro-section-title { font-size: 0.95em; font-weight: 700; margin: 16px 0 4px; color: var(--text-main, #f3f4f6); }
+        .border-purple { border-left-color: #8b5cf6 !important; }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <header class="top-navbar">
+        <button class="logo-btn" onclick="location.href='index.html'" title="Trang chủ">
+            <img src="logoaic.png" alt="AIC Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-title">AIC FA SYSTEM</span>
+                <span class="logo-sub">Hệ thống Phân Tích Cơ Bản</span>
+            </div>
+        </button>
+        <div class="nav-breadcrumb">
+            <span class="breadcrumb-home" style="cursor:pointer" onclick="location.href='index.html'">Tổng quan</span>
+            <span class="breadcrumb-sep">›</span>
+            <span class="breadcrumb-sector" style="color:#8b5cf6">🔮 Chiêm Tinh Tài Chính</span>
+        </div>
+        <a href="https://aic-proweb.vercel.app/" class="home-link-btn" title="Về trang chủ AIC Pro Web">
+            <span class="home-link-icon">🏠</span>
+            <span>HOME</span>
+        </a>
+    </header>
+
+    <main class="view" style="display:flex">
+
+        <!-- Header Card -->
+        <div class="card header-card">
+            <div class="sector-ribbon" style="background:#8b5cf6">CHIÊM TINH TÀI CHÍNH</div>
+            <div class="header-main">
+                <div class="header-info">
+                    <h2>Chiêm Tinh Tài Chính — Chu kỳ, Góc chiếu & Nhật/Nguyệt thực</h2>
+                    <p class="subtitle">Vị trí hành tinh và ngày nhật/nguyệt thực TÍNH TOÁN THIÊN VĂN THẬT (thư viện ephem) — cập nhật hàng ngày</p>
+                </div>
+            </div>
+            <div class="astro-caveat">
+                ⚠ <b>Lưu ý:</b> đây là khung lý thuyết chiêm tinh tài chính (financial astrology) /
+                W.D. Gann. Vị trí hành tinh, góc chiếu, ngày nhật/nguyệt thực dưới đây là <b>chính
+                xác về mặt thiên văn học</b> (tính bằng thư viện thiên văn ephem, đã đối chiếu khớp
+                các nhật thực thật đã biết). Tuy nhiên, mối liên hệ giữa các hiện tượng này với biến
+                động thị trường tài chính <b>KHÔNG được khoa học/tài chính chính thống kiểm chứng</b>
+                — đây là công cụ tham khảo/nghiên cứu cá nhân, không phải khuyến nghị đầu tư.
+            </div>
+            <p class="astro-generated-note" id="astro-generated-at"></p>
+        </div>
+
+        <!-- Buổi 1 -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">🪐 Buổi 1 — Kiến thức cơ bản về Chiêm tinh Tài chính</h3>
+            <p class="astro-section-title">Khái niệm cơ bản về hành tinh</p>
+            <p class="vimo-synthesis-text">Mỗi hành tinh trong chiêm tinh tài chính được gán một "chất" ảnh hưởng khác nhau tới thị trường: Mặt Trời — xu hướng chính/niềm tin; Mặt Trăng — tâm lý đám đông, biến động ngắn hạn; Sao Thủy — thông tin, thanh khoản, giao dịch; Sao Kim — giá trị tài sản, hàng tiêu dùng; Sao Hỏa — biến động mạnh, đầu cơ; Sao Mộc — mở rộng, tăng trưởng; Sao Thổ — thắt chặt, kỷ luật, khủng hoảng; Sao Thiên Vương — biến động đột ngột, công nghệ; Sao Hải Vương — bong bóng, ảo tưởng định giá; Sao Diêm Vương — biến đổi cấu trúc dài hạn.</p>
+            <p class="astro-section-title">Khái niệm cơ bản về cung hoàng đạo</p>
+            <p class="vimo-synthesis-text">Vòng hoàng đạo (ecliptic, quỹ đạo biểu kiến Mặt Trời quanh Trái Đất) chia thành 12 cung, mỗi cung 30° — mỗi cung mang 1 yếu tố (Lửa/Đất/Khí/Nước) và 1 tính chất (Khai mở/Cố định/Biến động) quyết định cách năng lượng hành tinh biểu hiện khi đi qua cung đó.</p>
+            <div class="ind-note" id="astro-sun-moon-today" style="margin-top:8px"></div>
+        </div>
+
+        <!-- Buổi 2 -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">🔁 Buổi 2 — Kiến thức về Chu kỳ</h3>
+            <p class="vimo-synthesis-text">Lý thuyết chu kỳ trong chiêm tinh tài chính cho rằng thị trường lặp lại biến động theo các khoảng thời gian tương đối đều đặn tính từ một mốc quan trọng (thường là đáy/đỉnh lớn) — gồm chu kỳ chính (Major Cycle, dài hạn), chu kỳ sơ cấp (ngắn hơn), và 2 chu kỳ được dùng phổ biến nhất: <b>chu kỳ 50 tuần</b> và <b>chu kỳ 4 năm</b>. Mốc neo (ngày bắt đầu đếm) do người phân tích tự chọn — không có 1 mốc "đúng" duy nhất, nên công cụ dưới đây để bạn tự nhập mốc neo của riêng mình.</p>
+            <div class="astro-cycle-tool">
+                <div>
+                    <label for="cycle-anchor">Ngày mốc (đáy/đỉnh lớn)</label>
+                    <input type="date" id="cycle-anchor">
+                </div>
+                <div>
+                    <label for="cycle-length">Chu kỳ</label>
+                    <select id="cycle-length">
+                        <option value="50w">50 tuần</option>
+                        <option value="4y">4 năm</option>
+                        <option value="custom">Tùy chỉnh (số tuần)</option>
+                    </select>
+                </div>
+                <div id="cycle-custom-wrap" style="display:none">
+                    <label for="cycle-custom-weeks">Số tuần</label>
+                    <input type="number" id="cycle-custom-weeks" min="1" value="13" style="width:80px">
+                </div>
+                <button class="btn btn-primary" id="cycle-calc-btn" style="height:38px">Tính mốc chu kỳ</button>
+            </div>
+            <div id="cycle-result" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Buổi 3 -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">🌐 Buổi 3 — Chu kỳ và Dấu hiệu Địa tâm</h3>
+            <p class="vimo-synthesis-text">"Địa tâm" (geocentric) nghĩa là vị trí hành tinh quan sát TỪ TRÁI ĐẤT (khác vị trí nhật tâm/heliocentric quan sát từ Mặt Trời) — đây là hệ tọa độ chiêm tinh tài chính truyền thống sử dụng để định thời điểm thị trường.</p>
+            <p class="astro-section-title">Vị trí địa tâm hiện tại</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-positions-table"></table></div>
+            <p class="astro-section-title">Góc chiếu (aspect) đang hoạt động (orb ≤ 3°)</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-current-aspects-table"></table></div>
+        </div>
+
+        <!-- Buổi 4 -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">⏱️ Buổi 4 — Phương pháp Super Timing của W.D. Gann</h3>
+            <p class="vimo-synthesis-text">W.D. Gann sử dụng góc chiếu chính xác giữa các hành tinh để tìm "ngày cửa sổ thời gian" (time window) có khả năng đảo chiều thị trường cao hơn. Bảng dưới liệt kê các ngày góc chiếu "cứng" (hợp/vuông/xung — được coi là biến động mạnh hơn góc "mềm") sắp CHÍNH XÁC trong 90 ngày tới, giữa các hành tinh từ Sao Thủy trở ra (không gồm Mặt Trăng do di chuyển quá nhanh, tạo góc chiếu liên tục ít ý nghĩa cho mốc thời gian nhiều ngày). Đây là cách diễn giải PHỔ BIẾN của lý thuyết timing theo góc chiếu — không phải công thức độc quyền của một khóa học cụ thể nào.</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-upcoming-aspects-table"></table></div>
+        </div>
+
+        <!-- Buổi 5 -->
+        <div class="card margin-top-20">
+            <h3 class="border-purple">🌑 Buổi 5 — Phương pháp Hiện tượng Che khuất (Nhật thực, Nguyệt thực)</h3>
+            <p class="vimo-synthesis-text">Nhiều nhà phân tích chiêm tinh tài chính coi ngày nhật thực/nguyệt thực là các "mốc thời gian động" lớn — thời điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường. Bảng dưới liệt kê ngày nhật thực/nguyệt thực thật trong 12 tháng tới (tính bằng thiên văn học, đã đối chiếu khớp các nhật thực đã biết).</p>
+            <div style="overflow-x:auto"><table class="astro-table" id="astro-eclipses-table"></table></div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 AIC Group — Hệ thống vận hành nội bộ phục vụ phân tích đầu tư.</p>
+    </footer>
+
+</div>
+<script src="app_chiemtinh.js?v=1"></script>
+<script src="access-gate.js"></script>
+</body>
+</html>

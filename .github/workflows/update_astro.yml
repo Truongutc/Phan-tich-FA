@@ -1,0 +1,74 @@
+name: Cập nhật Chiêm tinh Tài chính
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * *'   # 08:00 giờ Việt Nam (UTC+7) hàng ngày — vị trí hành tinh đổi theo ngày
+
+permissions:
+  contents: write
+
+jobs:
+  update-astro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ephem
+
+      - name: Tính toán dữ liệu chiêm tinh (vị trí hành tinh, góc chiếu, nhật/nguyệt thực)
+        run: python template_astro.py
+
+      - name: Commit và push kết quả
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/astro.json 2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "Không có thay đổi để commit."
+          else
+            git commit -m "Auto-update: Chiêm tinh Tài chính — $(date +'%Y-%m-%d')"
+
+            PUSHED=0
+            for i in 1 2 3; do
+              git fetch origin master
+              if git rebase origin/master; then
+                if git push origin HEAD:master; then
+                  PUSHED=1
+                  break
+                fi
+              else
+                git rebase --abort
+              fi
+              echo "Push attempt $i failed, retrying..."
+              sleep 10
+            done
+
+            if [ "$PUSHED" != "1" ]; then
+              echo "::error::Could not push chiêm tinh update after 3 attempts."
+              exit 1
+            fi
+          fi
+
+      # QUAN TRỌNG: push tạo bởi GITHUB_TOKEN mặc định KHÔNG kích hoạt workflow "on: push" khác —
+      # gọi thẳng deploy_pages.yml để site GitHub Pages có data/astro.json mới ngay.
+      - name: Trigger GitHub Pages redeploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy_pages.yml --ref ${{ github.ref_name }}

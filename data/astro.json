@@ -1,0 +1,204 @@
+{
+  "generatedAt": "2026-08-04 02:28 UTC",
+  "positions": [
+    {
+      "name": "Mặt Trời",
+      "lon": 131.39,
+      "sign": "Sư Tử",
+      "degInSign": 11.39,
+      "retrograde": false
+    },
+    {
+      "name": "Mặt Trăng",
+      "lon": 16.05,
+      "sign": "Bạch Dương",
+      "degInSign": 16.05,
+      "retrograde": false
+    },
+    {
+      "name": "Sao Thủy",
+      "lon": 112.11,
+      "sign": "Cự Giải",
+      "degInSign": 22.11,
+      "retrograde": false
+    },
+    {
+      "name": "Sao Kim",
+      "lon": 176.89,
+      "sign": "Xử Nữ",
+      "degInSign": 26.89,
+      "retrograde": false
+    },
+    {
+      "name": "Sao Hỏa",
+      "lon": 84.79,
+      "sign": "Song Tử",
+      "degInSign": 24.79,
+      "retrograde": false
+    },
+    {
+      "name": "Sao Mộc",
+      "lon": 127.28,
+      "sign": "Sư Tử",
+      "degInSign": 7.28,
+      "retrograde": false
+    },
+    {
+      "name": "Sao Thổ",
+      "lon": 14.31,
+      "sign": "Bạch Dương",
+      "degInSign": 14.31,
+      "retrograde": true
+    },
+    {
+      "name": "Sao Thiên Vương",
+      "lon": 64.74,
+      "sign": "Song Tử",
+      "degInSign": 4.74,
+      "retrograde": false
+    },
+    {
+      "name": "Sao Hải Vương",
+      "lon": 3.84,
+      "sign": "Bạch Dương",
+      "degInSign": 3.84,
+      "retrograde": true
+    },
+    {
+      "name": "Sao Diêm Vương",
+      "lon": 303.72,
+      "sign": "Bảo Bình",
+      "degInSign": 3.72,
+      "retrograde": true
+    }
+  ],
+  "currentAspects": [
+    {
+      "a": "Sao Hải Vương",
+      "b": "Sao Diêm Vương",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 0.12
+    },
+    {
+      "a": "Sao Thiên Vương",
+      "b": "Sao Hải Vương",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 0.9
+    },
+    {
+      "a": "Sao Thiên Vương",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)",
+      "angle": 120,
+      "orb": 1.02
+    },
+    {
+      "a": "Mặt Trăng",
+      "b": "Sao Thổ",
+      "aspect": "Hợp (Conjunction)",
+      "angle": 0,
+      "orb": 1.74
+    },
+    {
+      "a": "Sao Kim",
+      "b": "Sao Hỏa",
+      "aspect": "Vuông (Square)",
+      "angle": 90,
+      "orb": 2.1
+    },
+    {
+      "a": "Sao Mộc",
+      "b": "Sao Thiên Vương",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 2.54
+    },
+    {
+      "a": "Mặt Trời",
+      "b": "Sao Thổ",
+      "aspect": "Tam hợp (Trine)",
+      "angle": 120,
+      "orb": 2.92
+    }
+  ],
+  "upcomingAspects": [
+    {
+      "date": "2026-08-17",
+      "a": "Sao Hỏa",
+      "b": "Sao Hải Vương",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-08-28",
+      "a": "Sao Thủy",
+      "b": "Sao Thiên Vương",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-08-29",
+      "a": "Mặt Trời",
+      "b": "Sao Thiên Vương",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-09-01",
+      "a": "Sao Hỏa",
+      "b": "Sao Thổ",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-09-15",
+      "a": "Sao Kim",
+      "b": "Sao Diêm Vương",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-10-02",
+      "a": "Sao Thủy",
+      "b": "Sao Hỏa",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-10-02",
+      "a": "Sao Thủy",
+      "b": "Sao Diêm Vương",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-10-11",
+      "a": "Sao Kim",
+      "b": "Sao Hỏa",
+      "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-10-26",
+      "a": "Mặt Trời",
+      "b": "Sao Diêm Vương",
+      "aspect": "Vuông (Square)"
+    }
+  ],
+  "upcomingEclipses": [
+    {
+      "date": "2026-08-12",
+      "type": "solar"
+    },
+    {
+      "date": "2026-08-28",
+      "type": "lunar"
+    },
+    {
+      "date": "2027-02-06",
+      "type": "solar"
+    },
+    {
+      "date": "2027-02-20",
+      "type": "lunar"
+    },
+    {
+      "date": "2027-08-02",
+      "type": "solar"
+    }
+  ]
+}
