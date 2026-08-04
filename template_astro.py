@@ -15,7 +15,12 @@ import datetime
 import json
 import os
 
+import requests
+
 import fetch_astro_data as astro
+
+BACKTEST_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+               "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -248,6 +253,60 @@ def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations,
     return events
 
 
+def fetch_vnindex_price_history(days_back=380):
+    """Lấy lịch sử giá đóng cửa VN-Index theo ngày từ Vietcap IQ (API nội bộ, xem
+    .agents/skills/giaodichvietcap/SKILL.md) — dùng để đối chiếu (backtest) trực quan với chỉ số
+    áp lực/thuận lợi chiêm tinh, theo yêu cầu user (2026-08-04): "vẽ backtest lại trong 1 năm trở
+    lại đây để test". Trả list [{date, close}] tăng dần theo thời gian, hoặc [] nếu lỗi mạng
+    (fail-safe — không được làm hỏng phần dữ liệu chiêm tinh chính nếu API ngoài lỗi/đổi cấu trúc)."""
+    try:
+        s = requests.Session()
+        s.headers.update({
+            "User-Agent": BACKTEST_UA,
+            "Accept": "application/json, text/plain, */*",
+            "Referer": "https://trading.vietcap.com.vn/",
+        })
+        s.get("https://trading.vietcap.com.vn/iq/market?tab=information", timeout=15)
+        to_date = datetime.date.today()
+        from_date = to_date - datetime.timedelta(days=days_back)
+        url = "https://trading.vietcap.com.vn/api/iq-insight-service/v1/market-indices/history"
+        points = {}
+        page = 0
+        while page <= 10:
+            r = s.get(url, params={
+                "index": "VNINDEX", "page": page, "size": 100,
+                "fromDate": from_date.isoformat(), "toDate": to_date.isoformat(),
+            }, timeout=20)
+            r.raise_for_status()
+            payload = r.json()
+            if not payload.get("successful"):
+                break
+            content = payload.get("data", {}).get("content", [])
+            if not content:
+                break
+            for row in content:
+                d, c = row.get("tradingDate"), row.get("closeIndex")
+                if d and c is not None:
+                    points[d] = c
+            if len(content) < 100:
+                break
+            page += 1
+        return [{"date": d, "close": points[d]} for d in sorted(points)]
+    except Exception as e:
+        print(f"  [WARN] VNIndex price history (Vietcap) thất bại: {e}")
+        return []
+
+
+def build_backtest_data(days_back=365):
+    """Ghép chỉ số áp lực/thuận lợi chiêm tinh QUÁ KHỨ với giá đóng cửa VN-Index THẬT cùng khoảng
+    thời gian — user (2026-08-04) muốn tự quan sát trực quan có tương quan hay không. Đây là công
+    cụ KIỂM THỬ/tham khảo cá nhân, KHÔNG phải bằng chứng khoa học đã kiểm chứng."""
+    return {
+        "astro": astro.build_historical_pressure_series(days_back=days_back),
+        "vnindex": fetch_vnindex_price_history(days_back=days_back + 5),
+    }
+
+
 def build_astro_data():
     positions_raw = astro.get_planet_positions()
     signs = {name: astro.get_zodiac_sign(lon) for name, lon in positions_raw.items()}
@@ -285,6 +344,7 @@ def build_astro_data():
         },
         "currentAssessment": build_current_assessment(positions, current_aspects),
         "forecastTimeline": build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations),
+        "backtest": build_backtest_data(days_back=365),
     }
 
     json_path = os.path.join(PROJECT_ROOT, "data", "astro.json")
@@ -293,7 +353,8 @@ def build_astro_data():
     print(f"[OK] JSON: {json_path}")
     print(f"  -> {len(out['positions'])} hành tinh, {len(out['currentAspects'])} aspect hiện tại, "
           f"{len(out['upcomingAspects'])} aspect sắp tới, {len(out['upcomingEclipses'])} nhật/nguyệt thực, "
-          f"{len(out['retroStations'])} station, {len(out['forecastTimeline'])} sự kiện trong dòng thời gian dự báo")
+          f"{len(out['retroStations'])} station, {len(out['forecastTimeline'])} sự kiện trong dòng thời gian dự báo, "
+          f"backtest: {len(out['backtest']['astro'])} điểm chiêm tinh / {len(out['backtest']['vnindex'])} điểm VN-Index")
     return json_path
 
 

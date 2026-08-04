@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderHousesTable(data.positions, data.houses);
     renderVerdictBanner(data.marketVerdict);
     renderPressureChart(data.dailyPressure);
+    renderBacktestChart(data.backtest);
     renderAssessment(data.currentAssessment);
     renderForecastTimeline(data.forecastTimeline);
     initCycleTool();
@@ -137,6 +138,61 @@ function renderPressureChart(series) {
 
     svg += `<text x="${padL - 6}" y="${padT + 4}" fill="#9ca3af" font-size="10" text-anchor="end">${maxS.toFixed(1)}</text>`;
     svg += `<text x="${padL - 6}" y="${(h - padB).toFixed(1)}" fill="#9ca3af" font-size="10" text-anchor="end">${minS.toFixed(1)}</text>`;
+    svg += `</svg>`;
+    container.innerHTML = svg;
+}
+
+function renderBacktestChart(backtest) {
+    const card = document.getElementById('backtest-card');
+    const container = document.getElementById('astro-backtest-chart-container');
+    if (!card || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
+    card.style.display = 'block';
+
+    const astroSeries = backtest.astro;
+    const vnSeries = backtest.vnindex;
+
+    const w = 900, h = 260, padL = 46, padR = 46, padT = 14, padB = 24;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+
+    const t0 = new Date(astroSeries[0].date).getTime();
+    const t1 = new Date(astroSeries[astroSeries.length - 1].date).getTime();
+    const tRange = (t1 - t0) || 1;
+    const xAt = dateStr => padL + ((new Date(dateStr).getTime() - t0) / tRange) * plotW;
+
+    const astroScores = astroSeries.map(p => p.score);
+    const minA = Math.min(...astroScores), maxA = Math.max(...astroScores);
+    const rangeA = (maxA - minA) || 1;
+    const yAtAstro = s => padT + plotH - ((s - minA) / rangeA) * plotH;
+
+    const vnCloses = vnSeries.map(p => p.close);
+    const minV = Math.min(...vnCloses), maxV = Math.max(...vnCloses);
+    const rangeV = (maxV - minV) || 1;
+    const yAtVn = c => padT + plotH - ((c - minV) / rangeV) * plotH;
+
+    const astroPoints = astroSeries.map(p => `${xAt(p.date).toFixed(1)},${yAtAstro(p.score).toFixed(1)}`).join(' ');
+    const vnPoints = vnSeries.map(p => `${xAt(p.date).toFixed(1)},${yAtVn(p.close).toFixed(1)}`).join(' ');
+
+    let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
+
+    // Lưới ngày trục hoành (~mỗi 1 tháng)
+    const totalDays = Math.round(tRange / 86400000) || 1;
+    const step = Math.max(Math.round(totalDays / 12), 1);
+    for (let d = 0; d <= totalDays; d += step) {
+        const dt = new Date(t0 + d * 86400000);
+        const x = padL + (d / totalDays) * plotW;
+        svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
+        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(dt.toISOString().slice(0, 10)).slice(0, 5)}</text>`;
+    }
+
+    // Đường chỉ số chiêm tinh (tím, trục trái) + đường VN-Index thật (trắng, trục phải)
+    svg += `<polyline points="${astroPoints}" fill="none" stroke="#8b5cf6" stroke-width="1.5" opacity="0.85"/>`;
+    svg += `<polyline points="${vnPoints}" fill="none" stroke="#e5e7eb" stroke-width="2"/>`;
+
+    svg += `<text x="${padL - 6}" y="${padT + 4}" fill="#8b5cf6" font-size="10" text-anchor="end">${maxA.toFixed(1)}</text>`;
+    svg += `<text x="${padL - 6}" y="${(h - padB).toFixed(1)}" fill="#8b5cf6" font-size="10" text-anchor="end">${minA.toFixed(1)}</text>`;
+    svg += `<text x="${w - padR + 6}" y="${padT + 4}" fill="#e5e7eb" font-size="10" text-anchor="start">${maxV.toFixed(0)}</text>`;
+    svg += `<text x="${w - padR + 6}" y="${(h - padB).toFixed(1)}" fill="#e5e7eb" font-size="10" text-anchor="start">${minV.toFixed(0)}</text>`;
+
     svg += `</svg>`;
     container.innerHTML = svg;
 }

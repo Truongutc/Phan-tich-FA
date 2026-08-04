@@ -117,6 +117,13 @@
             <div id="astro-pressure-chart-container"></div>
         </div>
 
+        <!-- Backtest: đối chiếu chỉ số chiêm tinh với VN-Index thật 1 năm qua -->
+        <div class="card margin-top-20" id="backtest-card" style="display:none">
+            <h3 class="border-purple">🧪 Backtest: Đối chiếu với VN-Index Thật (1 năm qua)</h3>
+            <p class="vimo-synthesis-text">Kiểm thử trực quan: đường <span style="color:#e5e7eb;font-weight:600">trắng</span> là VN-Index THẬT (đóng cửa mỗi phiên, nguồn Vietcap), đường <span style="color:#8b5cf6;font-weight:600">tím</span> là chỉ số áp lực/thuận lợi chiêm tinh cùng khoảng thời gian (cách tính giống hệt biểu đồ dự báo phía trên, chỉ khác là tính NGƯỢC cho quá khứ). Tự quan sát 2 đường có xu hướng đi cùng chiều hay không — đây là công cụ kiểm thử cá nhân, <b>KHÔNG phải bằng chứng khoa học đã kiểm chứng</b>, mẫu 1 năm là quá ngắn để kết luận chắc chắn về tương quan.</p>
+            <div id="astro-backtest-chart-container"></div>
+        </div>
+
         <!-- Biểu đồ sao -->
         <div class="card margin-top-20">
             <h3 class="border-purple">🌌 Biểu đồ Vị trí Hành tinh (Sơ đồ vòng hoàng đạo & Nhà)</h3>
@@ -152,7 +159,8 @@
         <!-- Dự báo giai đoạn tới -->
         <div class="card margin-top-20" id="forecast-card" style="display:none">
             <h3 class="border-purple">📅 Dự báo Giai đoạn Tới (90 ngày)</h3>
-            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. Đây là các mốc NGÀY CHÍNH XÁC (exact) — ảnh hưởng thực tế thường trải dài vài ngày quanh mốc đó (xem biểu đồ Áp lực/Thuận lợi liên tục ở trên để biết diễn biến GIỮA 2 mốc). <span class="astro-sentiment-positive">Chữ xanh</span> = theo lý thuyết truyền thống thường thuận lợi; <span class="astro-sentiment-tension">chữ cam</span> = CĂNG THẲNG/biến động mạnh (KHÔNG khẳng định tăng hay giảm — góc vuông/xung chỉ báo hiệu biến động, không có chiều rõ ràng theo đúng lý thuyết); <span class="astro-sentiment-negative">chữ đỏ</span> = tín hiệu tương đối một chiều theo lý thuyết truyền thống (hành tinh bắt đầu nghịch hành).</p>
+            <p class="vimo-synthesis-text" style="background:#8b5cf615;padding:10px 12px;border-radius:6px;border-left:3px solid #8b5cf6">⚠️ <b>Đọc bảng này ĐÚNG CÁCH:</b> mỗi dòng chỉ là 1 sự kiện RIÊNG LẺ, màu sắc phản ánh bản chất TRUYỀN THỐNG của riêng góc chiếu/sự kiện đó khi đứng MỘT MÌNH — không phải dự báo "thị trường sẽ đi lên/xuống kể từ ngày này". Nhiều sự kiện có thể cùng lúc kéo 2 hướng khác nhau. <b>Biểu đồ Áp lực/Thuận lợi ở mục "Kết luận Tổng thể" phía trên mới là con số TỔNG HỢP đã cộng dồn tất cả sự kiện cùng lúc</b> — đó mới là thứ quyết định xu hướng chung; bảng dưới đây chỉ để xem CHI TIẾT từng thành phần góp phần tạo nên đường đó.</p>
+            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. Đây là các mốc NGÀY CHÍNH XÁC (exact) — ảnh hưởng thực tế thường trải dài vài ngày quanh mốc đó. <span class="astro-sentiment-positive">Chữ xanh</span> = theo lý thuyết truyền thống thường thuận lợi; <span class="astro-sentiment-tension">chữ cam</span> = CĂNG THẲNG/biến động mạnh (KHÔNG khẳng định tăng hay giảm — góc vuông/xung chỉ báo hiệu biến động, không có chiều rõ ràng theo đúng lý thuyết); <span class="astro-sentiment-negative">chữ đỏ</span> = tín hiệu tương đối một chiều theo lý thuyết truyền thống (hành tinh bắt đầu nghịch hành).</p>
             <div style="overflow-x:auto"><table class="astro-table" id="astro-forecast-table"></table></div>
         </div>
 
@@ -189,7 +197,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=6"></script>
+<script src="app_chiemtinh.js?v=7"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

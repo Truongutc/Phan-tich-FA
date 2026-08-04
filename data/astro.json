@@ -1,51 +1,51 @@
 {
-  "generatedAt": "2026-08-04 07:25 UTC",
+  "generatedAt": "2026-08-04 08:30 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 131.59,
+      "lon": 131.63,
       "sign": "Sư Tử",
-      "degInSign": 11.59,
+      "degInSign": 11.63,
       "retrograde": false,
       "house": 8
     },
     {
       "name": "Mặt Trăng",
-      "lon": 18.81,
+      "lon": 19.42,
       "sign": "Bạch Dương",
-      "degInSign": 18.81,
+      "degInSign": 19.42,
       "retrograde": false,
-      "house": 5
+      "house": 4
     },
     {
       "name": "Sao Thủy",
-      "lon": 112.34,
+      "lon": 112.39,
       "sign": "Cự Giải",
-      "degInSign": 22.34,
+      "degInSign": 22.39,
       "retrograde": false,
-      "house": 8
+      "house": 7
     },
     {
       "name": "Sao Kim",
-      "lon": 177.1,
+      "lon": 177.14,
       "sign": "Xử Nữ",
-      "degInSign": 27.1,
+      "degInSign": 27.14,
       "retrograde": false,
       "house": 10
     },
     {
       "name": "Sao Hỏa",
-      "lon": 84.93,
+      "lon": 84.96,
       "sign": "Song Tử",
-      "degInSign": 24.93,
+      "degInSign": 24.96,
       "retrograde": false,
-      "house": 7
+      "house": 6
     },
     {
       "name": "Sao Mộc",
-      "lon": 127.33,
+      "lon": 127.34,
       "sign": "Sư Tử",
-      "degInSign": 7.33,
+      "degInSign": 7.34,
       "retrograde": false,
       "house": 8
     },
@@ -55,7 +55,7 @@
       "sign": "Bạch Dương",
       "degInSign": 14.31,
       "retrograde": true,
-      "house": 5
+      "house": 4
     },
     {
       "name": "Sao Thiên Vương",
@@ -112,7 +112,7 @@
       "b": "Sao Hỏa",
       "aspect": "Vuông (Square)",
       "angle": 90,
-      "orb": 2.17,
+      "orb": 2.18,
       "applying": false
     },
     {
@@ -120,7 +120,7 @@
       "b": "Sao Thiên Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 2.59,
+      "orb": 2.6,
       "applying": false
     },
     {
@@ -128,8 +128,16 @@
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 2.72,
+      "orb": 2.68,
       "applying": true
+    },
+    {
+      "a": "Mặt Trăng",
+      "b": "Sao Thủy",
+      "aspect": "Vuông (Square)",
+      "angle": 90,
+      "orb": 2.97,
+      "applying": false
     }
   ],
   "upcomingAspects": [
@@ -207,15 +215,15 @@
     },
     {
       "date": "2026-09-01",
-      "a": "Sao Hỏa",
-      "b": "Sao Thổ",
-      "aspect": "Vuông (Square)"
-    },
-    {
-      "date": "2026-09-01",
       "a": "Sao Thủy",
       "b": "Sao Hỏa",
       "aspect": "Lục phân (Sextile)"
+    },
+    {
+      "date": "2026-09-01",
+      "a": "Sao Hỏa",
+      "b": "Sao Thổ",
+      "aspect": "Vuông (Square)"
     },
     {
       "date": "2026-09-12",
@@ -230,7 +238,7 @@
       "aspect": "Tam hợp (Trine)"
     },
     {
-      "date": "2026-09-15",
+      "date": "2026-09-14",
       "a": "Mặt Trời",
       "b": "Sao Hỏa",
       "aspect": "Lục phân (Sextile)"
@@ -272,7 +280,7 @@
       "aspect": "Vuông (Square)"
     },
     {
-      "date": "2026-10-03",
+      "date": "2026-10-02",
       "a": "Sao Thủy",
       "b": "Sao Diêm Vương",
       "aspect": "Vuông (Square)"
@@ -361,139 +369,139 @@
   "dailyPressure": [
     {
       "date": "2026-08-04",
-      "score": 2.163
+      "score": 2.172
     },
     {
       "date": "2026-08-05",
-      "score": 2.378
+      "score": 2.388
     },
     {
       "date": "2026-08-06",
-      "score": 2.648
+      "score": 2.668
     },
     {
       "date": "2026-08-07",
-      "score": 2.973
+      "score": 2.978
     },
     {
       "date": "2026-08-08",
-      "score": 3.057
+      "score": 3.06
     },
     {
       "date": "2026-08-09",
-      "score": 3.098
+      "score": 3.112
     },
     {
       "date": "2026-08-10",
-      "score": 3.467
+      "score": 3.485
     },
     {
       "date": "2026-08-11",
-      "score": 3.857
+      "score": 3.865
     },
     {
       "date": "2026-08-12",
-      "score": 4.317
+      "score": 4.325
     },
     {
       "date": "2026-08-13",
-      "score": 4.235
+      "score": 4.223
     },
     {
       "date": "2026-08-14",
-      "score": 3.788
+      "score": 3.762
     },
     {
       "date": "2026-08-15",
-      "score": 3.44
+      "score": 3.417
     },
     {
       "date": "2026-08-16",
-      "score": 3.045
+      "score": 3.033
     },
     {
       "date": "2026-08-17",
-      "score": 2.923
+      "score": 2.917
     },
     {
       "date": "2026-08-18",
-      "score": 2.382
+      "score": 2.34
     },
     {
       "date": "2026-08-19",
-      "score": 1.653
+      "score": 1.623
     },
     {
       "date": "2026-08-20",
-      "score": 1.058
+      "score": 1.037
     },
     {
       "date": "2026-08-21",
-      "score": 0.793
+      "score": 0.785
     },
     {
       "date": "2026-08-22",
-      "score": 0.897
+      "score": 0.908
     },
     {
       "date": "2026-08-23",
-      "score": 0.972
+      "score": 0.973
     },
     {
       "date": "2026-08-24",
-      "score": 0.933
+      "score": 0.932
     },
     {
       "date": "2026-08-25",
-      "score": 0.827
+      "score": 0.807
     },
     {
       "date": "2026-08-26",
-      "score": 0.408
+      "score": 0.39
     },
     {
       "date": "2026-08-27",
-      "score": -0.008
+      "score": -0.03
     },
     {
       "date": "2026-08-28",
-      "score": -0.372
+      "score": -0.357
     },
     {
       "date": "2026-08-29",
-      "score": 0.102
+      "score": 0.128
     },
     {
       "date": "2026-08-30",
-      "score": 0.77
+      "score": 0.793
     },
     {
       "date": "2026-08-31",
-      "score": 1.437
+      "score": 1.463
     },
     {
       "date": "2026-09-01",
-      "score": 1.777
+      "score": 1.792
     },
     {
       "date": "2026-09-02",
-      "score": 1.933
+      "score": 1.937
     },
     {
       "date": "2026-09-03",
-      "score": 2.007
+      "score": 2.01
     },
     {
       "date": "2026-09-04",
-      "score": 2.067
+      "score": 2.063
     },
     {
       "date": "2026-09-05",
-      "score": 1.988
+      "score": 1.985
     },
     {
       "date": "2026-09-06",
-      "score": 1.92
+      "score": 1.917
     },
     {
       "date": "2026-09-07",
@@ -501,7 +509,7 @@
     },
     {
       "date": "2026-09-08",
-      "score": 1.893
+      "score": 1.895
     },
     {
       "date": "2026-09-09",
@@ -509,71 +517,71 @@
     },
     {
       "date": "2026-09-10",
-      "score": 1.902
+      "score": 1.895
     },
     {
       "date": "2026-09-11",
-      "score": 1.627
+      "score": 1.635
     },
     {
       "date": "2026-09-12",
-      "score": 1.803
+      "score": 1.81
     },
     {
       "date": "2026-09-13",
-      "score": 1.97
+      "score": 1.98
     },
     {
       "date": "2026-09-14",
-      "score": 2.052
+      "score": 2.035
     },
     {
       "date": "2026-09-15",
-      "score": 1.49
+      "score": 1.458
     },
     {
       "date": "2026-09-16",
-      "score": 0.848
+      "score": 0.823
     },
     {
       "date": "2026-09-17",
-      "score": 0.283
+      "score": 0.257
     },
     {
       "date": "2026-09-18",
-      "score": 0.038
+      "score": 0.03
     },
     {
       "date": "2026-09-19",
-      "score": 0.438
+      "score": 0.46
     },
     {
       "date": "2026-09-20",
-      "score": 0.882
+      "score": 0.902
     },
     {
       "date": "2026-09-21",
-      "score": 1.322
+      "score": 1.34
     },
     {
       "date": "2026-09-22",
-      "score": 1.562
+      "score": 1.547
     },
     {
       "date": "2026-09-23",
-      "score": 1.422
+      "score": 1.42
     },
     {
       "date": "2026-09-24",
-      "score": 1.368
+      "score": 1.367
     },
     {
       "date": "2026-09-25",
-      "score": 1.223
+      "score": 1.215
     },
     {
       "date": "2026-09-26",
-      "score": 1.075
+      "score": 1.068
     },
     {
       "date": "2026-09-27",
@@ -581,71 +589,71 @@
     },
     {
       "date": "2026-09-28",
-      "score": 1.1
+      "score": 1.107
     },
     {
       "date": "2026-09-29",
-      "score": 0.698
+      "score": 0.67
     },
     {
       "date": "2026-09-30",
-      "score": 0.06
+      "score": 0.035
     },
     {
       "date": "2026-10-01",
-      "score": -0.532
+      "score": -0.557
     },
     {
       "date": "2026-10-02",
-      "score": -1.142
+      "score": -1.168
     },
     {
       "date": "2026-10-03",
-      "score": -1.858
+      "score": -1.865
     },
     {
       "date": "2026-10-04",
-      "score": -1.902
+      "score": -1.903
     },
     {
       "date": "2026-10-05",
-      "score": -1.557
+      "score": -1.53
     },
     {
       "date": "2026-10-06",
-      "score": -1.095
+      "score": -1.072
     },
     {
       "date": "2026-10-07",
-      "score": -0.607
+      "score": -0.582
     },
     {
       "date": "2026-10-08",
-      "score": -0.332
+      "score": -0.322
     },
     {
       "date": "2026-10-09",
-      "score": -0.082
+      "score": -0.07
     },
     {
       "date": "2026-10-10",
-      "score": 0.123
+      "score": 0.132
     },
     {
       "date": "2026-10-11",
-      "score": 0.285
+      "score": 0.302
     },
     {
       "date": "2026-10-12",
-      "score": 0.602
+      "score": 0.617
     },
     {
       "date": "2026-10-13",
-      "score": 0.903
+      "score": 0.918
     },
     {
       "date": "2026-10-14",
-      "score": 1.202
+      "score": 1.212
     },
     {
       "date": "2026-10-15",
@@ -653,102 +661,102 @@
     },
     {
       "date": "2026-10-16",
-      "score": 1.607
+      "score": 1.595
     },
     {
       "date": "2026-10-17",
-      "score": 1.242
+      "score": 1.222
     },
     {
       "date": "2026-10-18",
-      "score": 0.795
+      "score": 0.778
     },
     {
       "date": "2026-10-19",
-      "score": 0.395
+      "score": 0.378
     },
     {
       "date": "2026-10-20",
-      "score": 0.01
+      "score": 0.0
     },
     {
       "date": "2026-10-21",
-      "score": -0.31
+      "score": -0.325
     },
     {
       "date": "2026-10-22",
-      "score": -0.635
+      "score": -0.653
     },
     {
       "date": "2026-10-23",
-      "score": -0.818
+      "score": -0.827
     },
     {
       "date": "2026-10-24",
-      "score": -1.363
+      "score": -1.368
     },
     {
       "date": "2026-10-25",
-      "score": -1.525
+      "score": -1.533
     },
     {
       "date": "2026-10-26",
-      "score": -1.707
+      "score": -1.705
     },
     {
       "date": "2026-10-27",
-      "score": -1.44
+      "score": -1.422
     },
     {
       "date": "2026-10-28",
-      "score": -1.108
+      "score": -1.092
     },
     {
       "date": "2026-10-29",
-      "score": -0.785
+      "score": -0.767
     },
     {
       "date": "2026-10-30",
-      "score": -0.462
+      "score": -0.453
     },
     {
       "date": "2026-10-31",
-      "score": -0.093
+      "score": -0.067
     },
     {
       "date": "2026-11-01",
-      "score": 0.453
+      "score": 0.478
     },
     {
       "date": "2026-11-02",
-      "score": 0.882
+      "score": 0.897
     }
   ],
   "marketVerdict": {
     "label": "✅ Đang THUẬN LỢI",
     "colorKey": "favorable",
-    "currentScore": 2.163,
-    "nearTermAvg": 3.382,
-    "trend": 1.219,
-    "detail": "Điểm áp lực/thuận lợi hôm nay: +2.16 · Trung bình 10 ngày tới: +3.38 (đang cải thiện +1.22 điểm). Điểm dương = nghiêng thuận lợi (nhiều góc chiếu hài hòa/ít nghịch hành), điểm âm = nghiêng áp lực (nhiều góc chiếu căng thẳng/nhiều hành tinh nghịch hành cùng lúc). Đây là chỉ số TỔNG HỢP nhiều tín hiệu cùng lúc, không phải chỉ 1 sự kiện đơn lẻ — có thể trái chiều với 1 sự kiện cụ thể trong bảng dự báo bên dưới nếu các tín hiệu khác đang mạnh hơn."
+    "currentScore": 2.172,
+    "nearTermAvg": 3.387,
+    "trend": 1.215,
+    "detail": "Điểm áp lực/thuận lợi hôm nay: +2.17 · Trung bình 10 ngày tới: +3.39 (đang cải thiện +1.22 điểm). Điểm dương = nghiêng thuận lợi (nhiều góc chiếu hài hòa/ít nghịch hành), điểm âm = nghiêng áp lực (nhiều góc chiếu căng thẳng/nhiều hành tinh nghịch hành cùng lúc). Đây là chỉ số TỔNG HỢP nhiều tín hiệu cùng lúc, không phải chỉ 1 sự kiện đơn lẻ — có thể trái chiều với 1 sự kiện cụ thể trong bảng dự báo bên dưới nếu các tín hiệu khác đang mạnh hơn."
   },
   "houses": {
     "locationName": "Hà Nội",
-    "ascendant": 252.41,
-    "midheaven": 169.12,
+    "ascendant": 266.98,
+    "midheaven": 186.85,
     "cusps": [
-      252.41,
-      282.41,
-      312.41,
-      342.41,
-      12.41,
-      42.41,
-      72.41,
-      102.41,
-      132.41,
-      162.41,
-      192.41,
-      222.41
+      266.98,
+      296.98,
+      326.98,
+      356.98,
+      26.98,
+      56.98,
+      86.98,
+      116.98,
+      146.98,
+      176.98,
+      206.98,
+      236.98
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
@@ -775,10 +783,7 @@
     "aspectLines": [],
     "houseLines": [
       "Mặt Trời đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"xu hướng chính, niềm tin thị trường\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
-      "Mặt Trăng đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"tâm lý đám đông, biến động ngắn hạn\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
-      "Sao Thủy đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"dòng thông tin, thanh khoản, hoạt động giao dịch\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
       "Sao Mộc đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"mở rộng, tăng trưởng, tâm lý lạc quan\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
-      "Sao Thổ đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
       "Sao Diêm Vương đang ở Nhà 2 (Tài sản/Tiền bạc — tài sản hữu hình, giá trị, dòng tiền cá nhân/doanh nghiệp) — chủ đề của hành tinh này (\"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\") đang được nhấn mạnh trong lĩnh vực Nhà 2."
     ]
   },
@@ -884,16 +889,16 @@
     {
       "date": "2026-09-01",
       "type": "aspect",
-      "title": "Sao Hỏa Vuông (Square) Sao Thổ",
-      "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "tension"
+      "title": "Sao Thủy Lục phân (Sextile) Sao Hỏa",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-09-01",
       "type": "aspect",
-      "title": "Sao Thủy Lục phân (Sextile) Sao Hỏa",
-      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
-      "sentiment": "positive"
+      "title": "Sao Hỏa Vuông (Square) Sao Thổ",
+      "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "sentiment": "tension"
     },
     {
       "date": "2026-09-10",
@@ -917,7 +922,7 @@
       "sentiment": "positive"
     },
     {
-      "date": "2026-09-15",
+      "date": "2026-09-14",
       "type": "aspect",
       "title": "Mặt Trời Lục phân (Sextile) Sao Hỏa",
       "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
@@ -966,7 +971,7 @@
       "sentiment": "tension"
     },
     {
-      "date": "2026-10-03",
+      "date": "2026-10-02",
       "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Diêm Vương",
       "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
@@ -1035,5 +1040,2483 @@
       "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension"
     }
-  ]
+  ],
+  "backtest": {
+    "astro": [
+      {
+        "date": "2025-08-04",
+        "score": 1.923
+      },
+      {
+        "date": "2025-08-05",
+        "score": 2.542
+      },
+      {
+        "date": "2025-08-06",
+        "score": 3.135
+      },
+      {
+        "date": "2025-08-07",
+        "score": 3.632
+      },
+      {
+        "date": "2025-08-08",
+        "score": 3.935
+      },
+      {
+        "date": "2025-08-09",
+        "score": 4.122
+      },
+      {
+        "date": "2025-08-10",
+        "score": 4.425
+      },
+      {
+        "date": "2025-08-11",
+        "score": 5.023
+      },
+      {
+        "date": "2025-08-12",
+        "score": 5.118
+      },
+      {
+        "date": "2025-08-13",
+        "score": 5.142
+      },
+      {
+        "date": "2025-08-14",
+        "score": 5.1
+      },
+      {
+        "date": "2025-08-15",
+        "score": 4.982
+      },
+      {
+        "date": "2025-08-16",
+        "score": 4.79
+      },
+      {
+        "date": "2025-08-17",
+        "score": 4.575
+      },
+      {
+        "date": "2025-08-18",
+        "score": 4.275
+      },
+      {
+        "date": "2025-08-19",
+        "score": 4.063
+      },
+      {
+        "date": "2025-08-20",
+        "score": 3.798
+      },
+      {
+        "date": "2025-08-21",
+        "score": 3.583
+      },
+      {
+        "date": "2025-08-22",
+        "score": 3.702
+      },
+      {
+        "date": "2025-08-23",
+        "score": 3.817
+      },
+      {
+        "date": "2025-08-24",
+        "score": 3.872
+      },
+      {
+        "date": "2025-08-25",
+        "score": 4.212
+      },
+      {
+        "date": "2025-08-26",
+        "score": 4.407
+      },
+      {
+        "date": "2025-08-27",
+        "score": 3.982
+      },
+      {
+        "date": "2025-08-28",
+        "score": 3.618
+      },
+      {
+        "date": "2025-08-29",
+        "score": 3.273
+      },
+      {
+        "date": "2025-08-30",
+        "score": 2.923
+      },
+      {
+        "date": "2025-08-31",
+        "score": 2.497
+      },
+      {
+        "date": "2025-09-01",
+        "score": 2.045
+      },
+      {
+        "date": "2025-09-02",
+        "score": 1.622
+      },
+      {
+        "date": "2025-09-03",
+        "score": 1.227
+      },
+      {
+        "date": "2025-09-04",
+        "score": 1.447
+      },
+      {
+        "date": "2025-09-05",
+        "score": 1.778
+      },
+      {
+        "date": "2025-09-06",
+        "score": 1.985
+      },
+      {
+        "date": "2025-09-07",
+        "score": 2.282
+      },
+      {
+        "date": "2025-09-08",
+        "score": 2.567
+      },
+      {
+        "date": "2025-09-09",
+        "score": 2.845
+      },
+      {
+        "date": "2025-09-10",
+        "score": 3.387
+      },
+      {
+        "date": "2025-09-11",
+        "score": 3.967
+      },
+      {
+        "date": "2025-09-12",
+        "score": 4.523
+      },
+      {
+        "date": "2025-09-13",
+        "score": 4.568
+      },
+      {
+        "date": "2025-09-14",
+        "score": 4.305
+      },
+      {
+        "date": "2025-09-15",
+        "score": 3.787
+      },
+      {
+        "date": "2025-09-16",
+        "score": 2.862
+      },
+      {
+        "date": "2025-09-17",
+        "score": 2.135
+      },
+      {
+        "date": "2025-09-18",
+        "score": 1.717
+      },
+      {
+        "date": "2025-09-19",
+        "score": 1.847
+      },
+      {
+        "date": "2025-09-20",
+        "score": 1.367
+      },
+      {
+        "date": "2025-09-21",
+        "score": 1.152
+      },
+      {
+        "date": "2025-09-22",
+        "score": 1.15
+      },
+      {
+        "date": "2025-09-23",
+        "score": 1.297
+      },
+      {
+        "date": "2025-09-24",
+        "score": 1.77
+      },
+      {
+        "date": "2025-09-25",
+        "score": 1.955
+      },
+      {
+        "date": "2025-09-26",
+        "score": 1.99
+      },
+      {
+        "date": "2025-09-27",
+        "score": 1.952
+      },
+      {
+        "date": "2025-09-28",
+        "score": 1.768
+      },
+      {
+        "date": "2025-09-29",
+        "score": 1.48
+      },
+      {
+        "date": "2025-09-30",
+        "score": 1.082
+      },
+      {
+        "date": "2025-10-01",
+        "score": 0.963
+      },
+      {
+        "date": "2025-10-02",
+        "score": 1.075
+      },
+      {
+        "date": "2025-10-03",
+        "score": 1.455
+      },
+      {
+        "date": "2025-10-04",
+        "score": 1.71
+      },
+      {
+        "date": "2025-10-05",
+        "score": 1.882
+      },
+      {
+        "date": "2025-10-06",
+        "score": 1.982
+      },
+      {
+        "date": "2025-10-07",
+        "score": 1.817
+      },
+      {
+        "date": "2025-10-08",
+        "score": 1.915
+      },
+      {
+        "date": "2025-10-09",
+        "score": 1.792
+      },
+      {
+        "date": "2025-10-10",
+        "score": 1.568
+      },
+      {
+        "date": "2025-10-11",
+        "score": 1.5
+      },
+      {
+        "date": "2025-10-12",
+        "score": 1.618
+      },
+      {
+        "date": "2025-10-13",
+        "score": 1.705
+      },
+      {
+        "date": "2025-10-14",
+        "score": 2.435
+      },
+      {
+        "date": "2025-10-15",
+        "score": 2.653
+      },
+      {
+        "date": "2025-10-16",
+        "score": 2.442
+      },
+      {
+        "date": "2025-10-17",
+        "score": 2.117
+      },
+      {
+        "date": "2025-10-18",
+        "score": 2.078
+      },
+      {
+        "date": "2025-10-19",
+        "score": 1.832
+      },
+      {
+        "date": "2025-10-20",
+        "score": 1.998
+      },
+      {
+        "date": "2025-10-21",
+        "score": 2.347
+      },
+      {
+        "date": "2025-10-22",
+        "score": 2.935
+      },
+      {
+        "date": "2025-10-23",
+        "score": 3.587
+      },
+      {
+        "date": "2025-10-24",
+        "score": 4.187
+      },
+      {
+        "date": "2025-10-25",
+        "score": 4.732
+      },
+      {
+        "date": "2025-10-26",
+        "score": 5.17
+      },
+      {
+        "date": "2025-10-27",
+        "score": 5.448
+      },
+      {
+        "date": "2025-10-28",
+        "score": 5.707
+      },
+      {
+        "date": "2025-10-29",
+        "score": 5.668
+      },
+      {
+        "date": "2025-10-30",
+        "score": 5.312
+      },
+      {
+        "date": "2025-10-31",
+        "score": 4.907
+      },
+      {
+        "date": "2025-11-01",
+        "score": 4.443
+      },
+      {
+        "date": "2025-11-02",
+        "score": 4.003
+      },
+      {
+        "date": "2025-11-03",
+        "score": 3.71
+      },
+      {
+        "date": "2025-11-04",
+        "score": 3.437
+      },
+      {
+        "date": "2025-11-05",
+        "score": 3.138
+      },
+      {
+        "date": "2025-11-06",
+        "score": 3.048
+      },
+      {
+        "date": "2025-11-07",
+        "score": 2.895
+      },
+      {
+        "date": "2025-11-08",
+        "score": 2.723
+      },
+      {
+        "date": "2025-11-09",
+        "score": 2.807
+      },
+      {
+        "date": "2025-11-10",
+        "score": 2.518
+      },
+      {
+        "date": "2025-11-11",
+        "score": 2.653
+      },
+      {
+        "date": "2025-11-12",
+        "score": 2.722
+      },
+      {
+        "date": "2025-11-13",
+        "score": 3.193
+      },
+      {
+        "date": "2025-11-14",
+        "score": 3.503
+      },
+      {
+        "date": "2025-11-15",
+        "score": 3.907
+      },
+      {
+        "date": "2025-11-16",
+        "score": 4.438
+      },
+      {
+        "date": "2025-11-17",
+        "score": 4.915
+      },
+      {
+        "date": "2025-11-18",
+        "score": 4.71
+      },
+      {
+        "date": "2025-11-19",
+        "score": 4.737
+      },
+      {
+        "date": "2025-11-20",
+        "score": 4.775
+      },
+      {
+        "date": "2025-11-21",
+        "score": 4.778
+      },
+      {
+        "date": "2025-11-22",
+        "score": 4.887
+      },
+      {
+        "date": "2025-11-23",
+        "score": 5.23
+      },
+      {
+        "date": "2025-11-24",
+        "score": 5.265
+      },
+      {
+        "date": "2025-11-25",
+        "score": 5.227
+      },
+      {
+        "date": "2025-11-26",
+        "score": 5.198
+      },
+      {
+        "date": "2025-11-27",
+        "score": 4.785
+      },
+      {
+        "date": "2025-11-28",
+        "score": 4.603
+      },
+      {
+        "date": "2025-11-29",
+        "score": 4.132
+      },
+      {
+        "date": "2025-11-30",
+        "score": 4.307
+      },
+      {
+        "date": "2025-12-01",
+        "score": 4.083
+      },
+      {
+        "date": "2025-12-02",
+        "score": 4.177
+      },
+      {
+        "date": "2025-12-03",
+        "score": 3.998
+      },
+      {
+        "date": "2025-12-04",
+        "score": 3.852
+      },
+      {
+        "date": "2025-12-05",
+        "score": 3.608
+      },
+      {
+        "date": "2025-12-06",
+        "score": 3.483
+      },
+      {
+        "date": "2025-12-07",
+        "score": 3.06
+      },
+      {
+        "date": "2025-12-08",
+        "score": 2.52
+      },
+      {
+        "date": "2025-12-09",
+        "score": 2.083
+      },
+      {
+        "date": "2025-12-10",
+        "score": 2.213
+      },
+      {
+        "date": "2025-12-11",
+        "score": 2.117
+      },
+      {
+        "date": "2025-12-12",
+        "score": 1.85
+      },
+      {
+        "date": "2025-12-13",
+        "score": 1.705
+      },
+      {
+        "date": "2025-12-14",
+        "score": 1.408
+      },
+      {
+        "date": "2025-12-15",
+        "score": 1.153
+      },
+      {
+        "date": "2025-12-16",
+        "score": 0.645
+      },
+      {
+        "date": "2025-12-17",
+        "score": 0.127
+      },
+      {
+        "date": "2025-12-18",
+        "score": -0.195
+      },
+      {
+        "date": "2025-12-19",
+        "score": -0.323
+      },
+      {
+        "date": "2025-12-20",
+        "score": -0.648
+      },
+      {
+        "date": "2025-12-21",
+        "score": -0.822
+      },
+      {
+        "date": "2025-12-22",
+        "score": -0.423
+      },
+      {
+        "date": "2025-12-23",
+        "score": -0.137
+      },
+      {
+        "date": "2025-12-24",
+        "score": 0.033
+      },
+      {
+        "date": "2025-12-25",
+        "score": 0.558
+      },
+      {
+        "date": "2025-12-26",
+        "score": 1.007
+      },
+      {
+        "date": "2025-12-27",
+        "score": 1.04
+      },
+      {
+        "date": "2025-12-28",
+        "score": 0.972
+      },
+      {
+        "date": "2025-12-29",
+        "score": 0.638
+      },
+      {
+        "date": "2025-12-30",
+        "score": 0.137
+      },
+      {
+        "date": "2025-12-31",
+        "score": 0.093
+      },
+      {
+        "date": "2026-01-01",
+        "score": 0.05
+      },
+      {
+        "date": "2026-01-02",
+        "score": 0.405
+      },
+      {
+        "date": "2026-01-03",
+        "score": 0.87
+      },
+      {
+        "date": "2026-01-04",
+        "score": 1.033
+      },
+      {
+        "date": "2026-01-05",
+        "score": 1.065
+      },
+      {
+        "date": "2026-01-06",
+        "score": 0.507
+      },
+      {
+        "date": "2026-01-07",
+        "score": -0.097
+      },
+      {
+        "date": "2026-01-08",
+        "score": -0.673
+      },
+      {
+        "date": "2026-01-09",
+        "score": -1.255
+      },
+      {
+        "date": "2026-01-10",
+        "score": -1.503
+      },
+      {
+        "date": "2026-01-11",
+        "score": -0.807
+      },
+      {
+        "date": "2026-01-12",
+        "score": 0.212
+      },
+      {
+        "date": "2026-01-13",
+        "score": 1.625
+      },
+      {
+        "date": "2026-01-14",
+        "score": 3.113
+      },
+      {
+        "date": "2026-01-15",
+        "score": 5.077
+      },
+      {
+        "date": "2026-01-16",
+        "score": 6.815
+      },
+      {
+        "date": "2026-01-17",
+        "score": 8.56
+      },
+      {
+        "date": "2026-01-18",
+        "score": 9.232
+      },
+      {
+        "date": "2026-01-19",
+        "score": 9.493
+      },
+      {
+        "date": "2026-01-20",
+        "score": 8.623
+      },
+      {
+        "date": "2026-01-21",
+        "score": 7.098
+      },
+      {
+        "date": "2026-01-22",
+        "score": 5.46
+      },
+      {
+        "date": "2026-01-23",
+        "score": 4.245
+      },
+      {
+        "date": "2026-01-24",
+        "score": 3.34
+      },
+      {
+        "date": "2026-01-25",
+        "score": 2.782
+      },
+      {
+        "date": "2026-01-26",
+        "score": 2.297
+      },
+      {
+        "date": "2026-01-27",
+        "score": 1.907
+      },
+      {
+        "date": "2026-01-28",
+        "score": 1.592
+      },
+      {
+        "date": "2026-01-29",
+        "score": 1.388
+      },
+      {
+        "date": "2026-01-30",
+        "score": 1.248
+      },
+      {
+        "date": "2026-01-31",
+        "score": 1.13
+      },
+      {
+        "date": "2026-02-01",
+        "score": 1.113
+      },
+      {
+        "date": "2026-02-02",
+        "score": 1.033
+      },
+      {
+        "date": "2026-02-03",
+        "score": 0.728
+      },
+      {
+        "date": "2026-02-04",
+        "score": 0.668
+      },
+      {
+        "date": "2026-02-05",
+        "score": 0.152
+      },
+      {
+        "date": "2026-02-06",
+        "score": 0.14
+      },
+      {
+        "date": "2026-02-07",
+        "score": 0.217
+      },
+      {
+        "date": "2026-02-08",
+        "score": 0.288
+      },
+      {
+        "date": "2026-02-09",
+        "score": 0.632
+      },
+      {
+        "date": "2026-02-10",
+        "score": 0.81
+      },
+      {
+        "date": "2026-02-11",
+        "score": 0.843
+      },
+      {
+        "date": "2026-02-12",
+        "score": 0.873
+      },
+      {
+        "date": "2026-02-13",
+        "score": 0.982
+      },
+      {
+        "date": "2026-02-14",
+        "score": 1.078
+      },
+      {
+        "date": "2026-02-15",
+        "score": 1.163
+      },
+      {
+        "date": "2026-02-16",
+        "score": 1.283
+      },
+      {
+        "date": "2026-02-17",
+        "score": 1.465
+      },
+      {
+        "date": "2026-02-18",
+        "score": 1.435
+      },
+      {
+        "date": "2026-02-19",
+        "score": 1.622
+      },
+      {
+        "date": "2026-02-20",
+        "score": 1.767
+      },
+      {
+        "date": "2026-02-21",
+        "score": 1.867
+      },
+      {
+        "date": "2026-02-22",
+        "score": 1.97
+      },
+      {
+        "date": "2026-02-23",
+        "score": 1.83
+      },
+      {
+        "date": "2026-02-24",
+        "score": 1.542
+      },
+      {
+        "date": "2026-02-25",
+        "score": 1.23
+      },
+      {
+        "date": "2026-02-26",
+        "score": 0.492
+      },
+      {
+        "date": "2026-02-27",
+        "score": 0.13
+      },
+      {
+        "date": "2026-02-28",
+        "score": 0.303
+      },
+      {
+        "date": "2026-03-01",
+        "score": 0.733
+      },
+      {
+        "date": "2026-03-02",
+        "score": 1.225
+      },
+      {
+        "date": "2026-03-03",
+        "score": 1.825
+      },
+      {
+        "date": "2026-03-04",
+        "score": 2.45
+      },
+      {
+        "date": "2026-03-05",
+        "score": 2.827
+      },
+      {
+        "date": "2026-03-06",
+        "score": 3.055
+      },
+      {
+        "date": "2026-03-07",
+        "score": 3.182
+      },
+      {
+        "date": "2026-03-08",
+        "score": 3.202
+      },
+      {
+        "date": "2026-03-09",
+        "score": 3.16
+      },
+      {
+        "date": "2026-03-10",
+        "score": 2.952
+      },
+      {
+        "date": "2026-03-11",
+        "score": 2.827
+      },
+      {
+        "date": "2026-03-12",
+        "score": 2.427
+      },
+      {
+        "date": "2026-03-13",
+        "score": 2.212
+      },
+      {
+        "date": "2026-03-14",
+        "score": 1.962
+      },
+      {
+        "date": "2026-03-15",
+        "score": 1.772
+      },
+      {
+        "date": "2026-03-16",
+        "score": 1.77
+      },
+      {
+        "date": "2026-03-17",
+        "score": 1.792
+      },
+      {
+        "date": "2026-03-18",
+        "score": 1.883
+      },
+      {
+        "date": "2026-03-19",
+        "score": 2.085
+      },
+      {
+        "date": "2026-03-20",
+        "score": 2.383
+      },
+      {
+        "date": "2026-03-21",
+        "score": 3.122
+      },
+      {
+        "date": "2026-03-22",
+        "score": 3.362
+      },
+      {
+        "date": "2026-03-23",
+        "score": 3.458
+      },
+      {
+        "date": "2026-03-24",
+        "score": 3.417
+      },
+      {
+        "date": "2026-03-25",
+        "score": 3.36
+      },
+      {
+        "date": "2026-03-26",
+        "score": 3.293
+      },
+      {
+        "date": "2026-03-27",
+        "score": 3.108
+      },
+      {
+        "date": "2026-03-28",
+        "score": 2.935
+      },
+      {
+        "date": "2026-03-29",
+        "score": 2.757
+      },
+      {
+        "date": "2026-03-30",
+        "score": 2.527
+      },
+      {
+        "date": "2026-03-31",
+        "score": 2.118
+      },
+      {
+        "date": "2026-04-01",
+        "score": 1.887
+      },
+      {
+        "date": "2026-04-02",
+        "score": 1.778
+      },
+      {
+        "date": "2026-04-03",
+        "score": 1.678
+      },
+      {
+        "date": "2026-04-04",
+        "score": 1.483
+      },
+      {
+        "date": "2026-04-05",
+        "score": 1.483
+      },
+      {
+        "date": "2026-04-06",
+        "score": 1.607
+      },
+      {
+        "date": "2026-04-07",
+        "score": 1.897
+      },
+      {
+        "date": "2026-04-08",
+        "score": 2.24
+      },
+      {
+        "date": "2026-04-09",
+        "score": 2.493
+      },
+      {
+        "date": "2026-04-10",
+        "score": 2.898
+      },
+      {
+        "date": "2026-04-11",
+        "score": 3.428
+      },
+      {
+        "date": "2026-04-12",
+        "score": 3.968
+      },
+      {
+        "date": "2026-04-13",
+        "score": 4.402
+      },
+      {
+        "date": "2026-04-14",
+        "score": 4.43
+      },
+      {
+        "date": "2026-04-15",
+        "score": 4.33
+      },
+      {
+        "date": "2026-04-16",
+        "score": 4.153
+      },
+      {
+        "date": "2026-04-17",
+        "score": 3.888
+      },
+      {
+        "date": "2026-04-18",
+        "score": 3.577
+      },
+      {
+        "date": "2026-04-19",
+        "score": 3.222
+      },
+      {
+        "date": "2026-04-20",
+        "score": 2.693
+      },
+      {
+        "date": "2026-04-21",
+        "score": 2.137
+      },
+      {
+        "date": "2026-04-22",
+        "score": 1.718
+      },
+      {
+        "date": "2026-04-23",
+        "score": 1.427
+      },
+      {
+        "date": "2026-04-24",
+        "score": 1.2
+      },
+      {
+        "date": "2026-04-25",
+        "score": 1.145
+      },
+      {
+        "date": "2026-04-26",
+        "score": 1.253
+      },
+      {
+        "date": "2026-04-27",
+        "score": 1.69
+      },
+      {
+        "date": "2026-04-28",
+        "score": 2.205
+      },
+      {
+        "date": "2026-04-29",
+        "score": 2.455
+      },
+      {
+        "date": "2026-04-30",
+        "score": 2.578
+      },
+      {
+        "date": "2026-05-01",
+        "score": 2.432
+      },
+      {
+        "date": "2026-05-02",
+        "score": 2.088
+      },
+      {
+        "date": "2026-05-03",
+        "score": 1.443
+      },
+      {
+        "date": "2026-05-04",
+        "score": 0.857
+      },
+      {
+        "date": "2026-05-05",
+        "score": 0.433
+      },
+      {
+        "date": "2026-05-06",
+        "score": 0.097
+      },
+      {
+        "date": "2026-05-07",
+        "score": 0.588
+      },
+      {
+        "date": "2026-05-08",
+        "score": 1.242
+      },
+      {
+        "date": "2026-05-09",
+        "score": 1.725
+      },
+      {
+        "date": "2026-05-10",
+        "score": 2.097
+      },
+      {
+        "date": "2026-05-11",
+        "score": 2.665
+      },
+      {
+        "date": "2026-05-12",
+        "score": 3.037
+      },
+      {
+        "date": "2026-05-13",
+        "score": 3.307
+      },
+      {
+        "date": "2026-05-14",
+        "score": 3.015
+      },
+      {
+        "date": "2026-05-15",
+        "score": 2.688
+      },
+      {
+        "date": "2026-05-16",
+        "score": 2.358
+      },
+      {
+        "date": "2026-05-17",
+        "score": 2.668
+      },
+      {
+        "date": "2026-05-18",
+        "score": 3.125
+      },
+      {
+        "date": "2026-05-19",
+        "score": 3.523
+      },
+      {
+        "date": "2026-05-20",
+        "score": 3.192
+      },
+      {
+        "date": "2026-05-21",
+        "score": 2.733
+      },
+      {
+        "date": "2026-05-22",
+        "score": 2.45
+      },
+      {
+        "date": "2026-05-23",
+        "score": 2.567
+      },
+      {
+        "date": "2026-05-24",
+        "score": 2.445
+      },
+      {
+        "date": "2026-05-25",
+        "score": 2.193
+      },
+      {
+        "date": "2026-05-26",
+        "score": 1.937
+      },
+      {
+        "date": "2026-05-27",
+        "score": 1.835
+      },
+      {
+        "date": "2026-05-28",
+        "score": 1.567
+      },
+      {
+        "date": "2026-05-29",
+        "score": 1.367
+      },
+      {
+        "date": "2026-05-30",
+        "score": 1.45
+      },
+      {
+        "date": "2026-05-31",
+        "score": 1.545
+      },
+      {
+        "date": "2026-06-01",
+        "score": 1.482
+      },
+      {
+        "date": "2026-06-02",
+        "score": 1.57
+      },
+      {
+        "date": "2026-06-03",
+        "score": 1.627
+      },
+      {
+        "date": "2026-06-04",
+        "score": 1.463
+      },
+      {
+        "date": "2026-06-05",
+        "score": 1.593
+      },
+      {
+        "date": "2026-06-06",
+        "score": 1.552
+      },
+      {
+        "date": "2026-06-07",
+        "score": 1.548
+      },
+      {
+        "date": "2026-06-08",
+        "score": 1.492
+      },
+      {
+        "date": "2026-06-09",
+        "score": 1.26
+      },
+      {
+        "date": "2026-06-10",
+        "score": 1.157
+      },
+      {
+        "date": "2026-06-11",
+        "score": 1.61
+      },
+      {
+        "date": "2026-06-12",
+        "score": 2.157
+      },
+      {
+        "date": "2026-06-13",
+        "score": 2.685
+      },
+      {
+        "date": "2026-06-14",
+        "score": 3.118
+      },
+      {
+        "date": "2026-06-15",
+        "score": 3.525
+      },
+      {
+        "date": "2026-06-16",
+        "score": 3.742
+      },
+      {
+        "date": "2026-06-17",
+        "score": 3.63
+      },
+      {
+        "date": "2026-06-18",
+        "score": 3.41
+      },
+      {
+        "date": "2026-06-19",
+        "score": 3.375
+      },
+      {
+        "date": "2026-06-20",
+        "score": 3.277
+      },
+      {
+        "date": "2026-06-21",
+        "score": 3.245
+      },
+      {
+        "date": "2026-06-22",
+        "score": 3.373
+      },
+      {
+        "date": "2026-06-23",
+        "score": 3.645
+      },
+      {
+        "date": "2026-06-24",
+        "score": 3.79
+      },
+      {
+        "date": "2026-06-25",
+        "score": 3.928
+      },
+      {
+        "date": "2026-06-26",
+        "score": 3.837
+      },
+      {
+        "date": "2026-06-27",
+        "score": 3.955
+      },
+      {
+        "date": "2026-06-28",
+        "score": 4.187
+      },
+      {
+        "date": "2026-06-29",
+        "score": 4.253
+      },
+      {
+        "date": "2026-06-30",
+        "score": 3.848
+      },
+      {
+        "date": "2026-07-01",
+        "score": 3.803
+      },
+      {
+        "date": "2026-07-02",
+        "score": 3.94
+      },
+      {
+        "date": "2026-07-03",
+        "score": 3.995
+      },
+      {
+        "date": "2026-07-04",
+        "score": 4.048
+      },
+      {
+        "date": "2026-07-05",
+        "score": 4.022
+      },
+      {
+        "date": "2026-07-06",
+        "score": 3.64
+      },
+      {
+        "date": "2026-07-07",
+        "score": 3.092
+      },
+      {
+        "date": "2026-07-08",
+        "score": 2.905
+      },
+      {
+        "date": "2026-07-09",
+        "score": 2.612
+      },
+      {
+        "date": "2026-07-10",
+        "score": 2.315
+      },
+      {
+        "date": "2026-07-11",
+        "score": 2.155
+      },
+      {
+        "date": "2026-07-12",
+        "score": 2.055
+      },
+      {
+        "date": "2026-07-13",
+        "score": 1.878
+      },
+      {
+        "date": "2026-07-14",
+        "score": 1.912
+      },
+      {
+        "date": "2026-07-15",
+        "score": 2.077
+      },
+      {
+        "date": "2026-07-16",
+        "score": 2.235
+      },
+      {
+        "date": "2026-07-17",
+        "score": 2.4
+      },
+      {
+        "date": "2026-07-18",
+        "score": 2.565
+      },
+      {
+        "date": "2026-07-19",
+        "score": 2.713
+      },
+      {
+        "date": "2026-07-20",
+        "score": 2.698
+      },
+      {
+        "date": "2026-07-21",
+        "score": 2.712
+      },
+      {
+        "date": "2026-07-22",
+        "score": 2.822
+      },
+      {
+        "date": "2026-07-23",
+        "score": 2.927
+      },
+      {
+        "date": "2026-07-24",
+        "score": 3.437
+      },
+      {
+        "date": "2026-07-25",
+        "score": 3.318
+      },
+      {
+        "date": "2026-07-26",
+        "score": 3.135
+      },
+      {
+        "date": "2026-07-27",
+        "score": 2.587
+      },
+      {
+        "date": "2026-07-28",
+        "score": 2.325
+      },
+      {
+        "date": "2026-07-29",
+        "score": 2.033
+      },
+      {
+        "date": "2026-07-30",
+        "score": 1.92
+      },
+      {
+        "date": "2026-07-31",
+        "score": 1.835
+      },
+      {
+        "date": "2026-08-01",
+        "score": 1.855
+      },
+      {
+        "date": "2026-08-02",
+        "score": 2.0
+      },
+      {
+        "date": "2026-08-03",
+        "score": 1.995
+      },
+      {
+        "date": "2026-08-04",
+        "score": 2.172
+      }
+    ],
+    "vnindex": [
+      {
+        "date": "2025-07-30",
+        "close": 1507.63
+      },
+      {
+        "date": "2025-07-31",
+        "close": 1502.52
+      },
+      {
+        "date": "2025-08-01",
+        "close": 1495.21
+      },
+      {
+        "date": "2025-08-04",
+        "close": 1528.19
+      },
+      {
+        "date": "2025-08-05",
+        "close": 1547.15
+      },
+      {
+        "date": "2025-08-06",
+        "close": 1573.71
+      },
+      {
+        "date": "2025-08-07",
+        "close": 1581.81
+      },
+      {
+        "date": "2025-08-08",
+        "close": 1584.95
+      },
+      {
+        "date": "2025-08-11",
+        "close": 1596.86
+      },
+      {
+        "date": "2025-08-12",
+        "close": 1608.22
+      },
+      {
+        "date": "2025-08-13",
+        "close": 1611.6
+      },
+      {
+        "date": "2025-08-14",
+        "close": 1640.69
+      },
+      {
+        "date": "2025-08-15",
+        "close": 1630.0
+      },
+      {
+        "date": "2025-08-18",
+        "close": 1636.37
+      },
+      {
+        "date": "2025-08-19",
+        "close": 1654.2
+      },
+      {
+        "date": "2025-08-20",
+        "close": 1664.36
+      },
+      {
+        "date": "2025-08-21",
+        "close": 1688.0
+      },
+      {
+        "date": "2025-08-22",
+        "close": 1645.47
+      },
+      {
+        "date": "2025-08-25",
+        "close": 1614.03
+      },
+      {
+        "date": "2025-08-26",
+        "close": 1667.63
+      },
+      {
+        "date": "2025-08-27",
+        "close": 1672.78
+      },
+      {
+        "date": "2025-08-28",
+        "close": 1680.86
+      },
+      {
+        "date": "2025-08-29",
+        "close": 1682.21
+      },
+      {
+        "date": "2025-09-03",
+        "close": 1681.3
+      },
+      {
+        "date": "2025-09-04",
+        "close": 1696.29
+      },
+      {
+        "date": "2025-09-05",
+        "close": 1666.97
+      },
+      {
+        "date": "2025-09-08",
+        "close": 1624.53
+      },
+      {
+        "date": "2025-09-09",
+        "close": 1637.32
+      },
+      {
+        "date": "2025-09-10",
+        "close": 1643.26
+      },
+      {
+        "date": "2025-09-11",
+        "close": 1657.75
+      },
+      {
+        "date": "2025-09-12",
+        "close": 1667.26
+      },
+      {
+        "date": "2025-09-15",
+        "close": 1684.9
+      },
+      {
+        "date": "2025-09-16",
+        "close": 1680.9
+      },
+      {
+        "date": "2025-09-17",
+        "close": 1670.97
+      },
+      {
+        "date": "2025-09-18",
+        "close": 1665.18
+      },
+      {
+        "date": "2025-09-19",
+        "close": 1658.62
+      },
+      {
+        "date": "2025-09-22",
+        "close": 1634.45
+      },
+      {
+        "date": "2025-09-23",
+        "close": 1635.26
+      },
+      {
+        "date": "2025-09-24",
+        "close": 1657.46
+      },
+      {
+        "date": "2025-09-25",
+        "close": 1666.09
+      },
+      {
+        "date": "2025-09-26",
+        "close": 1660.7
+      },
+      {
+        "date": "2025-09-29",
+        "close": 1666.48
+      },
+      {
+        "date": "2025-09-30",
+        "close": 1661.7
+      },
+      {
+        "date": "2025-10-01",
+        "close": 1665.05
+      },
+      {
+        "date": "2025-10-02",
+        "close": 1652.71
+      },
+      {
+        "date": "2025-10-03",
+        "close": 1645.82
+      },
+      {
+        "date": "2025-10-06",
+        "close": 1695.5
+      },
+      {
+        "date": "2025-10-07",
+        "close": 1685.3
+      },
+      {
+        "date": "2025-10-08",
+        "close": 1697.83
+      },
+      {
+        "date": "2025-10-09",
+        "close": 1716.47
+      },
+      {
+        "date": "2025-10-10",
+        "close": 1747.55
+      },
+      {
+        "date": "2025-10-13",
+        "close": 1765.12
+      },
+      {
+        "date": "2025-10-14",
+        "close": 1761.06
+      },
+      {
+        "date": "2025-10-15",
+        "close": 1757.95
+      },
+      {
+        "date": "2025-10-16",
+        "close": 1766.85
+      },
+      {
+        "date": "2025-10-17",
+        "close": 1731.19
+      },
+      {
+        "date": "2025-10-20",
+        "close": 1636.43
+      },
+      {
+        "date": "2025-10-21",
+        "close": 1663.43
+      },
+      {
+        "date": "2025-10-22",
+        "close": 1678.5
+      },
+      {
+        "date": "2025-10-23",
+        "close": 1687.06
+      },
+      {
+        "date": "2025-10-24",
+        "close": 1683.18
+      },
+      {
+        "date": "2025-10-27",
+        "close": 1652.54
+      },
+      {
+        "date": "2025-10-28",
+        "close": 1680.5
+      },
+      {
+        "date": "2025-10-29",
+        "close": 1685.83
+      },
+      {
+        "date": "2025-10-30",
+        "close": 1669.57
+      },
+      {
+        "date": "2025-10-31",
+        "close": 1639.65
+      },
+      {
+        "date": "2025-11-03",
+        "close": 1617.0
+      },
+      {
+        "date": "2025-11-04",
+        "close": 1651.98
+      },
+      {
+        "date": "2025-11-05",
+        "close": 1654.89
+      },
+      {
+        "date": "2025-11-06",
+        "close": 1642.64
+      },
+      {
+        "date": "2025-11-07",
+        "close": 1599.1
+      },
+      {
+        "date": "2025-11-10",
+        "close": 1580.54
+      },
+      {
+        "date": "2025-11-11",
+        "close": 1593.61
+      },
+      {
+        "date": "2025-11-12",
+        "close": 1631.86
+      },
+      {
+        "date": "2025-11-13",
+        "close": 1631.44
+      },
+      {
+        "date": "2025-11-14",
+        "close": 1635.46
+      },
+      {
+        "date": "2025-11-17",
+        "close": 1654.42
+      },
+      {
+        "date": "2025-11-18",
+        "close": 1659.92
+      },
+      {
+        "date": "2025-11-19",
+        "close": 1649.0
+      },
+      {
+        "date": "2025-11-20",
+        "close": 1655.99
+      },
+      {
+        "date": "2025-11-21",
+        "close": 1654.93
+      },
+      {
+        "date": "2025-11-24",
+        "close": 1667.98
+      },
+      {
+        "date": "2025-11-25",
+        "close": 1660.36
+      },
+      {
+        "date": "2025-11-26",
+        "close": 1680.36
+      },
+      {
+        "date": "2025-11-27",
+        "close": 1684.32
+      },
+      {
+        "date": "2025-11-28",
+        "close": 1690.99
+      },
+      {
+        "date": "2025-12-01",
+        "close": 1701.67
+      },
+      {
+        "date": "2025-12-02",
+        "close": 1717.06
+      },
+      {
+        "date": "2025-12-03",
+        "close": 1731.77
+      },
+      {
+        "date": "2025-12-04",
+        "close": 1737.24
+      },
+      {
+        "date": "2025-12-05",
+        "close": 1741.32
+      },
+      {
+        "date": "2025-12-08",
+        "close": 1753.74
+      },
+      {
+        "date": "2025-12-09",
+        "close": 1747.17
+      },
+      {
+        "date": "2025-12-10",
+        "close": 1718.98
+      },
+      {
+        "date": "2025-12-11",
+        "close": 1698.9
+      },
+      {
+        "date": "2025-12-12",
+        "close": 1646.89
+      },
+      {
+        "date": "2025-12-15",
+        "close": 1646.01
+      },
+      {
+        "date": "2025-12-16",
+        "close": 1679.18
+      },
+      {
+        "date": "2025-12-17",
+        "close": 1673.66
+      },
+      {
+        "date": "2025-12-18",
+        "close": 1676.98
+      },
+      {
+        "date": "2025-12-19",
+        "close": 1704.31
+      },
+      {
+        "date": "2025-12-22",
+        "close": 1751.03
+      },
+      {
+        "date": "2025-12-23",
+        "close": 1772.15
+      },
+      {
+        "date": "2025-12-24",
+        "close": 1782.82
+      },
+      {
+        "date": "2025-12-25",
+        "close": 1742.85
+      },
+      {
+        "date": "2025-12-26",
+        "close": 1729.8
+      },
+      {
+        "date": "2025-12-29",
+        "close": 1754.84
+      },
+      {
+        "date": "2025-12-30",
+        "close": 1766.9
+      },
+      {
+        "date": "2025-12-31",
+        "close": 1784.49
+      },
+      {
+        "date": "2026-01-05",
+        "close": 1788.4
+      },
+      {
+        "date": "2026-01-06",
+        "close": 1816.27
+      },
+      {
+        "date": "2026-01-07",
+        "close": 1861.58
+      },
+      {
+        "date": "2026-01-08",
+        "close": 1855.56
+      },
+      {
+        "date": "2026-01-09",
+        "close": 1867.9
+      },
+      {
+        "date": "2026-01-12",
+        "close": 1877.33
+      },
+      {
+        "date": "2026-01-13",
+        "close": 1902.93
+      },
+      {
+        "date": "2026-01-14",
+        "close": 1894.44
+      },
+      {
+        "date": "2026-01-15",
+        "close": 1864.8
+      },
+      {
+        "date": "2026-01-16",
+        "close": 1879.13
+      },
+      {
+        "date": "2026-01-19",
+        "close": 1896.59
+      },
+      {
+        "date": "2026-01-20",
+        "close": 1893.78
+      },
+      {
+        "date": "2026-01-21",
+        "close": 1885.44
+      },
+      {
+        "date": "2026-01-22",
+        "close": 1882.73
+      },
+      {
+        "date": "2026-01-23",
+        "close": 1870.79
+      },
+      {
+        "date": "2026-01-26",
+        "close": 1843.72
+      },
+      {
+        "date": "2026-01-27",
+        "close": 1830.5
+      },
+      {
+        "date": "2026-01-28",
+        "close": 1802.91
+      },
+      {
+        "date": "2026-01-29",
+        "close": 1814.98
+      },
+      {
+        "date": "2026-01-30",
+        "close": 1829.04
+      },
+      {
+        "date": "2026-02-02",
+        "close": 1806.5
+      },
+      {
+        "date": "2026-02-03",
+        "close": 1813.4
+      },
+      {
+        "date": "2026-02-04",
+        "close": 1791.43
+      },
+      {
+        "date": "2026-02-05",
+        "close": 1782.56
+      },
+      {
+        "date": "2026-02-06",
+        "close": 1755.49
+      },
+      {
+        "date": "2026-02-09",
+        "close": 1754.82
+      },
+      {
+        "date": "2026-02-10",
+        "close": 1754.03
+      },
+      {
+        "date": "2026-02-11",
+        "close": 1796.85
+      },
+      {
+        "date": "2026-02-12",
+        "close": 1814.09
+      },
+      {
+        "date": "2026-02-13",
+        "close": 1824.09
+      },
+      {
+        "date": "2026-02-23",
+        "close": 1860.14
+      },
+      {
+        "date": "2026-02-24",
+        "close": 1867.62
+      },
+      {
+        "date": "2026-02-25",
+        "close": 1860.91
+      },
+      {
+        "date": "2026-02-26",
+        "close": 1879.64
+      },
+      {
+        "date": "2026-02-27",
+        "close": 1880.33
+      },
+      {
+        "date": "2026-03-02",
+        "close": 1846.1
+      },
+      {
+        "date": "2026-03-03",
+        "close": 1813.14
+      },
+      {
+        "date": "2026-03-04",
+        "close": 1818.27
+      },
+      {
+        "date": "2026-03-05",
+        "close": 1808.51
+      },
+      {
+        "date": "2026-03-06",
+        "close": 1767.84
+      },
+      {
+        "date": "2026-03-09",
+        "close": 1652.79
+      },
+      {
+        "date": "2026-03-10",
+        "close": 1676.73
+      },
+      {
+        "date": "2026-03-11",
+        "close": 1728.34
+      },
+      {
+        "date": "2026-03-12",
+        "close": 1709.61
+      },
+      {
+        "date": "2026-03-13",
+        "close": 1696.24
+      },
+      {
+        "date": "2026-03-16",
+        "close": 1693.21
+      },
+      {
+        "date": "2026-03-17",
+        "close": 1710.29
+      },
+      {
+        "date": "2026-03-18",
+        "close": 1713.83
+      },
+      {
+        "date": "2026-03-19",
+        "close": 1699.13
+      },
+      {
+        "date": "2026-03-20",
+        "close": 1647.81
+      },
+      {
+        "date": "2026-03-23",
+        "close": 1591.17
+      },
+      {
+        "date": "2026-03-24",
+        "close": 1614.77
+      },
+      {
+        "date": "2026-03-25",
+        "close": 1658.19
+      },
+      {
+        "date": "2026-03-26",
+        "close": 1644.63
+      },
+      {
+        "date": "2026-03-27",
+        "close": 1672.8
+      },
+      {
+        "date": "2026-03-30",
+        "close": 1662.54
+      },
+      {
+        "date": "2026-03-31",
+        "close": 1674.49
+      },
+      {
+        "date": "2026-04-01",
+        "close": 1702.93
+      },
+      {
+        "date": "2026-04-02",
+        "close": 1694.82
+      },
+      {
+        "date": "2026-04-03",
+        "close": 1684.04
+      },
+      {
+        "date": "2026-04-06",
+        "close": 1674.99
+      },
+      {
+        "date": "2026-04-07",
+        "close": 1677.54
+      },
+      {
+        "date": "2026-04-08",
+        "close": 1756.55
+      },
+      {
+        "date": "2026-04-09",
+        "close": 1736.68
+      },
+      {
+        "date": "2026-04-10",
+        "close": 1750.0
+      },
+      {
+        "date": "2026-04-13",
+        "close": 1758.96
+      },
+      {
+        "date": "2026-04-14",
+        "close": 1775.65
+      },
+      {
+        "date": "2026-04-15",
+        "close": 1800.65
+      },
+      {
+        "date": "2026-04-16",
+        "close": 1819.83
+      },
+      {
+        "date": "2026-04-17",
+        "close": 1817.17
+      },
+      {
+        "date": "2026-04-20",
+        "close": 1837.11
+      },
+      {
+        "date": "2026-04-21",
+        "close": 1833.48
+      },
+      {
+        "date": "2026-04-22",
+        "close": 1857.3
+      },
+      {
+        "date": "2026-04-23",
+        "close": 1870.36
+      },
+      {
+        "date": "2026-04-24",
+        "close": 1853.29
+      },
+      {
+        "date": "2026-04-28",
+        "close": 1875.84
+      },
+      {
+        "date": "2026-04-29",
+        "close": 1854.1
+      },
+      {
+        "date": "2026-05-04",
+        "close": 1854.06
+      },
+      {
+        "date": "2026-05-05",
+        "close": 1874.85
+      },
+      {
+        "date": "2026-05-06",
+        "close": 1891.2
+      },
+      {
+        "date": "2026-05-07",
+        "close": 1909.01
+      },
+      {
+        "date": "2026-05-08",
+        "close": 1915.37
+      },
+      {
+        "date": "2026-05-11",
+        "close": 1895.5
+      },
+      {
+        "date": "2026-05-12",
+        "close": 1901.1
+      },
+      {
+        "date": "2026-05-13",
+        "close": 1898.37
+      },
+      {
+        "date": "2026-05-14",
+        "close": 1925.46
+      },
+      {
+        "date": "2026-05-15",
+        "close": 1921.6
+      },
+      {
+        "date": "2026-05-18",
+        "close": 1927.94
+      },
+      {
+        "date": "2026-05-19",
+        "close": 1912.93
+      },
+      {
+        "date": "2026-05-20",
+        "close": 1913.23
+      },
+      {
+        "date": "2026-05-21",
+        "close": 1896.89
+      },
+      {
+        "date": "2026-05-22",
+        "close": 1877.13
+      },
+      {
+        "date": "2026-05-25",
+        "close": 1886.03
+      },
+      {
+        "date": "2026-05-26",
+        "close": 1884.18
+      },
+      {
+        "date": "2026-05-27",
+        "close": 1874.43
+      },
+      {
+        "date": "2026-05-28",
+        "close": 1863.67
+      },
+      {
+        "date": "2026-05-29",
+        "close": 1863.49
+      },
+      {
+        "date": "2026-06-01",
+        "close": 1844.54
+      },
+      {
+        "date": "2026-06-02",
+        "close": 1826.47
+      },
+      {
+        "date": "2026-06-03",
+        "close": 1819.01
+      },
+      {
+        "date": "2026-06-04",
+        "close": 1831.55
+      },
+      {
+        "date": "2026-06-05",
+        "close": 1838.9
+      },
+      {
+        "date": "2026-06-08",
+        "close": 1790.53
+      },
+      {
+        "date": "2026-06-09",
+        "close": 1793.05
+      },
+      {
+        "date": "2026-06-10",
+        "close": 1803.71
+      },
+      {
+        "date": "2026-06-11",
+        "close": 1798.61
+      },
+      {
+        "date": "2026-06-12",
+        "close": 1791.65
+      },
+      {
+        "date": "2026-06-15",
+        "close": 1799.31
+      },
+      {
+        "date": "2026-06-16",
+        "close": 1807.94
+      },
+      {
+        "date": "2026-06-17",
+        "close": 1806.2
+      },
+      {
+        "date": "2026-06-18",
+        "close": 1830.47
+      },
+      {
+        "date": "2026-06-19",
+        "close": 1824.53
+      },
+      {
+        "date": "2026-06-22",
+        "close": 1857.91
+      },
+      {
+        "date": "2026-06-23",
+        "close": 1869.04
+      },
+      {
+        "date": "2026-06-24",
+        "close": 1878.02
+      },
+      {
+        "date": "2026-06-25",
+        "close": 1863.07
+      },
+      {
+        "date": "2026-06-26",
+        "close": 1871.91
+      },
+      {
+        "date": "2026-06-29",
+        "close": 1854.97
+      },
+      {
+        "date": "2026-06-30",
+        "close": 1860.01
+      },
+      {
+        "date": "2026-07-01",
+        "close": 1867.21
+      },
+      {
+        "date": "2026-07-02",
+        "close": 1866.35
+      },
+      {
+        "date": "2026-07-03",
+        "close": 1862.08
+      },
+      {
+        "date": "2026-07-06",
+        "close": 1843.5
+      },
+      {
+        "date": "2026-07-07",
+        "close": 1848.25
+      },
+      {
+        "date": "2026-07-08",
+        "close": 1853.7
+      },
+      {
+        "date": "2026-07-09",
+        "close": 1840.7
+      },
+      {
+        "date": "2026-07-10",
+        "close": 1828.34
+      },
+      {
+        "date": "2026-07-13",
+        "close": 1800.54
+      },
+      {
+        "date": "2026-07-14",
+        "close": 1806.63
+      },
+      {
+        "date": "2026-07-15",
+        "close": 1782.12
+      },
+      {
+        "date": "2026-07-16",
+        "close": 1804.24
+      },
+      {
+        "date": "2026-07-17",
+        "close": 1787.45
+      },
+      {
+        "date": "2026-07-20",
+        "close": 1743.51
+      },
+      {
+        "date": "2026-07-21",
+        "close": 1730.56
+      },
+      {
+        "date": "2026-07-22",
+        "close": 1668.53
+      },
+      {
+        "date": "2026-07-23",
+        "close": 1699.38
+      },
+      {
+        "date": "2026-07-24",
+        "close": 1686.11
+      },
+      {
+        "date": "2026-07-27",
+        "close": 1669.01
+      },
+      {
+        "date": "2026-07-28",
+        "close": 1680.62
+      },
+      {
+        "date": "2026-07-29",
+        "close": 1704.68
+      },
+      {
+        "date": "2026-07-30",
+        "close": 1744.66
+      },
+      {
+        "date": "2026-07-31",
+        "close": 1735.78
+      },
+      {
+        "date": "2026-08-03",
+        "close": 1762.84
+      }
+    ]
+  }
 }

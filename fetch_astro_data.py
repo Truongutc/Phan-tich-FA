@@ -330,31 +330,43 @@ def build_daily_pressure_series(days_ahead=90):
     find_upcoming_exact_aspects (mọi hành tinh trừ Mặt Trăng), KHÔNG giới hạn ở 5 hành tinh chậm
     như bản đầu (lỗi khiến ảnh hưởng Sao Hỏa/Mặt Trời/Sao Thủy/Sao Kim bị bỏ sót hoàn toàn). Trả
     list [{date, score}]."""
+    now = _utcnow()
+    return [_pressure_score_at(now + datetime.timedelta(days=d)) for d in range(days_ahead + 1)]
+
+
+def _pressure_score_at(t):
+    """Điểm áp lực/thuận lợi tại 1 thời điểm t bất kỳ (quá khứ hay tương lai đều tính được vì ephem
+    không giới hạn khoảng thời gian) — logic dùng chung cho build_daily_pressure_series (tương lai)
+    và build_historical_pressure_series (quá khứ, để đối chiếu ngược với diễn biến VN-Index thật)."""
     ORB_WINDOW = 6.0
     score_planets = [n for n in PLANETS if n != "Mặt Trăng"]
+    positions = get_planet_positions(t)
+    retro_penalty = sum(0.4 for name in score_planets if name != "Mặt Trời" and is_retrograde(name, t))
+
+    aspect_score = 0.0
+    for i in range(len(score_planets)):
+        for j in range(i + 1, len(score_planets)):
+            a, b = positions[score_planets[i]], positions[score_planets[j]]
+            diff = abs(a - b) % 360
+            if diff > 180:
+                diff = 360 - diff
+            for angle in (0, 60, 90, 120, 180):
+                gap = abs(diff - angle)
+                if gap <= ORB_WINDOW:
+                    weight = (ORB_WINDOW - gap) / ORB_WINDOW
+                    if angle in (60, 120):
+                        aspect_score += weight
+                    elif angle in (90, 180):
+                        aspect_score -= weight
+                    break
+
+    return {"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - retro_penalty, 3)}
+
+
+def build_historical_pressure_series(days_back=365):
+    """Đường điểm áp lực/thuận lợi trong QUÁ KHỨ (days_back ngày trở lại đây) — dùng để đối chiếu
+    ngược (backtest) với diễn biến VN-Index thật, kiểm tra trực quan mối tương quan (nếu có) giữa
+    chỉ số chiêm tinh và biến động thị trường thực tế. KHÔNG phải bằng chứng khoa học, chỉ là công
+    cụ quan sát trực quan theo yêu cầu user (2026-08-04)."""
     now = _utcnow()
-    results = []
-    for d in range(days_ahead + 1):
-        t = now + datetime.timedelta(days=d)
-        positions = get_planet_positions(t)
-        retro_penalty = sum(0.4 for name in score_planets if name != "Mặt Trời" and is_retrograde(name, t))
-
-        aspect_score = 0.0
-        for i in range(len(score_planets)):
-            for j in range(i + 1, len(score_planets)):
-                a, b = positions[score_planets[i]], positions[score_planets[j]]
-                diff = abs(a - b) % 360
-                if diff > 180:
-                    diff = 360 - diff
-                for angle in (0, 60, 90, 120, 180):
-                    gap = abs(diff - angle)
-                    if gap <= ORB_WINDOW:
-                        weight = (ORB_WINDOW - gap) / ORB_WINDOW
-                        if angle in (60, 120):
-                            aspect_score += weight
-                        elif angle in (90, 180):
-                            aspect_score -= weight
-                        break
-
-        results.append({"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - retro_penalty, 3)})
-    return results
+    return [_pressure_score_at(now - datetime.timedelta(days=d)) for d in range(days_back, -1, -1)]
