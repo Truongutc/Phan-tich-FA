@@ -444,15 +444,24 @@ function renderForecastTimeline(events) {
         return;
     }
     el.innerHTML = `
-        <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Diễn giải (lý thuyết chiêm tinh tài chính)</th></tr></thead>
+        <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Diễn giải (lý thuyết chiêm tinh tài chính)</th><th>Điểm ròng hôm đó</th></tr></thead>
         <tbody>${events.map(e => {
             const sentimentClass = SENTIMENT_CLASS[e.sentiment] || 'astro-sentiment-neutral';
             const badgeClass = SENTIMENT_BADGE[e.sentiment] || 'solar';
+            let netCell = '<span style="color:#6b7280">—</span>';
+            if (typeof e.netScore === 'number') {
+                const trendUp = e.netTrend === 'up';
+                const trendDown = e.netTrend === 'down';
+                const color = trendUp ? '#10b981' : (trendDown ? '#ef4444' : '#9ca3af');
+                const arrow = trendUp ? '↑' : (trendDown ? '↓' : '');
+                netCell = `<span style="color:${color};font-weight:600;white-space:nowrap">${e.netScore >= 0 ? '+' : ''}${e.netScore.toFixed(2)} ${arrow}</span>`;
+            }
             return `
             <tr>
                 <td style="white-space:nowrap">${_fmtDate(e.date)}</td>
                 <td style="white-space:nowrap"><span class="astro-badge ${badgeClass}">${EVENT_ICON[e.type] || ''} ${e.title}</span></td>
                 <td style="font-size:0.92em" class="${sentimentClass}">${e.interpretation}</td>
+                <td class="num">${netCell}</td>
             </tr>`;
         }).join('')}</tbody>`;
 }

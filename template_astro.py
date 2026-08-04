@@ -202,10 +202,17 @@ def build_current_assessment(positions, current_aspects):
             "houseLines": house_lines}
 
 
-def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations, days_ahead=FORECAST_DAYS_AHEAD):
+def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations, daily_pressure=None, days_ahead=FORECAST_DAYS_AHEAD):
     """Hợp nhất góc chiếu sắp tới + nhật/nguyệt thực + ngày hành tinh đổi chiều (station) trong
     `days_ahead` ngày tới thành 1 dòng thời gian duy nhất, mỗi sự kiện kèm diễn giải rule-based.
-    Trả list sắp theo ngày tăng dần."""
+    Trả list sắp theo ngày tăng dần.
+
+    daily_pressure (nếu có): gắn thêm netScore/netTrend (điểm áp lực/thuận lợi TỔNG HỢP đúng ngày
+    đó + xu hướng so với hôm trước) vào MỖI sự kiện — user (2026-08-04) nhiều lần bị nhầm vì 1 dòng
+    sự kiện màu xanh (tích cực khi đứng riêng lẻ) xuất hiện đúng lúc chỉ số TỔNG lại đang giảm (vd
+    "Sao Thủy Lục phân Sao Thiên Vương" 13/08 tô xanh trong khi điểm ròng ngày đó đang đi xuống từ
+    đỉnh 12/08) — chỉ giải thích bằng chữ (cảnh báo phía trên bảng) là chưa đủ, cần gắn SỐ THẬT vào
+    từng dòng để không phải đối chiếu ngược lên biểu đồ."""
     cutoff = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=days_ahead)).strftime("%Y-%m-%d")
     events = []
 
@@ -249,7 +256,17 @@ def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations,
             "sentiment": "negative" if is_retro_start else "positive",
         })
 
+    score_by_date, trend_by_date = {}, {}
+    if daily_pressure:
+        for i, p in enumerate(daily_pressure):
+            score_by_date[p["date"]] = p["score"]
+            if i > 0:
+                trend_by_date[p["date"]] = "up" if p["score"] >= daily_pressure[i - 1]["score"] else "down"
+
     events.sort(key=lambda e: e["date"])
+    for e in events:
+        e["netScore"] = score_by_date.get(e["date"])
+        e["netTrend"] = trend_by_date.get(e["date"])
     return events
 
 
@@ -345,7 +362,7 @@ def build_astro_data():
             "meanings": HOUSE_MEANING,
         },
         "currentAssessment": build_current_assessment(positions, current_aspects),
-        "forecastTimeline": build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations),
+        "forecastTimeline": build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations, daily_pressure=daily_pressure),
         "backtest": build_backtest_data(days_back=3650),
     }
 
