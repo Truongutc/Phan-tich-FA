@@ -3,7 +3,7 @@ name: Cập nhật Chiêm tinh Tài chính
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *'   # 08:00 giờ Việt Nam (UTC+7) hàng ngày — vị trí hành tinh đổi theo ngày
+    - cron: '0 1 * * 1'   # 08:00 giờ Việt Nam (UTC+7) sáng Thứ 2 đầu tuần hàng tuần (user 2026-08-04: chuyển từ hàng ngày sang hàng tuần)
 
 permissions:
   contents: write
