@@ -95,9 +95,13 @@ ASPECTS = {
 }
 # "Hard aspects" (hợp/vuông/xung) — theo lý thuyết chiêm tinh tài chính/Gann thường được coi là
 # thời điểm biến động/đảo chiều tiềm năng nhiều hơn "soft aspects" (lục phân/tam hợp, coi là hài
-# hòa/ổn định) — dùng để lọc bảng "ngày góc chiếu sắp tới" (Buổi 4) cho gọn, tránh liệt kê quá
-# nhiều aspect ít ý nghĩa với mục đích "tìm ngày đảo chiều".
+# hòa/ổn định).
 HARD_ASPECTS = {0, 90, 180}
+
+# Hành tinh CHẬM — dùng cho điểm áp lực liên tục (build_daily_pressure_series) và đánh giá hiện tại
+# (template_astro.py:SLOW_PLANETS) vì quyết định chu kỳ kinh tế LỚN hơn hành tinh nhanh/Mặt Trời-
+# Mặt Trăng (đổi vị trí liên tục, chỉ tạo biến động ngày).
+SLOW_PLANET_NAMES = ("Sao Mộc", "Sao Thổ", "Sao Thiên Vương", "Sao Hải Vương", "Sao Diêm Vương")
 
 
 def _utcnow():
@@ -304,4 +308,53 @@ def find_retrograde_stations(days_ahead=90, step_hours=12):
                 })
             prev_state[name] = cur_state
     results.sort(key=lambda r: r["date"])
+    return results
+
+
+def build_daily_pressure_series(days_ahead=90):
+    """Điểm ÁP LỰC/THUẬN LỢI thị trường LIÊN TỤC theo từng ngày — trả lời trực tiếp câu hỏi user
+    (2026-08-04): "giữa 2 mốc sự kiện [rời rạc trong bảng dự báo] thì thị trường ra sao?" — bảng
+    sự kiện chỉ đánh dấu ngày CHÍNH XÁC (exact) của góc chiếu/station, nhưng ảnh hưởng thực tế trải
+    dài NHIỀU NGÀY quanh mốc đó (orb) — hàm này tính 1 đường LIÊN TỤC thay vì chỉ các điểm rời rạc.
+
+    Mỗi ngày: (a) mỗi hành tinh (trừ Mặt Trời/Mặt Trăng) đang nghịch hành trừ 0.4 điểm (ảnh hưởng
+    nhẹ nhưng kéo dài nhiều tuần); (b) mỗi cặp hành tinh (trừ Mặt Trăng — di chuyển quá nhanh, xem
+    lý do ở find_upcoming_exact_aspects) đang trong orb ±6° của 1 góc chiếu cộng/trừ điểm có TRỌNG
+    SỐ theo orb (gần exact = ảnh hưởng mạnh hơn, giảm tuyến tính về 0 ở biên orb) — hài hòa (tam
+    hợp/lục phân) CỘNG điểm, căng thẳng (vuông/xung) TRỪ điểm. Điểm dương = nghiêng thuận lợi, điểm
+    âm = nghiêng áp lực/căng thẳng — đây là góc nhìn TỔNG HỢP ĐỊNH LƯỢNG mang tính quyết đoán hơn
+    nhãn "tension" trung lập ở bảng sự kiện rời rạc (2 góc nhìn bổ sung cho nhau: bảng sự kiện =
+    từng góc chiếu riêng lẻ trung lập, đường điểm này = tổng hợp NHIỀU góc chiếu + nghịch hành cùng
+    lúc GIỮA CÙNG 1 TẬP HÀNH TINH với bảng sự kiện — user 2026-08-04 chỉ ra ví dụ Sao Hỏa vuông Sao
+    Thổ phải thể hiện được trong đường điểm này, nên DÙNG CHUNG tập hành tinh với
+    find_upcoming_exact_aspects (mọi hành tinh trừ Mặt Trăng), KHÔNG giới hạn ở 5 hành tinh chậm
+    như bản đầu (lỗi khiến ảnh hưởng Sao Hỏa/Mặt Trời/Sao Thủy/Sao Kim bị bỏ sót hoàn toàn). Trả
+    list [{date, score}]."""
+    ORB_WINDOW = 6.0
+    score_planets = [n for n in PLANETS if n != "Mặt Trăng"]
+    now = _utcnow()
+    results = []
+    for d in range(days_ahead + 1):
+        t = now + datetime.timedelta(days=d)
+        positions = get_planet_positions(t)
+        retro_penalty = sum(0.4 for name in score_planets if name != "Mặt Trời" and is_retrograde(name, t))
+
+        aspect_score = 0.0
+        for i in range(len(score_planets)):
+            for j in range(i + 1, len(score_planets)):
+                a, b = positions[score_planets[i]], positions[score_planets[j]]
+                diff = abs(a - b) % 360
+                if diff > 180:
+                    diff = 360 - diff
+                for angle in (0, 60, 90, 120, 180):
+                    gap = abs(diff - angle)
+                    if gap <= ORB_WINDOW:
+                        weight = (ORB_WINDOW - gap) / ORB_WINDOW
+                        if angle in (60, 120):
+                            aspect_score += weight
+                        elif angle in (90, 180):
+                            aspect_score -= weight
+                        break
+
+        results.append({"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - retro_penalty, 3)})
     return results

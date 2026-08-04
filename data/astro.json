@@ -1,53 +1,53 @@
 {
-  "generatedAt": "2026-08-04 06:53 UTC",
+  "generatedAt": "2026-08-04 07:25 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 131.57,
+      "lon": 131.59,
       "sign": "Sư Tử",
-      "degInSign": 11.57,
+      "degInSign": 11.59,
       "retrograde": false,
-      "house": 9
+      "house": 8
     },
     {
       "name": "Mặt Trăng",
-      "lon": 18.51,
+      "lon": 18.81,
       "sign": "Bạch Dương",
-      "degInSign": 18.51,
+      "degInSign": 18.81,
       "retrograde": false,
       "house": 5
     },
     {
       "name": "Sao Thủy",
-      "lon": 112.31,
+      "lon": 112.34,
       "sign": "Cự Giải",
-      "degInSign": 22.31,
+      "degInSign": 22.34,
       "retrograde": false,
       "house": 8
     },
     {
       "name": "Sao Kim",
-      "lon": 177.08,
+      "lon": 177.1,
       "sign": "Xử Nữ",
-      "degInSign": 27.08,
+      "degInSign": 27.1,
       "retrograde": false,
       "house": 10
     },
     {
       "name": "Sao Hỏa",
-      "lon": 84.91,
+      "lon": 84.93,
       "sign": "Song Tử",
-      "degInSign": 24.91,
+      "degInSign": 24.93,
       "retrograde": false,
       "house": 7
     },
     {
       "name": "Sao Mộc",
-      "lon": 127.32,
+      "lon": 127.33,
       "sign": "Sư Tử",
-      "degInSign": 7.32,
+      "degInSign": 7.33,
       "retrograde": false,
-      "house": 9
+      "house": 8
     },
     {
       "name": "Sao Thổ",
@@ -120,7 +120,7 @@
       "b": "Sao Thiên Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 2.58,
+      "orb": 2.59,
       "applying": false
     },
     {
@@ -128,16 +128,64 @@
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 2.74,
+      "orb": 2.72,
       "applying": true
     }
   ],
   "upcomingAspects": [
     {
+      "date": "2026-08-07",
+      "a": "Mặt Trời",
+      "b": "Sao Thổ",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-08-10",
+      "a": "Sao Kim",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-08-12",
+      "a": "Sao Thủy",
+      "b": "Sao Hải Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-08-12",
+      "a": "Sao Kim",
+      "b": "Sao Thiên Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-08-13",
+      "a": "Sao Thủy",
+      "b": "Sao Thiên Vương",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
+      "date": "2026-08-13",
+      "a": "Sao Thủy",
+      "b": "Sao Kim",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
       "date": "2026-08-17",
       "a": "Sao Hỏa",
       "b": "Sao Hải Vương",
       "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-08-17",
+      "a": "Sao Thủy",
+      "b": "Sao Thổ",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-08-17",
+      "a": "Sao Kim",
+      "b": "Sao Mộc",
+      "aspect": "Lục phân (Sextile)"
     },
     {
       "date": "2026-08-28",
@@ -153,15 +201,69 @@
     },
     {
       "date": "2026-09-01",
+      "a": "Sao Mộc",
+      "b": "Sao Thổ",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-09-01",
       "a": "Sao Hỏa",
       "b": "Sao Thổ",
       "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-09-01",
+      "a": "Sao Thủy",
+      "b": "Sao Hỏa",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
+      "date": "2026-09-12",
+      "a": "Sao Thủy",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-09-14",
+      "a": "Sao Thủy",
+      "b": "Sao Thiên Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-09-15",
+      "a": "Mặt Trời",
+      "b": "Sao Hỏa",
+      "aspect": "Lục phân (Sextile)"
     },
     {
       "date": "2026-09-15",
       "a": "Sao Kim",
       "b": "Sao Diêm Vương",
       "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-09-15",
+      "a": "Sao Hải Vương",
+      "b": "Sao Diêm Vương",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
+      "date": "2026-09-22",
+      "a": "Sao Thủy",
+      "b": "Sao Mộc",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
+      "date": "2026-09-26",
+      "a": "Mặt Trời",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-09-28",
+      "a": "Mặt Trời",
+      "b": "Sao Thiên Vương",
+      "aspect": "Tam hợp (Trine)"
     },
     {
       "date": "2026-10-02",
@@ -176,10 +278,34 @@
       "aspect": "Vuông (Square)"
     },
     {
+      "date": "2026-10-03",
+      "a": "Sao Hỏa",
+      "b": "Sao Hải Vương",
+      "aspect": "Tam hợp (Trine)"
+    },
+    {
+      "date": "2026-10-07",
+      "a": "Sao Hỏa",
+      "b": "Sao Thiên Vương",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
       "date": "2026-10-11",
       "a": "Sao Kim",
       "b": "Sao Hỏa",
       "aspect": "Vuông (Square)"
+    },
+    {
+      "date": "2026-10-15",
+      "a": "Mặt Trời",
+      "b": "Sao Mộc",
+      "aspect": "Lục phân (Sextile)"
+    },
+    {
+      "date": "2026-10-16",
+      "a": "Sao Hỏa",
+      "b": "Sao Thổ",
+      "aspect": "Tam hợp (Trine)"
     },
     {
       "date": "2026-10-26",
@@ -232,23 +358,397 @@
       "type": "station_retrograde"
     }
   ],
+  "dailyPressure": [
+    {
+      "date": "2026-08-04",
+      "score": 2.163
+    },
+    {
+      "date": "2026-08-05",
+      "score": 2.378
+    },
+    {
+      "date": "2026-08-06",
+      "score": 2.648
+    },
+    {
+      "date": "2026-08-07",
+      "score": 2.973
+    },
+    {
+      "date": "2026-08-08",
+      "score": 3.057
+    },
+    {
+      "date": "2026-08-09",
+      "score": 3.098
+    },
+    {
+      "date": "2026-08-10",
+      "score": 3.467
+    },
+    {
+      "date": "2026-08-11",
+      "score": 3.857
+    },
+    {
+      "date": "2026-08-12",
+      "score": 4.317
+    },
+    {
+      "date": "2026-08-13",
+      "score": 4.235
+    },
+    {
+      "date": "2026-08-14",
+      "score": 3.788
+    },
+    {
+      "date": "2026-08-15",
+      "score": 3.44
+    },
+    {
+      "date": "2026-08-16",
+      "score": 3.045
+    },
+    {
+      "date": "2026-08-17",
+      "score": 2.923
+    },
+    {
+      "date": "2026-08-18",
+      "score": 2.382
+    },
+    {
+      "date": "2026-08-19",
+      "score": 1.653
+    },
+    {
+      "date": "2026-08-20",
+      "score": 1.058
+    },
+    {
+      "date": "2026-08-21",
+      "score": 0.793
+    },
+    {
+      "date": "2026-08-22",
+      "score": 0.897
+    },
+    {
+      "date": "2026-08-23",
+      "score": 0.972
+    },
+    {
+      "date": "2026-08-24",
+      "score": 0.933
+    },
+    {
+      "date": "2026-08-25",
+      "score": 0.827
+    },
+    {
+      "date": "2026-08-26",
+      "score": 0.408
+    },
+    {
+      "date": "2026-08-27",
+      "score": -0.008
+    },
+    {
+      "date": "2026-08-28",
+      "score": -0.372
+    },
+    {
+      "date": "2026-08-29",
+      "score": 0.102
+    },
+    {
+      "date": "2026-08-30",
+      "score": 0.77
+    },
+    {
+      "date": "2026-08-31",
+      "score": 1.437
+    },
+    {
+      "date": "2026-09-01",
+      "score": 1.777
+    },
+    {
+      "date": "2026-09-02",
+      "score": 1.933
+    },
+    {
+      "date": "2026-09-03",
+      "score": 2.007
+    },
+    {
+      "date": "2026-09-04",
+      "score": 2.067
+    },
+    {
+      "date": "2026-09-05",
+      "score": 1.988
+    },
+    {
+      "date": "2026-09-06",
+      "score": 1.92
+    },
+    {
+      "date": "2026-09-07",
+      "score": 1.893
+    },
+    {
+      "date": "2026-09-08",
+      "score": 1.893
+    },
+    {
+      "date": "2026-09-09",
+      "score": 1.917
+    },
+    {
+      "date": "2026-09-10",
+      "score": 1.902
+    },
+    {
+      "date": "2026-09-11",
+      "score": 1.627
+    },
+    {
+      "date": "2026-09-12",
+      "score": 1.803
+    },
+    {
+      "date": "2026-09-13",
+      "score": 1.97
+    },
+    {
+      "date": "2026-09-14",
+      "score": 2.052
+    },
+    {
+      "date": "2026-09-15",
+      "score": 1.49
+    },
+    {
+      "date": "2026-09-16",
+      "score": 0.848
+    },
+    {
+      "date": "2026-09-17",
+      "score": 0.283
+    },
+    {
+      "date": "2026-09-18",
+      "score": 0.038
+    },
+    {
+      "date": "2026-09-19",
+      "score": 0.438
+    },
+    {
+      "date": "2026-09-20",
+      "score": 0.882
+    },
+    {
+      "date": "2026-09-21",
+      "score": 1.322
+    },
+    {
+      "date": "2026-09-22",
+      "score": 1.562
+    },
+    {
+      "date": "2026-09-23",
+      "score": 1.422
+    },
+    {
+      "date": "2026-09-24",
+      "score": 1.368
+    },
+    {
+      "date": "2026-09-25",
+      "score": 1.223
+    },
+    {
+      "date": "2026-09-26",
+      "score": 1.075
+    },
+    {
+      "date": "2026-09-27",
+      "score": 1.007
+    },
+    {
+      "date": "2026-09-28",
+      "score": 1.1
+    },
+    {
+      "date": "2026-09-29",
+      "score": 0.698
+    },
+    {
+      "date": "2026-09-30",
+      "score": 0.06
+    },
+    {
+      "date": "2026-10-01",
+      "score": -0.532
+    },
+    {
+      "date": "2026-10-02",
+      "score": -1.142
+    },
+    {
+      "date": "2026-10-03",
+      "score": -1.858
+    },
+    {
+      "date": "2026-10-04",
+      "score": -1.902
+    },
+    {
+      "date": "2026-10-05",
+      "score": -1.557
+    },
+    {
+      "date": "2026-10-06",
+      "score": -1.095
+    },
+    {
+      "date": "2026-10-07",
+      "score": -0.607
+    },
+    {
+      "date": "2026-10-08",
+      "score": -0.332
+    },
+    {
+      "date": "2026-10-09",
+      "score": -0.082
+    },
+    {
+      "date": "2026-10-10",
+      "score": 0.123
+    },
+    {
+      "date": "2026-10-11",
+      "score": 0.285
+    },
+    {
+      "date": "2026-10-12",
+      "score": 0.602
+    },
+    {
+      "date": "2026-10-13",
+      "score": 0.903
+    },
+    {
+      "date": "2026-10-14",
+      "score": 1.202
+    },
+    {
+      "date": "2026-10-15",
+      "score": 1.335
+    },
+    {
+      "date": "2026-10-16",
+      "score": 1.607
+    },
+    {
+      "date": "2026-10-17",
+      "score": 1.242
+    },
+    {
+      "date": "2026-10-18",
+      "score": 0.795
+    },
+    {
+      "date": "2026-10-19",
+      "score": 0.395
+    },
+    {
+      "date": "2026-10-20",
+      "score": 0.01
+    },
+    {
+      "date": "2026-10-21",
+      "score": -0.31
+    },
+    {
+      "date": "2026-10-22",
+      "score": -0.635
+    },
+    {
+      "date": "2026-10-23",
+      "score": -0.818
+    },
+    {
+      "date": "2026-10-24",
+      "score": -1.363
+    },
+    {
+      "date": "2026-10-25",
+      "score": -1.525
+    },
+    {
+      "date": "2026-10-26",
+      "score": -1.707
+    },
+    {
+      "date": "2026-10-27",
+      "score": -1.44
+    },
+    {
+      "date": "2026-10-28",
+      "score": -1.108
+    },
+    {
+      "date": "2026-10-29",
+      "score": -0.785
+    },
+    {
+      "date": "2026-10-30",
+      "score": -0.462
+    },
+    {
+      "date": "2026-10-31",
+      "score": -0.093
+    },
+    {
+      "date": "2026-11-01",
+      "score": 0.453
+    },
+    {
+      "date": "2026-11-02",
+      "score": 0.882
+    }
+  ],
+  "marketVerdict": {
+    "label": "✅ Đang THUẬN LỢI",
+    "colorKey": "favorable",
+    "currentScore": 2.163,
+    "nearTermAvg": 3.382,
+    "trend": 1.219,
+    "detail": "Điểm áp lực/thuận lợi hôm nay: +2.16 · Trung bình 10 ngày tới: +3.38 (đang cải thiện +1.22 điểm). Điểm dương = nghiêng thuận lợi (nhiều góc chiếu hài hòa/ít nghịch hành), điểm âm = nghiêng áp lực (nhiều góc chiếu căng thẳng/nhiều hành tinh nghịch hành cùng lúc). Đây là chỉ số TỔNG HỢP nhiều tín hiệu cùng lúc, không phải chỉ 1 sự kiện đơn lẻ — có thể trái chiều với 1 sự kiện cụ thể trong bảng dự báo bên dưới nếu các tín hiệu khác đang mạnh hơn."
+  },
   "houses": {
     "locationName": "Hà Nội",
-    "ascendant": 245.33,
-    "midheaven": 160.47,
+    "ascendant": 252.41,
+    "midheaven": 169.12,
     "cusps": [
-      245.33,
-      275.33,
-      305.33,
-      335.33,
-      5.33,
-      35.33,
-      65.33,
-      95.33,
-      125.33,
-      155.33,
-      185.33,
-      215.33
+      252.41,
+      282.41,
+      312.41,
+      342.41,
+      12.41,
+      42.41,
+      72.41,
+      102.41,
+      132.41,
+      162.41,
+      192.41,
+      222.41
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
@@ -274,54 +774,126 @@
     ],
     "aspectLines": [],
     "houseLines": [
+      "Mặt Trời đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"xu hướng chính, niềm tin thị trường\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
       "Mặt Trăng đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"tâm lý đám đông, biến động ngắn hạn\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
       "Sao Thủy đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"dòng thông tin, thanh khoản, hoạt động giao dịch\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
+      "Sao Mộc đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"mở rộng, tăng trưởng, tâm lý lạc quan\") đang được nhấn mạnh trong lĩnh vực Nhà 8.",
       "Sao Thổ đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
       "Sao Diêm Vương đang ở Nhà 2 (Tài sản/Tiền bạc — tài sản hữu hình, giá trị, dòng tiền cá nhân/doanh nghiệp) — chủ đề của hành tinh này (\"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\") đang được nhấn mạnh trong lĩnh vực Nhà 2."
     ]
   },
   "forecastTimeline": [
     {
+      "date": "2026-08-07",
+      "type": "aspect",
+      "title": "Mặt Trời Tam hợp (Trine) Sao Thổ",
+      "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-08-10",
+      "type": "aspect",
+      "title": "Sao Kim Tam hợp (Trine) Sao Diêm Vương",
+      "interpretation": "Liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-08-12",
+      "type": "aspect",
+      "title": "Sao Thủy Tam hợp (Trine) Sao Hải Vương",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"bong bóng định giá, sự mơ hồ/ảo tưởng thị trường\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-08-12",
+      "type": "aspect",
+      "title": "Sao Kim Tam hợp (Trine) Sao Thiên Vương",
+      "interpretation": "Liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
       "date": "2026-08-12",
       "type": "solar",
       "title": "Nhật thực",
       "interpretation": "Nhiều nhà phân tích chiêm tinh tài chính coi đây là \"mốc thời gian động\" lớn — thời điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường trong vài tuần quanh ngày này.",
-      "sentiment": "neutral"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-08-13",
+      "type": "aspect",
+      "title": "Sao Thủy Lục phân (Sextile) Sao Thiên Vương",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-08-13",
+      "type": "aspect",
+      "title": "Sao Thủy Lục phân (Sextile) Sao Kim",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-08-17",
       "type": "aspect",
       "title": "Sao Hỏa Vuông (Square) Sao Hải Vương",
       "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"bong bóng định giá, sự mơ hồ/ảo tưởng thị trường\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-08-17",
+      "type": "aspect",
+      "title": "Sao Thủy Tam hợp (Trine) Sao Thổ",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-08-17",
+      "type": "aspect",
+      "title": "Sao Kim Lục phân (Sextile) Sao Mộc",
+      "interpretation": "Liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" và \"mở rộng, tăng trưởng, tâm lý lạc quan\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-08-28",
       "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Thiên Vương",
       "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
     },
     {
       "date": "2026-08-28",
       "type": "lunar",
       "title": "Nguyệt thực",
       "interpretation": "Tương tự nhật thực, được coi là mốc thời gian động — thường liên quan tới biến động tâm lý đám đông/thanh khoản ngắn hạn.",
-      "sentiment": "neutral"
+      "sentiment": "tension"
     },
     {
       "date": "2026-08-29",
       "type": "aspect",
       "title": "Mặt Trời Vuông (Square) Sao Thiên Vương",
       "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-09-01",
+      "type": "aspect",
+      "title": "Sao Mộc Tam hợp (Trine) Sao Thổ",
+      "interpretation": "Liên quan \"mở rộng, tăng trưởng, tâm lý lạc quan\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-09-01",
       "type": "aspect",
       "title": "Sao Hỏa Vuông (Square) Sao Thổ",
       "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-09-01",
+      "type": "aspect",
+      "title": "Sao Thủy Lục phân (Sextile) Sao Hỏa",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-09-10",
@@ -331,25 +903,81 @@
       "sentiment": "negative"
     },
     {
+      "date": "2026-09-12",
+      "type": "aspect",
+      "title": "Sao Thủy Tam hợp (Trine) Sao Diêm Vương",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-09-14",
+      "type": "aspect",
+      "title": "Sao Thủy Tam hợp (Trine) Sao Thiên Vương",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-09-15",
+      "type": "aspect",
+      "title": "Mặt Trời Lục phân (Sextile) Sao Hỏa",
+      "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
+    },
+    {
       "date": "2026-09-15",
       "type": "aspect",
       "title": "Sao Kim Vuông (Square) Sao Diêm Vương",
       "interpretation": "Liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-09-15",
+      "type": "aspect",
+      "title": "Sao Hải Vương Lục phân (Sextile) Sao Diêm Vương",
+      "interpretation": "Liên quan \"bong bóng định giá, sự mơ hồ/ảo tưởng thị trường\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-09-22",
+      "type": "aspect",
+      "title": "Sao Thủy Lục phân (Sextile) Sao Mộc",
+      "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"mở rộng, tăng trưởng, tâm lý lạc quan\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-09-26",
+      "type": "aspect",
+      "title": "Mặt Trời Tam hợp (Trine) Sao Diêm Vương",
+      "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-09-28",
+      "type": "aspect",
+      "title": "Mặt Trời Tam hợp (Trine) Sao Thiên Vương",
+      "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-10-02",
       "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Hỏa",
       "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
     },
     {
       "date": "2026-10-03",
       "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Diêm Vương",
       "interpretation": "Liên quan \"dòng thông tin, thanh khoản, hoạt động giao dịch\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-10-03",
+      "type": "aspect",
+      "title": "Sao Hỏa Tam hợp (Trine) Sao Hải Vương",
+      "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"bong bóng định giá, sự mơ hồ/ảo tưởng thị trường\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-10-03",
@@ -359,17 +987,38 @@
       "sentiment": "negative"
     },
     {
+      "date": "2026-10-07",
+      "type": "aspect",
+      "title": "Sao Hỏa Lục phân (Sextile) Sao Thiên Vương",
+      "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"biến động đột ngột/cú sốc, nhóm công nghệ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
+    },
+    {
       "date": "2026-10-11",
       "type": "aspect",
       "title": "Sao Kim Vuông (Square) Sao Hỏa",
       "interpretation": "Liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
+    },
+    {
+      "date": "2026-10-15",
+      "type": "aspect",
+      "title": "Mặt Trời Lục phân (Sextile) Sao Mộc",
+      "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"mở rộng, tăng trưởng, tâm lý lạc quan\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive"
     },
     {
       "date": "2026-10-15",
       "type": "station_direct",
       "title": "Sao Diêm Vương thuận hành trở lại",
       "interpretation": "Đánh dấu thời điểm năng lượng bị dồn nén trong giai đoạn Sao Diêm Vương nghịch hành trước đó được GIẢI PHÓNG — thị trường dễ có biến động rõ rệt quanh mốc này.",
+      "sentiment": "positive"
+    },
+    {
+      "date": "2026-10-16",
+      "type": "aspect",
+      "title": "Sao Hỏa Tam hợp (Trine) Sao Thổ",
+      "interpretation": "Liên quan \"biến động mạnh, hoạt động đầu cơ\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
       "sentiment": "positive"
     },
     {
@@ -384,7 +1033,7 @@
       "type": "aspect",
       "title": "Mặt Trời Vuông (Square) Sao Diêm Vương",
       "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc\" — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "negative"
+      "sentiment": "tension"
     }
   ]
 }

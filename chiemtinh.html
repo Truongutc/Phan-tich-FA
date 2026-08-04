@@ -32,7 +32,19 @@
         .astro-badge.lunar { background: #8b5cf622; color: #8b5cf6; }
         .astro-sentiment-positive { color: #10b981; font-weight: 600; }
         .astro-sentiment-negative { color: #ef4444; font-weight: 600; }
+        .astro-sentiment-tension { color: #f59e0b; font-weight: 600; }
         .astro-sentiment-neutral { color: var(--text-main, #f3f4f6); }
+        .astro-badge.tension { background: #f59e0b22; color: #f59e0b; }
+        .astro-verdict-banner {
+            margin-top: 14px; padding: 18px 22px; border-radius: 12px; border-left: 5px solid;
+            font-size: 1.1em; font-weight: 700;
+        }
+        .astro-verdict-banner.favorable { border-color: #10b981; background: rgba(16,185,129,0.08); color: #10b981; }
+        .astro-verdict-banner.risk { border-color: #ef4444; background: rgba(239,68,68,0.08); color: #ef4444; }
+        .astro-verdict-banner.reversal_up { border-color: #10b981; background: rgba(16,185,129,0.08); color: #10b981; }
+        .astro-verdict-banner.reversal_down { border-color: #ef4444; background: rgba(239,68,68,0.08); color: #ef4444; }
+        .astro-verdict-banner.neutral { border-color: #9ca3af; background: rgba(156,163,175,0.08); color: #9ca3af; }
+        .astro-verdict-detail { font-size: 0.75em; font-weight: 400; color: var(--text-muted, #9ca3af); margin-top: 8px; line-height: 1.6; }
         .astro-cycle-tool { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-top: 12px; }
         .astro-cycle-tool label { display: block; font-size: 0.8em; color: var(--text-muted, #9ca3af); margin-bottom: 4px; }
         .astro-cycle-tool input, .astro-cycle-tool select {
@@ -94,8 +106,15 @@
         <!-- Kết luận tổng thể -->
         <div class="card margin-top-20" id="assessment-overall-card" style="display:none">
             <h3 class="border-purple">🧭 Kết luận Tổng thể</h3>
-            <p class="vimo-synthesis-text" id="assessment-overall" style="font-weight:600"></p>
+            <div class="astro-verdict-banner" id="verdict-banner">
+                <div id="verdict-label">—</div>
+                <div class="astro-verdict-detail" id="verdict-detail"></div>
+            </div>
+            <p class="vimo-synthesis-text" id="assessment-overall" style="font-weight:600;margin-top:14px"></p>
             <p class="astro-generated-note" id="astro-sun-moon-today"></p>
+            <p class="astro-section-title" style="margin-top:16px">📈 Chỉ số Áp lực/Thuận lợi Thị trường (90 ngày)</p>
+            <p class="vimo-synthesis-text" style="font-size:0.85em">Đường LIÊN TỤC (không chỉ các mốc rời rạc) — tổng hợp nghịch hành + góc chiếu của TẤT CẢ hành tinh (trừ Mặt Trăng) đang trong orb mỗi ngày. Trên mốc "0" (nét đứt) = nghiêng thuận lợi, dưới mốc 0 = nghiêng áp lực. Cho biết diễn biến GIỮA các sự kiện trong bảng dự báo bên dưới, không chỉ tại đúng ngày sự kiện.</p>
+            <div id="astro-pressure-chart-container"></div>
         </div>
 
         <!-- Biểu đồ sao -->
@@ -133,7 +152,7 @@
         <!-- Dự báo giai đoạn tới -->
         <div class="card margin-top-20" id="forecast-card" style="display:none">
             <h3 class="border-purple">📅 Dự báo Giai đoạn Tới (90 ngày)</h3>
-            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. <span class="astro-sentiment-positive">Chữ xanh</span> = theo lý thuyết truyền thống thường thuận lợi cho thị trường; <span class="astro-sentiment-negative">chữ đỏ</span> = thường tạo căng thẳng/áp lực giảm; chữ trắng = trung tính/không rõ chiều.</p>
+            <p class="vimo-synthesis-text">Dòng thời gian hợp nhất góc chiếu chính xác sắp tới, ngày nhật/nguyệt thực, và ngày hành tinh đổi chiều nghịch hành/thuận hành — sắp xếp theo thời gian gần nhất trước. Đây là các mốc NGÀY CHÍNH XÁC (exact) — ảnh hưởng thực tế thường trải dài vài ngày quanh mốc đó (xem biểu đồ Áp lực/Thuận lợi liên tục ở trên để biết diễn biến GIỮA 2 mốc). <span class="astro-sentiment-positive">Chữ xanh</span> = theo lý thuyết truyền thống thường thuận lợi; <span class="astro-sentiment-tension">chữ cam</span> = CĂNG THẲNG/biến động mạnh (KHÔNG khẳng định tăng hay giảm — góc vuông/xung chỉ báo hiệu biến động, không có chiều rõ ràng theo đúng lý thuyết); <span class="astro-sentiment-negative">chữ đỏ</span> = tín hiệu tương đối một chiều theo lý thuyết truyền thống (hành tinh bắt đầu nghịch hành).</p>
             <div style="overflow-x:auto"><table class="astro-table" id="astro-forecast-table"></table></div>
         </div>
 
@@ -170,7 +189,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=4"></script>
+<script src="app_chiemtinh.js?v=5"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

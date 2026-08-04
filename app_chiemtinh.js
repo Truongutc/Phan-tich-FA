@@ -38,10 +38,57 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderPositionsTable(data.positions);
     renderCurrentAspectsTable(data.currentAspects);
     renderHousesTable(data.positions, data.houses);
+    renderVerdictBanner(data.marketVerdict);
+    renderPressureChart(data.dailyPressure);
     renderAssessment(data.currentAssessment);
     renderForecastTimeline(data.forecastTimeline);
     initCycleTool();
 });
+
+function renderVerdictBanner(verdict) {
+    const banner = document.getElementById('verdict-banner');
+    if (!banner || !verdict) return;
+    banner.className = `astro-verdict-banner ${verdict.colorKey}`;
+    const labelEl = document.getElementById('verdict-label');
+    const detailEl = document.getElementById('verdict-detail');
+    if (labelEl) labelEl.textContent = verdict.label;
+    if (detailEl) detailEl.textContent = verdict.detail;
+}
+
+function renderPressureChart(series) {
+    const container = document.getElementById('astro-pressure-chart-container');
+    if (!container || !series || !series.length) return;
+
+    const w = 900, h = 220, padL = 40, padR = 10, padT = 10, padB = 24;
+    const scores = series.map(p => p.score);
+    const minS = Math.min(...scores, 0), maxS = Math.max(...scores, 0);
+    const range = (maxS - minS) || 1;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+
+    const xAt = i => padL + (i / (series.length - 1)) * plotW;
+    const yAt = s => padT + plotH - ((s - minS) / range) * plotH;
+    const zeroY = yAt(0);
+
+    const linePoints = series.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p.score).toFixed(1)}`).join(' ');
+    const areaPoints = `${padL.toFixed(1)},${zeroY.toFixed(1)} ` + linePoints + ` ${xAt(series.length - 1).toFixed(1)},${zeroY.toFixed(1)}`;
+
+    let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
+    svg += `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${w - padR}" y2="${zeroY.toFixed(1)}" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,4"/>`;
+    svg += `<polygon points="${areaPoints}" fill="#8b5cf622"/>`;
+    svg += `<polyline points="${linePoints}" fill="none" stroke="#8b5cf6" stroke-width="2"/>`;
+    // Nhãn ngày mỗi ~10 ngày
+    series.forEach((p, i) => {
+        if (i % 10 === 0 || i === series.length - 1) {
+            const x = xAt(i);
+            svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
+            svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(p.date).slice(0, 5)}</text>`;
+        }
+    });
+    svg += `<text x="${padL - 6}" y="${padT + 4}" fill="#9ca3af" font-size="10" text-anchor="end">${maxS.toFixed(1)}</text>`;
+    svg += `<text x="${padL - 6}" y="${(h - padB).toFixed(1)}" fill="#9ca3af" font-size="10" text-anchor="end">${minS.toFixed(1)}</text>`;
+    svg += `</svg>`;
+    container.innerHTML = svg;
+}
 
 function renderSunMoonToday(positions) {
     const el = document.getElementById('astro-sun-moon-today');
@@ -147,8 +194,8 @@ function renderAssessment(assessment) {
     }
 }
 
-const SENTIMENT_CLASS = { positive: 'astro-sentiment-positive', negative: 'astro-sentiment-negative', neutral: 'astro-sentiment-neutral' };
-const SENTIMENT_BADGE = { positive: 'soft', negative: 'hard', neutral: 'solar' };
+const SENTIMENT_CLASS = { positive: 'astro-sentiment-positive', negative: 'astro-sentiment-negative', tension: 'astro-sentiment-tension', neutral: 'astro-sentiment-neutral' };
+const SENTIMENT_BADGE = { positive: 'soft', negative: 'hard', tension: 'tension', neutral: 'solar' };
 const EVENT_ICON = { aspect: '🪐', solar: '☀️', lunar: '🌕', station_retrograde: '℞', station_direct: '➡️' };
 
 function renderForecastTimeline(events) {

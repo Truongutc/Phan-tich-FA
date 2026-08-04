@@ -86,20 +86,63 @@ ASPECT_TONE = {
 # chiếu chỉ liên quan Mặt Trời/Mặt Trăng/hành tinh nhanh (vốn đổi liên tục, chỉ tạo biến động ngày).
 SLOW_PLANETS = {"Sao Mộc", "Sao Thổ", "Sao Thiên Vương", "Sao Hải Vương", "Sao Diêm Vương"}
 
-# Chiều hướng (sentiment) RULE-BASED cho bảng dự báo (user 2026-08-04: "sự kiện tốt cho thị trường
-# đi lên thì chữ xanh lá, căng thẳng áp lực đi xuống thì chữ đỏ") — theo cách hiểu PHỔ BIẾN của
-# chiêm tinh tài chính: góc chiếu "cứng căng thẳng" (vuông/xung) = negative; góc chiếu "hài hòa"
-# (tam hợp/lục phân) = positive; hợp (conjunction) mang tính khởi đầu trung tính, phụ thuộc 2 hành
-# tinh liên quan nên để neutral; hành tinh BẮT ĐẦU nghịch hành = negative (bất định/rủi ro tăng);
-# hành tinh THUẬN HÀNH TRỞ LẠI = positive (năng lượng dồn nén được giải phóng/rõ ràng trở lại);
-# nhật/nguyệt thực = neutral (tín hiệu BIẾN ĐỘNG MẠNH, không mang tính định hướng tăng/giảm rõ).
+# Chiều hướng (sentiment) RULE-BASED cho bảng dự báo. SỬA LẠI (user 2026-08-04 chỉ ra bảng dự báo
+# "đỏ lòe hết cả" suốt 2 tháng, hỏi thẳng "giữa 2 mốc thì thị trường lên hay xuống") — lỗi thiết kế
+# TRƯỚC ĐÓ: gán Vuông/Xung = "negative" (đỏ) ngầm khẳng định "sẽ giảm", trong khi đúng lý thuyết
+# chiêm tinh tài chính, góc chiếu CỨNG chỉ có nghĩa CĂNG THẲNG/BIẾN ĐỘNG MẠNH — CÓ THỂ đi lên hoặc
+# xuống, không có chiều rõ ràng. Sửa: tách riêng "tension" (màu hổ phách/cam — biến động mạnh,
+# KHÔNG khẳng định chiều) khỏi "negative" thật (chỉ dành cho tín hiệu tương đối MỘT CHIỀU theo lý
+# thuyết truyền thống: hành tinh BẮT ĐẦU nghịch hành). Tam hợp/lục phân (hài hòa) = positive.
+# Hợp (conjunction, khởi đầu) = neutral. Hành tinh THUẬN HÀNH TRỞ LẠI = positive (giải phóng/rõ
+# ràng). Nhật/nguyệt thực = tension (biến động mạnh, không rõ chiều — giống vuông/xung).
 ASPECT_SENTIMENT = {
     "Hợp (Conjunction)": "neutral",
-    "Vuông (Square)": "negative",
-    "Xung (Opposition)": "negative",
+    "Vuông (Square)": "tension",
+    "Xung (Opposition)": "tension",
     "Tam hợp (Trine)": "positive",
     "Lục phân (Sextile)": "positive",
 }
+
+
+def build_market_verdict(daily_pressure_series):
+    """Kết luận TỔNG QUÁT ở đầu trang (user 2026-08-04: "hiện tại đang thuận hay đang rủi ro xấu,
+    hay đang chuẩn bị đảo chiều tăng, đảo chiều giảm") — dựa trên build_daily_pressure_series()
+    (fetch_astro_data.py): điểm HÔM NAY (current_score) so với điểm TRUNG BÌNH 10 ngày tới
+    (near_term_avg) để phát hiện xu hướng đang cải thiện/xấu đi, không chỉ nhìn 1 thời điểm. Trả
+    {label, colorKey, currentScore, nearTermAvg, detail}."""
+    if not daily_pressure_series:
+        return None
+    current_score = daily_pressure_series[0]["score"]
+    near_term = daily_pressure_series[1:11]
+    near_term_avg = round(sum(p["score"] for p in near_term) / len(near_term), 3) if near_term else current_score
+    trend = round(near_term_avg - current_score, 3)
+
+    FAV_THRESHOLD, TREND_THRESHOLD = 0.8, 0.5
+    is_favorable_now = current_score > FAV_THRESHOLD
+    is_risky_now = current_score < -FAV_THRESHOLD
+    improving = trend > TREND_THRESHOLD
+    worsening = trend < -TREND_THRESHOLD
+
+    if is_risky_now and improving:
+        label, color_key = "🔄 Đang chịu áp lực nhưng có dấu hiệu CHUẨN BỊ ĐẢO CHIỀU TĂNG", "reversal_up"
+    elif is_favorable_now and worsening:
+        label, color_key = "🔄 Đang thuận lợi nhưng có dấu hiệu CHUẨN BỊ ĐẢO CHIỀU GIẢM", "reversal_down"
+    elif is_risky_now:
+        label, color_key = "⚠️ Đang chịu ÁP LỰC/RỦI RO", "risk"
+    elif is_favorable_now:
+        label, color_key = "✅ Đang THUẬN LỢI", "favorable"
+    else:
+        label, color_key = "⚪ TRUNG TÍNH — chưa có tín hiệu rõ ràng", "neutral"
+
+    detail = (f"Điểm áp lực/thuận lợi hôm nay: {current_score:+.2f} · Trung bình 10 ngày tới: "
+              f"{near_term_avg:+.2f} ({'đang cải thiện' if trend > 0 else 'đang xấu đi' if trend < 0 else 'ổn định'} "
+              f"{abs(trend):+.2f} điểm). Điểm dương = nghiêng thuận lợi (nhiều góc chiếu hài hòa/ít nghịch hành), "
+              f"điểm âm = nghiêng áp lực (nhiều góc chiếu căng thẳng/nhiều hành tinh nghịch hành cùng lúc). "
+              f"Đây là chỉ số TỔNG HỢP nhiều tín hiệu cùng lúc, không phải chỉ 1 sự kiện đơn lẻ — có thể trái "
+              f"chiều với 1 sự kiện cụ thể trong bảng dự báo bên dưới nếu các tín hiệu khác đang mạnh hơn.")
+
+    return {"label": label, "colorKey": color_key, "currentScore": current_score,
+            "nearTermAvg": near_term_avg, "trend": trend, "detail": detail}
 
 
 def build_current_assessment(positions, current_aspects):
@@ -184,7 +227,7 @@ def build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations,
                                 "quanh ngày này." if is_solar else
                                 "Tương tự nhật thực, được coi là mốc thời gian động — thường liên quan tới biến động "
                                 "tâm lý đám đông/thanh khoản ngắn hạn."),
-            "sentiment": "neutral",
+            "sentiment": "tension",
         })
 
     for s in retro_stations:
@@ -218,9 +261,13 @@ def build_astro_data():
         for name, lon in positions_raw.items()
     ]
     current_aspects = astro.find_current_aspects(positions_raw, orb=3.0)
-    upcoming_aspects = astro.find_upcoming_exact_aspects(days_ahead=FORECAST_DAYS_AHEAD, step_hours=6)
+    # only_hard=False (SỬA user 2026-08-04): trước đây chỉ lấy góc chiếu cứng khiến bảng dự báo
+    # toàn màu căng thẳng suốt 2 tháng, không có đối trọng — giờ lấy CẢ góc chiếu mềm (tam hợp/lục
+    # phân) để bức tranh cân bằng, đúng thực tế hơn (không phải lúc nào cũng chỉ có căng thẳng).
+    upcoming_aspects = astro.find_upcoming_exact_aspects(days_ahead=FORECAST_DAYS_AHEAD, step_hours=6, only_hard=False)
     upcoming_eclipses = astro.find_upcoming_eclipses(months_ahead=12)
     retro_stations = astro.find_retrograde_stations(days_ahead=FORECAST_DAYS_AHEAD, step_hours=12)
+    daily_pressure = astro.build_daily_pressure_series(days_ahead=FORECAST_DAYS_AHEAD)
 
     out = {
         "generatedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -229,6 +276,8 @@ def build_astro_data():
         "upcomingAspects": upcoming_aspects,
         "upcomingEclipses": upcoming_eclipses,
         "retroStations": retro_stations,
+        "dailyPressure": daily_pressure,
+        "marketVerdict": build_market_verdict(daily_pressure),
         "houses": {
             "locationName": astro.HOUSE_LOCATION_NAME, "ascendant": round(ascendant, 2),
             "midheaven": round(midheaven, 2), "cusps": [round(c, 2) for c in house_cusps],
