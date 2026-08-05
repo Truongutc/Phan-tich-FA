@@ -244,7 +244,7 @@ function renderBacktestChart(backtest) {
         }
         endIdx = Math.min(astroTimes.length - 1, endIdx + 1);
 
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 2.4;
         for (let i = startIdx; i < endIdx; i++) {
             const x1 = chart.timeScale().timeToCoordinate(astroTimes[i]);
             const y1 = astroAnchor.priceToCoordinate(astroSeries[i].score);
