@@ -173,8 +173,12 @@ function renderBacktestChart(backtest) {
     }
     card.style.display = 'block';
 
-    const astroSeries = backtest.astro; // [{date, score}] đủ mỗi ngày lịch, tăng dần theo thời gian
+    const astroSeriesAll = backtest.astro; // [{date, score}] đủ mỗi ngày lịch
     const vnSeries = backtest.vnindex;  // [{date, close}] chỉ các phiên giao dịch thật
+
+    // Tạo Set các ngày giao dịch của VN-Index để lọc astroSeries khớp 1:1 theo phiên giao dịch
+    const vnDateSet = new Set(vnSeries.map(p => p.date));
+    const astroSeries = astroSeriesAll.filter(p => vnDateSet.has(p.date));
 
     const chart = LightweightCharts.createChart(container, {
         ...LWC_THEME,
@@ -194,19 +198,6 @@ function renderBacktestChart(backtest) {
     // Chỉ số áp lực/thuận lợi chiêm tinh (trục trái) — tô XANH khi tăng so với hôm trước, ĐỎ khi
     // giảm (user yêu cầu, để đối chiếu trực quan với chiều VN-Index), vẽ dạng ĐƯỜNG liền (không
     // phải cột) để đọc dễ như biểu đồ dự báo phía trên.
-    //
-    // LƯU Ý (lịch sử sửa lỗi 2026-08-04) — 3 cách trước đều không ổn:
-    //  (a) 2 LineSeries đè nhau dùng whitespace tạo khoảng trống: Lightweight Charts không cắt
-    //      line qua whitespace giữa chừng, mỗi series tự nối thẳng qua chỗ trống thành 2 đường
-    //      méo mó riêng ("nhìn như 2 đường chiêm tinh khác nhau" — user phản ánh đúng).
-    //  (b) tách thành ~830 LineSeries riêng (1 đoạn tăng/giảm liên tục = 1 series): hình đúng
-    //      nhưng trang tải chậm hẳn (~17s, quá nhiều series).
-    //  (c) HistogramSeries (dạng cột, native per-point color): nhanh + đúng màu, nhưng user thấy
-    //      dạng cột khó nhìn hơn dạng đường liền như biểu đồ dự báo phía trên.
-    // FIX ĐÚNG: tự vẽ đường bằng 1 <canvas> overlay đặt CHỒNG lên chart (pointer-events:none, chart
-    // gốc vẫn nhận mọi thao tác zoom/pan/crosshair bình thường) — dùng timeToCoordinate/
-    // priceToCoordinate của CHÍNH chart để đồng bộ tọa độ, vẽ lại mỗi khi phạm vi xem đổi (pan/
-    // zoom), chỉ vẽ phần đang hiển thị nên rất nhẹ (không phụ thuộc việc render/số lượng Series).
     const astroAnchor = chart.addLineSeries({
         // series "neo" vô hình — chỉ để tra priceToCoordinate đúng theo trục trái, không hiện line thật
         priceScaleId: 'left', color: 'transparent', lineWidth: 1, lineVisible: false,
@@ -216,7 +207,7 @@ function renderBacktestChart(backtest) {
 
     const astroTimes = astroSeries.map(p => _d2ts(p.date));
     const astroByDate = {};
-    astroSeries.forEach(p => { astroByDate[p.date] = p.score; });
+    astroSeriesAll.forEach(p => { astroByDate[p.date] = p.score; });
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;';
     container.appendChild(canvas);
