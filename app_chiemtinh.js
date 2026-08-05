@@ -210,21 +210,19 @@ function renderBacktestChart(backtest) {
     astroSeriesAll.forEach(p => { astroByDate[p.date] = p.score; });
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:2;';
-    
-    // Đặt canvas overlay vào ĐÚNG khung vẽ (pane container) của Lightweight Charts thay vì container tổng ngoài cùng.
-    // Trục giá trái (leftPriceScale) chiếm khoảng ~50-60px bên trái container tổng.
-    // Hàm timeToCoordinate() trả về tọa độ pixel tính từ mép trái của vùng vẽ (Plot Area).
-    // Nếu gắn canvas ở container tổng ngoài cùng (left:0), đường vẽ sẽ bị lệch sang trái đúng bằng chiều rộng trục trái.
-    // Khi zoom out (mỗi bar chỉ 2px), lệch 50px = lệch 25 ngày! Khi zoom in (mỗi bar 10px), lệch 50px = 5 ngày.
-    // Gắn canvas vào parentElement của chart canvas sẽ giúp gốc (0,0) của canvas trùng 100% với Plot Area.
-    const chartCanvas = container.querySelector('canvas');
-    const paneContainer = chartCanvas ? chartCanvas.parentElement : container;
-    if (paneContainer !== container) {
-        paneContainer.style.position = 'relative';
-    }
-    paneContainer.appendChild(canvas);
+
+    // Đặt canvas overlay vào ĐÚNG khung vẽ (pane container) của Lightweight Charts thay vì container
+    // tổng ngoài cùng — trục giá trái chiếm ~50-60px bên trái container tổng, và timeToCoordinate()
+    // trả về tọa độ tính từ mép trái vùng vẽ (Plot Area), KHÔNG phải mép trái container tổng. Gắn
+    // canvas ở container tổng (left:0) khiến đường vẽ lệch sang trái đúng bằng bề rộng trục trái —
+    // lệch cố định theo PIXEL, nên số NGÀY lệch tương ứng thay đổi theo mức zoom (zoom ra mỗi bar
+    // chỉ 2px thì lệch 50px = lệch tới 25 ngày; zoom vào mỗi bar 10px thì lệch 50px chỉ ~5 ngày) —
+    // đúng như hiện tượng user mô tả xuyên suốt (khớp khi zoom vào, lệch nhiều khi zoom ra).
+    // Gắn canvas vào parentElement của canvas-vùng-vẽ-chính sẽ giúp gốc (0,0) trùng 100% với Plot Area.
+    let paneContainer = null; // gán sau khi layout ban đầu của chart đã ổn định, xem bên dưới
 
     function drawAstroOverlayNow() {
+        if (!paneContainer) return; // canvas overlay chưa gắn xong (đang chờ layout ổn định)
         const rect = paneContainer.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         canvas.width = rect.width * dpr;
@@ -305,6 +303,23 @@ function renderBacktestChart(backtest) {
         drawAstroOverlay();
     });
     ro.observe(container);
+
+    // Trì hoãn 2 khung hình (double requestAnimationFrame) trước khi ĐO/chọn canvas vùng-vẽ-chính —
+    // ngay sau createChart(), canvas nội bộ của Lightweight Charts vẫn còn ở kích thước MẶC ĐỊNH của
+    // thẻ <canvas> (300x150), CHƯA được layout lại theo kích thước thật; đo sớm sẽ luôn chọn nhầm
+    // (từng xảy ra: chartCanvas.width đọc được là 300 thay vì 1110 thực tế). Đợi ổn định layout rồi
+    // mới tìm canvas RỘNG NHẤT trong số các canvas con (canvas trục trái/phải luôn hẹp hơn nhiều —
+    // ví dụ 52/48px — so với canvas vùng vẽ chính, ví dụ 1110px).
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        const allCanvases = Array.from(container.querySelectorAll('canvas'));
+        const chartCanvas = allCanvases.reduce((widest, c) => (c.width > (widest ? widest.width : 0) ? c : widest), null);
+        paneContainer = chartCanvas ? chartCanvas.parentElement : container;
+        if (paneContainer !== container) {
+            paneContainer.style.position = 'relative';
+        }
+        paneContainer.appendChild(canvas);
+        drawAstroOverlayNow();
+    }));
 }
 
 function renderSunMoonToday(positions) {
