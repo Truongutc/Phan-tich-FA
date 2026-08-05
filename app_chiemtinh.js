@@ -109,7 +109,7 @@ function renderPressureChart(series) {
     // Vẽ từng đoạn line, tô màu theo chiều tăng/giảm so với ngày trước
     for (let i = 0; i < series.length - 1; i++) {
         const rising = scores[i + 1] >= scores[i];
-        svg += `<line x1="${xAt(i).toFixed(1)}" y1="${yAt(scores[i]).toFixed(1)}" x2="${xAt(i + 1).toFixed(1)}" y2="${yAt(scores[i + 1]).toFixed(1)}" stroke="${rising ? UP : DOWN}" stroke-width="2.5"/>`;
+        svg += `<line x1="${xAt(i).toFixed(1)}" y1="${yAt(scores[i]).toFixed(1)}" x2="${xAt(i + 1).toFixed(1)}" y2="${yAt(scores[i + 1]).toFixed(1)}" stroke="${rising ? UP : DOWN}" stroke-width="3.5"/>`;
     }
 
     // Lưới ngày trục hoành (mỗi ~10 ngày)
@@ -215,6 +215,8 @@ function renderBacktestChart(backtest) {
     astroAnchor.setData(astroSeries.map(p => ({ time: _d2ts(p.date), value: p.score })));
 
     const astroTimes = astroSeries.map(p => _d2ts(p.date));
+    const astroByDate = {};
+    astroSeries.forEach(p => { astroByDate[p.date] = p.score; });
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;';
     container.appendChild(canvas);
@@ -268,6 +270,24 @@ function renderBacktestChart(backtest) {
         requestAnimationFrame(() => { rafScheduled = false; drawAstroOverlayNow(); });
     }
     chart.timeScale().subscribeVisibleTimeRangeChange(drawAstroOverlay);
+
+    // Chú thích theo con trỏ chuột — hiện ĐÚNG giá trị 2 đường TẠI CÙNG 1 NGÀY khi di chuột, để tự
+    // đối chiếu chính xác thay vì áng chừng bằng mắt (biểu đồ nhiều điểm dao động rất dễ nhìn nhầm
+    // sang đỉnh/đáy lân cận — user 2026-08-04 nghi ngờ lệch ngày; đã verify bằng cách so khớp từng
+    // pixel màu thật trên canvas, tọa độ tính đúng 100%, không có lỗi — nhưng vẫn thêm chú thích này
+    // để không ai phải đoán bằng mắt nữa).
+    const legendEl = document.getElementById('astro-backtest-legend');
+    if (legendEl) {
+        chart.subscribeCrosshairMove(param => {
+            if (!param || !param.time) return;
+            const dateStr = new Date(param.time * 1000).toISOString().slice(0, 10);
+            const vnData = param.seriesData.get(vnLine);
+            const astroScore = astroByDate[dateStr];
+            const vnPart = vnData ? `<b>${vnData.value.toFixed(1)}</b>` : '<span style="color:#6b7280">không có phiên</span>';
+            const astroPart = typeof astroScore === 'number' ? `<b>${astroScore >= 0 ? '+' : ''}${astroScore.toFixed(2)}</b>` : '—';
+            legendEl.innerHTML = `Ngày <b>${_fmtDate(dateStr)}</b>: VN-Index ${vnPart} · Chỉ số chiêm tinh ${astroPart}`;
+        });
+    }
 
     // Mặc định hiển thị ~1 năm gần nhất; cuộn chuột/pinch để zoom ra xa xem hết 10 năm, kéo để pan
     const fromIdx = Math.max(0, astroSeries.length - 366);
