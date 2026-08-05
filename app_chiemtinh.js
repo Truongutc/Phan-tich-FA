@@ -209,11 +209,23 @@ function renderBacktestChart(backtest) {
     const astroByDate = {};
     astroSeriesAll.forEach(p => { astroByDate[p.date] = p.score; });
     const canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;';
-    container.appendChild(canvas);
+    canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:2;';
+    
+    // Đặt canvas overlay vào ĐÚNG khung vẽ (pane container) của Lightweight Charts thay vì container tổng ngoài cùng.
+    // Trục giá trái (leftPriceScale) chiếm khoảng ~50-60px bên trái container tổng.
+    // Hàm timeToCoordinate() trả về tọa độ pixel tính từ mép trái của vùng vẽ (Plot Area).
+    // Nếu gắn canvas ở container tổng ngoài cùng (left:0), đường vẽ sẽ bị lệch sang trái đúng bằng chiều rộng trục trái.
+    // Khi zoom out (mỗi bar chỉ 2px), lệch 50px = lệch 25 ngày! Khi zoom in (mỗi bar 10px), lệch 50px = 5 ngày.
+    // Gắn canvas vào parentElement của chart canvas sẽ giúp gốc (0,0) của canvas trùng 100% với Plot Area.
+    const chartCanvas = container.querySelector('canvas');
+    const paneContainer = chartCanvas ? chartCanvas.parentElement : container;
+    if (paneContainer !== container) {
+        paneContainer.style.position = 'relative';
+    }
+    paneContainer.appendChild(canvas);
 
     function drawAstroOverlayNow() {
-        const rect = container.getBoundingClientRect();
+        const rect = paneContainer.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
