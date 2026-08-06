@@ -80,32 +80,37 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/vimo_raw.json data/vimo.json data/vnindex_valuation_history.json "Bao cao/VIMO/" 2>/dev/null || true
+          # KHÔNG dùng "git rebase origin/master" ở đây — data/vimo*.json là file GHI ĐÈ TOÀN BỘ
+          # mỗi lần chạy (không phải sửa từng dòng), nên nếu remote ĐÃ có 1 bản ghi đè khác, rebase
+          # sẽ conflict CHẮC CHẮN (không phải race condition thoáng qua) — thử lại nhiều lần vẫn
+          # conflict y hệt, dẫn tới job fail dù dữ liệu tính ra hoàn toàn đúng (đã xác nhận xảy ra
+          # thật với update_astro.yml cùng pattern, 2026-08-06). Dùng "git reset --soft" mỗi vòng
+          # lặp: đưa nhánh về đúng đầu remote MỚI NHẤT rồi commit LẠI đúng file trên đĩa (không đổi)
+          # — không bao giờ conflict, tự phục hồi nếu remote đổi tiếp giữa các lần thử.
+          PUSHED=0
+          for i in 1 2 3 4 5; do
+            git fetch origin master
+            git reset --soft origin/master
+            git add data/vimo_raw.json data/vimo.json data/vnindex_valuation_history.json "Bao cao/VIMO/" 2>/dev/null || true
 
-          if git diff --staged --quiet; then
-            echo "Không có thay đổi để commit."
-          else
-            git commit -m "Auto-update: Vĩ mô Việt Nam — $(date +'%Y-%m-%d')"
-
-            PUSHED=0
-            for i in 1 2 3 4 5; do
-              git fetch origin master
-              if git rebase origin/master; then
-                if git push origin HEAD:master; then
-                  PUSHED=1
-                  break
-                fi
-              else
-                git rebase --abort
-              fi
-              echo "Push attempt $i failed, retrying..."
-              sleep 10
-            done
-
-            if [ "$PUSHED" != "1" ]; then
-              echo "::error::Could not push vĩ mô update after 5 attempts (remote kept diverging)."
-              exit 1
+            if git diff --staged --quiet; then
+              echo "Không có thay đổi để commit."
+              PUSHED=1
+              break
             fi
+
+            git commit -m "Auto-update: Vĩ mô Việt Nam — $(date +'%Y-%m-%d')"
+            if git push origin HEAD:master; then
+              PUSHED=1
+              break
+            fi
+            echo "Push attempt $i failed, retrying..."
+            sleep 10
+          done
+
+          if [ "$PUSHED" != "1" ]; then
+            echo "::error::Could not push vĩ mô update after 5 attempts (remote kept diverging)."
+            exit 1
           fi
 
       # QUAN TRỌNG: push tạo bởi GITHUB_TOKEN mặc định KHÔNG kích hoạt các workflow "on: push"

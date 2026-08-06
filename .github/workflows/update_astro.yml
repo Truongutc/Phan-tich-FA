@@ -39,32 +39,37 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/astro.json 2>/dev/null || true
+          # KHÔNG dùng "git rebase origin/master" ở đây — data/astro.json là file GHI ĐÈ TOÀN BỘ
+          # mỗi lần chạy (không phải sửa từng dòng), nên nếu remote ĐÃ có 1 bản ghi đè khác (VD do
+          # user vừa push tay 1 bản mới, hoặc lần chạy trước), rebase sẽ conflict CHẮC CHẮN (không
+          # phải race condition thoáng qua) — thử lại 3 lần vẫn conflict y hệt, dẫn tới job fail dù
+          # dữ liệu tính ra hoàn toàn đúng (đã xảy ra thật 2026-08-06). Dùng "git reset --soft" mỗi
+          # vòng lặp: đưa nhánh về đúng đầu remote MỚI NHẤT rồi commit LẠI đúng file trên đĩa (không
+          # đổi) — không bao giờ conflict, tự phục hồi nếu remote đổi tiếp giữa các lần thử.
+          PUSHED=0
+          for i in 1 2 3 4 5; do
+            git fetch origin master
+            git reset --soft origin/master
+            git add data/astro.json 2>/dev/null || true
 
-          if git diff --staged --quiet; then
-            echo "Không có thay đổi để commit."
-          else
-            git commit -m "Auto-update: Chiêm tinh Tài chính — $(date +'%Y-%m-%d')"
-
-            PUSHED=0
-            for i in 1 2 3; do
-              git fetch origin master
-              if git rebase origin/master; then
-                if git push origin HEAD:master; then
-                  PUSHED=1
-                  break
-                fi
-              else
-                git rebase --abort
-              fi
-              echo "Push attempt $i failed, retrying..."
-              sleep 10
-            done
-
-            if [ "$PUSHED" != "1" ]; then
-              echo "::error::Could not push chiêm tinh update after 3 attempts."
-              exit 1
+            if git diff --staged --quiet; then
+              echo "Không có thay đổi để commit."
+              PUSHED=1
+              break
             fi
+
+            git commit -m "Auto-update: Chiêm tinh Tài chính — $(date +'%Y-%m-%d')"
+            if git push origin HEAD:master; then
+              PUSHED=1
+              break
+            fi
+            echo "Push attempt $i failed, retrying..."
+            sleep 10
+          done
+
+          if [ "$PUSHED" != "1" ]; then
+            echo "::error::Could not push chiêm tinh update after 5 attempts."
+            exit 1
           fi
 
       # QUAN TRỌNG: push tạo bởi GITHUB_TOKEN mặc định KHÔNG kích hoạt workflow "on: push" khác —
