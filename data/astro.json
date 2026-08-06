@@ -1,51 +1,51 @@
 {
-  "generatedAt": "2026-08-06 01:30 UTC",
+  "generatedAt": "2026-08-06 01:47 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 133.27,
+      "lon": 133.28,
       "sign": "Sư Tử",
-      "degInSign": 13.27,
+      "degInSign": 13.28,
       "retrograde": false,
       "house": 11
     },
     {
       "name": "Mặt Trăng",
-      "lon": 42.8,
+      "lon": 42.97,
       "sign": "Kim Ngưu",
-      "degInSign": 12.8,
+      "degInSign": 12.97,
       "retrograde": false,
       "house": 8
     },
     {
       "name": "Sao Thủy",
-      "lon": 114.45,
+      "lon": 114.46,
       "sign": "Cự Giải",
-      "degInSign": 24.45,
+      "degInSign": 24.46,
       "retrograde": false,
-      "house": 11
+      "house": 10
     },
     {
       "name": "Sao Kim",
-      "lon": 178.88,
+      "lon": 178.9,
       "sign": "Xử Nữ",
-      "degInSign": 28.88,
+      "degInSign": 28.9,
       "retrograde": false,
       "house": 1
     },
     {
       "name": "Sao Hỏa",
-      "lon": 86.1,
+      "lon": 86.11,
       "sign": "Song Tử",
-      "degInSign": 26.1,
+      "degInSign": 26.11,
       "retrograde": false,
-      "house": 10
+      "house": 9
     },
     {
       "name": "Sao Mộc",
-      "lon": 127.71,
+      "lon": 127.72,
       "sign": "Sư Tử",
-      "degInSign": 7.71,
+      "degInSign": 7.72,
       "retrograde": false,
       "house": 11
     },
@@ -96,7 +96,7 @@
       "b": "Mặt Trăng",
       "aspect": "Vuông (Square)",
       "angle": 90,
-      "orb": 0.47,
+      "orb": 0.31,
       "applying": false
     },
     {
@@ -112,7 +112,7 @@
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 1.01,
+      "orb": 1.0,
       "applying": true
     },
     {
@@ -128,7 +128,7 @@
       "b": "Sao Hỏa",
       "aspect": "Vuông (Square)",
       "angle": 90,
-      "orb": 2.78,
+      "orb": 2.79,
       "applying": false
     },
     {
@@ -136,7 +136,7 @@
       "b": "Sao Thiên Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 2.92,
+      "orb": 2.93,
       "applying": false
     }
   ],
@@ -238,7 +238,7 @@
       "aspect": "Tam hợp (Trine)"
     },
     {
-      "date": "2026-09-15",
+      "date": "2026-09-14",
       "a": "Mặt Trời",
       "b": "Sao Hỏa",
       "aspect": "Lục phân (Sextile)"
@@ -742,21 +742,21 @@
   },
   "houses": {
     "locationName": "Hà Nội",
-    "ascendant": 173.59,
-    "midheaven": 83.7,
+    "ascendant": 177.59,
+    "midheaven": 87.64,
     "cusps": [
-      173.59,
-      203.59,
-      233.59,
-      263.59,
-      293.59,
-      323.59,
-      353.59,
-      23.59,
-      53.59,
-      83.59,
-      113.59,
-      143.59
+      177.59,
+      207.59,
+      237.59,
+      267.59,
+      297.59,
+      327.59,
+      357.59,
+      27.59,
+      57.59,
+      87.59,
+      117.59,
+      147.59
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
@@ -959,12 +959,12 @@
       "netTrend": "down"
     },
     {
-      "date": "2026-09-15",
+      "date": "2026-09-14",
       "type": "aspect",
       "title": "Mặt Trời Lục phân (Sextile) Sao Hỏa",
       "interpretation": "Liên quan \"xu hướng chính, niềm tin thị trường\" và \"biến động mạnh, hoạt động đầu cơ\" — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
       "sentiment": "positive",
-      "netScore": 1.348,
+      "netScore": 1.982,
       "netTrend": "down"
     },
     {
