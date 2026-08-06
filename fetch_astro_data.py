@@ -108,6 +108,14 @@ def _utcnow():
     return datetime.datetime.now(datetime.timezone.utc)
 
 
+def _anchor_noon_utc(base=None):
+    """Chuẩn hóa 1 thời điểm về đúng 12:00:00 UTC cùng ngày — dùng làm mốc CỐ ĐỊNH cho chuỗi điểm
+    áp lực/thuận lợi theo ngày trong build_daily_pressure_series/build_historical_pressure_series,
+    để KHÔNG phụ thuộc giờ chạy thực tế của cron (xem lý do sửa 2026-08-06 tại nơi gọi hàm này)."""
+    b = base or _utcnow()
+    return datetime.datetime(b.year, b.month, b.day, 12, 0, 0, tzinfo=datetime.timezone.utc)
+
+
 def get_planet_positions(when=None):
     """Trả {tên hành tinh: kinh độ hoàng đạo địa tâm (độ, 0-360)} tại thời điểm `when` (datetime
     UTC hoặc None = hiện tại)."""
@@ -329,8 +337,17 @@ def build_daily_pressure_series(days_ahead=90):
     Thổ phải thể hiện được trong đường điểm này, nên DÙNG CHUNG tập hành tinh với
     find_upcoming_exact_aspects (mọi hành tinh trừ Mặt Trăng), KHÔNG giới hạn ở 5 hành tinh chậm
     như bản đầu (lỗi khiến ảnh hưởng Sao Hỏa/Mặt Trời/Sao Thủy/Sao Kim bị bỏ sót hoàn toàn). Trả
-    list [{date, score}]."""
-    now = _utcnow()
+    list [{date, score}].
+
+    LƯU Ý (sửa lỗi 2026-08-06): mốc "now" TRƯỚC ĐÂY giữ nguyên giờ/phút/giây lúc script chạy, nên
+    "ngày X" ở 2 lần chạy cron khác giờ nhau (VD ~10h UTC tuần trước vs ~1h UTC tuần này) thực chất
+    là 2 THỜI ĐIỂM khác nhau trong ngày X — với góc chiếu đang gần đúng orb (sắp exact), chênh lệch
+    vài giờ đủ làm điểm số xê dịch nhẹ, đôi khi khiến ĐỈNH của đường dao động "nhảy" sang ngày liền
+    kề giữa 2 lần cập nhật (user 2026-08-06 phát hiện: đỉnh báo 12/08 tuần trước (4.347 vs 4.195),
+    13/08 tuần này (4.198 vs 4.327) — 2 ngày gần như hòa điểm, chỉ cần lệch giờ tính là lật đỉnh).
+    Dùng _anchor_noon_utc() để mốc mỗi ngày LUÔN là đúng 12:00 UTC bất kể cron chạy giờ nào — kết
+    quả sẽ ỔN ĐỊNH, tái lập được giữa các lần chạy khác nhau."""
+    now = _anchor_noon_utc()
     return [_pressure_score_at(now + datetime.timedelta(days=d)) for d in range(days_ahead + 1)]
 
 
@@ -367,6 +384,7 @@ def build_historical_pressure_series(days_back=365):
     """Đường điểm áp lực/thuận lợi trong QUÁ KHỨ (days_back ngày trở lại đây) — dùng để đối chiếu
     ngược (backtest) với diễn biến VN-Index thật, kiểm tra trực quan mối tương quan (nếu có) giữa
     chỉ số chiêm tinh và biến động thị trường thực tế. KHÔNG phải bằng chứng khoa học, chỉ là công
-    cụ quan sát trực quan theo yêu cầu user (2026-08-04)."""
-    now = _utcnow()
+    cụ quan sát trực quan theo yêu cầu user (2026-08-04). Dùng mốc 12:00 UTC cố định mỗi ngày (xem
+    _anchor_noon_utc, lý do tại build_daily_pressure_series) để kết quả ổn định giữa các lần chạy."""
+    now = _anchor_noon_utc()
     return [_pressure_score_at(now - datetime.timedelta(days=d)) for d in range(days_back, -1, -1)]
