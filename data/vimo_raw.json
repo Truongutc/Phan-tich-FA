@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-08-07 09:38",
+    "last_auto_update": "2026-08-07 13:57",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -12170,11 +12170,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-07-14",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
         "period": "2026-07-15",
         "value": 2.25,
         "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
@@ -12288,6 +12283,11 @@
         "period": "2026-08-06",
         "value": 2.25,
         "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-08-07",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
       }
     ],
     "note": "ECB Deposit Facility Rate (FRED series ECBDFR) — lãi suất NHTW Châu Âu trả cho tiền gửi qua đêm của ngân hàng thương mại, ĐANG LÀ lãi suất điều hành THỰC TẾ quan trọng nhất của ECB từ sau khủng hoảng 2008 (khác Main Refinancing Rate truyền thống) — dùng để đối chiếu xu hướng chính sách tiền tệ Eurozone với Fed.",
@@ -12300,11 +12300,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-07-02",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
       {
         "period": "2026-07-03",
         "value": 3.73,
@@ -12417,6 +12412,11 @@
       },
       {
         "period": "2026-08-04",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-08-05",
         "value": 3.73,
         "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
       }
@@ -13082,11 +13082,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2024-07-01",
-        "value": 4.2,
-        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
-      },
-      {
         "period": "2024-08-01",
         "value": 4.2,
         "source_url": "https://fred.stlouisfed.org/series/UNRATE"
@@ -13195,6 +13190,11 @@
         "period": "2026-06-01",
         "value": 4.2,
         "source_url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.1,
+        "source_url": "https://fred.stlouisfed.org/series/UNRATE"
       }
     ],
     "note": "Unemployment Rate (FRED series UNRATE) — 1 trong 2 chỉ tiêu thuộc \"dual mandate\" của Fed (cùng lạm phát), quyết định trực tiếp hướng đi lãi suất Fed.",
@@ -13207,11 +13207,6 @@
     "good_direction": "higher",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-07-01",
-        "value": 53.0,
-        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
-      },
       {
         "period": "2024-08-01",
         "value": 9.0,
@@ -13319,12 +13314,17 @@
       },
       {
         "period": "2026-05-01",
-        "value": 129.0,
+        "value": 63.0,
         "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
       },
       {
         "period": "2026-06-01",
-        "value": 57.0,
+        "value": 20.0,
+        "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
+      },
+      {
+        "period": "2026-07-01",
+        "value": -23.0,
         "source_url": "https://fred.stlouisfed.org/series/PAYEMS"
       }
     ],
