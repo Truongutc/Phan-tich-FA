@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07 10:10 UTC",
+  "generatedAt": "2026-08-07 10:13 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
@@ -11,9 +11,9 @@
     },
     {
       "name": "Mặt Trăng",
-      "lon": 62.04,
+      "lon": 62.07,
       "sign": "Song Tử",
-      "degInSign": 2.04,
+      "degInSign": 2.07,
       "retrograde": false,
       "house": 5
     },
@@ -35,9 +35,9 @@
     },
     {
       "name": "Sao Hỏa",
-      "lon": 87.01,
+      "lon": 87.02,
       "sign": "Song Tử",
-      "degInSign": 27.01,
+      "degInSign": 27.02,
       "retrograde": false,
       "house": 6
     },
@@ -120,7 +120,7 @@
       "b": "Sao Diêm Vương",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 1.6,
+      "orb": 1.57,
       "applying": false
     },
     {
@@ -128,7 +128,7 @@
       "b": "Sao Hải Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 1.75,
+      "orb": 1.72,
       "applying": false
     },
     {
@@ -136,7 +136,7 @@
       "b": "Sao Kim",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 1.78,
+      "orb": 1.81,
       "applying": false
     },
     {
@@ -144,7 +144,7 @@
       "b": "Sao Thiên Vương",
       "aspect": "Hợp (Conjunction)",
       "angle": 0,
-      "orb": 2.79,
+      "orb": 2.76,
       "applying": false
     }
   ],
@@ -744,21 +744,21 @@
   },
   "houses": {
     "locationName": "Hà Nội",
-    "ascendant": 293.98,
-    "midheaven": 216.83,
+    "ascendant": 294.69,
+    "midheaven": 217.54,
     "cusps": [
-      293.98,
-      323.98,
-      353.98,
-      23.98,
-      53.98,
-      83.98,
-      113.98,
-      143.98,
-      173.98,
-      203.98,
-      233.98,
-      263.98
+      294.69,
+      324.69,
+      354.69,
+      24.69,
+      54.69,
+      84.69,
+      114.69,
+      144.69,
+      174.69,
+      204.69,
+      234.69,
+      264.69
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
