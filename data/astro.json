@@ -1,69 +1,69 @@
 {
-  "generatedAt": "2026-08-07 10:33 UTC",
+  "generatedAt": "2026-08-07 16:52 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 134.59,
+      "lon": 134.84,
       "sign": "Sư Tử",
-      "degInSign": 14.59,
+      "degInSign": 14.84,
       "retrograde": false,
-      "house": 7
-    },
-    {
-      "name": "Mặt Trăng",
-      "lon": 62.26,
-      "sign": "Song Tử",
-      "degInSign": 2.26,
-      "retrograde": false,
-      "house": 5
-    },
-    {
-      "name": "Sao Thủy",
-      "lon": 116.29,
-      "sign": "Cự Giải",
-      "degInSign": 26.29,
-      "retrograde": false,
-      "house": 6
-    },
-    {
-      "name": "Sao Kim",
-      "lon": 180.27,
-      "sign": "Thiên Bình",
-      "degInSign": 0.27,
-      "retrograde": false,
-      "house": 9
-    },
-    {
-      "name": "Sao Hỏa",
-      "lon": 87.02,
-      "sign": "Song Tử",
-      "degInSign": 27.02,
-      "retrograde": false,
-      "house": 5
-    },
-    {
-      "name": "Sao Mộc",
-      "lon": 128.02,
-      "sign": "Sư Tử",
-      "degInSign": 8.02,
-      "retrograde": false,
-      "house": 7
-    },
-    {
-      "name": "Sao Thổ",
-      "lon": 14.26,
-      "sign": "Bạch Dương",
-      "degInSign": 14.26,
-      "retrograde": true,
       "house": 3
     },
     {
-      "name": "Sao Thiên Vương",
-      "lon": 64.83,
+      "name": "Mặt Trăng",
+      "lon": 66.04,
       "sign": "Song Tử",
-      "degInSign": 4.83,
+      "degInSign": 6.04,
+      "retrograde": false,
+      "house": 1
+    },
+    {
+      "name": "Sao Thủy",
+      "lon": 116.66,
+      "sign": "Cự Giải",
+      "degInSign": 26.66,
+      "retrograde": false,
+      "house": 3
+    },
+    {
+      "name": "Sao Kim",
+      "lon": 180.54,
+      "sign": "Thiên Bình",
+      "degInSign": 0.54,
       "retrograde": false,
       "house": 5
+    },
+    {
+      "name": "Sao Hỏa",
+      "lon": 87.2,
+      "sign": "Song Tử",
+      "degInSign": 27.2,
+      "retrograde": false,
+      "house": 2
+    },
+    {
+      "name": "Sao Mộc",
+      "lon": 128.07,
+      "sign": "Sư Tử",
+      "degInSign": 8.07,
+      "retrograde": false,
+      "house": 3
+    },
+    {
+      "name": "Sao Thổ",
+      "lon": 14.25,
+      "sign": "Bạch Dương",
+      "degInSign": 14.25,
+      "retrograde": true,
+      "house": 11
+    },
+    {
+      "name": "Sao Thiên Vương",
+      "lon": 64.84,
+      "sign": "Song Tử",
+      "degInSign": 4.84,
+      "retrograde": false,
+      "house": 1
     },
     {
       "name": "Sao Hải Vương",
@@ -71,7 +71,7 @@
       "sign": "Bạch Dương",
       "degInSign": 3.79,
       "retrograde": true,
-      "house": 3
+      "house": 11
     },
     {
       "name": "Sao Diêm Vương",
@@ -79,7 +79,7 @@
       "sign": "Bảo Bình",
       "degInSign": 3.64,
       "retrograde": true,
-      "house": 1
+      "house": 9
     }
   ],
   "currentAspects": [
@@ -96,7 +96,7 @@
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 0.33,
+      "orb": 0.59,
       "applying": false
     },
     {
@@ -104,39 +104,7 @@
       "b": "Sao Hải Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 1.04,
-      "applying": false
-    },
-    {
-      "a": "Sao Thiên Vương",
-      "b": "Sao Diêm Vương",
-      "aspect": "Tam hợp (Trine)",
-      "angle": 120,
-      "orb": 1.19,
-      "applying": false
-    },
-    {
-      "a": "Mặt Trăng",
-      "b": "Sao Diêm Vương",
-      "aspect": "Tam hợp (Trine)",
-      "angle": 120,
-      "orb": 1.38,
-      "applying": false
-    },
-    {
-      "a": "Mặt Trăng",
-      "b": "Sao Hải Vương",
-      "aspect": "Lục phân (Sextile)",
-      "angle": 60,
-      "orb": 1.53,
-      "applying": false
-    },
-    {
-      "a": "Mặt Trăng",
-      "b": "Sao Kim",
-      "aspect": "Tam hợp (Trine)",
-      "angle": 120,
-      "orb": 1.99,
+      "orb": 1.05,
       "applying": false
     },
     {
@@ -144,7 +112,39 @@
       "b": "Sao Thiên Vương",
       "aspect": "Hợp (Conjunction)",
       "angle": 0,
-      "orb": 2.57,
+      "orb": 1.2,
+      "applying": false
+    },
+    {
+      "a": "Sao Thiên Vương",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)",
+      "angle": 120,
+      "orb": 1.2,
+      "applying": false
+    },
+    {
+      "a": "Mặt Trăng",
+      "b": "Sao Mộc",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 2.03,
+      "applying": false
+    },
+    {
+      "a": "Mặt Trăng",
+      "b": "Sao Hải Vương",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 2.25,
+      "applying": false
+    },
+    {
+      "a": "Mặt Trăng",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)",
+      "angle": 120,
+      "orb": 2.4,
       "applying": false
     }
   ],
@@ -358,7 +358,7 @@
       "type": "station_retrograde"
     },
     {
-      "date": "2026-10-15",
+      "date": "2026-10-16",
       "planet": "Sao Diêm Vương",
       "type": "station_direct"
     },
@@ -744,21 +744,21 @@
   },
   "houses": {
     "locationName": "Hà Nội",
-    "ascendant": 299.89,
-    "midheaven": 222.64,
+    "ascendant": 55.1,
+    "midheaven": 312.66,
     "cusps": [
-      299.89,
-      329.89,
-      359.89,
-      29.89,
-      59.89,
-      89.89,
-      119.89,
-      149.89,
-      179.89,
-      209.89,
-      239.89,
-      269.89
+      55.1,
+      85.1,
+      115.1,
+      145.1,
+      175.1,
+      205.1,
+      235.1,
+      265.1,
+      295.1,
+      325.1,
+      355.1,
+      25.1
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
@@ -784,9 +784,8 @@
     ],
     "aspectLines": [],
     "houseLines": [
-      "Mặt Trăng đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"tâm lý đám đông, biến động ngắn hạn\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
-      "Sao Hỏa đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
-      "Sao Thiên Vương đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"biến động đột ngột/cú sốc, nhóm công nghệ\") đang được nhấn mạnh trong lĩnh vực Nhà 5."
+      "Sao Kim đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"định giá tài sản, nhóm ngành tiêu dùng/tài chính\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
+      "Sao Hỏa đang ở Nhà 2 (Tài sản/Tiền bạc — tài sản hữu hình, giá trị, dòng tiền cá nhân/doanh nghiệp) — chủ đề của hành tinh này (\"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\") đang được nhấn mạnh trong lĩnh vực Nhà 2."
     ]
   },
   "forecastTimeline": [
@@ -1070,19 +1069,19 @@
       "netTrend": "up"
     },
     {
-      "date": "2026-10-15",
-      "type": "station_direct",
-      "title": "Sao Diêm Vương thuận hành trở lại",
-      "interpretation": "Đánh dấu thời điểm năng lượng bị dồn nén trong giai đoạn Sao Diêm Vương nghịch hành trước đó được GIẢI PHÓNG — thị trường dễ có biến động rõ rệt quanh mốc này.",
-      "sentiment": "positive",
-      "netScore": 1.315,
-      "netTrend": "up"
-    },
-    {
       "date": "2026-10-16",
       "type": "aspect",
       "title": "Sao Hỏa Tam hợp (Trine) Sao Thổ",
       "interpretation": "Liên quan \"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\" và \"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\" — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive",
+      "netScore": 1.55,
+      "netTrend": "up"
+    },
+    {
+      "date": "2026-10-16",
+      "type": "station_direct",
+      "title": "Sao Diêm Vương thuận hành trở lại",
+      "interpretation": "Đánh dấu thời điểm năng lượng bị dồn nén trong giai đoạn Sao Diêm Vương nghịch hành trước đó được GIẢI PHÓNG — thị trường dễ có biến động rõ rệt quanh mốc này.",
       "sentiment": "positive",
       "netScore": 1.55,
       "netTrend": "up"
