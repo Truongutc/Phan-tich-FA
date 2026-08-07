@@ -27,17 +27,27 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 FORECAST_DAYS_AHEAD = 90
 
 # Ý nghĩa hành tinh trong chiêm tinh tài chính (hiển thị trong chiemtinh.html).
+# BỔ SUNG (2026-08-07, từ tài liệu khóa học chiêm tinh tài chính user cung cấp — 20 bài giảng đã
+# đọc qua, chỉ giữ lại phần LÝ THUYẾT CHUNG có cơ sở lặp lại được, bỏ các case study lịch sử tự
+# công bố chưa kiểm chứng và các khung numerology/tôn giáo (Shemitah, vết đen mặt trời) không cùng
+# hệ với chiêm tinh hành tinh): Sao Thủy thêm "khối lượng/hành vi mua-bán" (nguồn nói thẳng Thủy
+# tinh CHI PHỐI hành vi giao dịch nhà đầu tư, không chỉ dòng thông tin); Sao Hỏa đổi khung từ "tự nó
+# tạo biến động" sang "yếu tố KÍCH HOẠT/khuếch đại" — nguồn mô tả nhất quán Hỏa tinh không tự đặt xu
+# hướng mà khuếch đại căng thẳng/xu hướng ĐÃ có sẵn khi hợp/vuông hành tinh khác (đặc biệt hành tinh
+# chậm); Sao Hải Vương thêm rõ khía cạnh "tin đồn/thông tin nhiễu" (không chỉ bong bóng định giá);
+# Sao Diêm Vương thêm liên hệ ngân hàng/tiền tệ (nguồn: "vấn đề tài chính, ngân hàng, biến động ngầm
+# thị trường tiền tệ").
 PLANET_MEANING = {
     "Mặt Trời": "xu hướng chính, niềm tin thị trường",
     "Mặt Trăng": "tâm lý đám đông, biến động ngắn hạn",
-    "Sao Thủy": "dòng thông tin, thanh khoản, hoạt động giao dịch",
+    "Sao Thủy": "dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư",
     "Sao Kim": "định giá tài sản, nhóm ngành tiêu dùng/tài chính",
-    "Sao Hỏa": "biến động mạnh, hoạt động đầu cơ",
+    "Sao Hỏa": "yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ",
     "Sao Mộc": "mở rộng, tăng trưởng, tâm lý lạc quan",
     "Sao Thổ": "thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng",
     "Sao Thiên Vương": "biến động đột ngột/cú sốc, nhóm công nghệ",
-    "Sao Hải Vương": "bong bóng định giá, sự mơ hồ/ảo tưởng thị trường",
-    "Sao Diêm Vương": "biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc",
+    "Sao Hải Vương": "thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường",
+    "Sao Diêm Vương": "biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc, dòng chảy ngầm trong hệ thống ngân hàng/tiền tệ",
 }
 
 # Ý nghĩa TRUYỀN THỐNG của từng hành tinh khi nghịch hành — lấy tinh thần từ cách W.D. Gann diễn
@@ -45,13 +55,13 @@ PLANET_MEANING = {
 # xem PLANET_MEANING) — luôn dùng ngôn ngữ "theo lý thuyết truyền thống"/"thường được cho là",
 # KHÔNG khẳng định chắc chắn (nhất quán với cảnh báo ở đầu trang).
 RETROGRADE_MEANING = {
-    "Sao Thủy": "thông tin/giao dịch dễ nhiễu loạn, quyết định vội vàng dễ sai sót, hợp đồng/thỏa thuận dễ trục trặc — thị trường thường biến động thất thường, xu hướng không rõ ràng, nên cẩn trọng với các quyết định đầu tư quan trọng trong giai đoạn này",
+    "Sao Thủy": "thông tin/giao dịch dễ nhiễu loạn, quyết định vội vàng dễ sai sót, hợp đồng/thỏa thuận dễ trục trặc — theo lý thuyết này Sao Thủy nghịch hành ví như \"kẻ lừa đảo\", dễ tạo \"phá vỡ giả\" (giá tưởng như vượt/thủng 1 mốc hỗ trợ-kháng cự quan trọng rồi quay đầu ngay sau đó) — nên cẩn trọng xác nhận lại thông tin/tín hiệu kỹ thuật trước khi ra quyết định lớn trong giai đoạn này",
     "Sao Kim": "định giá tài sản/nhóm ngành tiêu dùng-tài chính dễ được thị trường nhìn lại và điều chỉnh, tâm lý định giá lại những gì đã thiết lập trước đó",
     "Sao Hỏa": "năng lượng/tốc độ hành động của thị trường bị dồn nén, các xu hướng đầu cơ ngắn hạn dễ chững lại hoặc đảo chiều bất ngờ",
     "Sao Mộc": "đà mở rộng/tăng trưởng chậm lại, thời điểm thị trường có xu hướng nhìn lại các quyết định đầu tư/mở rộng đã đưa ra thay vì mở rộng mới",
     "Sao Thổ": "nhìn lại kỷ luật/cấu trúc rủi ro đã thiết lập, dễ bộc lộ điểm yếu cấu trúc tài chính tiềm ẩn",
     "Sao Thiên Vương": "biến động bị dồn nén, thường giải phóng đột ngột quanh thời điểm hành tinh quay lại thuận hành (station direct)",
-    "Sao Hải Vương": "ảo tưởng định giá/kỳ vọng thị trường dễ bị nhìn lại và điều chỉnh về gần thực tế hơn",
+    "Sao Hải Vương": "ảo tưởng định giá/kỳ vọng thị trường dễ bị nhìn lại và điều chỉnh về gần thực tế hơn — thông tin lưu hành giai đoạn này dễ mang tính chủ quan/tin đồn hơn là dựa trên dữ kiện rõ ràng, đặc biệt nếu trùng lúc Sao Thủy cũng đang nghịch hành thì rủi ro nhiễu loạn thông tin càng cộng hưởng",
     "Sao Diêm Vương": "thay đổi cấu trúc dài hạn diễn ra âm thầm, ít tạo biến động tức thời rõ rệt",
 }
 
