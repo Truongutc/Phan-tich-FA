@@ -77,6 +77,24 @@ def _append_point(raw, key, period, value, source_url):
         series.append({"period": period, "value": value, "source_url": source_url})
 
 
+def _merge_point_anywhere(raw, key, period, value, source_url):
+    """Giống _append_point() nhưng tìm period trong TOÀN BỘ series (không chỉ phần tử cuối) rồi
+    sắp lại theo thời gian sau khi thêm — cần cho các nguồn có thể trả 1 điểm KHÔNG PHẢI mới nhất
+    trong cùng 1 lần gọi (vd VietnamBiz trả cả value kỳ mới nhất LẪN pre_value kỳ liền trước, xem
+    fetch_vietnambiz_macro() — nếu series hiện có khoảng trống ở giữa, pre_value có thể trùng 1
+    period đã tồn tại nhưng KHÔNG PHẢI phần tử cuối, dùng _append_point() thường sẽ tạo bản trùng
+    lệch thứ tự). An toàn dùng string-sort trực tiếp vì các chỉ báo nguồn VietnamBiz đều 1 định
+    dạng period thuần nhất (toàn 'YYYY-MM' hoặc toàn 'YYYY-Qn'), không trộn lẫn như fdi_disbursed."""
+    series = raw[key]["series"]
+    for p in series:
+        if p["period"] == period:
+            p["value"] = value
+            p["source_url"] = source_url
+            return
+    series.append({"period": period, "value": value, "source_url": source_url})
+    series.sort(key=lambda p: p["period"])
+
+
 def _period_sort_key(period):
     """Khoá sắp xếp thời gian cho các định dạng period KHÁC NHAU cùng tồn tại trong 1 series
     (vd fdi_registered_usd_bn/public_investment_growth trộn 'YYYY-MM' theo tháng từ VBMA với
@@ -1468,11 +1486,33 @@ VIETNAMBIZ_TITLE_MAP = {
 }
 
 
+def _vietnambiz_prior_period(period):
+    """Lùi period 'YYYY-MM' hoặc 'YYYY-Qn' về đúng 1 kỳ trước đó — dùng để ghép pre_value của
+    VietnamBiz thành 1 điểm lịch sử THỨ HAI (xem fetch_vietnambiz_macro(): mỗi lần gọi trang trả
+    cả value kỳ mới nhất LẪN pre_value kỳ liền trước, trước đây chỉ dùng value nên mỗi lần Action
+    chạy chỉ tích lũy được 1 điểm — user 2026-08-08, khi nso.gov.vn (nguồn chính cho retail_sales_
+    growth) tạm sập, tận dụng pre_value có sẵn để có ngay điểm thứ 2 miễn phí, không cần thêm
+    request nào)."""
+    m = re.match(r"(\d{4})-(\d{2})$", period)
+    if m:
+        y, mo = int(m.group(1)), int(m.group(2))
+        y, mo = (y - 1, 12) if mo == 1 else (y, mo - 1)
+        return f"{y:04d}-{mo:02d}"
+    m = re.match(r"(\d{4})-Q(\d)$", period)
+    if m:
+        y, q = int(m.group(1)), int(m.group(2))
+        y, q = (y - 1, 4) if q == 1 else (y, q - 1)
+        return f"{y:04d}-Q{q}"
+    return None
+
+
 def fetch_vietnambiz_macro():
     """data.vietnambiz.vn/macro-economic nhúng __NEXT_DATA__ JSON (Next.js server-rendered,
     KHÔNG phải SPA rỗng) chứa ~25 chỉ báo vĩ mô, mỗi chỉ báo có value (kỳ mới nhất) + pre_value
-    (kỳ trước) + nhãn kỳ tiếng Việt ('Tháng 06/2026'/'Quý 2/2026'/'Năm 2023'). Trả dict
-    {indicator_key: (period_iso, value)} cho các chỉ báo có trong VIETNAMBIZ_TITLE_MAP."""
+    (kỳ trước) + nhãn kỳ tiếng Việt ('Tháng 06/2026'/'Quý 2/2026'/'Năm 2023'). Trả list
+    [(indicator_key, period_iso, value), ...] (2 điểm/chỉ báo nếu pre_value hợp lệ — value kỳ mới
+    nhất + pre_value kỳ liền trước, xem _vietnambiz_prior_period) cho các chỉ báo có trong
+    VIETNAMBIZ_TITLE_MAP."""
     url = "https://data.vietnambiz.vn/macro-economic"
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
@@ -1480,10 +1520,10 @@ def fetch_vietnambiz_macro():
         m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.S)
         if not m:
             print("  [WARN] VietnamBiz: không tìm thấy __NEXT_DATA__ — trang có thể đã đổi cấu trúc.")
-            return {}
+            return []
         data = json.loads(m.group(1))
         items = data.get("props", {}).get("pageProps", {}).get("data", [])
-        out = {}
+        out = []
         for it in items:
             key = VIETNAMBIZ_TITLE_MAP.get(it.get("title"))
             if not key:
@@ -1497,11 +1537,18 @@ def fetch_vietnambiz_macro():
                 period = f"{m_quarter.group(2)}-Q{m_quarter.group(1)}"
             else:
                 period = ngay
-            out[key] = (period, round(float(it["value"]), 2))
+            # pre_value luôn là kỳ LIỀN TRƯỚC value, không đảm bảo là điểm mới nhất trong series
+            # hiện có (nếu series đang có khoảng trống) — nơi gọi PHẢI dùng _merge_point_anywhere()
+            # (không phải _append_point() thường) để tránh tạo bản trùng lệch thứ tự thời gian.
+            if it.get("pre_value") is not None:
+                prior_period = _vietnambiz_prior_period(period)
+                if prior_period:
+                    out.append((key, prior_period, round(float(it["pre_value"]), 2)))
+            out.append((key, period, round(float(it["value"]), 2)))
         return out
     except Exception as e:
         print(f"  [WARN] VietnamBiz macro thất bại: {e}")
-        return {}
+        return []
 
 
 VIETNAMBIZ_RATE_TITLE_MAP = {
@@ -2186,10 +2233,10 @@ def update_vimo_raw():
         ]
         print(f"  -> {len(pts)} điểm")
 
-    print("[VietnamBiz — Bán lẻ (đối chiếu, tích lũy theo lần chạy)]")
+    print("[VietnamBiz — Bán lẻ (đối chiếu, tích lũy theo lần chạy, nay lấy cả value + pre_value)]")
     vnb = fetch_vietnambiz_macro()
-    for key, (period, value) in vnb.items():
-        _append_point(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
+    for key, period, value in vnb:
+        _merge_point_anywhere(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
         print(f"  -> {key} {period}: {value}")
 
     print("[VBMA — PMI sản xuất theo tháng (toàn bộ lịch sử từ T1/2016)]")
