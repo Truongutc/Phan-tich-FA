@@ -301,6 +301,32 @@ def _tcbs_ipower_gap_level_vote(raw, trends):
             "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
 
 
+# CHÊNH LỆCH tăng trưởng TÍN DỤNG - HUY ĐỘNG (YoY thật, theo tháng) — user (2026-08-08): "Credit
+# +18-20% trong khi Deposit +10-12% thì hệ thống ngân hàng phải tìm nguồn vốn -> lãi suất huy động
+# tăng -> lãi suất cho vay tăng". Dùng credit_growth_yoy_monthly/deposit_growth_yoy_monthly (PHÁI
+# SINH, so CÙNG THÁNG năm trước — KHÔNG dùng credit_growth/deposit_growth thô trong vimo_raw.json
+# vì 2 chuỗi đó LỆCH PHƯƠNG PHÁP: credit_growth là YTD reset đầu năm, deposit_growth là YoY nhưng
+# quá thưa — trộn chung sẽ sai, xem note của _add_credit_derived_indicators). Ngưỡng 5 điểm % —
+# thấp hơn hẳn ví dụ "vùng nguy hiểm" user tự nêu (7-10 điểm %) để bắt tín hiệu SỚM, tương tự cách
+# chọn ngưỡng IMPORT_EXPORT_GAP_DANGER ở trên. Dữ liệu thật hiện tại: tín dụng 18,23% - huy động
+# 10,76% = gap 7,47 điểm % -> đã VƯỢT ngưỡng, đúng hiện trạng user mô tả.
+CREDIT_DEPOSIT_GAP_DANGER = 5.0
+
+
+def _credit_deposit_gap_level_vote(raw, trends):
+    credit = trends.get("credit_growth_yoy_monthly", {}).get("latest")
+    deposit = trends.get("deposit_growth_yoy_monthly", {}).get("latest")
+    if credit is None or deposit is None:
+        return None
+    gap = round(credit - deposit, 2)
+    vote = -1 if gap > CREDIT_DEPOSIT_GAP_DANGER else 1
+    judgment_label = ("tín dụng vượt xa huy động, ngân hàng phải tăng lãi suất tìm vốn" if vote < 0
+                       else "tín dụng và huy động tăng trưởng cân đối")
+    label = f"Tín dụng trừ huy động YoY ({credit:+.2f}% - {deposit:+.2f}% = {gap:+.2f} điểm %)"
+    return {"indicator": "credit_deposit_gap", "label": label, "vote": vote,
+            "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
+
+
 # GDP TRỪ CPI (chênh lệch tăng trưởng thực - lạm phát) — user (2026-08-08): "không nên đơn giản
 # GDP cao = macro tốt, mà phải nhìn GDP growth – Inflation". Ngưỡng lấy TRỰC TIẾP từ 3 ví dụ user
 # đưa ra (đều ở mức GDP +8%): CPI +3% (gap=5) -> "quá đẹp"; CPI +4,5% (gap=3,5, ĐÚNG mốc
@@ -370,7 +396,7 @@ def _import_export_gap_level_vote(raw, trends):
 # Hàng hóa" — xem lý do/ngưỡng ngay phía trên.
 GROUP_LEVEL_CHECKS = {
     "Thanh khoản": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote,
-                     _tcbs_ipower_gap_level_vote],
+                     _tcbs_ipower_gap_level_vote, _credit_deposit_gap_level_vote],
     "Tăng trưởng": [_gdp_cpi_gap_level_vote],
     "Thương mại & Hàng hóa": [_import_export_gap_level_vote],
 }
@@ -379,6 +405,7 @@ SHORT_LABEL["interbank_vs_deposit"] = "Liên ngân hàng"
 SHORT_LABEL["tcbs_ipower_gap"] = "iPower TCBS"
 SHORT_LABEL["gdp_cpi_gap"] = "GDP-CPI"
 SHORT_LABEL["import_export_gap"] = "NK-XK"
+SHORT_LABEL["credit_deposit_gap"] = "Tín dụng-Huy động"
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -2683,6 +2710,16 @@ def run_vimo_analysis():
         t = trends[key]
         print(f"  {ind['label']}: {t.get('arrow', '—')} (latest={t.get('latest')}, n={t.get('n_points', 0)})")
 
+    # PHẢI chạy TRƯỚC calc_scorecard() — _credit_deposit_gap_level_vote() (GROUP_LEVEL_CHECKS,
+    # nhóm "Thanh khoản") cần credit_growth_yoy_monthly/deposit_growth_yoy_monthly đã có sẵn
+    # trong trends (user 2026-08-08: muốn Credit growth/Deposit growth gap vào Scorecard trực
+    # tiếp, giống gdp_cpi_gap/import_export_gap). Trước đây hàm này chạy SAU calc_scorecard nên
+    # KHÔNG ảnh hưởng gì tới điểm — dời lên đây, không đổi hành vi các chỗ dùng khác vì các dữ
+    # liệu nó cần (credit_balance_total, deposit_balance_total...) đều đã có sẵn trong raw từ
+    # đầu, không phụ thuộc bất kỳ tính toán nào ở giữa vị trí cũ/mới.
+    print("[INFO] Tính tăng trưởng dư nợ tín dụng YoY (theo tháng) + tỷ lệ Tín dụng/GDP (KHÔNG lưu vào vimo_raw.json)...")
+    _add_credit_derived_indicators(raw, trends)
+
     print("[INFO] Tính Scorecard Vĩ Mô...")
     scorecard, scorecard_total = calc_scorecard(raw, trends)
     for gname, g in scorecard.items():
@@ -2767,9 +2804,6 @@ def run_vimo_analysis():
 
     print("[INFO] Tính spread đường cong lợi suất TPCP Mỹ 10Y-2Y / 10Y-3M (KHÔNG lưu vào vimo_raw.json)...")
     _add_us_yield_curve_spread(raw, trends)
-
-    print("[INFO] Tính tăng trưởng dư nợ tín dụng YoY (theo tháng) + tỷ lệ Tín dụng/GDP (KHÔNG lưu vào vimo_raw.json)...")
-    _add_credit_derived_indicators(raw, trends)
 
     print("[INFO] Tính bơm/hút ròng riêng kênh tín phiếu NHNN (KHÔNG lưu vào vimo_raw.json)...")
     _add_tin_phieu_net_operation(raw, trends)

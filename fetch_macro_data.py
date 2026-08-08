@@ -402,6 +402,52 @@ _VN_MONTH_COUNT_WORDS = {
 }
 
 
+def fetch_aric_gdp_by_use():
+    """aric.adb.org (Asian Regional Integration Center, ADB) — bảng "Economic & Financial
+    Indicators" cho Việt Nam, sector "Real Sector and Prices", TẦN SUẤT NĂM (frq=5, predefined=15)
+    — user (2026-08-08) muốn tách GDP theo CẤU PHẦN SỬ DỤNG (tiêu dùng tư nhân/chính phủ/đầu tư)
+    thay vì chỉ theo khu vực kinh tế (đã có sẵn gdp_share_agri/industry/services qua NSO). Trang
+    KHÔNG có API/CSV, nhưng bảng kết quả server-render HTML đơn giản, 1 dòng/năm, N cột theo ĐÚNG
+    THỨ TỰ tên chỉ số ở dòng "Indicator:" đầu bảng (không phải thứ tự cố định — PHẢI đọc header để
+    map đúng cột, tránh gán nhầm nếu ADB đổi thứ tự sau này). Chỉ tần suất NĂM có bộ chỉ số này
+    (frq=3/4 chỉ trả CPI/IIP/bán lẻ hoặc GDP Growth đơn lẻ — đã khảo sát thủ công 2026-08-08), nên
+    dữ liệu trễ ~1 năm so với hiện tại (thường mới nhất là năm trước). Trả {indicator_name: [(year,
+    value), ...]} hoặc {} nếu thất bại — indicator_name lấy nguyên văn cột "Indicator:" của ADB."""
+    url = "https://aric.adb.org/database/economic-financial-indicators-result?mode=preview&cty=160&frq=5&predefined=15&prec=3"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m_table = re.search(r"<table.*?</table>", r.text, re.S)
+        if not m_table:
+            print("  [WARN] ARIC GDP theo cấu phần: không tìm thấy bảng — trang có thể đã đổi cấu trúc.")
+            return {}
+        table = m_table.group(0)
+
+        m_header = re.search(r"<tr><th>Indicator:</th>(.*?)</tr>", table)
+        if not m_header:
+            print("  [WARN] ARIC GDP theo cấu phần: không tìm thấy dòng 'Indicator:' — bỏ qua.")
+            return {}
+        columns = re.findall(r"<th>([^<]*)</th>", m_header.group(1))
+        if not columns:
+            return {}
+
+        out = {name: [] for name in columns}
+        for m_row in re.finditer(r"<tr><td>(\d{4})-\d{2}</td>(.*?)</tr>", table):
+            year = int(m_row.group(1))
+            cells = re.findall(r'<td[^>]*>([^<]*)</td>', m_row.group(2))
+            for name, cell in zip(columns, cells):
+                cell = cell.strip()
+                if cell:
+                    try:
+                        out[name].append((year, float(cell)))
+                    except ValueError:
+                        continue
+        return out
+    except Exception as e:
+        print(f"  [WARN] ARIC GDP theo cấu phần thất bại: {e}")
+        return {}
+
+
 def fetch_nso_gdp_structure_report():
     """Tự động tìm bài 'Thông cáo báo chí về tình hình kinh tế-xã hội' MỚI NHẤT (tiếng Việt) trên
     nso.gov.vn/du-lieu-va-so-lieu-thong-ke/ (index Việt — KHÁC index tiếng Anh đã dùng ở
@@ -2166,6 +2212,57 @@ def update_vimo_raw():
         _append_point(raw, "retail_sales_growth", gdp_struct["retail_sales_period"],
                        gdp_struct["retail_sales_yoy_pct"], gdp_struct["source_url"])
         print(f"  -> Tổng mức bán lẻ {gdp_struct['retail_sales_period']}: {gdp_struct['retail_sales_value_ty']} nghìn tỷ đồng (YoY {gdp_struct['retail_sales_yoy_pct']}%)")
+
+    # GDP theo CẤU PHẦN SỬ DỤNG (tiêu dùng tư nhân/chính phủ, đầu tư) — user (2026-08-08): "GDP
+    # tăng nhờ cái gì? Tăng trưởng đến từ tiêu dùng nội địa, đầu tư, xuất khẩu hay chính phủ?" —
+    # khác gdp_share_agri/industry/services (cơ cấu theo KHU VỰC KINH TẾ, NSO, theo quý) — đây là
+    # cơ cấu theo LOẠI CHI TIÊU, chỉ có ở tần suất NĂM qua ARIC/ADB (đã khảo sát thủ công, xem
+    # fetch_aric_gdp_by_use()). Export/import growth ĐÃ có sẵn từ nguồn khác (Hải quan/VietnamBiz),
+    # không lấy lại ở đây.
+    print("[ARIC/ADB — GDP theo cấu phần sử dụng: đầu tư, tiêu dùng tư nhân/chính phủ (theo NĂM)]")
+    aric = fetch_aric_gdp_by_use()
+    _ARIC_KEY_MAP = {
+        "Gross Domestic Investment Growth (y-o-y, %)": (
+            "gdp_investment_growth", "Tăng trưởng đầu tư toàn xã hội (GDP theo cấu phần sử dụng)"),
+        "Private Consumption Expenditure Growth (y-o-y, %)": (
+            "private_consumption_growth", "Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng)"),
+        "Public Consumption Expenditure Growth (y-o-y, %)": (
+            "public_consumption_growth", "Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng)"),
+    }
+    for aric_name, (key, label) in _ARIC_KEY_MAP.items():
+        points = aric.get(aric_name, [])
+        if not points:
+            continue
+        if key not in raw:
+            raw[key] = {
+                "group": "growth", "label": label, "unit": "%", "good_direction": "higher",
+                "auto_source": "manual",
+                "note": ("Nguồn aric.adb.org (Asian Regional Integration Center, ADB — CEIC "
+                         "database), sector 'Real Sector and Prices', tần suất NĂM (trang không "
+                         "có API/CSV, chỉ có bảng HTML tần suất năm cho bộ chỉ số này). Trễ ~1 "
+                         "năm so với hiện tại (số liệu năm N thường công bố đầy đủ vào năm N+1)."),
+                "impact": "Tách GDP theo LOẠI CHI TIÊU (khác cơ cấu theo khu vực kinh tế gdp_share_*) — tăng trưởng đến từ tiêu dùng nội địa bền vững hơn tăng trưởng dựa vào đầu tư/chi tiêu chính phủ đơn thuần.",
+                "series": [],
+            }
+        # MERGE (không ghi đè toàn bộ series) — "gdp_investment_growth" đã tồn tại SẴN TRƯỚC đây
+        # với 1 điểm THỦ CÔNG "2026-H1" trích từ báo cáo NSO (mới hơn, đáng tin hơn ARIC vốn chỉ
+        # có tới năm 2025) — ghi đè thẳng `series = [...]` sẽ XÓA MẤT điểm đó (đã xảy ra thật 1
+        # lần, phát hiện qua git diff khi kiểm tra UI, xem lịch sử commit 2026-08-08). Period ARIC
+        # luôn dạng "YYYY" thuần (khác "YYYY-H1"/"YYYY-Q1" của các điểm thủ công) nên không bao
+        # giờ trùng — an toàn dùng merge-theo-period, chỉ thêm năm CHƯA có, giữ nguyên mọi điểm
+        # thủ công/nguồn khác đã có sẵn.
+        existing_periods = {p["period"] for p in raw[key]["series"]}
+        added = 0
+        for year, v in sorted(points):
+            period = f"{year:04d}"
+            if period not in existing_periods:
+                raw[key]["series"].append({
+                    "period": period, "value": v,
+                    "source_url": "https://aric.adb.org/database/economic-financial-indicators"})
+                existing_periods.add(period)
+                added += 1
+        raw[key]["series"].sort(key=lambda p: p["period"])
+        print(f"  -> {label}: +{added} điểm mới từ ARIC (tổng {len(raw[key]['series'])} điểm)")
 
     print("[NSO — cơ cấu vốn đầu tư qua OCR ảnh infographic (dữ liệu CHỈ có ở dạng ảnh, xem fetch_nso_infographic_investment)]")
     ocr_inv = fetch_nso_infographic_investment()
