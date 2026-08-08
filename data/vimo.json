@@ -19625,6 +19625,1545 @@
       "note": "Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), theo giá hiện hành, GIÁ TRỊ CỦA RIÊNG THÁNG ĐÓ (không phải lũy kế từ đầu năm).",
       "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — tăng trưởng chậm lại là tín hiệu sớm về sức cầu nội địa yếu đi, ảnh hưởng nhóm bán lẻ/hàng tiêu dùng/F&B."
     },
+    "tin_phieu_outstanding_balance": {
+      "group": "monetary",
+      "label": "Số dư tín phiếu NHNN đang lưu hành",
+      "unit": "tỷ đồng",
+      "goodDirection": "lower",
+      "autoSource": "vira",
+      "series": [
+        {
+          "period": "2024-12-31",
+          "value": 50780.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-01-2025-.html"
+        },
+        {
+          "period": "2025-01-02",
+          "value": 48980.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-01-2025-.html"
+        },
+        {
+          "period": "2025-01-06",
+          "value": 63580.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-01-2025-.html"
+        },
+        {
+          "period": "2025-01-08",
+          "value": 93180.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-01-2025-.html"
+        },
+        {
+          "period": "2025-01-09",
+          "value": 88380.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-01-2025-.html"
+        },
+        {
+          "period": "2025-01-13",
+          "value": 75100.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-01-2025-.html"
+        },
+        {
+          "period": "2025-01-14",
+          "value": 62300.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-01-2025-.html"
+        },
+        {
+          "period": "2025-01-15",
+          "value": 74250.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-01-2025-.html"
+        },
+        {
+          "period": "2025-01-16",
+          "value": 76.15,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-01-2025-.html"
+        },
+        {
+          "period": "2025-01-20",
+          "value": 61.05,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-01-2025-.html"
+        },
+        {
+          "period": "2025-01-21",
+          "value": 51.95,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-01-2025-.html"
+        },
+        {
+          "period": "2025-01-22",
+          "value": 32.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-01-2025-.html"
+        },
+        {
+          "period": "2025-02-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-02-2025-.html"
+        },
+        {
+          "period": "2025-02-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-02-2025-.html"
+        },
+        {
+          "period": "2025-02-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-02-2025-.html"
+        },
+        {
+          "period": "2025-02-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-02-2025-.html"
+        },
+        {
+          "period": "2025-02-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-02-2025-.html"
+        },
+        {
+          "period": "2025-02-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-02-2025-.html"
+        },
+        {
+          "period": "2025-02-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-02-2025-.html"
+        },
+        {
+          "period": "2025-02-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-02-2025-.html"
+        },
+        {
+          "period": "2025-02-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-02-2025-.html"
+        },
+        {
+          "period": "2025-02-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-02-2025-.html"
+        },
+        {
+          "period": "2025-02-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-02-2025-.html"
+        },
+        {
+          "period": "2025-02-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-02-2025-.html"
+        },
+        {
+          "period": "2025-02-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-02-2025-.html"
+        },
+        {
+          "period": "2025-02-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-02-2025-.html"
+        },
+        {
+          "period": "2025-02-27",
+          "value": 7999.3,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-02-2025-.html"
+        },
+        {
+          "period": "2025-03-03",
+          "value": 4999.6,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-03-2025-.html"
+        },
+        {
+          "period": "2025-03-04",
+          "value": 4999.5,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-03-2025-.html"
+        },
+        {
+          "period": "2025-03-05",
+          "value": 3999.7,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-03-2025-.html"
+        },
+        {
+          "period": "2025-03-06",
+          "value": 2999.7,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-03-2025-.html"
+        },
+        {
+          "period": "2025-03-10",
+          "value": 999.8,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-03-2025-.html"
+        },
+        {
+          "period": "2025-03-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-03-2025-.html"
+        },
+        {
+          "period": "2025-03-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-03-2025-.html"
+        },
+        {
+          "period": "2025-03-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-03-2025-.html"
+        },
+        {
+          "period": "2025-03-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-03-2025-.html"
+        },
+        {
+          "period": "2025-03-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-03-2025-.html"
+        },
+        {
+          "period": "2025-03-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-03-2025-.html"
+        },
+        {
+          "period": "2025-03-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-03-2025-.html"
+        },
+        {
+          "period": "2025-03-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-03-2025-.html"
+        },
+        {
+          "period": "2025-04-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-04-2025-.html"
+        },
+        {
+          "period": "2025-04-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-04-2025-.html"
+        },
+        {
+          "period": "2025-04-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-04-2025-.html"
+        },
+        {
+          "period": "2025-04-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-04-2025-.html"
+        },
+        {
+          "period": "2025-04-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-04-2025-.html"
+        },
+        {
+          "period": "2025-04-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-04-2025-.html"
+        },
+        {
+          "period": "2025-04-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-04-2025-.html"
+        },
+        {
+          "period": "2025-04-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-04-2025-.html"
+        },
+        {
+          "period": "2025-04-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-04-2025-.html"
+        },
+        {
+          "period": "2025-04-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-04-2025-.html"
+        },
+        {
+          "period": "2025-04-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-04-2025-.html"
+        },
+        {
+          "period": "2025-04-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-04-2025-.html"
+        },
+        {
+          "period": "2025-04-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-04-2025-.html"
+        },
+        {
+          "period": "2025-04-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-04-2025-.html"
+        },
+        {
+          "period": "2025-04-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-04-2025-.html"
+        },
+        {
+          "period": "2025-04-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-05-2025-.html"
+        },
+        {
+          "period": "2025-05-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-05-2025-.html"
+        },
+        {
+          "period": "2025-05-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-05-2025-.html"
+        },
+        {
+          "period": "2025-05-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-05-2025-.html"
+        },
+        {
+          "period": "2025-05-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-05-2025-.html"
+        },
+        {
+          "period": "2025-05-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-05-2025-.html"
+        },
+        {
+          "period": "2025-05-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-05-2025-.html"
+        },
+        {
+          "period": "2025-05-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-05-2025-.html"
+        },
+        {
+          "period": "2025-05-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-05-2025-.html"
+        },
+        {
+          "period": "2025-05-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-05-2025-.html"
+        },
+        {
+          "period": "2025-05-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-05-2025-.html"
+        },
+        {
+          "period": "2025-05-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-05-2025-.html"
+        },
+        {
+          "period": "2025-05-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-05-2025-.html"
+        },
+        {
+          "period": "2025-05-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-05-2025-.html"
+        },
+        {
+          "period": "2025-05-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-05-2025-.html"
+        },
+        {
+          "period": "2025-06-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-06-2025-.html"
+        },
+        {
+          "period": "2025-06-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-06-2025-.html"
+        },
+        {
+          "period": "2025-06-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-06-2025-.html"
+        },
+        {
+          "period": "2025-06-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-06-2025-.html"
+        },
+        {
+          "period": "2025-06-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-06-2025-.html"
+        },
+        {
+          "period": "2025-06-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-06-2025-.html"
+        },
+        {
+          "period": "2025-06-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-06-2025-.html"
+        },
+        {
+          "period": "2025-06-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-06-2025-.html"
+        },
+        {
+          "period": "2025-06-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-06-2025-.html"
+        },
+        {
+          "period": "2025-06-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-06-2025-.html"
+        },
+        {
+          "period": "2025-06-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-06-2025-.html"
+        },
+        {
+          "period": "2025-06-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-06-2025-.html"
+        },
+        {
+          "period": "2025-06-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-06-2025-.html"
+        },
+        {
+          "period": "2025-06-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-06-2025-.html"
+        },
+        {
+          "period": "2025-06-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-06-2025-.html"
+        },
+        {
+          "period": "2025-06-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-07-2025-.html"
+        },
+        {
+          "period": "2025-07-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-07-2025-.html"
+        },
+        {
+          "period": "2025-07-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-07-2025-.html"
+        },
+        {
+          "period": "2025-07-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-07-2025-.html"
+        },
+        {
+          "period": "2025-07-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-07-2025-.html"
+        },
+        {
+          "period": "2025-07-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2025-.html"
+        },
+        {
+          "period": "2025-07-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2025-.html"
+        },
+        {
+          "period": "2025-07-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-07-2025-.html"
+        },
+        {
+          "period": "2025-07-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2025-.html"
+        },
+        {
+          "period": "2025-07-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2025-.html"
+        },
+        {
+          "period": "2025-07-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2025-.html"
+        },
+        {
+          "period": "2025-07-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-07-2025-.html"
+        },
+        {
+          "period": "2025-07-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2025-.html"
+        },
+        {
+          "period": "2025-07-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2025-.html"
+        },
+        {
+          "period": "2025-07-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2025-.html"
+        },
+        {
+          "period": "2025-07-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-07-2025-.html"
+        },
+        {
+          "period": "2025-07-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2025-.html"
+        },
+        {
+          "period": "2025-07-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2025-.html"
+        },
+        {
+          "period": "2025-07-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2025-.html"
+        },
+        {
+          "period": "2025-07-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-08-2025-.html"
+        },
+        {
+          "period": "2025-08-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-08-2025-.html"
+        },
+        {
+          "period": "2025-08-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-08-2025-.html"
+        },
+        {
+          "period": "2025-08-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-08-2025-.html"
+        },
+        {
+          "period": "2025-08-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-08-2025-.html"
+        },
+        {
+          "period": "2025-08-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-08-2025-.html"
+        },
+        {
+          "period": "2025-08-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-08-2025-.html"
+        },
+        {
+          "period": "2025-08-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-08-2025-.html"
+        },
+        {
+          "period": "2025-08-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-08-2025-.html"
+        },
+        {
+          "period": "2025-08-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-08-2025-.html"
+        },
+        {
+          "period": "2025-08-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-08-2025-.html"
+        },
+        {
+          "period": "2025-08-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-08-2025-.html"
+        },
+        {
+          "period": "2025-08-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-08-2025-.html"
+        },
+        {
+          "period": "2025-08-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2025-.html"
+        },
+        {
+          "period": "2025-08-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2025-.html"
+        },
+        {
+          "period": "2025-08-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2025-.html"
+        },
+        {
+          "period": "2025-08-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-08-2025-.html"
+        },
+        {
+          "period": "2025-09-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-09-2025-.html"
+        },
+        {
+          "period": "2025-09-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-09-2025-.html"
+        },
+        {
+          "period": "2025-09-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-09-2025-.html"
+        },
+        {
+          "period": "2025-09-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-09-2025-.html"
+        },
+        {
+          "period": "2025-09-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2025-.html"
+        },
+        {
+          "period": "2025-09-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-09-2025-.html"
+        },
+        {
+          "period": "2025-09-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2025-.html"
+        },
+        {
+          "period": "2025-09-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2025-.html"
+        },
+        {
+          "period": "2025-09-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2025-.html"
+        },
+        {
+          "period": "2025-09-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-09-2025-.html"
+        },
+        {
+          "period": "2025-09-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-09-2025-.html"
+        },
+        {
+          "period": "2025-09-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-09-2025-.html"
+        },
+        {
+          "period": "2025-09-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2025-.html"
+        },
+        {
+          "period": "2025-09-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-09-2025-.html"
+        },
+        {
+          "period": "2025-09-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2025-.html"
+        },
+        {
+          "period": "2025-09-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2025-.html"
+        },
+        {
+          "period": "2025-10-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2025-.html"
+        },
+        {
+          "period": "2025-10-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-10-2025-.html"
+        },
+        {
+          "period": "2025-10-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2025-.html"
+        },
+        {
+          "period": "2025-10-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2025-.html"
+        },
+        {
+          "period": "2025-10-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-10-2025-.html"
+        },
+        {
+          "period": "2025-10-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-10-2025-.html"
+        },
+        {
+          "period": "2025-10-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-10-2025-.html"
+        },
+        {
+          "period": "2025-10-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-10-2025-.html"
+        },
+        {
+          "period": "2025-10-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-10-2025-.html"
+        },
+        {
+          "period": "2025-10-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-10-2025-.html"
+        },
+        {
+          "period": "2025-10-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-10-2025-.html"
+        },
+        {
+          "period": "2025-10-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-10-2025-.html"
+        },
+        {
+          "period": "2025-10-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2025-.html"
+        },
+        {
+          "period": "2025-10-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-10-2025-.html"
+        },
+        {
+          "period": "2025-10-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2025-.html"
+        },
+        {
+          "period": "2025-10-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2025-.html"
+        },
+        {
+          "period": "2025-10-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2025-.html"
+        },
+        {
+          "period": "2025-10-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-10-2025-.html"
+        },
+        {
+          "period": "2025-11-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-11-2025-.html"
+        },
+        {
+          "period": "2025-11-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-11-2025-.html"
+        },
+        {
+          "period": "2025-11-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-11-2025-.html"
+        },
+        {
+          "period": "2025-11-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-11-2025-.html"
+        },
+        {
+          "period": "2025-11-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-11-2025-.html"
+        },
+        {
+          "period": "2025-11-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-11-2025-.html"
+        },
+        {
+          "period": "2025-11-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-11-2025-.html"
+        },
+        {
+          "period": "2025-11-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-11-2025-.html"
+        },
+        {
+          "period": "2025-11-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-11-2025-.html"
+        },
+        {
+          "period": "2025-11-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-11-2025-.html"
+        },
+        {
+          "period": "2025-11-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-11-2025-.html"
+        },
+        {
+          "period": "2025-11-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-11-2025-.html"
+        },
+        {
+          "period": "2025-11-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-11-2025-.html"
+        },
+        {
+          "period": "2025-11-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-11-2025-.html"
+        },
+        {
+          "period": "2025-11-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-11-2025-.html"
+        },
+        {
+          "period": "2025-12-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-12-2025-.html"
+        },
+        {
+          "period": "2025-12-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-12-2025-.html"
+        },
+        {
+          "period": "2025-12-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-12-2025-.html"
+        },
+        {
+          "period": "2025-12-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-12-2025-.html"
+        },
+        {
+          "period": "2025-12-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-12-2025-.html"
+        },
+        {
+          "period": "2025-12-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-12-2025-.html"
+        },
+        {
+          "period": "2025-12-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-12-2025-.html"
+        },
+        {
+          "period": "2025-12-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-12-2025-.html"
+        },
+        {
+          "period": "2025-12-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-12-2025-.html"
+        },
+        {
+          "period": "2025-12-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-12-2025-.html"
+        },
+        {
+          "period": "2025-12-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-12-2025-.html"
+        },
+        {
+          "period": "2025-12-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-12-2025-.html"
+        },
+        {
+          "period": "2025-12-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-12-2025-.html"
+        },
+        {
+          "period": "2025-12-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-12-2025-.html"
+        },
+        {
+          "period": "2025-12-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-12-2025-.html"
+        },
+        {
+          "period": "2025-12-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-12-2025-.html"
+        },
+        {
+          "period": "2025-12-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-12-2025-.html"
+        },
+        {
+          "period": "2025-12-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-12-2025-.html"
+        },
+        {
+          "period": "2025-12-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-01-2026-.html"
+        },
+        {
+          "period": "2026-01-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-01-2026-.html"
+        },
+        {
+          "period": "2026-01-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-01-2026-.html"
+        },
+        {
+          "period": "2026-01-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-01-2026-.html"
+        },
+        {
+          "period": "2026-01-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-01-2026-.html"
+        },
+        {
+          "period": "2026-01-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-01-2026-.html"
+        },
+        {
+          "period": "2026-01-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-01-2026-.html"
+        },
+        {
+          "period": "2026-01-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-01-2026-.html"
+        },
+        {
+          "period": "2026-01-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-01-2026-.html"
+        },
+        {
+          "period": "2026-01-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-01-2026-.html"
+        },
+        {
+          "period": "2026-01-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-01-2026-.html"
+        },
+        {
+          "period": "2026-01-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-01-2026-.html"
+        },
+        {
+          "period": "2026-01-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-01-2026-.html"
+        },
+        {
+          "period": "2026-01-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-01-2026-.html"
+        },
+        {
+          "period": "2026-01-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-01-2026-.html"
+        },
+        {
+          "period": "2026-01-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-01-2026-.html"
+        },
+        {
+          "period": "2026-01-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-01-2026-.html"
+        },
+        {
+          "period": "2026-02-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-02-2026-.html"
+        },
+        {
+          "period": "2026-02-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-02-2026-.html"
+        },
+        {
+          "period": "2026-02-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-02-2026-.html"
+        },
+        {
+          "period": "2026-02-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-02-2026-.html"
+        },
+        {
+          "period": "2026-02-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-02-2026-.html"
+        },
+        {
+          "period": "2026-02-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-02-2026-.html"
+        },
+        {
+          "period": "2026-02-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-02-2026-.html"
+        },
+        {
+          "period": "2026-02-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-02-2026-.html"
+        },
+        {
+          "period": "2026-02-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-02-2026-.html"
+        },
+        {
+          "period": "2026-02-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-02-2026-.html"
+        },
+        {
+          "period": "2026-02-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-02-2026-.html"
+        },
+        {
+          "period": "2026-03-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-03-2026-.html"
+        },
+        {
+          "period": "2026-03-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-03-2026-.html"
+        },
+        {
+          "period": "2026-03-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-03-2026-.html"
+        },
+        {
+          "period": "2026-03-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-03-2026-.html"
+        },
+        {
+          "period": "2026-03-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-03-2026-.html"
+        },
+        {
+          "period": "2026-03-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-03-2026-.html"
+        },
+        {
+          "period": "2026-03-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-03-2026-.html"
+        },
+        {
+          "period": "2026-03-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-03-2026-.html"
+        },
+        {
+          "period": "2026-03-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-03-2026-.html"
+        },
+        {
+          "period": "2026-03-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-03-2026-.html"
+        },
+        {
+          "period": "2026-03-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-03-2026-.html"
+        },
+        {
+          "period": "2026-03-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-03-2026-.html"
+        },
+        {
+          "period": "2026-03-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-03-2026-.html"
+        },
+        {
+          "period": "2026-03-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-03-2026-.html"
+        },
+        {
+          "period": "2026-03-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-03-2026-.html"
+        },
+        {
+          "period": "2026-03-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-03-2026-.html"
+        },
+        {
+          "period": "2026-03-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-04-2026-.html"
+        },
+        {
+          "period": "2026-04-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-04-2026-.html"
+        },
+        {
+          "period": "2026-04-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-04-2026-.html"
+        },
+        {
+          "period": "2026-04-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-04-2026-.html"
+        },
+        {
+          "period": "2026-04-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-04-2026-.html"
+        },
+        {
+          "period": "2026-04-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-04-2026-.html"
+        },
+        {
+          "period": "2026-04-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-04-2026-.html"
+        },
+        {
+          "period": "2026-04-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-04-2026-.html"
+        },
+        {
+          "period": "2026-04-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-04-2026-.html"
+        },
+        {
+          "period": "2026-04-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-04-2026-.html"
+        },
+        {
+          "period": "2026-04-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-04-2026-.html"
+        },
+        {
+          "period": "2026-04-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-04-2026-.html"
+        },
+        {
+          "period": "2026-04-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-04-2026-.html"
+        },
+        {
+          "period": "2026-04-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-04-2026-.html"
+        },
+        {
+          "period": "2026-04-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-04-2026-.html"
+        },
+        {
+          "period": "2026-04-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-04-2026-.html"
+        },
+        {
+          "period": "2026-04-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-05-2026-.html"
+        },
+        {
+          "period": "2026-05-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-05-2026-.html"
+        },
+        {
+          "period": "2026-05-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-05-2026-.html"
+        },
+        {
+          "period": "2026-05-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-05-2026-.html"
+        },
+        {
+          "period": "2026-05-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-05-2026-.html"
+        },
+        {
+          "period": "2026-05-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-05-2026-.html"
+        },
+        {
+          "period": "2026-05-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-05-2026-.html"
+        },
+        {
+          "period": "2026-05-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-05-2026-.html"
+        },
+        {
+          "period": "2026-05-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-05-2026-.html"
+        },
+        {
+          "period": "2026-05-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-05-2026-.html"
+        },
+        {
+          "period": "2026-05-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-05-2026-.html"
+        },
+        {
+          "period": "2026-05-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-05-2026-.html"
+        },
+        {
+          "period": "2026-05-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-05-2026-.html"
+        },
+        {
+          "period": "2026-05-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-05-2026-.html"
+        },
+        {
+          "period": "2026-05-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-05-2026-.html"
+        },
+        {
+          "period": "2026-06-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-06-2026-.html"
+        },
+        {
+          "period": "2026-06-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-06-2026-.html"
+        },
+        {
+          "period": "2026-06-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-06-2026-.html"
+        },
+        {
+          "period": "2026-06-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-06-2026-.html"
+        },
+        {
+          "period": "2026-06-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-06-2026-.html"
+        },
+        {
+          "period": "2026-06-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-06-2026-.html"
+        },
+        {
+          "period": "2026-06-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-06-2026-.html"
+        },
+        {
+          "period": "2026-06-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-06-2026-.html"
+        },
+        {
+          "period": "2026-06-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-06-2026-.html"
+        },
+        {
+          "period": "2026-06-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-06-2026-.html"
+        },
+        {
+          "period": "2026-06-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-06-2026-.html"
+        },
+        {
+          "period": "2026-06-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-06-2026-.html"
+        },
+        {
+          "period": "2026-06-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-06-2026-.html"
+        },
+        {
+          "period": "2026-06-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-06-2026-.html"
+        },
+        {
+          "period": "2026-06-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-06-2026-.html"
+        },
+        {
+          "period": "2026-06-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-06-2026-.html"
+        },
+        {
+          "period": "2026-06-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-07-2026-.html"
+        },
+        {
+          "period": "2026-07-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-07-2026-.html"
+        },
+        {
+          "period": "2026-07-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-07-2026-.html"
+        },
+        {
+          "period": "2026-07-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-07-2026-.html"
+        },
+        {
+          "period": "2026-07-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-07-2026-.html"
+        },
+        {
+          "period": "2026-07-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+        },
+        {
+          "period": "2026-07-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+        },
+        {
+          "period": "2026-07-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+        },
+        {
+          "period": "2026-07-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+        },
+        {
+          "period": "2026-07-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+        },
+        {
+          "period": "2026-07-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+        },
+        {
+          "period": "2026-07-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+        },
+        {
+          "period": "2026-07-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+        },
+        {
+          "period": "2026-07-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+        },
+        {
+          "period": "2026-07-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+        },
+        {
+          "period": "2026-07-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+        },
+        {
+          "period": "2026-07-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+        },
+        {
+          "period": "2026-07-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+        },
+        {
+          "period": "2026-07-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
+        },
+        {
+          "period": "2026-08-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-08-2026-.html"
+        },
+        {
+          "period": "2026-08-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-08-2026-.html"
+        },
+        {
+          "period": "2026-08-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-08-2026-.html"
+        },
+        {
+          "period": "2026-08-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-08-2026-.html"
+        }
+      ],
+      "trend": {
+        "latest": 0.0,
+        "latest_period": "2026-08-06",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-08-2026-.html",
+        "n_points": 302,
+        "prior": 0.0,
+        "prior_period": "2026-08-05",
+        "delta": 0.0,
+        "delta_vs_4back": 0.0,
+        "far_period": "2026-07-30",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
+      },
+      "note": "vira.org.vn (bản tin Kinh tế - Tài chính ngày) — câu 'có X tỷ đồng tín phiếu lưu hành trên thị trường' CHỈ xuất hiện khi số dư > 0, nên ngày nào không thấy câu này được ghi 0 (không phải thiếu dữ liệu). NHNN không chào thầu tín phiếu nào kể từ 30/10/2025 (xem tin_phieu_days_since_issuance) nên chuỗi này bằng 0 xuyên suốt từ mốc đó tới nay.",
+      "impact": "Tín phiếu là kênh HÚT thanh khoản đối lập OMO (kênh BƠM) — NHNN quay lại phát hành tín phiếu là dấu hiệu SỚM cho thấy đang chủ động rút bớt thanh khoản dư thừa."
+    },
     "fdi_disbursed_quarterly": {
       "group": "trade",
       "label": "FDI giải ngân theo quý (rời rạc)",
@@ -23186,6 +24725,1540 @@
       },
       "note": "= credit_balance_total (vbma, theo tháng) / nominal_gdp_annual (World Bank, theo NĂM gần nhất có sẵn) x100 — GDP năm nào chưa công bố thì dùng năm gần nhất trước đó (GDP thường công bố trễ hơn tín dụng). Chỉ báo đòn bẩy tín dụng kinh điển BIS/IMF. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng để tính Scorecard.",
       "impact": "Tỷ lệ Tín dụng/GDP tăng nhanh và bền vững (credit boom) là 1 trong các chỉ báo cảnh báo sớm khủng hoảng tài chính được BIS/IMF theo dõi sát nhất — cùng một mức tăng trưởng tín dụng % nhưng nếu tỷ lệ này đã cao/tăng nhanh thì rủi ro tích lũy lớn hơn nhiều."
+    },
+    "tin_phieu_net_operation": {
+      "group": "monetary",
+      "label": "NHNN bơm ròng/hút ròng qua tín phiếu (riêng kênh tín phiếu)",
+      "unit": "tỷ đồng",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2025-01-02",
+          "value": -1800.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-01-2025-.html"
+        },
+        {
+          "period": "2025-01-06",
+          "value": 14600.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-01-2025-.html"
+        },
+        {
+          "period": "2025-01-08",
+          "value": 29600.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-01-2025-.html"
+        },
+        {
+          "period": "2025-01-09",
+          "value": -4800.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-01-2025-.html"
+        },
+        {
+          "period": "2025-01-13",
+          "value": -13280.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-01-2025-.html"
+        },
+        {
+          "period": "2025-01-14",
+          "value": -12800.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-01-2025-.html"
+        },
+        {
+          "period": "2025-01-15",
+          "value": 11950.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-01-2025-.html"
+        },
+        {
+          "period": "2025-01-16",
+          "value": -74173.85,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-01-2025-.html"
+        },
+        {
+          "period": "2025-01-20",
+          "value": -15.1,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-01-2025-.html"
+        },
+        {
+          "period": "2025-01-21",
+          "value": -9.1,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-01-2025-.html"
+        },
+        {
+          "period": "2025-01-22",
+          "value": -19.95,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-01-2025-.html"
+        },
+        {
+          "period": "2025-02-03",
+          "value": -32.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-02-2025-.html"
+        },
+        {
+          "period": "2025-02-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-02-2025-.html"
+        },
+        {
+          "period": "2025-02-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-02-2025-.html"
+        },
+        {
+          "period": "2025-02-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-02-2025-.html"
+        },
+        {
+          "period": "2025-02-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-02-2025-.html"
+        },
+        {
+          "period": "2025-02-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-02-2025-.html"
+        },
+        {
+          "period": "2025-02-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-02-2025-.html"
+        },
+        {
+          "period": "2025-02-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-02-2025-.html"
+        },
+        {
+          "period": "2025-02-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-02-2025-.html"
+        },
+        {
+          "period": "2025-02-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-02-2025-.html"
+        },
+        {
+          "period": "2025-02-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-02-2025-.html"
+        },
+        {
+          "period": "2025-02-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-02-2025-.html"
+        },
+        {
+          "period": "2025-02-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-02-2025-.html"
+        },
+        {
+          "period": "2025-02-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-02-2025-.html"
+        },
+        {
+          "period": "2025-02-27",
+          "value": 7999.3,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-02-2025-.html"
+        },
+        {
+          "period": "2025-03-03",
+          "value": -2999.7,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-03-2025-.html"
+        },
+        {
+          "period": "2025-03-04",
+          "value": -0.1,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-03-2025-.html"
+        },
+        {
+          "period": "2025-03-05",
+          "value": -999.8,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-03-2025-.html"
+        },
+        {
+          "period": "2025-03-06",
+          "value": -1000.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-03-2025-.html"
+        },
+        {
+          "period": "2025-03-10",
+          "value": -1999.9,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-03-2025-.html"
+        },
+        {
+          "period": "2025-03-17",
+          "value": -999.8,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-03-2025-.html"
+        },
+        {
+          "period": "2025-03-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-03-2025-.html"
+        },
+        {
+          "period": "2025-03-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-03-2025-.html"
+        },
+        {
+          "period": "2025-03-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-03-2025-.html"
+        },
+        {
+          "period": "2025-03-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-03-2025-.html"
+        },
+        {
+          "period": "2025-03-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-03-2025-.html"
+        },
+        {
+          "period": "2025-03-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-03-2025-.html"
+        },
+        {
+          "period": "2025-03-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-03-2025-.html"
+        },
+        {
+          "period": "2025-04-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-04-2025-.html"
+        },
+        {
+          "period": "2025-04-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-04-2025-.html"
+        },
+        {
+          "period": "2025-04-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-04-2025-.html"
+        },
+        {
+          "period": "2025-04-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-04-2025-.html"
+        },
+        {
+          "period": "2025-04-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-04-2025-.html"
+        },
+        {
+          "period": "2025-04-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-04-2025-.html"
+        },
+        {
+          "period": "2025-04-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-04-2025-.html"
+        },
+        {
+          "period": "2025-04-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-04-2025-.html"
+        },
+        {
+          "period": "2025-04-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-04-2025-.html"
+        },
+        {
+          "period": "2025-04-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-04-2025-.html"
+        },
+        {
+          "period": "2025-04-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-04-2025-.html"
+        },
+        {
+          "period": "2025-04-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-04-2025-.html"
+        },
+        {
+          "period": "2025-04-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-04-2025-.html"
+        },
+        {
+          "period": "2025-04-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-04-2025-.html"
+        },
+        {
+          "period": "2025-04-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-04-2025-.html"
+        },
+        {
+          "period": "2025-04-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-05-2025-.html"
+        },
+        {
+          "period": "2025-05-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-05-2025-.html"
+        },
+        {
+          "period": "2025-05-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-05-2025-.html"
+        },
+        {
+          "period": "2025-05-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-05-2025-.html"
+        },
+        {
+          "period": "2025-05-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-05-2025-.html"
+        },
+        {
+          "period": "2025-05-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-05-2025-.html"
+        },
+        {
+          "period": "2025-05-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-05-2025-.html"
+        },
+        {
+          "period": "2025-05-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-05-2025-.html"
+        },
+        {
+          "period": "2025-05-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-05-2025-.html"
+        },
+        {
+          "period": "2025-05-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-05-2025-.html"
+        },
+        {
+          "period": "2025-05-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-05-2025-.html"
+        },
+        {
+          "period": "2025-05-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-05-2025-.html"
+        },
+        {
+          "period": "2025-05-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-05-2025-.html"
+        },
+        {
+          "period": "2025-05-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-05-2025-.html"
+        },
+        {
+          "period": "2025-05-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-05-2025-.html"
+        },
+        {
+          "period": "2025-06-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-06-2025-.html"
+        },
+        {
+          "period": "2025-06-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-06-2025-.html"
+        },
+        {
+          "period": "2025-06-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-06-2025-.html"
+        },
+        {
+          "period": "2025-06-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-06-2025-.html"
+        },
+        {
+          "period": "2025-06-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-06-2025-.html"
+        },
+        {
+          "period": "2025-06-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-06-2025-.html"
+        },
+        {
+          "period": "2025-06-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-06-2025-.html"
+        },
+        {
+          "period": "2025-06-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-06-2025-.html"
+        },
+        {
+          "period": "2025-06-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-06-2025-.html"
+        },
+        {
+          "period": "2025-06-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-06-2025-.html"
+        },
+        {
+          "period": "2025-06-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-06-2025-.html"
+        },
+        {
+          "period": "2025-06-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-06-2025-.html"
+        },
+        {
+          "period": "2025-06-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-06-2025-.html"
+        },
+        {
+          "period": "2025-06-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-06-2025-.html"
+        },
+        {
+          "period": "2025-06-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-06-2025-.html"
+        },
+        {
+          "period": "2025-06-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-07-2025-.html"
+        },
+        {
+          "period": "2025-07-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-07-2025-.html"
+        },
+        {
+          "period": "2025-07-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-07-2025-.html"
+        },
+        {
+          "period": "2025-07-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-07-2025-.html"
+        },
+        {
+          "period": "2025-07-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-07-2025-.html"
+        },
+        {
+          "period": "2025-07-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2025-.html"
+        },
+        {
+          "period": "2025-07-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2025-.html"
+        },
+        {
+          "period": "2025-07-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-07-2025-.html"
+        },
+        {
+          "period": "2025-07-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2025-.html"
+        },
+        {
+          "period": "2025-07-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2025-.html"
+        },
+        {
+          "period": "2025-07-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2025-.html"
+        },
+        {
+          "period": "2025-07-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-07-2025-.html"
+        },
+        {
+          "period": "2025-07-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2025-.html"
+        },
+        {
+          "period": "2025-07-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2025-.html"
+        },
+        {
+          "period": "2025-07-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2025-.html"
+        },
+        {
+          "period": "2025-07-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-07-2025-.html"
+        },
+        {
+          "period": "2025-07-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2025-.html"
+        },
+        {
+          "period": "2025-07-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2025-.html"
+        },
+        {
+          "period": "2025-07-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2025-.html"
+        },
+        {
+          "period": "2025-07-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-08-2025-.html"
+        },
+        {
+          "period": "2025-08-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-08-2025-.html"
+        },
+        {
+          "period": "2025-08-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-08-2025-.html"
+        },
+        {
+          "period": "2025-08-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-08-2025-.html"
+        },
+        {
+          "period": "2025-08-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-08-2025-.html"
+        },
+        {
+          "period": "2025-08-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-08-2025-.html"
+        },
+        {
+          "period": "2025-08-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-08-2025-.html"
+        },
+        {
+          "period": "2025-08-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-08-2025-.html"
+        },
+        {
+          "period": "2025-08-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-08-2025-.html"
+        },
+        {
+          "period": "2025-08-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-08-2025-.html"
+        },
+        {
+          "period": "2025-08-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-08-2025-.html"
+        },
+        {
+          "period": "2025-08-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-08-2025-.html"
+        },
+        {
+          "period": "2025-08-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-08-2025-.html"
+        },
+        {
+          "period": "2025-08-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2025-.html"
+        },
+        {
+          "period": "2025-08-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2025-.html"
+        },
+        {
+          "period": "2025-08-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2025-.html"
+        },
+        {
+          "period": "2025-08-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-08-2025-.html"
+        },
+        {
+          "period": "2025-09-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-09-2025-.html"
+        },
+        {
+          "period": "2025-09-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-09-2025-.html"
+        },
+        {
+          "period": "2025-09-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-09-2025-.html"
+        },
+        {
+          "period": "2025-09-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-09-2025-.html"
+        },
+        {
+          "period": "2025-09-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2025-.html"
+        },
+        {
+          "period": "2025-09-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-09-2025-.html"
+        },
+        {
+          "period": "2025-09-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2025-.html"
+        },
+        {
+          "period": "2025-09-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2025-.html"
+        },
+        {
+          "period": "2025-09-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2025-.html"
+        },
+        {
+          "period": "2025-09-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-09-2025-.html"
+        },
+        {
+          "period": "2025-09-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-09-2025-.html"
+        },
+        {
+          "period": "2025-09-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-09-2025-.html"
+        },
+        {
+          "period": "2025-09-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2025-.html"
+        },
+        {
+          "period": "2025-09-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-09-2025-.html"
+        },
+        {
+          "period": "2025-09-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2025-.html"
+        },
+        {
+          "period": "2025-09-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2025-.html"
+        },
+        {
+          "period": "2025-10-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2025-.html"
+        },
+        {
+          "period": "2025-10-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-10-2025-.html"
+        },
+        {
+          "period": "2025-10-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2025-.html"
+        },
+        {
+          "period": "2025-10-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2025-.html"
+        },
+        {
+          "period": "2025-10-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-10-2025-.html"
+        },
+        {
+          "period": "2025-10-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-10-2025-.html"
+        },
+        {
+          "period": "2025-10-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-10-2025-.html"
+        },
+        {
+          "period": "2025-10-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-10-2025-.html"
+        },
+        {
+          "period": "2025-10-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-10-2025-.html"
+        },
+        {
+          "period": "2025-10-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-10-2025-.html"
+        },
+        {
+          "period": "2025-10-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-10-2025-.html"
+        },
+        {
+          "period": "2025-10-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-10-2025-.html"
+        },
+        {
+          "period": "2025-10-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2025-.html"
+        },
+        {
+          "period": "2025-10-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-10-2025-.html"
+        },
+        {
+          "period": "2025-10-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2025-.html"
+        },
+        {
+          "period": "2025-10-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2025-.html"
+        },
+        {
+          "period": "2025-10-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2025-.html"
+        },
+        {
+          "period": "2025-10-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-10-2025-.html"
+        },
+        {
+          "period": "2025-11-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-11-2025-.html"
+        },
+        {
+          "period": "2025-11-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-11-2025-.html"
+        },
+        {
+          "period": "2025-11-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-11-2025-.html"
+        },
+        {
+          "period": "2025-11-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-11-2025-.html"
+        },
+        {
+          "period": "2025-11-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-11-2025-.html"
+        },
+        {
+          "period": "2025-11-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-11-2025-.html"
+        },
+        {
+          "period": "2025-11-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-11-2025-.html"
+        },
+        {
+          "period": "2025-11-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-11-2025-.html"
+        },
+        {
+          "period": "2025-11-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-11-2025-.html"
+        },
+        {
+          "period": "2025-11-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-11-2025-.html"
+        },
+        {
+          "period": "2025-11-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-11-2025-.html"
+        },
+        {
+          "period": "2025-11-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-11-2025-.html"
+        },
+        {
+          "period": "2025-11-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-11-2025-.html"
+        },
+        {
+          "period": "2025-11-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-11-2025-.html"
+        },
+        {
+          "period": "2025-11-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-11-2025-.html"
+        },
+        {
+          "period": "2025-12-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-12-2025-.html"
+        },
+        {
+          "period": "2025-12-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-12-2025-.html"
+        },
+        {
+          "period": "2025-12-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-12-2025-.html"
+        },
+        {
+          "period": "2025-12-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-12-2025-.html"
+        },
+        {
+          "period": "2025-12-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-12-2025-.html"
+        },
+        {
+          "period": "2025-12-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-12-2025-.html"
+        },
+        {
+          "period": "2025-12-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-12-2025-.html"
+        },
+        {
+          "period": "2025-12-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-12-2025-.html"
+        },
+        {
+          "period": "2025-12-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-12-2025-.html"
+        },
+        {
+          "period": "2025-12-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-12-2025-.html"
+        },
+        {
+          "period": "2025-12-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-12-2025-.html"
+        },
+        {
+          "period": "2025-12-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-12-2025-.html"
+        },
+        {
+          "period": "2025-12-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-12-2025-.html"
+        },
+        {
+          "period": "2025-12-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-12-2025-.html"
+        },
+        {
+          "period": "2025-12-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-12-2025-.html"
+        },
+        {
+          "period": "2025-12-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-12-2025-.html"
+        },
+        {
+          "period": "2025-12-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-12-2025-.html"
+        },
+        {
+          "period": "2025-12-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-12-2025-.html"
+        },
+        {
+          "period": "2025-12-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-01-2026-.html"
+        },
+        {
+          "period": "2026-01-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-01-2026-.html"
+        },
+        {
+          "period": "2026-01-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-01-2026-.html"
+        },
+        {
+          "period": "2026-01-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-01-2026-.html"
+        },
+        {
+          "period": "2026-01-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-01-2026-.html"
+        },
+        {
+          "period": "2026-01-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-01-2026-.html"
+        },
+        {
+          "period": "2026-01-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-01-2026-.html"
+        },
+        {
+          "period": "2026-01-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-01-2026-.html"
+        },
+        {
+          "period": "2026-01-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-01-2026-.html"
+        },
+        {
+          "period": "2026-01-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-01-2026-.html"
+        },
+        {
+          "period": "2026-01-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-01-2026-.html"
+        },
+        {
+          "period": "2026-01-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-01-2026-.html"
+        },
+        {
+          "period": "2026-01-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-01-2026-.html"
+        },
+        {
+          "period": "2026-01-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-01-2026-.html"
+        },
+        {
+          "period": "2026-01-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-01-2026-.html"
+        },
+        {
+          "period": "2026-01-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-01-2026-.html"
+        },
+        {
+          "period": "2026-01-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-01-2026-.html"
+        },
+        {
+          "period": "2026-02-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-02-2026-.html"
+        },
+        {
+          "period": "2026-02-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-02-2026-.html"
+        },
+        {
+          "period": "2026-02-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-02-2026-.html"
+        },
+        {
+          "period": "2026-02-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-02-2026-.html"
+        },
+        {
+          "period": "2026-02-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-02-2026-.html"
+        },
+        {
+          "period": "2026-02-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-02-2026-.html"
+        },
+        {
+          "period": "2026-02-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-02-2026-.html"
+        },
+        {
+          "period": "2026-02-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-02-2026-.html"
+        },
+        {
+          "period": "2026-02-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-02-2026-.html"
+        },
+        {
+          "period": "2026-02-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-02-2026-.html"
+        },
+        {
+          "period": "2026-02-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-02-2026-.html"
+        },
+        {
+          "period": "2026-03-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-03-2026-.html"
+        },
+        {
+          "period": "2026-03-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-03-2026-.html"
+        },
+        {
+          "period": "2026-03-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-03-2026-.html"
+        },
+        {
+          "period": "2026-03-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-03-2026-.html"
+        },
+        {
+          "period": "2026-03-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-03-2026-.html"
+        },
+        {
+          "period": "2026-03-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-03-2026-.html"
+        },
+        {
+          "period": "2026-03-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-03-2026-.html"
+        },
+        {
+          "period": "2026-03-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-03-2026-.html"
+        },
+        {
+          "period": "2026-03-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-03-2026-.html"
+        },
+        {
+          "period": "2026-03-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-03-2026-.html"
+        },
+        {
+          "period": "2026-03-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-03-2026-.html"
+        },
+        {
+          "period": "2026-03-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-03-2026-.html"
+        },
+        {
+          "period": "2026-03-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-03-2026-.html"
+        },
+        {
+          "period": "2026-03-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-03-2026-.html"
+        },
+        {
+          "period": "2026-03-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-03-2026-.html"
+        },
+        {
+          "period": "2026-03-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-03-2026-.html"
+        },
+        {
+          "period": "2026-03-31",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-04-2026-.html"
+        },
+        {
+          "period": "2026-04-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-04-2026-.html"
+        },
+        {
+          "period": "2026-04-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-04-2026-.html"
+        },
+        {
+          "period": "2026-04-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-04-2026-.html"
+        },
+        {
+          "period": "2026-04-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-04-2026-.html"
+        },
+        {
+          "period": "2026-04-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-04-2026-.html"
+        },
+        {
+          "period": "2026-04-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-04-2026-.html"
+        },
+        {
+          "period": "2026-04-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-04-2026-.html"
+        },
+        {
+          "period": "2026-04-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-04-2026-.html"
+        },
+        {
+          "period": "2026-04-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-04-2026-.html"
+        },
+        {
+          "period": "2026-04-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-04-2026-.html"
+        },
+        {
+          "period": "2026-04-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-04-2026-.html"
+        },
+        {
+          "period": "2026-04-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-04-2026-.html"
+        },
+        {
+          "period": "2026-04-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-04-2026-.html"
+        },
+        {
+          "period": "2026-04-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-04-2026-.html"
+        },
+        {
+          "period": "2026-04-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-04-2026-.html"
+        },
+        {
+          "period": "2026-04-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-05-2026-.html"
+        },
+        {
+          "period": "2026-05-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-05-2026-.html"
+        },
+        {
+          "period": "2026-05-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-05-2026-.html"
+        },
+        {
+          "period": "2026-05-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-05-2026-.html"
+        },
+        {
+          "period": "2026-05-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-05-2026-.html"
+        },
+        {
+          "period": "2026-05-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-05-2026-.html"
+        },
+        {
+          "period": "2026-05-12",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-13-05-2026-.html"
+        },
+        {
+          "period": "2026-05-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-05-2026-.html"
+        },
+        {
+          "period": "2026-05-19",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-20-05-2026-.html"
+        },
+        {
+          "period": "2026-05-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-05-2026-.html"
+        },
+        {
+          "period": "2026-05-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-05-2026-.html"
+        },
+        {
+          "period": "2026-05-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-05-2026-.html"
+        },
+        {
+          "period": "2026-05-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-05-2026-.html"
+        },
+        {
+          "period": "2026-05-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-05-2026-.html"
+        },
+        {
+          "period": "2026-05-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-05-2026-.html"
+        },
+        {
+          "period": "2026-06-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-06-2026-.html"
+        },
+        {
+          "period": "2026-06-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-06-2026-.html"
+        },
+        {
+          "period": "2026-06-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-06-2026-.html"
+        },
+        {
+          "period": "2026-06-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-06-2026-.html"
+        },
+        {
+          "period": "2026-06-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-06-2026-.html"
+        },
+        {
+          "period": "2026-06-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-06-2026-.html"
+        },
+        {
+          "period": "2026-06-10",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-06-2026-.html"
+        },
+        {
+          "period": "2026-06-11",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-12-06-2026-.html"
+        },
+        {
+          "period": "2026-06-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-06-2026-.html"
+        },
+        {
+          "period": "2026-06-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-06-2026-.html"
+        },
+        {
+          "period": "2026-06-17",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-06-2026-.html"
+        },
+        {
+          "period": "2026-06-18",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-19-06-2026-.html"
+        },
+        {
+          "period": "2026-06-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-06-2026-.html"
+        },
+        {
+          "period": "2026-06-24",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-06-2026-.html"
+        },
+        {
+          "period": "2026-06-25",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-06-2026-.html"
+        },
+        {
+          "period": "2026-06-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-06-2026-.html"
+        },
+        {
+          "period": "2026-06-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-07-2026-.html"
+        },
+        {
+          "period": "2026-07-01",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-07-2026-.html"
+        },
+        {
+          "period": "2026-07-02",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-03-07-2026-.html"
+        },
+        {
+          "period": "2026-07-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-07-2026-.html"
+        },
+        {
+          "period": "2026-07-07",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-07-2026-.html"
+        },
+        {
+          "period": "2026-07-08",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-09-07-2026-.html"
+        },
+        {
+          "period": "2026-07-09",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-10-07-2026-.html"
+        },
+        {
+          "period": "2026-07-13",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-14-07-2026-.html"
+        },
+        {
+          "period": "2026-07-14",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-07-2026-.html"
+        },
+        {
+          "period": "2026-07-15",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-07-2026-.html"
+        },
+        {
+          "period": "2026-07-16",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-07-2026-.html"
+        },
+        {
+          "period": "2026-07-20",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-21-07-2026-.html"
+        },
+        {
+          "period": "2026-07-21",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-22-07-2026-.html"
+        },
+        {
+          "period": "2026-07-22",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-07-2026-.html"
+        },
+        {
+          "period": "2026-07-23",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-24-07-2026-.html"
+        },
+        {
+          "period": "2026-07-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-07-2026-.html"
+        },
+        {
+          "period": "2026-07-28",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-07-2026-.html"
+        },
+        {
+          "period": "2026-07-29",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-07-2026-.html"
+        },
+        {
+          "period": "2026-07-30",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-31-07-2026-.html"
+        },
+        {
+          "period": "2026-08-03",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-04-08-2026-.html"
+        },
+        {
+          "period": "2026-08-04",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-05-08-2026-.html"
+        },
+        {
+          "period": "2026-08-05",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-08-2026-.html"
+        },
+        {
+          "period": "2026-08-06",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-08-2026-.html"
+        }
+      ],
+      "trend": {
+        "latest": 0.0,
+        "latest_period": "2026-08-06",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-08-2026-.html",
+        "n_points": 301,
+        "prior": 0.0,
+        "prior_period": "2026-08-05",
+        "delta": 0.0,
+        "delta_vs_4back": 0.0,
+        "far_period": "2026-07-30",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
+      },
+      "note": "= chênh lệch tin_phieu_outstanding_balance giữa 2 lần công bố liên tiếp — dương (tồn kho tăng) nghĩa là NHNN HÚT ròng thêm qua tín phiếu, âm (tồn kho giảm/đáo hạn nhiều hơn phát hành mới) nghĩa là đang BƠM ròng trả lại thị trường qua kênh này. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": "Tín phiếu là kênh HÚT thanh khoản — NHNN hút ròng thêm qua kênh này (giá trị dương) là dấu hiệu chủ động rút bớt thanh khoản dư thừa khỏi hệ thống."
     }
   }
 }

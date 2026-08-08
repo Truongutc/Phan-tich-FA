@@ -1336,7 +1336,12 @@ def fetch_vira_bulletin(lookback_days=10):
             text = htmlmod.unescape(text)
             text = re.sub(r"\s+", " ", text)
 
-            m_date = re.search(r"Ng[àa]y\s*(\d{1,2})/(\d{1,2}),\s*l[ãa]i suất b[ìi]nh qu[âa]n LNH VND", text)
+            # "chào " là optional — bản tin 2025 dùng "lãi suất CHÀO bình quân LNH VND", bản tin
+            # 2026 bỏ chữ "chào" (phát hiện khi backfill lịch sử 2025 cho tin_phieu_outstanding_
+            # balance, user 2026-08-08 — thiếu optional này khiến TOÀN BỘ bản tin 2025 bị bỏ qua
+            # do không khớp được ngày, dù trang tải về bình thường).
+            m_date = re.search(
+                r"Ng[àa]y\s*(\d{1,2})/(\d{1,2}),\s*l[ãa]i suất (?:ch[àa]o )?b[ìi]nh qu[âa]n LNH VND", text)
             if not m_date:
                 continue
             day, month = int(m_date.group(1)), int(m_date.group(2))
@@ -1369,9 +1374,22 @@ def fetch_vira_bulletin(lookback_days=10):
             if m_omo_rate:
                 entry["omo_rate"] = float(m_omo_rate.group(1).replace(",", "."))
 
-            m_outstanding = re.search(r"C[óo]\s*([\d.,]+)\s*tỷ đồng lưu hành trên kênh cầm cố", text)
+            # "trên"/"ở" đều gặp trong thực tế (vd bản tin 15/10/2025 dùng "lưu hành Ở kênh cầm
+            # cố" thay vì "TRÊN" — quy tắc trước chỉ khớp "trên" nên bỏ sót các ngày dùng "ở").
+            m_outstanding = re.search(r"C[óo]\s*([\d.,]+)\s*tỷ đồng lưu hành (?:trên|ở) kênh cầm cố", text)
             if m_outstanding:
                 entry["omo_outstanding"] = _vn_number(m_outstanding.group(1))
+
+            # Số dư TÍN PHIẾU NHNN đang lưu hành (kênh HÚT thanh khoản, đối lập omo_outstanding ở
+            # trên) — user (2026-08-08) muốn biểu đồ tổng quan Tbill giống kiểu OMO. Câu CHỈ xuất
+            # hiện khi có số dư tín phiếu > 0 (đã khảo sát: các ngày NHNN "không chào thầu tín
+            # phiếu" — tức hiện tại và suốt từ 30/10/2025 — câu này KHÔNG xuất hiện, ngụ ý bằng 0;
+            # mẫu THẬT có số liệu: bản tin 02/01/2025 "...có 50.780 tỷ đồng tín phiếu lưu hành trên
+            # thị trường"). Field vắng mặt trong entry -> nơi gọi coi là 0 (không phải None/thiếu
+            # dữ liệu), xem build_tin_phieu_outstanding_series()/_backfill_tin_phieu.py.
+            m_tp_outstanding = re.search(
+                r"c[óo]\s*([\d.,]+)\s*tỷ đồng tín phiếu lưu hành (?:trên|ở) thị trường", text)
+            entry["tin_phieu_outstanding"] = _vn_number(m_tp_outstanding.group(1)) if m_tp_outstanding else 0.0
 
             if len(entry) > 2:
                 results.append(entry)
@@ -2340,7 +2358,22 @@ def update_vimo_raw():
         "bond_7y": "govt_bond_yield_7y", "bond_10y": "govt_bond_yield_10y",
         "bond_15y": "govt_bond_yield_15y", "omo_net": "omo_net_operation",
         "omo_rate": "omo_rate_7d", "omo_outstanding": "omo_outstanding_balance",
+        "tin_phieu_outstanding": "tin_phieu_outstanding_balance",
     }
+    if "tin_phieu_outstanding_balance" not in raw:
+        raw["tin_phieu_outstanding_balance"] = {
+            "group": "monetary", "label": "Số dư tín phiếu NHNN đang lưu hành", "unit": "tỷ đồng",
+            "good_direction": "lower", "auto_source": "vira",
+            "note": ("vira.org.vn (bản tin Kinh tế - Tài chính ngày) — câu 'có X tỷ đồng tín "
+                     "phiếu lưu hành trên thị trường' CHỈ xuất hiện khi số dư > 0, nên ngày nào "
+                     "không thấy câu này được ghi 0 (không phải thiếu dữ liệu). NHNN không chào "
+                     "thầu tín phiếu nào kể từ 30/10/2025 (xem tin_phieu_days_since_issuance) nên "
+                     "chuỗi này bằng 0 xuyên suốt từ mốc đó tới nay — user (2026-08-08) muốn thấy "
+                     "trực quan kênh hút thanh khoản qua tín phiếu đang 'tắt', đối chiếu với "
+                     "omo_outstanding_balance (kênh bơm, vẫn hoạt động) trong cùng 1 biểu đồ."),
+            "impact": "Tín phiếu là kênh HÚT thanh khoản đối lập OMO (kênh BƠM) — NHNN quay lại phát hành tín phiếu là dấu hiệu SỚM cho thấy đang chủ động rút bớt thanh khoản dư thừa, thường đi kèm giai đoạn tỷ giá/lạm phát chịu áp lực.",
+            "series": [],
+        }
     # _append_point() chỉ so khớp điểm CUỐI series — không đủ ở đây vì lookback_days quét lùi ~10
     # ngày MỖI LẦN chạy nên phần lớn ngày đã có sẵn từ lần chạy trước (không nằm ở cuối series do
     # thứ tự append). Tự kiểm tra period đã tồn tại (ở BẤT KỲ đâu trong series) trước khi thêm, để

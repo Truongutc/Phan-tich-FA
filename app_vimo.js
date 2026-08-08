@@ -513,7 +513,10 @@ function _renderGenericIndicatorCard(grid, key, ind) {
     card.className = 'vimo-indicator-card';
     const t = ind.trend || {};
     const nValid = (ind.series || []).filter(p => p.value !== null && p.value !== undefined).length;
-    const hasChart = nValid >= 4;
+    // Hạ ngưỡng 4 -> 2 (user 2026-08-08: muốn "chart hóa" Lãi suất iPower TCBS/Tăng trưởng huy
+    // động vốn dù mới có 1-2 điểm) — 2 điểm đã đủ để so sánh xu hướng tăng/giảm giữa 2 lần cập
+    // nhật gần nhất, không cần chờ tích lũy đủ 4 điểm mới hiện.
+    const hasChart = nValid >= 2;
     const judgColor = t.judgment_color || '#94a3b8';
     const canvasId = `chart-${key}`;
 
@@ -581,6 +584,7 @@ function renderIndicatorGroups(indicators) {
             renderInterbank6mHistoryChart(grid, indicators);
             renderBondYieldHistoryChart(grid, indicators);
             renderOmoHistoryChart(grid, indicators);
+            renderTinPhieuHistoryChart(grid, indicators);
             // Tăng trưởng tín dụng, cung tiền M2 & huy động cùng 1 chart (user 2026-08-01/08-03,
             // đối chiếu ảnh tham khảo từ vbma.org.vn/vi/market-data/money-supply +
             // data.vietnambiz.vn/currency-interest-rate) — credit_growth_yoy_monthly/
@@ -961,6 +965,70 @@ function renderOmoHistoryChart(grid, indicators) {
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Tồn kho (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'Bơm/hút ròng (tỷ đồng/ngày)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// Số dư tín phiếu NHNN đang lưu hành (TỒN KHO, kênh HÚT — đối lập OMO là kênh BƠM) + bơm/hút ròng
+// RIÊNG kênh tín phiếu (DÒNG CHẢY/ngày, suy ra từ chênh lệch tồn kho — xem
+// _add_tin_phieu_net_operation trong template_vimo.py) — cùng kiểu trình bày "stock vs flow" như
+// renderOmoHistoryChart ở trên (user 2026-08-08: muốn 1 biểu đồ Tbill tương tự OMO để thấy trực
+// quan kênh này đang "tắt" — NHNN không chào thầu tín phiếu nào từ 30/10/2025, series này bằng 0
+// xuyên suốt từ mốc đó tới nay, KHÔNG phải thiếu dữ liệu).
+function renderTinPhieuHistoryChart(grid, indicators) {
+    const outstanding = ((indicators.tin_phieu_outstanding_balance || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const net = ((indicators.tin_phieu_net_operation || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const allPeriods = _sortPeriods(new Set([...outstanding, ...net].map(p => p.period)));
+    if (!allPeriods.length) return;
+
+    const outstandingByPeriod = Object.fromEntries(outstanding.map(p => [p.period, p.value]));
+    const netByPeriod = Object.fromEntries(net.map(p => [p.period, p.value]));
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">📈 Số dư tín phiếu NHNN đang lưu hành & Bơm/hút ròng qua tín phiếu theo thời gian</span></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-tin-phieu-history"></canvas></div>
+        <div class="ind-note">Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). Đường (trục trái) = tồn kho lưu hành; cột (trục phải) = dòng chảy ròng/ngày (xanh = hút ròng thêm, đỏ = bơm ròng trả lại/đáo hạn nhiều hơn phát hành). Kênh HÚT thanh khoản, đối lập OMO (kênh BƠM) — bằng 0 xuyên suốt từ 30/10/2025 (lần chào bán tín phiếu gần nhất) tới nay vì NHNN không dùng kênh này, không phải thiếu dữ liệu.</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-tin-phieu-history');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: [
+                {
+                    type: 'bar', label: 'Bơm/hút ròng tín phiếu (phải)', yAxisID: 'y1',
+                    data: allPeriods.map(p => netByPeriod[p] ?? null),
+                    backgroundColor: allPeriods.map(p => (netByPeriod[p] ?? 0) >= 0 ? '#10b98188' : '#ef444488'),
+                    borderWidth: 0, order: 2,
+                    datalabels: { ..._endpointDatalabelsConfig(0), color: '#c9d2e3' },
+                },
+                {
+                    type: 'line', label: 'Số dư lưu hành (trái)', yAxisID: 'y',
+                    data: allPeriods.map(p => outstandingByPeriod[p] ?? null),
+                    borderColor: '#f59e0b', backgroundColor: '#f59e0b15', fill: true,
+                    tension: 0.1, pointRadius: 1, spanGaps: true, order: 1,
+                    datalabels: _endpointDatalabelsConfig(0),
+                },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Tồn kho (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'Bơm/hút ròng (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],

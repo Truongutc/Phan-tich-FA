@@ -2299,6 +2299,41 @@ def _add_credit_derived_indicators(raw, trends):
                 print(f"  -> Tỷ lệ Tín dụng/GDP danh nghĩa: {len(ratio_points)} điểm")
 
 
+def _add_tin_phieu_net_operation(raw, trends):
+    """Bơm/hút ròng RIÊNG kênh tín phiếu NHNN (tỷ đồng/ngày) — suy ra từ CHÊNH LỆCH số dư tín
+    phiếu đang lưu hành giữa 2 lần công bố liên tiếp (tin_phieu_outstanding_balance, xem
+    fetch_vira_bulletin() trong fetch_macro_data.py) — ĐÚNG ĐỊNH NGHĨA toán học (thay đổi tồn kho
+    = dòng chảy ròng trong khoảng thời gian đó), không cần parse câu trúng thầu/đáo hạn tín phiếu
+    (nhiều biến thể theo số kỳ hạn, chưa có mẫu THẬT để viết regex tin cậy khi NHNN CÓ phát hành —
+    xem note của tin_phieu_outstanding_balance). Cùng cặp line+bar 'tồn kho vs dòng chảy' như
+    omo_outstanding_balance/omo_net_operation (user 2026-08-08: muốn biểu đồ Tbill tương tự OMO).
+    Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."""
+    outstanding = raw.get("tin_phieu_outstanding_balance")
+    if not outstanding or len(outstanding["series"]) < 2:
+        return
+    series = sorted(outstanding["series"], key=lambda p: p["period"])
+    points = []
+    for prev, curr in zip(series, series[1:]):
+        if prev.get("value") is None or curr.get("value") is None:
+            continue
+        points.append({"period": curr["period"], "value": round(curr["value"] - prev["value"], 2),
+                        "source_url": curr["source_url"]})
+    if not points:
+        return
+    raw["tin_phieu_net_operation"] = {
+        "group": "monetary", "label": "NHNN bơm ròng/hút ròng qua tín phiếu (riêng kênh tín phiếu)",
+        "unit": "tỷ đồng", "good_direction": "higher", "auto_source": "derived",
+        "series": points,
+        "note": ("= chênh lệch tin_phieu_outstanding_balance giữa 2 lần công bố liên tiếp — dương "
+                 "(tồn kho tăng) nghĩa là NHNN HÚT ròng thêm qua tín phiếu, âm (tồn kho giảm/đáo "
+                 "hạn nhiều hơn phát hành mới) nghĩa là đang BƠM ròng trả lại thị trường qua kênh "
+                 "này. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."),
+        "impact": "Tín phiếu là kênh HÚT thanh khoản — NHNN hút ròng thêm qua kênh này (giá trị dương) là dấu hiệu chủ động rút bớt thanh khoản dư thừa khỏi hệ thống.",
+    }
+    trends["tin_phieu_net_operation"] = calc_trend(points, "higher")
+    print(f"  -> Bơm/hút ròng qua tín phiếu (riêng): {len(points)} điểm")
+
+
 # Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
 # kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
 # Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
@@ -2671,6 +2706,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính tăng trưởng dư nợ tín dụng YoY (theo tháng) + tỷ lệ Tín dụng/GDP (KHÔNG lưu vào vimo_raw.json)...")
     _add_credit_derived_indicators(raw, trends)
+
+    print("[INFO] Tính bơm/hút ròng riêng kênh tín phiếu NHNN (KHÔNG lưu vào vimo_raw.json)...")
+    _add_tin_phieu_net_operation(raw, trends)
 
     print("[INFO] Dựng bảng giám sát chỉ số vĩ mô hàng tháng (heatmap)...")
     monitoring_table = _build_monitoring_table(raw)
