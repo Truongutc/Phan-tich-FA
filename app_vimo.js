@@ -76,6 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decision, data.decisionHeadline);
     renderIndicatorGroups(data.indicators);
     renderInternationalSection(data.indicators);
+    // PHẢI gọi SAU renderIndicatorGroups() — hàm đó destroy() TOÀN BỘ chartInstances hiện có ở
+    // đầu (dọn dẹp cho lần render riêng của nó), nên nếu gọi renderMacroOverview() trước đó thì
+    // biểu đồ vừa tạo sẽ bị destroy() ngay sau, canvas về trạng thái rỗng dù không có lỗi console
+    // nào (Chart.js destroy() im lặng) — đã xác nhận qua Playwright (canvas kẹt ở 300x150 mặc
+    // định, Chart.getChart() trả null) trước khi đổi thứ tự gọi.
+    renderMacroOverview(data.macroOverview);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -241,13 +247,16 @@ function renderMonitoringTable(table) {
 }
 
 function _heatmapColor(g) {
-    // g=0 -> đỏ (#ef4444), g=1 -> xanh (#10b981) — lerp RGB tuyến tính, alpha cố định để chữ tối
-    // (color:#0b1220 trong CSS) vẫn đọc được trên cả 2 đầu dải màu.
+    // g=0 -> đỏ (#ef4444), g=1 -> xanh (#10b981) — lerp RGB tuyến tính. Alpha TĂNG lên 0.85 (trước
+    // là 0.55, user 2026-08-07: "màu tối quá, nhìn không rõ") — nền thẻ của trang tối màu, alpha
+    // thấp khiến màu nền ô bị pha loãng/tối theo, trong khi chữ trong ô lại cố định màu TỐI
+    // (color:#0b1220 trong CSS) để đọc được trên nền sáng — alpha thấp làm chữ tối trên nền cũng
+    // tối, tương phản kém. Alpha cao hơn giữ nền gần với màu đỏ/xanh THẬT, sáng rõ, chữ tối nổi bật.
     const red = [239, 68, 68], green = [16, 185, 129];
     const r = Math.round(red[0] + (green[0] - red[0]) * g);
     const gr = Math.round(red[1] + (green[1] - red[1]) * g);
     const b = Math.round(red[2] + (green[2] - red[2]) * g);
-    return `rgba(${r},${gr},${b},0.55)`;
+    return `rgba(${r},${gr},${b},0.85)`;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -582,6 +591,18 @@ function renderIndicatorGroups(indicators) {
                 ['deposit_growth_yoy_monthly', 'Tăng trưởng huy động (YoY)', '#f59e0b'],
             ], 'chart-credit-money-supply', '📈 Tăng trưởng tín dụng, cung tiền M2 & huy động theo tháng (so cùng kỳ năm trước)',
             'Nguồn: vbma.org.vn (cung tiền M2 trực tiếp; tín dụng/huy động phái sinh từ dư nợ/tiền gửi tuyệt đối) — cả 3 đều YoY thật theo tháng, không phải so với đầu năm.', null);
+
+            // Bản "so cuối năm trước" (YTD, reset mỗi tháng 1) của CÙNG 3 chỉ báo trên — user
+            // (2026-08-08): muốn xem diễn biến TRONG NĂM rõ hơn, vì có giai đoạn cùng kỳ năm
+            // trước tăng mạnh khiến YoY hiện tại trông thấp đi không phản ánh đúng xu hướng năm
+            // nay. Cả 3 đều phái sinh từ mức tuyệt đối (credit/deposit/m2_balance_total), xem
+            // _ytd_from_level_series() trong template_vimo.py.
+            renderMultiTenorHistoryChart(grid, indicators, [
+                ['credit_growth_ytd_monthly', 'Tăng trưởng tín dụng (YTD)', '#3b82f6'],
+                ['m2_growth_ytd_monthly', 'Tăng trưởng cung tiền M2 (YTD)', '#a78bfa'],
+                ['deposit_growth_ytd_monthly', 'Tăng trưởng huy động (YTD)', '#f59e0b'],
+            ], 'chart-credit-money-supply-ytd', '📈 Tăng trưởng tín dụng, cung tiền M2 & huy động theo tháng (so cuối năm trước)',
+            'Nguồn: vbma.org.vn (phái sinh từ mức tuyệt đối tín dụng/M2/huy động) — cả 3 đều so với mốc 31/12 năm trước, RESET về gần 0% mỗi tháng 1 rồi cộng dồn tới tháng 12, không phải so cùng kỳ.', null);
         }
         if (grp === 'growth') {
             renderStackedAreaChart(grid, indicators, {
@@ -1106,4 +1127,89 @@ function renderInternationalSection(indicators) {
             renderUsYieldSpreadChart(grid, indicators);
         }
     });
+}
+
+// ═══════════════════════════════════════════════════════════
+// BIỂU ĐỒ TỔNG QUAN VĨ MÔ — đặt NGAY TRÊN ĐẦU trang (user 2026-08-08, kèm ảnh mẫu dashboard
+// "VĨ MÔ VIỆT NAM THÁNG 7/2026") để thấy diễn biến chung mà không phải kéo xem nhiều chart bên
+// dưới. 2 biểu đồ: năm hiện tại (chỉ vẽ các tháng đã có) + năm gần nhất đã hoàn chỉnh (đủ 12
+// tháng) để so sánh — dữ liệu do _build_macro_overview() (template_vimo.py) đóng gói sẵn thành
+// {currentYear, recentFullYear}, mỗi năm là list {key, label, unit, values[]} theo đúng thứ tự
+// tháng 1..N. IIP/CPI/Xuất-Nhập khẩu dùng chung trục % (trái); FDI giải ngân (tỷ USD) và Giải
+// ngân đầu tư công (nghìn tỷ đồng) lệch quy mô rất nhiều nên mỗi chỉ số 1 trục riêng bên phải.
+// ═══════════════════════════════════════════════════════════
+const MACRO_OVERVIEW_COLORS = {
+    iip_growth: '#3b82f6',
+    export_growth_customs: '#10b981',
+    import_growth_customs: '#ef4444',
+    cpi_yoy: '#f59e0b',
+    fdi_disbursed: '#a78bfa',
+    public_investment_disbursement_value: '#22d3ee',
+};
+
+function renderMacroOverview(macroOverview) {
+    if (!macroOverview) return;
+    const card = document.getElementById('macro-overview-card');
+    if (!card) return;
+
+    const current = macroOverview.currentYear;
+    const recent = macroOverview.recentFullYear;
+    const hasCurrent = current && current.series && current.series.length && current.monthsShown;
+    const hasRecent = recent && recent.series && recent.series.length;
+    if (!hasCurrent && !hasRecent) return;
+    card.style.display = '';
+
+    const titleCurrent = document.getElementById('macro-overview-title-current');
+    const titleRecent = document.getElementById('macro-overview-title-recent');
+    if (hasCurrent) {
+        titleCurrent.textContent = `📅 Năm ${current.year} (đến hết tháng ${current.monthsShown})`;
+        _renderMacroOverviewChart('chart-macro-overview-current', current);
+    }
+    if (hasRecent) {
+        titleRecent.textContent = `📅 Năm ${recent.year} (đối chiếu, đủ 12 tháng)`;
+        _renderMacroOverviewChart('chart-macro-overview-recent', recent);
+    }
+}
+
+function _renderMacroOverviewChart(canvasId, yearData) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const labels = Array.from({ length: yearData.monthsShown }, (_, i) => `Tháng ${i + 1}`);
+
+    const datasets = yearData.series.map(row => {
+        const color = MACRO_OVERVIEW_COLORS[row.key] || '#9aa5bd';
+        const yAxisID = row.unit === '%' ? 'y' : (row.key === 'fdi_disbursed' ? 'y1' : 'y2');
+        return {
+            label: row.label, data: row.values, yAxisID,
+            borderColor: color, backgroundColor: color + '15', fill: false,
+            tension: 0.25, pointRadius: 3, spanGaps: true,
+        };
+    });
+
+    const hasFdi = yearData.series.some(r => r.key === 'fdi_disbursed');
+    const hasPublicInv = yearData.series.some(r => r.key === 'public_investment_disbursement_value');
+    const scales = {
+        x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+        y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+             title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
+    };
+    if (hasFdi) {
+        scales.y1 = { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'FDI giải ngân (tỷ USD)', color: '#9aa5bd', font: { size: 9 } } };
+    }
+    if (hasPublicInv) {
+        scales.y2 = { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'ĐT công giải ngân (nghìn tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } };
+    }
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 11, font: { size: 10 } } } },
+            scales,
+        },
+    });
+    chartInstances.push(chart);
 }

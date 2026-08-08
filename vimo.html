@@ -172,6 +172,19 @@
             </div>
         </div>
 
+        <!-- Biểu đồ tổng quan Vĩ mô: IIP/CPI/XNK (%) + FDI giải ngân & Giải ngân đầu tư công (lũy kế),
+             đặt NGAY TRÊN ĐẦU trang để thấy diễn biến chung mà không phải kéo xem nhiều chart bên
+             dưới (user 2026-08-08, kèm ảnh mẫu dashboard "VĨ MÔ VIỆT NAM THÁNG 7/2026") — 2 biểu đồ:
+             năm hiện tại (chỉ vẽ các tháng đã có) + năm gần nhất đã hoàn chỉnh (đủ 12 tháng) để so sánh. -->
+        <div class="card margin-top-20" id="macro-overview-card" style="display:none">
+            <h3 class="border-blue">📈 Diễn biến Vĩ mô Tổng quan</h3>
+            <div class="vimo-chart-title" id="macro-overview-title-current"></div>
+            <div class="ind-chart" style="height:320px"><canvas id="chart-macro-overview-current"></canvas></div>
+            <div class="vimo-chart-title" id="macro-overview-title-recent"></div>
+            <div class="ind-chart" style="height:320px"><canvas id="chart-macro-overview-recent"></canvas></div>
+            <p class="ind-source-note" style="margin-top:8px">FDI giải ngân & Giải ngân đầu tư công là số LŨY KẾ TỪ ĐẦU NĂM (reset về gần 0 mỗi tháng 1, tăng dần theo tháng). Các chỉ số % (IIP/CPI/Xuất-Nhập khẩu) là tăng trưởng so với cùng kỳ năm trước (YoY).</p>
+        </div>
+
         <!-- Đánh giá Tổng thể — trả lời trực tiếp: đang tốt lên/xấu đi, rõ ràng/xám, phù hợp đầu tư không -->
         <div class="card margin-top-20" id="verdict-card">
             <h3 class="border-blue">🧭 Đánh giá Tổng thể</h3>
@@ -327,7 +340,7 @@
     </footer>
 
 </div>
-<script src="app_vimo.js?v=8"></script>
+<script src="app_vimo.js?v=10"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

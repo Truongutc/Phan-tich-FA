@@ -502,6 +502,36 @@ def fetch_nso_gdp_structure_report():
             out["public_investment_disbursement_value_ty"] = _vn_number(m4b.group(2))
             out["public_investment_disbursement_rate_pct"] = _vn_number(m4b.group(3))
 
+        # FDI GIẢI NGÂN lũy kế theo THÁNG (tỷ USD) — user (2026-08-07) yêu cầu biểu đồ tổng quan vĩ
+        # mô cần đường FDI giải ngân lũy kế trong năm. Câu "Vốn đầu tư trực tiếp nước ngoài thực
+        # hiện tại Việt Nam N tháng năm YYYY ước đạt X tỷ USD" xuất hiện HÀNG THÁNG trong báo cáo
+        # (khác fdi_disbursed hiện có — series đó chỉ cập nhật theo QUÝ/6T/9T/cả năm từ nguồn khác,
+        # xem đầu file); cùng chỉ số nên GHI VÀO CHUNG series fdi_disbursed (period 'YYYY-MM' trộn
+        # với 'YYYY-Qn/Hn/9M/FY' đã có — _period_sort_key() đã hỗ trợ sẵn kiểu trộn này, xem ở trên).
+        m_fdi = re.search(
+            r"Vốn đầu tư trực tiếp nước ngoài thực hiện tại Việt Nam (\S+(?:\s+một)?) tháng "
+            r"(?:đầu )?năm (\d{4}) ước đạt ([\d.,]+) tỷ USD", text)
+        if m_fdi:
+            month = _VN_MONTH_COUNT_WORDS.get(m_fdi.group(1).lower())
+            if month:
+                out["fdi_disbursed_period"] = f"{int(m_fdi.group(2)):04d}-{month:02d}"
+                out["fdi_disbursed_usd_bn"] = _vn_number(m_fdi.group(3))
+
+        # IIP (Chỉ số sản xuất công nghiệp) tăng trưởng YoY THEO THÁNG riêng lẻ — dự phòng/bổ sung
+        # cho iip_growth (nguồn chính vẫn là fetch_nso_chart_embed("index-of-industrial-production"),
+        # NHƯNG trang embed chỉ giữ cửa sổ ~13 tháng gần nhất, không lùi được xa hơn — câu này trong
+        # từng báo cáo tháng giúp lấp khoảng trống lịch sử khi cần backfill nhiều tháng cùng lúc.
+        # CHỈ điền nếu chưa có sẵn giá trị cho kỳ đó (xem nơi gọi) — nguồn chart-embed đáng tin hơn.
+        m_iip = re.search(
+            r"Chỉ số sản xuất công nghiệp \(IIP\) tháng \S+ ước (?:tính )?tăng [\d.,]+% so với tháng "
+            r"trước và tăng ([\d.,]+)% so với cùng kỳ năm trước", text)
+        if m_iip and out.get("public_investment_disbursement_period"):
+            out["iip_growth_period"] = out["public_investment_disbursement_period"]
+            out["iip_growth_pct"] = _vn_number(m_iip.group(1))
+        elif m_iip and out.get("fdi_disbursed_period"):
+            out["iip_growth_period"] = out["fdi_disbursed_period"]
+            out["iip_growth_pct"] = _vn_number(m_iip.group(1))
+
         return out
     except Exception as e:
         print(f"  [WARN] NSO (VN) cơ cấu GDP/đầu tư thất bại: {e}")
@@ -830,6 +860,42 @@ def fetch_vbma_deposit_balance():
         return out
     except Exception as e:
         print(f"  [WARN] VBMA huy động thất bại: {e}")
+        return []
+
+
+def fetch_vbma_money_supply_level():
+    """CÙNG file CSV với fetch_vbma_money_supply()/fetch_vbma_deposit_balance() — lấy cột M2 tuyệt
+    đối (cols[1], tỷ VND) thay vì % YoY. Bổ sung MỨC TUYỆT ĐỐI cho m2_growth (vốn chỉ có %), cùng
+    vai trò như credit_balance_total/deposit_balance_total — dùng để suy ra tăng trưởng SO VỚI
+    CUỐI NĂM TRƯỚC (YTD) của M2 tại template_vimo.py (user 2026-08-08: muốn xem diễn biến tín
+    dụng/M2/huy động TRONG NĂM thay vì so cùng kỳ, vì cùng kỳ năm trước tăng mạnh làm YoY hiện tại
+    trông thấp đi không rõ ràng). Trả list [(period_iso, value_ty_vnd), ...] hoặc [] nếu thất bại."""
+    url = "https://vbma.org.vn/csv/markets/tables/vi/tong_cung_tien_theo_thang.csv"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        text = r.content.decode("utf-16-le").lstrip("﻿")
+        lines = text.splitlines()
+        if len(lines) < 2:
+            print("  [WARN] VBMA cung tiền M2 (mức tuyệt đối): file rỗng hoặc đổi cấu trúc.")
+            return []
+        out = []
+        for line in lines[1:]:
+            cols = line.split("\t")
+            if len(cols) < 2:
+                continue
+            m = re.match(r"T(\d{1,2})\s+(\d{4})", cols[0].strip())
+            if not m:
+                continue
+            period = f"{m.group(2)}-{int(m.group(1)):02d}"
+            try:
+                out.append((period, round(_vbma_num(cols[1]), 0)))
+            except ValueError:
+                continue
+        out.sort(key=lambda t: t[0])
+        return out
+    except Exception as e:
+        print(f"  [WARN] VBMA cung tiền M2 (mức tuyệt đối) thất bại: {e}")
         return []
 
 
@@ -1966,6 +2032,19 @@ def update_vimo_raw():
                        gdp_struct["public_investment_disbursement_value_ty"], gdp_struct["source_url"])
         print(f"  -> Giải ngân đầu tư công {p}: {gdp_struct['public_investment_disbursement_value_ty']} nghìn tỷ đồng "
               f"({gdp_struct['public_investment_disbursement_rate_pct']}% kế hoạch năm)")
+    # FDI giải ngân lũy kế theo THÁNG (bổ sung 2026-08-07 cho biểu đồ tổng quan vĩ mô — xem note tại
+    # chỗ trích trong fetch_nso_gdp_structure_report()) — ghi vào CHUNG series fdi_disbursed đã có
+    # sẵn (period 'YYYY-MM' trộn với 'YYYY-Qn/Hn/9M/FY', _period_sort_key() đã hỗ trợ).
+    if gdp_struct.get("fdi_disbursed_period"):
+        _append_point(raw, "fdi_disbursed", gdp_struct["fdi_disbursed_period"],
+                       gdp_struct["fdi_disbursed_usd_bn"], gdp_struct["source_url"])
+        print(f"  -> FDI giải ngân lũy kế {gdp_struct['fdi_disbursed_period']}: {gdp_struct['fdi_disbursed_usd_bn']} tỷ USD")
+    # IIP dự phòng/lấp khoảng trống (nguồn CHÍNH vẫn là fetch_nso_chart_embed bên dưới, gọi SAU nên
+    # sẽ ghi đè lại đúng giá trị đáng tin hơn cho các kỳ nó phủ được — xem note tại chỗ trích).
+    if gdp_struct.get("iip_growth_period"):
+        _append_point(raw, "iip_growth", gdp_struct["iip_growth_period"],
+                       gdp_struct["iip_growth_pct"], gdp_struct["source_url"])
+        print(f"  -> IIP (dự phòng, sẽ bị ghi đè nếu chart-embed phủ được kỳ này) {gdp_struct['iip_growth_period']}: {gdp_struct['iip_growth_pct']}%")
 
     print("[NSO — cơ cấu vốn đầu tư qua OCR ảnh infographic (dữ liệu CHỈ có ở dạng ảnh, xem fetch_nso_infographic_investment)]")
     ocr_inv = fetch_nso_infographic_investment()
@@ -2106,6 +2185,27 @@ def update_vimo_raw():
     pts = fetch_vbma_money_supply()
     if pts:
         raw["m2_growth"]["series"] = [
+            {"period": p, "value": v,
+             "source_url": "https://vbma.org.vn/vi/market-data/money-supply"}
+            for p, v in pts
+        ]
+        print(f"  -> {len(pts)} điểm")
+
+    print("[VBMA — Cung tiền M2 mức tuyệt đối theo tháng (toàn bộ lịch sử từ T12/2018)]")
+    pts = fetch_vbma_money_supply_level()
+    if pts:
+        if "m2_balance_total" not in raw:
+            raw["m2_balance_total"] = {
+                "group": "monetary", "label": "Tổng cung tiền M2", "unit": "tỷ VND",
+                "good_direction": "higher", "auto_source": "vbma",
+                "note": ("Cùng file CSV VBMA đang dùng cho m2_growth (%) — bổ sung góc nhìn QUY MÔ "
+                         "tuyệt đối, dùng để suy ra tăng trưởng M2 SO VỚI CUỐI NĂM TRƯỚC (YTD) tại "
+                         "template_vimo.py, cùng cách credit_balance_total/deposit_balance_total "
+                         "phục vụ credit_growth_ytd_monthly/deposit_growth_ytd_monthly."),
+                "impact": "Quy mô cung tiền tuyệt đối đối chiếu với dư nợ tín dụng/huy động tuyệt đối cho biết thanh khoản hệ thống đang nới lỏng hay thắt chặt.",
+                "series": [],
+            }
+        raw["m2_balance_total"]["series"] = [
             {"period": p, "value": v,
              "source_url": "https://vbma.org.vn/vi/market-data/money-supply"}
             for p, v in pts

@@ -1770,7 +1770,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
                     synthesis, pdf_url=None,
                     valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
-                    monitoring_table=None):
+                    monitoring_table=None, macro_overview=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -1787,6 +1787,7 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
                               if decision_label_headline else None),
         "synthesis": synthesis,
         "monitoringTable": monitoring_table,
+        "macroOverview": macro_overview,
         "indicators": {},
     }
     for key, ind in raw.items():
@@ -2149,6 +2150,22 @@ def _yoy_from_level_series(level_by_period, source_url):
     return points
 
 
+def _ytd_from_level_series(level_by_period, source_url):
+    """Suy ra tăng trưởng SO VỚI CUỐI NĂM TRƯỚC (mốc 31/12 năm trước, RESET mỗi tháng 1 rồi cộng
+    dồn tới tháng 12 — khác _yoy_from_level_series ở trên là so CÙNG THÁNG năm trước, không reset)
+    từ 1 chuỗi giá trị tuyệt đối theo tháng {period: value} — user (2026-08-08): muốn xem diễn
+    biến tín dụng/M2/huy động TRONG NĂM thay vì so cùng kỳ, vì cùng kỳ năm trước tăng/giảm mạnh
+    làm tăng trưởng YoY hiện tại trông thấp/cao đi không phản ánh đúng xu hướng trong năm nay."""
+    points = []
+    for period in sorted(level_by_period):
+        year, month = period.split("-")
+        base_period = f"{int(year) - 1}-12"
+        if base_period in level_by_period and level_by_period[base_period]:
+            ytd = round((level_by_period[period] / level_by_period[base_period] - 1) * 100, 2)
+            points.append({"period": period, "value": ytd, "source_url": source_url})
+    return points
+
+
 def _add_credit_derived_indicators(raw, trends):
     """Từ credit_balance_total/deposit_balance_total (giá trị tuyệt đối, theo tháng, vbma) suy ra
     các chỉ báo mới (user 2026-08-01/2026-08-03):
@@ -2161,12 +2178,20 @@ def _add_credit_derived_indicators(raw, trends):
        Tiền gửi dân cư, CÙNG file CSV VBMA đang dùng cho cung tiền M2) — bổ sung góc nhìn YoY thật
        cho huy động, đối chiếu deposit_growth hiện có (nguồn vietnambiz, snapshot 1 điểm/lần chạy,
        user chỉ ra qua data.vietnambiz.vn/currency-interest-rate).
-    3. credit_to_gdp_ratio — dư nợ tín dụng / GDP danh nghĩa (nominal_gdp_annual, World Bank, theo
+    3. credit_growth_ytd_monthly/deposit_growth_ytd_monthly/m2_growth_ytd_monthly — tăng trưởng SO
+       VỚI CUỐI NĂM TRƯỚC (YTD, reset mỗi tháng 1) từ credit_balance_total/deposit_balance_total/
+       m2_balance_total — user (2026-08-08): xem thêm biểu đồ credit-money-supply YoY hiện có
+       (renderInterbank... không, renderMultiTenorHistoryChart 'so cùng kỳ năm trước'), muốn có
+       thêm góc nhìn "so cuối năm trước" để thấy diễn biến TRONG NĂM rõ hơn — vì có những giai đoạn
+       cùng kỳ năm trước tăng mạnh khiến YoY hiện tại trông thấp đi dù thực ra đang tăng tốt trong
+       năm nay. Dùng _ytd_from_level_series() (khác _yoy_from_level_series ở chỗ RESET mốc neo về
+       31/12 năm trước mỗi tháng 1, không so cùng tháng năm trước).
+    4. credit_to_gdp_ratio — dư nợ tín dụng / GDP danh nghĩa (nominal_gdp_annual, World Bank, theo
        NĂM) x100, khớp GDP theo NĂM gần nhất có sẵn <= năm của tháng tín dụng (GDP thường công bố
        trễ hơn tín dụng vài tháng-1 năm). Chỉ báo đòn bẩy tín dụng kinh điển (BIS/IMF) — tỷ lệ tăng
        nhanh là dấu hiệu cảnh báo rủi ro tích lũy (bong bóng tài sản/nợ xấu).
-    Cả 3 đều PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng cho Scorecard (đã có
-    credit_growth/deposit_growth nguồn SBV/vietnambiz cho vai trò đó)."""
+    Tất cả đều PHÁI SINH tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng cho Scorecard (đã có
+    credit_growth/deposit_growth/m2_growth nguồn SBV/vietnambiz/vbma cho vai trò đó)."""
     credit = raw.get("credit_balance_total")
     if not credit:
         return
@@ -2209,7 +2234,40 @@ def _add_credit_derived_indicators(raw, trends):
             trends["deposit_growth_yoy_monthly"] = calc_trend(deposit_yoy_points, "higher")
             print(f"  -> Tăng trưởng huy động vốn YoY (theo tháng): {len(deposit_yoy_points)} điểm")
 
-    # 3. Tín dụng / GDP danh nghĩa
+    # 3. Tăng trưởng SO VỚI CUỐI NĂM TRƯỚC (YTD, reset mỗi tháng 1) — tín dụng, huy động, M2
+    _YTD_DERIVED_SPECS = [
+        ("credit_balance_total", "credit_growth_ytd_monthly",
+         "Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng)",
+         "https://vbma.org.vn/vi/market-data/credit"),
+        ("deposit_balance_total", "deposit_growth_ytd_monthly",
+         "Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng)",
+         "https://vbma.org.vn/vi/market-data/money-supply"),
+        ("m2_balance_total", "m2_growth_ytd_monthly",
+         "Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng)",
+         "https://vbma.org.vn/vi/market-data/money-supply"),
+    ]
+    for level_key, new_key, label, source_url in _YTD_DERIVED_SPECS:
+        level_ind = raw.get(level_key)
+        if not level_ind:
+            continue
+        level_by_period = {p["period"]: p["value"] for p in level_ind["series"] if p.get("value") is not None}
+        ytd_points = _ytd_from_level_series(level_by_period, source_url)
+        if not ytd_points:
+            continue
+        raw[new_key] = {
+            "group": "monetary", "label": label, "unit": "%", "good_direction": "higher",
+            "auto_source": "derived", "series": ytd_points,
+            "note": (f"Suy ra từ {level_key} (mức tuyệt đối theo tháng, vbma.org.vn) bằng cách so "
+                     f"với mốc 31/12 năm trước, RESET mỗi tháng 1 rồi cộng dồn tới tháng 12 (YTD) — "
+                     f"KHÁC {level_key.replace('_balance_total', '')}_growth_yoy_monthly ở trên "
+                     f"(so CÙNG THÁNG năm trước, không reset). Phái sinh tính toán, KHÔNG lưu vào "
+                     f"vimo_raw.json — KHÔNG dùng để tính Scorecard."),
+            "impact": "Cho thấy tốc độ tăng TRONG NĂM NAY rõ ràng hơn, không bị nhiễu bởi mức tăng/giảm mạnh hay yếu của cùng kỳ năm trước.",
+        }
+        trends[new_key] = calc_trend(ytd_points, "higher")
+        print(f"  -> {label}: {len(ytd_points)} điểm")
+
+    # 4. Tín dụng / GDP danh nghĩa
     gdp = raw.get("nominal_gdp_annual")
     if gdp:
         gdp_by_year = {p["period"]: p["value"] for p in gdp["series"] if p.get("value") is not None}
@@ -2313,6 +2371,66 @@ def _build_monitoring_table(raw, n_months=13):
     if not rows:
         return None
     return {"periods": periods, "rows": rows}
+
+
+# Biểu đồ TỔNG QUAN vĩ mô (user 2026-08-07) — thay vì phải xem nhiều biểu đồ riêng lẻ bên dưới,
+# gom vài chỉ báo chính thành 1 khu vực đầu trang. 2 bộ: (a) NĂM HIỆN TẠI tính tới tháng gần nhất
+# có dữ liệu, (b) NĂM GẦN NHẤT ĐÃ HOÀN CHỈNH (đủ 12 tháng) để so sánh trực quan. Chủ động BỎ doanh
+# số bán lẻ (user: "nếu không có dữ liệu quá khứ thì bỏ qua") — nguồn hiện quá thưa (2-3 điểm rải
+# rác, xem note tại _MONITORING_TABLE_ROWS). FDI giải ngân + giải ngân đầu tư công lấy GIÁ TRỊ LŨY
+# KẾ (tỷ USD / nghìn tỷ đồng), KHÔNG phải % — user yêu cầu rõ (khác cột %KH năm trong bảng giám sát).
+_MACRO_OVERVIEW_SERIES = [
+    ("iip_growth", "Sản xuất công nghiệp (IIP, YoY)", "%"),
+    ("export_growth_customs", "Xuất khẩu (YoY)", "%"),
+    ("import_growth_customs", "Nhập khẩu (YoY)", "%"),
+    ("cpi_yoy", "CPI (YoY)", "%"),
+    ("fdi_disbursed", "FDI giải ngân (lũy kế)", "tỷ USD"),
+    ("public_investment_disbursement_value", "Giải ngân đầu tư công (lũy kế)", "nghìn tỷ đồng"),
+]
+_MACRO_OVERVIEW_MONTHLY_RE = re.compile(r"^(\d{4})-(\d{2})$")
+
+
+def _build_macro_overview(raw):
+    """Trả {"currentYear": {...}, "recentFullYear": {...}} hoặc None nếu chưa có dữ liệu nào —
+    xem _MACRO_OVERVIEW_SERIES/comment phía trên."""
+    def year_series(year):
+        result = []
+        for key, label, unit in _MACRO_OVERVIEW_SERIES:
+            ind = raw.get(key)
+            if not ind:
+                continue
+            by_month = {}
+            for p in ind["series"]:
+                m = _MACRO_OVERVIEW_MONTHLY_RE.match(p["period"])
+                if m and int(m.group(1)) == year and p.get("value") is not None:
+                    by_month[int(m.group(2))] = p["value"]
+            if not by_month:
+                continue
+            result.append({"key": key, "label": label, "unit": unit,
+                            "values": [by_month.get(m) for m in range(1, 13)]})
+        return result
+
+    current_year = datetime.datetime.now().year
+    recent_full_year = current_year - 1
+
+    current_rows = year_series(current_year)
+    # Cắt bớt các tháng CHƯA CÓ dữ liệu ở đuôi (tránh trục X kéo dài hết 12 tháng rỗng cho năm
+    # đang chạy dở) — dựa theo tháng CUỐI CÙNG có ít nhất 1 chỉ báo báo cáo.
+    last_month = 0
+    for row in current_rows:
+        for i, v in enumerate(row["values"], start=1):
+            if v is not None:
+                last_month = max(last_month, i)
+    current_rows_trimmed = ([{**row, "values": row["values"][:last_month]} for row in current_rows]
+                             if last_month else [])
+
+    recent_rows = year_series(recent_full_year)
+    if not current_rows_trimmed and not recent_rows:
+        return None
+    return {
+        "currentYear": {"year": current_year, "monthsShown": last_month, "series": current_rows_trimmed},
+        "recentFullYear": {"year": recent_full_year, "monthsShown": 12, "series": recent_rows},
+    }
 
 
 def _add_us_yield_curve_spread(raw, trends):
@@ -2560,6 +2678,15 @@ def run_vimo_analysis():
     else:
         print("  -> Chưa đủ dữ liệu tháng để dựng bảng.")
 
+    print("[INFO] Dựng biểu đồ tổng quan vĩ mô (năm hiện tại + năm gần nhất đã hoàn chỉnh)...")
+    macro_overview = _build_macro_overview(raw)
+    if macro_overview:
+        print(f"  -> Năm {macro_overview['currentYear']['year']}: {len(macro_overview['currentYear']['series'])} chỉ báo, "
+              f"{macro_overview['currentYear']['monthsShown']} tháng; "
+              f"Năm {macro_overview['recentFullYear']['year']}: {len(macro_overview['recentFullYear']['series'])} chỉ báo")
+    else:
+        print("  -> Chưa đủ dữ liệu để dựng biểu đồ tổng quan.")
+
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
     synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)
     print("  -> Đã sinh phân tích tổng hợp")
@@ -2609,7 +2736,8 @@ def run_vimo_analysis():
     print("[INFO] Saving JSON dashboard...")
     save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
-                    decision_text_headline=decision_text_headline, monitoring_table=monitoring_table)
+                    decision_text_headline=decision_text_headline, monitoring_table=monitoring_table,
+                    macro_overview=macro_overview)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)
