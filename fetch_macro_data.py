@@ -532,6 +532,36 @@ def fetch_nso_gdp_structure_report():
             out["iip_growth_period"] = out["fdi_disbursed_period"]
             out["iip_growth_pct"] = _vn_number(m_iip.group(1))
 
+        # Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng — user (2026-08-08) yêu cầu dữ
+        # liệu THEO TỪNG THÁNG (không phải lũy kế) + tăng trưởng YoY từng tháng, nguồn chính đề
+        # xuất là vnanet.vn nhưng khảo sát cho thấy các bài đó chỉ là ẢNH (infographic) hoặc bài
+        # báo phái sinh — số liệu GỐC nằm sẵn TRONG CHÍNH báo cáo NSO đang fetch (câu mẫu xác nhận
+        # qua báo cáo T7/2026: "Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng theo giá
+        # hiện hành tháng Bảy ước đạt 669,1 nghìn tỷ đồng, tăng 0,9% so với tháng trước và tăng
+        # 14,5% so với cùng kỳ năm trước.") nên KHÔNG cần crawl vnanet.vn riêng — dùng lại đúng hạ
+        # tầng sitemap-backfill đã có cho FDI/IIP. Tự suy kỳ báo cáo (year, month) từ câu LŨY KẾ đi
+        # kèm ngay sau đó ("Tính chung N tháng năm YYYY, tổng mức bán lẻ...") thay vì phải parse
+        # tên tháng chữ ("tháng Bảy"/"tháng Mười Một") — tách biệt hoàn toàn khỏi period của GDP/
+        # đầu tư công ở trên để không phụ thuộc các regex kia có khớp hay không.
+        m_retail_cum = re.search(
+            r"Tính chung (\S+(?:\s+một)?) tháng (?:đầu )?năm (\d{4}), tổng mức bán lẻ hàng hóa và "
+            r"doanh thu dịch vụ tiêu dùng theo giá hiện hành ước đạt ([\d.,]+) nghìn tỷ đồng, tăng "
+            r"([\d.,]+)% so với cùng kỳ năm trước", text)
+        m_retail_month = re.search(
+            r"[Tt]ổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng theo giá hiện hành (?:trong )?"
+            r"tháng [^\d,]+? ước đạt ([\d.,]+) nghìn tỷ đồng, tăng ([\d.,]+)% so với tháng trước(?:,)? "
+            r"(?:và )?tăng (?:tới )?([\d.,]+)% so với cùng kỳ năm trước", text)
+        retail_period = None
+        if m_retail_cum:
+            rmonth = _VN_MONTH_COUNT_WORDS.get(m_retail_cum.group(1).lower())
+            if rmonth:
+                retail_period = f"{int(m_retail_cum.group(2)):04d}-{rmonth:02d}"
+        if m_retail_month and (retail_period or out.get("public_investment_disbursement_period")):
+            out["retail_sales_period"] = retail_period or out["public_investment_disbursement_period"]
+            out["retail_sales_value_ty"] = _vn_number(m_retail_month.group(1))
+            out["retail_sales_mom_pct"] = _vn_number(m_retail_month.group(2))
+            out["retail_sales_yoy_pct"] = _vn_number(m_retail_month.group(3))
+
         return out
     except Exception as e:
         print(f"  [WARN] NSO (VN) cơ cấu GDP/đầu tư thất bại: {e}")
@@ -2045,6 +2075,25 @@ def update_vimo_raw():
         _append_point(raw, "iip_growth", gdp_struct["iip_growth_period"],
                        gdp_struct["iip_growth_pct"], gdp_struct["source_url"])
         print(f"  -> IIP (dự phòng, sẽ bị ghi đè nếu chart-embed phủ được kỳ này) {gdp_struct['iip_growth_period']}: {gdp_struct['iip_growth_pct']}%")
+    # Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng THEO THÁNG (user 2026-08-08) — giá
+    # trị tuyệt đối (nghìn tỷ đồng) ghi vào retail_sales_value (chỉ báo MỚI), tăng trưởng YoY ghi
+    # vào retail_sales_growth (chỉ báo ĐÃ CÓ, trước đây chỉ có vài điểm rời rạc nguồn vietnambiz —
+    # từ nay được backfill dày hơn nhiều nhờ series NSO theo tháng này).
+    if gdp_struct.get("retail_sales_period"):
+        if "retail_sales_value" not in raw:
+            raw["retail_sales_value"] = {
+                "group": "growth", "label": "Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng",
+                "unit": "nghìn tỷ đồng", "good_direction": "higher", "auto_source": "nso_scrape",
+                "note": ("Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), "
+                         "theo giá hiện hành, GIÁ TRỊ CỦA RIÊNG THÁNG ĐÓ (không phải lũy kế từ đầu năm)."),
+                "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — tăng trưởng chậm lại là tín hiệu sớm về sức cầu nội địa yếu đi, ảnh hưởng nhóm bán lẻ/hàng tiêu dùng/F&B.",
+                "series": [],
+            }
+        _append_point(raw, "retail_sales_value", gdp_struct["retail_sales_period"],
+                       gdp_struct["retail_sales_value_ty"], gdp_struct["source_url"])
+        _append_point(raw, "retail_sales_growth", gdp_struct["retail_sales_period"],
+                       gdp_struct["retail_sales_yoy_pct"], gdp_struct["source_url"])
+        print(f"  -> Tổng mức bán lẻ {gdp_struct['retail_sales_period']}: {gdp_struct['retail_sales_value_ty']} nghìn tỷ đồng (YoY {gdp_struct['retail_sales_yoy_pct']}%)")
 
     print("[NSO — cơ cấu vốn đầu tư qua OCR ảnh infographic (dữ liệu CHỈ có ở dạng ảnh, xem fetch_nso_infographic_investment)]")
     ocr_inv = fetch_nso_infographic_investment()

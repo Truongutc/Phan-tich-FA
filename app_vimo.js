@@ -1141,6 +1141,7 @@ function renderInternationalSection(indicators) {
 // ═══════════════════════════════════════════════════════════
 const MACRO_OVERVIEW_COLORS = {
     iip_growth: '#3b82f6',
+    retail_sales_growth: '#ec4899',
     export_growth_customs: '#10b981',
     import_growth_customs: '#ef4444',
     cpi_yoy: '#f59e0b',

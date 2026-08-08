@@ -2381,6 +2381,7 @@ def _build_monitoring_table(raw, n_months=13):
 # KẾ (tỷ USD / nghìn tỷ đồng), KHÔNG phải % — user yêu cầu rõ (khác cột %KH năm trong bảng giám sát).
 _MACRO_OVERVIEW_SERIES = [
     ("iip_growth", "Sản xuất công nghiệp (IIP, YoY)", "%"),
+    ("retail_sales_growth", "Bán lẻ hàng hóa & dịch vụ tiêu dùng (YoY)", "%"),
     ("export_growth_customs", "Xuất khẩu (YoY)", "%"),
     ("import_growth_customs", "Nhập khẩu (YoY)", "%"),
     ("cpi_yoy", "CPI (YoY)", "%"),
