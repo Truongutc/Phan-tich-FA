@@ -2228,20 +2228,41 @@ def update_vimo_raw():
             "private_consumption_growth", "Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng)"),
         "Public Consumption Expenditure Growth (y-o-y, %)": (
             "public_consumption_growth", "Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng)"),
+        # ĐÓNG GÓP (điểm %) vào tăng trưởng GDP chung của TỪNG cấu phần sử dụng — user (2026-08-09)
+        # muốn "biểu đồ tỷ trọng GDP theo cấu phần sử dụng" nhưng ARIC (và cả báo cáo NSO gốc)
+        # KHÔNG có "% GDP tuyệt đối" theo cấu phần sử dụng (chỉ NSO có %GDP theo KHU VỰC KINH TẾ —
+        # gdp_share_agri/industry/services — khác hẳn) — đây là dữ liệu THẬT gần nhất trả lời đúng
+        # câu hỏi "GDP tăng nhờ cái gì": 3 cột này CỘNG LẠI ≈ GDP Growth (y-o-y) cùng năm (đã kiểm
+        # tra: 2025 đầu tư 2,894 + tiêu dùng tư 3,992 + tiêu dùng công 1,056 = 7,942 ≈ GDP 8,019,
+        # phần chênh nhỏ là xuất khẩu ròng/thay đổi tồn kho ARIC không tách riêng) — vẽ stacked
+        # area đúng bản chất "phần trăm ĐIỂM đóng góp vào tăng trưởng", KHÔNG PHẢI %GDP level.
+        "Contribution to Growth: Gross Domestic Investment": (
+            "gdp_use_contrib_investment", "Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %)"),
+        "Contribution to Growth: Private Consumption Expenditure": (
+            "gdp_use_contrib_private_consumption", "Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %)"),
+        "Contribution to Growth: Public Consumption Expenditure": (
+            "gdp_use_contrib_public_consumption", "Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %)"),
     }
     for aric_name, (key, label) in _ARIC_KEY_MAP.items():
         points = aric.get(aric_name, [])
         if not points:
             continue
+        is_contrib = key.startswith("gdp_use_contrib_")
         if key not in raw:
             raw[key] = {
-                "group": "growth", "label": label, "unit": "%", "good_direction": "higher",
-                "auto_source": "manual",
+                "group": "growth", "label": label, "unit": "điểm %" if is_contrib else "%",
+                "good_direction": "higher", "auto_source": "manual",
                 "note": ("Nguồn aric.adb.org (Asian Regional Integration Center, ADB — CEIC "
                          "database), sector 'Real Sector and Prices', tần suất NĂM (trang không "
                          "có API/CSV, chỉ có bảng HTML tần suất năm cho bộ chỉ số này). Trễ ~1 "
-                         "năm so với hiện tại (số liệu năm N thường công bố đầy đủ vào năm N+1)."),
-                "impact": "Tách GDP theo LOẠI CHI TIÊU (khác cơ cấu theo khu vực kinh tế gdp_share_*) — tăng trưởng đến từ tiêu dùng nội địa bền vững hơn tăng trưởng dựa vào đầu tư/chi tiêu chính phủ đơn thuần.",
+                         "năm so với hiện tại (số liệu năm N thường công bố đầy đủ vào năm N+1)."
+                         + (" ĐÂY LÀ SỐ ĐIỂM % ĐÓNG GÓP VÀO TĂNG TRƯỞNG GDP, KHÔNG PHẢI %GDP "
+                            "tuyệt đối (Việt Nam không công bố %GDP theo cấu phần sử dụng) — 3 "
+                            "cấu phần (đầu tư/tiêu dùng tư/tiêu dùng công) cộng lại xấp xỉ bằng "
+                            "GDP Growth cùng năm, phần chênh nhỏ là xuất khẩu ròng/tồn kho." if is_contrib else "")),
+                "impact": ("Cấu phần nào đóng góp nhiều điểm % nhất vào tăng trưởng GDP năm đó — đầu tư/chi tiêu chính phủ đóng góp áp đảo so với tiêu dùng tư nhân là dấu hiệu tăng trưởng dựa vào vốn/đòn bẩy hơn là cầu tiêu dùng nội địa bền vững."
+                           if is_contrib else
+                           "Tách GDP theo LOẠI CHI TIÊU (khác cơ cấu theo khu vực kinh tế gdp_share_*) — tăng trưởng đến từ tiêu dùng nội địa bền vững hơn tăng trưởng dựa vào đầu tư/chi tiêu chính phủ đơn thuần."),
                 "series": [],
             }
         # MERGE (không ghi đè toàn bộ series) — "gdp_investment_growth" đã tồn tại SẴN TRƯỚC đây

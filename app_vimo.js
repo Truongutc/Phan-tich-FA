@@ -531,7 +531,7 @@ function _renderGenericIndicatorCard(grid, key, ind) {
             ${t.judgment_label ? `<span class="ind-judgment" style="background:${judgColor}22;color:${judgColor}">${t.value_arrow || ''} ${t.judgment_label}</span>` : ''}
         </div>
         <div class="ind-value">${t.latest !== null && t.latest !== undefined ? formatNumber(t.latest) : '-'} <span style="font-size:0.5em;color:var(--text-muted)">${ind.unit}</span></div>
-        <div class="ind-meta">Kỳ: ${t.latest_period || '—'} · Nguồn: ${SOURCE_LABELS[ind.autoSource] || ind.autoSource}</div>
+        <div class="ind-meta">Kỳ: ${t.latest_period ? _periodToDisplayLabel(t.latest_period) : '—'} · Nguồn: ${SOURCE_LABELS[ind.autoSource] || ind.autoSource}</div>
         ${hasChart ? `<div class="ind-chart"><canvas id="${canvasId}"></canvas></div>` : ''}
         ${ind.impact ? `<div class="ind-note">${ind.impact}</div>` : ''}
         ${ind.note ? `<div class="ind-source-note">${ind.note}</div>` : ''}
@@ -548,7 +548,7 @@ function _renderGenericIndicatorCard(grid, key, ind) {
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: valid.map(p => p.period),
+                labels: valid.map(p => _periodToDisplayLabel(p.period)),
                 datasets: [{
                     data: valid.map(p => p.value), borderColor: color,
                     backgroundColor: color + '15', fill: true, tension: 0.25, pointRadius: 2,
@@ -621,6 +621,7 @@ function renderIndicatorGroups(indicators) {
                 canvasId: 'chart-gdp-structure',
                 note: 'Nguồn: nso.gov.vn (Thông cáo báo chí KT-XH quý, tự động). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm), không phải chuỗi quý độc lập.',
             });
+            renderGdpUseContributionChart(grid, indicators);
         }
         if (grp === 'trade') {
             renderStackedAreaChart(grid, indicators, {
@@ -672,6 +673,21 @@ function _sortPeriods(periods) {
     return [...periods].sort((a, b) => _periodSortKey(a) - _periodSortKey(b));
 }
 
+// Chuyển period dạng TUẦN "YYYY-Wnn" thành NGÀY THẬT (Chủ nhật — ngày cuối ISO week đó) dạng
+// "YYYY-MM-DD" — user (2026-08-09): "dữ liệu biểu đồ đang thể hiện W, hãy thể hiện rõ ngày tháng
+// nào, nếu là tuần thì lấy giá trị ngày cuối cùng của tuần". Các định dạng khác (tháng/quý/ngày)
+// giữ nguyên. Dùng CHUNG thuật toán tính Thứ Hai đầu tuần với _periodSortKey() ở trên (4/1 luôn
+// nằm trong tuần 1 theo chuẩn ISO) rồi cộng thêm 6 ngày ra Chủ nhật.
+function _periodToDisplayLabel(period) {
+    const m = /^(\d{4})-W(\d{2})$/.exec(period);
+    if (!m) return period;
+    const jan4 = Date.UTC(+m[1], 0, 4);
+    const jan4Dow = (new Date(jan4).getUTCDay() + 6) % 7;
+    const weekMonday = jan4 - jan4Dow * 86400000 + (+m[2] - 1) * 7 * 86400000;
+    const d = new Date(weekMonday + 6 * 86400000);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
 // Biểu đồ miền (stacked area) DÙNG CHUNG cho cơ cấu GDP theo khu vực VÀ cơ cấu vốn đầu tư theo
 // thành phần (user 2026-07-13) — mỗi kỳ báo cáo là 1 điểm trên trục X, các thành phần % cộng lại
 // ~100%. Vẽ được ngay cả khi mới có 1 điểm (sẽ dài dần mỗi lần Action chạy, giống các chart khác).
@@ -719,6 +735,61 @@ function renderStackedAreaChart(grid, indicators, { title, keys, canvasId, note 
             scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, stacked: true, min: 0, max: 100 } },
         },
         plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// Đóng góp (ĐIỂM %) của từng cấu phần SỬ DỤNG (đầu tư/tiêu dùng tư nhân/tiêu dùng chính phủ) vào
+// tăng trưởng GDP chung theo NĂM — user (2026-08-09) hỏi "tạo biểu đồ tỷ trọng GDP theo cấu phần
+// sử dụng". KHÔNG dùng renderStackedAreaChart() ở trên (giả định cố định trục Y 0-100%, hợp cho
+// %GDP theo khu vực/thành phần vốn đầu tư — 2 chart đã có) vì đây là ĐIỂM % ĐÓNG GÓP VÀO TĂNG
+// TRƯỞNG (3 cấu phần cộng lại ≈ GDP Growth cùng năm, thường chỉ ~5-10, không phải 100) — dùng
+// trục Y tự co giãn thay vì cố định 0-100 để không bị dồn cụm đáy biểu đồ.
+function renderGdpUseContributionChart(grid, indicators) {
+    const keys = [
+        ['gdp_use_contrib_investment', 'Đầu tư', '#3b82f6'],
+        ['gdp_use_contrib_private_consumption', 'Tiêu dùng tư nhân', '#10b981'],
+        ['gdp_use_contrib_public_consumption', 'Tiêu dùng chính phủ', '#f59e0b'],
+    ];
+    const seriesByKey = keys.map(([key, label, color]) => [
+        label, color, ((indicators[key] || {}).series || []).filter(p => p.value !== null && p.value !== undefined),
+    ]);
+    const allPeriods = _sortPeriods(new Set(seriesByKey.flatMap(([, , s]) => s.map(p => p.period))));
+    if (!allPeriods.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">🗺️ Đóng góp vào tăng trưởng GDP theo cấu phần sử dụng (điểm %, theo năm)</span></div>
+        <div class="ind-chart" style="height:260px"><canvas id="chart-gdp-use-contribution"></canvas></div>
+        <div class="ind-note">Nguồn: aric.adb.org (ADB/CEIC), theo NĂM (trễ ~1 năm). 3 cấu phần CỘNG LẠI xấp xỉ bằng GDP Growth cùng năm (phần chênh nhỏ là xuất khẩu ròng/tồn kho, ARIC không tách riêng) — ĐÂY LÀ ĐIỂM % ĐÓNG GÓP VÀO TĂNG TRƯỞNG, KHÔNG PHẢI %GDP tuyệt đối (Việt Nam không công bố %GDP theo cấu phần sử dụng).</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-gdp-use-contribution');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: seriesByKey.map(([label, color, s]) => {
+                const byPeriod = Object.fromEntries(s.map(p => [p.period, p.value]));
+                return {
+                    label, data: allPeriods.map(p => byPeriod[p] ?? null),
+                    borderColor: color, backgroundColor: color + '55', fill: true,
+                    tension: 0.15, pointRadius: 2, spanGaps: true,
+                };
+            }),
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true,
+                     title: { display: true, text: 'Điểm % đóng góp', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
     });
     chartInstances.push(chart);
 }
@@ -1001,7 +1072,7 @@ function renderTradeBalanceMonthlyChart(grid, indicators) {
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">📈 Xuất khẩu, nhập khẩu & cán cân thương mại theo từng tháng</span></div>
         <div class="ind-chart" style="height:320px"><canvas id="chart-trade-balance-monthly"></canvas></div>
-        <div class="ind-note">Nguồn: Tổng cục Hải quan (file "Trị giá xuất/nhập khẩu sơ bộ các tháng", cập nhật THỦ CÔNG — không tự động qua GitHub Action nên có thể trễ vài tháng). Cột = cán cân THÁNG ĐÓ (xanh = xuất siêu, đỏ = nhập siêu); đường = kim ngạch xuất/nhập khẩu tuyệt đối, cùng đơn vị tỷ USD.</div>
+        <div class="ind-note">Nguồn: Tổng cục Hải quan (file "Trị giá xuất/nhập khẩu sơ bộ các tháng", cập nhật THỦ CÔNG — không tự động qua GitHub Action nên có thể trễ vài tháng). Cột (trục phải) = cán cân THÁNG ĐÓ (xanh = xuất siêu, đỏ = nhập siêu); đường (trục trái) = kim ngạch xuất/nhập khẩu tuyệt đối — 2 trục lệch quy mô (kim ngạch ~30-60 tỷ USD, cán cân ~vài tỷ USD) nên tách riêng để nhìn rõ cả hai.</div>
     `;
     grid.appendChild(card);
 
@@ -1012,19 +1083,19 @@ function renderTradeBalanceMonthlyChart(grid, indicators) {
             labels: allPeriods,
             datasets: [
                 {
-                    type: 'bar', label: 'Cán cân thương mại',
+                    type: 'bar', label: 'Cán cân thương mại (phải)', yAxisID: 'y1',
                     data: allPeriods.map(p => balanceByPeriod[p] ?? null),
                     backgroundColor: allPeriods.map(p => (balanceByPeriod[p] ?? 0) >= 0 ? '#10b98188' : '#ef444488'),
                     borderWidth: 0, order: 3,
                 },
                 {
-                    type: 'line', label: 'Xuất khẩu',
+                    type: 'line', label: 'Xuất khẩu (trái)', yAxisID: 'y',
                     data: allPeriods.map(p => exportByPeriod[p] ?? null),
                     borderColor: '#10b981', backgroundColor: '#10b98115', fill: false,
                     tension: 0.15, pointRadius: 1, spanGaps: true, order: 1,
                 },
                 {
-                    type: 'line', label: 'Nhập khẩu',
+                    type: 'line', label: 'Nhập khẩu (trái)', yAxisID: 'y',
                     data: allPeriods.map(p => importByPeriod[p] ?? null),
                     borderColor: '#ef4444', backgroundColor: '#ef444415', fill: false,
                     tension: 0.15, pointRadius: 1, spanGaps: true, order: 2,
@@ -1036,7 +1107,10 @@ function renderTradeBalanceMonthlyChart(grid, indicators) {
             plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 },
-                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD', color: '#9aa5bd', font: { size: 9 } } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Kim ngạch XK/NK (tỷ USD)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'Cán cân thương mại (tỷ USD)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
     });

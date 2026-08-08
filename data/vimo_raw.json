@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-08-08 12:27",
+    "last_auto_update": "2026-08-08 12:37",
     "scorecard_history": [
       {
         "date": "2026-07-12",
@@ -20671,5 +20671,638 @@
     ],
     "note": "= credit_balance_total (vbma, theo tháng) / nominal_gdp_annual (World Bank, theo NĂM gần nhất có sẵn) x100 — GDP năm nào chưa công bố thì dùng năm gần nhất trước đó (GDP thường công bố trễ hơn tín dụng). Chỉ báo đòn bẩy tín dụng kinh điển BIS/IMF. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json, KHÔNG dùng để tính Scorecard.",
     "impact": "Tỷ lệ Tín dụng/GDP tăng nhanh và bền vững (credit boom) là 1 trong các chỉ báo cảnh báo sớm khủng hoảng tài chính được BIS/IMF theo dõi sát nhất — cùng một mức tăng trưởng tín dụng % nhưng nếu tỷ lệ này đã cao/tăng nhanh thì rủi ro tích lũy lớn hơn nhiều."
+  },
+  "gdp_use_contrib_investment": {
+    "group": "growth",
+    "label": "Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %)",
+    "unit": "điểm %",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "note": "Nguồn aric.adb.org (Asian Regional Integration Center, ADB — CEIC database), sector 'Real Sector and Prices', tần suất NĂM (trang không có API/CSV, chỉ có bảng HTML tần suất năm cho bộ chỉ số này). Trễ ~1 năm so với hiện tại (số liệu năm N thường công bố đầy đủ vào năm N+1). ĐÂY LÀ SỐ ĐIỂM % ĐÓNG GÓP VÀO TĂNG TRƯỞNG GDP, KHÔNG PHẢI %GDP tuyệt đối (Việt Nam không công bố %GDP theo cấu phần sử dụng) — 3 cấu phần (đầu tư/tiêu dùng tư/tiêu dùng công) cộng lại xấp xỉ bằng GDP Growth cùng năm, phần chênh nhỏ là xuất khẩu ròng/tồn kho.",
+    "impact": "Cấu phần nào đóng góp nhiều điểm % nhất vào tăng trưởng GDP năm đó — đầu tư/chi tiêu chính phủ đóng góp áp đảo so với tiêu dùng tư nhân là dấu hiệu tăng trưởng dựa vào vốn/đòn bẩy hơn là cầu tiêu dùng nội địa bền vững.",
+    "series": [
+      {
+        "period": "1986",
+        "value": 2.898,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1987",
+        "value": 2.57,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1988",
+        "value": 0.159,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1989",
+        "value": 0.172,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1990",
+        "value": -0.127,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1991",
+        "value": 1.313,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1992",
+        "value": 2.726,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1993",
+        "value": 6.113,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1994",
+        "value": 3.032,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1995",
+        "value": 3.14,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1996",
+        "value": 2.921,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1997",
+        "value": 2.111,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1998",
+        "value": 2.836,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1999",
+        "value": 0.327,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2000",
+        "value": 2.336,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2001",
+        "value": 2.553,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2002",
+        "value": 2.594,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2003",
+        "value": 3.572,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2004",
+        "value": 2.813,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2005",
+        "value": 2.892,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2006",
+        "value": 3.089,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2007",
+        "value": 7.362,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2008",
+        "value": 1.806,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2009",
+        "value": 2.02,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2010",
+        "value": 3.554,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2011",
+        "value": -1.511,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2012",
+        "value": 0.834,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2013",
+        "value": 1.817,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2014",
+        "value": 2.775,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2015",
+        "value": 3.003,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2016",
+        "value": 3.16,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2017",
+        "value": 3.373,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2018",
+        "value": 2.707,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2019",
+        "value": 2.543,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2020",
+        "value": 1.46,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2021",
+        "value": 1.183,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2022",
+        "value": 1.938,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2023",
+        "value": 1.436,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2024",
+        "value": 2.418,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2025",
+        "value": 2.894,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      }
+    ]
+  },
+  "gdp_use_contrib_private_consumption": {
+    "group": "growth",
+    "label": "Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %)",
+    "unit": "điểm %",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "note": "Nguồn aric.adb.org (Asian Regional Integration Center, ADB — CEIC database), sector 'Real Sector and Prices', tần suất NĂM (trang không có API/CSV, chỉ có bảng HTML tần suất năm cho bộ chỉ số này). Trễ ~1 năm so với hiện tại (số liệu năm N thường công bố đầy đủ vào năm N+1). ĐÂY LÀ SỐ ĐIỂM % ĐÓNG GÓP VÀO TĂNG TRƯỞNG GDP, KHÔNG PHẢI %GDP tuyệt đối (Việt Nam không công bố %GDP theo cấu phần sử dụng) — 3 cấu phần (đầu tư/tiêu dùng tư/tiêu dùng công) cộng lại xấp xỉ bằng GDP Growth cùng năm, phần chênh nhỏ là xuất khẩu ròng/tồn kho.",
+    "impact": "Cấu phần nào đóng góp nhiều điểm % nhất vào tăng trưởng GDP năm đó — đầu tư/chi tiêu chính phủ đóng góp áp đảo so với tiêu dùng tư nhân là dấu hiệu tăng trưởng dựa vào vốn/đòn bẩy hơn là cầu tiêu dùng nội địa bền vững.",
+    "series": [
+      {
+        "period": "1986",
+        "value": 0.312,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1987",
+        "value": 1.097,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1988",
+        "value": 2.743,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1989",
+        "value": 1.886,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1990",
+        "value": 2.544,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1991",
+        "value": 2.343,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1992",
+        "value": 2.805,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1993",
+        "value": 2.401,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1994",
+        "value": 3.902,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1995",
+        "value": 4.582,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1996",
+        "value": 5.651,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1997",
+        "value": 3.666,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1998",
+        "value": 2.712,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1999",
+        "value": 1.557,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2000",
+        "value": 1.807,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2001",
+        "value": 2.535,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2002",
+        "value": 3.936,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2003",
+        "value": 4.733,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2004",
+        "value": 3.976,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2005",
+        "value": 4.042,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2006",
+        "value": 4.596,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2007",
+        "value": 5.955,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2008",
+        "value": 5.262,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2009",
+        "value": 1.813,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2010",
+        "value": 5.674,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2011",
+        "value": 3.109,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2012",
+        "value": 2.828,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2013",
+        "value": 2.99,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2014",
+        "value": 3.599,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2015",
+        "value": 5.03,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2016",
+        "value": 3.753,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2017",
+        "value": 4.18,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2018",
+        "value": 4.016,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2019",
+        "value": 4.064,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2020",
+        "value": 0.219,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2021",
+        "value": 1.222,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2022",
+        "value": 4.421,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2023",
+        "value": 1.714,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2024",
+        "value": 3.667,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2025",
+        "value": 3.992,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      }
+    ]
+  },
+  "gdp_use_contrib_public_consumption": {
+    "group": "growth",
+    "label": "Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %)",
+    "unit": "điểm %",
+    "good_direction": "higher",
+    "auto_source": "manual",
+    "note": "Nguồn aric.adb.org (Asian Regional Integration Center, ADB — CEIC database), sector 'Real Sector and Prices', tần suất NĂM (trang không có API/CSV, chỉ có bảng HTML tần suất năm cho bộ chỉ số này). Trễ ~1 năm so với hiện tại (số liệu năm N thường công bố đầy đủ vào năm N+1). ĐÂY LÀ SỐ ĐIỂM % ĐÓNG GÓP VÀO TĂNG TRƯỞNG GDP, KHÔNG PHẢI %GDP tuyệt đối (Việt Nam không công bố %GDP theo cấu phần sử dụng) — 3 cấu phần (đầu tư/tiêu dùng tư/tiêu dùng công) cộng lại xấp xỉ bằng GDP Growth cùng năm, phần chênh nhỏ là xuất khẩu ròng/tồn kho.",
+    "impact": "Cấu phần nào đóng góp nhiều điểm % nhất vào tăng trưởng GDP năm đó — đầu tư/chi tiêu chính phủ đóng góp áp đảo so với tiêu dùng tư nhân là dấu hiệu tăng trưởng dựa vào vốn/đòn bẩy hơn là cầu tiêu dùng nội địa bền vững.",
+    "series": [
+      {
+        "period": "1986",
+        "value": 0.501,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1987",
+        "value": 0.732,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1988",
+        "value": 0.893,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1989",
+        "value": 1.149,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1990",
+        "value": 1.169,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1991",
+        "value": 0.943,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1992",
+        "value": 0.856,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1993",
+        "value": 1.456,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1994",
+        "value": 1.234,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1995",
+        "value": 1.01,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1996",
+        "value": 0.884,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1997",
+        "value": 0.468,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1998",
+        "value": 0.362,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "1999",
+        "value": -0.626,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2000",
+        "value": 0.495,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2001",
+        "value": 0.641,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2002",
+        "value": 0.521,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2003",
+        "value": 0.685,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2004",
+        "value": 0.74,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2005",
+        "value": 0.78,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2006",
+        "value": 0.807,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2007",
+        "value": 0.848,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2008",
+        "value": 0.719,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2009",
+        "value": 0.734,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2010",
+        "value": 1.213,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2011",
+        "value": 0.446,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2012",
+        "value": 0.865,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2013",
+        "value": 0.766,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2014",
+        "value": 0.239,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2015",
+        "value": 0.801,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2016",
+        "value": 0.395,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2017",
+        "value": 0.563,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2018",
+        "value": 0.464,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2019",
+        "value": 0.525,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2020",
+        "value": 0.117,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2021",
+        "value": 0.424,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2022",
+        "value": 0.281,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2023",
+        "value": 0.416,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2024",
+        "value": 0.521,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      },
+      {
+        "period": "2025",
+        "value": 1.056,
+        "source_url": "https://aric.adb.org/database/economic-financial-indicators"
+      }
+    ]
   }
 }
