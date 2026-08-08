@@ -247,16 +247,17 @@ function renderMonitoringTable(table) {
 }
 
 function _heatmapColor(g) {
-    // g=0 -> đỏ (#ef4444), g=1 -> xanh (#10b981) — lerp RGB tuyến tính. Alpha TĂNG lên 0.85 (trước
-    // là 0.55, user 2026-08-07: "màu tối quá, nhìn không rõ") — nền thẻ của trang tối màu, alpha
-    // thấp khiến màu nền ô bị pha loãng/tối theo, trong khi chữ trong ô lại cố định màu TỐI
-    // (color:#0b1220 trong CSS) để đọc được trên nền sáng — alpha thấp làm chữ tối trên nền cũng
-    // tối, tương phản kém. Alpha cao hơn giữ nền gần với màu đỏ/xanh THẬT, sáng rõ, chữ tối nổi bật.
+    // g=0 -> đỏ (#ef4444), g=1 -> xanh (#10b981) — lerp RGB tuyến tính. Alpha: 0.55 (gốc) -> 0.85
+    // (2026-08-07) -> 1.0 (2026-08-08, user vẫn thấy tối trên điện thoại) — ĐỦ 1.0 nghĩa là màu
+    // nền ô = ĐÚNG màu đỏ/xanh gốc, không còn bị pha loãng bởi nền thẻ tối phía sau nữa (alpha <1
+    // luôn bị nền tối đằng sau ăn bớt độ sáng, thấy rõ hơn trên màn hình điện thoại độ sáng/tương
+    // phản thấp hơn desktop). Chữ trong ô vẫn cố định màu TỐI (color:#0b1220 trong CSS) nên nền
+    // càng đặc màu càng dễ đọc, không có lý do giữ alpha <1 nữa.
     const red = [239, 68, 68], green = [16, 185, 129];
     const r = Math.round(red[0] + (green[0] - red[0]) * g);
     const gr = Math.round(red[1] + (green[1] - red[1]) * g);
     const b = Math.round(red[2] + (green[2] - red[2]) * g);
-    return `rgba(${r},${gr},${b},0.85)`;
+    return `rgba(${r},${gr},${b},1)`;
 }
 
 // ═══════════════════════════════════════════════════════════
