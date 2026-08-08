@@ -6,7 +6,7 @@
     "groups": {
       "Tăng trưởng": {
         "score": 1,
-        "nVotes": 5,
+        "nVotes": 6,
         "detail": [
           {
             "indicator": "gdp_growth",
@@ -47,9 +47,17 @@
             "arrow": "▲",
             "judgment_label": "Tốt lên",
             "kind": "trend"
+          },
+          {
+            "indicator": "gdp_cpi_gap",
+            "label": "GDP trừ CPI (+8.39% - +4.45% = +3.94 điểm %)",
+            "vote": 0,
+            "arrow": "→",
+            "judgment_label": "tăng trưởng thực còn ổn nhưng bắt đầu chịu áp lực lạm phát",
+            "kind": "level"
           }
         ],
-        "reason": "GDP tốt lên; IIP tốt lên; PMI tốt lên; Bán lẻ tốt lên; Thất nghiệp tốt lên."
+        "reason": "GDP tốt lên; IIP tốt lên; PMI tốt lên; Bán lẻ tốt lên; Thất nghiệp tốt lên; GDP-CPI tăng trưởng thực còn ổn nhưng bắt đầu chịu áp lực lạm phát."
       },
       "Lạm phát": {
         "score": 1,
@@ -177,7 +185,7 @@
       },
       "Thương mại & Hàng hóa": {
         "score": -1,
-        "nVotes": 3,
+        "nVotes": 4,
         "detail": [
           {
             "indicator": "trade_balance",
@@ -202,9 +210,17 @@
             "arrow": "▲",
             "judgment_label": "Tốt lên",
             "kind": "trend"
+          },
+          {
+            "indicator": "import_export_gap",
+            "label": "Nhập khẩu trừ xuất khẩu YoY (+41.42% - +25.01% = +16.41 điểm %)",
+            "vote": -1,
+            "arrow": "⚠",
+            "judgment_label": "nhập siêu tăng tốc, áp lực lên tỷ giá",
+            "kind": "level"
           }
         ],
-        "reason": "Cán cân TM xấu đi; Xuất khẩu xấu đi; Dầu Brent tốt lên."
+        "reason": "Cán cân TM xấu đi; Xuất khẩu xấu đi; Dầu Brent tốt lên; NK-XK nhập siêu tăng tốc, áp lực lên tỷ giá."
       }
     },
     "total": 3

@@ -301,6 +301,62 @@ def _tcbs_ipower_gap_level_vote(raw, trends):
             "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
 
 
+# GDP TRỪ CPI (chênh lệch tăng trưởng thực - lạm phát) — user (2026-08-08): "không nên đơn giản
+# GDP cao = macro tốt, mà phải nhìn GDP growth – Inflation". Ngưỡng lấy TRỰC TIẾP từ 3 ví dụ user
+# đưa ra (đều ở mức GDP +8%): CPI +3% (gap=5) -> "quá đẹp"; CPI +4,5% (gap=3,5, ĐÚNG mốc
+# CPI_TARGET_CEILING đã có sẵn trong hệ thống) -> "vẫn tốt nhưng bắt đầu có áp lực"; CPI +6%
+# (gap=2) -> "bắt đầu nguy hiểm" (NHNN buộc phải tăng lãi suất/hút thanh khoản để kìm lạm phát,
+# ảnh hưởng trực tiếp định giá cổ phiếu). Suy ra 2 ngưỡng tròn khớp đúng cả 3 ví dụ: gap>=4 ->
+# +1 (đẹp), 2<gap<4 -> 0 (áp lực, chưa nguy hiểm), gap<=2 -> -1 (nguy hiểm). Gắn vào nhóm "Tăng
+# trưởng" (không phải "Lạm phát") vì bản chất là ĐIỀU CHỈNH tín hiệu GDP — GDP cao mà đi kèm lạm
+# phát ăn gần hết phần tăng trưởng thực thì KHÔNG nên tính là tín hiệu tăng trưởng tốt.
+GDP_CPI_GAP_GOOD = 4.0
+GDP_CPI_GAP_DANGER = 2.0
+
+
+def _gdp_cpi_gap_level_vote(raw, trends):
+    gdp = trends.get("gdp_growth", {}).get("latest")
+    cpi = trends.get("cpi_yoy", {}).get("latest")
+    if gdp is None or cpi is None:
+        return None
+    gap = round(gdp - cpi, 2)
+    # (tương tự import_export_gap ở dưới: tránh viết tắt NHNN — bị .lower() thành "nhnn" xấu trên UI)
+    if gap >= GDP_CPI_GAP_GOOD:
+        vote, judgment_label = 1, "tăng trưởng thực khỏe, lạm phát chưa ăn mòn"
+    elif gap <= GDP_CPI_GAP_DANGER:
+        vote, judgment_label = -1, "tăng trưởng thực mỏng, rủi ro ngân hàng nhà nước phải thắt chặt"
+    else:
+        vote, judgment_label = 0, "tăng trưởng thực còn ổn nhưng bắt đầu chịu áp lực lạm phát"
+    label = f"GDP trừ CPI ({gdp:+.2f}% - {cpi:+.2f}% = {gap:+.2f} điểm %)"
+    return {"indicator": "gdp_cpi_gap", "label": label, "vote": vote,
+            "arrow": "⚠" if vote < 0 else ("✓" if vote > 0 else "→"), "judgment_label": judgment_label}
+
+
+# CHÊNH LỆCH tăng trưởng NHẬP KHẨU - XUẤT KHẨU (YoY) — user (2026-08-08): nhập khẩu tăng nhanh hơn
+# xuất khẩu kéo dài -> cầu USD tăng -> áp lực tỷ giá USD/VND -> NHNN khó nới lỏng tiền tệ. Ví dụ
+# THẬT user nêu (lũy kế 7 tháng 2026): xuất +21,7%, nhập +34,8% -> gap=13,1 điểm % -> nêu đây là
+# tín hiệu cảnh báo (🟠). Ngưỡng 10 điểm % (tròn, thấp hơn ví dụ thật ~13 để bắt được tín hiệu
+# TRƯỚC khi giãn tới mức đó) — nhập khẩu tăng nhanh hơn xuất khẩu nhưng trong biên độ hẹp (<10
+# điểm %) là bình thường (chu kỳ nhập nguyên liệu/máy móc phục vụ sản xuất-xuất khẩu sau).
+IMPORT_EXPORT_GAP_DANGER = 10.0
+
+
+def _import_export_gap_level_vote(raw, trends):
+    export = trends.get("export_growth", {}).get("latest")
+    imp = trends.get("import_growth", {}).get("latest")
+    if export is None or imp is None:
+        return None
+    gap = round(imp - export, 2)
+    vote = -1 if gap > IMPORT_EXPORT_GAP_DANGER else 1
+    # _scorecard_group_reason() tự động .lower() judgment_label khi ghép câu lý do — tránh viết
+    # tắt USD/VND ở đây (sẽ bị hạ thành "usd/vnd" xấu trên UI, đã phát hiện qua screenshot).
+    judgment_label = ("nhập siêu tăng tốc, áp lực lên tỷ giá" if vote < 0
+                       else "nhập/xuất khẩu tăng trưởng cân đối")
+    label = f"Nhập khẩu trừ xuất khẩu YoY ({imp:+.2f}% - {export:+.2f}% = {gap:+.2f} điểm %)"
+    return {"indicator": "import_export_gap", "label": label, "vote": vote,
+            "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
+
+
 # Các "phiếu mức" cần dữ liệu TỪ NHIỀU CHỈ BÁO cùng lúc (không chỉ 1 chỉ báo tự so với ngưỡng của
 # chính nó như LEVEL_VOTE_FUNCS) — gắn theo TÊN NHÓM Scorecard (LIST vì 1 nhóm có thể có nhiều
 # phép so sánh độc lập), gọi hết trong calc_scorecard. Gắn vào "Thanh khoản" (KHÔNG PHẢI "Lãi
@@ -310,11 +366,19 @@ def _tcbs_ipower_gap_level_vote(raw, trends):
 # thị trường, không lẫn tín hiệu căng thẳng). User (2026-07-24) chỉ ra nhóm Thanh khoản trước đó
 # báo "+1 Tốt" trong khi đường cong liên ngân hàng dốc lên và NHNN chỉ bơm không hút — sửa cả
 # việc phân nhóm chỉ báo (ở đây) VÀ việc credit_growth bị tính sai chiều (xem SCORECARD_GROUPS).
-GROUP_LEVEL_CHECKS = {"Thanh khoản": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote,
-                                        _tcbs_ipower_gap_level_vote]}
+# Thêm 2026-08-08 (user): gdp_cpi_gap vào "Tăng trưởng", import_export_gap vào "Thương mại &
+# Hàng hóa" — xem lý do/ngưỡng ngay phía trên.
+GROUP_LEVEL_CHECKS = {
+    "Thanh khoản": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote,
+                     _tcbs_ipower_gap_level_vote],
+    "Tăng trưởng": [_gdp_cpi_gap_level_vote],
+    "Thương mại & Hàng hóa": [_import_export_gap_level_vote],
+}
 SHORT_LABEL["deposit_rate_gap"] = "Ngân hàng"
 SHORT_LABEL["interbank_vs_deposit"] = "Liên ngân hàng"
 SHORT_LABEL["tcbs_ipower_gap"] = "iPower TCBS"
+SHORT_LABEL["gdp_cpi_gap"] = "GDP-CPI"
+SHORT_LABEL["import_export_gap"] = "NK-XK"
 
 
 # ══════════════════════════════════════════════════════════════════════════
