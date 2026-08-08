@@ -633,6 +633,7 @@ function renderIndicatorGroups(indicators) {
                 canvasId: 'chart-investment-structure',
                 note: 'Nguồn: nso.gov.vn (Thông cáo báo chí KT-XH quý, tự động). Số liệu LŨY KẾ theo kỳ báo cáo (Q1/6 tháng/9 tháng/cả năm), không phải chuỗi quý độc lập.',
             });
+            renderTradeBalanceMonthlyChart(grid, indicators);
         }
     });
 }
@@ -968,6 +969,76 @@ function renderOmoHistoryChart(grid, indicators) {
             },
         },
         plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// Kim ngạch xuất khẩu + nhập khẩu (2 đường, cùng đơn vị tỷ USD) và cán cân thương mại THEO TỪNG
+// THÁNG RIÊNG LẺ (cột, xanh = thặng dư, đỏ = thâm hụt) — user (2026-08-08): "bổ sung dữ liệu xuất
+// khẩu nhập khẩu các tháng... thêm biểu đồ cán cân xuất nhập khẩu theo tháng" (khác trade_balance
+// hiện có trên trang chỉ là số LŨY KẾ theo quý từ NSO). Nguồn export_value_monthly/import_value_
+// monthly/trade_balance_monthly (Hải quan, xem load_customs_xnk_local() trong fetch_macro_data.py)
+// ĐÃ CÓ SẴN 144 điểm/chỉ báo nhưng CHƯA từng được vẽ chart — dữ liệu này CHỈ cập nhật khi chạy
+// pipeline THỦ CÔNG trên máy có sẵn thư mục Excel Hải quan (GitHub Action không có, xem comment
+// CUSTOMS_XNK_FOLDER), nên chuỗi có thể trễ vài tháng so với hiện tại — không phải lỗi hiển thị.
+function renderTradeBalanceMonthlyChart(grid, indicators) {
+    const exportSeries = ((indicators.export_value_monthly || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const importSeries = ((indicators.import_value_monthly || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const balanceSeries = ((indicators.trade_balance_monthly || {}).series || [])
+        .filter(p => p.value !== null && p.value !== undefined);
+    const allPeriods = _sortPeriods(new Set([...exportSeries, ...importSeries, ...balanceSeries].map(p => p.period)));
+    if (!allPeriods.length) return;
+
+    const exportByPeriod = Object.fromEntries(exportSeries.map(p => [p.period, p.value]));
+    const importByPeriod = Object.fromEntries(importSeries.map(p => [p.period, p.value]));
+    const balanceByPeriod = Object.fromEntries(balanceSeries.map(p => [p.period, p.value]));
+
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    card.style.gridColumn = '1 / -1';
+    card.innerHTML = `
+        <div class="ind-header"><span class="ind-name">📈 Xuất khẩu, nhập khẩu & cán cân thương mại theo từng tháng</span></div>
+        <div class="ind-chart" style="height:320px"><canvas id="chart-trade-balance-monthly"></canvas></div>
+        <div class="ind-note">Nguồn: Tổng cục Hải quan (file "Trị giá xuất/nhập khẩu sơ bộ các tháng", cập nhật THỦ CÔNG — không tự động qua GitHub Action nên có thể trễ vài tháng). Cột = cán cân THÁNG ĐÓ (xanh = xuất siêu, đỏ = nhập siêu); đường = kim ngạch xuất/nhập khẩu tuyệt đối, cùng đơn vị tỷ USD.</div>
+    `;
+    grid.appendChild(card);
+
+    const ctx = card.querySelector('#chart-trade-balance-monthly');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allPeriods,
+            datasets: [
+                {
+                    type: 'bar', label: 'Cán cân thương mại',
+                    data: allPeriods.map(p => balanceByPeriod[p] ?? null),
+                    backgroundColor: allPeriods.map(p => (balanceByPeriod[p] ?? 0) >= 0 ? '#10b98188' : '#ef444488'),
+                    borderWidth: 0, order: 3,
+                },
+                {
+                    type: 'line', label: 'Xuất khẩu',
+                    data: allPeriods.map(p => exportByPeriod[p] ?? null),
+                    borderColor: '#10b981', backgroundColor: '#10b98115', fill: false,
+                    tension: 0.15, pointRadius: 1, spanGaps: true, order: 1,
+                },
+                {
+                    type: 'line', label: 'Nhập khẩu',
+                    data: allPeriods.map(p => importByPeriod[p] ?? null),
+                    borderColor: '#ef4444', backgroundColor: '#ef444415', fill: false,
+                    tension: 0.15, pointRadius: 1, spanGaps: true, order: 2,
+                },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
     });
     chartInstances.push(chart);
 }

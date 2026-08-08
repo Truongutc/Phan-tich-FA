@@ -1507,6 +1507,7 @@ VIETNAMBIZ_TITLE_MAP = {
     "Xuất khẩu (YoY)": "export_growth",
     "Nhập khẩu (YoY)": "import_growth",
     "PMI": "pmi_manufacturing",
+    "Tăng trưởng CPI (YoY)": "cpi_yoy",
 }
 
 
@@ -2455,16 +2456,24 @@ def update_vimo_raw():
     print("[Hải quan — Xuất/nhập khẩu theo tháng (file Excel cục bộ, CHỈ có khi chạy thủ công trên máy có sẵn thư mục)]")
     xnk = load_customs_xnk_local()
     if xnk["export"] or xnk["import"]:
+        # PHẢI dùng _merge_point_anywhere() (không phải _append_point()) — CUSTOMS_XNK_FOLDER
+        # thường có NHIỀU file V01-*.xls chồng lấn kỳ (vd file "năm 2025" phủ Tháng 01-12, file
+        # "năm 2026" phủ Tháng 01-06 của năm SAU nhưng cấu trúc đọc theo TÊN FILE không theo
+        # NĂM DỮ LIỆU nên các file MỚI của CÙNG năm vẫn có thể phủ lại các tháng ĐÃ CÓ) — dùng
+        # _append_point() (chỉ so khớp phần tử CUỐI) khiến mỗi file quét lại từ đầu sẽ nối THÊM
+        # bản trùng thay vì ghi đè, phát hiện thực tế: 144 điểm nhưng chỉ 18 tháng riêng biệt (mỗi
+        # tháng lặp đúng 8 lần, khớp số file trong thư mục) — user 2026-08-08 phát hiện qua yêu
+        # cầu vẽ biểu đồ cán cân thương mại theo tháng.
         for period, value, fname in xnk["export"]:
-            _append_point(raw, "export_value_monthly", period, value, fname)
+            _merge_point_anywhere(raw, "export_value_monthly", period, value, fname)
         for period, value, fname in xnk["import"]:
-            _append_point(raw, "import_value_monthly", period, value, fname)
+            _merge_point_anywhere(raw, "import_value_monthly", period, value, fname)
         export_by_period = {p: v for p, v, _ in xnk["export"]}
         import_by_period = {p: v for p, v, _ in xnk["import"]}
         for period in sorted(set(export_by_period) & set(import_by_period)):
             balance = round(export_by_period[period] - import_by_period[period], 4)
-            _append_point(raw, "trade_balance_monthly", period, balance, "Hải quan (V01+V02, tính từ xuất trừ nhập)")
-        print(f"  -> {len(xnk['export'])} tháng xuất khẩu, {len(xnk['import'])} tháng nhập khẩu")
+            _merge_point_anywhere(raw, "trade_balance_monthly", period, balance, "Hải quan (V01+V02, tính từ xuất trừ nhập)")
+        print(f"  -> {len(set(export_by_period))} tháng xuất khẩu, {len(set(import_by_period))} tháng nhập khẩu")
     else:
         print("  [INFO] Không tìm thấy thư mục/file Hải quan cục bộ — bỏ qua (bình thường khi chạy trên GitHub Action).")
 
