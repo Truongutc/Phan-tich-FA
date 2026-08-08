@@ -6,10 +6,52 @@
     "last_auto_update": "2026-08-08 12:37",
     "scorecard_history": [
       {
+        "date": "2026-05-10",
+        "total": -2,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
+        "date": "2026-06-09",
+        "total": -1,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
+        "date": "2026-06-24",
+        "total": -1,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
+        "date": "2026-07-09",
+        "total": -2,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
+        "date": "2026-07-18",
+        "total": -2,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
+        "date": "2026-07-25",
+        "total": -1,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
+        "date": "2026-08-01",
+        "total": -1,
+        "valuation_label": "N/A (backfill)",
+        "decision_label": "N/A (backfill)"
+      },
+      {
         "date": "2026-08-08",
         "total": 2,
         "valuation_label": "Hợp lý",
-        "decision_label": "Duy trì, chọn lọc"
+        "decision_label": "Tăng tỷ trọng vừa phải"
       }
     ]
   },
