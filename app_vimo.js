@@ -10,11 +10,13 @@ const GROUP_LABELS = {
     growth: 'Tăng trưởng', inflation: 'Lạm phát', monetary: 'Tiền tệ & Lãi suất',
     trade: 'Thương mại & Vốn', fiscal: 'Tài khóa', labor: 'Lao động',
     external: 'Áp lực bên ngoài', market: 'Thị trường chứng khoán',
+    demographics: 'Dân số',
 };
-const GROUP_ORDER = ['growth', 'inflation', 'monetary', 'trade', 'fiscal', 'labor', 'external', 'market'];
+const GROUP_ORDER = ['growth', 'inflation', 'monetary', 'trade', 'fiscal', 'labor', 'external', 'market', 'demographics'];
 const GROUP_ICONS = {
     growth: '📈', inflation: '💰', monetary: '🏦', trade: '🚢',
     fiscal: '🏛️', labor: '👷', external: '🌐', market: '📊',
+    demographics: '👥',
 };
 const SOURCE_LABELS = {
     worldbank: 'World Bank API', imf: 'IMF DataMapper API', fred: 'FRED API',
@@ -32,6 +34,7 @@ const SOURCE_LABELS = {
     vira: 'vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động)',
     derived: 'Tính từ chuỗi lũy kế đã có (phái sinh, không phải nguồn ngoài)',
     manual: 'Nghiên cứu thủ công',
+    '40yo': '40yo.vn (tổng hợp IMF/World Bank/ADB, tự động)',
 };
 
 const CHART_DEFAULTS = {

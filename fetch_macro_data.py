@@ -448,6 +448,135 @@ def fetch_aric_gdp_by_use():
         return {}
 
 
+def fetch_40yo_vnm_data():
+    """40yo.vn/vi-mo/vn (Việt Nam) — trang là SPA (JS render) nhưng gọi thẳng endpoint JSON công
+    khai (không auth, không rate-limit thấy được khi khảo sát) chứa ~80 chỉ báo Việt Nam tổng hợp
+    từ IMF WEO/World Bank/ADB/UNCTAD, cấu trúc {y: năm thập phân, v: giá trị, p: nhãn kỳ dạng
+    'MM/YYYY' (tháng)/'Qn/YYYY' (quý)/'YYYY' (năm)} mỗi điểm — do chính trang này dùng để vẽ chart
+    cho người dùng, phát hiện qua bắt network request khi mở trang bằng Playwright (2026-08-09).
+    Trả dict JSON đầy đủ (khóa 'charts' chứa các nhóm biểu đồ) hoặc {} nếu thất bại."""
+    url = "https://40yo.vn/data/countries/VNM.json"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=30)
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:
+        print(f"  [WARN] 40yo.vn VNM data thất bại: {e}")
+        return {}
+
+
+def _40yo_period_to_iso(p):
+    """'MM/YYYY' (tháng) -> 'YYYY-MM'; 'Qn/YYYY' (quý) -> 'YYYY-Qn'; 'YYYY' (năm) -> 'YYYY' — khớp
+    định dạng period chuẩn đang dùng trong toàn hệ thống."""
+    m = re.match(r"^(\d{2})/(\d{4})$", p)
+    if m:
+        return f"{m.group(2)}-{m.group(1)}"
+    m = re.match(r"^Q(\d)/(\d{4})$", p)
+    if m:
+        return f"{m.group(2)}-Q{m.group(1)}"
+    if re.match(r"^\d{4}$", p):
+        return p
+    return None
+
+
+def _40yo_is_fresh(iso_periods, freshness):
+    """Chỉ giữ chuỗi CÒN ĐANG CẬP NHẬT — user (2026-08-09): "dữ liệu tháng nhưng lại đang dừng ở
+    năm 2025 thì bỏ qua, dữ liệu quý không có Q1 2026 thì bỏ qua, dữ liệu năm không có 2025 thì bỏ
+    qua vì các data đó không có tính cập nhật" (khảo sát 2026-08-09 cho thấy nhiều chuỗi trong bộ
+    dữ liệu 40yo.vn đã ngừng cập nhật từ lâu, vd finacc_break "Gián tiếp cổ phiếu" dừng ở Q4/2013)."""
+    if not iso_periods:
+        return False
+    last = max(iso_periods)
+    if freshness == "monthly":
+        return last[:4] >= "2026"
+    if freshness == "quarterly":
+        return last >= "2026-Q1"
+    return last >= "2025"  # annual
+
+
+# Danh sách chỉ báo GIỮ LẠI từ 40yo.vn (đã khảo sát thủ công 2026-08-09, loại các chuỗi đã ngừng
+# cập nhật qua _40yo_is_fresh — xem quyết định chi tiết trong lịch sử trao đổi). Mỗi phần tử:
+# (chart_key, series_name, raw_key, label, unit, good_direction, group, freshness).
+_40YO_SPEC = [
+    ("yields", "1Y", "govt_bond_yield_1y_40yo", "Lợi suất TPCP thứ cấp 1 năm (40yo)", "%", "lower", "monetary", "monthly"),
+    ("yields", "2Y", "govt_bond_yield_2y_40yo", "Lợi suất TPCP thứ cấp 2 năm (40yo)", "%", "lower", "monetary", "monthly"),
+    ("spread", "10Y − 2Y", "yield_spread_10y_2y_vn", "Chênh lệch lợi suất TPCP 10Y-2Y (VN)", "điểm %", "higher", "monetary", "monthly"),
+    ("spread", "2Y − 1Y", "yield_spread_2y_1y_vn", "Chênh lệch lợi suất TPCP 2Y-1Y (VN)", "điểm %", "higher", "monetary", "monthly"),
+    ("policy_vs_us", "Lợi suất 10Y − Mỹ", "yield_spread_vn_us_10y", "Chênh lệch lợi suất TPCP 10Y VN so với Mỹ", "điểm %", "higher", "monetary", "monthly"),
+    ("policy_vs_us", "Lợi suất 2Y − Mỹ", "yield_spread_vn_us_2y", "Chênh lệch lợi suất TPCP 2Y VN so với Mỹ", "điểm %", "higher", "monetary", "monthly"),
+    ("reserves", "Ngoại tệ (USD)", "forex_reserves_monthly", "Dự trữ ngoại hối — ngoại tệ (theo tháng)", "tỷ USD", "higher", "external", "monthly"),
+    ("reserves", "SDR (USD)", "forex_reserves_sdr", "Dự trữ ngoại hối — SDR", "tỷ USD", "higher", "external", "monthly"),
+    ("exch_broad", "USD/VND (phải)", "usdvnd_monthly_avg", "Tỷ giá USD/VND (bình quân tháng)", "VND", "lower", "external", "monthly"),
+    ("pe", "P/E thị trường", "vnindex_pe_market_monthly", "P/E thị trường (theo tháng, từ 2016)", "lần", "lower", "market", "monthly"),
+    ("index_pe", "Chỉ số giá cổ phiếu", "vnindex_level_monthly", "Chỉ số giá cổ phiếu (theo tháng)", "điểm", "higher", "market", "monthly"),
+    ("bop", "Hàng hóa", "bop_goods", "Cán cân vãng lai — Hàng hóa", "tỷ USD", "higher", "trade", "quarterly"),
+    ("bop", "Dịch vụ", "bop_services", "Cán cân vãng lai — Dịch vụ", "tỷ USD", "higher", "trade", "quarterly"),
+    ("bop", "Thu nhập sơ cấp", "bop_primary_income", "Cán cân vãng lai — Thu nhập sơ cấp", "tỷ USD", "higher", "trade", "quarterly"),
+    ("bop", "Thu nhập thứ cấp", "bop_secondary_income", "Cán cân vãng lai — Thu nhập thứ cấp", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc", "FDI · tài sản", "finacc_fdi_assets", "Cán cân tài chính — FDI (tài sản)", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc", "FDI · nợ", "finacc_fdi_liabilities", "Cán cân tài chính — FDI (nợ)", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc", "Gián tiếp · tài sản", "finacc_portfolio_assets", "Cán cân tài chính — Đầu tư gián tiếp (tài sản)", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc", "Gián tiếp · nợ", "finacc_portfolio_liabilities", "Cán cân tài chính — Đầu tư gián tiếp (nợ)", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc", "Khác · tài sản", "finacc_other_assets", "Cán cân tài chính — Khác (tài sản)", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc", "Khác · nợ", "finacc_other_liabilities", "Cán cân tài chính — Khác (nợ)", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_break", "ĐTTT · vốn CP", "finacc_fdi_equity", "FDI — Vốn cổ phần", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_break", "ĐTTT · công cụ nợ", "finacc_fdi_debt_instr", "FDI — Công cụ nợ", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_break", "Khác · tiền & tiền gửi", "finacc_other_deposits", "Đầu tư khác — Tiền & tiền gửi", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_break", "Khác · cho vay", "finacc_other_loans", "Đầu tư khác — Cho vay", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_dep_sec", "Ngân hàng", "finacc_deposits_bank", "Tiền gửi (cán cân tài chính) — Khu vực ngân hàng", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_dep_sec", "Khác", "finacc_deposits_other", "Tiền gửi (cán cân tài chính) — Khu vực khác", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_loan_sec", "Chính phủ", "finacc_loans_gov", "Vay nợ (cán cân tài chính) — Chính phủ", "tỷ USD", "higher", "trade", "quarterly"),
+    ("finacc_loan_sec", "Khác", "finacc_loans_other", "Vay nợ (cán cân tài chính) — Khu vực khác", "tỷ USD", "higher", "trade", "quarterly"),
+    ("adb_gdp", "Chính phủ", "govt_debt_pct_gdp_adb", "Dư nợ TPCP / GDP (ADB)", "% GDP", "lower", "fiscal", "quarterly"),
+    ("adb_gdp", "Doanh nghiệp", "corp_debt_pct_gdp_adb", "Dư nợ TPDN / GDP (ADB)", "% GDP", "lower", "fiscal", "quarterly"),
+    ("adb_gdp", "Ngân hàng trung ương", "cb_debt_pct_gdp_adb", "Dư nợ tín phiếu NHTW / GDP (ADB)", "% GDP", "lower", "fiscal", "quarterly"),
+    ("adb_fcy", "Chính phủ", "govt_fcy_debt_usd", "Dư nợ TPCP bằng ngoại tệ", "tỷ USD", "lower", "fiscal", "quarterly"),
+    ("adb_fcy", "Doanh nghiệp", "corp_fcy_debt_usd", "Dư nợ TPDN bằng ngoại tệ", "tỷ USD", "lower", "fiscal", "quarterly"),
+    ("adb_mat_gov", "1–3 năm", "govt_bond_maturity_1_3y", "Cơ cấu kỳ hạn TPCP — 1-3 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_gov", "3–5 năm", "govt_bond_maturity_3_5y", "Cơ cấu kỳ hạn TPCP — 3-5 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_gov", "5–10 năm", "govt_bond_maturity_5_10y", "Cơ cấu kỳ hạn TPCP — 5-10 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_gov", "Trên 10 năm", "govt_bond_maturity_10y_plus", "Cơ cấu kỳ hạn TPCP — Trên 10 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_corp", "1–3 năm", "corp_bond_maturity_1_3y", "Cơ cấu kỳ hạn TPDN — 1-3 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_corp", "3–5 năm", "corp_bond_maturity_3_5y", "Cơ cấu kỳ hạn TPDN — 3-5 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_corp", "5–10 năm", "corp_bond_maturity_5_10y", "Cơ cấu kỳ hạn TPDN — 5-10 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_mat_corp", "Trên 10 năm", "corp_bond_maturity_10y_plus", "Cơ cấu kỳ hạn TPDN — Trên 10 năm", "% dư nợ", "higher", "fiscal", "quarterly"),
+    ("adb_holder", "Ngân hàng", "govt_bond_holder_bank", "Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng", "%", "higher", "fiscal", "quarterly"),
+    ("adb_holder", "Bảo hiểm", "govt_bond_holder_insurance", "Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm", "%", "higher", "fiscal", "quarterly"),
+    ("adb_holder", "Công ty chứng khoán", "govt_bond_holder_securities", "Cơ cấu nhà đầu tư nắm giữ TPCP — CTCK", "%", "higher", "fiscal", "quarterly"),
+    ("adb_holder", "Quỹ đầu tư", "govt_bond_holder_fund", "Cơ cấu nhà đầu tư nắm giữ TPCP — Quỹ đầu tư", "%", "higher", "fiscal", "quarterly"),
+    ("adb_holder", "Nước ngoài", "govt_bond_holder_foreign", "Cơ cấu nhà đầu tư nắm giữ TPCP — Nước ngoài", "%", "higher", "fiscal", "quarterly"),
+    ("adb_holder", "Khác", "govt_bond_holder_other", "Cơ cấu nhà đầu tư nắm giữ TPCP — Khác", "%", "higher", "fiscal", "quarterly"),
+    ("ids", "Chính phủ", "intl_debt_securities_gov", "Nợ chứng khoán quốc tế — Chính phủ", "tỷ USD", "lower", "fiscal", "quarterly"),
+    ("ids", "DN phi tài chính", "intl_debt_securities_corp", "Nợ chứng khoán quốc tế — DN phi tài chính", "tỷ USD", "lower", "fiscal", "quarterly"),
+    ("markets_size", "Vốn hóa TTCK", "stock_market_cap_pct_gdp", "Vốn hóa thị trường chứng khoán / GDP", "% GDP", "higher", "market", "annual"),
+    ("fiscal_bal", "Thu ngân sách", "fiscal_revenue_pct_gdp", "Thu ngân sách / GDP", "% GDP", "higher", "fiscal", "annual"),
+    ("fiscal_bal", "Chi ngân sách", "fiscal_expenditure_pct_gdp", "Chi ngân sách / GDP", "% GDP", "lower", "fiscal", "annual"),
+    ("fiscal_bal", "Cân đối tổng thể", "fiscal_balance_overall_pct_gdp", "Cân đối ngân sách tổng thể / GDP", "% GDP", "higher", "fiscal", "annual"),
+    ("fiscal_bal", "Nợ công / GDP", "public_debt_pct_gdp_forecast", "Nợ công / GDP (có dự báo tới 2031)", "% GDP", "lower", "fiscal", "annual"),
+    ("lt_fiscal", "Cân đối sơ cấp", "fiscal_primary_balance_pct_gdp", "Cân đối ngân sách sơ cấp / GDP", "% GDP", "higher", "fiscal", "annual"),
+    ("demo_urb", "Tỷ lệ đô thị hóa", "urbanization_rate", "Tỷ lệ đô thị hóa", "% dân số", "higher", "demographics", "annual"),
+    ("demo_age", "0–14", "population_age_0_14", "Dân số 0-14 tuổi", "triệu người", "higher", "demographics", "annual"),
+    ("demo_age", "15–64", "population_age_15_64", "Dân số 15-64 tuổi (lao động)", "triệu người", "higher", "demographics", "annual"),
+    ("demo_age", "65+", "population_age_65_plus", "Dân số 65+ tuổi", "triệu người", "higher", "demographics", "annual"),
+    ("demo_dep", "Chung", "dependency_ratio_total", "Tỷ lệ phụ thuộc chung", "%", "lower", "demographics", "annual"),
+    ("demo_dep", "Trẻ em", "dependency_ratio_youth", "Tỷ lệ phụ thuộc — Trẻ em", "%", "lower", "demographics", "annual"),
+    ("demo_dep", "Người già", "dependency_ratio_elderly", "Tỷ lệ phụ thuộc — Người già", "%", "lower", "demographics", "annual"),
+    ("gdp_exp", "Tiêu dùng hộ GĐ", "gdp_share_use_consumption_household", "GDP theo sử dụng — Tiêu dùng hộ gia đình", "% GDP", "higher", "growth", "annual"),
+    ("gdp_exp", "Tiêu dùng Chính phủ", "gdp_share_use_consumption_government", "GDP theo sử dụng — Tiêu dùng Chính phủ", "% GDP", "higher", "growth", "annual"),
+    ("gdp_exp", "Đầu tư (GFCF)", "gdp_share_use_investment", "GDP theo sử dụng — Đầu tư (GFCF)", "% GDP", "higher", "growth", "annual"),
+    ("gdp_exp", "Xuất khẩu", "gdp_share_use_export", "GDP theo sử dụng — Xuất khẩu", "% GDP", "higher", "growth", "annual"),
+    ("gdp_exp", "Nhập khẩu", "gdp_share_use_import", "GDP theo sử dụng — Nhập khẩu", "% GDP", "higher", "growth", "annual"),
+    ("gdp_sector", "Nông nghiệp", "gdp_share_agri_annual_40yo", "Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986)", "% GDP", "higher", "growth", "annual"),
+    ("gdp_sector", "Công nghiệp", "gdp_share_industry_annual_40yo", "Cơ cấu GDP theo ngành — Công nghiệp-Xây dựng (theo năm, từ 1986)", "% GDP", "higher", "growth", "annual"),
+    ("gdp_sector", "Dịch vụ", "gdp_share_services_annual_40yo", "Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986)", "% GDP", "higher", "growth", "annual"),
+    ("inc_saving", "Tiết kiệm quốc gia", "national_savings_pct_gdp", "Tiết kiệm quốc gia / GDP", "% GDP", "higher", "growth", "annual"),
+    ("inc_saving", "Tổng đầu tư", "gross_investment_pct_gdp", "Tổng đầu tư / GDP", "% GDP", "higher", "growth", "annual"),
+    ("inc_pc", "Danh nghĩa (USD)", "gdp_per_capita_nominal_usd", "GDP bình quân đầu người (danh nghĩa)", "USD", "higher", "growth", "annual"),
+    ("inc_pc", "PPP (Int$)", "gdp_per_capita_ppp_intl", "GDP bình quân đầu người (PPP)", "Int$", "higher", "growth", "annual"),
+    ("inc_pc", "GNI/người (Atlas USD)", "gni_per_capita_atlas_usd", "GNI bình quân đầu người (Atlas)", "USD", "higher", "growth", "annual"),
+]
+
+
 def fetch_nso_gdp_structure_report():
     """Tự động tìm bài 'Thông cáo báo chí về tình hình kinh tế-xã hội' MỚI NHẤT (tiếng Việt) trên
     nso.gov.vn/du-lieu-va-so-lieu-thong-ke/ (index Việt — KHÁC index tiếng Anh đã dùng ở
@@ -2284,6 +2413,61 @@ def update_vimo_raw():
                 added += 1
         raw[key]["series"].sort(key=lambda p: p["period"])
         print(f"  -> {label}: +{added} điểm mới từ ARIC (tổng {len(raw[key]['series'])} điểm)")
+
+    # 40yo.vn — kho dữ liệu tổng hợp IMF/World Bank/ADB/UNCTAD rất lớn (~80 chỉ báo VN), user
+    # (2026-08-09) yêu cầu "bổ sung tất cả" nhưng CHỈ giữ chuỗi CÒN CẬP NHẬT (_40yo_is_fresh) và
+    # CHỈ vẽ biểu đồ từ 2016 trở lại đây (lọc ngay tại bước ghi vào raw, không lưu phần lịch sử xa
+    # hơn — trừ các chuỗi có DỰ BÁO tương lai vẫn giữ nguyên vì đó là thông tin hữu ích, không phải
+    # "dữ liệu cũ"). Xem _40YO_SPEC ở trên cho danh sách đầy đủ + lý do loại từng chuỗi đã cũ.
+    print("[40yo.vn — kho dữ liệu tổng hợp IMF/World Bank/ADB/UNCTAD (~70 chỉ báo, đã lọc chuỗi còn cập nhật)]")
+    data_40yo = fetch_40yo_vnm_data()
+    charts_40yo = data_40yo.get("charts", {})
+    n_kept, n_skipped_stale = 0, 0
+    for chart_key, series_name, raw_key, label, unit, good_dir, group, freshness in _40YO_SPEC:
+        chart = charts_40yo.get(chart_key)
+        if not chart:
+            continue
+        series_list = chart.get("series") or ((chart.get("left") or []) + (chart.get("right") or []))
+        series = next((s for s in series_list if s.get("name") == series_name), None)
+        if not series or not series.get("data"):
+            continue
+        points = []
+        for pt in series["data"]:
+            iso = _40yo_period_to_iso(pt.get("p", ""))
+            if iso is None or pt.get("v") is None:
+                continue
+            points.append((iso, pt["v"]))
+        iso_periods = [p for p, _ in points]
+        if not _40yo_is_fresh(iso_periods, freshness):
+            n_skipped_stale += 1
+            continue
+        # Chỉ giữ TỪ 2016 trở đi (user: "những dữ liệu lâu quá rồi thì chỉ vẽ biểu đồ cho từ 2016
+        # trở lại đây") — áp dụng ngay khi ghi vào raw (không lưu phần xa hơn) vì các chỉ báo này
+        # CHỈ dùng để hiển thị tham khảo, không cần backtest xa hơn 2016.
+        points = [(p, v) for p, v in points if p[:4] >= "2016"]
+        if not points:
+            continue
+        if raw_key not in raw:
+            raw[raw_key] = {
+                "group": group, "label": label, "unit": unit, "good_direction": good_dir,
+                "auto_source": "40yo",
+                "note": ("Nguồn 40yo.vn (tổng hợp IMF WEO/World Bank/ADB/UNCTAD), endpoint JSON "
+                         "công khai 40yo.vn/data/countries/VNM.json — chỉ hiển thị từ 2016 (dữ "
+                         "liệu gốc có thể sâu hơn nhiều, xem 40yo.vn/vi-mo/vn nếu cần lịch sử xa "
+                         "hơn). Các năm sau hiện tại (nếu có) là DỰ BÁO của IMF/ADB, không phải "
+                         "số liệu thực tế đã công bố."),
+                "impact": "Chỉ báo tham khảo bổ sung, chưa dùng cho Scorecard — mở rộng phạm vi theo dõi sang các mảng hệ thống chưa có nguồn tự động trước đây (đường cong lợi suất, cơ cấu nợ TPCP/TPDN, cán cân thanh toán chi tiết, dân số, ngân sách dài hạn).",
+                "series": [],
+            }
+        existing_periods = {p["period"] for p in raw[raw_key]["series"]}
+        for period, value in points:
+            if period not in existing_periods:
+                raw[raw_key]["series"].append({"period": period, "value": value,
+                                                 "source_url": "https://40yo.vn/vi-mo/vn"})
+                existing_periods.add(period)
+        raw[raw_key]["series"].sort(key=lambda p: p["period"])
+        n_kept += 1
+    print(f"  -> Giữ {n_kept} chuỗi (từ 2016), bỏ {n_skipped_stale} chuỗi đã ngừng cập nhật")
 
     print("[NSO — cơ cấu vốn đầu tư qua OCR ảnh infographic (dữ liệu CHỈ có ở dạng ảnh, xem fetch_nso_infographic_investment)]")
     ocr_inv = fetch_nso_infographic_investment()
