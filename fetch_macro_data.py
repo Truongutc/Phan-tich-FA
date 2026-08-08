@@ -1492,8 +1492,13 @@ def fetch_nab_deposit_rate_12m():
 # VietnamBiz's Vietnamese "title" field -> indicator key trong vimo_raw.json. CHỈ map các chỉ
 # báo mà VietnamBiz là nguồn TỐT NHẤT tìm được (bán lẻ — trước đây "manual" chỉ 1 điểm) — không
 # map đè lên GDP/CPI/thất nghiệp/IIP vì NSO (trực tiếp từ cơ quan thống kê) đáng tin cậy hơn
-# nguồn tổng hợp lại của bên thứ ba, dù VietnamBiz cũng có các chỉ báo đó làm đối chiếu. PMI
-# cũng đã chuyển sang fetch_vbma_pmi() (full lịch sử từ 2016) nên bỏ khỏi map này.
+# nguồn tổng hợp lại của bên thứ ba, dù VietnamBiz cũng có các chỉ báo đó làm đối chiếu.
+# PMI: đã chuyển hẳn sang fetch_vbma_pmi() (full lịch sử từ 2016) ngày 2026-07-23 nên từng bỏ
+# khỏi map này — nhưng VBMA cập nhật TRỄ hơn VietnamBiz (user 2026-08-08 chỉ ra thiếu T7/2026;
+# VBMA lúc đó mới có tới T6, trong khi VietnamBiz đã có T7=52,9 — cùng số liệu gốc S&P Global,
+# chỉ khác tốc độ cập nhật). Thêm LẠI vào map để bổ sung điểm MỚI NHẤT khi VBMA chưa kịp — an
+# toàn ghép chung 1 series vì fetch_vietnambiz_macro() giờ dùng _merge_point_anywhere() (tìm+ghi
+# đè đúng vị trí, không nhân đôi) thay vì _append_point() cũ.
 VIETNAMBIZ_TITLE_MAP = {
     "Bán lẻ HH&DV (YoY)": "retail_sales_growth",
     "Thu ngân sách (YoY)": "budget_revenue_growth",
@@ -1501,6 +1506,7 @@ VIETNAMBIZ_TITLE_MAP = {
     "Vốn đầu tư NSNN (YoY)": "public_investment_growth",
     "Xuất khẩu (YoY)": "export_growth",
     "Nhập khẩu (YoY)": "import_growth",
+    "PMI": "pmi_manufacturing",
 }
 
 
@@ -2251,12 +2257,12 @@ def update_vimo_raw():
         ]
         print(f"  -> {len(pts)} điểm")
 
-    print("[VietnamBiz — Bán lẻ (đối chiếu, tích lũy theo lần chạy, nay lấy cả value + pre_value)]")
-    vnb = fetch_vietnambiz_macro()
-    for key, period, value in vnb:
-        _merge_point_anywhere(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
-        print(f"  -> {key} {period}: {value}")
-
+    # VBMA PMI PHẢI chạy TRƯỚC VietnamBiz — VBMA ghi ĐÈ TOÀN BỘ series (full lịch sử từ 2016,
+    # không phải merge từng điểm), nên nếu chạy SAU sẽ XÓA MẤT điểm PMI tháng mới nhất mà
+    # VietnamBiz vừa thêm (VietnamBiz cập nhật NHANH hơn VBMA — user 2026-08-08 chỉ ra VBMA trễ
+    # 1-2 tháng — xem PMI trong VIETNAMBIZ_TITLE_MAP). Đã xác nhận lỗi này thật qua 1 lần chạy sai
+    # thứ tự: log báo "pmi_manufacturing 2026-07: 52.9" nhưng vimo_raw.json cuối cùng KHÔNG có
+    # điểm đó vì bước VBMA chạy sau đã ghi đè mất.
     print("[VBMA — PMI sản xuất theo tháng (toàn bộ lịch sử từ T1/2016)]")
     pts = fetch_vbma_pmi()
     if pts:
@@ -2266,6 +2272,12 @@ def update_vimo_raw():
             for p, v in pts
         ]
         print(f"  -> {len(pts)} điểm")
+
+    print("[VietnamBiz — Bán lẻ (đối chiếu, tích lũy theo lần chạy, nay lấy cả value + pre_value)]")
+    vnb = fetch_vietnambiz_macro()
+    for key, period, value in vnb:
+        _merge_point_anywhere(raw, key, period, value, "https://data.vietnambiz.vn/macro-economic")
+        print(f"  -> {key} {period}: {value}")
 
     print("[VBMA — FDI đăng ký lũy kế theo tháng (bổ sung fdi_registered_usd_bn, cửa sổ trượt 2 năm)]")
     pts = fetch_vbma_fdi_registered()
