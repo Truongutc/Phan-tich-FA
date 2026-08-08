@@ -6,100 +6,10 @@
     "last_auto_update": "2026-08-08 12:37",
     "scorecard_history": [
       {
-        "date": "2026-07-12",
-        "total": 2,
-        "valuation_label": "Hợp lý",
-        "decision_label": "Duy trì, chọn lọc"
-      },
-      {
-        "date": "2026-07-13",
-        "total": 0,
-        "valuation_label": "Hợp lý",
-        "decision_label": "Phòng thủ, giữ tiền mặt"
-      },
-      {
-        "date": "2026-07-17",
-        "total": -1,
-        "valuation_label": "Hợp lý",
-        "decision_label": "Phòng thủ, giữ tiền mặt"
-      },
-      {
-        "date": "2026-07-20",
-        "total": -1,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Mua từ từ, phân kỳ"
-      },
-      {
-        "date": "2026-07-24",
-        "total": 1,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Bung vốn mạnh"
-      },
-      {
-        "date": "2026-07-25",
-        "total": -2,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Nên mua vào"
-      },
-      {
-        "date": "2026-07-28",
-        "total": -2,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Nên mua vào"
-      },
-      {
-        "date": "2026-07-29",
-        "total": 0,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Mua tỷ trọng cao"
-      },
-      {
-        "date": "2026-07-30",
-        "total": -3,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Nên mua vào"
-      },
-      {
-        "date": "2026-07-31",
-        "total": 1,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Mua tỷ trọng cao"
-      },
-      {
-        "date": "2026-08-01",
-        "total": 1,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Mua mạnh"
-      },
-      {
-        "date": "2026-08-03",
-        "total": -1,
-        "valuation_label": "Rẻ/Hấp dẫn",
-        "decision_label": "Nên mua vào"
-      },
-      {
-        "date": "2026-08-04",
-        "total": -2,
-        "valuation_label": "Hợp lý",
-        "decision_label": "Giải ngân một phần"
-      },
-      {
-        "date": "2026-08-05",
-        "total": -2,
-        "valuation_label": "Hợp lý",
-        "decision_label": "Tăng tỷ trọng vừa phải"
-      },
-      {
-        "date": "2026-08-07",
-        "total": -1,
-        "valuation_label": "Hợp lý",
-        "decision_label": "Giải ngân một phần"
-      },
-      {
         "date": "2026-08-08",
         "total": 2,
         "valuation_label": "Hợp lý",
-        "decision_label": "Tăng tỷ trọng vừa phải"
+        "decision_label": "Duy trì, chọn lọc"
       }
     ]
   },

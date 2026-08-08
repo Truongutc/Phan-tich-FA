@@ -481,14 +481,106 @@ def calc_trend(series, good_direction):
     return result
 
 
+def _median(values):
+    s = sorted(values)
+    n = len(s)
+    if n == 0:
+        return None
+    mid = n // 2
+    return s[mid] if n % 2 == 1 else (s[mid - 1] + s[mid]) / 2
+
+
+# Số năm dùng làm cửa sổ tính "TRẠNG THÁI" (tốt/xấu) của 1 chỉ báo — user (2026-08-09): "Ngưỡng
+# tốt xấu của các chỉ báo sẽ được tính theo mức median của 5 năm gần nhất" — ÁP DỤNG CHUNG cho MỌI
+# chỉ báo (không cần định nghĩa ngưỡng thủ công riêng từng loại như CPI_TARGET_CEILING), khác hẳn
+# is_improving của calc_trend() (chỉ so kỳ này với kỳ NGAY TRƯỚC — đo TỐC ĐỘ thay đổi, không nói
+# được hiện đang Ở MỨC cao/thấp so với lịch sử). 2 trục này ĐỘC LẬP (xem _quadrant_vote).
+STATE_MEDIAN_WINDOW_YEARS = 5
+
+
+def _period_subkey(period):
+    """Trích phần 'VỊ TRÍ TRONG NĂM' của period để so CÙNG KỲ qua các năm — user (2026-08-09):
+    "GDP tháng này so với median CÙNG THÁNG trong 5 năm gần nhất" (không phải gộp lẫn mọi tháng
+    trong 5 năm — 1 chỉ báo có mùa vụ như IIP/bán lẻ tháng Tết sẽ so sai nếu trộn chung mọi tháng).
+    'YYYY-MM'/'YYYY-MM-DD' -> 'MM' (so theo THÁNG — chuỗi ngày như VIRA không có tính lặp lại theo
+    năm ở mức ngày nên so theo tháng là hợp lý nhất); 'YYYY-Qn'/'YYYY-Hn'/'YYYY-9M'/'YYYY-FY'/
+    'YYYY-Wnn' -> giữ nguyên hậu tố; 'YYYY' thuần (chỉ báo theo NĂM, vd ARIC) -> None (mỗi năm đã
+    là 1 kỳ duy nhất, không cần lọc thêm sub-period)."""
+    m = re.match(r"\d{4}-(\d{2})-\d{2}$", period)
+    if m:
+        return m.group(1)
+    m = re.match(r"\d{4}-(\d{2})$", period)
+    if m:
+        return m.group(1)
+    m = re.match(r"\d{4}-(Q\d|H\d|9M|FY|W\d{2})$", period)
+    if m:
+        return m.group(1)
+    return None
+
+
+def _indicator_state_good(series, good_direction, years=STATE_MEDIAN_WINDOW_YEARS):
+    """So giá trị MỚI NHẤT với MEDIAN của CÙNG KỲ (cùng tháng/quý/tuần — xem _period_subkey) trong
+    `years` năm gần nhất TRƯỚC kỳ hiện tại (không tính điểm mới nhất vào chính median dùng để so nó
+    — so với LỊCH SỬ, không so với chính nó). Trả True (TỐT so với chính nó cùng kỳ các năm qua) /
+    False (XẤU) / None nếu không đủ dữ liệu (<3 điểm cùng kỳ trong cửa sổ — median từ 1-2 điểm
+    không đáng tin, cũng không nên ép chỉ báo mới/thưa dữ liệu phải có ngay 1 'trạng thái')."""
+    valid = [p for p in series if p.get("value") is not None]
+    if not valid:
+        return None
+    latest = valid[-1]
+    m_latest = re.match(r"(\d{4})", latest["period"])
+    if not m_latest:
+        return None
+    latest_year = int(m_latest.group(1))
+    latest_sub = _period_subkey(latest["period"])
+    window = []
+    for p in valid[:-1]:
+        m = re.match(r"(\d{4})", p["period"])
+        if not m or not (latest_year - years <= int(m.group(1)) <= latest_year):
+            continue
+        if latest_sub is not None and _period_subkey(p["period"]) != latest_sub:
+            continue
+        window.append(p["value"])
+    if len(window) < 3:
+        return None
+    med = _median(window)
+    return latest["value"] >= med if good_direction == "higher" else latest["value"] <= med
+
+
+def _quadrant_vote(state_good, is_improving):
+    """Ghép TRẠNG THÁI (tốt/xấu, so median 5 năm) VỚI XU HƯỚNG (đang tốt lên/xấu đi, calc_trend)
+    thành 1 phiếu liên tục theo ĐÚNG 4 mức user (2026-08-09) yêu cầu — thay cho phiếu nhị phân ±1
+    cũ (chỉ dựa xu hướng, không phân biệt được 'đang xấu đi từ mức đã tốt' với 'đang xấu đi từ mức
+    đã xấu', 2 tình huống có ý nghĩa đầu tư rất khác nhau):
+      xấu + đang xấu đi   -> -1    (rủi ro rõ nhất, đang xấu và càng xấu thêm)
+      xấu + đang tốt lên  -> -0.2  (còn xấu nhưng đã có tín hiệu đảo chiều)
+      tốt + đang xấu đi   -> +0.2  (còn tốt nhưng bắt đầu suy yếu, cần theo dõi)
+      tốt + đang tốt lên  -> +1    (tín hiệu tốt nhất, đang tốt và càng tốt thêm)
+    Khi is_improving=None (đi ngang, không đủ biến động để xác định xu hướng) -> giữ dấu theo
+    trạng thái nhưng giảm biên độ (không có tín hiệu xu hướng rõ để đẩy hẳn về ±1) — TỰ CHỌN mức
+    trung gian ±0.6 hợp lý (chưa có yêu cầu cụ thể cho ca này). Khi state_good=None (chưa đủ 5 năm
+    dữ liệu để tính median) -> lùi về phiếu nhị phân ±1 kiểu CŨ (chỉ theo xu hướng) thay vì bỏ
+    phiếu — tránh các chỉ báo mới/thưa dữ liệu đột nhiên mất hẳn quyền biểu quyết."""
+    if state_good is None:
+        if is_improving is None:
+            return None
+        return 1.0 if is_improving else -1.0
+    if is_improving is None:
+        return 0.6 if state_good else -0.6
+    if state_good:
+        return 1.0 if is_improving else 0.2
+    return -0.2 if is_improving else -1.0
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # SCORECARD VĨ MÔ — 6 nhóm, mỗi nhóm -1/0/+1 (Chương 4.1/6.1, đã tách Lạm phát/Lãi suất riêng)
 # ══════════════════════════════════════════════════════════════════════════
 def calc_scorecard(raw, trends):
     """trends: {indicator_key: calc_trend(...) result}. Trả {group_name: {score, detail, n}}.
-    Mỗi chỉ báo góp 1 PHIẾU XU HƯỚNG (như cũ); các chỉ báo có ngưỡng mục tiêu chính thức
-    (LEVEL_VOTE_FUNCS) góp THÊM 1 PHIẾU MỨC độc lập — 1 chỉ báo có thể góp 2 phiếu vào cùng 1
-    nhóm, nên n_votes đếm SỐ PHIẾU chứ không còn nhất thiết = số chỉ báo."""
+    Mỗi chỉ báo góp 1 PHIẾU (trạng thái x xu hướng, xem _quadrant_vote — KHÔNG còn nhị phân ±1
+    thuần túy như trước 2026-08-09); các chỉ báo có ngưỡng mục tiêu chính thức (LEVEL_VOTE_FUNCS)
+    góp THÊM 1 PHIẾU MỨC độc lập — 1 chỉ báo có thể góp 2 phiếu vào cùng 1 nhóm, nên n_votes đếm SỐ
+    PHIẾU chứ không còn nhất thiết = số chỉ báo."""
     scorecard = {}
     for group_name, keys in SCORECARD_GROUPS.items():
         votes = []
@@ -496,9 +588,14 @@ def calc_scorecard(raw, trends):
         for k in keys:
             t = trends.get(k)
             if t and t.get("is_improving") is not None:
-                votes.append(1 if t["is_improving"] else -1)
+                state_good = _indicator_state_good(raw[k]["series"], raw[k]["good_direction"])
+                vote = _quadrant_vote(state_good, t["is_improving"])
+                if vote is None:
+                    continue
+                votes.append(vote)
                 detail.append({"indicator": k, "label": raw[k]["label"], "vote": votes[-1],
-                                "arrow": t["arrow"], "judgment_label": t["judgment_label"], "kind": "trend"})
+                                "arrow": t["arrow"], "judgment_label": t["judgment_label"], "kind": "trend",
+                                "state": ("tốt" if state_good else "xấu") if state_good is not None else None})
             level_func = LEVEL_VOTE_FUNCS.get(k)
             if level_func and t and t.get("latest") is not None:
                 level_vote = level_func(t["latest"])
@@ -564,7 +661,17 @@ def _scorecard_group_reason(detail, raw, trends):
             phrases.append(f"{short} {level_txt} {joiner} {trend_txt}")
         else:
             v = votes[0]
-            phrases.append(f"{short} {v['judgment_label'].lower()}")
+            # -0.2/+0.2 = 2 ca "nghịch" của _quadrant_vote (trạng thái ngược dấu với xu hướng) —
+            # user (2026-08-09): lo câu lý do chỉ nói "Tốt lên" mà không thấy CPI thực ra vẫn cao
+            # hơn median 5 năm (chỉ đang giảm dần), dễ đọc nhầm thành tín hiệu tốt thuần túy. CHỈ
+            # thêm câu giải thích cho 2 ca này (trạng thái mâu thuẫn xu hướng) — ca thuận (tốt+tốt
+            # lên, xấu+xấu đi) giữ câu ngắn gọn cũ vì không có gì bất ngờ cần giải thích thêm.
+            if v["vote"] == -0.2:
+                phrases.append(f"{short} còn ở mức xấu so với cùng kỳ 5 năm qua dù đang tốt lên")
+            elif v["vote"] == 0.2:
+                phrases.append(f"{short} vẫn ở mức tốt so với cùng kỳ 5 năm qua nhưng đang yếu đi")
+            else:
+                phrases.append(f"{short} {v['judgment_label'].lower()}")
     return "; ".join(phrases) + "."
 
 
