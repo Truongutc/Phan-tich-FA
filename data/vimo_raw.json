@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-08-08 13:25",
+    "last_auto_update": "2026-08-08 06:36",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -12149,6 +12149,11 @@
         "period": "2026-08-05",
         "value": 4.63,
         "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 4.69,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
       }
     ],
     "note": "10-Year Treasury Constant Maturity Rate (FRED series DGS10) — lãi suất phi rủi ro tham chiếu toàn cầu, ảnh hưởng định giá mọi tài sản rủi ro (kể cả VN-Index) qua kênh chi phí vốn.",
@@ -13701,6 +13706,11 @@
         "period": "2026-08-05",
         "value": 3.89,
         "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 3.9,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
       }
     ],
     "note": "3-Month Treasury Constant Maturity Rate (FRED series DGS3MO) — đầu ngắn đường cong lợi suất, dùng tính spread 10Y-3M (1 trong 2 chỉ báo đảo ngược đường cong kinh điển).",
@@ -13826,6 +13836,11 @@
       {
         "period": "2026-08-05",
         "value": 4.03,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 4.06,
         "source_url": "https://fred.stlouisfed.org/series/DGS1"
       }
     ],
@@ -13953,6 +13968,11 @@
         "period": "2026-08-05",
         "value": 4.18,
         "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 4.25,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
       }
     ],
     "note": "2-Year Treasury Constant Maturity Rate (FRED series DGS2) — dùng tính spread 10Y-2Y, chỉ báo đảo ngược đường cong ĐƯỢC THEO DÕI NHIỀU NHẤT bởi thị trường tài chính toàn cầu.",
@@ -14079,6 +14099,11 @@
         "period": "2026-08-05",
         "value": 4.33,
         "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 4.4,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
       }
     ],
     "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
@@ -14204,6 +14229,11 @@
       {
         "period": "2026-08-05",
         "value": 5.17,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 5.22,
         "source_url": "https://fred.stlouisfed.org/series/DGS30"
       }
     ],
