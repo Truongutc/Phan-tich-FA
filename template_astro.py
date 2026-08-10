@@ -26,6 +26,17 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 FORECAST_DAYS_AHEAD = 90
 
+# Bộ đệm "nhìn xa thêm" (không hiển thị) cho riêng chuỗi dailyPressure — user (2026-08-10) chỉ ra
+# biểu đồ 90 ngày không gắn nhãn ngày cho 1 đỉnh sắp tới vì đường vẫn đang đi lên đúng lúc dữ liệu
+# hết (ngày 90). Thuật toán phát hiện đỉnh/đáy phía app_chiemtinh.js (_findPressureTurningPoints)
+# chỉ xác nhận 1 đỉnh SAU KHI thấy đường đảo chiều giảm đủ mạnh — nếu xu hướng chưa kịp đảo chiều
+# trong phạm vi dữ liệu thì không có cách nào biết chắc, kể cả về mặt logic. Giải pháp: tính thêm
+# PRESSURE_LOOKAHEAD_BUFFER_DAYS ngày sau mốc 90 (không vẽ) chỉ để thuật toán có đủ dữ liệu XÁC
+# NHẬN đỉnh/đáy nằm SÁT MÉP PHẢI (ví dụ đỉnh thật ở ngày 87 nhưng cần thấy đường giảm tới ngày 95
+# mới đủ biên độ xác nhận) — nếu đỉnh thật nằm NGOÀI 90 ngày thì vẫn không hiển thị (đúng bản chất,
+# không tự bịa dữ liệu ngoài phạm vi dự báo).
+PRESSURE_LOOKAHEAD_BUFFER_DAYS = 15
+
 # Ý nghĩa hành tinh trong chiêm tinh tài chính (hiển thị trong chiemtinh.html).
 # BỔ SUNG (2026-08-07, từ tài liệu khóa học chiêm tinh tài chính user cung cấp — 20 bài giảng đã
 # đọc qua, chỉ giữ lại phần LÝ THUYẾT CHUNG có cơ sở lặp lại được, bỏ các case study lịch sử tự
@@ -392,7 +403,10 @@ def build_astro_data():
     natal_positions_raw = vnindex_natal["positions"]
     upcoming_natal_aspects = astro.find_upcoming_transit_to_natal_exact_aspects(
         natal_positions_raw, days_ahead=FORECAST_DAYS_AHEAD, step_hours=6, only_hard=False)
-    daily_pressure = astro.build_daily_natal_pressure_series(natal_positions_raw, days_ahead=FORECAST_DAYS_AHEAD)
+    # Tính dư PRESSURE_LOOKAHEAD_BUFFER_DAYS ngày (xem giải thích ở khai báo hằng số) — JS chỉ vẽ
+    # đúng FORECAST_DAYS_AHEAD ngày đầu, phần dư dùng để xác nhận đỉnh/đáy sát mép phải.
+    daily_pressure = astro.build_daily_natal_pressure_series(
+        natal_positions_raw, days_ahead=FORECAST_DAYS_AHEAD + PRESSURE_LOOKAHEAD_BUFFER_DAYS)
 
     out = {
         "generatedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),

@@ -85,51 +85,83 @@ function _findPressureTurningPoints(scores, threshold) {
     return points;
 }
 
+// Số ngày CHÍNH THỨC của bảng dự báo — khớp FORECAST_DAYS_AHEAD (template_astro.py). `series`
+// truyền vào DÀI HƠN con số này (data/astro.json tính dư PRESSURE_LOOKAHEAD_BUFFER_DAYS ngày,
+// bình thường KHÔNG hiển thị) — dùng để thuật toán phát hiện đỉnh/đáy (_findPressureTurningPoints)
+// có đủ dữ liệu XÁC NHẬN 1 đỉnh/đáy nằm sát MÉP PHẢI biểu đồ chính thức. User (2026-08-10): đường
+// đang đi (tăng hoặc giảm) đúng lúc hết dữ liệu ngày 90 nên không đỉnh/đáy nào được gắn nhãn —
+// thuật toán cần thấy đường ĐẢO CHIỀU đủ mạnh mới dám xác nhận, không thể biết chắc nếu dữ liệu
+// dừng giữa chừng 1 xu hướng. Nếu đỉnh/đáy XÁC NHẬN ĐẦU TIÊN sau mốc 90 ngày nằm ngay trong phần
+// đệm (gần mép), biểu đồ sẽ TỰ NỚI RỘNG đúng tới điểm đó (kèm vạch mốc "90 ngày chính thức") thay
+// vì cắt cụt xu hướng đang rõ ràng hình thành — nếu không có đỉnh/đáy nào xác nhận được trong toàn
+// bộ phần đệm thì vẫn dừng đúng ở ngày 90 (không tự bịa dữ liệu ngoài phạm vi dự báo).
+const PRESSURE_DISPLAY_DAYS = 90;
+
 function renderPressureChart(series) {
     const container = document.getElementById('astro-pressure-chart-container');
     if (!container || !series || !series.length) return;
 
+    const officialLen = Math.min(series.length, PRESSURE_DISPLAY_DAYS + 1);
+    const officialScores = series.slice(0, officialLen).map(p => p.score);
+    const officialRange = (Math.max(...officialScores, 0) - Math.min(...officialScores, 0)) || 1;
+    const threshold = Math.max(officialRange * 0.15, 0.5);
+    const allTurningPoints = _findPressureTurningPoints(series.map(p => p.score), threshold);
+
+    let displayLen = officialLen;
+    const firstBeyond = allTurningPoints.find(tp => tp.idx >= officialLen);
+    if (firstBeyond) displayLen = firstBeyond.idx + 1;
+    const displaySeries = series.slice(0, displayLen);
+    const extended = displayLen > officialLen;
+
     const w = 900, h = 250, padL = 40, padR = 10, padT = 26, padB = 24;
-    const scores = series.map(p => p.score);
+    const scores = displaySeries.map(p => p.score);
     const minS = Math.min(...scores, 0), maxS = Math.max(...scores, 0);
     const range = (maxS - minS) || 1;
     const plotW = w - padL - padR, plotH = h - padT - padB;
 
-    const xAt = i => padL + (i / (series.length - 1)) * plotW;
+    const xAt = i => padL + (i / (displaySeries.length - 1)) * plotW;
     const yAt = s => padT + plotH - ((s - minS) / range) * plotH;
     const zeroY = yAt(0);
     const UP = '#10b981', DOWN = '#ef4444';
 
-    const linePoints = series.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p.score).toFixed(1)}`).join(' ');
-    const areaPoints = `${padL.toFixed(1)},${zeroY.toFixed(1)} ` + linePoints + ` ${xAt(series.length - 1).toFixed(1)},${zeroY.toFixed(1)}`;
+    const linePoints = displaySeries.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p.score).toFixed(1)}`).join(' ');
+    const areaPoints = `${padL.toFixed(1)},${zeroY.toFixed(1)} ` + linePoints + ` ${xAt(displaySeries.length - 1).toFixed(1)},${zeroY.toFixed(1)}`;
 
     let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
     svg += `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${w - padR}" y2="${zeroY.toFixed(1)}" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,4"/>`;
     svg += `<polygon points="${areaPoints}" fill="#8b5cf615"/>`;
 
     // Vẽ từng đoạn line, tô màu theo chiều tăng/giảm so với ngày trước
-    for (let i = 0; i < series.length - 1; i++) {
+    for (let i = 0; i < displaySeries.length - 1; i++) {
         const rising = scores[i + 1] >= scores[i];
         svg += `<line x1="${xAt(i).toFixed(1)}" y1="${yAt(scores[i]).toFixed(1)}" x2="${xAt(i + 1).toFixed(1)}" y2="${yAt(scores[i + 1]).toFixed(1)}" stroke="${rising ? UP : DOWN}" stroke-width="3.5"/>`;
     }
 
     // Lưới ngày trục hoành (mỗi ~10 ngày)
-    series.forEach((p, i) => {
-        if (i % 10 === 0 || i === series.length - 1) {
+    displaySeries.forEach((p, i) => {
+        if (i % 10 === 0 || i === displaySeries.length - 1) {
             const x = xAt(i);
             svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
             svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(p.date).slice(0, 5)}</text>`;
         }
     });
 
-    // Đánh dấu ngày tại các đỉnh/đáy đảo chiều đáng kể (lọc nhiễu bằng ngưỡng biên độ)
-    const threshold = Math.max(range * 0.15, 0.5);
-    const turningPoints = _findPressureTurningPoints(scores, threshold);
+    // Vạch mốc "90 ngày chính thức" khi biểu đồ đã tự nới rộng thêm vài ngày để hoàn thiện 1 xu
+    // hướng đang hình thành sát mép (xem giải thích ở PRESSURE_DISPLAY_DAYS).
+    if (extended) {
+        const boundaryX = xAt(officialLen - 1);
+        svg += `<line x1="${boundaryX.toFixed(1)}" y1="${padT}" x2="${boundaryX.toFixed(1)}" y2="${h - padB}" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="2,3"/>`;
+        svg += `<text x="${boundaryX.toFixed(1)}" y="${padT - 6}" fill="#8b5cf6" font-size="9" text-anchor="middle">90 ngày</text>`;
+    }
+
+    // Đánh dấu ngày tại các đỉnh/đáy đảo chiều đáng kể (lọc theo phạm vi đang hiển thị — đã tính ở
+    // allTurningPoints phía trên, chạy trên TOÀN BỘ series kể cả phần đệm ẩn).
+    const turningPoints = allTurningPoints.filter(tp => tp.idx < displayLen);
     turningPoints.forEach(({ idx, type }) => {
         const x = xAt(idx), y = yAt(scores[idx]);
         const isPeak = type === 'peak';
         const color = isPeak ? UP : DOWN;
-        const label = _fmtDate(series[idx].date);
+        const label = _fmtDate(displaySeries[idx].date);
         let labelY = isPeak ? y - 12 : y + 20;
         labelY = Math.min(Math.max(labelY, padT + 8), h - padB - 4);
         const boxW = label.length * 5.6 + 8;
