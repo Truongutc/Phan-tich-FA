@@ -38,10 +38,12 @@ ZODIAC_SIGNS = [
 
 # Nhà (House) — KHÁC vị trí hành tinh/cung hoàng đạo ở trên (không phụ thuộc địa điểm): Nhà cần 1
 # ĐỊA ĐIỂM cụ thể trên Trái Đất (dựa trên đường chân trời/kinh tuyến tại nơi đó). User (2026-08-04)
-# chọn Hà Nội làm địa điểm tham chiếu chuẩn cho mọi tính toán Nhà trên trang.
-HOUSE_LOCATION_NAME = "Hà Nội"
-HOUSE_LAT = 21.0285
-HOUSE_LON = 105.8542
+# ban đầu chọn Hà Nội; đổi sang TP.HCM (2026-08-09) — nơi đặt trụ sở HOSE (Sở Giao dịch Chứng
+# khoán TP.HCM, đơn vị vận hành VN-Index), phù hợp hơn vì các tính toán "Nhà" trên trang dùng để
+# đối chiếu với biến động VN-Index. Toạ độ trung tâm Q.1, TP.HCM (khu vực trụ sở HOSE).
+HOUSE_LOCATION_NAME = "TP. Hồ Chí Minh"
+HOUSE_LAT = 10.7769
+HOUSE_LON = 106.7009
 # Độ nghiêng trục Trái Đất (obliquity) — xấp xỉ hiện tại, đủ chính xác cho việc tính Nhà (không
 # cần độ chính xác cấp giây cung như hiệu chỉnh thiên văn chuyên nghiệp).
 OBLIQUITY_DEG = 23.4367
