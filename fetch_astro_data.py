@@ -341,6 +341,17 @@ def find_transit_to_natal_aspects(natal_positions, when=None, orb=3.0):
     return out
 
 
+RETRO_PENALTY_WEIGHT = 0.15
+# SỬA (user 2026-08-10, phát hiện qua đối chiếu backtest T4-T10/2025: VN-Index tăng liên tục nhưng
+# điểm chiêm tinh lại giảm dần): điều tra cho thấy phần phạt nghịch hành là nguyên nhân của ~25% độ
+# lệch đó — Sao Thổ/Thiên Vương/Hải Vương... có xu hướng nghịch hành ĐỒNG LOẠT khoảng tháng 5-11
+# HÀNG NĂM (quy luật thiên văn thật, do vị trí Trái Đất so với các hành tinh ngoài, lặp lại qua
+# nhiều năm đã kiểm tra: 2018/2020/2022/2024/2025 — KHÔNG liên quan gì tới VN-Index), khiến điểm bị
+# kéo xuống có tính MÙA VỤ, không phản ánh góc chiếu thực tế với lá số VN-Index. Giảm trọng số từ
+# 0.4 xuống 0.15/hành tinh (user chọn giảm thay vì bỏ hẳn — vẫn giữ nghịch hành là 1 tín hiệu hợp lệ
+# theo lý thuyết truyền thống, chỉ bớt chi phối điểm tổng so với phần góc chiếu/aspect).
+
+
 def _natal_pressure_score_at(natal_positions, t):
     """Điểm áp lực/thuận lợi RIÊNG CHO VN-INDEX tại thời điểm t — mẫu theo _pressure_score_at() ở
     trên nhưng cặp (hành tinh TRANSIT × hành tinh NATAL cố định trong lá số VN-Index) thay vì
@@ -349,7 +360,8 @@ def _natal_pressure_score_at(natal_positions, t):
     ORB_WINDOW = 6.0
     score_planets = [n for n in PLANETS if n != "Mặt Trăng"]
     transit_positions = get_planet_positions(t)
-    retro_penalty = sum(0.4 for name in score_planets if name != "Mặt Trời" and is_retrograde(name, t))
+    retro_penalty = sum(RETRO_PENALTY_WEIGHT for name in score_planets
+                         if name != "Mặt Trời" and is_retrograde(name, t))
 
     aspect_score = 0.0
     for t_name in score_planets:
