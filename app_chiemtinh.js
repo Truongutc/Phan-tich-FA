@@ -60,13 +60,34 @@ function renderVerdictBanner(verdict) {
 }
 
 function _findPressureTurningPoints(scores, threshold) {
-    // Thuật toán zigzag chuẩn: xác nhận 1 đỉnh/đáy khi đảo chiều đủ lớn (>= threshold)
+    // Thuật toán zigzag: xác nhận 1 đỉnh/đáy khi đảo chiều đủ lớn (>= threshold).
+    //
+    // Giai đoạn "khởi động" (trend chưa xác định) theo dõi CẢ 2 cực trị chạy (runningMax/runningMin)
+    // thay vì khóa cứng vào hướng của bước đi ĐẦU TIÊN — sửa lỗi (user 2026-08-10 phát hiện: đỉnh
+    // thật ngày 15/08 bị bỏ sót hoàn toàn) khi bản cũ chỉ nhìn scores[0] rồi chốt hướng ngay ở bước
+    // i=1: nếu ngày đầu tiên chỉ dao động nhiễu nhẹ (vd giảm 0.08 điểm) trước khi TĂNG MẠNH thật sự,
+    // bản cũ đã lỡ khóa "đang giảm" từ đó, khiến đỉnh thật sau đó (dù cao hơn nhiều) không bao giờ
+    // được xác nhận vì độ tăng so với mốc SAI đã khóa không đủ vượt threshold.
     const points = [];
     let trend = 0; // 0=chưa rõ, 1=đang tăng, -1=đang giảm
+    let runningMax = scores[0], runningMaxIdx = 0;
+    let runningMin = scores[0], runningMinIdx = 0;
     let extremeIdx = 0;
     let extremeVal = scores[0];
     for (let i = 1; i < scores.length; i++) {
         const v = scores[i];
+        if (trend === 0) {
+            if (v > runningMax) { runningMax = v; runningMaxIdx = i; }
+            if (v < runningMin) { runningMin = v; runningMinIdx = i; }
+            if (runningMax - v >= threshold) {
+                points.push({ idx: runningMaxIdx, type: 'peak' });
+                trend = -1; extremeVal = v; extremeIdx = i;
+            } else if (v - runningMin >= threshold) {
+                points.push({ idx: runningMinIdx, type: 'trough' });
+                trend = 1; extremeVal = v; extremeIdx = i;
+            }
+            continue;
+        }
         if (trend >= 0 && v >= extremeVal) {
             extremeVal = v; extremeIdx = i; trend = 1;
         } else if (trend <= 0 && v <= extremeVal) {
@@ -78,6 +99,13 @@ function _findPressureTurningPoints(scores, threshold) {
             points.push({ idx: extremeIdx, type: 'trough' });
             trend = 1; extremeVal = v; extremeIdx = i;
         }
+    }
+    if (trend === 0) {
+        // Toàn bộ chuỗi chưa từng đảo chiều đủ mạnh để xác nhận — lấy cực trị RÕ RỆT hơn (so biên
+        // độ so với điểm khởi đầu) làm điểm duy nhất, thay vì mặc định "peak" một cách tùy tiện.
+        extremeVal = (runningMax - scores[0]) >= (scores[0] - runningMin) ? runningMax : runningMin;
+        extremeIdx = extremeVal === runningMax ? runningMaxIdx : runningMinIdx;
+        trend = extremeVal === runningMax ? 1 : -1;
     }
     if (extremeIdx !== (points.length ? points[points.length - 1].idx : -1)) {
         points.push({ idx: extremeIdx, type: trend === -1 ? 'trough' : 'peak' });
@@ -92,9 +120,9 @@ function _findPressureTurningPoints(scores, threshold) {
 // đang đi (tăng hoặc giảm) đúng lúc hết dữ liệu ngày 90 nên không đỉnh/đáy nào được gắn nhãn —
 // thuật toán cần thấy đường ĐẢO CHIỀU đủ mạnh mới dám xác nhận, không thể biết chắc nếu dữ liệu
 // dừng giữa chừng 1 xu hướng. Nếu đỉnh/đáy XÁC NHẬN ĐẦU TIÊN sau mốc 90 ngày nằm ngay trong phần
-// đệm (gần mép), biểu đồ sẽ TỰ NỚI RỘNG đúng tới điểm đó (kèm vạch mốc "90 ngày chính thức") thay
-// vì cắt cụt xu hướng đang rõ ràng hình thành — nếu không có đỉnh/đáy nào xác nhận được trong toàn
-// bộ phần đệm thì vẫn dừng đúng ở ngày 90 (không tự bịa dữ liệu ngoài phạm vi dự báo).
+// đệm (gần mép), biểu đồ sẽ TỰ NỚI RỘNG đúng tới điểm đó — user (2026-08-10) không cần phân biệt
+// rạch ròi ranh giới 90 ngày, chỉ cần thấy đúng xu hướng — nếu không có đỉnh/đáy nào xác nhận được
+// trong toàn bộ phần đệm thì vẫn dừng đúng ở ngày 90 (không tự bịa dữ liệu ngoài phạm vi dự báo).
 const PRESSURE_DISPLAY_DAYS = 90;
 
 function renderPressureChart(series) {
@@ -111,7 +139,6 @@ function renderPressureChart(series) {
     const firstBeyond = allTurningPoints.find(tp => tp.idx >= officialLen);
     if (firstBeyond) displayLen = firstBeyond.idx + 1;
     const displaySeries = series.slice(0, displayLen);
-    const extended = displayLen > officialLen;
 
     const w = 900, h = 250, padL = 40, padR = 10, padT = 26, padB = 24;
     const scores = displaySeries.map(p => p.score);
@@ -145,14 +172,6 @@ function renderPressureChart(series) {
             svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(p.date).slice(0, 5)}</text>`;
         }
     });
-
-    // Vạch mốc "90 ngày chính thức" khi biểu đồ đã tự nới rộng thêm vài ngày để hoàn thiện 1 xu
-    // hướng đang hình thành sát mép (xem giải thích ở PRESSURE_DISPLAY_DAYS).
-    if (extended) {
-        const boundaryX = xAt(officialLen - 1);
-        svg += `<line x1="${boundaryX.toFixed(1)}" y1="${padT}" x2="${boundaryX.toFixed(1)}" y2="${h - padB}" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="2,3"/>`;
-        svg += `<text x="${boundaryX.toFixed(1)}" y="${padT - 6}" fill="#8b5cf6" font-size="9" text-anchor="middle">90 ngày</text>`;
-    }
 
     // Đánh dấu ngày tại các đỉnh/đáy đảo chiều đáng kể (lọc theo phạm vi đang hiển thị — đã tính ở
     // allTurningPoints phía trên, chạy trên TOÀN BỘ series kể cả phần đệm ẩn).
