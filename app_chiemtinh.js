@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCurrentAspectsTable(data.currentAspects);
     renderHousesTable(data.positions, data.houses);
     renderVerdictBanner(data.marketVerdict);
-    renderPressureChart(data.dailyPressure, data.dailyPressureNatal);
+    renderPressureChart(data.dailyPressure);
     renderBacktestChart(data.backtest);
     renderAssessment(data.currentAssessment);
     renderForecastTimeline(data.forecastTimeline);
@@ -85,15 +85,13 @@ function _findPressureTurningPoints(scores, threshold) {
     return points;
 }
 
-function renderPressureChart(series, natalSeries) {
+function renderPressureChart(series) {
     const container = document.getElementById('astro-pressure-chart-container');
     if (!container || !series || !series.length) return;
 
     const w = 900, h = 250, padL = 40, padR = 10, padT = 26, padB = 24;
     const scores = series.map(p => p.score);
-    const natalScores = (natalSeries && natalSeries.length === series.length) ? natalSeries.map(p => p.score) : null;
-    const allScores = natalScores ? scores.concat(natalScores) : scores;
-    const minS = Math.min(...allScores, 0), maxS = Math.max(...allScores, 0);
+    const minS = Math.min(...scores, 0), maxS = Math.max(...scores, 0);
     const range = (maxS - minS) || 1;
     const plotW = w - padL - padR, plotH = h - padT - padB;
 
@@ -108,13 +106,6 @@ function renderPressureChart(series, natalSeries) {
     let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block" preserveAspectRatio="none">`;
     svg += `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${w - padR}" y2="${zeroY.toFixed(1)}" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,4"/>`;
     svg += `<polygon points="${areaPoints}" fill="#8b5cf615"/>`;
-
-    // Đường điểm áp lực RIÊNG CHO VN-Index (transit-to-natal) — vẽ TRƯỚC (dưới) đường chung, tím nét
-    // đứt, để đường chung (nét liền, quan trọng hơn cho mắt) luôn nổi lên trên khi 2 đường giao nhau.
-    if (natalScores) {
-        const natalLinePoints = natalScores.map((s, i) => `${xAt(i).toFixed(1)},${yAt(s).toFixed(1)}`).join(' ');
-        svg += `<polyline points="${natalLinePoints}" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-dasharray="6,4"/>`;
-    }
 
     // Vẽ từng đoạn line, tô màu theo chiều tăng/giảm so với ngày trước
     for (let i = 0; i < series.length - 1; i++) {
@@ -184,14 +175,11 @@ function renderBacktestChart(backtest) {
     card.style.display = 'block';
 
     const astroSeriesAll = backtest.astro; // [{date, score}] đủ mỗi ngày lịch
-    const astroNatalSeriesAll = backtest.astroNatal || []; // [{date, score}] riêng cho VN-Index (transit-to-natal)
     const vnSeries = backtest.vnindex;  // [{date, close}] chỉ các phiên giao dịch thật
 
     // Tạo Set các ngày giao dịch của VN-Index để lọc astroSeries khớp 1:1 theo phiên giao dịch
     const vnDateSet = new Set(vnSeries.map(p => p.date));
     const astroSeries = astroSeriesAll.filter(p => vnDateSet.has(p.date));
-    const astroNatalSeries = astroNatalSeriesAll.filter(p => vnDateSet.has(p.date));
-    const hasNatal = astroNatalSeries.length === astroSeries.length && astroNatalSeries.length > 0;
 
     const chart = LightweightCharts.createChart(container, {
         ...LWC_THEME,
@@ -218,23 +206,9 @@ function renderBacktestChart(backtest) {
     });
     astroAnchor.setData(astroSeries.map(p => ({ time: _d2ts(p.date), value: p.score })));
 
-    // Neo vô hình thứ 2 cho chỉ số RIÊNG VN-Index (transit-to-natal) — cùng trục trái 'left' với
-    // astroAnchor để 2 đường DÙNG CHUNG 1 thang đo (auto-scale tính theo cả 2 series), giúp so sánh
-    // trực quan đúng tỉ lệ thay vì mỗi đường co giãn theo thang riêng.
-    let natalAnchor = null;
-    if (hasNatal) {
-        natalAnchor = chart.addLineSeries({
-            priceScaleId: 'left', color: 'transparent', lineWidth: 1, lineVisible: false,
-            lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false, title: '',
-        });
-        natalAnchor.setData(astroNatalSeries.map(p => ({ time: _d2ts(p.date), value: p.score })));
-    }
-
     const astroTimes = astroSeries.map(p => _d2ts(p.date));
     const astroByDate = {};
     astroSeriesAll.forEach(p => { astroByDate[p.date] = p.score; });
-    const astroNatalByDate = {};
-    astroNatalSeriesAll.forEach(p => { astroNatalByDate[p.date] = p.score; });
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:2;';
 
@@ -270,25 +244,6 @@ function renderBacktestChart(backtest) {
             if (astroTimes[i] > range.to) { endIdx = i; break; }
         }
         endIdx = Math.min(astroTimes.length - 1, endIdx + 1);
-
-        // Đường tím nét đứt (riêng VN-Index, transit-to-natal) vẽ TRƯỚC/dưới đường chung — cùng kỹ
-        // thuật canvas overlay + rAF-batching đã fix bug lệch ngày/timing ở phiên trước.
-        if (hasNatal && natalAnchor) {
-            ctx.save();
-            ctx.setLineDash([7, 5]);
-            ctx.lineWidth = 2.2;
-            ctx.strokeStyle = '#a78bfa';
-            ctx.beginPath();
-            let started = false;
-            for (let i = startIdx; i <= endIdx; i++) {
-                const x = chart.timeScale().timeToCoordinate(astroTimes[i]);
-                const y = natalAnchor.priceToCoordinate(astroNatalSeries[i].score);
-                if (x === null || y === null) continue;
-                if (!started) { ctx.moveTo(x, y); started = true; } else { ctx.lineTo(x, y); }
-            }
-            ctx.stroke();
-            ctx.restore();
-        }
 
         ctx.lineWidth = 3.1;
         for (let i = startIdx; i < endIdx; i++) {
@@ -330,11 +285,9 @@ function renderBacktestChart(backtest) {
             const dateStr = new Date(param.time * 1000).toISOString().slice(0, 10);
             const vnData = param.seriesData.get(vnLine);
             const astroScore = astroByDate[dateStr];
-            const natalScore = astroNatalByDate[dateStr];
             const vnPart = vnData ? `<b>${vnData.value.toFixed(1)}</b>` : '<span style="color:#6b7280">không có phiên</span>';
             const astroPart = typeof astroScore === 'number' ? `<b>${astroScore >= 0 ? '+' : ''}${astroScore.toFixed(2)}</b>` : '—';
-            const natalPart = typeof natalScore === 'number' ? `<b style="color:#a78bfa">${natalScore >= 0 ? '+' : ''}${natalScore.toFixed(2)}</b>` : '—';
-            legendEl.innerHTML = `Ngày <b>${_fmtDate(dateStr)}</b>: VN-Index ${vnPart} · Chỉ số chung ${astroPart} · Chỉ số riêng VN-Index ${natalPart}`;
+            legendEl.innerHTML = `Ngày <b>${_fmtDate(dateStr)}</b>: VN-Index ${vnPart} · Chỉ số chiêm tinh ${astroPart}`;
         });
     }
 
@@ -501,7 +454,7 @@ function renderAssessment(assessment) {
 
 const SENTIMENT_CLASS = { positive: 'astro-sentiment-positive', negative: 'astro-sentiment-negative', tension: 'astro-sentiment-tension', neutral: 'astro-sentiment-neutral' };
 const SENTIMENT_BADGE = { positive: 'soft', negative: 'hard', tension: 'tension', neutral: 'solar' };
-const EVENT_ICON = { aspect: '🪐', solar: '☀️', lunar: '🌕', station_retrograde: '℞', station_direct: '➡️', natal_transit: '🔮' };
+const EVENT_ICON = { aspect: '🪐', solar: '☀️', lunar: '🌕', station_retrograde: '℞', station_direct: '➡️' };
 
 function renderForecastTimeline(events) {
     const card = document.getElementById('forecast-card');
@@ -515,13 +468,10 @@ function renderForecastTimeline(events) {
     el.innerHTML = `
         <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Diễn giải (lý thuyết chiêm tinh tài chính)</th><th>Điểm ròng hôm đó</th></tr></thead>
         <tbody>${events.map(e => {
-            const isNatal = e.kind === 'natal_transit';
             const sentimentClass = SENTIMENT_CLASS[e.sentiment] || 'astro-sentiment-neutral';
-            const badgeClass = isNatal ? 'natal' : (SENTIMENT_BADGE[e.sentiment] || 'solar');
+            const badgeClass = SENTIMENT_BADGE[e.sentiment] || 'solar';
             let netCell = '<span style="color:#6b7280">—</span>';
-            if (isNatal && typeof e.netScoreNatal === 'number') {
-                netCell = `<span style="color:#a78bfa;font-weight:600;white-space:nowrap">${e.netScoreNatal >= 0 ? '+' : ''}${e.netScoreNatal.toFixed(2)}</span>`;
-            } else if (typeof e.netScore === 'number') {
+            if (typeof e.netScore === 'number') {
                 const trendUp = e.netTrend === 'up';
                 const trendDown = e.netTrend === 'down';
                 const color = trendUp ? '#10b981' : (trendDown ? '#ef4444' : '#9ca3af');

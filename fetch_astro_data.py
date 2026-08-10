@@ -216,51 +216,6 @@ def _aspect_signed_gap(a_lon, b_lon, target_angle):
     return gap
 
 
-def find_upcoming_exact_aspects(days_ahead=90, step_hours=6, only_hard=True, exclude_moon=True):
-    """Quét từng bước `step_hours` giờ trong `days_ahead` ngày tới, phát hiện các thời điểm 1 cặp
-    hành tinh đi qua ĐÚNG 1 góc chiếu (gap đổi dấu giữa 2 bước qua) — đây là "ngày góc chiếu chính
-    xác" theo cách diễn giải phổ biến của lý thuyết timing chiêm tinh tài chính (không phải công
-    thức độc quyền Gann — nguồn khóa học không công bố công thức cụ thể, xem docstring module).
-    Trả list {date_iso, a, b, aspect} sắp xếp theo thời gian tăng dần, KHÔNG trùng lặp quá gần
-    nhau (chỉ giữ lần dò đầu tiên phát hiện đổi dấu cho mỗi cặp+aspect). exclude_moon=True (mặc
-    định) bỏ Mặt Trăng khỏi bảng này — Mặt Trăng di chuyển ~13°/ngày nên tạo góc chiếu với MỌI
-    hành tinh khác mỗi vài ngày, làm bảng "ngày đảo chiều tiềm năng" (Buổi 4) ngập toàn tín hiệu
-    ngắn hạn/ít ý nghĩa — thực hành chiêm tinh tài chính phổ biến tập trung hành tinh chậm hơn cho
-    mốc thời gian nhiều ngày-nhiều tuần. Mặt Trăng vẫn xuất hiện đầy đủ ở bảng "aspect hiện tại"
-    (Buổi 3, xem find_current_aspects)."""
-    names = [n for n in PLANETS if not (exclude_moon and n == "Mặt Trăng")]
-    target_angles = HARD_ASPECTS if only_hard else set(ASPECTS.keys())
-    now = _utcnow()
-    steps = int(days_ahead * 24 / step_hours)
-
-    prev_positions = get_planet_positions(now)
-    prev_gaps = {}
-    results = []
-    seen = set()
-
-    for step in range(1, steps + 1):
-        t = now + datetime.timedelta(hours=step * step_hours)
-        cur_positions = get_planet_positions(t)
-        for i in range(len(names)):
-            for j in range(i + 1, len(names)):
-                a, b = names[i], names[j]
-                for angle in target_angles:
-                    key = (a, b, angle)
-                    gap = _aspect_signed_gap(cur_positions[a], cur_positions[b], angle)
-                    prev_gap = prev_gaps.get(key)
-                    if prev_gap is not None and abs(prev_gap) < 8 and (prev_gap > 0) != (gap > 0) and key not in seen:
-                        results.append({
-                            "date": t.strftime("%Y-%m-%d"),
-                            "a": a, "b": b, "aspect": ASPECTS[angle],
-                        })
-                        seen.add(key)
-                    prev_gaps[key] = gap
-        prev_positions = cur_positions
-
-    results.sort(key=lambda r: r["date"])
-    return results
-
-
 _ECLIPSE_LAT_THRESHOLD = {"solar": 1.6, "lunar": 1.1}  # ngưỡng ecliptic latitude Mặt Trăng (độ)
 
 
@@ -331,77 +286,6 @@ def find_retrograde_stations(days_ahead=90, step_hours=12):
             prev_state[name] = cur_state
     results.sort(key=lambda r: r["date"])
     return results
-
-
-def build_daily_pressure_series(days_ahead=90):
-    """Điểm ÁP LỰC/THUẬN LỢI thị trường LIÊN TỤC theo từng ngày — trả lời trực tiếp câu hỏi user
-    (2026-08-04): "giữa 2 mốc sự kiện [rời rạc trong bảng dự báo] thì thị trường ra sao?" — bảng
-    sự kiện chỉ đánh dấu ngày CHÍNH XÁC (exact) của góc chiếu/station, nhưng ảnh hưởng thực tế trải
-    dài NHIỀU NGÀY quanh mốc đó (orb) — hàm này tính 1 đường LIÊN TỤC thay vì chỉ các điểm rời rạc.
-
-    Mỗi ngày: (a) mỗi hành tinh (trừ Mặt Trời/Mặt Trăng) đang nghịch hành trừ 0.4 điểm (ảnh hưởng
-    nhẹ nhưng kéo dài nhiều tuần); (b) mỗi cặp hành tinh (trừ Mặt Trăng — di chuyển quá nhanh, xem
-    lý do ở find_upcoming_exact_aspects) đang trong orb ±6° của 1 góc chiếu cộng/trừ điểm có TRỌNG
-    SỐ theo orb (gần exact = ảnh hưởng mạnh hơn, giảm tuyến tính về 0 ở biên orb) — hài hòa (tam
-    hợp/lục phân) CỘNG điểm, căng thẳng (vuông/xung) TRỪ điểm. Điểm dương = nghiêng thuận lợi, điểm
-    âm = nghiêng áp lực/căng thẳng — đây là góc nhìn TỔNG HỢP ĐỊNH LƯỢNG mang tính quyết đoán hơn
-    nhãn "tension" trung lập ở bảng sự kiện rời rạc (2 góc nhìn bổ sung cho nhau: bảng sự kiện =
-    từng góc chiếu riêng lẻ trung lập, đường điểm này = tổng hợp NHIỀU góc chiếu + nghịch hành cùng
-    lúc GIỮA CÙNG 1 TẬP HÀNH TINH với bảng sự kiện — user 2026-08-04 chỉ ra ví dụ Sao Hỏa vuông Sao
-    Thổ phải thể hiện được trong đường điểm này, nên DÙNG CHUNG tập hành tinh với
-    find_upcoming_exact_aspects (mọi hành tinh trừ Mặt Trăng), KHÔNG giới hạn ở 5 hành tinh chậm
-    như bản đầu (lỗi khiến ảnh hưởng Sao Hỏa/Mặt Trời/Sao Thủy/Sao Kim bị bỏ sót hoàn toàn). Trả
-    list [{date, score}].
-
-    LƯU Ý (sửa lỗi 2026-08-06): mốc "now" TRƯỚC ĐÂY giữ nguyên giờ/phút/giây lúc script chạy, nên
-    "ngày X" ở 2 lần chạy cron khác giờ nhau (VD ~10h UTC tuần trước vs ~1h UTC tuần này) thực chất
-    là 2 THỜI ĐIỂM khác nhau trong ngày X — với góc chiếu đang gần đúng orb (sắp exact), chênh lệch
-    vài giờ đủ làm điểm số xê dịch nhẹ, đôi khi khiến ĐỈNH của đường dao động "nhảy" sang ngày liền
-    kề giữa 2 lần cập nhật (user 2026-08-06 phát hiện: đỉnh báo 12/08 tuần trước (4.347 vs 4.195),
-    13/08 tuần này (4.198 vs 4.327) — 2 ngày gần như hòa điểm, chỉ cần lệch giờ tính là lật đỉnh).
-    Dùng _anchor_noon_utc() để mốc mỗi ngày LUÔN là đúng 12:00 UTC bất kể cron chạy giờ nào — kết
-    quả sẽ ỔN ĐỊNH, tái lập được giữa các lần chạy khác nhau."""
-    now = _anchor_noon_utc()
-    return [_pressure_score_at(now + datetime.timedelta(days=d)) for d in range(days_ahead + 1)]
-
-
-def _pressure_score_at(t):
-    """Điểm áp lực/thuận lợi tại 1 thời điểm t bất kỳ (quá khứ hay tương lai đều tính được vì ephem
-    không giới hạn khoảng thời gian) — logic dùng chung cho build_daily_pressure_series (tương lai)
-    và build_historical_pressure_series (quá khứ, để đối chiếu ngược với diễn biến VN-Index thật)."""
-    ORB_WINDOW = 6.0
-    score_planets = [n for n in PLANETS if n != "Mặt Trăng"]
-    positions = get_planet_positions(t)
-    retro_penalty = sum(0.4 for name in score_planets if name != "Mặt Trời" and is_retrograde(name, t))
-
-    aspect_score = 0.0
-    for i in range(len(score_planets)):
-        for j in range(i + 1, len(score_planets)):
-            a, b = positions[score_planets[i]], positions[score_planets[j]]
-            diff = abs(a - b) % 360
-            if diff > 180:
-                diff = 360 - diff
-            for angle in (0, 60, 90, 120, 180):
-                gap = abs(diff - angle)
-                if gap <= ORB_WINDOW:
-                    weight = (ORB_WINDOW - gap) / ORB_WINDOW
-                    if angle in (60, 120):
-                        aspect_score += weight
-                    elif angle in (90, 180):
-                        aspect_score -= weight
-                    break
-
-    return {"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - retro_penalty, 3)}
-
-
-def build_historical_pressure_series(days_back=365):
-    """Đường điểm áp lực/thuận lợi trong QUÁ KHỨ (days_back ngày trở lại đây) — dùng để đối chiếu
-    ngược (backtest) với diễn biến VN-Index thật, kiểm tra trực quan mối tương quan (nếu có) giữa
-    chỉ số chiêm tinh và biến động thị trường thực tế. KHÔNG phải bằng chứng khoa học, chỉ là công
-    cụ quan sát trực quan theo yêu cầu user (2026-08-04). Dùng mốc 12:00 UTC cố định mỗi ngày (xem
-    _anchor_noon_utc, lý do tại build_daily_pressure_series) để kết quả ổn định giữa các lần chạy."""
-    now = _anchor_noon_utc()
-    return [_pressure_score_at(now - datetime.timedelta(days=d)) for d in range(days_back, -1, -1)]
 
 
 # ══════════════════════════════════════════════════════════════════════════
