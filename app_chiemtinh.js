@@ -59,6 +59,32 @@ function renderVerdictBanner(verdict) {
     if (detailEl) detailEl.textContent = verdict.detail;
 }
 
+function _isTradingDay(dateStr) {
+    const day = new Date(dateStr + 'T00:00:00Z').getUTCDay(); // Chủ Nhật=0, Thứ Bảy=6
+    return day !== 0 && day !== 6;
+}
+
+// Nhãn đỉnh/đáy phải rơi vào NGÀY CÓ THỂ GIAO DỊCH — chỉ số chiêm tinh tính liên tục mọi ngày
+// trong tuần (hành tinh vẫn "di chuyển" cả cuối tuần) nhưng gắn nhãn 1 ngày Chủ Nhật là "đỉnh thị
+// trường" là vô nghĩa vì HOSE không giao dịch ngày đó (user 2026-08-10 chỉ ra). Dịch điểm cực trị
+// về ngày giao dịch GẦN NHẤT (chưa tính lịch nghỉ lễ VN cụ thể, chỉ loại thứ 7/CN — đủ xử lý phần
+// lớn trường hợp).
+function _nearestTradingDayIdx(series, idx, preferHigh) {
+    if (_isTradingDay(series[idx].date)) return idx;
+    for (let d = 1; d <= 3; d++) {
+        const before = idx - d, after = idx + d;
+        const beforeOk = before >= 0 && _isTradingDay(series[before].date);
+        const afterOk = after < series.length && _isTradingDay(series[after].date);
+        if (beforeOk && afterOk) {
+            const vb = series[before].score, va = series[after].score;
+            return preferHigh ? (vb >= va ? before : after) : (vb <= va ? before : after);
+        }
+        if (beforeOk) return before;
+        if (afterOk) return after;
+    }
+    return idx;
+}
+
 function _findPressureTurningPoints(scores, threshold) {
     // Thuật toán zigzag: xác nhận 1 đỉnh/đáy khi đảo chiều đủ lớn (>= threshold).
     //
@@ -133,7 +159,8 @@ function renderPressureChart(series) {
     const officialScores = series.slice(0, officialLen).map(p => p.score);
     const officialRange = (Math.max(...officialScores, 0) - Math.min(...officialScores, 0)) || 1;
     const threshold = Math.max(officialRange * 0.15, 0.5);
-    const allTurningPoints = _findPressureTurningPoints(series.map(p => p.score), threshold);
+    const allTurningPoints = _findPressureTurningPoints(series.map(p => p.score), threshold)
+        .map(tp => ({ idx: _nearestTradingDayIdx(series, tp.idx, tp.type === 'peak'), type: tp.type }));
 
     let displayLen = officialLen;
     const firstBeyond = allTurningPoints.find(tp => tp.idx >= officialLen);
