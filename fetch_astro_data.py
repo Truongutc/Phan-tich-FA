@@ -105,6 +105,18 @@ HARD_ASPECTS = {0, 90, 180}
 # Mặt Trăng (đổi vị trí liên tục, chỉ tạo biến động ngày).
 SLOW_PLANET_NAMES = ("Sao Mộc", "Sao Thổ", "Sao Thiên Vương", "Sao Hải Vương", "Sao Diêm Vương")
 
+# Lá số VN-Index (natal chart) — user (2026-08-09) chỉ ra: điểm áp lực transit-transit ở dưới
+# (build_daily_pressure_series...) KHÔNG mang đặc thù riêng của VN-Index — cùng kết quả sẽ áp dụng
+# y hệt cho vàng, USD hay bất kỳ tài sản nào khác hỏi tại cùng thời điểm, vì không tham chiếu gì
+# tới VN-Index cả. Kỹ thuật chuẩn mundane astrology để phân tích 1 thị trường/tổ chức cụ thể: lập
+# lá số tại đúng thời điểm thực thể ra đời, rồi theo dõi TRANSIT (hành tinh hiện tại) tạo góc chiếu
+# với các điểm CỐ ĐỊNH trong lá số đó (như cách phân tích lá số NYSE/S&P 500). VN-Index "ra đời"
+# cùng phiên giao dịch đầu tiên của HOSE (khi đó là Trung tâm GDCK TP.HCM), 28/07/2000. Giờ mở cửa
+# 09:00 ICT là QUY ƯỚC user (2026-08-09) xác nhận dùng (chưa có nguồn xác nhận chính xác tới phút)
+# — vị trí hành tinh/góc chiếu hầu như không đổi dù lệch vài giờ (trừ Mặt Trăng ~0.5°/giờ), nhưng
+# Ascendant/Nhà nhạy hơn nhiều (~1°/4 phút) nên độ tin cậy của riêng phần Ascendant/Nhà thấp hơn.
+VNINDEX_NATAL_DATETIME = datetime.datetime(2000, 7, 28, 2, 0, 0, tzinfo=datetime.timezone.utc)  # 09:00 ICT 28/07/2000
+
 
 def _utcnow():
     return datetime.datetime.now(datetime.timezone.utc)
@@ -390,3 +402,142 @@ def build_historical_pressure_series(days_back=365):
     _anchor_noon_utc, lý do tại build_daily_pressure_series) để kết quả ổn định giữa các lần chạy."""
     now = _anchor_noon_utc()
     return [_pressure_score_at(now - datetime.timedelta(days=d)) for d in range(days_back, -1, -1)]
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# LÁ SỐ VN-INDEX (NATAL CHART) + TRANSIT-TO-NATAL — xem VNINDEX_NATAL_DATETIME ở trên cho bối
+# cảnh/lý do. Các hàm dưới đây MẪU THEO đúng các hàm transit-transit ở trên (find_current_aspects,
+# find_upcoming_exact_aspects, _pressure_score_at, build_daily_pressure_series,
+# build_historical_pressure_series) nhưng 1 bên của phép so sánh là vị trí NATAL CỐ ĐỊNH (tính 1
+# lần tại VNINDEX_NATAL_DATETIME) thay vì cả 2 bên đều là transit.
+# ══════════════════════════════════════════════════════════════════════════
+def get_vnindex_natal_chart():
+    """Tính 1 LẦN (tại VNINDEX_NATAL_DATETIME) toàn bộ lá số VN-Index: vị trí hành tinh, cung hoàng
+    đạo, Ascendant/MC, 12 Nhà — dùng làm điểm tham chiếu CỐ ĐỊNH cho mọi phép so sánh transit-to-
+    natal bên dưới. Trả dict {datetime, locationName, lat, lon, positions, signs, ascendant,
+    midheaven, cusps}."""
+    when = VNINDEX_NATAL_DATETIME
+    positions = get_planet_positions(when)
+    signs = {name: get_zodiac_sign(lon) for name, lon in positions.items()}
+    asc, mc = get_ascendant_mc(when)
+    cusps = get_house_cusps(when)
+    return {
+        "datetime": when.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "locationName": HOUSE_LOCATION_NAME, "lat": HOUSE_LAT, "lon": HOUSE_LON,
+        "positions": positions, "signs": signs,
+        "ascendant": round(asc, 2), "midheaven": round(mc, 2),
+        "cusps": [round(c, 2) for c in cusps],
+    }
+
+
+def find_transit_to_natal_aspects(natal_positions, when=None, orb=3.0):
+    """Góc chiếu giữa hành tinh TRANSIT (tại `when`, mặc định hiện tại) với vị trí CỐ ĐỊNH trong lá
+    số VN-Index (`natal_positions`, xem get_vnindex_natal_chart) — khác find_current_aspects() ở
+    trên (đó là transit-transit, không đặc thù VN-Index). Không giới hạn i<j như bản gốc vì 2 tập
+    hành tinh (transit/natal) khác nhau về bản chất — hành tinh CÓ THỂ chiếu tới đúng vị trí natal
+    CỦA CHÍNH NÓ (vd "Sao Thổ transit hợp Sao Thổ natal" = Saturn Return, sự kiện chiêm tinh có ý
+    nghĩa riêng, KHÔNG phải trùng lặp cần loại bỏ). Trả list {transit, natal, aspect, angle, orb}
+    sắp theo orb tăng dần."""
+    transit_positions = get_planet_positions(when)
+    out = []
+    for t_name, t_lon in transit_positions.items():
+        for n_name, n_lon in natal_positions.items():
+            diff = abs(t_lon - n_lon) % 360
+            if diff > 180:
+                diff = 360 - diff
+            for angle, label in ASPECTS.items():
+                gap = abs(diff - angle)
+                if gap <= orb:
+                    out.append({
+                        "transit": t_name, "natal": n_name, "aspect": label,
+                        "angle": angle, "orb": round(gap, 2),
+                    })
+                    break
+    out.sort(key=lambda x: x["orb"])
+    return out
+
+
+def _natal_pressure_score_at(natal_positions, t):
+    """Điểm áp lực/thuận lợi RIÊNG CHO VN-INDEX tại thời điểm t — mẫu theo _pressure_score_at() ở
+    trên nhưng cặp (hành tinh TRANSIT × hành tinh NATAL cố định trong lá số VN-Index) thay vì
+    transit×transit. Phần phạt nghịch hành GIỮ NGUYÊN dựa trên transit hiện tại (nghịch hành là
+    hiện tượng transit, không liên quan lá số natal — natal đứng yên theo định nghĩa)."""
+    ORB_WINDOW = 6.0
+    score_planets = [n for n in PLANETS if n != "Mặt Trăng"]
+    transit_positions = get_planet_positions(t)
+    retro_penalty = sum(0.4 for name in score_planets if name != "Mặt Trời" and is_retrograde(name, t))
+
+    aspect_score = 0.0
+    for t_name in score_planets:
+        t_lon = transit_positions[t_name]
+        for n_name in score_planets:
+            n_lon = natal_positions[n_name]
+            diff = abs(t_lon - n_lon) % 360
+            if diff > 180:
+                diff = 360 - diff
+            for angle in (0, 60, 90, 120, 180):
+                gap = abs(diff - angle)
+                if gap <= ORB_WINDOW:
+                    weight = (ORB_WINDOW - gap) / ORB_WINDOW
+                    if angle in (60, 120):
+                        aspect_score += weight
+                    elif angle in (90, 180):
+                        aspect_score -= weight
+                    break
+
+    return {"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - retro_penalty, 3)}
+
+
+def build_daily_natal_pressure_series(natal_positions, days_ahead=90):
+    """Như build_daily_pressure_series() ở trên nhưng dùng _natal_pressure_score_at() — điểm RIÊNG
+    cho VN-Index (transit chạm lá số) thay vì điểm chung (transit-transit, không đặc thù tài sản
+    nào). Dùng SONG SONG với bản gốc theo yêu cầu user (2026-08-09) để tự đối chiếu."""
+    now = _anchor_noon_utc()
+    return [_natal_pressure_score_at(natal_positions, now + datetime.timedelta(days=d))
+            for d in range(days_ahead + 1)]
+
+
+def build_historical_natal_pressure_series(natal_positions, days_back=365):
+    """Như build_historical_pressure_series() ở trên nhưng dùng _natal_pressure_score_at() — dùng
+    cho biểu đồ backtest RIÊNG VN-Index (song song đường transit-transit hiện có)."""
+    now = _anchor_noon_utc()
+    return [_natal_pressure_score_at(natal_positions, now - datetime.timedelta(days=d))
+            for d in range(days_back, -1, -1)]
+
+
+def find_upcoming_transit_to_natal_exact_aspects(natal_positions, days_ahead=90, step_hours=6,
+                                                   only_hard=True, exclude_moon=True):
+    """Như find_upcoming_exact_aspects() ở trên nhưng quét TRANSIT chạm ĐÚNG vị trí CỐ ĐỊNH trong
+    lá số VN-Index (natal_positions) — chỉ 1 bên (transit) di chuyển theo thời gian, bên natal cố
+    định. only_hard=True mặc định (giống bản gốc) vì không gian tổ hợp lớn hơn nhiều (9 transit × 9
+    natal = 81 cặp, so với 28 cặp unique của bản transit-transit) — bật only_hard=False sẽ tạo quá
+    nhiều tín hiệu ít ý nghĩa cho khung 90 ngày. Trả list {date, transit, natal, aspect} sắp theo
+    thời gian tăng dần."""
+    names = [n for n in PLANETS if not (exclude_moon and n == "Mặt Trăng")]
+    target_angles = HARD_ASPECTS if only_hard else set(ASPECTS.keys())
+    now = _utcnow()
+    steps = int(days_ahead * 24 / step_hours)
+
+    prev_gaps = {}
+    results = []
+    seen = set()
+
+    for step in range(1, steps + 1):
+        t = now + datetime.timedelta(hours=step * step_hours)
+        cur_positions = get_planet_positions(t)
+        for t_name in names:
+            for n_name in names:
+                for angle in target_angles:
+                    key = (t_name, n_name, angle)
+                    gap = _aspect_signed_gap(cur_positions[t_name], natal_positions[n_name], angle)
+                    prev_gap = prev_gaps.get(key)
+                    if prev_gap is not None and abs(prev_gap) < 8 and (prev_gap > 0) != (gap > 0) and key not in seen:
+                        results.append({
+                            "date": t.strftime("%Y-%m-%d"),
+                            "transit": t_name, "natal": n_name, "aspect": ASPECTS[angle],
+                        })
+                        seen.add(key)
+                    prev_gaps[key] = gap
+
+    results.sort(key=lambda r: r["date"])
+    return results

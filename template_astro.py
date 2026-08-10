@@ -325,14 +325,41 @@ def fetch_vnindex_price_history(days_back=380):
         return []
 
 
-def build_backtest_data(days_back=3650):
+def build_backtest_data(days_back=3650, natal_positions=None):
     """Ghép chỉ số áp lực/thuận lợi chiêm tinh QUÁ KHỨ với giá đóng cửa VN-Index THẬT cùng khoảng
     thời gian — user (2026-08-04, mở rộng lên 10 năm) muốn tự quan sát trực quan có tương quan hay
     không. Đây là công cụ KIỂM THỬ/tham khảo cá nhân, KHÔNG phải bằng chứng khoa học đã kiểm chứng.
-    days_back=3650 (~10 năm) — Vietcap IQ có dữ liệu VNINDEX từ 2016 trở đi cho endpoint này."""
-    return {
+    days_back=3650 (~10 năm) — Vietcap IQ có dữ liệu VNINDEX từ 2016 trở đi cho endpoint này.
+
+    natal_positions (tùy chọn, 2026-08-09): nếu có, thêm mảng astroNatal (điểm transit-to-natal
+    riêng VN-Index) song song astro (điểm transit-transit chung) — để user tự đối chiếu cái nào
+    khớp giá VN-Index thật tốt hơn."""
+    out = {
         "astro": astro.build_historical_pressure_series(days_back=days_back),
         "vnindex": fetch_vnindex_price_history(days_back=days_back + 5),
+    }
+    if natal_positions is not None:
+        out["astroNatal"] = astro.build_historical_natal_pressure_series(natal_positions, days_back=days_back)
+    return out
+
+
+def build_vnindex_natal_section(natal):
+    """Đóng gói lá số natal VN-Index (astro.get_vnindex_natal_chart()) thành section JSON cho card
+    "🔮 Lá số VN-Index" — cùng shape với positions/houses hiện có để tái dùng renderer phía JS."""
+    natal_positions_list = [
+        {"name": name, "lon": lon, "sign": natal["signs"][name][0], "degInSign": natal["signs"][name][1],
+         "house": astro.get_house_of(lon, natal["cusps"])}
+        for name, lon in natal["positions"].items()
+    ]
+    return {
+        "datetime": natal["datetime"],
+        "locationName": natal["locationName"], "lat": natal["lat"], "lon": natal["lon"],
+        "positions": natal_positions_list,
+        "ascendant": natal["ascendant"], "midheaven": natal["midheaven"], "cusps": natal["cusps"],
+        "meanings": HOUSE_MEANING,
+        "note": ("Giờ mở cửa (09:00 ICT 28/07/2000, phiên giao dịch đầu tiên HOSE) là mốc quy ước, "
+                 "chưa có nguồn xác nhận chính xác tới phút — vị trí hành tinh/góc chiếu gần như không "
+                 "đổi dù lệch vài giờ, nhưng Ascendant/Nhà có thể sai lệch nếu giờ thực tế khác."),
     }
 
 
@@ -357,6 +384,34 @@ def build_astro_data():
     retro_stations = astro.find_retrograde_stations(days_ahead=FORECAST_DAYS_AHEAD, step_hours=12)
     daily_pressure = astro.build_daily_pressure_series(days_ahead=FORECAST_DAYS_AHEAD)
 
+    # Lá số VN-Index (natal chart) + transit-to-natal — bổ sung song song với điểm áp lực
+    # transit-transit hiện có, theo yêu cầu user (2026-08-09): backtest/dự báo cần gắn ĐÚNG đặc thù
+    # riêng của VN-Index thay vì dùng chung 1 điểm số cho mọi tài sản. Xem plan
+    # rippling-brewing-sunset.md.
+    vnindex_natal = astro.get_vnindex_natal_chart()
+    natal_positions_raw = vnindex_natal["positions"]
+    upcoming_natal_aspects = astro.find_upcoming_transit_to_natal_exact_aspects(
+        natal_positions_raw, days_ahead=FORECAST_DAYS_AHEAD, step_hours=6, only_hard=True)
+    daily_pressure_natal = astro.build_daily_natal_pressure_series(natal_positions_raw, days_ahead=FORECAST_DAYS_AHEAD)
+
+    natal_events = []
+    cutoff = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=FORECAST_DAYS_AHEAD)).strftime("%Y-%m-%d")
+    for a in upcoming_natal_aspects:
+        if a["date"] > cutoff:
+            continue
+        _, desc = ASPECT_TONE.get(a["aspect"], ("", ""))
+        natal_events.append({
+            "date": a["date"], "type": "natal_transit", "kind": "natal_transit",
+            "title": f"{a['transit']} (transit) {a['aspect']} {a['natal']} (lá số VN-Index)",
+            "interpretation": (f"Hành tinh transit chạm đúng vị trí {a['natal']} trong lá số VN-Index — "
+                                f"liên quan \"{PLANET_MEANING.get(a['transit'], '')}\" tác động trực tiếp lên chủ đề "
+                                f"\"{PLANET_MEANING.get(a['natal'], '')}\" của chính VN-Index — {desc}."),
+            "sentiment": ASPECT_SENTIMENT.get(a["aspect"], "neutral"),
+        })
+    score_by_date = {p["date"]: p["score"] for p in daily_pressure_natal}
+    for e in natal_events:
+        e["netScoreNatal"] = score_by_date.get(e["date"])
+
     out = {
         "generatedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "positions": positions,
@@ -365,15 +420,20 @@ def build_astro_data():
         "upcomingEclipses": upcoming_eclipses,
         "retroStations": retro_stations,
         "dailyPressure": daily_pressure,
+        "dailyPressureNatal": daily_pressure_natal,
         "marketVerdict": build_market_verdict(daily_pressure),
         "houses": {
             "locationName": astro.HOUSE_LOCATION_NAME, "ascendant": round(ascendant, 2),
             "midheaven": round(midheaven, 2), "cusps": [round(c, 2) for c in house_cusps],
             "meanings": HOUSE_MEANING,
         },
+        "vnIndexNatal": build_vnindex_natal_section(vnindex_natal),
         "currentAssessment": build_current_assessment(positions, current_aspects),
-        "forecastTimeline": build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations, daily_pressure=daily_pressure),
-        "backtest": build_backtest_data(days_back=3650),
+        "forecastTimeline": sorted(
+            build_forecast_timeline(upcoming_aspects, upcoming_eclipses, retro_stations, daily_pressure=daily_pressure)
+            + natal_events,
+            key=lambda e: e["date"]),
+        "backtest": build_backtest_data(days_back=3650, natal_positions=natal_positions_raw),
     }
 
     json_path = os.path.join(PROJECT_ROOT, "data", "astro.json")
@@ -383,7 +443,8 @@ def build_astro_data():
     print(f"  -> {len(out['positions'])} hành tinh, {len(out['currentAspects'])} aspect hiện tại, "
           f"{len(out['upcomingAspects'])} aspect sắp tới, {len(out['upcomingEclipses'])} nhật/nguyệt thực, "
           f"{len(out['retroStations'])} station, {len(out['forecastTimeline'])} sự kiện trong dòng thời gian dự báo, "
-          f"backtest: {len(out['backtest']['astro'])} điểm chiêm tinh / {len(out['backtest']['vnindex'])} điểm VN-Index")
+          f"backtest: {len(out['backtest']['astro'])} điểm chiêm tinh / {len(out['backtest']['vnindex'])} điểm VN-Index "
+          f"/ {len(out['backtest'].get('astroNatal', []))} điểm natal VN-Index")
     return json_path
 
 
