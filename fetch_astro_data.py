@@ -341,18 +341,15 @@ def find_transit_to_natal_aspects(natal_positions, when=None, orb=3.0):
     return out
 
 
-RETRO_PENALTY_WEIGHT = 0.25
+RETRO_PENALTY_WEIGHT = 0.15
 # SỬA (user 2026-08-10, phát hiện qua đối chiếu backtest T4-T10/2025: VN-Index tăng liên tục nhưng
 # điểm chiêm tinh lại giảm dần): điều tra cho thấy phần phạt nghịch hành là nguyên nhân của ~25% độ
 # lệch đó — Sao Thổ/Thiên Vương/Hải Vương... có xu hướng nghịch hành ĐỒNG LOẠT khoảng tháng 5-11
 # HÀNG NĂM (quy luật thiên văn thật, do vị trí Trái Đất so với các hành tinh ngoài, lặp lại qua
 # nhiều năm đã kiểm tra: 2018/2020/2022/2024/2025 — KHÔNG liên quan gì tới VN-Index), khiến điểm bị
-# kéo xuống có tính MÙA VỤ, không phản ánh góc chiếu thực tế với lá số VN-Index. Ban đầu giảm từ 0.4
-# xuống 0.15/hành tinh; sau khi quét tương quan với 2500 phiên VN-Index thật (w=0 đến 0.5, bước
-# 0.025) cho thấy MỌI giá trị đều cho hit-rate/tương quan không khác biệt có ý nghĩa thống kê so với
-# ngẫu nhiên (dao động 50-51.3%, trong khi baseline "luôn đoán tăng" đã là 56.6%) — nghĩa là không
-# có cơ sở dữ liệu để chọn 1 con số "đúng nhất". User (2026-08-10) sau khi biết rõ điều này vẫn chọn
-# 0.25 (nằm trong nhóm hit-rate nhỉnh nhất, dù chênh lệch nằm trong nhiễu thống kê).
+# kéo xuống có tính MÙA VỤ, không phản ánh góc chiếu thực tế với lá số VN-Index. Giảm trọng số từ
+# 0.4 xuống 0.15/hành tinh (user chọn giảm thay vì bỏ hẳn — vẫn giữ nghịch hành là 1 tín hiệu hợp lệ
+# theo lý thuyết truyền thống, chỉ bớt chi phối điểm tổng so với phần góc chiếu/aspect).
 
 
 def _natal_pressure_score_at(natal_positions, t):
