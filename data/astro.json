@@ -1,85 +1,85 @@
 {
-  "generatedAt": "2026-08-10 03:12 UTC",
+  "generatedAt": "2026-08-13 05:41 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 137.17,
+      "lon": 140.15,
       "sign": "Sư Tử",
-      "degInSign": 17.17,
+      "degInSign": 20.15,
       "retrograde": false,
-      "house": 10
+      "house": 9
     },
     {
       "name": "Mặt Trăng",
-      "lon": 101.55,
-      "sign": "Cự Giải",
-      "degInSign": 11.55,
+      "lon": 146.89,
+      "sign": "Sư Tử",
+      "degInSign": 26.89,
       "retrograde": false,
       "house": 9
     },
     {
       "name": "Sao Thủy",
-      "lon": 120.34,
+      "lon": 125.64,
       "sign": "Sư Tử",
-      "degInSign": 0.34,
-      "retrograde": false,
-      "house": 10
-    },
-    {
-      "name": "Sao Kim",
-      "lon": 182.96,
-      "sign": "Thiên Bình",
-      "degInSign": 2.96,
-      "retrograde": false,
-      "house": 12
-    },
-    {
-      "name": "Sao Hỏa",
-      "lon": 88.82,
-      "sign": "Song Tử",
-      "degInSign": 28.82,
+      "degInSign": 5.64,
       "retrograde": false,
       "house": 9
     },
     {
-      "name": "Sao Mộc",
-      "lon": 128.61,
-      "sign": "Sư Tử",
-      "degInSign": 8.61,
+      "name": "Sao Kim",
+      "lon": 186.01,
+      "sign": "Thiên Bình",
+      "degInSign": 6.01,
       "retrograde": false,
-      "house": 10
+      "house": 11
+    },
+    {
+      "name": "Sao Hỏa",
+      "lon": 90.88,
+      "sign": "Cự Giải",
+      "degInSign": 0.88,
+      "retrograde": false,
+      "house": 7
+    },
+    {
+      "name": "Sao Mộc",
+      "lon": 129.29,
+      "sign": "Sư Tử",
+      "degInSign": 9.29,
+      "retrograde": false,
+      "house": 9
     },
     {
       "name": "Sao Thổ",
-      "lon": 14.2,
+      "lon": 14.12,
       "sign": "Bạch Dương",
-      "degInSign": 14.2,
+      "degInSign": 14.12,
       "retrograde": true,
-      "house": 6
+      "house": 5
     },
     {
       "name": "Sao Thiên Vương",
-      "lon": 64.9,
+      "lon": 64.98,
       "sign": "Song Tử",
-      "degInSign": 4.9,
+      "degInSign": 4.98,
       "retrograde": false,
-      "house": 8
+      "house": 7
     },
     {
       "name": "Sao Hải Vương",
-      "lon": 3.75,
+      "lon": 3.69,
       "sign": "Bạch Dương",
-      "degInSign": 3.75,
+      "degInSign": 3.69,
       "retrograde": true,
-      "house": 6
+      "house": 5
     },
     {
       "name": "Sao Diêm Vương",
-      "lon": 303.58,
+      "lon": 303.51,
       "sign": "Bảo Bình",
-      "degInSign": 3.58,
+      "degInSign": 3.51,
       "retrograde": true,
-      "house": 4
+      "house": 3
     }
   ],
   "currentAspects": [
@@ -88,39 +88,23 @@
       "b": "Sao Diêm Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 0.17,
+      "orb": 0.18,
       "applying": false
     },
     {
-      "a": "Sao Kim",
-      "b": "Sao Diêm Vương",
-      "aspect": "Tam hợp (Trine)",
-      "angle": 120,
-      "orb": 0.62,
-      "applying": true
-    },
-    {
-      "a": "Sao Kim",
-      "b": "Sao Hải Vương",
-      "aspect": "Xung (Opposition)",
-      "angle": 180,
-      "orb": 0.79,
-      "applying": true
-    },
-    {
-      "a": "Sao Thiên Vương",
-      "b": "Sao Hải Vương",
+      "a": "Sao Thủy",
+      "b": "Sao Kim",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 1.15,
-      "applying": false
+      "orb": 0.37,
+      "applying": true
     },
     {
-      "a": "Sao Thiên Vương",
-      "b": "Sao Diêm Vương",
-      "aspect": "Tam hợp (Trine)",
-      "angle": 120,
-      "orb": 1.32,
+      "a": "Sao Thủy",
+      "b": "Sao Thiên Vương",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 0.66,
       "applying": false
     },
     {
@@ -128,39 +112,67 @@
       "b": "Sao Thiên Vương",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 1.94,
-      "applying": true
+      "orb": 1.03,
+      "applying": false
+    },
+    {
+      "a": "Sao Thiên Vương",
+      "b": "Sao Hải Vương",
+      "aspect": "Lục phân (Sextile)",
+      "angle": 60,
+      "orb": 1.29,
+      "applying": false
+    },
+    {
+      "a": "Sao Thiên Vương",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)",
+      "angle": 120,
+      "orb": 1.47,
+      "applying": false
     },
     {
       "a": "Sao Thủy",
-      "b": "Sao Kim",
-      "aspect": "Lục phân (Sextile)",
-      "angle": 60,
-      "orb": 2.62,
-      "applying": true
-    },
-    {
-      "a": "Mặt Trăng",
-      "b": "Sao Thổ",
-      "aspect": "Vuông (Square)",
-      "angle": 90,
-      "orb": 2.65,
-      "applying": false
-    },
-    {
-      "a": "Mặt Trời",
-      "b": "Sao Thổ",
+      "b": "Sao Hải Vương",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 2.97,
+      "orb": 1.95,
       "applying": false
+    },
+    {
+      "a": "Sao Thủy",
+      "b": "Sao Diêm Vương",
+      "aspect": "Xung (Opposition)",
+      "angle": 180,
+      "orb": 2.13,
+      "applying": false
+    },
+    {
+      "a": "Sao Kim",
+      "b": "Sao Hải Vương",
+      "aspect": "Xung (Opposition)",
+      "angle": 180,
+      "orb": 2.32,
+      "applying": false
+    },
+    {
+      "a": "Sao Kim",
+      "b": "Sao Diêm Vương",
+      "aspect": "Tam hợp (Trine)",
+      "angle": 120,
+      "orb": 2.5,
+      "applying": false
+    },
+    {
+      "a": "Sao Hỏa",
+      "b": "Sao Hải Vương",
+      "aspect": "Vuông (Square)",
+      "angle": 90,
+      "orb": 2.81,
+      "applying": true
     }
   ],
   "upcomingEclipses": [
-    {
-      "date": "2026-08-12",
-      "type": "solar"
-    },
     {
       "date": "2026-08-28",
       "type": "lunar"
@@ -201,18 +213,6 @@
     }
   ],
   "dailyPressure": [
-    {
-      "date": "2026-08-10",
-      "score": 7.232
-    },
-    {
-      "date": "2026-08-11",
-      "score": 7.148
-    },
-    {
-      "date": "2026-08-12",
-      "score": 7.237
-    },
     {
       "date": "2026-08-13",
       "score": 7.322
@@ -624,33 +624,45 @@
     {
       "date": "2026-11-23",
       "score": 4.21
+    },
+    {
+      "date": "2026-11-24",
+      "score": 4.272
+    },
+    {
+      "date": "2026-11-25",
+      "score": 4.193
+    },
+    {
+      "date": "2026-11-26",
+      "score": 4.07
     }
   ],
   "marketVerdict": {
     "label": "🔄 Đang thuận lợi nhưng có dấu hiệu CHUẨN BỊ ĐẢO CHIỀU GIẢM",
     "colorKey": "reversal_down",
-    "currentScore": 7.232,
-    "nearTermAvg": 6.393,
-    "trend": -0.839,
-    "detail": "Điểm áp lực/thuận lợi hôm nay: +7.23 · Trung bình 10 ngày tới: +6.39 (đang xấu đi +0.84 điểm). Điểm dương = nghiêng thuận lợi (nhiều góc chiếu hài hòa/ít nghịch hành), điểm âm = nghiêng áp lực (nhiều góc chiếu căng thẳng/nhiều hành tinh nghịch hành cùng lúc). Đây là chỉ số TỔNG HỢP nhiều tín hiệu cùng lúc, không phải chỉ 1 sự kiện đơn lẻ — có thể trái chiều với 1 sự kiện cụ thể trong bảng dự báo bên dưới nếu các tín hiệu khác đang mạnh hơn."
+    "currentScore": 7.322,
+    "nearTermAvg": 5.309,
+    "trend": -2.013,
+    "detail": "Điểm áp lực/thuận lợi hôm nay: +7.32 · Trung bình 10 ngày tới: +5.31 (đang xấu đi +2.01 điểm). Điểm dương = nghiêng thuận lợi (nhiều góc chiếu hài hòa/ít nghịch hành), điểm âm = nghiêng áp lực (nhiều góc chiếu căng thẳng/nhiều hành tinh nghịch hành cùng lúc). Đây là chỉ số TỔNG HỢP nhiều tín hiệu cùng lúc, không phải chỉ 1 sự kiện đơn lẻ — có thể trái chiều với 1 sự kiện cụ thể trong bảng dự báo bên dưới nếu các tín hiệu khác đang mạnh hơn."
   },
   "houses": {
     "locationName": "TP. Hồ Chí Minh",
-    "ascendant": 203.34,
-    "midheaven": 111.59,
+    "ascendant": 241.88,
+    "midheaven": 151.87,
     "cusps": [
-      203.34,
-      233.34,
-      263.34,
-      293.34,
-      323.34,
-      353.34,
-      23.34,
-      53.34,
-      83.34,
-      113.34,
-      143.34,
-      173.34
+      241.88,
+      271.88,
+      301.88,
+      331.88,
+      1.88,
+      31.88,
+      61.88,
+      91.88,
+      121.88,
+      151.88,
+      181.88,
+      211.88
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
@@ -785,55 +797,11 @@
     ],
     "aspectLines": [],
     "houseLines": [
-      "Sao Thiên Vương đang ở Nhà 8 (Tài chính chung/Nợ — NỢ, thuế, tiền người khác, khủng hoảng/chuyển đổi) — chủ đề của hành tinh này (\"biến động đột ngột/cú sốc, nhóm công nghệ\") đang được nhấn mạnh trong lĩnh vực Nhà 8."
+      "Sao Thổ đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"thắt chặt, kỷ luật, rủi ro suy thoái/khủng hoảng\") đang được nhấn mạnh trong lĩnh vực Nhà 5.",
+      "Sao Hải Vương đang ở Nhà 5 (Đầu cơ/Rủi ro — ĐẦU CƠ, cờ bạc tài chính, khẩu vị rủi ro) — chủ đề của hành tinh này (\"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\") đang được nhấn mạnh trong lĩnh vực Nhà 5."
     ]
   },
   "forecastTimeline": [
-    {
-      "date": "2026-08-12",
-      "type": "aspect",
-      "title": "Sao Kim Tam hợp (Trine) Sao Hải Vương (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
-      "sentiment": "positive",
-      "netScore": 7.237,
-      "netTrend": "up"
-    },
-    {
-      "date": "2026-08-12",
-      "type": "aspect",
-      "title": "Sao Kim Lục phân (Sextile) Mặt Trời (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Mặt Trời trong lá số VN-Index — liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" tác động trực tiếp lên chủ đề \"xu hướng chính, niềm tin thị trường\" của chính VN-Index — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
-      "sentiment": "positive",
-      "netScore": 7.237,
-      "netTrend": "up"
-    },
-    {
-      "date": "2026-08-12",
-      "type": "aspect",
-      "title": "Sao Kim Tam hợp (Trine) Sao Mộc (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Mộc trong lá số VN-Index — liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" tác động trực tiếp lên chủ đề \"mở rộng, tăng trưởng, tâm lý lạc quan\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
-      "sentiment": "positive",
-      "netScore": 7.237,
-      "netTrend": "up"
-    },
-    {
-      "date": "2026-08-12",
-      "type": "solar",
-      "title": "Nhật thực",
-      "interpretation": "Nhiều nhà phân tích chiêm tinh tài chính coi đây là \"mốc thời gian động\" lớn — thời điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường trong vài tuần quanh ngày này.",
-      "sentiment": "tension",
-      "netScore": 7.237,
-      "netTrend": "up"
-    },
-    {
-      "date": "2026-08-13",
-      "type": "aspect",
-      "title": "Sao Thủy Lục phân (Sextile) Sao Mộc (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Mộc trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"mở rộng, tăng trưởng, tâm lý lạc quan\" của chính VN-Index — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
-      "sentiment": "positive",
-      "netScore": 7.322,
-      "netTrend": "up"
-    },
     {
       "date": "2026-08-15",
       "type": "aspect",
@@ -859,6 +827,15 @@
       "interpretation": "Hành tinh transit chạm đúng vị trí Sao Diêm Vương trong lá số VN-Index — liên quan \"mở rộng, tăng trưởng, tâm lý lạc quan\" tác động trực tiếp lên chủ đề \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc, dòng chảy ngầm trong hệ thống ngân hàng/tiền tệ\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
       "sentiment": "positive",
       "netScore": 6.628,
+      "netTrend": "down"
+    },
+    {
+      "date": "2026-08-19",
+      "type": "aspect",
+      "title": "Sao Thủy Hợp (Conjunction) Sao Kim (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Kim trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" của chính VN-Index — thường đánh dấu điểm KHỞI ĐẦU của 1 chu kỳ/xu hướng mới liên quan tới 2 lĩnh vực này.",
+      "sentiment": "neutral",
+      "netScore": 4.21,
       "netTrend": "down"
     },
     {
@@ -926,6 +903,15 @@
     },
     {
       "date": "2026-08-28",
+      "type": "aspect",
+      "title": "Mặt Trời Vuông (Square) Sao Mộc (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Mộc trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"mở rộng, tăng trưởng, tâm lý lạc quan\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "sentiment": "tension",
+      "netScore": 3.792,
+      "netTrend": "down"
+    },
+    {
+      "date": "2026-08-28",
       "type": "lunar",
       "title": "Nguyệt thực",
       "interpretation": "Tương tự nhật thực, được coi là mốc thời gian động — thường liên quan tới biến động tâm lý đám đông/thanh khoản ngắn hạn.",
@@ -934,22 +920,13 @@
       "netTrend": "down"
     },
     {
-      "date": "2026-08-29",
-      "type": "aspect",
-      "title": "Mặt Trời Vuông (Square) Sao Mộc (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Mộc trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"mở rộng, tăng trưởng, tâm lý lạc quan\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "tension",
-      "netScore": 3.51,
-      "netTrend": "down"
-    },
-    {
-      "date": "2026-08-31",
+      "date": "2026-08-30",
       "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Diêm Vương (lá số VN-Index)",
       "interpretation": "Hành tinh transit chạm đúng vị trí Sao Diêm Vương trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"biến đổi cấu trúc dài hạn, khủng hoảng/tái cấu trúc, dòng chảy ngầm trong hệ thống ngân hàng/tiền tệ\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
-      "netScore": 3.518,
-      "netTrend": "up"
+      "netScore": 3.305,
+      "netTrend": "down"
     },
     {
       "date": "2026-09-01",
@@ -1080,15 +1057,6 @@
     {
       "date": "2026-09-20",
       "type": "aspect",
-      "title": "Mặt Trời Lục phân (Sextile) Sao Hỏa (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hỏa trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\" của chính VN-Index — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
-      "sentiment": "positive",
-      "netScore": 3.478,
-      "netTrend": "up"
-    },
-    {
-      "date": "2026-09-20",
-      "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Thủy (lá số VN-Index)",
       "interpretation": "Hành tinh transit chạm đúng vị trí Sao Thủy trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
@@ -1101,6 +1069,15 @@
       "title": "Sao Kim Vuông (Square) Mặt Trời (lá số VN-Index)",
       "interpretation": "Hành tinh transit chạm đúng vị trí Mặt Trời trong lá số VN-Index — liên quan \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" tác động trực tiếp lên chủ đề \"xu hướng chính, niềm tin thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
+      "netScore": 3.478,
+      "netTrend": "up"
+    },
+    {
+      "date": "2026-09-20",
+      "type": "aspect",
+      "title": "Mặt Trời Lục phân (Sextile) Sao Hỏa (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hỏa trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\" của chính VN-Index — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
+      "sentiment": "positive",
       "netScore": 3.478,
       "netTrend": "up"
     },
@@ -1132,15 +1109,6 @@
       "netTrend": "up"
     },
     {
-      "date": "2026-09-24",
-      "type": "aspect",
-      "title": "Sao Hỏa Hợp (Conjunction) Sao Hỏa (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hỏa trong lá số VN-Index — liên quan \"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\" tác động trực tiếp lên chủ đề \"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\" của chính VN-Index — thường đánh dấu điểm KHỞI ĐẦU của 1 chu kỳ/xu hướng mới liên quan tới 2 lĩnh vực này.",
-      "sentiment": "neutral",
-      "netScore": 5.687,
-      "netTrend": "up"
-    },
-    {
       "date": "2026-09-27",
       "type": "aspect",
       "title": "Sao Hỏa Lục phân (Sextile) Sao Thổ (lá số VN-Index)",
@@ -1148,6 +1116,15 @@
       "sentiment": "positive",
       "netScore": 4.965,
       "netTrend": "down"
+    },
+    {
+      "date": "2026-09-28",
+      "type": "aspect",
+      "title": "Mặt Trời Tam hợp (Trine) Sao Hải Vương (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive",
+      "netScore": 5.137,
+      "netTrend": "up"
     },
     {
       "date": "2026-09-28",
@@ -1163,15 +1140,6 @@
       "type": "aspect",
       "title": "Mặt Trời Tam hợp (Trine) Sao Mộc (lá số VN-Index)",
       "interpretation": "Hành tinh transit chạm đúng vị trí Sao Mộc trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"mở rộng, tăng trưởng, tâm lý lạc quan\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
-      "sentiment": "positive",
-      "netScore": 5.137,
-      "netTrend": "up"
-    },
-    {
-      "date": "2026-09-28",
-      "type": "aspect",
-      "title": "Mặt Trời Tam hợp (Trine) Sao Hải Vương (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
       "sentiment": "positive",
       "netScore": 5.137,
       "netTrend": "up"
@@ -1206,6 +1174,15 @@
     {
       "date": "2026-10-04",
       "type": "aspect",
+      "title": "Sao Thủy Vuông (Square) Mặt Trời (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Mặt Trời trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"xu hướng chính, niềm tin thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "sentiment": "tension",
+      "netScore": 1.695,
+      "netTrend": "down"
+    },
+    {
+      "date": "2026-10-04",
+      "type": "aspect",
       "title": "Sao Thủy Vuông (Square) Sao Hải Vương (lá số VN-Index)",
       "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
@@ -1213,21 +1190,12 @@
       "netTrend": "down"
     },
     {
-      "date": "2026-10-05",
-      "type": "aspect",
-      "title": "Sao Thủy Vuông (Square) Mặt Trời (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Mặt Trời trong lá số VN-Index — liên quan \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" tác động trực tiếp lên chủ đề \"xu hướng chính, niềm tin thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
-      "sentiment": "tension",
-      "netScore": 1.287,
-      "netTrend": "down"
-    },
-    {
-      "date": "2026-10-08",
+      "date": "2026-10-07",
       "type": "aspect",
       "title": "Sao Hỏa Lục phân (Sextile) Sao Mộc (lá số VN-Index)",
       "interpretation": "Hành tinh transit chạm đúng vị trí Sao Mộc trong lá số VN-Index — liên quan \"yếu tố kích hoạt/khuếch đại biến động hoặc căng thẳng đã tiềm ẩn sẵn, hoạt động đầu cơ\" tác động trực tiếp lên chủ đề \"mở rộng, tăng trưởng, tâm lý lạc quan\" của chính VN-Index — thường tạo CƠ HỘI nhẹ nhàng, ít biến động mạnh.",
       "sentiment": "positive",
-      "netScore": 2.347,
+      "netScore": 1.812,
       "netTrend": "up"
     },
     {
@@ -1330,6 +1298,15 @@
       "netTrend": "down"
     },
     {
+      "date": "2026-10-28",
+      "type": "aspect",
+      "title": "Mặt Trời Vuông (Square) Sao Hải Vương (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "sentiment": "tension",
+      "netScore": 0.14,
+      "netTrend": "down"
+    },
+    {
       "date": "2026-10-29",
       "type": "aspect",
       "title": "Mặt Trời Vuông (Square) Mặt Trời (lá số VN-Index)",
@@ -1339,29 +1316,26 @@
       "netTrend": "up"
     },
     {
-      "date": "2026-10-29",
+      "date": "2026-11-08",
       "type": "aspect",
-      "title": "Mặt Trời Vuông (Square) Sao Hải Vương (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "title": "Mặt Trời Tam hợp (Trine) Sao Thủy (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Thủy trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"dòng thông tin, thanh khoản, khối lượng giao dịch, hành vi mua/bán của nhà đầu tư\" của chính VN-Index — thường tạo sự HÀI HÒA/thuận lợi, liên quan tới giai đoạn ổn định hoặc tăng trưởng êm.",
+      "sentiment": "positive",
+      "netScore": 3.243,
+      "netTrend": "down"
+    },
+    {
+      "date": "2026-11-10",
+      "type": "aspect",
+      "title": "Mặt Trời Vuông (Square) Sao Kim (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Kim trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"định giá tài sản, nhóm ngành tiêu dùng/tài chính\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
-      "netScore": 0.142,
-      "netTrend": "up"
+      "netScore": 2.057,
+      "netTrend": "down"
     }
   ],
   "backtest": {
     "astro": [
-      {
-        "date": "2016-08-12",
-        "score": -2.398
-      },
-      {
-        "date": "2016-08-13",
-        "score": -2.063
-      },
-      {
-        "date": "2016-08-14",
-        "score": -1.57
-      },
       {
         "date": "2016-08-15",
         "score": -0.873
@@ -15953,17 +15927,21 @@
       {
         "date": "2026-08-10",
         "score": 7.232
+      },
+      {
+        "date": "2026-08-11",
+        "score": 7.148
+      },
+      {
+        "date": "2026-08-12",
+        "score": 7.237
+      },
+      {
+        "date": "2026-08-13",
+        "score": 7.322
       }
     ],
     "vnindex": [
-      {
-        "date": "2016-08-08",
-        "close": 629.46
-      },
-      {
-        "date": "2016-08-09",
-        "close": 637.34
-      },
       {
         "date": "2016-08-10",
         "close": 648.33
@@ -25955,6 +25933,18 @@
       {
         "date": "2026-08-07",
         "close": 1768.06
+      },
+      {
+        "date": "2026-08-10",
+        "close": 1776.77
+      },
+      {
+        "date": "2026-08-11",
+        "close": 1773.41
+      },
+      {
+        "date": "2026-08-12",
+        "close": 1793.18
       }
     ]
   }
