@@ -84,13 +84,39 @@ jobs:
           # mỗi lần chạy (không phải sửa từng dòng), nên nếu remote ĐÃ có 1 bản ghi đè khác, rebase
           # sẽ conflict CHẮC CHẮN (không phải race condition thoáng qua) — thử lại nhiều lần vẫn
           # conflict y hệt, dẫn tới job fail dù dữ liệu tính ra hoàn toàn đúng (đã xác nhận xảy ra
-          # thật với update_astro.yml cùng pattern, 2026-08-06). Dùng "git reset --soft" mỗi vòng
-          # lặp: đưa nhánh về đúng đầu remote MỚI NHẤT rồi commit LẠI đúng file trên đĩa (không đổi)
-          # — không bao giờ conflict, tự phục hồi nếu remote đổi tiếp giữa các lần thử.
+          # thật với update_astro.yml cùng pattern, 2026-08-06).
+          #
+          # SỬA LỖI NGHIÊM TRỌNG (2026-08-13): bản trước dùng "git reset --soft origin/master" rồi
+          # add đúng các file data — nhưng --soft KHÔNG đồng bộ index/working tree với các file
+          # KHÁC ngoài file được add tường minh. Nếu remote đã có commit MỚI (vd user vừa push sửa
+          # template_vimo.py/fetch_macro_data.py/app_vimo.js) xen giữa lúc workflow checkout và lúc
+          # commit ở đây, thì bản CŨ của những file đó (từ checkout ban đầu) vẫn còn trong
+          # index/working tree sau reset --soft, và bị commit ĐÈ LÊN — XÓA MẤT thay đổi mới trên
+          # remote một cách âm thầm (đã xác nhận xảy ra thật với update_astro.yml cùng pattern,
+          # 2026-08-13: fetch_astro_data.py/app_chiemtinh.js bị revert về bản cũ). Dùng "git reset
+          # --hard origin/master" thay vào đó — đồng bộ TOÀN BỘ nhánh/index/working tree về ĐÚNG
+          # remote mới nhất trước, rồi mới ghi đè LẠI đúng các file data đã tính ở bước trước (lưu
+          # tạm ra ngoài cây git để không bị mất khi reset --hard) — đảm bảo commit ở đây CHỈ BAO
+          # GIỜ đụng tới các file data đó.
+          mkdir -p /tmp/vimo_output/BaoCaoVIMO
+          cp data/vimo_raw.json /tmp/vimo_output/ 2>/dev/null || true
+          cp data/vimo.json /tmp/vimo_output/ 2>/dev/null || true
+          cp data/vnindex_valuation_history.json /tmp/vimo_output/ 2>/dev/null || true
+          cp -r "Bao cao/VIMO/." /tmp/vimo_output/BaoCaoVIMO/ 2>/dev/null || true
+
+          restore_output() {
+            cp /tmp/vimo_output/vimo_raw.json data/vimo_raw.json 2>/dev/null || true
+            cp /tmp/vimo_output/vimo.json data/vimo.json 2>/dev/null || true
+            cp /tmp/vimo_output/vnindex_valuation_history.json data/vnindex_valuation_history.json 2>/dev/null || true
+            mkdir -p "Bao cao/VIMO"
+            cp -r /tmp/vimo_output/BaoCaoVIMO/. "Bao cao/VIMO/" 2>/dev/null || true
+          }
+
           PUSHED=0
           for i in 1 2 3 4 5; do
             git fetch origin master
-            git reset --soft origin/master
+            git reset --hard origin/master
+            restore_output
             git add data/vimo_raw.json data/vimo.json data/vnindex_valuation_history.json "Bao cao/VIMO/" 2>/dev/null || true
 
             if git diff --staged --quiet; then
