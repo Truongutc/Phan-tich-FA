@@ -1,59 +1,59 @@
 {
-  "generatedAt": "2026-08-15 04:20 UTC",
+  "generatedAt": "2026-08-15 05:08 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
-      "lon": 142.01,
+      "lon": 142.05,
       "sign": "Sư Tử",
-      "degInSign": 22.01,
+      "degInSign": 22.05,
+      "retrograde": false,
+      "house": 9
+    },
+    {
+      "name": "Mặt Trăng",
+      "lon": 174.45,
+      "sign": "Xử Nữ",
+      "degInSign": 24.45,
       "retrograde": false,
       "house": 10
     },
     {
-      "name": "Mặt Trăng",
-      "lon": 174.01,
-      "sign": "Xử Nữ",
-      "degInSign": 24.01,
-      "retrograde": false,
-      "house": 11
-    },
-    {
       "name": "Sao Thủy",
-      "lon": 129.23,
+      "lon": 129.29,
       "sign": "Sư Tử",
-      "degInSign": 9.23,
+      "degInSign": 9.29,
       "retrograde": false,
       "house": 9
     },
     {
       "name": "Sao Kim",
-      "lon": 187.89,
+      "lon": 187.92,
       "sign": "Thiên Bình",
-      "degInSign": 7.89,
+      "degInSign": 7.92,
       "retrograde": false,
       "house": 11
     },
     {
       "name": "Sao Hỏa",
-      "lon": 92.16,
+      "lon": 92.18,
       "sign": "Cự Giải",
-      "degInSign": 2.16,
+      "degInSign": 2.18,
       "retrograde": false,
       "house": 8
     },
     {
       "name": "Sao Mộc",
-      "lon": 129.72,
+      "lon": 129.73,
       "sign": "Sư Tử",
-      "degInSign": 9.72,
+      "degInSign": 9.73,
       "retrograde": false,
       "house": 9
     },
     {
       "name": "Sao Thổ",
-      "lon": 14.06,
+      "lon": 14.05,
       "sign": "Bạch Dương",
-      "degInSign": 14.06,
+      "degInSign": 14.05,
       "retrograde": true,
       "house": 5
     },
@@ -67,9 +67,9 @@
     },
     {
       "name": "Sao Hải Vương",
-      "lon": 3.66,
+      "lon": 3.65,
       "sign": "Bạch Dương",
-      "degInSign": 3.66,
+      "degInSign": 3.65,
       "retrograde": true,
       "house": 5
     },
@@ -88,7 +88,7 @@
       "b": "Sao Diêm Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 0.19,
+      "orb": 0.18,
       "applying": false
     },
     {
@@ -96,7 +96,7 @@
       "b": "Sao Mộc",
       "aspect": "Hợp (Conjunction)",
       "angle": 0,
-      "orb": 0.49,
+      "orb": 0.44,
       "applying": true
     },
     {
@@ -104,7 +104,7 @@
       "b": "Sao Kim",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 1.34,
+      "orb": 1.37,
       "applying": false
     },
     {
@@ -112,7 +112,7 @@
       "b": "Sao Hải Vương",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 1.37,
+      "orb": 1.38,
       "applying": false
     },
     {
@@ -120,7 +120,7 @@
       "b": "Sao Hải Vương",
       "aspect": "Vuông (Square)",
       "angle": 90,
-      "orb": 1.5,
+      "orb": 1.47,
       "applying": true
     },
     {
@@ -136,7 +136,7 @@
       "b": "Sao Mộc",
       "aspect": "Lục phân (Sextile)",
       "angle": 60,
-      "orb": 1.83,
+      "orb": 1.81,
       "applying": true
     },
     {
@@ -144,7 +144,7 @@
       "b": "Sao Thiên Vương",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 2.86,
+      "orb": 2.89,
       "applying": false
     }
   ],
@@ -628,21 +628,21 @@
   },
   "houses": {
     "locationName": "TP. Hồ Chí Minh",
-    "ascendant": 224.75,
-    "midheaven": 133.01,
+    "ascendant": 235.87,
+    "midheaven": 145.07,
     "cusps": [
-      224.75,
-      254.75,
-      284.75,
-      314.75,
-      344.75,
-      14.75,
-      44.75,
-      74.75,
-      104.75,
-      134.75,
-      164.75,
-      194.75
+      235.87,
+      265.87,
+      295.87,
+      325.87,
+      355.87,
+      25.87,
+      55.87,
+      85.87,
+      115.87,
+      145.87,
+      175.87,
+      205.87
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
@@ -1271,19 +1271,19 @@
       "netTrend": "down"
     },
     {
-      "date": "2026-10-29",
+      "date": "2026-10-28",
       "type": "aspect",
-      "title": "Mặt Trời Vuông (Square) Mặt Trời (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Mặt Trời trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"xu hướng chính, niềm tin thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "title": "Mặt Trời Vuông (Square) Sao Hải Vương (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
-      "netScore": 0.749,
-      "netTrend": "up"
+      "netScore": 0.676,
+      "netTrend": "down"
     },
     {
       "date": "2026-10-29",
       "type": "aspect",
-      "title": "Mặt Trời Vuông (Square) Sao Hải Vương (lá số VN-Index)",
-      "interpretation": "Hành tinh transit chạm đúng vị trí Sao Hải Vương trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"thông tin nhiễu loạn/tin đồn, bong bóng định giá, tâm lý mơ hồ/ảo tưởng thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
+      "title": "Mặt Trời Vuông (Square) Mặt Trời (lá số VN-Index)",
+      "interpretation": "Hành tinh transit chạm đúng vị trí Mặt Trời trong lá số VN-Index — liên quan \"xu hướng chính, niềm tin thị trường\" tác động trực tiếp lên chủ đề \"xu hướng chính, niềm tin thị trường\" của chính VN-Index — thường tạo CĂNG THẲNG/xung đột, liên quan tới biến động mạnh hoặc thời điểm đảo chiều đột ngột.",
       "sentiment": "tension",
       "netScore": 0.749,
       "netTrend": "up"
