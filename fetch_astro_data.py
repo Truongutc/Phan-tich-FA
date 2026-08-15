@@ -218,12 +218,57 @@ def _aspect_signed_gap(a_lon, b_lon, target_angle):
 
 _ECLIPSE_LAT_THRESHOLD = {"solar": 1.6, "lunar": 1.1}  # ngưỡng ecliptic latitude Mặt Trăng (độ)
 
+# ĐIỂM TIN CẬY nhật/nguyệt thực (2026-08-15, rút ra từ đối chiếu 27 tài liệu chiêm tinh tài chính
+# do user cung cấp — xem sổ tay nghiên cứu): trước đây MỌI kỳ thực được gắn nhãn "mốc thời gian
+# động" như nhau, dù không phải kỳ thực nào cũng thực sự trùng biến động lớn. Tài liệu (9.txt,
+# 10.txt, độc lập với nhau) cùng đưa ra tinh thần: 1 kỳ thực có khả năng gây đảo chiều CAO HƠN khi
+# đồng thời có thêm các yếu tố khác hội tụ đúng lúc — không tự nó đủ. Dùng 3 tiêu chí dễ tính lại
+# bằng các hàm đã có sẵn trong module này (không cần dữ liệu/thư viện mới):
+#   1. Có ít nhất 1 góc chiếu cổ điển khác (orb 3°) đang hoạt động giữa 2 hành tinh bất kỳ đúng
+#      lúc đó (find_current_aspects) — thời điểm "đông đúc" về mặt hình học hơn bình thường.
+#   2. Có hành tinh (trừ Mặt Trời/Mặt Trăng) đang ở 1 trong 3 cung khởi đầu mùa Cự Giải/Thiên
+#      Bình/Ma Kết (loại Bạch Dương vì di chuyển quá nhanh, dễ luôn đúng — theo đúng lý do nêu
+#      trong tài liệu).
+#   3. Có hành tinh đổi chiều nghịch hành/thuận hành (station) trong vòng ±3 ngày quanh kỳ thực.
+# Điểm 0-3 = số tiêu chí đạt được, gắn vào output thay vì chỉ có nhãn nhị phân — KHÔNG khẳng định
+# chắc chắn "điểm cao = biến động chắc chắn xảy ra" (vẫn là lý thuyết chưa kiểm chứng khoa học,
+# giống toàn bộ module này), chỉ để phân biệt tương đối giữa các kỳ thực với nhau.
+_ECLIPSE_CARDINAL_SIGNS = {"Cự Giải", "Thiên Bình", "Ma Kết"}
+_ECLIPSE_STATION_CHECK_DAYS = 3.0
+
+
+def _eclipse_confidence(date_dt):
+    """Trả điểm 0-3 theo số tiêu chí hội tụ tại thời điểm kỳ thực `date_dt` (datetime UTC) — xem
+    giải thích 3 tiêu chí ở trên _ECLIPSE_CARDINAL_SIGNS."""
+    score = 0
+    positions = get_planet_positions(date_dt)
+
+    if find_current_aspects(positions, orb=3.0, when=date_dt, check_applying=False):
+        score += 1
+
+    for name, lon in positions.items():
+        if name in ("Mặt Trời", "Mặt Trăng"):
+            continue
+        sign, _ = get_zodiac_sign(lon)
+        if sign in _ECLIPSE_CARDINAL_SIGNS:
+            score += 1
+            break
+
+    names = [n for n in PLANETS if n not in ("Mặt Trời", "Mặt Trăng")]
+    window = datetime.timedelta(days=_ECLIPSE_STATION_CHECK_DAYS)
+    for name in names:
+        if is_retrograde(name, date_dt - window) != is_retrograde(name, date_dt + window):
+            score += 1
+            break
+
+    return score
+
 
 def find_upcoming_eclipses(months_ahead=12):
     """Lặp qua các kỳ trăng non (New Moon, ứng viên nhật thực)/trăng tròn (Full Moon, ứng viên
     nguyệt thực) sắp tới, lọc theo ecliptic latitude Mặt Trăng tại thời điểm giao hội — đã verify
-    khớp các nhật thực thật đã biết (2026-2027). Trả list {date_iso, type: 'solar'/'lunar'} sắp
-    xếp theo thời gian."""
+    khớp các nhật thực thật đã biết (2026-2027). Trả list {date_iso, type: 'solar'/'lunar',
+    confidence: 0-3} sắp xếp theo thời gian (xem _eclipse_confidence())."""
     end = _utcnow() + datetime.timedelta(days=months_ahead * 31)
     cur = ephem.Date(_utcnow())
     results = []
@@ -244,9 +289,11 @@ def find_upcoming_eclipses(months_ahead=12):
                 continue
             moon_lat = math.degrees(float(ephem.Ecliptic(ephem.Moon(date)).lat))
             if abs(moon_lat) < _ECLIPSE_LAT_THRESHOLD[kind]:
+                date_dt = ephem.Date(date).datetime().replace(tzinfo=datetime.timezone.utc)
                 results.append({
-                    "date": ephem.Date(date).datetime().strftime("%Y-%m-%d"),
+                    "date": date_dt.strftime("%Y-%m-%d"),
                     "type": kind,
+                    "confidence": _eclipse_confidence(date_dt),
                 })
             seen_dates.add(date_str)
         cur = ephem.Date(min(nm, fm)) + 1
@@ -262,28 +309,43 @@ def find_upcoming_eclipses(months_ahead=12):
     return dedup
 
 
+def find_all_stations(start, end, step_hours=12):
+    """Quét TOÀN BỘ station (đổi chiều nghịch hành/thuận hành) của mọi hành tinh (trừ Mặt Trời/Mặt
+    Trăng — không có nghịch hành) trong khoảng [start, end] BẤT KỲ (quá khứ lẫn tương lai) — tổng
+    quát hóa find_retrograde_stations() (vốn chỉ quét từ "hiện tại" trở đi) để dùng được cho cả
+    backtest lịch sử lẫn dự báo. Trả {tên hành tinh: [{date: datetime, type: str}, ...]} sắp theo
+    thời gian tăng dần trong mỗi hành tinh."""
+    names = [n for n in PLANETS if n not in ("Mặt Trời", "Mặt Trăng")]
+    total_hours = (end - start).total_seconds() / 3600
+    steps = max(0, int(total_hours / step_hours))
+    result = {name: [] for name in names}
+    prev_state = {name: is_retrograde(name, start) for name in names}
+    for step in range(1, steps + 1):
+        t = start + datetime.timedelta(hours=step * step_hours)
+        for name in names:
+            cur_state = is_retrograde(name, t)
+            if cur_state != prev_state[name]:
+                result[name].append({
+                    "date": t,
+                    "type": "station_retrograde" if cur_state else "station_direct",
+                })
+            prev_state[name] = cur_state
+    return result
+
+
 def find_retrograde_stations(days_ahead=90, step_hours=12):
     """Quét phát hiện ngày hành tinh ĐỔI CHIỀU chuyển động biểu kiến — "station retrograde" (bắt
     đầu nghịch hành) hoặc "station direct" (kết thúc nghịch hành, thuận hành trở lại). Đây là các
     mốc thời gian được chiêm tinh tài chính coi là QUAN TRỌNG hơn cả giai đoạn nghịch hành đang
-    diễn ra — thời điểm hành tinh "đứng yên" biểu kiến trên bầu trời trong vài ngày. Mặt Trời/Mặt
-    Trăng không có nghịch hành nên không quét. Trả list {date, planet, type} sắp theo thời gian."""
-    names = [n for n in PLANETS if n not in ("Mặt Trời", "Mặt Trăng")]
+    diễn ra — thời điểm hành tinh "đứng yên" biểu kiến trên bầu trời trong vài ngày. Trả list
+    {date, planet, type} sắp theo thời gian (dùng find_all_stations() cho khoảng [now, now+days_ahead])."""
     now = _utcnow()
-    steps = int(days_ahead * 24 / step_hours)
-    results = []
-    prev_state = {name: is_retrograde(name, now) for name in names}
-    for step in range(1, steps + 1):
-        t = now + datetime.timedelta(hours=step * step_hours)
-        for name in names:
-            cur_state = is_retrograde(name, t)
-            if cur_state != prev_state[name]:
-                results.append({
-                    "date": t.strftime("%Y-%m-%d"),
-                    "planet": name,
-                    "type": "station_retrograde" if cur_state else "station_direct",
-                })
-            prev_state[name] = cur_state
+    end = now + datetime.timedelta(days=days_ahead)
+    stations = find_all_stations(now, end, step_hours=step_hours)
+    results = [
+        {"date": e["date"].strftime("%Y-%m-%d"), "planet": name, "type": e["type"]}
+        for name, events in stations.items() for e in events
+    ]
     results.sort(key=lambda r: r["date"])
     return results
 
@@ -341,30 +403,47 @@ def find_transit_to_natal_aspects(natal_positions, when=None, orb=3.0):
     return out
 
 
-RETRO_PENALTY_WEIGHT = 0.25
-# SỬA (user 2026-08-10, phát hiện qua đối chiếu backtest T4-T10/2025: VN-Index tăng liên tục nhưng
-# điểm chiêm tinh lại giảm dần): điều tra cho thấy phần phạt nghịch hành là nguyên nhân của ~25% độ
-# lệch đó — Sao Thổ/Thiên Vương/Hải Vương... có xu hướng nghịch hành ĐỒNG LOẠT khoảng tháng 5-11
-# HÀNG NĂM (quy luật thiên văn thật, do vị trí Trái Đất so với các hành tinh ngoài, lặp lại qua
-# nhiều năm đã kiểm tra: 2018/2020/2022/2024/2025 — KHÔNG liên quan gì tới VN-Index), khiến điểm bị
-# kéo xuống có tính MÙA VỤ, không phản ánh góc chiếu thực tế với lá số VN-Index. Ban đầu giảm từ 0.4
-# xuống 0.15/hành tinh; sau khi quét tương quan với 2500 phiên VN-Index thật (w=0 đến 0.5, bước
-# 0.025) cho thấy MỌI giá trị đều cho hit-rate/tương quan không khác biệt có ý nghĩa thống kê so với
-# ngẫu nhiên (dao động 50-51.3%, trong khi baseline "luôn đoán tăng" đã là 56.6%) — nghĩa là không
-# có cơ sở dữ liệu để chọn 1 con số "đúng nhất". User (2026-08-10) sau khi biết rõ điều này vẫn chọn
-# 0.25 (nằm trong nhóm hit-rate nhỉnh nhất, dù chênh lệch nằm trong nhiễu thống kê).
+# SỬA KIẾN TRÚC (2026-08-15, rút ra từ đối chiếu 27 tài liệu chiêm tinh tài chính — xem sổ tay
+# nghiên cứu đã gửi user): công thức CŨ phạt CỐ ĐỊNH RETRO_PENALTY_WEIGHT=0.25 cho MỖI hành tinh
+# đang nghịch hành, phạt ĐỀU trong SUỐT giai đoạn nghịch hành (có thể kéo dài nhiều tuần) — đây
+# chính là nguyên nhân thiên lệch theo mùa đã phát hiện trước đó (nhiều hành tinh chậm nghịch hành
+# đồng loạt khoảng tháng 5-11 hàng năm, không liên quan VN-Index). 2 nguồn tài liệu ĐỘC LẬP (đọc
+# bởi 2 agent khác nhau, không biết về nhau) cùng chỉ ra: ngày hành tinh THỰC SỰ ĐỔI CHIỀU (station)
+# — 1-2 ngày cụ thể khi hành tinh "đứng yên" biểu kiến trên bầu trời — mới là sự kiện có ý nghĩa,
+# KHÔNG PHẢI cả giai đoạn nghịch hành kéo dài. Thay phạt liên tục bằng hiệu ứng suy giảm tuyến tính
+# quanh ngày station gần nhất (window hẹp, tương tự cách tính trọng số orb góc chiếu ở dưới) — vừa
+# sửa đúng logic theo tài liệu, vừa tự động triệt tiêu thiên lệch mùa vụ (hiệu ứng chỉ còn active
+# vài ngày/năm cho mỗi hành tinh thay vì nhiều tuần liên tục).
+STATION_EFFECT_WINDOW_DAYS = 7.0
+STATION_EFFECT_WEIGHT = 0.5
 
 
-def _natal_pressure_score_at(natal_positions, t):
+def _nearest_station_days(station_events, t):
+    """station_events: list [{date: datetime, type: str}, ...] của 1 hành tinh (xem
+    find_all_stations()). Trả số ngày (luôn dương) tới station GẦN NHẤT so với t, hoặc None nếu
+    rỗng."""
+    if not station_events:
+        return None
+    return min(abs((e["date"] - t).total_seconds()) for e in station_events) / 86400.0
+
+
+def _natal_pressure_score_at(natal_positions, t, stations):
     """Điểm áp lực/thuận lợi RIÊNG CHO VN-INDEX tại thời điểm t — mẫu theo _pressure_score_at() ở
     trên nhưng cặp (hành tinh TRANSIT × hành tinh NATAL cố định trong lá số VN-Index) thay vì
-    transit×transit. Phần phạt nghịch hành GIỮ NGUYÊN dựa trên transit hiện tại (nghịch hành là
-    hiện tượng transit, không liên quan lá số natal — natal đứng yên theo định nghĩa)."""
+    transit×transit. `stations`: kết quả find_all_stations() cho khoảng thời gian BAO TRÙM t (kèm
+    đệm ±STATION_EFFECT_WINDOW_DAYS) — hiệu ứng "đổi chiều" thay cho phạt nghịch hành liên tục cũ
+    (xem giải thích ở STATION_EFFECT_WINDOW_DAYS/STATION_EFFECT_WEIGHT)."""
     ORB_WINDOW = 6.0
     score_planets = [n for n in PLANETS if n != "Mặt Trăng"]
     transit_positions = get_planet_positions(t)
-    retro_penalty = sum(RETRO_PENALTY_WEIGHT for name in score_planets
-                         if name != "Mặt Trời" and is_retrograde(name, t))
+
+    station_effect = 0.0
+    for name in score_planets:
+        if name == "Mặt Trời":
+            continue
+        days = _nearest_station_days(stations.get(name, []), t)
+        if days is not None and days <= STATION_EFFECT_WINDOW_DAYS:
+            station_effect += STATION_EFFECT_WEIGHT * (STATION_EFFECT_WINDOW_DAYS - days) / STATION_EFFECT_WINDOW_DAYS
 
     aspect_score = 0.0
     for t_name in score_planets:
@@ -384,23 +463,29 @@ def _natal_pressure_score_at(natal_positions, t):
                         aspect_score -= weight
                     break
 
-    return {"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - retro_penalty, 3)}
+    return {"date": t.strftime("%Y-%m-%d"), "score": round(aspect_score - station_effect, 3)}
 
 
 def build_daily_natal_pressure_series(natal_positions, days_ahead=90):
     """Như build_daily_pressure_series() ở trên nhưng dùng _natal_pressure_score_at() — điểm RIÊNG
-    cho VN-Index (transit chạm lá số) thay vì điểm chung (transit-transit, không đặc thù tài sản
-    nào). Dùng SONG SONG với bản gốc theo yêu cầu user (2026-08-09) để tự đối chiếu."""
+    cho VN-Index (transit chạm lá số). Tính trước find_all_stations() 1 LẦN cho toàn bộ khoảng cần
+    (kèm đệm ±STATION_EFFECT_WINDOW_DAYS ở 2 đầu để hiệu ứng station sát biên vẫn chính xác), thay
+    vì quét lại cho từng ngày."""
     now = _anchor_noon_utc()
-    return [_natal_pressure_score_at(natal_positions, now + datetime.timedelta(days=d))
+    pad = datetime.timedelta(days=STATION_EFFECT_WINDOW_DAYS)
+    stations = find_all_stations(now - pad, now + datetime.timedelta(days=days_ahead) + pad)
+    return [_natal_pressure_score_at(natal_positions, now + datetime.timedelta(days=d), stations)
             for d in range(days_ahead + 1)]
 
 
 def build_historical_natal_pressure_series(natal_positions, days_back=365):
     """Như build_historical_pressure_series() ở trên nhưng dùng _natal_pressure_score_at() — dùng
-    cho biểu đồ backtest RIÊNG VN-Index (song song đường transit-transit hiện có)."""
+    cho biểu đồ backtest RIÊNG VN-Index. Tính trước find_all_stations() 1 LẦN cho toàn bộ khoảng
+    (xem build_daily_natal_pressure_series)."""
     now = _anchor_noon_utc()
-    return [_natal_pressure_score_at(natal_positions, now - datetime.timedelta(days=d))
+    pad = datetime.timedelta(days=STATION_EFFECT_WINDOW_DAYS)
+    stations = find_all_stations(now - datetime.timedelta(days=days_back) - pad, now + pad)
+    return [_natal_pressure_score_at(natal_positions, now - datetime.timedelta(days=d), stations)
             for d in range(days_back, -1, -1)]
 
 

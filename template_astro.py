@@ -259,15 +259,27 @@ def build_forecast_timeline(upcoming_natal_aspects, upcoming_eclipses, retro_sta
         if e["date"] > cutoff:
             continue
         is_solar = e["type"] == "solar"
+        confidence = e.get("confidence", 0)
+        # ĐIỂM TIN CẬY 0-3 (2026-08-15, xem _eclipse_confidence() trong fetch_astro_data.py): trước
+        # đây MỌI kỳ thực nhận cùng 1 câu diễn giải — giờ phân biệt theo số tiêu chí hội tụ (góc
+        # chiếu khác đang hoạt động / hành tinh ở cung mùa / hành tinh đổi chiều gần đó).
+        confidence_note = {
+            0: "không có yếu tố nào khác hội tụ cùng lúc theo 3 tiêu chí tham khảo — độ tin cậy THẤP hơn mức trung bình.",
+            1: "có 1/3 yếu tố hội tụ — độ tin cậy Ở MỨC TRUNG BÌNH.",
+            2: "có 2/3 yếu tố hội tụ cùng lúc — độ tin cậy CAO HƠN mức trung bình.",
+            3: "có ĐỦ CẢ 3 yếu tố hội tụ cùng lúc — độ tin cậy CAO NHẤT trong thang tham khảo.",
+        }[confidence]
         events.append({
-            "date": e["date"], "type": e["type"],
-            "title": "Nhật thực" if is_solar else "Nguyệt thực",
-            "interpretation": ("Nhiều nhà phân tích chiêm tinh tài chính coi đây là \"mốc thời gian động\" lớn — thời "
+            "date": e["date"], "type": e["type"], "confidence": confidence,
+            "title": f"{'Nhật thực' if is_solar else 'Nguyệt thực'} (độ tin cậy {confidence}/3)",
+            "interpretation": (("Nhiều nhà phân tích chiêm tinh tài chính coi đây là \"mốc thời gian động\" lớn — thời "
                                 "điểm thị trường có xác suất biến động/đảo chiều cao hơn bình thường trong vài tuần "
                                 "quanh ngày này." if is_solar else
                                 "Tương tự nhật thực, được coi là mốc thời gian động — thường liên quan tới biến động "
-                                "tâm lý đám đông/thanh khoản ngắn hạn."),
-            "sentiment": "tension",
+                                "tâm lý đám đông/thanh khoản ngắn hạn.")
+                                + f" Đối chiếu 3 tiêu chí bổ sung (góc chiếu khác đang hoạt động, hành tinh ở cung "
+                                f"mùa, hành tinh đổi chiều gần đó): {confidence_note}"),
+            "sentiment": "tension" if confidence >= 1 else "neutral",
         })
 
     for s in retro_stations:
