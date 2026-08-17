@@ -355,16 +355,47 @@ def fetch_vnindex_price_history(days_back=380):
         return []
 
 
+def fetch_vnindex_novin_price_history(days_back=3650):
+    """Lấy lịch sử chỉ số VN-Index đã LOẠI TRỪ nhóm cổ phiếu họ VIN (VIC/VHM/VRE...) từ
+    aic-chart-nganh.vercel.app (endpoint tĩnh, không cần xác thực — dò ra qua network request thực
+    tế của trang, xem ghi chú 2026-08-15) — user muốn có thêm 1 biểu đồ backtest đối chiếu chỉ số
+    chiêm tinh với VN-Index KHÔNG bị ảnh hưởng bởi nhóm vốn hóa lớn nhất thị trường, để tự so sánh
+    xem chỉ số chiêm tinh khớp với VN-Index nào rõ hơn. File gốc có rất nhiều field kỹ thuật khác
+    (MA/RSI/MACD/...) — chỉ lấy đúng "dates"+"closes", KHÔNG lưu các field thừa vào data/astro.json.
+    Trả list [{date, close}] tăng dần, hoặc [] nếu lỗi mạng (fail-safe, nguồn ngoài không do ta
+    kiểm soát)."""
+    try:
+        r = requests.get(
+            "https://aic-chart-nganh.vercel.app/Output/history/VNINDEX_NONVIN.json",
+            headers={"User-Agent": BACKTEST_UA}, timeout=30,
+        )
+        r.raise_for_status()
+        payload = r.json()
+        dates, closes = payload.get("dates", []), payload.get("closes", [])
+        points = [{"date": d, "close": c} for d, c in zip(dates, closes) if c is not None]
+        if days_back and points:
+            cutoff = (datetime.date.today() - datetime.timedelta(days=days_back)).isoformat()
+            points = [p for p in points if p["date"] >= cutoff]
+        return points
+    except Exception as e:
+        print(f"  [WARN] VNIndex no-VIN price history (aic-chart-nganh) thất bại: {e}")
+        return []
+
+
 def build_backtest_data(natal_positions, days_back=3650):
     """Ghép chỉ số áp lực/thuận lợi chiêm tinh QUÁ KHỨ (transit-to-natal, riêng cho VN-Index — xem
     VNINDEX_NATAL_DATETIME/build_historical_natal_pressure_series) với giá đóng cửa VN-Index THẬT
     cùng khoảng thời gian — user (2026-08-04, mở rộng lên 10 năm; 2026-08-10, chuyển hẳn sang
     phương pháp natal vì "cách mới đúng hơn") muốn tự quan sát trực quan có tương quan hay không.
     Đây là công cụ KIỂM THỬ/tham khảo cá nhân, KHÔNG phải bằng chứng khoa học đã kiểm chứng.
-    days_back=3650 (~10 năm) — Vietcap IQ có dữ liệu VNINDEX từ 2016 trở đi cho endpoint này."""
+    days_back=3650 (~10 năm) — Vietcap IQ có dữ liệu VNINDEX từ 2016 trở đi cho endpoint này.
+
+    vnindexNoVin (2026-08-15): CÙNG chuỗi "astro" ở trên (điểm số không phụ thuộc VN-Index nào cả)
+    đối chiếu thêm với VN-Index KHÔNG TÍNH họ VIN — xem fetch_vnindex_novin_price_history()."""
     return {
         "astro": astro.build_historical_natal_pressure_series(natal_positions, days_back=days_back),
         "vnindex": fetch_vnindex_price_history(days_back=days_back + 5),
+        "vnindexNoVin": fetch_vnindex_novin_price_history(days_back=days_back + 5),
     }
 
 
@@ -446,7 +477,8 @@ def build_astro_data():
     print(f"  -> {len(out['positions'])} hành tinh, {len(out['currentAspects'])} aspect hiện tại, "
           f"{len(out['upcomingEclipses'])} nhật/nguyệt thực, {len(out['retroStations'])} station, "
           f"{len(out['forecastTimeline'])} sự kiện trong dòng thời gian dự báo (transit chạm lá số VN-Index), "
-          f"backtest: {len(out['backtest']['astro'])} điểm chiêm tinh (natal) / {len(out['backtest']['vnindex'])} điểm VN-Index")
+          f"backtest: {len(out['backtest']['astro'])} điểm chiêm tinh (natal) / {len(out['backtest']['vnindex'])} điểm VN-Index "
+          f"/ {len(out['backtest']['vnindexNoVin'])} điểm VN-Index (không VIN)")
     return json_path
 
 

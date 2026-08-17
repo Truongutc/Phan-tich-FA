@@ -128,6 +128,15 @@
             <div id="astro-backtest-chart-container" style="position:relative;width:100%;height:420px"></div>
         </div>
 
+        <!-- Backtest: đối chiếu chỉ số chiêm tinh với VN-Index KHÔNG TÍNH họ VIN -->
+        <div class="card margin-top-20" id="backtest-novin-card" style="display:none">
+            <h3 class="border-purple">🧪 Backtest: Đối chiếu với VN-Index KHÔNG TÍNH họ VIN</h3>
+            <p class="vimo-synthesis-text">Giống hệt biểu đồ backtest phía trên, chỉ khác đường <span style="color:#e5e7eb;font-weight:600">trắng</span> lần này là chỉ số VN-Index đã LOẠI TRỪ nhóm cổ phiếu họ VIN (VIC/VHM/VRE...) — nguồn <a href="https://aic-chart-nganh.vercel.app/" target="_blank" rel="noopener">aic-chart-nganh.vercel.app</a>. Nhóm VIN vốn hóa rất lớn, đôi khi 1 mã kéo/ghìm cả VN-Index chung, khiến chỉ số tổng không phản ánh đúng diễn biến phần còn lại của thị trường — tự đối chiếu xem chỉ số chiêm tinh khớp với VN-Index nào (có VIN hay không VIN) rõ hơn.</p>
+            <p class="astro-scroll-hint">🌐 Cuộn chuột (hoặc pinch trên cảm ứng) để zoom · 🖐️ Kéo để di chuyển (pan) qua các giai đoạn khác.</p>
+            <p class="astro-generated-note" id="astro-backtest-novin-legend">Di chuột vào biểu đồ để xem chính xác giá trị 2 đường tại từng ngày.</p>
+            <div id="astro-backtest-novin-chart-container" style="position:relative;width:100%;height:420px"></div>
+        </div>
+
         <!-- Lá số VN-Index (natal chart) -->
         <div class="card margin-top-20" id="natal-card" style="display:none">
             <h3 class="border-purple">🔮 Lá số VN-Index (Natal Chart)</h3>
@@ -210,7 +219,7 @@
     </footer>
 
 </div>
-<script src="app_chiemtinh.js?v=24"></script>
+<script src="app_chiemtinh.js?v=25"></script>
 <script src="access-gate.js"></script>
 </body>
 </html>

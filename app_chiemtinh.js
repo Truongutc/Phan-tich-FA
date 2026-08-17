@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderVerdictBanner(data.marketVerdict);
     renderPressureChart(data.dailyPressure);
     renderBacktestChart(data.backtest);
+    renderBacktestNoVinChart(data.backtest);
     renderAssessment(data.currentAssessment);
     renderForecastTimeline(data.forecastTimeline);
     renderVnIndexNatal(data.vnIndexNatal);
@@ -241,10 +242,15 @@ const LWC_THEME = {
     handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: true },
 };
 
-function renderBacktestChart(backtest) {
-    const card = document.getElementById('backtest-card');
-    const container = document.getElementById('astro-backtest-chart-container');
-    if (!card || !container || !backtest || !backtest.astro || !backtest.astro.length || !backtest.vnindex || !backtest.vnindex.length) return;
+// Lõi dùng chung cho MỌI biểu đồ backtest "giá thật (trục phải) đối chiếu chỉ số chiêm tinh (trục
+// trái)" — tách ra (2026-08-15) khi thêm biểu đồ VN-Index KHÔNG VIN thứ 2, để không lặp lại ~150
+// dòng logic canvas-overlay/rAF-batching/resize đã debug kỹ càng ở bản gốc. `opts`: {cardId,
+// containerId, legendId, astroSeriesAll, priceSeries, priceLabel}.
+function _renderBacktestChartGeneric(opts) {
+    const { cardId, containerId, legendId, astroSeriesAll, priceSeries, priceLabel } = opts;
+    const card = document.getElementById(cardId);
+    const container = document.getElementById(containerId);
+    if (!card || !container || !astroSeriesAll || !astroSeriesAll.length || !priceSeries || !priceSeries.length) return;
     if (typeof LightweightCharts === 'undefined') {
         container.innerHTML = '<div class="astro-generated-note">Không tải được thư viện biểu đồ (lightweight-charts) — kiểm tra kết nối mạng.</div>';
         card.style.display = 'block';
@@ -252,12 +258,12 @@ function renderBacktestChart(backtest) {
     }
     card.style.display = 'block';
 
-    const astroSeriesAll = backtest.astro; // [{date, score}] đủ mỗi ngày lịch
-    const vnSeries = backtest.vnindex;  // [{date, close}] chỉ các phiên giao dịch thật
+    const vnSeries = priceSeries;  // [{date, close}] chỉ các phiên giao dịch thật
 
-    // Tạo Set các ngày giao dịch của VN-Index để lọc astroSeries khớp 1:1 theo phiên giao dịch
+    // Tạo Set các ngày giao dịch để lọc astroSeries khớp 1:1 theo phiên giao dịch
     const vnDateSet = new Set(vnSeries.map(p => p.date));
     const astroSeries = astroSeriesAll.filter(p => vnDateSet.has(p.date));
+    if (!astroSeries.length) return;
 
     const chart = LightweightCharts.createChart(container, {
         ...LWC_THEME,
@@ -267,9 +273,9 @@ function renderBacktestChart(backtest) {
         leftPriceScale: { visible: true, borderColor: 'rgba(255,255,255,0.12)', autoScale: true, scaleMargins: { top: 0.1, bottom: 0.1 } },
     });
 
-    // VN-Index thật (trục phải, trắng)
+    // Giá thật (trục phải, trắng)
     const vnLine = chart.addLineSeries({
-        priceScaleId: 'right', color: '#e5e7eb', lineWidth: 2, title: 'VN-Index',
+        priceScaleId: 'right', color: '#e5e7eb', lineWidth: 2, title: priceLabel,
         priceFormat: { type: 'price', precision: 0, minMove: 1 },
     });
     vnLine.setData(vnSeries.map(p => ({ time: _d2ts(p.date), value: p.close })));
@@ -356,7 +362,7 @@ function renderBacktestChart(backtest) {
     // sang đỉnh/đáy lân cận — user 2026-08-04 nghi ngờ lệch ngày; đã verify bằng cách so khớp từng
     // pixel màu thật trên canvas, tọa độ tính đúng 100%, không có lỗi — nhưng vẫn thêm chú thích này
     // để không ai phải đoán bằng mắt nữa).
-    const legendEl = document.getElementById('astro-backtest-legend');
+    const legendEl = document.getElementById(legendId);
     if (legendEl) {
         chart.subscribeCrosshairMove(param => {
             if (!param || !param.time) return;
@@ -365,7 +371,7 @@ function renderBacktestChart(backtest) {
             const astroScore = astroByDate[dateStr];
             const vnPart = vnData ? `<b>${vnData.value.toFixed(1)}</b>` : '<span style="color:#6b7280">không có phiên</span>';
             const astroPart = typeof astroScore === 'number' ? `<b>${astroScore >= 0 ? '+' : ''}${astroScore.toFixed(2)}</b>` : '—';
-            legendEl.innerHTML = `Ngày <b>${_fmtDate(dateStr)}</b>: VN-Index ${vnPart} · Chỉ số chiêm tinh ${astroPart}`;
+            legendEl.innerHTML = `Ngày <b>${_fmtDate(dateStr)}</b>: ${priceLabel} ${vnPart} · Chỉ số chiêm tinh ${astroPart}`;
         });
     }
 
@@ -399,6 +405,27 @@ function renderBacktestChart(backtest) {
         paneContainer.appendChild(canvas);
         drawAstroOverlayNow();
     }));
+}
+
+function renderBacktestChart(backtest) {
+    if (!backtest) return;
+    _renderBacktestChartGeneric({
+        cardId: 'backtest-card', containerId: 'astro-backtest-chart-container', legendId: 'astro-backtest-legend',
+        astroSeriesAll: backtest.astro, priceSeries: backtest.vnindex, priceLabel: 'VN-Index',
+    });
+}
+
+// Biểu đồ backtest thứ 2 (2026-08-15, user yêu cầu): đối chiếu CÙNG chỉ số chiêm tinh với VN-Index
+// KHÔNG TÍNH họ VIN (VIC/VHM/VRE...) — dữ liệu lấy từ aic-chart-nganh.vercel.app (xem
+// fetch_vnindex_novin_price_history() trong template_astro.py). Nhóm VIN có vốn hóa rất lớn, đôi
+// khi kéo/ghìm VN-Index chung không phản ánh đúng diễn biến phần còn lại của thị trường — cho phép
+// tự so sánh xem chỉ số chiêm tinh khớp tốt hơn với VN-Index nào.
+function renderBacktestNoVinChart(backtest) {
+    if (!backtest) return;
+    _renderBacktestChartGeneric({
+        cardId: 'backtest-novin-card', containerId: 'astro-backtest-novin-chart-container', legendId: 'astro-backtest-novin-legend',
+        astroSeriesAll: backtest.astro, priceSeries: backtest.vnindexNoVin, priceLabel: 'VN-Index (không VIN)',
+    });
 }
 
 function renderSunMoonToday(positions) {
