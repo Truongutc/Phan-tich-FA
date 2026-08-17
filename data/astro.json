@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-17 01:09 UTC",
+  "generatedAt": "2026-08-17 01:12 UTC",
   "positions": [
     {
       "name": "Mặt Trời",
@@ -11,17 +11,17 @@
     },
     {
       "name": "Mặt Trăng",
-      "lon": 198.7,
+      "lon": 198.73,
       "sign": "Thiên Bình",
-      "degInSign": 18.7,
+      "degInSign": 18.73,
       "retrograde": false,
       "house": 1
     },
     {
       "name": "Sao Thủy",
-      "lon": 132.81,
+      "lon": 132.82,
       "sign": "Sư Tử",
-      "degInSign": 12.81,
+      "degInSign": 12.82,
       "retrograde": false,
       "house": 11
     },
@@ -112,7 +112,7 @@
       "b": "Sao Thổ",
       "aspect": "Tam hợp (Trine)",
       "angle": 120,
-      "orb": 1.18,
+      "orb": 1.17,
       "applying": true
     },
     {
@@ -136,7 +136,7 @@
       "b": "Sao Mộc",
       "aspect": "Hợp (Conjunction)",
       "angle": 0,
-      "orb": 2.68,
+      "orb": 2.69,
       "applying": false
     }
   ],
@@ -630,21 +630,21 @@
   },
   "houses": {
     "locationName": "TP. Hồ Chí Minh",
-    "ascendant": 179.59,
-    "midheaven": 89.62,
+    "ascendant": 180.19,
+    "midheaven": 90.18,
     "cusps": [
-      179.59,
-      209.59,
-      239.59,
-      269.59,
-      299.59,
-      329.59,
-      359.59,
-      29.59,
-      59.59,
-      89.59,
-      119.59,
-      149.59
+      180.19,
+      210.19,
+      240.19,
+      270.19,
+      300.19,
+      330.19,
+      0.19,
+      30.19,
+      60.19,
+      90.19,
+      120.19,
+      150.19
     ],
     "meanings": {
       "1": "Bản ngã/Diện mạo — hình ảnh, động lượng ban đầu của thị trường",
