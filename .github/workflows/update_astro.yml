@@ -3,7 +3,7 @@ name: Cập nhật Chiêm tinh Tài chính
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * 1'   # 08:00 giờ Việt Nam (UTC+7) sáng Thứ 2 đầu tuần hàng tuần (user 2026-08-04: chuyển từ hàng ngày sang hàng tuần)
+    - cron: '0 13 * * 5'   # 13:00 UTC = 20:00 giờ Việt Nam (UTC+7), thứ Sáu hàng tuần (user 2026-08-15: đổi từ 08:00 sáng Thứ 2 sang 20:00 tối Thứ 6, ngay sau lịch cập nhật vĩ mô)
 
 permissions:
   contents: write

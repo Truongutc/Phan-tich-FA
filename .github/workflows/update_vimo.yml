@@ -3,7 +3,7 @@ name: Cập nhật Vĩ mô Việt Nam
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 8 * * 5'   # 08:30 UTC = 15:30 giờ Việt Nam (UTC+7), thứ Sáu hàng tuần
+    - cron: '0 9 * * 5'   # 09:00 UTC = 16:00 giờ Việt Nam (UTC+7), thứ Sáu hàng tuần (user 2026-08-15: đổi từ 15:30 sang 16:00)
 
 permissions:
   contents: write
