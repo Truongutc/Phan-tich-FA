@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1IXqJPsRFBmB5OorYrWq7QbzijgCHlEGU/view?usp=drivesdk",
-  "lastUpdated": "2026-08-26 13:59",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/18jrwi8N7XkZdiFMbJlvIEsEoYLf5Z-Gq/view?usp=drivesdk",
+  "lastUpdated": "2026-08-28 20:43",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -98,20 +98,20 @@
         "reason": "CPI trong mục tiêu nhưng đang giảm; Lạm phát lõi xấu đi."
       },
       "Lãi suất": {
-        "score": -1,
+        "score": 1,
         "nVotes": 1,
         "detail": [
           {
             "indicator": "interbank_rate_3m",
             "label": "Lãi suất liên ngân hàng 3 tháng",
-            "vote": -1.0,
-            "arrow": "▼",
-            "judgment_label": "Xấu đi",
+            "vote": 1.0,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên",
             "kind": "trend",
             "state": null
           }
         ],
-        "reason": "LS liên NH 3T xấu đi."
+        "reason": "LS liên NH 3T tốt lên."
       },
       "Thanh khoản": {
         "score": -1,
@@ -145,7 +145,7 @@
           },
           {
             "indicator": "interbank_vs_deposit",
-            "label": "Liên ngân hàng 9 tháng (8.95%) so với huy động niêm yết 12 tháng (5.90%)",
+            "label": "Liên ngân hàng 9 tháng (8.12%) so với huy động niêm yết 12 tháng (5.90%)",
             "vote": -1,
             "arrow": "⚠",
             "judgment_label": "cao hơn niêm yết, căng thanh khoản",
@@ -204,14 +204,14 @@
           {
             "indicator": "fii_net_flow_hose",
             "label": "Khối ngoại mua/bán ròng HOSE (theo phiên)",
-            "vote": 1.0,
-            "arrow": "▲",
-            "judgment_label": "Tốt lên",
+            "vote": 0.2,
+            "arrow": "▼",
+            "judgment_label": "Xấu đi",
             "kind": "trend",
             "state": "tốt"
           }
         ],
-        "reason": "Tỷ giá tốt lên; FDI giải ngân tốt lên; FDI đăng ký tốt lên; Khối ngoại HOSE tốt lên."
+        "reason": "Tỷ giá tốt lên; FDI giải ngân tốt lên; FDI đăng ký tốt lên; Khối ngoại HOSE vẫn ở mức tốt so với cùng kỳ 5 năm qua nhưng đang yếu đi."
       },
       "Thương mại & Hàng hóa": {
         "score": -1,
@@ -238,11 +238,11 @@
           {
             "indicator": "brent_oil",
             "label": "Giá dầu Brent",
-            "vote": -1.0,
-            "arrow": "▼",
-            "judgment_label": "Xấu đi",
+            "vote": 1.0,
+            "arrow": "▲",
+            "judgment_label": "Tốt lên",
             "kind": "trend",
-            "state": "xấu"
+            "state": "tốt"
           },
           {
             "indicator": "import_export_gap",
@@ -253,105 +253,105 @@
             "kind": "level"
           }
         ],
-        "reason": "Cán cân TM xấu đi; Xuất khẩu xấu đi; Dầu Brent xấu đi; NK-XK nhập siêu tăng tốc, áp lực lên tỷ giá."
+        "reason": "Cán cân TM xấu đi; Xuất khẩu xấu đi; Dầu Brent tốt lên; NK-XK nhập siêu tăng tốc, áp lực lên tỷ giá."
       }
     },
-    "total": -1
+    "total": 1
   },
   "marketValuation": {
-    "pe": 11.305504848383553,
-    "pb": 1.7557412507262906,
+    "pe": 11.29118768979197,
+    "pb": 1.753517800622156,
     "rf": 0.045,
-    "erp": 0.04345248517521788,
+    "erp": 0.043564642398431705,
     "valuation_label": "Hợp lý",
     "pe_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
     "pb_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
     "risk_compensation": {
-      "earnings_yield": 0.08845248517521788,
+      "earnings_yield": 0.0885646423984317,
       "deposit_rf": 0.0613,
       "hurdle_1_5x_bond": 0.0675,
       "hurdle_2x_bond": 0.09,
       "hurdle_1_5x_deposit": 0.09195,
       "label": "Bù đắp tối thiểu, chưa có biên an toàn",
       "color": "warn",
-      "text": "Earnings Yield (1/P·E) hiện 8.85%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.13%): CHƯA đạt mức 1,5 lần (9.20%). => Bù đắp tối thiểu, chưa có biên an toàn."
+      "text": "Earnings Yield (1/P·E) hiện 8.86%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.13%): CHƯA đạt mức 1,5 lần (9.20%). => Bù đắp tối thiểu, chưa có biên an toàn."
     },
     "capm_valuation": {
-      "roe": 0.15529967695138572,
+      "roe": 0.1552996769513857,
       "coe": 0.115,
-      "justified_pb": 1.6199950300213186,
-      "premium_pct": 0.08379422046942064,
+      "justified_pb": 1.6199950300213182,
+      "premium_pct": 0.08242171619445071,
       "label": "Quanh vùng P/B hợp lý (CAPM)",
       "color": "warn",
-      "text": "ROE VN-Index (P/B÷P/E) = 15.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.62x, so với P/B thực tế 1.76x => cao hơn 8.4%. => Quanh vùng P/B hợp lý (CAPM)."
+      "text": "ROE VN-Index (P/B÷P/E) = 15.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.62x, so với P/B thực tế 1.75x => cao hơn 8.2%. => Quanh vùng P/B hợp lý (CAPM)."
     }
   },
   "decision": {
-    "label": "Giải ngân một phần",
-    "text": "Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn."
+    "label": "Duy trì, chọn lọc",
+    "text": "Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt."
   },
   "marketValuationHeadline": {
-    "pe": 12.18,
-    "pb": 2.01,
+    "pe": 12.46,
+    "pb": 2.06,
     "rf": 0.045,
-    "erp": 0.03710180623973727,
+    "erp": 0.03525682182985554,
     "valuation_label": "Hợp lý",
     "pe_source": "https://24hmoney.vn/indices/vn-index",
     "pb_source": "https://24hmoney.vn/indices/vn-index",
     "risk_compensation": {
-      "earnings_yield": 0.08210180623973727,
+      "earnings_yield": 0.08025682182985554,
       "deposit_rf": 0.0613,
       "hurdle_1_5x_bond": 0.0675,
       "hurdle_2x_bond": 0.09,
       "hurdle_1_5x_deposit": 0.09195,
       "label": "Bù đắp tối thiểu, chưa có biên an toàn",
       "color": "warn",
-      "text": "Earnings Yield (1/P·E) hiện 8.21%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.13%): CHƯA đạt mức 1,5 lần (9.20%). => Bù đắp tối thiểu, chưa có biên an toàn."
+      "text": "Earnings Yield (1/P·E) hiện 8.03%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.13%): CHƯA đạt mức 1,5 lần (9.20%). => Bù đắp tối thiểu, chưa có biên an toàn."
     },
     "capm_valuation": {
-      "roe": 0.16502463054187191,
+      "roe": 0.1653290529695024,
       "coe": 0.115,
-      "justified_pb": 1.769609700644183,
-      "premium_pct": 0.1358436830835119,
-      "label": "Quanh vùng P/B hợp lý (CAPM)",
-      "color": "warn",
-      "text": "ROE VN-Index (P/B÷P/E) = 16.50%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.77x, so với P/B thực tế 2.01x => cao hơn 13.6%. => Quanh vùng P/B hợp lý (CAPM)."
+      "justified_pb": 1.7742931226077292,
+      "premium_pct": 0.1610257480862911,
+      "label": "Đắt hơn nhiều so với P/B hợp lý (CAPM)",
+      "color": "bad",
+      "text": "ROE VN-Index (P/B÷P/E) = 16.53%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.77x, so với P/B thực tế 2.06x => cao hơn 16.1%. => Đắt hơn nhiều so với P/B hợp lý (CAPM)."
     }
   },
   "decisionHeadline": {
-    "label": "Giải ngân một phần",
-    "text": "Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn."
+    "label": "Duy trì, chọn lọc",
+    "text": "Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt."
   },
   "synthesis": {
     "verdict": {
-      "trend_label": "Đang xấu đi",
-      "trend_arrow": "▼",
-      "trend_detail": "So với tuần trước (2026-08-19): +0/6 → -1/6 ▼. So với tháng trước (2026-07-25): -1/6 → -1/6 →. So với quý trước (2026-06-09): -1/6 → -1/6 →.",
+      "trend_label": "Đi ngang, chưa có chuyển biến rõ",
+      "trend_arrow": "→",
+      "trend_detail": "So với tuần trước (2026-08-21): +1/6 → +1/6 →. So với tháng trước (2026-08-01): -1/6 → +1/6 ▲. So với quý trước (2026-06-09): -1/6 → +1/6 ▲.",
       "trend_week": {
-        "label": "Đang xấu đi",
-        "arrow": "▼",
-        "detail": "(2026-08-19): +0/6 → -1/6 ▼",
+        "label": "Đi ngang, chưa có chuyển biến rõ",
+        "arrow": "→",
+        "detail": "(2026-08-21): +1/6 → +1/6 →",
         "available": true
       },
       "trend_month": {
-        "label": "Đi ngang, chưa có chuyển biến rõ",
-        "arrow": "→",
-        "detail": "(2026-07-25): -1/6 → -1/6 →",
+        "label": "Đang cải thiện",
+        "arrow": "▲",
+        "detail": "(2026-08-01): -1/6 → +1/6 ▲",
         "available": true
       },
       "clarity_label": "Xám — tín hiệu trái chiều/hỗn hợp",
-      "clarity_pct": 59.1,
-      "clarity_detail": "88/149 chỉ báo có xu hướng rõ đang tốt lên (59%), 61/149 đang xấu đi."
+      "clarity_pct": 58.2,
+      "clarity_detail": "85/146 chỉ báo có xu hướng rõ đang tốt lên (58%), 61/146 đang xấu đi."
     },
-    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang xấu đi ▼ — So với tuần trước (2026-08-19): +0/6 → -1/6 ▼. So với tháng trước (2026-07-25): -1/6 → -1/6 →. So với quý trước (2026-06-09): -1/6 → -1/6 →. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 88/149 chỉ báo có xu hướng rõ đang tốt lên (59%), 61/149 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Giải ngân một phần\".\n\nScorecard Vĩ Mô tổng hợp đạt -1/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tiêu cực. Động lực tích cực đến từ nhóm Tăng trưởng và Tỷ giá & Dòng vốn ngoại. Ngược lại, nhóm Lãi suất, Thanh khoản và Thương mại & Hàng hóa đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Lạm phát giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026); (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.50 % (kỳ T7/2026); (3) PMI sản xuất (S&P Global) đạt 52.90 điểm (kỳ T7/2026); (4) Doanh số bán lẻ (YoY) đạt 14.48 % (kỳ T7/2026); (5) CPI (YoY) đạt 4.45 % (kỳ T7/2026); (6) Lãi suất liên ngân hàng qua đêm (O/N) đạt 2.50 % (kỳ 2026-08-25); (7) Lãi suất liên ngân hàng 1 tháng đạt 7.05 % (kỳ 2026-08-25); (8) Lãi suất liên ngân hàng 9 tháng đạt 8.95 % (kỳ Tuần 35/2026); (9) Tăng trưởng tín dụng (YoY) đạt 8.37 % (kỳ T6/2026); (10) Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết) đạt 6.00 % (kỳ T8/2026); (11) Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP đạt 15.20 % (kỳ 6T đầu 2026); (12) Tỷ giá USD/VND đạt 26059.91 VND/USD (kỳ T8/2026); (13) FDI giải ngân (lũy kế) đạt 15.20 tỷ USD (kỳ T7/2026); (14) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025); (15) Nợ công / GDP đạt 32.86 % (kỳ 2024); (16) Thu ngân sách (YoY) đạt 20.91 % (kỳ Q2/2026); (17) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026); (18) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026); (19) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026); (20) FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế) đạt 38.10 tỷ USD (kỳ T7/2026); (21) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt 276.68 tỷ VND (kỳ 2026-08-25); (22) Tổng dư nợ tín dụng toàn nền kinh tế đạt 20150411.00 tỷ VND (kỳ T6/2026); (23) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025); (24) Đóng góp vào lạm phát — nhóm Thực phẩm đạt 1.56 điểm % (kỳ T7/2026); (25) Đóng góp vào lạm phát — nhóm Nhà, điện, nước đạt 1.26 điểm % (kỳ T7/2026); (26) Đóng góp vào lạm phát — nhóm Vận tải đạt 0.35 điểm % (kỳ T7/2026); (27) VN-Index P/E (headline, có VIN) đạt 12.18 x (kỳ T8/2026); (28) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt 6481.27 tỷ đồng (kỳ 2026-08-25); (29) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 39.00 % (kỳ T7/2026); (30) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026); (31) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026); (32) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026); (33) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 445.50 nghìn tỷ đồng (kỳ T7/2026); (34) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026); (35) Lợi suất TPCP Mỹ kỳ hạn 10 năm đạt 4.70 % (kỳ 2026-08-24); (36) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 2.97 % (kỳ 2026-06-01); (37) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.80 % (kỳ 2026-06-01); (38) Tỷ lệ thất nghiệp Mỹ đạt 4.10 % (kỳ 2026-07-01); (39) CPI Mỹ (YoY) đạt 3.30 % (kỳ 2026-07-01); (40) CPI lõi Mỹ (YoY) đạt 2.47 % (kỳ 2026-07-01); (41) PCE Mỹ (YoY) đạt 3.70 % (kỳ 2026-07-01); (42) Lợi suất TPCP Mỹ kỳ hạn 5 năm đạt 4.41 % (kỳ 2026-08-24); (43) Lợi suất TPCP Mỹ kỳ hạn 30 năm đạt 5.23 % (kỳ 2026-08-24); (44) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01); (45) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01); (46) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025); (47) Tổng huy động vốn toàn nền kinh tế đạt 17440361.00 tỷ VND (kỳ T6/2026); (48) Tong cung tien M2 đạt 20414616.00 ty VND (kỳ T6/2026); (49) Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng đạt 669.10 nghìn tỷ đồng (kỳ T7/2026); (50) Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng) đạt 7.31 % (kỳ 2025); (51) Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng) đạt 11.89 % (kỳ 2025); (52) Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 7.09 % (kỳ T6/2026); (53) Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 5.60 % (kỳ T6/2026); (54) Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng) đạt 4.99 % (kỳ T6/2026); (55) Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %) đạt 2.89 điểm % (kỳ 2025); (56) Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %) đạt 3.99 điểm % (kỳ 2025); (57) Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %) đạt 1.06 điểm % (kỳ 2025); (58) Chênh lệch lợi suất TPCP 10Y VN so với Mỹ đạt -0.16 điểm % (kỳ T8/2026); (59) Chênh lệch lợi suất TPCP 2Y VN so với Mỹ đạt -0.48 điểm % (kỳ T8/2026); (60) Dự trữ ngoại hối — ngoại tệ (theo tháng) đạt 86318.00 tỷ USD (kỳ T6/2026); (61) Chỉ số giá cổ phiếu (theo tháng) đạt 1764.78 điểm (kỳ T8/2026); (62) Cán cân vãng lai — Dịch vụ đạt -1.67 tỷ USD (kỳ Q1/2026); (63) Cán cân vãng lai — Thu nhập sơ cấp đạt -1.23 tỷ USD (kỳ Q1/2026); (64) Cán cân tài chính — FDI (nợ) đạt -4.34 tỷ USD (kỳ Q1/2026); (65) Cán cân tài chính — Đầu tư gián tiếp (nợ) đạt 1.41 tỷ USD (kỳ Q1/2026); (66) Cán cân tài chính — Khác (nợ) đạt -0.68 tỷ USD (kỳ Q1/2026); (67) FDI — Vốn cổ phần đạt -3.13 tỷ USD (kỳ Q1/2026); (68) Đầu tư khác — Tiền & tiền gửi đạt 2.75 tỷ USD (kỳ Q1/2026); (69) Tiền gửi (cán cân tài chính) — Khu vực ngân hàng đạt 0.41 tỷ USD (kỳ Q1/2026); (70) Dư nợ TPDN / GDP (ADB) đạt 7.92 % GDP (kỳ Q1/2026); (71) Dư nợ tín phiếu NHTW / GDP (ADB) đạt 2.19 % GDP (kỳ Q1/2026); (72) Cơ cấu kỳ hạn TPCP — 1-3 năm đạt 8.85 % dư nợ (kỳ Q2/2026); (73) Cơ cấu kỳ hạn TPCP — 3-5 năm đạt 15.62 % dư nợ (kỳ Q2/2026); (74) Cơ cấu kỳ hạn TPDN — 3-5 năm đạt 14.35 % dư nợ (kỳ Q2/2026); (75) Cơ cấu kỳ hạn TPDN — 5-10 năm đạt 26.25 % dư nợ (kỳ Q2/2026); (76) Cơ cấu kỳ hạn TPDN — Trên 10 năm đạt 1.49 % dư nợ (kỳ Q2/2026); (77) Cơ cấu nhà đầu tư nắm giữ TPCP — Khác đạt 2.30 % (kỳ Q1/2026); (78) Vốn hóa thị trường chứng khoán / GDP đạt 61.40 % GDP (kỳ 2025); (79) Nợ công / GDP (có dự báo tới 2031) đạt 26.60 % GDP (kỳ 2031); (80) Tỷ lệ đô thị hóa đạt 38.80 % dân số (kỳ 2025); (81) Dân số 65+ tuổi đạt 22.00 triệu người (kỳ 2050); (82) GDP theo sử dụng — Tiêu dùng Chính phủ đạt 9.40 % GDP (kỳ 2025); (83) GDP theo sử dụng — Đầu tư (GFCF) đạt 34.60 % GDP (kỳ 2031); (84) Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986) đạt 42.70 % GDP (kỳ 2025); (85) Tổng đầu tư / GDP đạt 34.60 % GDP (kỳ 2031); (86) GDP bình quân đầu người (danh nghĩa) đạt 6652.00 USD (kỳ 2031); (87) GDP bình quân đầu người (PPP) đạt 27821.00 Int$ (kỳ 2031); (88) GNI bình quân đầu người (Atlas) đạt 4970.00 USD (kỳ 2025); (89) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026); (90) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026). Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) Lạm phát cơ bản (YoY) đạt 4.63 % (kỳ T7/2026); (2) Lãi suất liên ngân hàng 3 tháng đạt 7.86 % (kỳ Tuần 35/2026); (3) Lãi suất liên ngân hàng 1 tuần đạt 6.30 % (kỳ 2026-08-25); (4) Lãi suất liên ngân hàng 2 tuần đạt 6.35 % (kỳ 2026-08-25); (5) Lãi suất liên ngân hàng 6 tháng đạt 8.77 % (kỳ Tuần 35/2026); (6) Tăng trưởng cung tiền M2 (YoY) đạt 4.24 % (kỳ T6/2026); (7) Xuất khẩu (YoY) đạt 25.01 % (kỳ T7/2026); (8) Nhập khẩu (YoY) đạt 41.42 % (kỳ T7/2026); (9) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026); (10) Chi ngân sách (YoY) đạt -8.16 % (kỳ Q2/2026); (11) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 9.53 % (kỳ T7/2026); (12) Giá dầu Brent đạt 95.29 USD/thùng (kỳ 2026-08-18); (13) VN-Index P/E (ex-VIN) đạt 11.31 x (kỳ T8/2026); (14) VN-Index P/B (ex-VIN) đạt 1.76 x (kỳ T8/2026); (15) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026); (16) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026); (17) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026); (18) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 300.00 ngày (kỳ Tuần 35/2026); (19) Đóng góp vào lạm phát — nhóm Y tế đạt 0.07 điểm % (kỳ T7/2026); (20) Đóng góp vào lạm phát — nhóm Khác đạt 1.21 điểm % (kỳ T7/2026); (21) VN-Index P/B (headline, có VIN) đạt 2.01 x (kỳ T8/2026); (22) Số dư OMO đang lưu hành (kênh cầm cố) đạt 188070.84 tỷ đồng (kỳ 2026-08-25); (23) Lãi suất liên ngân hàng qua đêm Nhật Bản đạt 0.84 % (kỳ 2026-06-01); (24) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.67 % (kỳ 2026-06-01); (25) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt -23.00 nghìn người (kỳ 2026-07-01); (26) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01); (27) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.08 % (kỳ 2026-07-01); (28) CPI (HICP) Eurozone (YoY) đạt 2.93 % (kỳ 2026-07-01); (29) Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng) đạt 17.41 % (kỳ T6/2026); (30) Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng) đạt 10.39 % (kỳ T6/2026); (31) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 156.84 % (kỳ T6/2026); (32) Lợi suất TPCP thứ cấp 1 năm (40yo) đạt 3.66 % (kỳ T8/2026); (33) Lợi suất TPCP thứ cấp 2 năm (40yo) đạt 3.77 % (kỳ T8/2026); (34) Chênh lệch lợi suất TPCP 10Y-2Y (VN) đạt 75.90 điểm % (kỳ T8/2026); (35) Chênh lệch lợi suất TPCP 2Y-1Y (VN) đạt 10.90 điểm % (kỳ T8/2026); (36) Dự trữ ngoại hối — SDR đạt 1.94 tỷ USD (kỳ T6/2026); (37) P/E thị trường (theo tháng, từ 2016) đạt 14.97 lần (kỳ T8/2026); (38) Cán cân vãng lai — Hàng hóa đạt 2.43 tỷ USD (kỳ Q1/2026); (39) Cán cân vãng lai — Thu nhập thứ cấp đạt 3.19 tỷ USD (kỳ Q1/2026); (40) Cán cân tài chính — FDI (tài sản) đạt 0.16 tỷ USD (kỳ Q1/2026); (41) Cán cân tài chính — Đầu tư gián tiếp (tài sản) đạt -0.01 tỷ USD (kỳ Q1/2026); (42) Cán cân tài chính — Khác (tài sản) đạt 2.57 tỷ USD (kỳ Q1/2026); (43) FDI — Công cụ nợ đạt -1.21 tỷ USD (kỳ Q1/2026); (44) Đầu tư khác — Cho vay đạt -0.53 tỷ USD (kỳ Q1/2026); (45) Tiền gửi (cán cân tài chính) — Khu vực khác đạt 2.34 tỷ USD (kỳ Q1/2026); (46) Vay nợ (cán cân tài chính) — Chính phủ đạt 0.54 tỷ USD (kỳ Q1/2026); (47) Vay nợ (cán cân tài chính) — Khu vực khác đạt -1.07 tỷ USD (kỳ Q1/2026); (48) Cơ cấu kỳ hạn TPCP — 5-10 năm đạt 51.39 % dư nợ (kỳ Q2/2026); (49) Cơ cấu kỳ hạn TPCP — Trên 10 năm đạt 24.14 % dư nợ (kỳ Q2/2026); (50) Cơ cấu kỳ hạn TPDN — 1-3 năm đạt 57.91 % dư nợ (kỳ Q2/2026); (51) Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng đạt 36.56 % (kỳ Q1/2026); (52) Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm đạt 60.44 % (kỳ Q1/2026); (53) Dân số 0-14 tuổi đạt 18.70 triệu người (kỳ 2050); (54) Dân số 15-64 tuổi (lao động) đạt 69.30 triệu người (kỳ 2050); (55) Tỷ lệ phụ thuộc chung đạt 58.60 % (kỳ 2050); (56) Tỷ lệ phụ thuộc — Người già đạt 31.70 % (kỳ 2050); (57) GDP theo sử dụng — Tiêu dùng hộ gia đình đạt 53.20 % GDP (kỳ 2025); (58) GDP theo sử dụng — Xuất khẩu đạt 79.36 % GDP (kỳ 2026); (59) GDP theo sử dụng — Nhập khẩu đạt 75.19 % GDP (kỳ 2026); (60) Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986) đạt 11.60 % GDP (kỳ 2025); (61) Tiết kiệm quốc gia / GDP đạt 35.20 % GDP (kỳ 2031); (62) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026); (63) FDI đăng ký theo tháng (rời rạc) đạt 3.40 tỷ USD (kỳ T7/2026); (64) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 88.56 nghìn tỷ đồng (kỳ T7/2026); (65) Spread lợi suất TPCP Mỹ 10 năm - 2 năm đạt 0.46 điểm % (kỳ 2026-08-24); (66) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.83 điểm % (kỳ 2026-08-24).\n\nVề định giá, VN-Index đang giao dịch ở P/E 11.31x, P/B 1.76x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.35% — mức định giá được xếp loại \"Hợp lý\". Kết hợp Scorecard vĩ mô (-1/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Giải ngân một phần\": Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn.",
+    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đi ngang, chưa có chuyển biến rõ → — So với tuần trước (2026-08-21): +1/6 → +1/6 →. So với tháng trước (2026-08-01): -1/6 → +1/6 ▲. So với quý trước (2026-06-09): -1/6 → +1/6 ▲. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 85/146 chỉ báo có xu hướng rõ đang tốt lên (58%), 61/146 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Duy trì, chọn lọc\".\n\nScorecard Vĩ Mô tổng hợp đạt +1/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lãi suất và Tỷ giá & Dòng vốn ngoại. Ngược lại, nhóm Thanh khoản và Thương mại & Hàng hóa đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Lạm phát giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026); (2) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.50 % (kỳ T7/2026); (3) PMI sản xuất (S&P Global) đạt 52.90 điểm (kỳ T7/2026); (4) Doanh số bán lẻ (YoY) đạt 14.48 % (kỳ T7/2026); (5) CPI (YoY) đạt 4.45 % (kỳ T7/2026); (6) Lãi suất liên ngân hàng 3 tháng đạt 7.11 % (kỳ Tuần 35/2026); (7) Lãi suất liên ngân hàng qua đêm (O/N) đạt 1.20 % (kỳ 2026-08-27); (8) Lãi suất liên ngân hàng 1 tháng đạt 6.55 % (kỳ 2026-08-27); (9) Lãi suất liên ngân hàng 9 tháng đạt 8.12 % (kỳ Tuần 35/2026); (10) Tăng trưởng tín dụng (YoY) đạt 8.37 % (kỳ T6/2026); (11) Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết) đạt 6.00 % (kỳ T8/2026); (12) Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP đạt 15.20 % (kỳ 6T đầu 2026); (13) Tỷ giá USD/VND đạt 26044.82 VND/USD (kỳ T8/2026); (14) FDI giải ngân (lũy kế) đạt 15.20 tỷ USD (kỳ T7/2026); (15) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025); (16) Nợ công / GDP đạt 32.86 % (kỳ 2024); (17) Thu ngân sách (YoY) đạt 20.91 % (kỳ Q2/2026); (18) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026); (19) Giá dầu Brent đạt 88.24 USD/thùng (kỳ 2026-08-25); (20) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026); (21) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026); (22) FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế) đạt 38.10 tỷ USD (kỳ T7/2026); (23) Tổng dư nợ tín dụng toàn nền kinh tế đạt 20150411.00 tỷ VND (kỳ T6/2026); (24) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025); (25) Đóng góp vào lạm phát — nhóm Thực phẩm đạt 1.56 điểm % (kỳ T7/2026); (26) Đóng góp vào lạm phát — nhóm Nhà, điện, nước đạt 1.26 điểm % (kỳ T7/2026); (27) Đóng góp vào lạm phát — nhóm Vận tải đạt 0.35 điểm % (kỳ T7/2026); (28) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt 9596.25 tỷ đồng (kỳ 2026-08-27); (29) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 39.00 % (kỳ T7/2026); (30) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026); (31) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026); (32) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026); (33) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 445.50 nghìn tỷ đồng (kỳ T7/2026); (34) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026); (35) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 2.97 % (kỳ 2026-06-01); (36) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.80 % (kỳ 2026-06-01); (37) Tỷ lệ thất nghiệp Mỹ đạt 4.10 % (kỳ 2026-07-01); (38) CPI Mỹ (YoY) đạt 3.30 % (kỳ 2026-07-01); (39) CPI lõi Mỹ (YoY) đạt 2.47 % (kỳ 2026-07-01); (40) PCE Mỹ (YoY) đạt 3.70 % (kỳ 2026-07-01); (41) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01); (42) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01); (43) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025); (44) Tổng huy động vốn toàn nền kinh tế đạt 17440361.00 tỷ VND (kỳ T6/2026); (45) Tong cung tien M2 đạt 20414616.00 ty VND (kỳ T6/2026); (46) Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng đạt 669.10 nghìn tỷ đồng (kỳ T7/2026); (47) Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng) đạt 7.31 % (kỳ 2025); (48) Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng) đạt 11.89 % (kỳ 2025); (49) Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 7.09 % (kỳ T6/2026); (50) Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 5.60 % (kỳ T6/2026); (51) Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng) đạt 4.99 % (kỳ T6/2026); (52) Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %) đạt 2.89 điểm % (kỳ 2025); (53) Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %) đạt 3.99 điểm % (kỳ 2025); (54) Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %) đạt 1.06 điểm % (kỳ 2025); (55) Chênh lệch lợi suất TPCP 10Y VN so với Mỹ đạt -0.16 điểm % (kỳ T8/2026); (56) Chênh lệch lợi suất TPCP 2Y VN so với Mỹ đạt -0.48 điểm % (kỳ T8/2026); (57) Dự trữ ngoại hối — ngoại tệ (theo tháng) đạt 86318.00 tỷ USD (kỳ T6/2026); (58) Chỉ số giá cổ phiếu (theo tháng) đạt 1764.78 điểm (kỳ T8/2026); (59) Cán cân vãng lai — Dịch vụ đạt -1.67 tỷ USD (kỳ Q1/2026); (60) Cán cân vãng lai — Thu nhập sơ cấp đạt -1.23 tỷ USD (kỳ Q1/2026); (61) Cán cân tài chính — FDI (nợ) đạt -4.34 tỷ USD (kỳ Q1/2026); (62) Cán cân tài chính — Đầu tư gián tiếp (nợ) đạt 1.41 tỷ USD (kỳ Q1/2026); (63) Cán cân tài chính — Khác (nợ) đạt -0.68 tỷ USD (kỳ Q1/2026); (64) FDI — Vốn cổ phần đạt -3.13 tỷ USD (kỳ Q1/2026); (65) Đầu tư khác — Tiền & tiền gửi đạt 2.75 tỷ USD (kỳ Q1/2026); (66) Tiền gửi (cán cân tài chính) — Khu vực ngân hàng đạt 0.41 tỷ USD (kỳ Q1/2026); (67) Dư nợ TPDN / GDP (ADB) đạt 7.92 % GDP (kỳ Q1/2026); (68) Dư nợ tín phiếu NHTW / GDP (ADB) đạt 2.19 % GDP (kỳ Q1/2026); (69) Cơ cấu kỳ hạn TPCP — 1-3 năm đạt 8.85 % dư nợ (kỳ Q2/2026); (70) Cơ cấu kỳ hạn TPCP — 3-5 năm đạt 15.62 % dư nợ (kỳ Q2/2026); (71) Cơ cấu kỳ hạn TPDN — 3-5 năm đạt 14.35 % dư nợ (kỳ Q2/2026); (72) Cơ cấu kỳ hạn TPDN — 5-10 năm đạt 26.25 % dư nợ (kỳ Q2/2026); (73) Cơ cấu kỳ hạn TPDN — Trên 10 năm đạt 1.49 % dư nợ (kỳ Q2/2026); (74) Cơ cấu nhà đầu tư nắm giữ TPCP — Khác đạt 2.30 % (kỳ Q1/2026); (75) Vốn hóa thị trường chứng khoán / GDP đạt 61.40 % GDP (kỳ 2025); (76) Nợ công / GDP (có dự báo tới 2031) đạt 26.60 % GDP (kỳ 2031); (77) Tỷ lệ đô thị hóa đạt 38.80 % dân số (kỳ 2025); (78) Dân số 65+ tuổi đạt 22.00 triệu người (kỳ 2050); (79) GDP theo sử dụng — Tiêu dùng Chính phủ đạt 9.40 % GDP (kỳ 2025); (80) GDP theo sử dụng — Đầu tư (GFCF) đạt 34.60 % GDP (kỳ 2031); (81) Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986) đạt 42.70 % GDP (kỳ 2025); (82) Tổng đầu tư / GDP đạt 34.60 % GDP (kỳ 2031); (83) GDP bình quân đầu người (danh nghĩa) đạt 6652.00 USD (kỳ 2031); (84) GDP bình quân đầu người (PPP) đạt 27821.00 Int$ (kỳ 2031); (85) GNI bình quân đầu người (Atlas) đạt 4970.00 USD (kỳ 2025); (86) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026); (87) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026); (88) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.83 điểm % (kỳ 2026-08-27). Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) Lạm phát cơ bản (YoY) đạt 4.63 % (kỳ T7/2026); (2) Lãi suất liên ngân hàng 2 tuần đạt 6.60 % (kỳ 2026-08-27); (3) Lãi suất liên ngân hàng 6 tháng đạt 8.50 % (kỳ Tuần 35/2026); (4) Tăng trưởng cung tiền M2 (YoY) đạt 4.24 % (kỳ T6/2026); (5) Xuất khẩu (YoY) đạt 25.01 % (kỳ T7/2026); (6) Nhập khẩu (YoY) đạt 41.42 % (kỳ T7/2026); (7) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026); (8) Chi ngân sách (YoY) đạt -8.16 % (kỳ Q2/2026); (9) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 9.53 % (kỳ T7/2026); (10) VN-Index P/E (ex-VIN) đạt 11.29 x (kỳ T8/2026); (11) VN-Index P/B (ex-VIN) đạt 1.75 x (kỳ T8/2026); (12) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026); (13) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026); (14) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026); (15) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt 212.09 tỷ VND (kỳ 2026-08-27); (16) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 302.00 ngày (kỳ Tuần 35/2026); (17) Đóng góp vào lạm phát — nhóm Y tế đạt 0.07 điểm % (kỳ T7/2026); (18) Đóng góp vào lạm phát — nhóm Khác đạt 1.21 điểm % (kỳ T7/2026); (19) VN-Index P/E (headline, có VIN) đạt 12.46 x (kỳ T8/2026); (20) VN-Index P/B (headline, có VIN) đạt 2.06 x (kỳ T8/2026); (21) Số dư OMO đang lưu hành (kênh cầm cố) đạt 200982.40 tỷ đồng (kỳ 2026-08-27); (22) Lãi suất liên ngân hàng qua đêm Nhật Bản đạt 0.84 % (kỳ 2026-06-01); (23) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.67 % (kỳ 2026-06-01); (24) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt -23.00 nghìn người (kỳ 2026-07-01); (25) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01); (26) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.08 % (kỳ 2026-07-01); (27) Lợi suất TPCP Mỹ kỳ hạn 1 năm đạt 4.04 % (kỳ 2026-08-27); (28) CPI (HICP) Eurozone (YoY) đạt 2.93 % (kỳ 2026-07-01); (29) Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng) đạt 17.41 % (kỳ T6/2026); (30) Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng) đạt 10.39 % (kỳ T6/2026); (31) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 156.84 % (kỳ T6/2026); (32) Lợi suất TPCP thứ cấp 1 năm (40yo) đạt 3.66 % (kỳ T8/2026); (33) Lợi suất TPCP thứ cấp 2 năm (40yo) đạt 3.77 % (kỳ T8/2026); (34) Chênh lệch lợi suất TPCP 10Y-2Y (VN) đạt 75.90 điểm % (kỳ T8/2026); (35) Chênh lệch lợi suất TPCP 2Y-1Y (VN) đạt 10.90 điểm % (kỳ T8/2026); (36) Dự trữ ngoại hối — SDR đạt 1.94 tỷ USD (kỳ T6/2026); (37) P/E thị trường (theo tháng, từ 2016) đạt 14.97 lần (kỳ T8/2026); (38) Cán cân vãng lai — Hàng hóa đạt 2.43 tỷ USD (kỳ Q1/2026); (39) Cán cân vãng lai — Thu nhập thứ cấp đạt 3.19 tỷ USD (kỳ Q1/2026); (40) Cán cân tài chính — FDI (tài sản) đạt 0.16 tỷ USD (kỳ Q1/2026); (41) Cán cân tài chính — Đầu tư gián tiếp (tài sản) đạt -0.01 tỷ USD (kỳ Q1/2026); (42) Cán cân tài chính — Khác (tài sản) đạt 2.57 tỷ USD (kỳ Q1/2026); (43) FDI — Công cụ nợ đạt -1.21 tỷ USD (kỳ Q1/2026); (44) Đầu tư khác — Cho vay đạt -0.53 tỷ USD (kỳ Q1/2026); (45) Tiền gửi (cán cân tài chính) — Khu vực khác đạt 2.34 tỷ USD (kỳ Q1/2026); (46) Vay nợ (cán cân tài chính) — Chính phủ đạt 0.54 tỷ USD (kỳ Q1/2026); (47) Vay nợ (cán cân tài chính) — Khu vực khác đạt -1.07 tỷ USD (kỳ Q1/2026); (48) Cơ cấu kỳ hạn TPCP — 5-10 năm đạt 51.39 % dư nợ (kỳ Q2/2026); (49) Cơ cấu kỳ hạn TPCP — Trên 10 năm đạt 24.14 % dư nợ (kỳ Q2/2026); (50) Cơ cấu kỳ hạn TPDN — 1-3 năm đạt 57.91 % dư nợ (kỳ Q2/2026); (51) Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng đạt 36.56 % (kỳ Q1/2026); (52) Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm đạt 60.44 % (kỳ Q1/2026); (53) Dân số 0-14 tuổi đạt 18.70 triệu người (kỳ 2050); (54) Dân số 15-64 tuổi (lao động) đạt 69.30 triệu người (kỳ 2050); (55) Tỷ lệ phụ thuộc chung đạt 58.60 % (kỳ 2050); (56) Tỷ lệ phụ thuộc — Người già đạt 31.70 % (kỳ 2050); (57) GDP theo sử dụng — Tiêu dùng hộ gia đình đạt 53.20 % GDP (kỳ 2025); (58) GDP theo sử dụng — Xuất khẩu đạt 79.36 % GDP (kỳ 2026); (59) GDP theo sử dụng — Nhập khẩu đạt 75.19 % GDP (kỳ 2026); (60) Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986) đạt 11.60 % GDP (kỳ 2025); (61) Tiết kiệm quốc gia / GDP đạt 35.20 % GDP (kỳ 2031); (62) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026); (63) FDI đăng ký theo tháng (rời rạc) đạt 3.40 tỷ USD (kỳ T7/2026); (64) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 88.56 nghìn tỷ đồng (kỳ T7/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 11.29x, P/B 1.75x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.36% — mức định giá được xếp loại \"Hợp lý\". Kết hợp Scorecard vĩ mô (+1/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.",
     "economy_impact": [
       {
         "heading": "Tăng trưởng & Lạm phát",
-        "text": "Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026), tốt lên; Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.50 % (kỳ T7/2026), tốt lên; PMI sản xuất (S&P Global) đạt 52.90 điểm (kỳ T7/2026), tốt lên; Doanh số bán lẻ (YoY) đạt 14.48 % (kỳ T7/2026), tốt lên. Theo NSO, động lực tăng trưởng GDP 2026-Q2 chủ yếu đến từ khu vực Công nghiệp-Xây dựng (đóng góp 50.07% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, tư nhân và FDI — tăng 15.20% (2026-H1), vượt xa tốc độ tăng tiêu dùng cuối cùng, cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. Ở chiều giá cả, CPI (YoY) đạt 4.45 % (kỳ T7/2026), tốt lên; Lạm phát cơ bản (YoY) đạt 4.63 % (kỳ T7/2026), xấu đi."
+        "text": "Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026), tốt lên; Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.50 % (kỳ T7/2026), tốt lên; PMI sản xuất (S&P Global) đạt 52.90 điểm (kỳ T7/2026), tốt lên; Doanh số bán lẻ (YoY) đạt 14.48 % (kỳ T7/2026), tốt lên. Theo NSO, động lực tăng trưởng GDP 2026-Q2 chủ yếu đến từ khu vực Công nghiệp-Xây dựng (đóng góp 50.07% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, tư nhân và FDI — tăng 15.20% (2026-H1), vượt xa tốc độ tăng tiêu dùng cuối cùng, cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. Ở chiều giá cả, CPI (YoY) đạt 4.45 % (kỳ T7/2026), tốt lên; Lạm phát cơ bản (YoY) đạt 4.63 % (kỳ T7/2026), xấu đi. Giá dầu Brent hạ nhiệt là một kênh giảm áp lực CPI đáng chú ý — tác động trực tiếp nhất qua cấu phần chi phí vận tải/nhiên liệu trong rổ CPI (nhóm Giao thông), gián tiếp qua chi phí logistics đầu vào của doanh nghiệp sản xuất, chứ không phải do giá lương thực-thực phẩm hạ."
       },
       {
         "heading": "Thanh khoản hệ thống & Lãi suất chính thức (OMO/VNIBOR/niêm yết Big4)",
-        "text": "Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 % (kỳ 2026-08-19). Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 2.50% so với 9 tháng 8.95%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong 300 ngày gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra). Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 % (kỳ Tuần 35/2026), ổn định; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 % (kỳ Tuần 32/2026), ổn định; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 % (kỳ Tuần 35/2026), ổn định."
+        "text": "Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 % (kỳ 2026-08-19). Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 1.20% so với 9 tháng 8.12%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong 302 ngày gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra). Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 % (kỳ Tuần 35/2026), ổn định; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 % (kỳ Tuần 32/2026), ổn định; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 % (kỳ Tuần 35/2026), ổn định."
       },
       {
         "heading": "⚠️ Lãi suất THỰC TẾ thị trường (khác biểu niêm yết)",
@@ -363,11 +363,11 @@
       },
       {
         "heading": "Lao động & Áp lực bên ngoài",
-        "text": "Về lao động, Tỷ lệ thất nghiệp ở mức 2.21 % (kỳ Q1/2026). Áp lực từ bên ngoài: Lãi suất Fed (FEDFUNDS) đạt 3.63 % (kỳ 2026-07-01), ổn định; Giá dầu Brent đạt 95.29 USD/thùng (kỳ 2026-08-18), xấu đi; Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 118.06 điểm (kỳ 2026-08-21), ổn định; Tăng trưởng GDP Trung Quốc đạt 4.96 % (kỳ 2025), ổn định. Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là một trong các đối tác thương mại lớn nhất."
+        "text": "Về lao động, Tỷ lệ thất nghiệp ở mức 2.21 % (kỳ Q1/2026). Áp lực từ bên ngoài: Lãi suất Fed (FEDFUNDS) đạt 3.63 % (kỳ 2026-07-01), ổn định; Giá dầu Brent đạt 88.24 USD/thùng (kỳ 2026-08-25), tốt lên; Chỉ số USD (DTWEXBGS, thay thế DXY) đạt 118.06 điểm (kỳ 2026-08-21), ổn định; Tăng trưởng GDP Trung Quốc đạt 4.96 % (kỳ 2025), ổn định. Lãi suất Fed và chỉ số USD ảnh hưởng trực tiếp tới dòng vốn ngoại và tỷ giá USD/VND; giá dầu Brent tác động tới chi phí đầu vào và lạm phát nhập khẩu do Việt Nam là nước nhập khẩu ròng xăng dầu tinh chế; tăng trưởng GDP Trung Quốc ảnh hưởng tới nhu cầu nhập khẩu hàng hóa Việt Nam do đây là một trong các đối tác thương mại lớn nhất."
       }
     ],
-    "market_impact": "Với Scorecard vĩ mô -1/6 điểm (bất lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Hợp lý\", khuyến nghị phân bổ vốn hiện tại là \"Giải ngân một phần\": Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 4.35%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái phiếu ở mức lãi suất hiện tại. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (6.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng. Lãi suất liên ngân hàng tăng phản ánh thanh khoản hệ thống thắt chặt hơn — thường bất lợi cho nhóm cổ phiếu dùng đòn bẩy cao (bất động sản, xây dựng) do chi phí vốn tăng.",
-    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: Lạm phát cơ bản (YoY), Lãi suất liên ngân hàng 3 tháng, Tăng trưởng cung tiền M2 (YoY), Cán cân thương mại (lũy kế), Xuất khẩu (YoY) và Giá dầu Brent.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
+    "market_impact": "Với Scorecard vĩ mô +1/6 điểm (thuận lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Hợp lý\", khuyến nghị phân bổ vốn hiện tại là \"Duy trì, chọn lọc\": Vĩ mô tốt, định giá hợp lý — giữ tỷ trọng hiện tại, chọn cổ phiếu nền tảng tốt.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 4.36%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái phiếu ở mức lãi suất hiện tại. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (6.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent hạ nhiệt hỗ trợ biên lợi nhuận nhóm vận tải, nhựa, phân bón (chi phí đầu vào giảm), nhưng bất lợi cho nhóm khai thác/dầu khí thượng nguồn.",
+    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: Lạm phát cơ bản (YoY), Tăng trưởng cung tiền M2 (YoY), Khối ngoại mua/bán ròng HOSE (theo phiên), Cán cân thương mại (lũy kế) và Xuất khẩu (YoY).\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo."
   },
   "monitoringTable": {
     "periods": [
@@ -2788,27 +2788,27 @@
         },
         {
           "period": "2026-W35",
-          "value": 7.86,
+          "value": 7.11,
           "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
         }
       ],
       "trend": {
-        "latest": 7.86,
+        "latest": 7.11,
         "latest_period": "2026-W35",
         "latest_source": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1",
         "n_points": 8,
         "prior": 7.52,
         "prior_period": "2026-W34",
-        "delta": 0.34,
-        "delta_vs_4back": 0.52,
+        "delta": -0.41,
+        "delta_vs_4back": -0.23,
         "far_period": "2026-W31",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "Trading Economics (nguồn tham chiếu ban đầu) bị chặn 403 (WAF). Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng 'Lãi suất BQ liên Ngân hàng' theo kỳ hạn O/N-1W-2W-1M-3M-6M-9M — dùng cột 3 Tháng — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy).",
       "impact": "Lãi suất liên ngân hàng tăng cao là dấu hiệu sớm các NHTM đang thiếu vốn khả dụng (thị trường 2) — khi kéo dài, áp lực này truyền dẫn sang lãi suất huy động thị trường 1, đẩy chi phí vốn vay của doanh nghiệp/dân cư lên cao, không phải tín hiệu tích cực về lợi suất cho người gửi tiền."
@@ -3199,18 +3199,28 @@
           "period": "2026-08-25",
           "value": 2.5,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 2.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 1.2,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
-        "latest": 2.5,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
-        "prior": 4.0,
-        "prior_period": "2026-08-24",
-        "delta": -1.5,
-        "delta_vs_4back": -2.4,
-        "far_period": "2026-08-18",
+        "latest": 1.2,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
+        "prior": 2.0,
+        "prior_period": "2026-08-26",
+        "delta": -0.8,
+        "delta_vs_4back": -1.8,
+        "far_period": "2026-08-20",
         "direction": "down",
         "value_arrow": "↓",
         "is_improving": true,
@@ -3608,25 +3618,35 @@
           "period": "2026-08-25",
           "value": 6.3,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 6.3,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 6.3,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 6.3,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
-        "prior": 4.5,
-        "prior_period": "2026-08-24",
-        "delta": 1.8,
-        "delta_vs_4back": 0.9,
-        "far_period": "2026-08-18",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
+        "prior": 6.3,
+        "prior_period": "2026-08-26",
+        "delta": 0.0,
+        "delta_vs_4back": 2.75,
+        "far_period": "2026-08-20",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
       "impact": "1 điểm trên đường cong lãi suất liên ngân hàng VNIBOR — dùng so sánh chéo với các kỳ hạn khác để đánh giá áp lực chi phí vốn hệ thống đang tập trung ở tầm nhìn ngắn hay dài hạn."
@@ -4017,18 +4037,28 @@
           "period": "2026-08-25",
           "value": 6.35,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 6.4,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 6.6,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
-        "latest": 6.35,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
-        "prior": 6.13,
-        "prior_period": "2026-08-24",
-        "delta": 0.22,
-        "delta_vs_4back": 0.35,
-        "far_period": "2026-08-18",
+        "latest": 6.6,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
+        "prior": 6.4,
+        "prior_period": "2026-08-26",
+        "delta": 0.2,
+        "delta_vs_4back": 1.0,
+        "far_period": "2026-08-20",
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": false,
@@ -4426,18 +4456,28 @@
           "period": "2026-08-25",
           "value": 7.05,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 6.9,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 6.55,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
-        "latest": 7.05,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
-        "prior": 7.2,
-        "prior_period": "2026-08-24",
-        "delta": -0.15,
-        "delta_vs_4back": 0.02,
-        "far_period": "2026-08-18",
+        "latest": 6.55,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
+        "prior": 6.9,
+        "prior_period": "2026-08-26",
+        "delta": -0.35,
+        "delta_vs_4back": -0.48,
+        "far_period": "2026-08-20",
         "direction": "down",
         "value_arrow": "↓",
         "is_improving": true,
@@ -4488,19 +4528,19 @@
         },
         {
           "period": "2026-W35",
-          "value": 8.77,
+          "value": 8.5,
           "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
         }
       ],
       "trend": {
-        "latest": 8.77,
+        "latest": 8.5,
         "latest_period": "2026-W35",
         "latest_source": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1",
         "n_points": 7,
         "prior": 7.05,
         "prior_period": "2026-W34",
-        "delta": 1.72,
-        "delta_vs_4back": 1.55,
+        "delta": 1.45,
+        "delta_vs_4back": 1.28,
         "far_period": "2026-W31",
         "direction": "up",
         "value_arrow": "↑",
@@ -4552,19 +4592,19 @@
         },
         {
           "period": "2026-W35",
-          "value": 8.95,
+          "value": 8.12,
           "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
         }
       ],
       "trend": {
-        "latest": 8.95,
+        "latest": 8.12,
         "latest_period": "2026-W35",
         "latest_source": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1",
         "n_points": 7,
         "prior": 9.26,
         "prior_period": "2026-W34",
-        "delta": -0.31,
-        "delta_vs_4back": -0.31,
+        "delta": -1.14,
+        "delta_vs_4back": -1.14,
         "far_period": "2026-W31",
         "direction": "down",
         "value_arrow": "↓",
@@ -6204,18 +6244,18 @@
         },
         {
           "period": "2026-08",
-          "value": 26059.91,
+          "value": 26044.82,
           "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
         }
       ],
       "trend": {
-        "latest": 26059.91,
+        "latest": 26044.82,
         "latest_period": "2026-08",
         "latest_source": "https://api.exchangerate-api.com/v4/latest/USD",
         "n_points": 3,
         "prior": 26183.58,
         "prior_period": "2026-07",
-        "delta": -123.67,
+        "delta": -138.76,
         "direction": "down",
         "value_arrow": "↓",
         "is_improving": true,
@@ -6984,31 +7024,6 @@
       "autoSource": "fred",
       "series": [
         {
-          "period": "2026-08-03",
-          "value": 88.9,
-          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-08-04",
-          "value": 86.47,
-          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-08-05",
-          "value": 86.65,
-          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-08-06",
-          "value": 89.65,
-          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-08-07",
-          "value": 87.62,
-          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
           "period": "2026-08-10",
           "value": 92.74,
           "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
@@ -7042,25 +7057,50 @@
           "period": "2026-08-18",
           "value": 95.29,
           "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-19",
+          "value": 92.37,
+          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-20",
+          "value": 94.0,
+          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-21",
+          "value": 96.92,
+          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-24",
+          "value": 92.71,
+          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 88.24,
+          "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         }
       ],
       "trend": {
-        "latest": 95.29,
-        "latest_period": "2026-08-18",
+        "latest": 88.24,
+        "latest_period": "2026-08-25",
         "latest_source": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
         "n_points": 12,
-        "prior": 92.43,
-        "prior_period": "2026-08-17",
-        "delta": 2.86,
-        "delta_vs_4back": 2.77,
-        "far_period": "2026-08-12",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 92.71,
+        "prior_period": "2026-08-24",
+        "delta": -4.47,
+        "delta_vs_4back": -4.13,
+        "far_period": "2026-08-19",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu.",
       "impact": "Giá dầu tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng; đồng thời làm tăng chi phí nhập khẩu xăng dầu tinh chế của Việt Nam (nước nhập khẩu ròng), góp phần vào lạm phát chi phí đẩy."
@@ -7237,18 +7277,18 @@
         },
         {
           "period": "2026-08",
-          "value": 11.305504848383553,
+          "value": 11.29118768979197,
           "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
         }
       ],
       "trend": {
-        "latest": 11.305504848383553,
+        "latest": 11.29118768979197,
         "latest_period": "2026-08",
         "latest_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
         "n_points": 2,
         "prior": 10.728874927222238,
         "prior_period": "2026-07",
-        "delta": 0.5766,
+        "delta": 0.5623,
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": false,
@@ -7274,18 +7314,18 @@
         },
         {
           "period": "2026-08",
-          "value": 1.7557412507262906,
+          "value": 1.753517800622156,
           "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
         }
       ],
       "trend": {
-        "latest": 1.7557412507262906,
+        "latest": 1.753517800622156,
         "latest_period": "2026-08",
         "latest_source": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json",
         "n_points": 2,
         "prior": 1.6661908102494352,
         "prior_period": "2026-07",
-        "delta": 0.0896,
+        "delta": 0.0873,
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": false,
@@ -8075,25 +8115,30 @@
           "period": "2026-08-25",
           "value": 276.68,
           "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=26/08/2026"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 212.09,
+          "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=28/08/2026"
         }
       ],
       "trend": {
-        "latest": 276.68,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=26/08/2026",
-        "n_points": 18,
-        "prior": -617.34,
-        "prior_period": "2026-08-20",
-        "delta": 894.02,
-        "delta_vs_4back": 351.36,
-        "far_period": "2026-08-07",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
+        "latest": 212.09,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=28/08/2026",
+        "n_points": 19,
+        "prior": 276.68,
+        "prior_period": "2026-08-25",
+        "delta": -64.59,
+        "delta_vs_4back": 789.23,
+        "far_period": "2026-08-13",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
       },
       "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
       "impact": "Khối ngoại mua ròng liên tục là tín hiệu tích cực về niềm tin nhà đầu tư nước ngoài vào thị trường Việt Nam — bán ròng kéo dài (đặc biệt khi đi kèm tỷ giá USD/VND chịu áp lực) là dấu hiệu dòng vốn ngoại đang rút ra, có thể làm giảm thanh khoản và định giá chung của thị trường."
@@ -8137,19 +8182,19 @@
         },
         {
           "period": "2026-W35",
-          "value": 300,
+          "value": 302,
           "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
         }
       ],
       "trend": {
-        "latest": 300,
+        "latest": 302,
         "latest_period": "2026-W35",
         "latest_source": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn",
         "n_points": 7,
         "prior": 295,
         "prior_period": "2026-W34",
-        "delta": 5,
-        "delta_vs_4back": 25,
+        "delta": 7,
+        "delta_vs_4back": 27,
         "far_period": "2026-W31",
         "direction": "up",
         "value_arrow": "↑",
@@ -10904,25 +10949,25 @@
         },
         {
           "period": "2026-08",
-          "value": 12.18,
+          "value": 12.46,
           "source_url": "https://24hmoney.vn/indices/vn-index"
         }
       ],
       "trend": {
-        "latest": 12.18,
+        "latest": 12.46,
         "latest_period": "2026-08",
         "latest_source": "https://24hmoney.vn/indices/vn-index",
         "n_points": 2,
         "prior": 12.38,
         "prior_period": "2026-07",
-        "delta": -0.2,
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
+        "delta": 0.08,
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
       },
       "note": "Chỉ báo mới 2026-07-25 — P/E VN-Index THẬT (bao gồm cả họ VIN: VIC/VHM/VRE/VPL), fetch SONG SONG với vnindex_pe (ex-VIN) để có 2 quyết định phân bổ vốn độc lập đối chiếu nhau (user 2026-07-25). Nguồn: 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} trong window.__NUXT__).",
       "impact": "So sánh với vnindex_pe (ex-VIN): chênh lệch lớn giữa 2 số cho biết mức độ VIN đang kéo méo định giá chung của thị trường lên/xuống."
@@ -10941,18 +10986,18 @@
         },
         {
           "period": "2026-08",
-          "value": 2.01,
+          "value": 2.06,
           "source_url": "https://24hmoney.vn/indices/vn-index"
         }
       ],
       "trend": {
-        "latest": 2.01,
+        "latest": 2.06,
         "latest_period": "2026-08",
         "latest_source": "https://24hmoney.vn/indices/vn-index",
         "n_points": 2,
         "prior": 1.98,
         "prior_period": "2026-07",
-        "delta": 0.03,
+        "delta": 0.08,
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": false,
@@ -11375,18 +11420,28 @@
           "period": "2026-08-25",
           "value": 3.7,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 3.7,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 3.7,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 3.7,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
         "prior": 3.7,
-        "prior_period": "2026-08-24",
+        "prior_period": "2026-08-26",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -11784,18 +11839,28 @@
           "period": "2026-08-25",
           "value": 4.26,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.26,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.27,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
-        "latest": 4.26,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
+        "latest": 4.27,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
         "prior": 4.26,
-        "prior_period": "2026-08-24",
-        "delta": 0.0,
+        "prior_period": "2026-08-26",
+        "delta": 0.01,
         "delta_vs_4back": 0.02,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -12193,18 +12258,28 @@
           "period": "2026-08-25",
           "value": 4.32,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.32,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.32,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 4.32,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
-        "prior": 4.31,
-        "prior_period": "2026-08-24",
-        "delta": 0.01,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
+        "prior": 4.32,
+        "prior_period": "2026-08-26",
+        "delta": 0.0,
         "delta_vs_4back": 0.01,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -12602,18 +12677,28 @@
           "period": "2026-08-25",
           "value": 4.45,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.45,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.45,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 4.45,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
         "prior": 4.45,
-        "prior_period": "2026-08-24",
+        "prior_period": "2026-08-26",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -13011,18 +13096,28 @@
           "period": "2026-08-25",
           "value": 4.58,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.58,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.58,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 4.58,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
         "prior": 4.58,
-        "prior_period": "2026-08-24",
+        "prior_period": "2026-08-26",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -13405,18 +13500,28 @@
           "period": "2026-08-25",
           "value": 6481.27,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 3315.31,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 9596.25,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
-        "latest": 6481.27,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 73,
-        "prior": -762.01,
-        "prior_period": "2026-08-24",
-        "delta": 7243.28,
-        "delta_vs_4back": 6176.64,
-        "far_period": "2026-08-18",
+        "latest": 9596.25,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 75,
+        "prior": 3315.31,
+        "prior_period": "2026-08-26",
+        "delta": 6280.94,
+        "delta_vs_4back": 8372.11,
+        "far_period": "2026-08-20",
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": true,
@@ -14623,18 +14728,28 @@
           "period": "2026-08-25",
           "value": 188070.84,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 191386.15,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 200982.4,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
-        "latest": 188070.84,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 76,
-        "prior": 181589.57,
-        "prior_period": "2026-08-24",
-        "delta": 6481.27,
-        "delta_vs_4back": 7080.6,
-        "far_period": "2026-08-18",
+        "latest": 200982.4,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 78,
+        "prior": 191386.15,
+        "prior_period": "2026-08-26",
+        "delta": 9596.25,
+        "delta_vs_4back": 20148.45,
+        "far_period": "2026-08-20",
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": false,
@@ -14653,16 +14768,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-08-03",
-          "value": 2.25,
-          "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-        },
-        {
-          "period": "2026-08-04",
-          "value": 2.25,
-          "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-        },
         {
           "period": "2026-08-05",
           "value": 2.25,
@@ -14772,18 +14877,28 @@
           "period": "2026-08-26",
           "value": 2.25,
           "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 2.25,
+          "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+        },
+        {
+          "period": "2026-08-28",
+          "value": 2.25,
+          "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
         }
       ],
       "trend": {
         "latest": 2.25,
-        "latest_period": "2026-08-26",
+        "latest_period": "2026-08-28",
         "latest_source": "https://fred.stlouisfed.org/series/ECBDFR",
         "n_points": 24,
         "prior": 2.25,
-        "prior_period": "2026-08-25",
+        "prior_period": "2026-08-27",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-22",
+        "far_period": "2026-08-24",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -14802,16 +14917,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-07-22",
-          "value": 3.73,
-          "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 3.73,
-          "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-        },
         {
           "period": "2026-07-24",
           "value": 3.73,
@@ -14921,18 +15026,28 @@
           "period": "2026-08-24",
           "value": 3.73,
           "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 3.73,
+          "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 3.73,
+          "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
         }
       ],
       "trend": {
         "latest": 3.73,
-        "latest_period": "2026-08-24",
+        "latest_period": "2026-08-26",
         "latest_source": "https://fred.stlouisfed.org/series/IUDSOIA",
         "n_points": 24,
         "prior": 3.73,
-        "prior_period": "2026-08-21",
+        "prior_period": "2026-08-25",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -15101,21 +15216,6 @@
       "autoSource": "fred",
       "series": [
         {
-          "period": "2026-07-22",
-          "value": 4.67,
-          "source_url": "https://fred.stlouisfed.org/series/DGS10"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 4.71,
-          "source_url": "https://fred.stlouisfed.org/series/DGS10"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 4.69,
-          "source_url": "https://fred.stlouisfed.org/series/DGS10"
-        },
-        {
           "period": "2026-07-27",
           "value": 4.65,
           "source_url": "https://fred.stlouisfed.org/series/DGS10"
@@ -15219,25 +15319,40 @@
           "period": "2026-08-24",
           "value": 4.7,
           "source_url": "https://fred.stlouisfed.org/series/DGS10"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 4.64,
+          "source_url": "https://fred.stlouisfed.org/series/DGS10"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.66,
+          "source_url": "https://fred.stlouisfed.org/series/DGS10"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.67,
+          "source_url": "https://fred.stlouisfed.org/series/DGS10"
         }
       ],
       "trend": {
-        "latest": 4.7,
-        "latest_period": "2026-08-24",
+        "latest": 4.67,
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/DGS10",
         "n_points": 24,
-        "prior": 4.74,
-        "prior_period": "2026-08-21",
-        "delta": -0.04,
-        "delta_vs_4back": -0.01,
-        "far_period": "2026-08-18",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
+        "prior": 4.66,
+        "prior_period": "2026-08-26",
+        "delta": 0.01,
+        "delta_vs_4back": -0.07,
+        "far_period": "2026-08-21",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "10-Year Treasury Constant Maturity Rate (FRED series DGS10) — lãi suất phi rủi ro tham chiếu toàn cầu, ảnh hưởng định giá mọi tài sản rủi ro (kể cả VN-Index) qua kênh chi phí vốn.",
       "impact": "Lợi suất Mỹ tăng thường kéo dòng vốn về Mỹ (USD mạnh lên), gây áp lực lên tỷ giá và định giá cổ phiếu các thị trường mới nổi trong đó có Việt Nam."
@@ -16874,21 +16989,6 @@
       "autoSource": "fred",
       "series": [
         {
-          "period": "2026-07-22",
-          "value": 3.89,
-          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 3.95,
-          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 3.96,
-          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-        },
-        {
           "period": "2026-07-27",
           "value": 3.96,
           "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
@@ -16992,18 +17092,33 @@
           "period": "2026-08-24",
           "value": 3.87,
           "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 3.86,
+          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 3.85,
+          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 3.84,
+          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
         }
       ],
       "trend": {
-        "latest": 3.87,
-        "latest_period": "2026-08-24",
+        "latest": 3.84,
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/DGS3MO",
         "n_points": 24,
-        "prior": 3.88,
-        "prior_period": "2026-08-21",
+        "prior": 3.85,
+        "prior_period": "2026-08-26",
         "delta": -0.01,
-        "delta_vs_4back": 0.01,
-        "far_period": "2026-08-18",
+        "delta_vs_4back": -0.04,
+        "far_period": "2026-08-21",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -17022,21 +17137,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-07-22",
-          "value": 4.11,
-          "source_url": "https://fred.stlouisfed.org/series/DGS1"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 4.15,
-          "source_url": "https://fred.stlouisfed.org/series/DGS1"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 4.14,
-          "source_url": "https://fred.stlouisfed.org/series/DGS1"
-        },
         {
           "period": "2026-07-27",
           "value": 4.14,
@@ -17141,25 +17241,40 @@
           "period": "2026-08-24",
           "value": 4.04,
           "source_url": "https://fred.stlouisfed.org/series/DGS1"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 4.01,
+          "source_url": "https://fred.stlouisfed.org/series/DGS1"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.02,
+          "source_url": "https://fred.stlouisfed.org/series/DGS1"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.04,
+          "source_url": "https://fred.stlouisfed.org/series/DGS1"
         }
       ],
       "trend": {
         "latest": 4.04,
-        "latest_period": "2026-08-24",
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/DGS1",
         "n_points": 24,
-        "prior": 4.03,
-        "prior_period": "2026-08-21",
-        "delta": 0.01,
-        "delta_vs_4back": 0.05,
-        "far_period": "2026-08-18",
-        "direction": "flat",
-        "value_arrow": "→",
-        "is_improving": null,
-        "label": "flat",
-        "arrow": "→",
-        "judgment_label": "Ổn định",
-        "judgment_color": "#f59e0b"
+        "prior": 4.02,
+        "prior_period": "2026-08-26",
+        "delta": 0.02,
+        "delta_vs_4back": 0.01,
+        "far_period": "2026-08-21",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
       },
       "note": "1-Year Treasury Constant Maturity Rate (FRED series DGS1) — điểm giữa đường cong, tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
       "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
@@ -17171,21 +17286,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-07-22",
-          "value": 4.31,
-          "source_url": "https://fred.stlouisfed.org/series/DGS2"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 4.37,
-          "source_url": "https://fred.stlouisfed.org/series/DGS2"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 4.33,
-          "source_url": "https://fred.stlouisfed.org/series/DGS2"
-        },
         {
           "period": "2026-07-27",
           "value": 4.31,
@@ -17290,18 +17390,33 @@
           "period": "2026-08-24",
           "value": 4.24,
           "source_url": "https://fred.stlouisfed.org/series/DGS2"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 4.17,
+          "source_url": "https://fred.stlouisfed.org/series/DGS2"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.19,
+          "source_url": "https://fred.stlouisfed.org/series/DGS2"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.2,
+          "source_url": "https://fred.stlouisfed.org/series/DGS2"
         }
       ],
       "trend": {
-        "latest": 4.24,
-        "latest_period": "2026-08-24",
+        "latest": 4.2,
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/DGS2",
         "n_points": 24,
-        "prior": 4.24,
-        "prior_period": "2026-08-21",
-        "delta": 0.0,
-        "delta_vs_4back": 0.05,
-        "far_period": "2026-08-18",
+        "prior": 4.19,
+        "prior_period": "2026-08-26",
+        "delta": 0.01,
+        "delta_vs_4back": -0.04,
+        "far_period": "2026-08-21",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -17320,21 +17435,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-07-22",
-          "value": 4.41,
-          "source_url": "https://fred.stlouisfed.org/series/DGS5"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 4.46,
-          "source_url": "https://fred.stlouisfed.org/series/DGS5"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 4.43,
-          "source_url": "https://fred.stlouisfed.org/series/DGS5"
-        },
         {
           "period": "2026-07-27",
           "value": 4.4,
@@ -17439,25 +17539,40 @@
           "period": "2026-08-24",
           "value": 4.41,
           "source_url": "https://fred.stlouisfed.org/series/DGS5"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 4.35,
+          "source_url": "https://fred.stlouisfed.org/series/DGS5"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 4.37,
+          "source_url": "https://fred.stlouisfed.org/series/DGS5"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 4.38,
+          "source_url": "https://fred.stlouisfed.org/series/DGS5"
         }
       ],
       "trend": {
-        "latest": 4.41,
-        "latest_period": "2026-08-24",
+        "latest": 4.38,
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/DGS5",
         "n_points": 24,
-        "prior": 4.43,
-        "prior_period": "2026-08-21",
-        "delta": -0.02,
-        "delta_vs_4back": 0.04,
-        "far_period": "2026-08-18",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
+        "prior": 4.37,
+        "prior_period": "2026-08-26",
+        "delta": 0.01,
+        "delta_vs_4back": -0.05,
+        "far_period": "2026-08-21",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
       "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
@@ -17469,21 +17584,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-07-22",
-          "value": 5.15,
-          "source_url": "https://fred.stlouisfed.org/series/DGS30"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 5.17,
-          "source_url": "https://fred.stlouisfed.org/series/DGS30"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 5.16,
-          "source_url": "https://fred.stlouisfed.org/series/DGS30"
-        },
         {
           "period": "2026-07-27",
           "value": 5.12,
@@ -17588,25 +17688,40 @@
           "period": "2026-08-24",
           "value": 5.23,
           "source_url": "https://fred.stlouisfed.org/series/DGS30"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 5.17,
+          "source_url": "https://fred.stlouisfed.org/series/DGS30"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 5.18,
+          "source_url": "https://fred.stlouisfed.org/series/DGS30"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 5.19,
+          "source_url": "https://fred.stlouisfed.org/series/DGS30"
         }
       ],
       "trend": {
-        "latest": 5.23,
-        "latest_period": "2026-08-24",
+        "latest": 5.19,
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/DGS30",
         "n_points": 24,
-        "prior": 5.27,
-        "prior_period": "2026-08-21",
-        "delta": -0.04,
-        "delta_vs_4back": -0.05,
-        "far_period": "2026-08-18",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
+        "prior": 5.18,
+        "prior_period": "2026-08-26",
+        "delta": 0.01,
+        "delta_vs_4back": -0.08,
+        "far_period": "2026-08-21",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "30-Year Treasury Constant Maturity Rate (FRED series DGS30) — đầu dài nhất đường cong lợi suất.",
       "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ, phản ánh kỳ vọng lạm phát/tăng trưởng dài hạn."
@@ -21160,18 +21275,28 @@
           "period": "2026-08-25",
           "value": 0.0,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 0.0,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 311,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 313,
         "prior": 0.0,
-        "prior_period": "2026-08-24",
+        "prior_period": "2026-08-26",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
@@ -44731,21 +44856,6 @@
       "autoSource": "derived",
       "series": [
         {
-          "period": "2026-07-22",
-          "value": 0.36,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 0.34,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 0.36,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
-        },
-        {
           "period": "2026-07-27",
           "value": 0.34,
           "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
@@ -44849,25 +44959,40 @@
           "period": "2026-08-24",
           "value": 0.46,
           "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 0.47,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 0.47,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 0.47,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
         }
       ],
       "trend": {
-        "latest": 0.46,
-        "latest_period": "2026-08-24",
+        "latest": 0.47,
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/T10Y2Y",
         "n_points": 24,
-        "prior": 0.5,
-        "prior_period": "2026-08-21",
-        "delta": -0.04,
-        "delta_vs_4back": -0.06,
-        "far_period": "2026-08-18",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 0.47,
+        "prior_period": "2026-08-26",
+        "delta": 0.0,
+        "delta_vs_4back": -0.03,
+        "far_period": "2026-08-21",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "= us_10y_yield − us_yield_2y (khớp theo period NGÀY, cả 2 đều từ FRED). Spread ÂM (đường cong đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm. good_direction=higher vì spread dương (đường cong bình thường, dốc lên) là trạng thái lành mạnh. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
       "impact": "Đường cong lợi suất Mỹ đảo ngược kéo dài là tín hiệu cảnh báo suy thoái Mỹ sớm nhất được thị trường toàn cầu theo dõi — ảnh hưởng khẩu vị rủi ro chung, gián tiếp tác động dòng vốn ngoại vào TTCK Việt Nam."
@@ -44879,21 +45004,6 @@
       "goodDirection": "higher",
       "autoSource": "derived",
       "series": [
-        {
-          "period": "2026-07-22",
-          "value": 0.78,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
-        },
-        {
-          "period": "2026-07-23",
-          "value": 0.76,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
-        },
-        {
-          "period": "2026-07-24",
-          "value": 0.73,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
-        },
         {
           "period": "2026-07-27",
           "value": 0.69,
@@ -44998,25 +45108,40 @@
           "period": "2026-08-24",
           "value": 0.83,
           "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 0.78,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 0.81,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 0.83,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
         }
       ],
       "trend": {
         "latest": 0.83,
-        "latest_period": "2026-08-24",
+        "latest_period": "2026-08-27",
         "latest_source": "https://fred.stlouisfed.org/series/T10Y3M",
         "n_points": 24,
-        "prior": 0.86,
-        "prior_period": "2026-08-21",
-        "delta": -0.03,
-        "delta_vs_4back": -0.02,
-        "far_period": "2026-08-18",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 0.81,
+        "prior_period": "2026-08-26",
+        "delta": 0.02,
+        "delta_vs_4back": -0.03,
+        "far_period": "2026-08-21",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "= us_10y_yield − us_yield_3m (khớp theo period NGÀY, cả 2 đều từ FRED). Spread ÂM (đường cong đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm. good_direction=higher vì spread dương (đường cong bình thường, dốc lên) là trạng thái lành mạnh. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
       "impact": "Đường cong lợi suất Mỹ đảo ngược kéo dài là tín hiệu cảnh báo suy thoái Mỹ sớm nhất được thị trường toàn cầu theo dõi — ảnh hưởng khẩu vị rủi ro chung, gián tiếp tác động dòng vốn ngoại vào TTCK Việt Nam."
@@ -46577,18 +46702,28 @@
           "period": "2026-08-25",
           "value": 0.0,
           "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-08-2026-.html"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 0.0,
+          "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html"
         }
       ],
       "trend": {
         "latest": 0.0,
-        "latest_period": "2026-08-25",
-        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-26-08-2026-.html",
-        "n_points": 310,
+        "latest_period": "2026-08-27",
+        "latest_source": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-08-2026-.html",
+        "n_points": 312,
         "prior": 0.0,
-        "prior_period": "2026-08-24",
+        "prior_period": "2026-08-26",
         "delta": 0.0,
         "delta_vs_4back": 0.0,
-        "far_period": "2026-08-18",
+        "far_period": "2026-08-20",
         "direction": "flat",
         "value_arrow": "→",
         "is_improving": null,
