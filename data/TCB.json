@@ -292,12 +292,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1Wxu6SWKfXq612giqGCSghgbWb3Rqjszg/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1PrNuRzAxL_k5Ye2mxS1PI-eZcjN5Lkv9/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1vmLLDKKf8aVlvFUoCK75ZNkZlExyIeTo/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1ARznPSKgVpFXjdZkms4ib5qg5-v9E_dL/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1206,
     "rf": 0.04534,
-    "fetchedAt": "2026-08-30 10:57"
+    "fetchedAt": "2026-08-30 11:18"
   },
   "pe_hist": [
     13.5226658764,
@@ -1814,5 +1814,5 @@
     ]
   },
   "bankRiskAnalysis": null,
-  "lastUpdated": "2026-08-30 10:57"
+  "lastUpdated": "2026-08-30 11:18"
 }
