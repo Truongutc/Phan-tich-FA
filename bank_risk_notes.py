@@ -113,29 +113,53 @@ _ROW_LABEL_FLAT = {
 }
 
 
-def _extract_number_row(text, label_flat, n_buckets, window=600):
-    """Tìm dòng có nhãn `label_flat` (đã strip dấu) trong `text`, trích các số VND dạng Việt Nam
-    (dấu chấm phân cách nghìn, số âm trong ngoặc) trong `window` ký tự sau nhãn. Chỉ trả về kết quả
-    nếu số lượng số trích được >= n_buckets (lấy đúng n_buckets số ĐẦU TIÊN — cột cuối "Tổng cộng"
-    nếu dư sẽ bị bỏ qua vì không cần). Trả về None nếu không tìm thấy nhãn hoặc thiếu số — KHÔNG ĐOÁN
-    số liệu thiếu.
+def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=None):
+    """Tìm DÒNG có nhãn `label_flat` (đã strip dấu) trong `text`, trích các "ô số" trong nhãn đó +
+    `lines_after` dòng kế tiếp. Chỉ trả về kết quả nếu số lượng ô trích được >= n_buckets (lấy đúng
+    n_buckets ô ĐẦU TIÊN — cột "Tổng cộng" dư nếu có sẽ bị bỏ qua vì không cần). Trả về None nếu
+    không tìm thấy nhãn hoặc thiếu số — KHÔNG ĐOÁN số liệu thiếu.
 
-    Dùng `rfind` (khớp CUỐI CÙNG) chứ không phải `find` (khớp ĐẦU TIÊN): riêng thuyết minh rủi ro lãi
-    suất có 2 dòng cùng nhãn "Mức chênh nhạy cảm..." — dòng (3) nội bảng và dòng (5) nội+ngoại bảng
-    (đầy đủ hơn, verify thật MBB 2025: 2 dòng cho ra CÙNG SỐ vì (4) ngoại bảng bằng 0, nhưng ngân hàng
-    khác có phái sinh lãi suất lớn có thể (4) khác 0 — lấy dòng CUỐI để luôn ra số ĐẦY ĐỦ NHẤT)."""
-    flat = _strip_accents(text)
-    pos = flat.rfind(label_flat)
-    if pos == -1:
+    Xử lý THEO DÒNG (không phải theo vị trí ký tự trong text gốc): tránh bug lệch index giữa bản đã
+    strip dấu (`flat`, NFD rồi bỏ dấu tổ hợp LUÔN làm text NGẮN ĐI so với bản gốc) và text gốc — dùng
+    vị trí ký tự trong `flat` để cắt `text` gốc là SAI vì 2 chuỗi lệch độ dài, sẽ cắt trúng đoạn không
+    liên quan trên trang (bug thật, phát hiện 2026-08 khi xem lại log TCB: SKIP "OCR chất lượng kém"
+    trong khi rất có thể nhãn+bảng đọc ĐÚNG nhưng bị cắt sai vị trí do bug này).
+
+    "Ô số" chấp nhận CẢ dấu gạch ngang "-" (băng 0 — rất phổ biến trong thuyết minh BCTC cho cột
+    không phát sinh giao dịch, vd cột "Quá hạn" của nhiều ngân hàng) — nếu chỉ khớp số thật sẽ làm
+    lệch cột so với nhãn (dòng có 1 dấu "-" thì các cột sau đó bị đếm lùi 1 vị trí)."""
+    lines = text.split("\n")
+    flat_lines = [_strip_accents(l) for l in lines]
+    # Nhãn có thể trải dài qua NHIỀU dòng (vd MBB thật: "Mức chênh nhạy cảm với lãi suất" rồi mới
+    # đến "nội, ngoại bảng (5) = (3) + (4)" ở dòng sau) — ghép cửa sổ trượt 3 dòng liên tiếp để tìm.
+    label_line_idx = None
+    for i in range(len(lines)):
+        joined = " ".join(flat_lines[i:i + 3])
+        if label_flat in joined:
+            label_line_idx = i  # lấy dòng ĐẦU tiên của cửa sổ khớp cuối cùng tìm được (label ổn định)
+    if label_line_idx is None:
+        if debug_tag:
+            print(f"  [DIAG] {debug_tag}: khong tim thay nhan '{label_flat}' tren trang nay")
         return None
-    window_text = text[pos:pos + window] if len(flat) == len(text) else text  # fallback nếu lệch index
-    # Số VN: tuỳ chọn ngoặc (âm), chữ số + nhiều nhóm ".xxx", KHÔNG khớp số lẻ 1-2 chữ số đứng riêng
-    # (tránh bắt nhầm số thứ tự dòng kiểu "(3)", "(5)" ngay trong chính nhãn dòng).
-    nums = re.findall(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?", window_text)
-    if len(nums) < n_buckets:
+    window_text = "\n".join(lines[label_line_idx:label_line_idx + 1 + lines_after])
+    # Nhãn dòng gap LUÔN kèm công thức tham chiếu kiểu "(3) = (1) - (2)" hoặc "(5) = (3) + (4)" ngay
+    # trong/cạnh chính nó — dấu "-" hoặc "+" ở đây là TOÁN TỬ, không phải ô dữ liệu, phải loại trước
+    # khi tìm "ô số" (bug thật, 2026-08: dấu "-" của công thức bị đếm nhầm thành cột đầu tiên, làm
+    # lệch toàn bộ các cột phía sau 1 vị trí).
+    window_text = re.sub(r"\(\s*\d\s*\)\s*=\s*\(\s*\d\s*\)(?:\s*[+\-]\s*\(\s*\d\s*\))*", " ", window_text)
+    _CELL_RE = re.compile(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?|(?<![\w.])-(?![\w.])")
+    toks = [m.group(0) for m in _CELL_RE.finditer(window_text)]
+    if len(toks) < n_buckets:
+        if debug_tag:
+            preview = window_text.replace("\n", " | ")[:300]
+            print(f"  [DIAG] {debug_tag}: tim thay nhan nhung chi doc duoc {len(toks)}/{n_buckets} o so. "
+                  f"Cua so OCR: \"{preview}\"")
         return None
     vals = []
-    for tok in nums[:n_buckets]:
+    for tok in toks[:n_buckets]:
+        if tok == "-":
+            vals.append(0.0)
+            continue
         neg = tok.startswith("(") and tok.endswith(")")
         clean = tok.strip("()").replace(".", "")
         try:
@@ -194,7 +218,7 @@ def fetch_bank_risk_gaps(ticker):
             text = _ocr_page_text(pdf_path, p)
             if not text:
                 continue
-            vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n)
+            vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}")
             if vals:
                 break
         if vals:
