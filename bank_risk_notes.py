@@ -488,16 +488,29 @@ def _download_report_pdf(ticker, cand):
 
 
 def _period_key_for_candidate(cand):
-    """Trả về "YYYY-H1"/"YYYY-FY" nếu candidate là báo cáo đã kiểm toán/soát xét (Quarter 5/6 theo
-    quy ước CafeF), None nếu là báo cáo quý thường (không đáng tin cho 2 bảng gap). Dùng LÀM KHÓA
-    để backfill/kiểm tra 1 kỳ lịch sử cụ thể (xem fetch_bank_risk_gaps_for_period/
-    latest_reviewed_period) — KHÁC hoàn toàn tên file cache PDF (_download_report_pdf tự suy ra
-    period_tag riêng, không dùng hàm này, dù logic tương tự)."""
+    """Trả về "YYYY-H1"/"YYYY-FY" nếu candidate là báo cáo đã kiểm toán/soát xét, None nếu là báo
+    cáo quý thường (không đáng tin cho 2 bảng gap). Dùng LÀM KHÓA để backfill/kiểm tra 1 kỳ lịch sử
+    cụ thể (xem fetch_bank_risk_gaps_for_period/latest_reviewed_period) — KHÁC hoàn toàn tên file
+    cache PDF (_download_report_pdf tự suy ra period_tag riêng, không dùng hàm này, dù logic tương
+    tự).
+
+    BUG THẬT phát hiện 2026-08 (qua ảnh chụp thật báo cáo MBB): trước đây hàm này CHỈ nhận Quarter
+    5/6 là "đã soát xét", loại thẳng mọi Quarter khác trước khi kịp xét tên — nhưng CafeF đôi khi
+    gắn báo cáo bán niên đã soát xét với Quarter=2 THẬT (không phải 5/6), tên vẫn có "đã soát xét"
+    rõ ràng (vd MBB: "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)", Quarter=2). Bản cũ
+    trả về None cho case này → bank_alm_store không lưu được (period_key=None bị bỏ qua ở
+    fetch_bank_risk_gaps_cached), dù chính fetch_bank_risk_gaps() vẫn đọc ĐÚNG số liệu (do
+    _recency_key ở _select_candidate_reports tính điểm mới/cũ độc lập, không bị bug này). Sửa: dùng
+    _is_half_year(tên) làm tín hiệu CHÍNH, Quarter chỉ để loại các Quarter chắc chắn không thể là
+    báo cáo giữa niên độ (1/3/4 — theo quy định chỉ báo cáo 6 tháng mới bắt buộc soát xét)."""
     q = cand.get("Quarter")
-    if q not in (5, 6):
-        return None
-    is_half = (q == 6) or _is_half_year(cand.get("Name", ""))
-    return f"{cand['Year']}-{'H1' if is_half else 'FY'}"
+    name = cand.get("Name", "")
+    is_half = (q == 6) or (q in (2, 5) and _is_half_year(name))
+    if is_half:
+        return f"{cand['Year']}-H1"
+    if q == 5:
+        return f"{cand['Year']}-FY"
+    return None
 
 
 def _select_candidate_reports(ticker):
