@@ -37,7 +37,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core tesseract-ocr
+          # tesseract-ocr-vie (2026-08, thêm cho bank_risk_notes.py — OCR thuyết minh rủi ro lãi
+          # suất/thanh khoản của cổ phiếu ngân hàng) — gói apt "tesseract-ocr" gốc CHỈ có dữ liệu
+          # ngôn ngữ tiếng Anh, thiếu gói này pytesseract sẽ lỗi "Failed loading language 'vie'"
+          # (bị nuốt bởi except trong _ocr_page_text, không crash pipeline nhưng OCR ra rỗng im lặng).
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-dejavu-core tesseract-ocr tesseract-ocr-vie
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install "opendataloader-pdf[hybrid]"
