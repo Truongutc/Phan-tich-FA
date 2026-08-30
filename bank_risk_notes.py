@@ -79,6 +79,36 @@ def _ocr_page_text(pdf_path, page_index, dpi=300):
         return ""
 
 
+def _ocr_page_words(pdf_path, page_index, dpi=300):
+    """OCR 1 trang, trả về list dict {"text","left","top","width","height"} — 1 phần tử/từ nhận diện
+    được (tọa độ pixel, gốc trên-trái). None nếu thiếu pytesseract, [] nếu lỗi OCR/hết trang — KHÔNG
+    BAO GIỜ raise. Dùng cho _extract_number_row_by_position() — xem docstring hàm đó lý do cần tọa độ
+    thay vì text tuyến tính từ image_to_string()."""
+    try:
+        import pytesseract
+        from pytesseract import Output
+        import pypdfium2 as pdfium
+    except ImportError:
+        return None
+    try:
+        doc = pdfium.PdfDocument(pdf_path)
+        if page_index >= len(doc):
+            return []
+        img = doc[page_index].render(scale=dpi / 72).to_pil()
+        data = pytesseract.image_to_data(img, lang="vie", output_type=Output.DICT)
+        words = []
+        for i in range(len(data["text"])):
+            t = (data["text"][i] or "").strip()
+            if not t:
+                continue
+            words.append({"text": t, "left": data["left"][i], "top": data["top"][i],
+                          "width": data["width"][i], "height": data["height"][i]})
+        return words
+    except Exception as e:
+        print(f"  [WARN] OCR (toa do) trang {page_index+1} loi: {e}")
+        return []
+
+
 def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     """Quét từ start_frac*tổng_số_trang tới hết tài liệu, OCR TỪNG TRANG (dừng ngay khi đã tìm đủ cả
     2 tiêu đề — không OCR speculative cả vùng). Trả về dict {"lai_suat": page_idx|None,
@@ -110,6 +140,13 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
 _ROW_LABEL_FLAT = {
     "lai_suat": "muc chenh nhay cam",
     "thanh_khoan": "muc chenh thanh khoan rong",
+}
+# Cặp từ neo (đã strip dấu) để định vị dòng gap theo TỌA ĐỘ — xem _extract_number_row_by_position().
+# Chọn 2 từ khá riêng biệt trong cụm nhãn (không dùng "muc"/"chenh" vì quá phổ biến, dễ trùng chỗ
+# khác trên trang) để giảm khớp nhầm: "nhạy"+"cảm" (rủi ro lãi suất), "khoản"+"ròng" (rủi ro thanh khoản).
+_ROW_ANCHOR_WORDS = {
+    "lai_suat": ("nhay", "cam"),
+    "thanh_khoan": ("khoan", "rong"),
 }
 
 
@@ -154,6 +191,61 @@ def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=No
             preview = window_text.replace("\n", " | ")[:300]
             print(f"  [DIAG] {debug_tag}: tim thay nhan nhung chi doc duoc {len(toks)}/{n_buckets} o so. "
                   f"Cua so OCR: \"{preview}\"")
+        return None
+    vals = []
+    for tok in toks[:n_buckets]:
+        if tok == "-":
+            vals.append(0.0)
+            continue
+        neg = tok.startswith("(") and tok.endswith(")")
+        clean = tok.strip("()").replace(".", "")
+        try:
+            v = float(clean)
+        except ValueError:
+            return None
+        vals.append(-v if neg else v)
+    return vals
+
+
+def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=None):
+    """Định vị dòng gap bằng TỌA ĐỘ PIXEL thay vì thứ tự đọc tuyến tính của image_to_string() — BUG
+    THẬT phát hiện 2026-08 qua log CI thật của TCB: với bảng rộng 9 cột trải hết bề ngang trang,
+    tesseract đọc lộn xộn — nhãn dòng gap bị nối liền với footnote/tiêu đề cột nằm Ở VỊ TRÍ KHÁC trên
+    trang thay vì 8 số thật nằm NGAY SAU nó theo hàng ngang. `_extract_number_row` (dựa vào
+    image_to_string) chỉ đáng tin cho các đoạn văn xuôi hẹp, KHÔNG đáng tin cho bảng số rộng — hàm
+    này thay thế bằng cách tự dựng lại đúng 1 HÀNG theo tọa độ:
+    1. Tìm 2 "từ neo" (`anchor_words`, đã strip dấu, vd "nhay"+"cam") đứng gần nhau theo trục dọc
+       (cùng 1 hàng) — xác nhận đây đúng là cụm nhãn cần tìm, không phải từ trùng ngẫu nhiên ở chỗ khác.
+    2. Lấy tọa độ Y của từ neo ĐẦU làm mốc hàng, gom TẤT CẢ các từ khác trên trang có Y lệch trong
+       ngưỡng chiều cao 1 dòng chữ (cùng hàng ngang thật, không phụ thuộc thứ tự OCR trả về).
+    3. Sắp xếp lại các từ đó theo X (trái→phải) — đây chính là thứ tái tạo ĐÚNG thứ tự cột của bảng.
+    4. Trích số VN từ chuỗi đã sắp xếp lại, giống `_extract_number_row`.
+    Nếu có NHIỀU cặp neo khớp trên trang (nhãn dòng gap có thể lặp — VD (3) nội bảng và (5) nội+ngoại
+    bảng), lấy cặp CUỐI (gần cuối trang hơn, giống lý do dùng rfind trước đây)."""
+    a1, a2 = anchor_words
+    flat = [(_strip_accents(w["text"]), w) for w in words]
+    anchor = None
+    for t1, w1 in flat:
+        if t1 != a1:
+            continue
+        for t2, w2 in flat:
+            if t2 == a2 and abs(w2["top"] - w1["top"]) < max(w1["height"], w2["height"], 1) * 1.5:
+                anchor = w1  # ghi đè nếu tìm thấy khớp SAU (gần cuối trang hơn) — tương đương rfind
+                break
+    if anchor is None:
+        if debug_tag:
+            print(f"  [DIAG] {debug_tag}: (toa do) khong tim thay tu neo '{a1}'+'{a2}' gan nhau tren trang nay")
+        return None
+    row_top, row_h = anchor["top"], max(anchor["height"], 1)
+    row_words = sorted((w for w in words if abs(w["top"] - row_top) < row_h * 1.2), key=lambda w: w["left"])
+    row_text = " ".join(w["text"] for w in row_words)
+    _CELL_RE = re.compile(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?|(?<![\w.])-(?![\w.])")
+    toks = [m.group(0) for m in _CELL_RE.finditer(row_text)]
+    if len(toks) < n_buckets:
+        if debug_tag:
+            preview = row_text[:300]
+            print(f"  [DIAG] {debug_tag}: (toa do) tim thay hang neo nhung chi doc duoc {len(toks)}/{n_buckets} "
+                  f"o so. Hang da sap xep lai theo X: \"{preview}\"")
         return None
     vals = []
     for tok in toks[:n_buckets]:
@@ -278,6 +370,16 @@ def fetch_bank_risk_gaps(ticker):
             vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}")
             if vals:
                 break
+            # Fallback theo TỌA ĐỘ (xem docstring _extract_number_row_by_position) — CHỈ chạy khi
+            # cách đọc tuyến tính ở trên thất bại, vì OCR theo tọa độ tốn thêm 1 lượt OCR trang (chậm
+            # hơn) — hầu hết trang không phải bảng gap sẽ bị loại ngay ở bước tuyến tính (rẻ) phía trên
+            # mà không cần OCR lại theo tọa độ.
+            wwords = _ocr_page_words(pdf_path, p)
+            if wwords:
+                vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
+                                                        debug_tag=f"{key} trang {p+1}")
+                if vals:
+                    break
         if vals:
             gap_key = "interest_rate_gap" if key == "lai_suat" else "liquidity_gap"
             result[gap_key] = dict(zip(bucket_list, vals))
