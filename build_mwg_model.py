@@ -401,14 +401,43 @@ def _download_pdf_text(pdf_url, max_pages=3, timeout=25):
 #     TỰ cố định TGDD/DMX/BHX (không có nhãn text cạnh vì nhãn là logo ảnh) — phải dựa vào thứ tự,
 #     không phải nhãn, nên kém tin cậy hơn 2 era kia (đã ghi rõ trong kết quả trả về bằng field
 #     "confidence").
-def _find_near(label_pat, unit_pat, text, max_gap=350):
+def _loose(s):
+    """Regex cho literal `s` chấp nhận 1 khoảng trắng THỪA mà pdfplumber thỉnh thoảng chèn NGAY GIỮA
+    1 âm tiết có dấu khi extract PDF báo cáo IR MWG (phát hiện 2026-08, báo cáo "7 tháng 2026": "ĐIỆN"
+    -> "ĐI ỆN", "THẾ" -> "TH Ế", "thuốc" -> "thu ốc" — không phải lỗi thiếu dấu cách giữa 2 TỪ như các
+    trường hợp \\s* đã xử lý trước đó, mà là kẽ hở ngay TRONG 1 từ, vị trí không cố định). Chèn \\s?
+    (tuỳ chọn) giữa MỌI cặp ký tự liền kề; khoảng trắng THẬT có sẵn trong `s` vẫn bắt buộc (\\s+) —
+    nên khớp được MỌI THỨ literal cũ khớp được, cộng thêm các biến thể bị chèn khoảng trắng lạc chỗ."""
+    out = []
+    for i, c in enumerate(s):
+        if c == " ":
+            out.append(r"\s+")
+        else:
+            out.append(re.escape(c))
+            if i + 1 < len(s) and s[i + 1] != " ":
+                out.append(r"\s?")
+    return "".join(out)
+
+def _find_near(label_pat, unit_pat, text, max_gap=350, exclude_opened=False):
     # Số liệu TỔNG (sidebar) luôn được theo sau bởi khoảng trắng/xuống dòng/dấu ngoặc — KHÔNG bao
     # giờ dính liền chữ thường ngay sau đơn vị. Ngược lại, số liệu PHỤ nằm giữa câu văn tường thuật
     # (VD "64cửahàngmởmới" — "mở mới" dính ngay sau "cửahàng" do pdfplumber làm mất khoảng cách) LUÔN
     # có chữ thường nối tiếp ngay sau đơn vị. Dùng negative lookahead `(?![a-zà-ỹ])` để loại các số
     # phụ này mà KHÔNG cần giả định số tổng phải đứng đầu dòng riêng (layout 2 cột khiến vị trí dòng
     # không nhất quán giữa các chuỗi — TGDD/BHX/EraBlue đứng đầu dòng nhưng DMX lại nằm giữa dòng).
-    m = re.search(label_pat + r".{0,%d}?([\d][\d.]*)\s*%s(?![a-zà-ỹ])" % (max_gap, unit_pat),
+    # `exclude_opened=True` (2026-08, báo cáo "7 tháng 2026" phát hiện) loại thêm 2 dạng số PHỤ đứng
+    # CÓ khoảng trắng đầy đủ (không dính liền như case cũ nên `(?![a-zà-ỹ])` không loại được):
+    #   - "mở mới trong kỳ" (VD "102 cửa hàng mở mới sau bảy [tháng]... 283 cửa hàng" — số TỔNG thật
+    #     283 đứng ngay sau, báo cáo "7 tháng 2026").
+    #   - "mục tiêu tương lai" (VD "...hướng đến mục tiêu tổng cộng 500 cửa hàng vào 2027.\n198 cửa
+    #     hàng" — số TỔNG thật 198 đứng ngay sau, báo cáo "2 tháng 2026") — nhận diện qua "vào <năm>"
+    #     theo ngay sau, không nhầm với mốc thời gian khác vì luôn là "vào" + năm 4 chữ số bắt đầu 20.
+    # CHỈ bật cho đơn vị "cửa hàng" (không bật cho "nhà thuốc") — đã verify báo cáo "4 tháng 2026" có
+    # câu tường thuật KHÔNG LIÊN QUAN "...dù không\n423 nhà thuốc\nmở cửa hàng mới..." (số cửa hàng An
+    # Khang thật 423 bị chèn giữa 2 vế câu "dù không MỞ CỬA HÀNG MỚI" do layout 2 cột) — nếu bật chung
+    # cho mọi đơn vị sẽ loại NHẦM số thật này thành None.
+    excl = r"(?!\s*mở\b)(?!\s*vào\s*20\d\d)" if exclude_opened else ""
+    m = re.search(label_pat + r".{0,%d}?([\d][\d.]*)\s*%s(?![a-zà-ỹ])%s" % (max_gap, unit_pat, excl),
                   text, re.IGNORECASE | re.DOTALL)
     return int(m.group(1).replace(".", "")) if m else None
 
@@ -463,26 +492,28 @@ def parse_mwg_store_counts(text):
     # lookahead "(?!\s*\(MWG\))" để không khớp nhầm dòng tiêu đề công ty. Era A hiếm khi công bố số
     # cửa hàng TGDĐ TÁCH RIÊNG (chỉ có tổng MWG + ĐMX + BHX) — không đoán, để None nếu không tìm thấy
     # thay vì gán nhầm tổng công ty cho TGDD.
-    result["TGDD"] = (_find_near(r"THẾ GIỚI DI ĐỘNG(?!\s*\(MWG\))", r"cửa\s*hàng", text)
-                       or _find_in_parens(r"THẾ GIỚI DI ĐỘNG(?!\s*\(MWG\))", r"cửa\s*hàng", text)
+    _CH = _loose("cửa hàng")            # "cửa hàng" — đơn vị dùng chung, xem _loose()
+    _NT = _loose("nhà thuốc")           # "nhà thuốc" — đã xác nhận bị chèn khoảng trắng lạc ("thu ốc")
+    result["TGDD"] = (_find_near(_loose("THẾ GIỚI DI ĐỘNG") + r"(?!\s*\(MWG\))", _CH, text, exclude_opened=True)
+                       or _find_in_parens(_loose("THẾ GIỚI DI ĐỘNG") + r"(?!\s*\(MWG\))", _CH, text)
                        or narrative_list.get("TGDD"))
-    result["DMX"] = (_find_near(r"ĐIỆN MÁY XANH", r"cửa\s*hàng", text)
-                      or _find_in_parens(r"ĐIỆN MÁY XANH", r"cửa\s*hàng", text)
+    result["DMX"] = (_find_near(_loose("ĐIỆN MÁY XANH"), _CH, text, exclude_opened=True)
+                      or _find_in_parens(_loose("ĐIỆN MÁY XANH"), _CH, text)
                       or _find_narrative([r"chuỗi\s*ĐMX\s*có\s*([\d][\d.]*)\s*cửa\s*hàng",
                                           r"ĐMX\s*có\s*([\d][\d.]*)\s*cửa\s*hàng"], text)
                       or narrative_list.get("DMX"))
-    result["BHX"] = (_find_near(r"BÁCH HÓA XANH", r"cửa\s*hàng", text)
-                      or _find_in_parens(r"BÁCH HÓA XANH", r"cửa\s*hàng", text)
+    result["BHX"] = (_find_near(_loose("BÁCH HÓA XANH"), _CH, text, exclude_opened=True)
+                      or _find_in_parens(_loose("BÁCH HÓA XANH"), _CH, text)
                       or _find_narrative([r"tổng\s*số\s*cửa\s*hàng\s*BHX\s*lên\s*([\d][\d.]*)",
                                           r"chuỗi\s*BHX\s*có\s*([\d][\d.]*)\s*cửa\s*hàng"], text)
                       or narrative_list.get("BHX"))
-    result["AnKhang"] = (_find_near(r"AN KHANG", r"nhà\s*thuốc", text)
-                          or _find_in_parens(r"AN KHANG", r"nhà\s*thuốc", text)
+    result["AnKhang"] = (_find_near(_loose("AN KHANG"), _NT, text)
+                          or _find_in_parens(_loose("AN KHANG"), _NT, text)
                           or narrative_list.get("AnKhang"))
-    result["AvaKids"] = (_find_near(r"AVA\s*KIDs?", r"cửa\s*hàng", text)
+    result["AvaKids"] = (_find_near(_loose("AVA KID") + "s?", _CH, text, exclude_opened=True)
                           or _find_narrative([r"([\d]+)\s*cửa\s*hàng\s*AVAKids"], text)
                           or narrative_list.get("AvaKids"))
-    result["EraBlue"] = _find_near(r"ERABLUE\s*\(liên doanh", r"cửa\s*hàng", text)
+    result["EraBlue"] = _find_near(_loose("ERABLUE") + r"\s*\(liên doanh", _CH, text, exclude_opened=True)
     return result
 
 def parse_mwg_segment_revenue(text, total_revenue=None):
