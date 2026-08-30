@@ -475,21 +475,35 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # tesseract-ocr binary hoặc bất kỳ bước nào thất bại, lúc đó bỏ qua hẳn phần này trong Excel/PDF/
     # JSON (không đoán số liệu). Đơn vị BCTC note là TRIỆU đồng, quy đổi /1000 sang TỶ đồng cho khớp
     # đơn vị total_assets_hist (Vietcap, tỷ đồng) dùng chung toàn bộ file này.
+    # bs_ratios (Loan/Assets, Wholesale Funding/Assets) KHÔNG cần OCR — tính thẳng từ dữ liệu Vietcap
+    # đã fetch sẵn phía trên (loans_hist/interbank_hist/bonds_hist/total_assets_hist), nên tính TRƯỚC,
+    # độc lập với khối try/except OCR bên dưới (không phụ thuộc tesseract-ocr có cài hay không).
     bank_ir_metrics = bank_liq_metrics = bank_risk_narrative = bank_risk_source = None
+    from bank_risk_notes import compute_balance_sheet_alm_ratios
+    bank_bs_ratios = compute_balance_sheet_alm_ratios(
+        total_assets_hist[-1], loans_hist[-1], interbank_hist[-1], bonds_hist[-1])
     try:
         from bank_risk_notes import (fetch_bank_risk_gaps, compute_interest_rate_risk_metrics,
                                       compute_liquidity_risk_metrics, build_risk_narrative)
         _risk_gaps = fetch_bank_risk_gaps(ticker)
         if _risk_gaps:
-            _ta = total_assets_hist[-1]
+            _ta, _eq = total_assets_hist[-1], equity_hist[-1]
+            # Liquid assets = tiền mặt + tiền gửi NHNN + tiền gửi/cho vay TCTD — dùng làm "đạn" đối
+            # chiếu với kịch bản rút tiền gửi (deposit run), KHÔNG cần OCR (đã fetch sẵn qua Vietcap).
+            _liquid_assets = cash_hist[-1] + sbv_dep_hist[-1] + bank_dep_hist[-1]
             if _risk_gaps.get("interest_rate_gap"):
                 _ir_gap_ty = {k: v / 1000 for k, v in _risk_gaps["interest_rate_gap"].items()}
-                bank_ir_metrics = compute_interest_rate_risk_metrics(_ir_gap_ty, _ta)
+                bank_ir_metrics = compute_interest_rate_risk_metrics(
+                    _ir_gap_ty, _ta, equity=_eq,
+                    disclosed_sensitivity=_risk_gaps.get("interest_rate_sensitivity_disclosed"))
             if _risk_gaps.get("liquidity_gap"):
                 _liq_gap_ty = {k: v / 1000 for k, v in _risk_gaps["liquidity_gap"].items()}
-                bank_liq_metrics = compute_liquidity_risk_metrics(_liq_gap_ty, _ta)
+                bank_liq_metrics = compute_liquidity_risk_metrics(
+                    _liq_gap_ty, _ta, equity=_eq, liquid_assets=_liquid_assets,
+                    customer_deposits=cust_dep_hist[-1])
             if bank_ir_metrics or bank_liq_metrics:
-                bank_risk_narrative = build_risk_narrative(bank_ir_metrics, bank_liq_metrics, ticker)
+                bank_risk_narrative = build_risk_narrative(bank_ir_metrics, bank_liq_metrics, ticker,
+                                                             bs_ratios=bank_bs_ratios)
                 bank_risk_source = {"title": _risk_gaps["source_title"], "url": _risk_gaps["source_url"],
                                      "year": _risk_gaps["fetched_year"]}
                 print(f"  -> Rui ro lai suat/thanh khoan: da trich tu '{_risk_gaps['source_title']}'")
@@ -3209,21 +3223,46 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         story.append(Spacer(1, 3))
         if bank_ir_metrics:
             m = bank_ir_metrics
+            _toe = m.get("gap_to_equity_1y")
+            _toe_txt = f", {_toe*100:+.0f}% vốn chủ" if _toe is not None else ""
             story.append(Paragraph(
                 f"• <b>Độ nhạy lãi suất:</b> {m['sensitive_type']} trong 1 năm tới (gap lũy kế "
-                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% tổng tài sản, mức độ: <b>{m['sensitivity_level']}</b>). "
-                f"Nếu lãi suất tăng {m['shock_bps']} điểm cơ bản, NII ước đổi "
-                f"{m['nii_sensitivity_per_shock']:+,.0f} tỷ đồng; nếu giảm {m['shock_bps']} điểm, "
-                f"NII ước đổi {-m['nii_sensitivity_per_shock']:+,.0f} tỷ đồng.", bullet_style))
+                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% tổng tài sản{_toe_txt}, mức độ: "
+                f"<b>{m['sensitivity_level']}</b>).", bullet_style))
+            _sc = m.get("stress_scenarios_nii") or {}
+            if _sc:
+                _sc_txt = "; ".join(f"{k}: {v:+,.0f} tỷ" for k, v in _sc.items())
+                story.append(Paragraph(f"&nbsp;&nbsp;Stress test NII (static gap, ước tính): {_sc_txt}.", bullet_style))
+            _disc = m.get("disclosed_sensitivity")
+            if _disc:
+                _disc_txt = "; ".join(
+                    f"{ccy} +{v['rate_increase_pct']:.2f}%: LNTT {v['pbt_impact']:+,.0f} tỷ, "
+                    f"VCSH {v['equity_impact']:+,.0f} tỷ" for ccy, v in _disc.items())
+                story.append(Paragraph(
+                    f"&nbsp;&nbsp;Độ nhạy lãi suất <b>do chính ngân hàng công bố</b> (đáng tin cậy hơn "
+                    f"ước tính trên): {_disc_txt}.", bullet_style))
         if bank_liq_metrics:
             m = bank_liq_metrics
+            _la = m.get("liquid_assets_ratio")
+            _la_txt = f" Liquid assets/Tổng tài sản = {_la*100:.1f}%." if _la is not None else ""
             story.append(Paragraph(
                 f"• <b>Rủi ro thanh khoản:</b> gap ròng kỳ hạn ≤1 tháng "
                 f"{m['cumulative_gap_1m_ratio']*100:+.2f}% tổng tài sản, lũy kế ≤1 năm "
-                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% (mức độ: <b>{m['risk_level']}</b>). Gap âm "
+                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% (mức độ: <b>{m['risk_level']}</b>).{_la_txt} Gap âm "
                 "nghĩa là nguồn vốn đáo hạn ngắn hạn cần được tái tài trợ/huy động liên tục — mức độ "
                 "Cao nên được phản ánh vào phần bù rủi ro đặc thù khi tính COE hoặc chiết khấu thêm "
                 "vào P/B mục tiêu.", bullet_style))
+            _stress = m.get("deposit_run_stress")
+            if _stress:
+                _stress_txt = "; ".join(f"rút {k} tiền gửi KH: {v:+,.0f} tỷ (âm = liquid assets đủ bù)"
+                                         for k, v in _stress.items())
+                story.append(Paragraph(f"&nbsp;&nbsp;Stress test rút tiền gửi: {_stress_txt}.", bullet_style))
+        if bank_bs_ratios and (bank_bs_ratios.get("loan_to_assets") is not None):
+            _la2 = bank_bs_ratios["loan_to_assets"]
+            _wf = bank_bs_ratios.get("wholesale_funding_ratio")
+            _wf_txt = f", Wholesale funding/Tổng tài sản = {_wf*100:.1f}%" if _wf is not None else ""
+            story.append(Paragraph(
+                f"• <b>Cơ cấu bảng cân đối:</b> Cho vay/Tổng tài sản = {_la2*100:.1f}%{_wf_txt}.", bullet_style))
         story.append(Spacer(1, 3))
 
         def _fmt_gap_row(label, gap_ratio_dict):
@@ -3648,14 +3687,16 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "ldr":  [round(x/100, 4) for x in ldr_hist] + [None]*3,
             "casa": [round(x/100, 4) for x in casa_ratio_hist] + [round(c, 4) for c in casa_target_fc]
         },
-        # Trích từ thuyết minh BCTC kiểm toán (bank_risk_notes.py) — None nếu thiếu tesseract-ocr
-        # hoặc không định vị/đọc được bảng (không suy diễn số liệu thiếu).
+        # gapRisk (interestRateRisk/liquidityRisk) trích từ thuyết minh BCTC kiểm toán qua OCR — None
+        # nếu thiếu tesseract-ocr hoặc không định vị/đọc được bảng (không suy diễn số liệu thiếu).
+        # balanceSheetRatios KHÔNG cần OCR (tính thẳng từ Vietcap) nên LUÔN có, kể cả khi OCR thất bại.
         "bankRiskAnalysis": {
             "source": bank_risk_source,
             "interestRateRisk": bank_ir_metrics,
             "liquidityRisk": bank_liq_metrics,
+            "balanceSheetRatios": bank_bs_ratios,
             "narrative": bank_risk_narrative,
-        } if (bank_ir_metrics or bank_liq_metrics) else None
+        } if (bank_ir_metrics or bank_liq_metrics) else {"balanceSheetRatios": bank_bs_ratios}
     }
 
     json_path = os.path.join(PROJECT_ROOT, "data", f"{ticker}.json")

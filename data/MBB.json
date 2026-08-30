@@ -297,7 +297,7 @@
   "betaRfCache": {
     "beta": 0.9506,
     "rf": 0.045,
-    "fetchedAt": "2026-08-30 17:39"
+    "fetchedAt": "2026-08-30 18:40"
   },
   "pe_hist": [
     8.8810600998,
@@ -1816,6 +1816,11 @@
       0.3983
     ]
   },
-  "bankRiskAnalysis": null,
-  "lastUpdated": "2026-08-30 17:39"
+  "bankRiskAnalysis": {
+    "balanceSheetRatios": {
+      "loan_to_assets": 0.662763142006945,
+      "wholesale_funding_ratio": 0.2693794469147101
+    }
+  },
+  "lastUpdated": "2026-08-30 18:40"
 }
