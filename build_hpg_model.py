@@ -135,11 +135,22 @@ begin_cash_hist = [get_yr(cf_recs, y, "cfa36") for y in years_hist]
 #    cần AI/thao tác thủ công): HRC FOB China, Quặng sắt 62% CFR, Than cốc luyện kim (DCE, CNY
 #    → quy đổi USD). Nếu fetch lỗi (mất mạng, đổi cấu trúc trang...), tự động dùng giá quý gần
 #    nhất trong bảng lịch sử làm phương án dự phòng — script KHÔNG BAO GIỜ dừng vì lỗi fetch.
+# 2026Q2 (2026-08, chốt quý — trước đó dữ liệu quý này chỉ nằm trong productionEstimateCache/
+# data/HPG.json chứ chưa được đưa vào đây, khiến CUR_Q_YEAR/CUR_Q_NUM (dưới) mãi mãi kẹt ở 2026Q2 và
+# không bao giờ tự chuyển sang dò tin 2026Q3 — user phát hiện: có bài báo sản lượng Q3 mới nhưng
+# action không ghi nhận vì bộ lọc _cur_q_months vẫn đang khớp tháng 4-6, không phải 7-9):
+#   HRC = 495 USD/t (median tháng 4/5/6: ~485/508/495 USD/t FOB Tianjin SS400 3mm, Mysteel/SteelOrbis)
+#   Iron ore = 106.1 (median World Bank Pink Sheet tháng 4/5/6: 106.1/108.6/100.8 — sẽ tự fetch lại
+#     đè lên qua IRON_MONTHLY bên dưới, số này chỉ là fallback nếu World Bank fetch lỗi)
+#   Coal = 238 USD/t (ước tính gần đúng, không tìm được số bình quân tháng chính thức — cross-check
+#     nhiều báo cáo tuần Argus/Fastmarkets MB-COA-0003: ~228 (T4) -> ~240 (T5, mid-May đã 240.2) ->
+#     đỉnh "17-tháng cao nhất" cuối T6 trước khi điều chỉnh giảm đầu Q3 — CẦN VERIFY LẠI nếu tìm được
+#     số liệu quý chính thức chính xác hơn từ Fastmarkets/Argus)
 Q18_LABELS = ["2021Q4","2022Q1","2022Q2","2022Q3","2022Q4","2023Q1","2023Q2","2023Q3","2023Q4",
-              "2024Q1","2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4","2026Q1"]
-Q18_HRC  = [640, 870, 720, 580, 570, 640, 615, 605, 620, 605, 600, 510, 500, 480, 470, 470, 460, 475]
-Q18_IRON = [112, 143, 138, 106,  99, 126, 112, 115, 129, 123, 113, 100, 101, 102,  96, 100, 104, 104]
-Q18_COAL = [375, 500, 480, 330, 290, 320, 245, 250, 290, 275, 250, 220, 203, 182, 184, 190, 212, 220]
+              "2024Q1","2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4","2026Q1","2026Q2"]
+Q18_HRC  = [640, 870, 720, 580, 570, 640, 615, 605, 620, 605, 600, 510, 500, 480, 470, 470, 460, 475, 495]
+Q18_IRON = [112, 143, 138, 106,  99, 126, 112, 115, 129, 123, 113, 100, 101, 102,  96, 100, 104, 104, 106.1]
+Q18_COAL = [375, 500, 480, 330, 290, 320, 245, 250, 290, 275, 250, 220, 203, 182, 184, 190, 212, 220, 238]
 CNY_USD_RATE = 7.2  # tỷ giá quy đổi than cốc (Đại Liên, niêm yết CNY) — cập nhật định kỳ nếu lệch nhiều
 UA_STR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
@@ -398,6 +409,18 @@ _i_2026q1 = Q18_LABELS.index("2026Q1")
 if Q18_XD[_i_2026q1] is None:
     Q18_XD[_i_2026q1] = _vnd_kg_to_usd_t(15400)  # median(15.100, 15.700) đồng/kg - VSA Q1/2026
     Q18_XD_SRC[_i_2026q1] = "VN"
+# 2026Q2 (2026-08, chốt quý): SRRc1 đã hết thanh khoản từ 10/2025 (xem chú thích Q18_XD ở trên) nên
+# REBAR_MONTHLY chắc chắn không có 3 tháng thật cho quý này -> luôn rơi vào nhánh neo nội địa. Giá thép
+# XD trong nước TĂNG suốt tháng 4-5/2026 rồi bị điều chỉnh giảm 2 lần trong tháng 6 (báo chí xác nhận
+# "giảm đáng kể so với đầu quý 2"), về mức 16.600-17.000đ/kg cuối quý — VẪN CAO HƠN nền Q1 (15.400đ/kg)
+# dù đã hạ nhiệt. Không tìm được bản tin VSA công bố giá bán bình quân CHÍNH THỨC cho quý này (đúng hạn
+# chế đã ghi nhận ở changelog 2026-07-02(j): "VSA bản tin tháng KHÔNG công bố giá bán rebar") nên ước
+# tính quân bình quý ~16.800đ/kg (giữa nền đầu quý và mức cuối quý đã hạ) — CẦN VERIFY LẠI nếu tìm được
+# số liệu quý chính thức chính xác hơn.
+_i_2026q2 = Q18_LABELS.index("2026Q2")
+if Q18_XD[_i_2026q2] is None:
+    Q18_XD[_i_2026q2] = _vnd_kg_to_usd_t(16800)
+    Q18_XD_SRC[_i_2026q2] = "VN"
 _i_2025q4 = Q18_LABELS.index("2025Q4")
 if Q18_XD[_i_2025q4] is None:
     _prev_i, _next_i = _i_2025q4 - 1, _i_2025q4 + 1
@@ -520,7 +543,7 @@ _hrc_by_yr, _iron_by_yr, _coal_by_yr = _group_by_year(Q18_HRC), _group_by_year(Q
 # duy nhất, dùng chung cho sheet 15_Quarterly_Data và JSON dashboard (tránh 2 mảng trùng lặp lệch
 # số như trước — hrc_data/xd_data trong sheet 15 và hrc_sales/xd_sales trong JSON export).
 SALES_Q_LABELS   = ["2023Q1","2023Q2","2023Q3","2023Q4","2024Q1","2024Q2","2024Q3","2024Q4",
-                    "2025Q1","2025Q2","2025Q3","2025Q4","2026Q1"]
+                    "2025Q1","2025Q2","2025Q3","2025Q4","2026Q1","2026Q2"]
 # 2024Q2-Q4 (2026-07, user phát hiện bug): số cũ [464, 312, 399] SAI — kiểm chứng lại qua báo chí
 # (thitruongtaichinhtiente.vn, nhipsongkinhdoanh.vn) xác nhận: Q3/2024 HRC = 738 nghìn tấn (số CHÍNH
 # XÁC, khớp bài báo); 9 tháng đầu 2024 HRC = 2.270 triệu tấn (khớp CHÍNH XÁC 805+X+738=2270 => Q2=727);
@@ -528,8 +551,15 @@ SALES_Q_LABELS   = ["2023Q1","2023Q2","2023Q3","2023Q4","2024Q1","2024Q2","2024Q
 # chính xác — ước tính bằng phần dư: HRC sản xuất cả năm 2024 "hơn 3 triệu tấn" (+5% so với 2023) =>
 # Q4 = ~3050 - 2270 = 780 (ước tính từ phần dư, không phải số công bố trực tiếp — cần verify lại nếu
 # có báo cáo Q4/2024 hoặc BCTC cụ thể hơn).
-HRC_SALES_HIST_KT = [482, 770, 780, 768, 805, 727, 738, 780, 1000, 1180, 1220, 1600, 1400]
-XD_SALES_HIST_KT  = [870, 970, 970, 970, 956, 1140, 1200, 1100, 1200, 1300, 1000, 1300, 1430]
+# 2026Q2 (2026-08, chốt quý — trước đó số này đã được action tự tìm thấy CHÍNH THỨC từ 29/07/2026 và
+# lưu trong data/HPG.json!productionEstimateCache, nhưng chưa bao giờ được cộng vào đây nên
+# CUR_Q_YEAR/NUM (tính từ SALES_Q_LABELS[-1], xem dưới) mãi kẹt ở "2026Q2 đang chạy" thay vì tự chuyển
+# sang "2026Q3 đang chạy" — khiến MỌI bài báo sản lượng Q3/2026 mới bị bộ lọc _cur_q_months loại bỏ dù
+# đã fetch được, nhìn như action "không ghi lại dữ liệu"): nguồn cafef.vn 08/07/2026 (bài "sản lượng
+# bán hàng" quý 2/2026, khớp đúng metric "sales" của mảng này) — Tổng 3.500kt (gồm cả sản phẩm khác
+# ngoài HRC/XD), tách riêng HRC 1.900kt + XD 1.300kt.
+HRC_SALES_HIST_KT = [482, 770, 780, 768, 805, 727, 738, 780, 1000, 1180, 1220, 1600, 1400, 1900]
+XD_SALES_HIST_KT  = [870, 970, 970, 970, 956, 1140, 1200, 1100, 1200, 1300, 1000, 1300, 1430, 1300]
 
 # Spread All = bình quân gia quyền Spread HRC/Spread Rebar theo sản lượng thực tế TỪNG QUÝ (2026-07,
 # theo yêu cầu user) — CHỈ tính được cho 13/18 quý trong bảng (2023Q1-2026Q1, đúng bằng SALES_Q_LABELS)
@@ -1147,26 +1177,34 @@ for _yr in (2023, 2024, 2025):
 # (KHÔNG suy từ văn bản bài PR gộp chung của hoaphat.com.vn — đã thử và bỏ, xem
 # fetch_hpg_production_updates()).
 if CUR_Q_YEAR == 2026 and CUR_Q_TOTAL_KT is not None:
-    _orig_hrc_assumption_kt = SL_HRC_A[5] * 1000  # giả định gốc trước khi ghi đè (6.0 triệu tấn)
-    _orig_xd_assumption_kt = SL_XD_A[5] * 1000    # giả định gốc trước khi ghi đè (3.0 triệu tấn)
-    _q1_2026_total_kt = HRC_SALES_HIST_KT[-1] + XD_SALES_HIST_KT[-1]
+    # Tổng quát hoá theo N quý ĐÃ CÓ actual trong năm 2026 (2026-08, sau khi chốt 2026Q2 vào
+    # SALES_Q_LABELS — xem comment ở HRC_SALES_HIST_KT/XD_SALES_HIST_KT phía trên) — bản cũ hardcode
+    # "_q1_2026_..." (chỉ cộng ĐÚNG 1 quý actual + CUR_Q, chia 2 nhân 4) chỉ đúng khi CUR_Q_NUM=2 (Q1 là
+    # actual DUY NHẤT của năm). Từ khi CUR_Q chuyển sang Q3 trở đi, công thức cũ sẽ ÂM THẦM BỎ SÓT các
+    # quý actual trước đó (vd bỏ sót Q1 khi CUR_Q=Q3) — sửa bằng cách cộng TẤT CẢ quý actual có nhãn
+    # "2026" trong SALES_Q_LABELS (không chỉ 1 quý cuối), n_known = số quý actual + 1 (quý đang chạy).
+    _actual_2026_idxs = [i for i, lbl in enumerate(SALES_Q_LABELS) if lbl.startswith("2026")]
+    _actual_hrc_kt = sum(HRC_SALES_HIST_KT[i] for i in _actual_2026_idxs)
+    _actual_xd_kt = sum(XD_SALES_HIST_KT[i] for i in _actual_2026_idxs)
+    _actual_total_kt = _actual_hrc_kt + _actual_xd_kt
     if CUR_Q_HRC_KT_DIRECT is not None and CUR_Q_XD_KT_DIRECT is not None:
         _cur_q_hrc_kt, _cur_q_xd_kt = CUR_Q_HRC_KT_DIRECT, CUR_Q_XD_KT_DIRECT
     else:
-        _q1_2026_hrc_ratio = HRC_SALES_HIST_KT[-1] / _q1_2026_total_kt
-        _cur_q_hrc_kt = CUR_Q_TOTAL_KT * _q1_2026_hrc_ratio
+        _hrc_ratio = _actual_hrc_kt / _actual_total_kt
+        _cur_q_hrc_kt = CUR_Q_TOTAL_KT * _hrc_ratio
         _cur_q_xd_kt = CUR_Q_TOTAL_KT - _cur_q_hrc_kt
-    _cum_hrc_kt = HRC_SALES_HIST_KT[-1] + _cur_q_hrc_kt
-    _cum_xd_kt = XD_SALES_HIST_KT[-1] + _cur_q_xd_kt
+    _n_known = len(_actual_2026_idxs) + 1
+    _cum_hrc_kt = _actual_hrc_kt + _cur_q_hrc_kt
+    _cum_xd_kt = _actual_xd_kt + _cur_q_xd_kt
     # KHÔNG dùng blend_annual_estimate() ở đây (2026-07, user phát hiện bug): công thức đó cộng lũy kế
     # thực tế với (giả định gốc CẢ NĂM) x (4-n)/4 — khi giả định gốc cũ (VD XD 3.0 triệu tấn/năm) đã lỗi
-    # thời, thấp hơn nhiều tốc độ thực tế (2 quý đã đạt 2.717 triệu tấn XD), phần "nửa năm còn lại" bị
-    # tính theo giả định lạc hậu thay vì theo đà thực tế đang chạy (Dung Quất 2 tăng công suất thật, không
-    # phải đột biến 1 quý) -> ra số annual thấp bất hợp lý (4.22 triệu tấn dù nửa năm đã 2.717 triệu tấn).
-    # Ngoại suy thẳng theo run-rate 2 quý đã biết mới đúng bản chất tăng trưởng công suất thực.
-    SL_HRC_A[5] = round((_cum_hrc_kt / 2 * 4) / 1000, 2)
-    SL_XD_A[5] = round((_cum_xd_kt / 2 * 4) / 1000, 2)
-    print(f"  -> Updated 2026E annual volume (run-rate extrapolation, n=2/4 quy da biet): HRC={SL_HRC_A[5]}Mt, XD={SL_XD_A[5]}Mt")
+    # thời, thấp hơn nhiều tốc độ thực tế, phần "còn lại của năm" bị tính theo giả định lạc hậu thay vì
+    # theo đà thực tế đang chạy (Dung Quất 2 tăng công suất thật, không phải đột biến 1 quý) -> ra số
+    # annual thấp bất hợp lý. Ngoại suy thẳng theo run-rate N quý đã biết mới đúng bản chất tăng trưởng
+    # công suất thực.
+    SL_HRC_A[5] = round((_cum_hrc_kt / _n_known * 4) / 1000, 2)
+    SL_XD_A[5] = round((_cum_xd_kt / _n_known * 4) / 1000, 2)
+    print(f"  -> Updated 2026E annual volume (run-rate extrapolation, n={_n_known}/4 quy da biet): HRC={SL_HRC_A[5]}Mt, XD={SL_XD_A[5]}Mt")
 
 # ── SL_HRC_A/SL_XD_A năm SAU năm dự phóng đầu tiên (2027E - index 6) khi CHƯA có quý nào của năm đó
 # (2026-07, theo yêu cầu user) — ước tính = SL 2 quý GẦN NHẤT đã biết (nửa năm) x2 (năm hóa) x1.05
@@ -4080,24 +4118,30 @@ def build_excel():
     )).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
 
     # ── Mục F: Dự phóng sản lượng NĂM 2026E — SỐ TÍNH SẴN từ SL_HRC_A/SL_XD_A (Python, ngoại suy
-    # thẳng theo run-rate 2 quý đã biết: lũy kế/2×4). KHÔNG dùng blend_annual_estimate() (2026-07, user
-    # phát hiện bug: hàm đó cộng lũy kế thực tế với (giả định gốc CẢ NĂM)×(4-n)/4 — khi giả định gốc cũ
-    # đã lỗi thời/thấp hơn tốc độ thực tế đang chạy do tăng công suất thật (Dung Quất 2), ra số annual
-    # thấp bất hợp lý, VD XD: nửa năm đã 2.717 triệu tấn mà blend ra cả năm chỉ 4.22 triệu tấn). Ghi số
-    # tính sẵn ở đây để 03_Revenue_Model!G4/G5 (Excel) và PDF/JSON dùng ĐÚNG 1 số, không lệch nhau.
+    # thẳng theo run-rate N quý đã biết: lũy kế/N×4, N = số quý actual 2026 + quý đang chạy — xem
+    # comment ở khối "if CUR_Q_YEAR == 2026" phía trên Python). KHÔNG dùng blend_annual_estimate()
+    # (2026-07, user phát hiện bug: hàm đó cộng lũy kế thực tế với (giả định gốc CẢ NĂM)×(4-n)/4 — khi
+    # giả định gốc cũ đã lỗi thời/thấp hơn tốc độ thực tế đang chạy do tăng công suất thật (Dung Quất
+    # 2), ra số annual thấp bất hợp lý). Ghi số tính sẵn ở đây để 03_Revenue_Model!G4/G5 (Excel) và
+    # PDF/JSON dùng ĐÚNG 1 số, không lệch nhau. N tự tính lại theo CUR_Q_NUM (2026-08, sau khi chốt
+    # 2026Q2 — bản cũ hardcode "2 quý" chỉ đúng khi CUR_Q_NUM=2, nay tổng quát cho mọi CUR_Q_NUM).
+    _f_actual_2026_lbls = [lbl for lbl in SALES_Q_LABELS if lbl.startswith("2026")]
+    _f_n = len(_f_actual_2026_lbls) + (1 if COL_CUR_Q else 0)
     r_f = r_qe_est + 3
-    ws15.cell(row=r_f, column=1, value="F. DỰ PHÓNG SẢN LƯỢNG NĂM 2026E (run-rate 2 quý đã biết)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
+    ws15.cell(row=r_f, column=1, value=f"F. DỰ PHÓNG SẢN LƯỢNG NĂM 2026E (run-rate {_f_n} quý đã biết)").font = Font(name=FONT_NAME, bold=True, size=11, color="1F4E79")
     ws15.merge_cells(start_row=r_f, start_column=1, end_row=r_f, end_column=5)
     r_f += 1
+    _f_terms_desc = " + ".join([f"SL {lbl[4:]}/{lbl[:4]}" for lbl in _f_actual_2026_lbls] + ([f"SL {CUR_Q_LABEL}"] if COL_CUR_Q else []))
     ws15.cell(row=r_f, column=1, value=(
-        f"Sản lượng năm 2026E = (SL Q1/2026 + SL {CUR_Q_LABEL}) / 2 × 4 — ngoại suy thẳng theo run-rate 2 quý "
+        f"Sản lượng năm 2026E = ({_f_terms_desc}) / {_f_n} × 4 — ngoại suy thẳng theo run-rate {_f_n} quý "
         "đã biết. Số tính sẵn (không phải công thức sống) để khớp tuyệt đối với 03_Revenue_Model!G4/G5 "
         "(Sản lượng HRC/XD 2026E) và PDF/JSON."
     )).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
     ws15.merge_cells(start_row=r_f, start_column=1, end_row=r_f, end_column=8)
     ws15.row_dimensions[r_f].height = 26
     r_f += 1
-    q1_cl, curq_cl = get_column_letter(COL_Q1_2026), (get_column_letter(COL_CUR_Q) if COL_CUR_Q else None)
+    _f_known_cols = [2 + SALES_Q_LABELS.index(lbl) for lbl in _f_actual_2026_lbls]
+    curq_cl = get_column_letter(COL_CUR_Q) if COL_CUR_Q else None
     R_F_HRC, R_F_XD = r_f, r_f + 1
     for row_i, label, src_row, val in ((R_F_HRC, "SL HRC năm 2026E (triệu tấn)", R_QV_HRC, SL_HRC_A[5]),
                                          (R_F_XD, "SL XD năm 2026E (triệu tấn)", R_QV_XD, SL_XD_A[5])):
@@ -4107,10 +4151,11 @@ def build_excel():
         c.number_format = '0.00'
         c.font = Font(name=FONT_NAME, bold=True, color="C0392B")
         c.border = thin_border; c.alignment = Alignment(horizontal='center')
-        note = (
-            f"= ({q1_cl}{src_row}/1000 (Q1) + {curq_cl}{src_row}/1000 ({CUR_Q_LABEL})) / 2 × 4, triệu tấn"
-            if curq_cl else f"Chưa có dữ liệu {CUR_Q_LABEL} — giữ giả định {val} triệu tấn"
-        )
+        if curq_cl:
+            _known_terms = " + ".join(f"{get_column_letter(cl)}{src_row}/1000" for cl in _f_known_cols)
+            note = f"= ({_known_terms} + {curq_cl}{src_row}/1000 ({CUR_Q_LABEL})) / {_f_n} × 4, triệu tấn"
+        else:
+            note = f"Chưa có dữ liệu {CUR_Q_LABEL} — giữ giả định {val} triệu tấn"
         ws15.cell(row=row_i, column=4, value=note).font = Font(name=FONT_NAME, italic=True, size=8, color="888888")
 
     # ── Openpyxl LineChart: Sản lượng HRC & XD theo quý ──
