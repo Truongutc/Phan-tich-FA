@@ -292,12 +292,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1cipM5gFgUK6f23jE-eiFo8eR7nB716Ui/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1QexJuajkc3tgHYEdFXl17ZsI1O1J_LEa/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1eClrLe5UszjLBopVpo09x0OTkT0sdgG6/edit?usp=drivesdk&ouid=102152071043512158095&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1mILUB1VqfMSWRjP5a73hAs04QJ5QVA_K/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1206,
     "rf": 0.04534,
-    "fetchedAt": "2026-08-30 14:12"
+    "fetchedAt": "2026-08-30 14:48"
   },
   "pe_hist": [
     13.5226658764,
@@ -1870,7 +1870,13 @@
         "+200bp": 2155,
         "-200bp": -2155
       },
-      "sensitivity_level": "Trung binh",
+      "stress_scenarios_nii_ratio": {
+        "+100bp": 0.028253110443374384,
+        "-100bp": -0.028253110443374384,
+        "+200bp": 0.056480012064445084,
+        "-200bp": -0.056480012064445084
+      },
+      "sensitivity_level": "Cần theo dõi",
       "disclosed_sensitivity": {
         "USD": {
           "rate_increase_pct": 1.5,
@@ -1884,11 +1890,11 @@
         }
       },
       "not_computed": [
-        "Delta EVE (can duration tung bucket, BCTC khong cong bo)"
+        "ΔEVE (cần duration từng bucket, BCTC không công bố)"
       ],
       "qualitative_caveats": [
-        "Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen cung nhip du cung 1 bucket ky han.",
-        "Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh vi thuc te thuong on dinh (sticky) hon nhieu."
+        "Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn.",
+        "Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều."
       ]
     },
     "liquidityRisk": {
@@ -1910,39 +1916,63 @@
         "tu_1_5_nam": 0.05305185813145823,
         "tren_5_nam": 0.1641914158210852
       },
+      "cumulative_gap_by_horizon": {
+        "1m": {
+          "value": -8462.984,
+          "ratio": -0.00709776962655539
+        },
+        "3m": {
+          "value": -49434.277,
+          "ratio": -0.041459739236340956
+        },
+        "12m": {
+          "value": -57555.355,
+          "ratio": -0.04827075775691091
+        }
+      },
       "cumulative_gap_1m": -12272.99,
       "cumulative_gap_1m_ratio": -0.010293160857803588,
       "cumulative_gap_1y": -61365.361,
       "cumulative_gap_1y_ratio": -0.051466148988159106,
       "gap_to_equity_1m": -0.06837265407594886,
-      "risk_level": "Thap",
+      "risk_level": "Thấp",
       "liquid_assets_ratio": 0.16897965842893223,
       "not_computed": [
-        "LCR (can phan loai HQLA chi tiet)",
-        "NSFR (can phan loai nguon von on dinh chi tiet)"
+        "LCR chuẩn Basel (cần phân loại HQLA chi tiết)",
+        "NSFR (cần phân loại nguồn vốn ổn định chi tiết)"
       ],
+      "short_term_liabilities": 739557.791,
+      "liquid_assets_to_st_liabilities_simple": 0.27243564661466735,
       "deposit_run_stress": {
         "-5%": -170536,
         "-10%": -139591,
         "-20%": -77700
+      },
+      "deposit_run_coverage": {
+        "-5%": 6.510846659207926,
+        "-10%": 3.255423329603963,
+        "-20%": 1.6277116648019816
       }
     },
     "balanceSheetRatios": {
       "loan_to_assets": 0.6349834141885834,
       "wholesale_funding_ratio": 0.3021888503654377
     },
-    "narrative": "Rui ro lai suat: gap luy ke <=1 nam = +4.16% tong tai san, +28% VCSH (Asset-sensitive, muc tham chieu do nhay cam: Trung binh — chi la moc dinh huong, khong phai nguong dat/khong dat). Stress NII theo kich ban (uoc tinh static gap): +100bp: +1,078 tr VND; -100bp: -1,078 tr VND; +200bp: +2,155 tr VND; -200bp: -2,155 tr VND. Gap luy ke tong tai san theo TUNG moc (khong chi nhin diem cuoi, vi 1 gap <=12 thang duong van co the che 1 gap am lon o moc gan hon): <=1m: +9.86%; <=3m: +16.74%; <=6m: +8.74%; <=12m: +4.16%. Do nhay lai suat NGAN HANG TU CONG BO (dang tin cay hon so uoc tinh tren): USD +1.50%: LNTT -263,935 tr, VCSH -211,148 tr; VND +3.00%: LNTT +3,135,332 tr, VCSH +2,508,266 tr. Rui ro thanh khoan: gap rong <=1 thang = -1.03% tong tai san, luy ke <=1 nam = -5.15% (muc tham chieu: Thap — chi la moc dinh huong). Liquid assets/Tong TS = 16.9%. Gap am nghia la ngan hang can tiep tuc tai tai tro/huy dong de bu dap phan chenh lech ky han — ap luc nay can duoc phan anh vao COE (phan bu rui ro dac thu) hoac P/B muc tieu neu ket hop voi liquid assets buffer mong (doc cap 2 chi so nay cung nhau, khong doc rieng le). Stress test rut tien gui: rut -5% tien gui KH: thieu hut -170,536 tr VND (am = liquid assets du bu); rut -10% tien gui KH: thieu hut -139,591 tr VND (am = liquid assets du bu); rut -20% tien gui KH: thieu hut -77,700 tr VND (am = liquid assets du bu). Co cau bang can doi (doc cung Liquid assets/Tong TS va LDR/CASA da co o phan khac): Cho vay/Tong tai san = 63.5%, Vay lien NH+GTCG/Tong tai san (wholesale funding) = 30.2%. KHONG tinh (BCTC khong cong bo du chi tiet de tinh dung, uoc luong se sai lech va tu tin gia tao hon la khong tinh): Delta EVE (can duration tung bucket, BCTC khong cong bo); LCR (can phan loai HQLA chi tiet); NSFR (can phan loai nguon von on dinh chi tiet). Luu y dinh tinh (khong the hien qua bang gap): Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen cung nhip du cung 1 bucket ky han. Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh vi thuc te thuong on dinh (sticky) hon nhieu. Cac muc do 'Thap/Trung binh/Cao' o tren chi la moc dinh huong tu 1 ky bao cao gan nhat, KHONG phai nguong dat/khong dat co dinh — de danh gia day du can so sanh voi peer cung nganh va xu huong qua nhieu ky (hien tai moi lay duoc 1 ky gan nhat tu thuyet minh BCTC).",
+    "narrative": "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = +4.16% tổng tài sản, +28% VCSH — Ngân hàng đang Asset-sensitive (tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi cho NII, lãi suất GIẢM bất lợi cho NII). Mức tham chiếu: Cần theo dõi (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt). Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: +9.86%; ≤3m: +16.74%; ≤6m: +8.74%; ≤12m: +4.16%. NII sensitivity (Tầng 3, ước tính static gap): +100bp: +1,078 tỷ VND (+2.8% NII); -100bp: -1,078 tỷ VND (-2.8% NII); +200bp: +2,155 tỷ VND (+5.6% NII); -200bp: -2,155 tỷ VND (-5.6% NII). Độ nhạy lãi suất do NGÂN HÀNG TỰ CÔNG BỐ (đáng tin cậy hơn ước tính static gap ở trên): USD +1.50%: LNTT -263,935 tỷ, VCSH -211,148 tỷ; VND +3.00%: LNTT +3,135,332 tỷ, VCSH +2,508,266 tỷ. NIM thực tế kỳ gần nhất (Tầng 5): 3.78% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment). Liquidity Gap: gap ròng ≤1 tháng = -1.03% tổng tài sản, luỹ kế ≤1 năm = -5.15% (mức tham chiếu: Thấp — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 16.9%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ. Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): 27.2% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn. Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -170,536 tỷ VND (Liquid Assets che phủ 651%); rút -10% tiền gửi KH: thiếu hụt -139,591 tỷ VND (Liquid Assets che phủ 326%); rút -20% tiền gửi KH: thiếu hụt -77,700 tỷ VND (Liquid Assets che phủ 163%). Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 63.5%, LDR = 89.5%, CASA = 34.5%, Wholesale Funding/Tổng tài sản = 30.2%. KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết). Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều. Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ.",
     "narrativeLines": [
-      "Rui ro lai suat: gap luy ke <=1 nam = +4.16% tong tai san, +28% VCSH (Asset-sensitive, muc tham chieu do nhay cam: Trung binh — chi la moc dinh huong, khong phai nguong dat/khong dat). Stress NII theo kich ban (uoc tinh static gap): +100bp: +1,078 tr VND; -100bp: -1,078 tr VND; +200bp: +2,155 tr VND; -200bp: -2,155 tr VND.",
-      "Gap luy ke tong tai san theo TUNG moc (khong chi nhin diem cuoi, vi 1 gap <=12 thang duong van co the che 1 gap am lon o moc gan hon): <=1m: +9.86%; <=3m: +16.74%; <=6m: +8.74%; <=12m: +4.16%.",
-      "Do nhay lai suat NGAN HANG TU CONG BO (dang tin cay hon so uoc tinh tren): USD +1.50%: LNTT -263,935 tr, VCSH -211,148 tr; VND +3.00%: LNTT +3,135,332 tr, VCSH +2,508,266 tr.",
-      "Rui ro thanh khoan: gap rong <=1 thang = -1.03% tong tai san, luy ke <=1 nam = -5.15% (muc tham chieu: Thap — chi la moc dinh huong). Liquid assets/Tong TS = 16.9%. Gap am nghia la ngan hang can tiep tuc tai tai tro/huy dong de bu dap phan chenh lech ky han — ap luc nay can duoc phan anh vao COE (phan bu rui ro dac thu) hoac P/B muc tieu neu ket hop voi liquid assets buffer mong (doc cap 2 chi so nay cung nhau, khong doc rieng le).",
-      "Stress test rut tien gui: rut -5% tien gui KH: thieu hut -170,536 tr VND (am = liquid assets du bu); rut -10% tien gui KH: thieu hut -139,591 tr VND (am = liquid assets du bu); rut -20% tien gui KH: thieu hut -77,700 tr VND (am = liquid assets du bu).",
-      "Co cau bang can doi (doc cung Liquid assets/Tong TS va LDR/CASA da co o phan khac): Cho vay/Tong tai san = 63.5%, Vay lien NH+GTCG/Tong tai san (wholesale funding) = 30.2%.",
-      "KHONG tinh (BCTC khong cong bo du chi tiet de tinh dung, uoc luong se sai lech va tu tin gia tao hon la khong tinh): Delta EVE (can duration tung bucket, BCTC khong cong bo); LCR (can phan loai HQLA chi tiet); NSFR (can phan loai nguon von on dinh chi tiet).",
-      "Luu y dinh tinh (khong the hien qua bang gap): Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen cung nhip du cung 1 bucket ky han. Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh vi thuc te thuong on dinh (sticky) hon nhieu.",
-      "Cac muc do 'Thap/Trung binh/Cao' o tren chi la moc dinh huong tu 1 ky bao cao gan nhat, KHONG phai nguong dat/khong dat co dinh — de danh gia day du can so sanh voi peer cung nganh va xu huong qua nhieu ky (hien tai moi lay duoc 1 ky gan nhat tu thuyet minh BCTC)."
+      "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = +4.16% tổng tài sản, +28% VCSH — Ngân hàng đang Asset-sensitive (tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi cho NII, lãi suất GIẢM bất lợi cho NII). Mức tham chiếu: Cần theo dõi (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt).",
+      "Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: +9.86%; ≤3m: +16.74%; ≤6m: +8.74%; ≤12m: +4.16%.",
+      "NII sensitivity (Tầng 3, ước tính static gap): +100bp: +1,078 tỷ VND (+2.8% NII); -100bp: -1,078 tỷ VND (-2.8% NII); +200bp: +2,155 tỷ VND (+5.6% NII); -200bp: -2,155 tỷ VND (-5.6% NII).",
+      "Độ nhạy lãi suất do NGÂN HÀNG TỰ CÔNG BỐ (đáng tin cậy hơn ước tính static gap ở trên): USD +1.50%: LNTT -263,935 tỷ, VCSH -211,148 tỷ; VND +3.00%: LNTT +3,135,332 tỷ, VCSH +2,508,266 tỷ.",
+      "NIM thực tế kỳ gần nhất (Tầng 5): 3.78% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment).",
+      "Liquidity Gap: gap ròng ≤1 tháng = -1.03% tổng tài sản, luỹ kế ≤1 năm = -5.15% (mức tham chiếu: Thấp — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 16.9%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ.",
+      "Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): 27.2% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn.",
+      "Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -170,536 tỷ VND (Liquid Assets che phủ 651%); rút -10% tiền gửi KH: thiếu hụt -139,591 tỷ VND (Liquid Assets che phủ 326%); rút -20% tiền gửi KH: thiếu hụt -77,700 tỷ VND (Liquid Assets che phủ 163%).",
+      "Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 63.5%, LDR = 89.5%, CASA = 34.5%, Wholesale Funding/Tổng tài sản = 30.2%.",
+      "KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết).",
+      "Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều.",
+      "Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ."
     ]
   },
-  "lastUpdated": "2026-08-30 14:13"
+  "lastUpdated": "2026-08-30 21:49"
 }
