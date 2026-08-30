@@ -2783,6 +2783,25 @@ def update_vimo_raw():
     save_raw(raw)
     print("\n[OK] Đã ghi data/vimo_raw.json")
 
+    # Rủi ro lãi suất/thanh khoản TOÀN HỆ THỐNG ngân hàng (2026-08) — ghi RIÊNG vào
+    # data/bank_alm/<TICKER>.json (KHÔNG phải vimo_raw.json ở trên), template_vimo.py đọc lại các
+    # file này để tổng hợp. Kiểm tra RẺ cho cả 26 ngân hàng mỗi tuần (vài giây, chỉ gọi API liệt kê
+    # BCTC) — CHỈ ngân hàng nào thực sự có kỳ đã kiểm toán/soát xét MỚI hơn store hiện có mới bị OCR
+    # lại (đắt); các tuần thường (chưa ngân hàng nào công bố kỳ mới) gần như miễn phí. Bọc try/except
+    # để lỗi phần này KHÔNG làm hỏng toàn bộ phần vĩ mô đã fetch xong ở trên.
+    try:
+        from bank_system_risk import refresh_quarterly_balance_sheet_all_banks, refresh_bank_alm_data
+        print("\n[He thong ALM ngan hang] Cap nhat bang can doi quy (khong can OCR)...")
+        refresh_quarterly_balance_sheet_all_banks()
+        print("[He thong ALM ngan hang] Kiem tra do moi 2 bang gap (OCR chi khi thuc su can)...")
+        result = refresh_bank_alm_data()
+        print(f"  -> Ky muc tieu: {result.get('target_period')}, thay doi: {result.get('changed')}")
+        for ticker, action in (result.get("actions") or {}).items():
+            if action not in ("skip_da_co", "skip_da_va_dung_nguon", "skip_da_danh_dau_thieu"):
+                print(f"     {ticker}: {action}")
+    except Exception as e:
+        print(f"  [WARN] He thong ALM ngan hang: bo qua ({e})")
+
 
 if __name__ == "__main__":
     update_vimo_raw()
