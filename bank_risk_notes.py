@@ -151,15 +151,31 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     start = max(0, int(total * start_frac))
     pages_to_scan = list(range(start, total))[:max_pages]
 
+    # Chỉ khớp khi cụm từ nằm trên 1 DÒNG NGẮN đứng riêng (kiểu tiêu đề mục, vd "45.1   Rủi ro lãi
+    # suất") — KHÔNG khớp khi cụm từ chỉ xuất hiện giữa 1 câu văn xuôi dài (vd ghi chú tổng quan liệt
+    # kê "...rủi ro tín dụng, rủi ro thanh khoản và rủi ro thị trường"). Bug thật phát hiện 2026-08 qua
+    # log TCB Q2/2026: ghi chú "43. CHÍNH SÁCH QUẢN LÝ RỦI RO TÀI CHÍNH" liệt kê "rủi ro thanh khoản"
+    # trong 1 câu tổng quan Ở TRANG SỚM HƠN 7 TRANG so với tiêu đề mục "45.3 Rủi ro thanh khoản" thật
+    # — khớp nhầm câu văn xuôi này làm mốc trang, khiến vùng quét bảng số (+8 trang từ mốc) dừng lại
+    # đúng 1 trang TRƯỚC khi tới được bảng thật. Ngưỡng 50 ký tự đủ rộng cho tiêu đề có số mục + tên
+    # ("45.1   Rủi ro lãi suất" ~21 ký tự) nhưng đủ hẹp để loại câu văn xuôi (luôn dài hơn nhiều).
+    _HEADING_MAX_LEN = 50
+
+    def _has_heading_line(text, phrase):
+        for line in text.split("\n"):
+            line_flat = _strip_accents(line).strip()
+            if phrase in line_flat and len(line_flat) <= _HEADING_MAX_LEN:
+                return True
+        return False
+
     found = {}
     for idx in pages_to_scan:
         text = _ocr_page_text(pdf_path, idx)
         if text is None:
             return None  # thiếu pytesseract - dừng hẳn, không quét tiếp vô ích
-        flat = _strip_accents(text)
-        if "lai_suat" not in found and "rui ro lai suat" in flat:
+        if "lai_suat" not in found and _has_heading_line(text, "rui ro lai suat"):
             found["lai_suat"] = idx
-        if "thanh_khoan" not in found and "rui ro thanh khoan" in flat:
+        if "thanh_khoan" not in found and _has_heading_line(text, "rui ro thanh khoan"):
             found["thanh_khoan"] = idx
         if "lai_suat" in found and "thanh_khoan" in found:
             break
