@@ -715,6 +715,17 @@ function renderBankRiskAnalysis(data, sectorKey) {
     if (!hasAnything) { card.classList.add('hidden'); return; }
     card.classList.remove('hidden');
 
+    // Tóm tắt 2-3 câu Ở ĐẦU thẻ (vị trí 2 — vị trí 1 là khối "Nhận định nhanh Earning Release" ở
+    // phần cập nhật quý, xem renderQuarterlyAndYTDEvaluation) — user muốn biết ngay mức độ rủi ro +
+    // khả năng chống chịu trước khi đọc hết danh sách chi tiết dài bên dưới.
+    const summaryEl = document.getElementById('bank-risk-summary');
+    if (data.summary && data.summary.summary_text) {
+        summaryEl.innerHTML = `<strong>🎯 Tóm tắt:</strong> ${data.summary.summary_text}`;
+        summaryEl.classList.remove('hidden');
+    } else {
+        summaryEl.classList.add('hidden');
+    }
+
     const pct = (v, d = 1) => (v === null || v === undefined) ? '-' : (v * 100).toFixed(d) + '%';
     const money = (v) => (v === null || v === undefined) ? '-' : Math.round(v).toLocaleString('vi-VN') + ' tỷ';
 
@@ -1082,6 +1093,11 @@ function renderQuarterlyAndYTDEvaluation(ticker, liveData, localJson, cfg) {
         commentary += `• Tăng trưởng tín dụng Cho vay lũy kế đạt <strong>${ac.ytd_loans_growth >= 0 ? '+' : ''}${ac.ytd_loans_growth}% YTD</strong> so với đầu năm. Tăng trưởng huy động tiền gửi đạt <strong>${ac.ytd_dep_growth >= 0 ? '+' : ''}${ac.ytd_dep_growth}% YTD</strong>.<br>`;
         commentary += `• <strong>Chất lượng nguồn thu:</strong> ${ac.profit_source_comment}<br>`;
         commentary += `• <strong>Áp lực dự phòng:</strong> ${ac.provision_comment}`;
+        // Tóm tắt rủi ro lãi suất/thanh khoản (vị trí 1 — vị trí 2 là đầu thẻ ALM chi tiết, xem
+        // renderBankRiskAnalysis) — null nếu chưa đọc được OCR kỳ này hoặc không phải ngân hàng.
+        if (ac.risk_comment) {
+            commentary += `<br>• <strong>Rủi ro lãi suất &amp; thanh khoản:</strong> ${ac.risk_comment}`;
+        }
     }
 
     container.innerHTML = `

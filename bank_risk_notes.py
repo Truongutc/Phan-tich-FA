@@ -901,3 +901,56 @@ def build_risk_narrative(ir_metrics, liq_metrics, ticker, bs_ratios=None):
     tương thích ngược (PDF/JSON cũ dùng 1 chuỗi), dùng build_risk_narrative_lines() trực tiếp ở nơi
     cần hiển thị dạng danh sách (vd web)."""
     return " ".join(build_risk_narrative_lines(ir_metrics, liq_metrics, ticker, bs_ratios=bs_ratios))
+
+
+def build_risk_summary(ir_metrics, liq_metrics):
+    """Trả về dict {"interest_rate_level", "liquidity_level", "summary_text"} hoặc None — bản TÓM TẮT
+    2-3 CÂU đặt Ở ĐẦU phần đánh giá ALM chi tiết (build_risk_narrative_lines) VÀ lặp lại trong khối
+    "Nhận định nhanh Earning Release" của phần cập nhật quý — người đọc cần biết NGAY rủi ro lãi suất/
+    thanh khoản có cao không và khả năng CHỐNG CHỊU biến cố ra sao trước khi đọc chi tiết từng
+    tầng/chỉ số dài dòng bên dưới. Khả năng chống chịu dựa trên chính KẾT QUẢ STRESS TEST (NII sensitivity,
+    deposit run coverage) — đáng tin hơn nhiều so với chỉ nhìn mức tham chiếu gap thô (1 gap "Cần theo
+    dõi" có thể vẫn CHỐNG CHỊU TỐT nếu tác động NII thực tế nhỏ, xem [[feedback_bank_alm_risk_framework]]
+    — nguyên tắc luôn đọc cặp Gap + mức độ ảnh hưởng thực tế cùng nhau). Không tự bịa số, chỉ diễn giải
+    lại các dict đầu vào đã tính ở compute_interest_rate_risk_metrics/compute_liquidity_risk_metrics."""
+    if not ir_metrics and not liq_metrics:
+        return None
+    parts = []
+    ir_level = liq_level = None
+    if ir_metrics:
+        ir_level = ir_metrics["sensitivity_level"]
+        gap_ratio = ir_metrics.get("cumulative_gap_1y_ratio")
+        sc_ratio = ir_metrics.get("stress_scenarios_nii_ratio") or {}
+        worst = max((abs(v) for v in sc_ratio.values() if v is not None), default=None)
+        gap_s = f" (gap {gap_ratio*100:+.2f}% tổng tài sản)" if gap_ratio is not None else ""
+        if worst is not None:
+            if worst < 0.05:
+                resil = "TỐT — NII ít biến động ngay cả khi lãi suất sốc mạnh"
+            elif worst < 0.15:
+                resil = "VỪA PHẢI — NII biến động đáng kể nhưng chưa ở mức nghiêm trọng"
+            else:
+                resil = "CẦN LƯU Ý — NII biến động mạnh khi lãi suất sốc"
+            parts.append(f"Rủi ro lãi suất: mức tham chiếu {ir_level}{gap_s}, khả năng chống chịu {resil} "
+                          f"(kịch bản sốc mạnh nhất làm NII đổi khoảng {worst*100:.1f}%).")
+        else:
+            parts.append(f"Rủi ro lãi suất: mức tham chiếu {ir_level}{gap_s}.")
+    if liq_metrics:
+        liq_level = liq_metrics["risk_level"]
+        coverage = liq_metrics.get("deposit_run_coverage") or {}
+        worst_cov = min((v for v in coverage.values() if v is not None), default=None)
+        if worst_cov is not None:
+            if worst_cov >= 1.0:
+                resil = "TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test"
+            elif worst_cov >= 0.5:
+                resil = "VỪA PHẢI — có thể cần huy động thêm nếu bị rút tiền gửi mạnh"
+            else:
+                resil = "CẦN LƯU Ý — tài sản thanh khoản không đủ bù kịch bản rút tiền gửi mạnh đã test"
+            parts.append(f"Rủi ro thanh khoản: mức tham chiếu {liq_level}, khả năng chống chịu {resil} "
+                          f"(che phủ {worst_cov*100:.0f}% ở kịch bản rút tiền gửi mạnh nhất).")
+        else:
+            parts.append(f"Rủi ro thanh khoản: mức tham chiếu {liq_level}.")
+    return {
+        "interest_rate_level": ir_level,
+        "liquidity_level": liq_level,
+        "summary_text": " ".join(parts),
+    }

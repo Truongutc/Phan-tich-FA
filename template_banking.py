@@ -546,12 +546,17 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # Deposits đơn thuần — user đã nhấn mạnh công thức đơn thuần đó SAI, không phản ánh đúng khác biệt
     # cơ cấu nguồn vốn giữa các ngân hàng), nên hoãn xây narrative tới đây thay vì ngay sau khi tính
     # bank_ir_metrics/bank_liq_metrics ở trên (lúc đó ldr_hist chưa tồn tại).
+    bank_risk_summary = None
     if bank_ir_metrics or bank_liq_metrics:
-        from bank_risk_notes import build_risk_narrative_lines
+        from bank_risk_notes import build_risk_narrative_lines, build_risk_summary
         bank_risk_narrative_lines = build_risk_narrative_lines(
             bank_ir_metrics, bank_liq_metrics, ticker, bs_ratios=bank_bs_ratios,
             ldr=ldr_hist[-1], casa=casa_ratio_hist[-1], nim_current=nim_hist[-1])
         bank_risk_narrative = " ".join(bank_risk_narrative_lines)
+        # Tóm tắt 2-3 câu đặt Ở ĐẦU phần đánh giá (web/PDF/Excel) VÀ lặp lại trong khối "Nhận định
+        # nhanh Earning Release" của phần cập nhật quý — user muốn đọc được ngay mức độ rủi ro + khả
+        # năng chống chịu ở CẢ 2 vị trí mà không phải đọc hết đoạn phân tích chi tiết dài bên dưới.
+        bank_risk_summary = build_risk_summary(bank_ir_metrics, bank_liq_metrics)
 
     cir_hist = [round(opex_hist[i] / max(toi_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
     roe_hist = [round(np_hist[i] / ((equity_hist[i-1] + equity_hist[i])/2 if i>0 else equity_hist[i]) * 100, 2) for i in range(len(years_hist))]
@@ -2062,6 +2067,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
                 "thẳng từ số liệu Vietcap, không cần OCR.")).font = FMT_ITALIC
             r += 1
         r += 1
+        if bank_risk_summary:
+            ws_alm.cell(row=r, column=1, value="TÓM TẮT").font = FMT_BOLD
+            r += 1
+            _sum_cell = ws_alm.cell(row=r, column=1, value=bank_risk_summary["summary_text"])
+            _sum_cell.alignment = Alignment(wrap_text=True, vertical='top')
+            ws_alm.merge_cells(f"A{r}:J{r+2}")
+            ws_alm.row_dimensions[r].height = 20
+            r += 4
 
         def _alm_section_header(row, text):
             c = ws_alm.cell(row=row, column=1, value=text)
@@ -3358,6 +3371,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Paragraph(f"• <b>Đánh giá tăng trưởng quy mô (YTD):</b> Tính lũy kế từ đầu năm đến quý gần nhất, dư nợ tín dụng (cho vay khách hàng) đạt mức tăng trưởng <b>{ytd_loans_growth:+.2f}% YTD</b>, trong khi huy động tiền gửi khách hàng tăng trưởng <b>{ytd_dep_growth:+.2f}% YTD</b>. Điều này phản ánh sự điều tiết nhịp nhàng và tương đồng trong quản trị tài sản Có - tài sản Nợ của ngân hàng.", bullet_style))
     story.append(Paragraph(f"• <b>Chất lượng nguồn gốc lợi nhuận:</b> {profit_source_comment} {provision_comment}", bullet_style))
     story.append(Paragraph(f"• <b>Đánh giá hiệu quả vận hành:</b> Thu nhập lãi thuần (NII) quý đạt <b>{nii_latest_val:,.1f} tỷ đồng</b>, Lợi nhuận sau thuế (LNST) đạt <b>{npat_latest_val:,.1f} tỷ đồng</b>. Tỷ lệ CIR và NIM duy trì ổn định nhờ tối ưu hóa chi phí vận hành và huy động nguồn vốn rẻ (CASA) giúp giảm chi phí vốn (COF).", bullet_style))
+    if bank_risk_summary:
+        # Lặp lại tóm tắt rủi ro lãi suất/thanh khoản ở đây (vị trí 1) — chi tiết đầy đủ nằm ở mục 3B
+        # (vị trí 2) — xem build_risk_summary() trong bank_risk_notes.py.
+        story.append(Paragraph(f"• <b>Rủi ro lãi suất & thanh khoản:</b> {bank_risk_summary['summary_text']}", bullet_style))
     story.append(Spacer(1, 8))
     
     story.append(Paragraph("Hoạt động tín dụng & Khả năng sinh lời (NIM) dài hạn:", h2_style))
@@ -3463,6 +3480,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             f"Trích từ \"{bank_risk_source['title']}\" (năm {bank_risk_source['year']}) — bảng phân "
             "loại tài sản/nguồn vốn theo kỳ hạn định lại lãi suất và kỳ hạn còn lại đến đáo hạn do "
             "chính ngân hàng/kiểm toán viên lập, không phải số tự tính toán suy diễn.", body_style))
+        if bank_risk_summary:
+            story.append(Spacer(1, 4))
+            story.append(Paragraph(f"<b>🎯 TÓM TẮT:</b> {bank_risk_summary['summary_text']}", body_style))
         story.append(Spacer(1, 3))
         # Render TRỰC TIẾP bank_risk_narrative_lines (nguồn DUY NHẤT cho phần đánh giá — web cũng đọc
         # đúng list này qua JSON narrativeLines) thay vì xây riêng 1 bộ bullet khác ở đây — tránh 2 nơi
@@ -3686,7 +3706,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "profit_source_comment": profit_source_comment,
             "provision_comment": provision_comment,
             "nii_latest_val": round(nii_latest_val, 2),
-            "npat_latest_val": round(npat_latest_val, 2)
+            "npat_latest_val": round(npat_latest_val, 2),
+            # Lặp lại đúng bank_risk_summary["summary_text"] (đã tính ở trên, xem build_risk_summary)
+            # vào khối "Nhận định nhanh Earning Release" — user muốn đọc được mức độ rủi ro lãi suất/
+            # thanh khoản + khả năng chống chịu ở CẢ 2 vị trí (đây là vị trí 1; vị trí 2 là đầu phần
+            # phân tích rủi ro chi tiết, xem bankRiskAnalysis.summary trong JSON). None nếu chưa đọc
+            # được OCR kỳ này — app_banking.js tự bỏ qua dòng này nếu null.
+            "risk_comment": bank_risk_summary["summary_text"] if bank_risk_summary else None,
         },
         "credit_funding_growth": {
             "quarters": labels_g,
@@ -3903,6 +3929,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "balanceSheetRatios": bank_bs_ratios,
             "narrative": bank_risk_narrative,
             "narrativeLines": bank_risk_narrative_lines,
+            "summary": bank_risk_summary,
         } if (bank_ir_metrics or bank_liq_metrics) else {"balanceSheetRatios": bank_bs_ratios}
     }
 
