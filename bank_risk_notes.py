@@ -150,6 +150,42 @@ _ROW_ANCHOR_WORDS = {
 }
 
 
+# Ô số: số VN chuẩn (dấu chấm phân cách nghìn, ngoặc = âm) HOẶC dấu gạch ngang đơn (= 0) HOẶC — dự
+# phòng — 1 dãy ≥4 chữ số THUẦN không dấu chấm (OCR thỉnh thoảng làm mất dấu chấm ở 1 vài ô riêng lẻ,
+# bug thật 2026-08: "34.144.640" bị đọc ra "34144640"). BẮT BUỘC dùng CHUNG 1 regex duy nhất (không
+# tách "thử chặt trước, lỏng sau" như bản đầu) — thử tách riêng đã gây bug KHÁC: khi 1 ô giữa hàng bị
+# mất dấu chấm, phần "chặt" vẫn đủ ĐẾM ra n_buckets token (vì tình cờ nhặt được cột "Tổng cộng" ở cuối
+# hàng bù vào chỗ trống), lấy nhầm cột forecast/tổng thay cho ô lỗi — 1 regex duy nhất giữ đúng THỨ TỰ
+# trái→phải nên ô mất dấu chấm được điền lại ĐÚNG VỊ TRÍ của nó, không bị cột sau đó nhảy vào thế chỗ.
+_CELL_RE = re.compile(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?|(?<![\w.])-(?![\w.])|\(?[\d]{4,}\)?")
+
+
+def _extract_cell_tokens(text, n_buckets):
+    """Trích đúng `n_buckets` "ô số" đầu tiên từ `text` theo ĐÚNG thứ tự trái→phải (xem _CELL_RE ở
+    trên). Trả về None nếu không đủ số lượng — KHÔNG ĐOÁN số liệu thiếu."""
+    toks = [m.group(0) for m in _CELL_RE.finditer(text)]
+    return toks[:n_buckets] if len(toks) >= n_buckets else None
+
+
+def _tokens_to_values(toks):
+    """Chuyển list token chuỗi (từ _extract_cell_tokens) sang list float — "-" = 0.0, ngoặc = âm,
+    bỏ dấu chấm phân cách nghìn. Trả về None nếu có token không parse được (không nên xảy ra vì
+    toks đã qua 2 regex ở trên, nhưng phòng hờ)."""
+    vals = []
+    for tok in toks:
+        if tok == "-":
+            vals.append(0.0)
+            continue
+        neg = tok.startswith("(") and tok.endswith(")")
+        clean = tok.strip("()").replace(".", "")
+        try:
+            v = float(clean)
+        except ValueError:
+            return None
+        vals.append(-v if neg else v)
+    return vals
+
+
 def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=None):
     """Tìm DÒNG có nhãn `label_flat` (đã strip dấu) trong `text`, trích các "ô số" trong nhãn đó +
     `lines_after` dòng kế tiếp. Chỉ trả về kết quả nếu số lượng ô trích được >= n_buckets (lấy đúng
@@ -184,27 +220,13 @@ def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=No
     # khi tìm "ô số" (bug thật, 2026-08: dấu "-" của công thức bị đếm nhầm thành cột đầu tiên, làm
     # lệch toàn bộ các cột phía sau 1 vị trí).
     window_text = re.sub(r"\(\s*\d\s*\)\s*=\s*\(\s*\d\s*\)(?:\s*[+\-]\s*\(\s*\d\s*\))*", " ", window_text)
-    _CELL_RE = re.compile(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?|(?<![\w.])-(?![\w.])")
-    toks = [m.group(0) for m in _CELL_RE.finditer(window_text)]
-    if len(toks) < n_buckets:
+    toks = _extract_cell_tokens(window_text, n_buckets)
+    if toks is None:
         if debug_tag:
             preview = window_text.replace("\n", " | ")[:300]
-            print(f"  [DIAG] {debug_tag}: tim thay nhan nhung chi doc duoc {len(toks)}/{n_buckets} o so. "
-                  f"Cua so OCR: \"{preview}\"")
+            print(f"  [DIAG] {debug_tag}: tim thay nhan nhung khong du so lieu. Cua so OCR: \"{preview}\"")
         return None
-    vals = []
-    for tok in toks[:n_buckets]:
-        if tok == "-":
-            vals.append(0.0)
-            continue
-        neg = tok.startswith("(") and tok.endswith(")")
-        clean = tok.strip("()").replace(".", "")
-        try:
-            v = float(clean)
-        except ValueError:
-            return None
-        vals.append(-v if neg else v)
-    return vals
+    return _tokens_to_values(toks)
 
 
 def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=None):
@@ -237,29 +259,25 @@ def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=No
             print(f"  [DIAG] {debug_tag}: (toa do) khong tim thay tu neo '{a1}'+'{a2}' gan nhau tren trang nay")
         return None
     row_top, row_h = anchor["top"], max(anchor["height"], 1)
-    row_words = sorted((w for w in words if abs(w["top"] - row_top) < row_h * 1.2), key=lambda w: w["left"])
-    row_text = " ".join(w["text"] for w in row_words)
-    _CELL_RE = re.compile(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?|(?<![\w.])-(?![\w.])")
-    toks = [m.group(0) for m in _CELL_RE.finditer(row_text)]
-    if len(toks) < n_buckets:
+    # Bảng trải rất rộng hết bề ngang trang (~1700px) — 1 vài ô ở xa neo có thể lệch Y vài pixel do
+    # scan hơi nghiêng/rung nét, không có 1 ngưỡng dung sai duy nhất đúng cho mọi lần quét. Thử tăng
+    # dần dung sai, DÙNG NGƯỠNG NHỎ NHẤT đã đủ đọc ra n_buckets ô để giảm rủi ro gom nhầm hàng bên
+    # cạnh (bug thật, 2026-08: log TCB v1 thiếu 3/8 ô dù đã định vị đúng hàng neo).
+    toks, row_text = None, ""
+    for tol_mult in (1.2, 2.0, 3.0, 4.5):
+        row_words = sorted((w for w in words if abs(w["top"] - row_top) < row_h * tol_mult),
+                            key=lambda w: w["left"])
+        row_text = " ".join(w["text"] for w in row_words)
+        toks = _extract_cell_tokens(row_text, n_buckets)
+        if toks is not None:
+            break
+    if toks is None:
         if debug_tag:
             preview = row_text[:300]
-            print(f"  [DIAG] {debug_tag}: (toa do) tim thay hang neo nhung chi doc duoc {len(toks)}/{n_buckets} "
-                  f"o so. Hang da sap xep lai theo X: \"{preview}\"")
+            print(f"  [DIAG] {debug_tag}: (toa do) tim thay hang neo nhung khong du so lieu du moi nguong "
+                  f"dung sai da thu. Hang rong nhat: \"{preview}\"")
         return None
-    vals = []
-    for tok in toks[:n_buckets]:
-        if tok == "-":
-            vals.append(0.0)
-            continue
-        neg = tok.startswith("(") and tok.endswith(")")
-        clean = tok.strip("()").replace(".", "")
-        try:
-            v = float(clean)
-        except ValueError:
-            return None
-        vals.append(-v if neg else v)
-    return vals
+    return _tokens_to_values(toks)
 
 
 _CURRENCY_ROW_RE = re.compile(
