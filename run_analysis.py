@@ -13,7 +13,17 @@ import os
 import sys
 import json
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# GitHub Actions runner mặc định giờ hệ thống UTC — "lastUpdated" hiển thị lên web (banking.html và
+# các trang khác) trước đây dùng datetime.now() thẳng (= giờ UTC trên CI), lệch 7 tiếng so với giờ
+# Việt Nam thật, khiến báo cáo MỚI CHẠY XONG trông như cũ (vd chạy lúc 21:13 giờ VN nhưng web hiện
+# 14:13). Dùng timezone cố định UTC+7 thay vì phụ thuộc giờ hệ thống của máy chạy script.
+VN_TZ = timezone(timedelta(hours=7))
+
+
+def _vn_now_str():
+    return datetime.now(VN_TZ).strftime("%Y-%m-%d %H:%M")
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, PROJECT_ROOT)
@@ -43,7 +53,7 @@ def update_registry(ticker, company_name, sector, excel_url, pdf_url):
         "ticker": ticker,
         "companyName": company_name,
         "sector": sector,
-        "lastUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "lastUpdated": _vn_now_str(),
         "excelUrl": excel_url,
         "pdfUrl": pdf_url,
     })
@@ -245,7 +255,7 @@ def run_analysis(ticker: str):
     if ticker_json:
         ticker_json["gdriveExcelUrl"] = excel_url
         ticker_json["gdrivePdfUrl"] = pdf_url
-        ticker_json["lastUpdated"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+        ticker_json["lastUpdated"] = _vn_now_str()
         json_path = os.path.join(PROJECT_ROOT, "data", f"{ticker}.json")
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(ticker_json, f, ensure_ascii=False, indent=2)
@@ -262,7 +272,7 @@ def run_analysis(ticker: str):
             "shares": 0,
             "gdriveExcelUrl": excel_url,
             "gdrivePdfUrl": pdf_url,
-            "lastUpdated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "lastUpdated": _vn_now_str(),
             "data": {"years": [], "revenue": [], "npat": [], "eps": [], "equity": []}
         }
         os.makedirs(os.path.join(PROJECT_ROOT, "data"), exist_ok=True)

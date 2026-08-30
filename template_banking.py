@@ -14,6 +14,16 @@ import json
 import datetime
 import subprocess
 import openpyxl
+
+# GitHub Actions runner mặc định giờ hệ thống UTC — các mốc "Ngày lập"/"cập nhật theo giá đóng cửa
+# ngày" hiển thị trong Excel/PDF trước đây dùng datetime.datetime.now() thẳng (= giờ UTC trên CI),
+# lệch 7 tiếng so với giờ Việt Nam thật (vd chạy lúc 21:13 giờ VN nhưng báo cáo ghi 14:13). Dùng
+# timezone cố định UTC+7 thay vì phụ thuộc giờ hệ thống của máy chạy script.
+_VN_TZ = datetime.timezone(datetime.timedelta(hours=7))
+
+
+def _vn_now():
+    return datetime.datetime.now(_VN_TZ)
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter, column_index_from_string
 from openpyxl.worksheet.formula import ArrayFormula
@@ -992,7 +1002,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     # Tên file theo ngày chạy thực tế (năm_tháng_ngày) thay vì chỉ năm-tháng — để không nhầm file cũ/mới
     # khi chạy nhiều lần trong cùng tháng (2026-07, cùng vấn đề đã sửa cho build_hpg_model.py).
-    month_str = datetime.datetime.now().strftime("%Y_%m_%d")
+    month_str = _vn_now().strftime("%Y_%m_%d")
     excel_path = os.path.join(out_dir, f"{ticker}_Model_{month_str}.xlsx")
     for v in range(1, 100):
         try:
@@ -1137,7 +1147,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     ws_cov["B2"].font = Font(bold=True, size=16, name="Calibri")
     ws_cov["B3"] = company_name
     ws_cov["B3"].font = Font(size=12, italic=True, name="Calibri")
-    ws_cov["B4"] = f"Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws_cov["B4"] = f"Ngày lập: {_vn_now().strftime('%d/%m/%Y %H:%M')}"
     ws_cov["B4"].font = Font(size=10, italic=True, name="Calibri", color="555555")
     ws_cov["B5"] = "Giá hiện tại (VND):"
     ws_cov["C5"] = "='02_Assumptions'!B2"
@@ -3204,7 +3214,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     
     # ------------------ PAGE 1: COVER & INVESTMENT SUMMARY ------------------
     story.append(Paragraph(f"BÁO CÁO PHÂN TÍCH CỔ PHIẾU NGÂN HÀNG: {ticker}", title_style))
-    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}", subtitle_style))
+    story.append(Paragraph(f"<b>{company_name}</b> | Ngày lập: {_vn_now().strftime('%d/%m/%Y %H:%M')}", subtitle_style))
     story.append(Spacer(1, 4))
     
     # Stock Info & Valuation Snapshot Table
@@ -3594,7 +3604,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     t_pdf_peer.setStyle(TableStyle(t_pdf_peer_styles))
     story.append(t_pdf_peer)
     story.append(Spacer(1, 5))
-    today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+    today_str = _vn_now().strftime("%Y-%m-%d")
     story.append(Paragraph(f"<i>Nguồn: Báo cáo tài chính các ngân hàng Q1/2026 và dữ liệu thống kê từ Vietcap. P/B được cập nhật theo thị giá đóng cửa ngày: {today_str}.</i>", body_style))
     
     # ------------------ PAGE 6: VALUATION & PE/PB HISTORY ------------------
