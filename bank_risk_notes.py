@@ -62,6 +62,28 @@ def _strip_accents(s):
     return "".join(c for c in s if unicodedata.category(c) != "Mn").lower()
 
 
+def _autorotate(img, pytesseract):
+    """Dò và sửa hướng trang (90/180/270 độ) bằng OSD của tesseract TRƯỚC khi OCR chính — 1 vài trang
+    BCTC (thường là bảng dàn ngang rộng — vd bảng khe hở lãi suất/thanh khoản) bị nhúng/scan LỘN NGƯỢC
+    180 độ so với phần còn lại của tài liệu (dù các trang chữ xuôi khác trong CÙNG file vẫn đọc bình
+    thường), khiến OCR đọc ra chuỗi ký tự vô nghĩa/lộn ngược thay vì số thật thay vì báo lỗi rõ ràng —
+    bug thật phát hiện 2026-08 qua log CI TCB: 1 trang bảng gap đọc ra rác dạng "9S/ téE ¿LE S06...",
+    verify bằng cách so chuỗi rác với chính footer trang (LUÔN có ở mọi trang) — "NH-q191/€S08" khi
+    đọc ngược lại đúng là "B05a/TCTD-HN", tức trang bị lộn ngược chứ không phải OCR kém đơn thuần.
+    Cần cài thêm gói apt "tesseract-ocr-osd" (dữ liệu ngôn ngữ riêng cho OSD, KHÁC "tesseract-ocr-vie")
+    — nếu thiếu, image_to_osd() lỗi, hàm này lặng lẽ trả về ảnh gốc KHÔNG xoay (không đoán mù góc quay
+    khi không chắc chắn — thà bỏ sót còn hơn xoay sai làm hỏng 1 trang vốn đã đúng chiều)."""
+    try:
+        from pytesseract import Output
+        osd = pytesseract.image_to_osd(img, output_type=Output.DICT)
+        angle = osd.get("rotate", 0)
+        if angle:
+            return img.rotate(-angle, expand=True)
+    except Exception:
+        pass
+    return img
+
+
 def _ocr_page_text(pdf_path, page_index, dpi=300):
     """OCR 1 trang (0-based index) bằng pytesseract. Trả về "" nếu thiếu pytesseract/tesseract binary
     hoặc lỗi bất kỳ bước nào — KHÔNG BAO GIỜ raise."""
@@ -75,6 +97,7 @@ def _ocr_page_text(pdf_path, page_index, dpi=300):
         if page_index >= len(doc):
             return ""
         img = doc[page_index].render(scale=dpi / 72).to_pil()
+        img = _autorotate(img, pytesseract)
         return pytesseract.image_to_string(img, lang="vie")
     except Exception as e:
         print(f"  [WARN] OCR trang {page_index+1} loi: {e}")
@@ -97,6 +120,7 @@ def _ocr_page_words(pdf_path, page_index, dpi=300):
         if page_index >= len(doc):
             return []
         img = doc[page_index].render(scale=dpi / 72).to_pil()
+        img = _autorotate(img, pytesseract)
         data = pytesseract.image_to_data(img, lang="vie", output_type=Output.DICT)
         words = []
         for i in range(len(data["text"])):
