@@ -494,9 +494,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     bank_bs_ratios = compute_balance_sheet_alm_ratios(
         total_assets_hist[-1], loans_hist[-1], interbank_hist[-1], bonds_hist[-1])
     try:
-        from bank_risk_notes import (fetch_bank_risk_gaps, compute_interest_rate_risk_metrics,
+        from bank_risk_notes import (fetch_bank_risk_gaps_cached, compute_interest_rate_risk_metrics,
                                       compute_liquidity_risk_metrics)
-        _risk_gaps = fetch_bank_risk_gaps(ticker)
+        # fetch_bank_risk_gaps_cached (thay vì fetch_bank_risk_gaps trực tiếp, 2026-08): tái sử
+        # dụng data/bank_alm/<TICKER>.json nếu bank_system_risk.py (đánh giá rủi ro toàn hệ thống
+        # ngân hàng trong vĩ mô) đã OCR đúng kỳ này rồi — và ngược lại, ghi lại vào store cho lần
+        # bank_system_risk.py chạy sau tận dụng, tránh OCR trùng lặp giữa 2 pipeline.
+        _risk_gaps = fetch_bank_risk_gaps_cached(ticker)
         if _risk_gaps:
             _ta, _eq = total_assets_hist[-1], equity_hist[-1]
             # Liquid assets = tiền mặt + tiền gửi NHNN + tiền gửi/cho vay TCTD — dùng làm "đạn" đối

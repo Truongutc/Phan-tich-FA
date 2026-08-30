@@ -487,30 +487,37 @@ def _download_report_pdf(ticker, cand):
     return pdf_path
 
 
-def fetch_bank_risk_gaps(ticker):
-    """Trả về dict {"interest_rate_gap": {bucket: value}, "liquidity_gap": {bucket: value},
-    "source_title":, "source_url":, "fetched_year":} hoặc None nếu bất kỳ bước nào thất bại (thiếu
-    tesseract, không tìm thấy BCTC nào, không định vị được note, OCR không đọc đủ số...). KHÔNG BAO
-    GIỜ raise — template_banking.py gọi hàm này trong try/except nhưng bản thân hàm đã tự an toàn.
+def _period_key_for_candidate(cand):
+    """Trả về "YYYY-H1"/"YYYY-FY" nếu candidate là báo cáo đã kiểm toán/soát xét (Quarter 5/6 theo
+    quy ước CafeF), None nếu là báo cáo quý thường (không đáng tin cho 2 bảng gap). Dùng LÀM KHÓA
+    để backfill/kiểm tra 1 kỳ lịch sử cụ thể (xem fetch_bank_risk_gaps_for_period/
+    latest_reviewed_period) — KHÁC hoàn toàn tên file cache PDF (_download_report_pdf tự suy ra
+    period_tag riêng, không dùng hàm này, dù logic tương tự)."""
+    q = cand.get("Quarter")
+    if q not in (5, 6):
+        return None
+    is_half = (q == 6) or _is_half_year(cand.get("Name", ""))
+    return f"{cand['Year']}-{'H1' if is_half else 'FY'}"
 
-    Chỉ BCTC đã KIỂM TOÁN/SOÁT XÉT (Quarter=5 năm, Quarter=6 bán niên theo CafeF — báo cáo quý thường
-    KHÔNG soát xét thường rút gọn thuyết minh, không có 2 bảng này) mới ĐÁNG TIN CẬY để thử, nhưng
-    KHÔNG giả định trước loại nào chắc chắn có/không có — luôn ưu tiên thử bản MỚI NHẤT theo kỳ dữ
-    liệu thật sự (không phải theo ngày công bố) trước, chỉ rơi về bản kiểm toán/soát xét gần nhất khi
-    bản mới nhất đó thật sự không đọc được (xem _extract_gaps_from_pdf) — để số liệu luôn bám sát kỳ
-    gần nhất CÓ SẴN, không cố định cứng vào "báo cáo năm" hay "báo cáo bán niên" (verify 2026-08:
-    từng lỡ luôn dùng báo cáo năm cũ trong khi báo cáo bán niên mới hơn đã có đủ số liệu chi tiết)."""
-    ticker = ticker.upper()
+
+def _select_candidate_reports(ticker):
+    """Lấy + xếp hạng danh sách BCTC của 1 ticker — logic CHỌN dùng chung cho cả fetch_bank_risk_gaps
+    (mới nhất), fetch_bank_risk_gaps_for_period (1 kỳ lịch sử cụ thể), và latest_reviewed_period
+    (kiểm tra rẻ, không tải/OCR). Trả về (newest_overall, newest_reviewed, reviewed_reports):
+    - newest_overall: BCTC MỚI NHẤT bất kể loại kỳ (None nếu không lấy được danh sách/không có gì).
+    - newest_reviewed: BCTC đã kiểm toán/soát xét MỚI NHẤT (None nếu không có bản nào).
+    - reviewed_reports: list TẤT CẢ bản đã kiểm toán/soát xét, mỗi phần tử có thêm key "period_key"
+      ("YYYY-H1"/"YYYY-FY"), ĐÃ KHỬ TRÙNG theo period_key — 1 kỳ bán niên có thể xuất hiện 2 lần (1
+      từ CafeF gắn đúng Quarter=6, 1 từ 24hmoney gắn NHẦM Quarter=5 vì _parse_24hmoney_period không
+      phân biệt được "kiểm toán năm" với "soát xét 6 tháng" chỉ từ tiêu đề) — ưu tiên giữ bản
+      Quarter==6 (gắn đúng từ đầu) khi trùng period_key."""
     try:
         items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
-    except Exception as e:
-        print(f"  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC ({e})")
-        return None
-
+    except Exception:
+        return None, None, []
     reports = [x for x in select_best_reports(items) if x.get("Quarter") in _QUARTER_END_MONTH]
     if not reports:
-        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nao cho ticker nay")
-        return None
+        return None, None, []
 
     def _recency_key(x):
         is_half = _is_half_year(x.get("Name", ""))
@@ -524,11 +531,60 @@ def fetch_bank_risk_gaps(ticker):
         return (x["Year"], end_month, reviewed)
 
     newest_overall = max(reports, key=_recency_key)
-    reviewed_reports = [x for x in reports if x["Quarter"] in (5, 6) or _is_half_year(x.get("Name", ""))]
+    reviewed_candidates = [x for x in reports if x["Quarter"] in (5, 6) or _is_half_year(x.get("Name", ""))]
+    by_period = {}
+    for cand in reviewed_candidates:
+        pk = _period_key_for_candidate(cand)
+        if pk is None:
+            continue
+        if pk not in by_period or (cand.get("Quarter") == 6 and by_period[pk].get("Quarter") != 6):
+            by_period[pk] = cand
+    reviewed_reports = []
+    for pk, cand in by_period.items():
+        tagged = dict(cand)
+        tagged["period_key"] = pk
+        reviewed_reports.append(tagged)
     if not reviewed_reports:
+        return newest_overall, None, []
+    newest_reviewed = max(reviewed_reports, key=_recency_key)
+    return newest_overall, newest_reviewed, reviewed_reports
+
+
+def latest_reviewed_period(ticker):
+    """Kiểm tra RẺ (chỉ gọi API liệt kê danh sách BCTC, KHÔNG tải PDF/KHÔNG OCR — vài giây) xem kỳ
+    đã kiểm toán/soát xét MỚI NHẤT hiện có của ticker này là gì (vd "2026-H1"). Dùng cho bước kiểm
+    tra "có dữ liệu mới hơn dữ liệu đã lưu chưa" trước khi quyết định có cần OCR lại hay không (xem
+    bank_system_risk.py). Trả về None nếu không lấy được danh sách BCTC hoặc không có bản đã kiểm
+    toán/soát xét nào."""
+    ticker = ticker.upper()
+    _, newest_reviewed, _ = _select_candidate_reports(ticker)
+    return newest_reviewed.get("period_key") if newest_reviewed else None
+
+
+def fetch_bank_risk_gaps(ticker):
+    """Trả về dict {"interest_rate_gap": {bucket: value}, "liquidity_gap": {bucket: value},
+    "source_title":, "source_url":, "fetched_year":} hoặc None nếu bất kỳ bước nào thất bại (thiếu
+    tesseract, không tìm thấy BCTC nào, không định vị được note, OCR không đọc đủ số...). KHÔNG BAO
+    GIỜ raise — template_banking.py gọi hàm này trong try/except nhưng bản thân hàm đã tự an toàn.
+
+    Chỉ BCTC đã KIỂM TOÁN/SOÁT XÉT (Quarter=5 năm, Quarter=6 bán niên theo CafeF — báo cáo quý thường
+    KHÔNG soát xét thường rút gọn thuyết minh, không có 2 bảng này) mới ĐÁNG TIN CẬY để thử, nhưng
+    KHÔNG giả định trước loại nào chắc chắn có/không có — luôn ưu tiên thử bản MỚI NHẤT theo kỳ dữ
+    liệu thật sự (không phải theo ngày công bố) trước, chỉ rơi về bản kiểm toán/soát xét gần nhất khi
+    bản mới nhất đó thật sự không đọc được (xem _extract_gaps_from_pdf) — để số liệu luôn bám sát kỳ
+    gần nhất CÓ SẴN, không cố định cứng vào "báo cáo năm" hay "báo cáo bán niên" (verify 2026-08:
+    từng lỡ luôn dùng báo cáo năm cũ trong khi báo cáo bán niên mới hơn đã có đủ số liệu chi tiết).
+
+    Chỉ lấy được kỳ MỚI NHẤT hiện có — xem fetch_bank_risk_gaps_for_period() để lấy 1 kỳ lịch sử cụ
+    thể (dùng cho backfill hệ thống ngân hàng, bank_system_risk.py)."""
+    ticker = ticker.upper()
+    newest_overall, newest_reviewed, _ = _select_candidate_reports(ticker)
+    if newest_overall is None:
+        print("  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC hoac khong tim thay BCTC nao")
+        return None
+    if newest_reviewed is None:
         print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam/ban nien da kiem toan/soat xet")
         return None
-    newest_reviewed = max(reviewed_reports, key=_recency_key)
 
     # Thử bản MỚI NHẤT (bất kể loại kỳ) trước để bám sát số liệu gần nhất có thể — thường TRÙNG với
     # newest_reviewed (chưa có báo cáo quý nào mới hơn báo cáo kiểm toán/soát xét gần nhất), lúc đó chỉ
@@ -536,7 +592,7 @@ def fetch_bank_risk_gaps(ticker):
     # VÀ đọc không ra (vd 1 báo cáo quý thường không soát xét, rút gọn thuyết minh).
     os.makedirs(CACHE_DIR, exist_ok=True)
     candidates_to_try = [newest_overall]
-    if newest_reviewed is not newest_overall and newest_reviewed["Link"] != newest_overall["Link"]:
+    if newest_reviewed["Link"] != newest_overall["Link"]:
         candidates_to_try.append(newest_reviewed)
 
     for cand in candidates_to_try:
@@ -558,11 +614,103 @@ def fetch_bank_risk_gaps(ticker):
         partial["source_title"] = cand["Name"]
         partial["source_url"] = cand["Link"]
         partial["fetched_year"] = cand["Year"]
+        # period_key ("YYYY-H1"/"YYYY-FY") — None nếu cand tình cờ là 1 báo cáo quý thường đọc được
+        # (hiếm, không đúng quy ước lưu trữ per-period) — nơi gọi (fetch_bank_risk_gaps_cached) tự
+        # bỏ qua việc lưu vào bank_alm_store khi None, không suy diễn kỳ.
+        partial["period_key"] = cand.get("period_key") or _period_key_for_candidate(cand)
         return partial
 
     print("  [SKIP] Rui ro lai suat/thanh khoan: da thu (các) BCTC gan nhat, khong ban nao doc du so lieu "
           "(OCR chat luong kem hoac dinh dang bang khac chuan)")
     return None
+
+
+def fetch_bank_risk_gaps_for_period(ticker, period_key):
+    """Giống fetch_bank_risk_gaps() nhưng lấy ĐÚNG 1 KỲ LỊCH SỬ cụ thể (vd "2025-H1") thay vì luôn
+    lấy kỳ mới nhất — dùng cho backfill lịch sử hệ thống ngân hàng (bank_system_risk.py). Trả về
+    None nếu ticker này KHÔNG CÓ báo cáo đã kiểm toán/soát xét đúng kỳ đó (KHÔNG PHẢI lỗi — ngân
+    hàng có thể chưa niêm yết lúc đó, hoặc CafeF/24hmoney không còn lưu bản cũ) — không thử "kỳ gần
+    đúng nhất", chỉ khớp CHÍNH XÁC period_key hoặc trả về None, để backfill không tự đoán số liệu.
+    KHÔNG BAO GIỜ raise, giống fetch_bank_risk_gaps()."""
+    ticker = ticker.upper()
+    _, _, reviewed_reports = _select_candidate_reports(ticker)
+    cand = next((c for c in reviewed_reports if c.get("period_key") == period_key), None)
+    if cand is None:
+        print(f"  [SKIP] Rui ro lai suat/thanh khoan ({period_key}): khong tim thay BCTC dung ky nay cho {ticker}")
+        return None
+
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    try:
+        pdf_path = _download_report_pdf(ticker, cand)
+    except Exception as e:
+        print(f"  [WARN] Rui ro lai suat/thanh khoan ({period_key}): tai '{cand['Name']}' that bai ({e})")
+        return None
+    status, partial = _extract_gaps_from_pdf(pdf_path)
+    if status == "missing_tool":
+        print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
+              "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
+        return None
+    if status == "no_note":
+        print(f"  [DIAG] Rui ro lai suat/thanh khoan ({period_key}): '{cand['Name']}' khong doc du 2 bang")
+        return None
+    partial["source_title"] = cand["Name"]
+    partial["source_url"] = cand["Link"]
+    partial["fetched_year"] = cand["Year"]
+    partial["period_key"] = period_key
+    return partial
+
+
+def fetch_bank_risk_gaps_cached(ticker):
+    """Wrapper tái sử dụng dữ liệu GIỮA 2 pipeline: phân tích 1 mã lẻ (template_banking.py) và tổng
+    hợp toàn hệ thống ngân hàng (bank_system_risk.py) — cả 2 nên gọi hàm này thay vì
+    fetch_bank_risk_gaps() trực tiếp, để 1 lần OCR phục vụ được cả 2 nơi.
+
+    Với ticker thuộc bank_universe.BANKING_TICKERS: kiểm tra RẺ (latest_reviewed_period, không OCR)
+    xem kỳ mới nhất hiện có là gì; nếu data/bank_alm/<TICKER>.json ĐÃ CÓ đúng kỳ đó với
+    status="reported" thì trả thẳng từ store (không tốn mạng/OCR); nếu không, gọi
+    fetch_bank_risk_gaps() bình thường rồi LƯU LẠI kết quả vào store cho lần gọi sau (của chính
+    pipeline này hoặc pipeline kia). Ticker ngoài bank_universe rơi thẳng về fetch_bank_risk_gaps()
+    không qua store (không nên xảy ra vì module này chỉ được gọi cho cổ phiếu ngân hàng, nhưng
+    phòng hờ). KHÔNG BAO GIỜ raise — lỗi đọc/ghi store bị nuốt, không làm hỏng kết quả OCR đã fetch
+    được."""
+    ticker = ticker.upper()
+    try:
+        from bank_universe import BANKING_TICKERS
+    except Exception:
+        BANKING_TICKERS = frozenset()
+    if ticker not in BANKING_TICKERS:
+        return fetch_bank_risk_gaps(ticker)
+
+    import bank_alm_store
+    cheap_period = latest_reviewed_period(ticker)
+    if cheap_period:
+        try:
+            bank_alm_store.record_cheap_check(ticker, cheap_period)
+            stored = bank_alm_store.get_period_entry(ticker, cheap_period)
+        except Exception:
+            stored = None
+        if stored and stored.get("status") == "reported" and \
+                (stored.get("interest_rate_gap") or stored.get("liquidity_gap")):
+            result = {"period_key": cheap_period}
+            for k in ("interest_rate_gap", "liquidity_gap", "liabilities_by_bucket",
+                      "interest_rate_sensitivity_disclosed"):
+                if stored.get(k) is not None:
+                    result[k] = stored[k]
+            src = stored.get("source") or {}
+            result["source_title"] = src.get("title")
+            result["source_url"] = src.get("url")
+            result["fetched_year"] = src.get("fetched_year")
+            return result
+
+    partial = fetch_bank_risk_gaps(ticker)
+    if partial and partial.get("period_key"):
+        source = {"title": partial.get("source_title"), "url": partial.get("source_url"),
+                  "fetched_year": partial.get("fetched_year")}
+        try:
+            bank_alm_store.upsert_reported_period(ticker, partial["period_key"], partial, source)
+        except Exception:
+            pass  # cache la "co thi tot" — loi ghi khong lam hong ket qua da fetch duoc
+    return partial
 
 
 # ── Tính chỉ số từ gap đã trích ──────────────────────────────────────────────────────────────────

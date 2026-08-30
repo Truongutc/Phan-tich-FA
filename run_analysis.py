@@ -113,10 +113,10 @@ def run_analysis(ticker: str):
     print(f"  STOCK ANALYSIS PIPELINE — {ticker}")
     print(f"{'='*60}\n")
 
-    # Danh sách mã ngân hàng
-    BANKING_TICKERS = {"VCB", "BID", "TCB", "MBB", "VPB", "ACB", "HDB", "TPB", "STB",
-                       "LPB", "ABB", "SHB", "VAB", "VIB", "BAB", "KLB", "NAB", "NVB",
-                       "SGB", "OCB", "EIB", "MSB"}
+    # Danh sách mã ngân hàng — dùng CHUNG 1 nguồn duy nhất (bank_universe.py) với
+    # bank_system_risk.py (đánh giá rủi ro lãi suất/thanh khoản toàn hệ thống) để không bao giờ
+    # lệch danh sách giữa 2 pipeline (trước 2026-08 danh sách khai trực tiếp ở đây từng THIẾU CTG).
+    from bank_universe import BANKING_TICKERS
 
     # Danh sách mã công ty chứng khoán (CTCK)
     SECURITIES_TICKERS = {"SSI", "VND", "HCM", "VCI", "FTS", "SHS", "BSI", "VIX", "MBS",
