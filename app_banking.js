@@ -722,8 +722,9 @@ function renderBankRiskAnalysis(data, sectorKey) {
     if (ir) {
         items.push({ label: 'Gap lãi suất ≤1 năm', value: pct(ir.cumulative_gap_1y_ratio, 2),
                      desc: `${ir.sensitive_type} · Mức tham chiếu: ${ir.sensitivity_level}` });
+        const sc1 = ir.stress_scenarios_nii_ratio && ir.stress_scenarios_nii_ratio['+100bp'];
         items.push({ label: 'NII nhạy cảm (+100bp)', value: money(ir.nii_sensitivity_per_shock),
-                     desc: 'Ước tính static gap' });
+                     desc: sc1 != null ? `Ước tính static gap · ${pct(sc1, 1)} NII thực tế` : 'Ước tính static gap' });
         // Gap lũy kế theo TỪNG mốc (không chỉ điểm cuối ≤1 năm) — 1 gap dương ở mốc cuối vẫn có thể
         // che 1 gap âm lớn ở mốc gần hơn, xem [[feedback_bank_alm_risk_framework]].
         const hz = ir.cumulative_gap_by_horizon;
@@ -738,10 +739,14 @@ function renderBankRiskAnalysis(data, sectorKey) {
     }
     if (liq) {
         items.push({ label: 'Gap thanh khoản ≤1 tháng', value: pct(liq.cumulative_gap_1m_ratio, 2),
-                     desc: `Mức độ: ${liq.risk_level}` });
+                     desc: `Mức tham chiếu: ${liq.risk_level}` });
         if (liq.liquid_assets_ratio != null) {
             items.push({ label: 'Liquid Assets/Tổng TS', value: pct(liq.liquid_assets_ratio, 1),
                          desc: 'Tiền mặt + NHNN + TCTD' });
+        }
+        if (liq.liquid_assets_to_st_liabilities_simple != null) {
+            items.push({ label: 'Liquid Assets/Nợ ngắn hạn', value: pct(liq.liquid_assets_to_st_liabilities_simple, 1),
+                         desc: 'LCR đơn giản hoá, khác LCR Basel chuẩn' });
         }
     } else {
         items.push({ label: 'Gap thanh khoản ≤1 tháng', value: '-', desc: 'Chưa đọc được từ BCTC' });

@@ -193,6 +193,13 @@ _ROW_ANCHOR_WORDS = {
     "lai_suat": ("nhay", "cam"),
     "thanh_khoan": ("khoan", "rong"),
 }
+# Dòng "Tổng nợ phải trả" nằm NGAY TRÊN dòng "Mức chênh thanh khoản ròng" trong CÙNG bảng thanh khoản
+# (đã verify ảnh chụp thật TCB) — trích thêm dòng này (tận dụng lại đúng text/tọa độ trang ĐÃ OCR cho
+# dòng gap, không tốn thêm lượt OCR nào) để tính "Nợ phải trả ngắn hạn" phục vụ tỷ lệ Liquid
+# Assets/Nợ phải trả ngắn hạn (bản ĐƠN GIẢN HÓA của LCR mà user yêu cầu — KHÁC LCR Basel chuẩn, chỉ
+# cần tổng nợ phải trả theo kỳ hạn, không cần phân loại HQLA/outflow rate như LCR thật).
+_ROW_LABEL_FLAT_LIAB = "tong no phai tra"
+_ROW_ANCHOR_WORDS_LIAB = ("no", "phai")
 
 
 # Ô số: số VN chuẩn (dấu chấm phân cách nghìn, ngoặc = âm) HOẶC dấu gạch ngang đơn (= 0) HOẶC — dự
@@ -394,7 +401,8 @@ def _extract_gaps_from_pdf(pdf_path):
     nếu tài liệu này THẬT SỰ không có 1 trong 2 tiêu đề/không đọc đủ số (vd BCTC quý không soát xét,
     rút gọn thuyết minh — không phải lỗi, bên gọi nên thử bản BCTC khác), hoặc ("ok", partial_dict)
     với partial_dict chứa các key đã trích được trong {"interest_rate_gap", "liquidity_gap",
-    "interest_rate_sensitivity_disclosed"}."""
+    "interest_rate_sensitivity_disclosed", "liabilities_by_bucket"} (key cuối — tổng nợ phải trả theo
+    kỳ hạn từ bảng thanh khoản — chỉ có nếu trích được, dùng tính Liquid Assets/Nợ phải trả ngắn hạn)."""
     pages = _find_note_pages(pdf_path)
     if pages is None:
         return "missing_tool", None
@@ -425,19 +433,31 @@ def _extract_gaps_from_pdf(pdf_path):
                 sens = _extract_rate_sensitivity_table(text)
                 if sens:
                     result["interest_rate_sensitivity_disclosed"] = sens
+            wwords = None
             vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}")
+            if not vals:
+                # Fallback theo TỌA ĐỘ (xem docstring _extract_number_row_by_position) — CHỈ chạy khi
+                # cách đọc tuyến tính ở trên thất bại, vì OCR theo tọa độ tốn thêm 1 lượt OCR trang
+                # (chậm hơn) — hầu hết trang không phải bảng gap sẽ bị loại ngay ở bước tuyến tính (rẻ)
+                # phía trên mà không cần OCR lại theo tọa độ.
+                wwords = _ocr_page_words(pdf_path, p)
+                if wwords:
+                    vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
+                                                            debug_tag=f"{key} trang {p+1}")
+            if vals and key == "thanh_khoan" and "liabilities_by_bucket" not in result:
+                # Tranh thủ trích luôn dòng "Tổng nợ phải trả" trên CÙNG trang/text/wwords đã OCR cho
+                # dòng gap (KHÔNG tốn thêm lượt OCR nào) — dùng cho Liquid Assets/Nợ phải trả ngắn hạn.
+                liab_vals = _extract_number_row(text, _ROW_LABEL_FLAT_LIAB, n, debug_tag=f"no_phai_tra trang {p+1}")
+                if not liab_vals:
+                    if wwords is None:
+                        wwords = _ocr_page_words(pdf_path, p)
+                    if wwords:
+                        liab_vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS_LIAB, n,
+                                                                     debug_tag=f"no_phai_tra trang {p+1}")
+                if liab_vals:
+                    result["liabilities_by_bucket"] = dict(zip(bucket_list, liab_vals))
             if vals:
                 break
-            # Fallback theo TỌA ĐỘ (xem docstring _extract_number_row_by_position) — CHỈ chạy khi
-            # cách đọc tuyến tính ở trên thất bại, vì OCR theo tọa độ tốn thêm 1 lượt OCR trang (chậm
-            # hơn) — hầu hết trang không phải bảng gap sẽ bị loại ngay ở bước tuyến tính (rẻ) phía trên
-            # mà không cần OCR lại theo tọa độ.
-            wwords = _ocr_page_words(pdf_path, p)
-            if wwords:
-                vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
-                                                        debug_tag=f"{key} trang {p+1}")
-                if vals:
-                    break
         if vals:
             gap_key = "interest_rate_gap" if key == "lai_suat" else "liquidity_gap"
             result[gap_key] = dict(zip(bucket_list, vals))
@@ -548,7 +568,7 @@ def fetch_bank_risk_gaps(ticker):
 # ── Tính chỉ số từ gap đã trích ──────────────────────────────────────────────────────────────────
 
 def compute_interest_rate_risk_metrics(gap, total_assets, equity=None, disclosed_sensitivity=None,
-                                        stress_bps=(100, 200)):
+                                        stress_bps=(100, 200), nii=None):
     """gap: dict theo INTEREST_RATE_BUCKETS. Trả về dict chỉ số — xem docstring module cho phương
     pháp (static gap, trọng số theo điểm giữa mỗi bucket, chỉ 4 bucket <=12 thang moi anh huong NII
     NAM NAY, bucket >1 nam khong lap lai trong nam danh gia).
@@ -559,7 +579,10 @@ def compute_interest_rate_risk_metrics(gap, total_assets, equity=None, disclosed
     `disclosed_sensitivity` — dict {ccy: {...}} từ _extract_rate_sensitivity_table() nếu ngân hàng
     CÓ tự công bố (đáng tin hơn nii_sensitivity_per_shock tự ước tính vì có tính hành vi/giả định nội
     bộ của ngân hàng) — chỉ đính kèm vào output, không dùng để ghi đè số tự tính.
-    `stress_bps` — các mức sốc lãi suất (điểm cơ bản) muốn tính kịch bản, mặc định +100/+200bp."""
+    `stress_bps` — các mức sốc lãi suất (điểm cơ bản) muốn tính kịch bản, mặc định +100/+200bp.
+    `nii` (Thu nhập lãi thuần thực tế kỳ gần nhất, cùng đơn vị `total_assets`) — tuỳ chọn, nếu có sẽ
+    thêm stress_scenarios_nii_ratio (ΔNII/NII thực tế) — mức độ NGHIÊM TRỌNG của cú sốc so với chính
+    dòng thu nhập lãi thuần của ngân hàng, đáng đọc hơn nhiều so với chỉ nhìn số tỷ VND tuyệt đối."""
     b = gap
     horizon_1y_keys = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_thang"]
     weights = {"den_1_thang": 11.5 / 12, "tu_1_3_thang": 10 / 12, "tu_3_6_thang": 7.5 / 12, "tu_6_12_thang": 3 / 12}
@@ -588,14 +611,18 @@ def compute_interest_rate_risk_metrics(gap, total_assets, equity=None, disclosed
     # lý nào cho gap nội bộ ngân hàng). Diễn giải đúng đắn LUÔN cần đi kèm: gap này có thực sự ảnh
     # hưởng đáng kể đến NII/LNTT không (xem stress_scenarios_nii), so với biến động NIM lịch sử ra sao,
     # và xu hướng qua các kỳ (cần dữ liệu nhiều năm, hiện tại BCTC risk-note chỉ lấy được kỳ gần nhất).
+    # Thang tham chiếu ĐÚNG như user hướng dẫn (0-2% khá cân bằng, 2-5% cần theo dõi, 5-10% khá lớn,
+    # >10% đáng chú ý) — chỉ là "ngưỡng phân tích để so sánh các ngân hàng", KHÔNG phải ngưỡng pháp lý.
     if ratio_1y is None:
-        level = "Khong xac dinh"
+        level = "Không xác định"
     elif abs(ratio_1y) < 0.02:
-        level = "Thap (gan trung tinh)"
+        level = "Khá cân bằng"
     elif abs(ratio_1y) < 0.05:
-        level = "Trung binh"
+        level = "Cần theo dõi"
+    elif abs(ratio_1y) < 0.10:
+        level = "Khá lớn"
     else:
-        level = "Cao"
+        level = "Đáng chú ý"
     # Kich ban stress: +bps (lai suat tang -> gap am se AN, gap duong se LOI) va -bps (nguoc lai) cho
     # MOI muc trong stress_bps — cong thuc tuyen tinh (static gap) nen +200bp = 2x +100bp, van tinh
     # rieng tung muc (khong chi nhan 2) de neu sau nay doi sang mo hinh phi tuyen thi khong phai sua
@@ -604,6 +631,7 @@ def compute_interest_rate_risk_metrics(gap, total_assets, equity=None, disclosed
     for bps in stress_bps:
         scenarios[f"+{bps}bp"] = round(weighted_gap * (bps / 10000))
         scenarios[f"-{bps}bp"] = round(weighted_gap * (-bps / 10000))
+    scenarios_ratio = ({k: (v / nii if nii else None) for k, v in scenarios.items()} if nii else None)
     return {
         "gap_by_bucket": b,
         "gap_ratio_by_bucket": {k: (v / total_assets if total_assets else None) for k, v in b.items()},
@@ -611,33 +639,35 @@ def compute_interest_rate_risk_metrics(gap, total_assets, equity=None, disclosed
         "cumulative_gap_1y": cum_1y,
         "cumulative_gap_1y_ratio": ratio_1y,
         "gap_to_equity_1y": gap_to_equity,
-        "sensitive_type": "Asset-sensitive" if cum_1y > 0 else ("Liability-sensitive" if cum_1y < 0 else "Trung tinh"),
+        "sensitive_type": "Asset-sensitive" if cum_1y > 0 else ("Liability-sensitive" if cum_1y < 0 else "Trung tính"),
         "nii_sensitivity_per_shock": scenarios.get("+100bp", round(weighted_gap * 0.01)),
         "shock_bps": 100,
         "stress_scenarios_nii": scenarios,
+        "stress_scenarios_nii_ratio": scenarios_ratio,
         "sensitivity_level": level,
         "disclosed_sensitivity": disclosed_sensitivity or None,
         # Không tự tính ΔEVE (Economic Value of Equity): cần duration/thời lượng còn lại của TỪNG
         # bucket, trong khi thuyết minh BCTC VN chỉ công bố SỐ DƯ gap theo bucket, không có duration —
         # ước lượng duration sẽ là bịa số, không đáng tin hơn việc không tính (xem
         # [[feedback_bank_alm_risk_framework]]).
-        "not_computed": ["Delta EVE (can duration tung bucket, BCTC khong cong bo)"],
+        "not_computed": ["ΔEVE (cần duration từng bucket, BCTC không công bố)"],
         # Rủi ro định tính KHÔNG thấy được từ riêng bảng gap số — chỉ là lưu ý đi kèm, không phải chỉ
         # số tính toán: (1) basis risk — tài sản/nguồn vốn có thể tham chiếu lãi suất KHÁC NHAU không
         # di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn; (2) rủi ro hành vi — CASA ghi nhận kỳ hạn "không
         # nhạy cảm lãi suất"/qua đêm theo hợp đồng nhưng hành vi thực tế của khách hàng thường ổn định
         # (sticky) hơn nhiều so với kỳ hạn hợp đồng.
         "qualitative_caveats": [
-            "Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen "
-            "cung nhip du cung 1 bucket ky han.",
-            "Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh "
-            "vi thuc te thuong on dinh (sticky) hon nhieu.",
+            "Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển "
+            "cùng nhịp dù cùng 1 bucket kỳ hạn.",
+            "Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành "
+            "vi thực tế thường ổn định (sticky) hơn nhiều.",
         ],
     }
 
 
 def compute_liquidity_risk_metrics(gap, total_assets, equity=None, liquid_assets=None,
-                                    customer_deposits=None, deposit_stress_pct=(5, 10, 20)):
+                                    customer_deposits=None, deposit_stress_pct=(5, 10, 20),
+                                    liabilities_gap=None):
     """gap: dict theo LIQUIDITY_BUCKETS.
 
     `liquid_assets` (tiền mặt + tiền gửi NHNN + tiền gửi/cho vay TCTD — LẤY THẲNG từ dữ liệu BCTC đã
@@ -645,23 +675,43 @@ def compute_liquidity_risk_metrics(gap, total_assets, equity=None, liquid_assets
     Liquid Assets/Tổng tài sản, dùng làm "đạn" so sánh với kịch bản rút tiền gửi.
     `customer_deposits` — tuỳ chọn, để chạy stress test rút X% tiền gửi khách hàng (deposit run) so
     với `liquid_assets`: thiếu hụt = X%×tiền gửi − liquid_assets (dương = liquid assets KHÔNG đủ bù,
-    cần huy động/vay thêm — đúng chuỗi nhân quả rủi ro thanh khoản → áp lực huy động bạn đã nêu)."""
+    cần huy động/vay thêm — đúng chuỗi nhân quả rủi ro thanh khoản → áp lực huy động bạn đã nêu).
+    `liabilities_gap` — dict theo LIQUIDITY_BUCKETS từ dòng "Tổng nợ phải trả" (nếu trích được, xem
+    _extract_gaps_from_pdf) — dùng tính Liquid Assets/Nợ phải trả ngắn hạn, bản ĐƠN GIẢN HÓA của LCR
+    (KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate — nhưng vẫn hữu ích để phân tích BCTC)."""
     b = gap
     cum_1m = b.get("den_1_thang", 0.0)
     cum_1y = cum_1m + b.get("tu_1_3_thang", 0.0) + b.get("tu_3_12_thang", 0.0)
     ratio_1m = cum_1m / total_assets if total_assets else None
     ratio_1y = cum_1y / total_assets if total_assets else None
     if ratio_1m is None:
-        level = "Khong xac dinh"
+        level = "Không xác định"
     elif ratio_1m > -0.03:
-        level = "Thap"
+        level = "Thấp"
     elif ratio_1m > -0.08:
-        level = "Trung binh"
+        level = "Trung bình"
     else:
         level = "Cao"
+    # Gap lũy kế theo TỪNG mốc (không chỉ <=1 tháng) — "quá hạn" tính vào mốc <=1 tháng vì thực chất
+    # còn cấp bách hơn (đã trễ hạn), khác cumulative_gap_1m ở trên (giữ nguyên định nghĩa cũ để không
+    # đổi ý nghĩa của field đã dùng chỗ khác — field mới này bổ sung, không thay thế).
+    _st_keys = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang"]
+    _horizon_keys_progressive = [
+        ("1m", _st_keys),
+        ("3m", _st_keys + ["tu_1_3_thang"]),
+        ("12m", _st_keys + ["tu_1_3_thang", "tu_3_12_thang"]),
+    ]
+    cumulative_gap_by_horizon = {}
+    for hz_label, hz_keys in _horizon_keys_progressive:
+        hz_val = sum(b.get(k, 0.0) for k in hz_keys)
+        cumulative_gap_by_horizon[hz_label] = {
+            "value": hz_val,
+            "ratio": (hz_val / total_assets if total_assets else None),
+        }
     result = {
         "gap_by_bucket": b,
         "gap_ratio_by_bucket": {k: (v / total_assets if total_assets else None) for k, v in b.items()},
+        "cumulative_gap_by_horizon": cumulative_gap_by_horizon,
         "cumulative_gap_1m": cum_1m,
         "cumulative_gap_1m_ratio": ratio_1m,
         "cumulative_gap_1y": cum_1y,
@@ -672,12 +722,26 @@ def compute_liquidity_risk_metrics(gap, total_assets, equity=None, liquid_assets
         # Không tự tính LCR/NSFR chuẩn Basel: cần phân loại HQLA (tài sản thanh khoản chất lượng cao)
         # và nguồn vốn ổn định theo đúng trọng số quy định — BCTC VN không công bố đủ chi tiết để phân
         # loại đúng, một số ước lượng "gần đúng" sẽ SAI LỆCH và tự tin giả tạo hơn là không tính (xem
-        # [[feedback_bank_alm_risk_framework]]).
-        "not_computed": ["LCR (can phan loai HQLA chi tiet)", "NSFR (can phan loai nguon von on dinh chi tiet)"],
+        # [[feedback_bank_alm_risk_framework]]). liquid_assets_to_st_liabilities_simple bên dưới LÀ 1
+        # bản đơn giản hoá KHÁC (không cần phân loại HQLA/outflow rate), không mâu thuẫn với việc này.
+        "not_computed": ["LCR chuẩn Basel (cần phân loại HQLA chi tiết)",
+                          "NSFR (cần phân loại nguồn vốn ổn định chi tiết)"],
     }
+    if liabilities_gap:
+        short_term_liab = sum(liabilities_gap.get(k, 0.0) for k in _st_keys + ["tu_1_3_thang", "tu_3_12_thang"])
+        result["short_term_liabilities"] = short_term_liab
+        result["liquid_assets_to_st_liabilities_simple"] = (
+            liquid_assets / short_term_liab if liquid_assets is not None and short_term_liab else None)
     if liquid_assets is not None and customer_deposits:
         result["deposit_run_stress"] = {
             f"-{p}%": round(customer_deposits * (p / 100) - liquid_assets) for p in deposit_stress_pct
+        }
+        # Ty le "dan" con lai sau stress — vd 65% nghia la liquid assets van con du 65% so voi phan
+        # tien gui bi rut, KHONG phai "con thieu 35%" (do CON tai san khac ngoai liquid assets co the
+        # xoay xo further, chi la khong "ngay lap tuc" bang liquid assets).
+        result["deposit_run_coverage"] = {
+            f"-{p}%": (liquid_assets / (customer_deposits * (p / 100)) if customer_deposits * (p / 100) else None)
+            for p in deposit_stress_pct
         }
     return result
 
@@ -698,71 +762,115 @@ def compute_balance_sheet_alm_ratios(total_assets, loans, interbank_liab, bonds_
     }
 
 
-def build_risk_narrative_lines(ir_metrics, liq_metrics, ticker, bs_ratios=None):
-    """Trả về LIST các câu tiếng Việt tóm tắt 2 rủi ro (+ cơ cấu bảng cân đối nếu có) — mỗi phần tử là
-    1 ý riêng, dùng để hiển thị dạng gạch đầu dòng trên web (đọc dễ hơn 1 đoạn văn dài); nối lại bằng
-    " ".join() để ra bản văn xuôi cho PDF/narrative cũ. Không tự bịa số nào ngoài các dict đầu vào đã
-    tính. Theo đúng phương pháp [[feedback_bank_alm_risk_framework]]: đọc gap LŨY KẾ theo từng mốc
-    (không chỉ điểm cuối), mức "Thấp/Trung bình/Cao" chỉ là MỐC THAM CHIẾU để định hướng chứ không
-    phải ngưỡng đạt/không đạt, luôn đọc CẶP chỉ số cùng nhau, và nêu rõ những gì KHÔNG tính được thay
-    vì bỏ qua im lặng."""
+def build_risk_narrative_lines(ir_metrics, liq_metrics, ticker, bs_ratios=None, ldr=None, casa=None,
+                                nim_current=None):
+    """Trả về LIST các câu tiếng Việt CÓ DẤU tóm tắt 2 rủi ro (+ cơ cấu bảng cân đối nếu có) — mỗi
+    phần tử là 1 ý riêng, dùng để hiển thị dạng gạch đầu dòng trên web (đọc dễ hơn 1 đoạn văn dài);
+    nối lại bằng " ".join() để ra bản văn xuôi cho PDF/narrative cũ. Không tự bịa số nào ngoài các
+    dict đầu vào đã tính. Theo đúng phương pháp [[feedback_bank_alm_risk_framework]] — 5 tầng đánh
+    giá rủi ro lãi suất (Repricing Gap/Assets, Cumulative Gap theo từng mốc, NII sensitivity, ΔEVE,
+    NIM thực tế), và bộ chỉ số thanh khoản (LDR đúng cách, CASA, Liquid Assets/Assets, Liquid
+    Assets/Nợ ngắn hạn (LCR đơn giản hoá), Liquidity Gap theo mốc, Wholesale Funding): đọc gap LŨY KẾ
+    theo từng mốc (không chỉ điểm cuối), mức tham chiếu chỉ để định hướng chứ không phải ngưỡng
+    đạt/không đạt, luôn đọc CẶP chỉ số cùng nhau, và nêu rõ những gì KHÔNG tính được thay vì bỏ qua
+    im lặng.
+
+    `ldr`, `casa` (%, 0-100) — LDR/CASA đã tính SẴN ở nơi khác trong template_banking.py (LDR theo
+    đúng công thức tín dụng/huy động user đã hướng dẫn, KHÔNG phải Loans/Deposits đơn thuần — công
+    thức đó sai vì không phản ánh đúng khác biệt cơ cấu nguồn vốn) — chỉ ĐÍNH KÈM vào đánh giá ALM để
+    đọc cặp cùng Liquid Assets/Assets, KHÔNG tính lại.
+    `nim_current` (%, kỳ gần nhất) — Tầng 5 của khung 5 tầng: Gap chỉ là mô hình lý thuyết, NIM thực
+    tế mới là thứ THỰC SỰ xảy ra."""
     lines = []
     if ir_metrics:
         pct = ir_metrics["cumulative_gap_1y_ratio"]
         pct_s = f"{pct*100:+.2f}%" if pct is not None else "?"
         toe = ir_metrics.get("gap_to_equity_1y")
         toe_s = f", {toe*100:+.0f}% VCSH" if toe is not None else ""
-        sc = ir_metrics.get("stress_scenarios_nii") or {}
-        sc_s = "; ".join(f"{k}: {v:+,.0f} tr VND" for k, v in sc.items())
-        base = (f"Rui ro lai suat: gap luy ke <=1 nam = {pct_s} tong tai san{toe_s} "
-                f"({ir_metrics['sensitive_type']}, muc tham chieu do nhay cam: {ir_metrics['sensitivity_level']} "
-                f"— chi la moc dinh huong, khong phai nguong dat/khong dat).")
-        lines.append(f"{base} Stress NII theo kich ban (uoc tinh static gap): {sc_s}." if sc_s else base)
+        stype = ir_metrics["sensitive_type"]
+        # Diễn giải TRỰC TIẾP ý nghĩa dấu gap (RSA-RSL) theo đúng nguyên lý user đưa ra — không chỉ
+        # dán nhãn "Asset/Liability-sensitive" mà nói rõ NẾU lãi suất tăng/giảm thì NII bị ảnh hưởng
+        # theo chiều nào, vì đây là phần "đáng tiền" nhất của repricing gap.
+        if stype == "Asset-sensitive":
+            direction = ("tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi "
+                         "cho NII, lãi suất GIẢM bất lợi cho NII")
+        elif stype == "Liability-sensitive":
+            direction = ("chi phí vốn được định lại lãi suất NHANH HƠN tài sản — lãi suất TĂNG gây "
+                         "áp lực lên NII/NIM, lãi suất GIẢM lại có lợi")
+        else:
+            direction = "gần như trung tính với biến động lãi suất"
+        lines.append(
+            f"Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = {pct_s} tổng tài sản{toe_s} — Ngân hàng "
+            f"đang {stype} ({direction}). Mức tham chiếu: {ir_metrics['sensitivity_level']} (thang so "
+            f"sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt)."
+        )
         hz = ir_metrics.get("cumulative_gap_by_horizon") or {}
-        if hz:
-            hz_parts = []
-            for lbl in ("1m", "3m", "6m", "12m"):
-                r = (hz.get(lbl) or {}).get("ratio")
-                if r is not None:
-                    hz_parts.append(f"<={lbl}: {r*100:+.2f}%")
-            if hz_parts:
-                lines.append(
-                    "Gap luy ke tong tai san theo TUNG moc (khong chi nhin diem cuoi, vi 1 gap <=12 "
-                    "thang duong van co the che 1 gap am lon o moc gan hon): " + "; ".join(hz_parts) + ".")
+        hz_parts = [f"≤{lbl}: {(hz.get(lbl) or {}).get('ratio')*100:+.2f}%"
+                    for lbl in ("1m", "3m", "6m", "12m") if (hz.get(lbl) or {}).get("ratio") is not None]
+        if hz_parts:
+            lines.append(
+                "Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở "
+                "mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY "
+                "chứ không phải sau 1 năm): " + "; ".join(hz_parts) + ".")
+        sc = ir_metrics.get("stress_scenarios_nii") or {}
+        sc_ratio = ir_metrics.get("stress_scenarios_nii_ratio")
+        if sc:
+            sc_s = "; ".join(
+                f"{k}: {v:+,.0f} tỷ VND" + (f" ({sc_ratio[k]*100:+.1f}% NII)" if sc_ratio and sc_ratio.get(k) is not None else "")
+                for k, v in sc.items())
+            lines.append(f"NII sensitivity (Tầng 3, ước tính static gap): {sc_s}.")
         disclosed = ir_metrics.get("disclosed_sensitivity")
         if disclosed:
             parts = "; ".join(
-                f"{ccy} +{v['rate_increase_pct']:.2f}%: LNTT {v['pbt_impact']:+,.0f} tr, "
-                f"VCSH {v['equity_impact']:+,.0f} tr" for ccy, v in disclosed.items()
+                f"{ccy} +{v['rate_increase_pct']:.2f}%: LNTT {v['pbt_impact']:+,.0f} tỷ, "
+                f"VCSH {v['equity_impact']:+,.0f} tỷ" for ccy, v in disclosed.items()
             )
-            lines.append(f"Do nhay lai suat NGAN HANG TU CONG BO (dang tin cay hon so uoc tinh tren): {parts}.")
+            lines.append(f"Độ nhạy lãi suất do NGÂN HÀNG TỰ CÔNG BỐ (đáng tin cậy hơn ước tính static gap ở trên): {parts}.")
+        if nim_current is not None:
+            lines.append(
+                f"NIM thực tế kỳ gần nhất (Tầng 5): {nim_current:.2f}% — đây là con số THỰC SỰ xảy "
+                f"ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên "
+                f"chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment)."
+            )
     if liq_metrics:
         r1m = liq_metrics["cumulative_gap_1m_ratio"]
         r1y = liq_metrics["cumulative_gap_1y_ratio"]
         r1m_s = f"{r1m*100:+.2f}%" if r1m is not None else "?"
         r1y_s = f"{r1y*100:+.2f}%" if r1y is not None else "?"
         la_ratio = liq_metrics.get("liquid_assets_ratio")
-        la_s = f" Liquid assets/Tong TS = {la_ratio*100:.1f}%." if la_ratio is not None else ""
+        la_s = f" Liquid Assets/Tổng TS = {la_ratio*100:.1f}%." if la_ratio is not None else ""
         lines.append(
-            f"Rui ro thanh khoan: gap rong <=1 thang = {r1m_s} tong tai san, luy ke <=1 nam = {r1y_s} "
-            f"(muc tham chieu: {liq_metrics['risk_level']} — chi la moc dinh huong).{la_s} Gap am nghia "
-            f"la ngan hang can tiep tuc tai tai tro/huy dong de bu dap phan chenh lech ky han — ap luc "
-            f"nay can duoc phan anh vao COE (phan bu rui ro dac thu) hoac P/B muc tieu neu ket hop voi "
-            f"liquid assets buffer mong (doc cap 2 chi so nay cung nhau, khong doc rieng le)."
+            f"Liquidity Gap: gap ròng ≤1 tháng = {r1m_s} tổng tài sản, luỹ kế ≤1 năm = {r1y_s} (mức "
+            f"tham chiếu: {liq_metrics['risk_level']} — chỉ là mốc định hướng).{la_s} Gap âm nghĩa là "
+            f"ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn "
+            f"cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG "
+            f"Liquid Assets buffer ở trên, không đọc riêng lẻ."
         )
+        st_ratio = liq_metrics.get("liquid_assets_to_st_liabilities_simple")
+        if st_ratio is not None:
+            lines.append(
+                f"Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không "
+                f"phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): {st_ratio*100:.1f}% — "
+                f"tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn."
+            )
         stress = liq_metrics.get("deposit_run_stress")
+        coverage = liq_metrics.get("deposit_run_coverage")
         if stress:
-            parts = "; ".join(f"rut {k} tien gui KH: thieu hut {v:+,.0f} tr VND (am = liquid assets du bu)"
-                               for k, v in stress.items())
-            lines.append(f"Stress test rut tien gui: {parts}.")
+            parts = "; ".join(
+                f"rút {k} tiền gửi KH: thiếu hụt {v:+,.0f} tỷ VND"
+                + (f" (Liquid Assets che phủ {coverage[k]*100:.0f}%)" if coverage and coverage.get(k) is not None else "")
+                for k, v in stress.items())
+            lines.append(f"Stress test rút tiền gửi (bank run): {parts}.")
     if bs_ratios:
         la = bs_ratios.get("loan_to_assets")
         wf = bs_ratios.get("wholesale_funding_ratio")
-        if la is not None or wf is not None:
+        ldr_s = f", LDR = {ldr:.1f}%" if ldr is not None else ""
+        casa_s = f", CASA = {casa:.1f}%" if casa is not None else ""
+        if la is not None or wf is not None or ldr is not None or casa is not None:
             lines.append(
-                f"Co cau bang can doi (doc cung Liquid assets/Tong TS va LDR/CASA da co o phan khac): "
-                f"Cho vay/Tong tai san = {la*100:.1f}%" + (
-                    f", Vay lien NH+GTCG/Tong tai san (wholesale funding) = {wf*100:.1f}%." if wf is not None else "."
+                f"Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): "
+                f"Cho vay/Tổng tài sản = {la*100:.1f}%{ldr_s}{casa_s}" + (
+                    f", Wholesale Funding/Tổng tài sản = {wf*100:.1f}%." if wf is not None else "."
                 )
             )
     not_computed = []
@@ -770,8 +878,8 @@ def build_risk_narrative_lines(ir_metrics, liq_metrics, ticker, bs_ratios=None):
         if m and m.get("not_computed"):
             not_computed.extend(m["not_computed"])
     if not_computed:
-        lines.append("KHONG tinh (BCTC khong cong bo du chi tiet de tinh dung, uoc luong se sai lech "
-                      "va tu tin gia tao hon la khong tinh): " + "; ".join(not_computed) + ".")
+        lines.append("KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin "
+                      "giả tạo hơn là không tính): " + "; ".join(not_computed) + ".")
     caveats = []
     for m in (ir_metrics, liq_metrics):
         if m and m.get("qualitative_caveats"):
@@ -779,11 +887,11 @@ def build_risk_narrative_lines(ir_metrics, liq_metrics, ticker, bs_ratios=None):
                 if c not in caveats:
                     caveats.append(c)
     if caveats:
-        lines.append("Luu y dinh tinh (khong the hien qua bang gap): " + " ".join(caveats))
+        lines.append("Lưu ý định tính (không thể hiện qua bảng gap số): " + " ".join(caveats))
     lines.append(
-        "Cac muc do 'Thap/Trung binh/Cao' o tren chi la moc dinh huong tu 1 ky bao cao gan nhat, KHONG "
-        "phai nguong dat/khong dat co dinh — de danh gia day du can so sanh voi peer cung nganh va xu "
-        "huong qua nhieu ky (hien tai moi lay duoc 1 ky gan nhat tu thuyet minh BCTC)."
+        "Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không "
+        "đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ "
+        "hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ."
     )
     return lines
 
