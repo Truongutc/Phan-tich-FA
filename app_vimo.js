@@ -10,13 +10,13 @@ const GROUP_LABELS = {
     growth: 'Tăng trưởng', inflation: 'Lạm phát', monetary: 'Tiền tệ & Lãi suất',
     trade: 'Thương mại & Vốn', fiscal: 'Tài khóa', labor: 'Lao động',
     external: 'Áp lực bên ngoài', market: 'Thị trường chứng khoán',
-    demographics: 'Dân số',
+    demographics: 'Dân số', bank_alm: 'Rủi ro hệ thống ngân hàng (ALM)',
 };
-const GROUP_ORDER = ['growth', 'inflation', 'monetary', 'trade', 'fiscal', 'labor', 'external', 'market', 'demographics'];
+const GROUP_ORDER = ['growth', 'inflation', 'monetary', 'trade', 'fiscal', 'labor', 'external', 'market', 'demographics', 'bank_alm'];
 const GROUP_ICONS = {
     growth: '📈', inflation: '💰', monetary: '🏦', trade: '🚢',
     fiscal: '🏛️', labor: '👷', external: '🌐', market: '📊',
-    demographics: '👥',
+    demographics: '👥', bank_alm: '🏦',
 };
 const SOURCE_LABELS = {
     worldbank: 'World Bank API', imf: 'IMF DataMapper API', fred: 'FRED API',

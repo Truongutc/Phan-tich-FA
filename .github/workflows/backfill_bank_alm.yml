@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       period:
-        description: 'Kỳ cần backfill (đã kiểm toán/soát xét), định dạng YYYY-H1 hoặc YYYY-FY, vd 2024-FY'
+        description: 'Ky can backfill, dinh dang YYYY-Qn (vd 2025-Q1, Q1-Q4 deu duoc, xac nhan 2026-08 la BCTC quy thuong CUNG co bang gap) hoac YYYY-FY (bao cao nam da kiem toan)'
         required: true
         default: '2025-FY'
 
@@ -15,8 +15,9 @@ jobs:
   backfill:
     runs-on: ubuntu-latest
     # 26 ngân hàng x tối đa vài phút OCR/ngân hàng cho 1 KỲ DUY NHẤT (không phải toàn bộ lịch sử —
-    # chạy input riêng cho từng kỳ, vd chạy tay 4 lần: 2024-FY, 2025-H1, 2025-FY, 2026-H1) — 90 phút
-    # đủ dư so với ước tính ~65 phút xấu nhất, cùng ngưỡng đã dùng cho analyze_stock.yml.
+    # chạy input riêng cho từng kỳ, vd chạy tay lần lượt 2025-Q1, 2025-Q2, 2025-Q3, 2025-FY... —
+    # BCTC quý thường CŨNG có đủ 2 bảng gap, xem bank_risk_notes.py) — 90 phút đủ dư so với ước
+    # tính ~65 phút xấu nhất, cùng ngưỡng đã dùng cho analyze_stock.yml.
     timeout-minutes: 90
 
     steps:

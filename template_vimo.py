@@ -164,6 +164,7 @@ GROUP_LABELS = {
     "intl_uk": "Quốc tế — Anh",
     "intl_jp": "Quốc tế — Nhật Bản",
     "intl_cn": "Quốc tế — Trung Quốc",
+    "bank_alm": "Rủi ro hệ thống ngân hàng (ALM)",
 }
 
 # Ánh xạ 8 nhóm dữ liệu (vimo_raw.json) -> 6 nhóm Scorecard Vĩ Mô theo đúng Chương 4.1/6.1 tài
@@ -1395,7 +1396,7 @@ def _build_market_impact(raw, trends, scorecard_total, valuation, decision_label
     return "\n\n".join(paras)
 
 
-def _build_watch_points(raw, trends, scorecard):
+def _build_watch_points(raw, trends, scorecard, banking_system_risk=None):
     worsening = []
     for gdata in scorecard.values():
         for d in gdata["detail"]:
@@ -1416,19 +1417,32 @@ def _build_watch_points(raw, trends, scorecard):
         lines.append(f"- Khoảng cách tăng trưởng tín dụng ({cred_v:.2f}%) so với huy động vốn ({dep_growth_v:.2f}%) — "
                       "nếu tiếp tục nới rộng, lãi suất huy động thực tế/thỏa thuận (đã ghi nhận tới 9%/năm, cao hơn "
                       "nhiều biểu niêm yết công khai) có thể còn tăng thêm, siết chi phí vốn toàn nền kinh tế.")
+    # Tóm tắt rủi ro ALM hệ thống ngân hàng lồng vào đây (mục "điểm cần theo dõi") — VỊ TRÍ 2, vị
+    # trí 1 là mục riêng "Rủi ro hệ thống ngân hàng (ALM)" ở phần 1.5 (xem build_pdf_vimo) — cùng 1
+    # summaryText đã tính sẵn ở _add_bank_alm_derived_indicators, không tính lại.
+    if banking_system_risk and banking_system_risk.get("summaryText"):
+        cov = banking_system_risk["coverage"]
+        lines.append(f"- Rủi ro ALM hệ thống ngân hàng (kỳ {banking_system_risk['asOf']}, "
+                      f"{cov['nBanksReported']+cov['nBanksPatched']}/{cov['nBanksTotal']} ngân hàng, "
+                      f"che phủ {cov['assetsCoveragePct']:.0f}% tổng tài sản hệ thống nếu có): "
+                      f"{banking_system_risk['summaryText']}")
     return "\n".join(lines)
 
 
-def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict):
+def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict,
+                          banking_system_risk=None):
     """Tổng hợp phân tích đa chỉ số RULE-BASED (không AI) — trả dict {overview, economy_impact,
     market_impact, watch_points, verdict}, mỗi mục text là 1+ đoạn văn ráp từ số liệu thật trong
-    raw/trends. verdict giữ nguyên dạng dict (không ráp thành văn) để dashboard render badge riêng."""
+    raw/trends. verdict giữ nguyên dạng dict (không ráp thành văn) để dashboard render badge riêng.
+    banking_system_risk (dict từ _add_bank_alm_derived_indicators, có thể None) chỉ được lồng vào
+    watch_points ở đây — mục RIÊNG "Rủi ro hệ thống ngân hàng (ALM)" nằm ở build_pdf_vimo/
+    save_json_vimo, không phải ở đây."""
     return {
         "verdict": verdict,
         "overview": _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict),
         "economy_impact": _build_economy_impact(raw, trends),
         "market_impact": _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text),
-        "watch_points": _build_watch_points(raw, trends, scorecard),
+        "watch_points": _build_watch_points(raw, trends, scorecard, banking_system_risk),
     }
 
 
@@ -1731,7 +1745,8 @@ def build_interbank_curve_chart(out_dir, raw):
 # ══════════════════════════════════════════════════════════════════════════
 def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label,
                     decision_text, charts, synthesis, verdict,
-                    valuation_headline=None, decision_label_headline=None, decision_text_headline=None):
+                    valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
+                    banking_system_risk=None):
     doc = SimpleDocTemplate(pdf_path, pagesize=A4, rightMargin=15 * mm, leftMargin=15 * mm,
                              topMargin=15 * mm, bottomMargin=15 * mm)
     styles = getSampleStyleSheet()
@@ -1863,6 +1878,34 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Paragraph(synthesis["market_impact"], body_st))
     story.append(Paragraph("1.4. Điểm cần theo dõi tiếp", h2_st))
     story.append(Paragraph(synthesis["watch_points"], body_st))
+
+    # ── 1.5. Rủi ro hệ thống ngân hàng (ALM) — mục RIÊNG (yêu cầu user 2026-08-30), tách khỏi câu
+    # tóm tắt đã lồng ở 1.4 watch_points (2 VỊ TRÍ như đã thống nhất). Chỉ hiển thị khi có dữ liệu.
+    if banking_system_risk:
+        story.append(Paragraph("1.5. Rủi ro hệ thống ngân hàng (ALM)", h2_st))
+        story.append(Paragraph(banking_system_risk.get("summaryText") or "", body_st))
+        cov = banking_system_risk["coverage"]
+        ir, liq = banking_system_risk["interestRateRisk"], banking_system_risk["liquidityRisk"]
+        alm_rows = [
+            ["Chỉ tiêu", "Giá trị"],
+            ["Kỳ", banking_system_risk["asOf"]],
+            ["Độ phủ dữ liệu", f"{cov['nBanksReported']}/{cov['nBanksTotal']} đã công bố, "
+                                f"{cov['nBanksPatched']} vá từ kỳ trước, {cov['nBanksMissing']} chưa có"
+                                + (f" ({cov['assetsCoveragePct']:.0f}% tổng tài sản hệ thống)"
+                                   if cov.get('assetsCoveragePct') is not None else "")],
+            ["Gap ròng lãi suất ≤1 năm / Tổng TS", f"{ir['netGapRatio']*100:+.2f}%" if ir.get('netGapRatio') is not None else "N/A"],
+            ["Mức phân tán (không bù trừ giữa các NH)", f"{ir['dispersionGapRatio']*100:.2f}%" if ir.get('dispersionGapRatio') is not None else "N/A"],
+            ["Ngân hàng lệch lãi suất nhiều nhất", f"{ir['worstBank']['ticker']} ({ir['worstBank']['ratio']*100:+.1f}%)" if ir.get('worstBank') else "N/A"],
+            ["Liquid Assets / Tổng TS", f"{liq['liquidAssetsRatio']*100:.1f}%" if liq.get('liquidAssetsRatio') is not None else "N/A"],
+            ["Che phủ nếu rút -10% tiền gửi", f"{liq['depositRunCoverageByStress'].get('-10%')*100:.0f}%" if liq.get('depositRunCoverageByStress', {}).get('-10%') is not None else "N/A"],
+            ["Ngân hàng thanh khoản yếu nhất", f"{liq['weakestBank']['ticker']} (che phủ {liq['weakestBank']['coverage']*100:.0f}%)" if liq.get('weakestBank') else "N/A"],
+        ]
+        t_alm = Table(alm_rows, colWidths=[75 * mm, 96 * mm])
+        t_alm.setStyle(tbl_style())
+        story.append(Spacer(1, 4))
+        story.append(t_alm)
+        if cov.get("missingTickers"):
+            story.append(Paragraph(f"<i>Chưa có dữ liệu: {', '.join(cov['missingTickers'])}</i>", italic_st))
     story.append(Spacer(1, 10))
 
     # ── Scorecard chi tiết ──
@@ -1881,7 +1924,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     # ── Từng nhóm chỉ báo chi tiết + chart ──
     story.append(Paragraph("3. Chi tiết theo từng nhóm chỉ báo (Chương 3)", h1_st))
     groups_order = ["growth", "inflation", "monetary", "trade", "fiscal", "labor", "external", "market",
-                    "intl_us", "intl_eu", "intl_uk", "intl_jp", "intl_cn"]
+                    "intl_us", "intl_eu", "intl_uk", "intl_jp", "intl_cn", "bank_alm"]
     for grp in groups_order:
         keys = [k for k, v in raw.items() if k != "_meta" and v["group"] == grp]
         if not keys:
@@ -1968,7 +2011,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
                     synthesis, pdf_url=None,
                     valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
-                    monitoring_table=None, macro_overview=None):
+                    monitoring_table=None, macro_overview=None, banking_system_risk=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -1986,6 +2029,10 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         "synthesis": synthesis,
         "monitoringTable": monitoring_table,
         "macroOverview": macro_overview,
+        # Mục RIÊNG (yêu cầu user 2026-08-30) — dict từ bank_system_risk.build_banking_system_risk_section,
+        # None nếu chưa có ngân hàng nào có dữ liệu. KHÔNG chứa mảng history riêng (xem ghi chú
+        # _add_bank_alm_derived_indicators) — chuỗi thời gian đã có sẵn ở indicators.bank_alm_system_*.
+        "bankingSystemRisk": banking_system_risk,
         "indicators": {},
     }
     for key, ind in raw.items():
@@ -2332,6 +2379,77 @@ def _add_customs_yoy_growth(raw, trends):
         }
         trends[new_key] = calc_trend(points, "higher")
         print(f"  -> {label}: {len(points)} điểm")
+
+
+def _add_bank_alm_derived_indicators(raw, trends):
+    """Tổng hợp rủi ro lãi suất/thanh khoản TOÀN HỆ THỐNG 26 ngân hàng niêm yết/UPCoM (2026-08) từ
+    data/bank_alm/<TICKER>.json (bank_system_risk.py, xem module đó để biết cách tổng hợp CÓ TRỌNG
+    SỐ THEO QUY MÔ — không lấy trung bình cộng % từng ngân hàng). Dữ liệu THEO QUÝ THẬT (Q1-Q4 +
+    FY, không chỉ ~2 điểm/năm như thiết kế ban đầu) — xác nhận 2026-08 qua ảnh chụp BCTC quý
+    thường thật (MBB, TCB) rằng 2 bảng khe hở lãi suất/thanh khoản CŨNG có ở báo cáo quý thường,
+    không chỉ ở bản đã kiểm toán/soát xét như tưởng lúc đầu. period_key luôn ở dạng "YYYY-Qn" chuẩn
+    hóa (bank_system_risk.recompute_system_aggregate_all_periods() đã gộp mọi "YYYY-FY" về
+    "YYYY-Q4" tương ứng) — KHÔNG BAO GIỜ có key "-FY" ở đây, để toàn bộ chuỗi luôn nằm gọn 1 sheet
+    Excel "Theo_Quy" (xem _classify_period_sheet), không bị tách rời giữa 2 sheet. Phái sinh tính
+    toán, KHÔNG lưu vào vimo_raw.json (giống các hàm _add_* khác trong file này) — nguồn thật nằm ở
+    data/bank_alm/, không phải vimo_raw.json.
+
+    Trả về dict bankingSystemRisk (kỳ MỚI NHẤT có dữ liệu) để dùng làm mục riêng + câu tóm tắt lồng
+    trong watch_points — None nếu chưa có ngân hàng nào có dữ liệu."""
+    try:
+        from bank_system_risk import recompute_system_aggregate_all_periods, build_banking_system_risk_section
+    except Exception as e:
+        print(f"  [WARN] Rui ro he thong ngan hang: bo qua (khong import duoc bank_system_risk: {e})")
+        return None
+
+    all_agg = recompute_system_aggregate_all_periods()
+    ir_points, liq_points = [], []
+    for period_key, agg in all_agg.items():
+        if (agg["n_banks_reported"] + agg["n_banks_patched"]) == 0:
+            continue
+        ir_ratio = agg["interest_rate_risk"]["stress_nii_ratio"].get("+100bp")
+        if ir_ratio is not None:
+            ir_points.append({"period": period_key, "value": round(ir_ratio * 100, 3), "source_url": None})
+        cov10 = agg["liquidity_risk"]["deposit_run_coverage"].get("-10%")
+        if cov10 is not None:
+            liq_points.append({"period": period_key, "value": round(cov10 * 100, 1), "source_url": None})
+
+    if ir_points:
+        raw["bank_alm_system_ir_risk_ratio"] = {
+            "group": "bank_alm", "auto_source": "derived",
+            "label": "Rủi ro lãi suất hệ thống NH niêm yết (ΔNII/NII khi LS +100bp)", "unit": "%",
+            "good_direction": "lower",  # |ratio| càng nhỏ càng ít nhạy cảm — dùng trị TUYỆT ĐỐI ở trend
+            "series": ir_points,
+            "note": ("Tổng hợp có trọng số theo quy mô (Σ stress NII / Σ NII toàn hệ thống, KHÔNG "
+                     "phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM — xem "
+                     "bank_system_risk.py. Dữ liệu theo quý thật (Q1-Q4); 1 số kỳ có thể vẫn đang "
+                     "\"vá\" (patched) từ kỳ liền trước với ngân hàng chưa công bố kịp — xem "
+                     "coverage trong mục \"Rủi ro hệ thống ngân hàng (ALM)\" để biết rõ tỷ lệ phủ."),
+            "impact": "ΔNII/NII lớn (trị tuyệt đối) nghĩa là lợi nhuận toàn hệ thống ngân hàng nhạy cảm hơn với biến động lãi suất.",
+        }
+        trends["bank_alm_system_ir_risk_ratio"] = calc_trend(
+            [{"period": p["period"], "value": abs(p["value"]), "source_url": None} for p in ir_points], "lower")
+        print(f"  -> Rui ro lai suat he thong NH: {len(ir_points)} diem")
+    if liq_points:
+        raw["bank_alm_system_liquidity_risk_ratio"] = {
+            "group": "bank_alm", "auto_source": "derived",
+            "label": "Rủi ro thanh khoản hệ thống NH niêm yết (che phủ rút -10% tiền gửi)", "unit": "%",
+            "good_direction": "higher",
+            "series": liq_points,
+            "note": ("Tổng hợp có trọng số theo quy mô (Σ liquid assets / Σ tiền gửi bị rút toàn hệ "
+                     "thống) từ 26 ngân hàng niêm yết/UPCoM. Dữ liệu theo quý thật, cùng cách tính "
+                     "coverage như chỉ báo lãi suất ở trên."),
+            "impact": "Tỷ lệ che phủ càng cao, hệ thống ngân hàng càng ít rủi ro thanh khoản khi có cú sốc rút tiền gửi đồng loạt.",
+        }
+        trends["bank_alm_system_liquidity_risk_ratio"] = calc_trend(liq_points, "higher")
+        print(f"  -> Rui ro thanh khoan he thong NH: {len(liq_points)} diem")
+
+    if not all_agg:
+        return None
+    # recompute_system_aggregate_all_periods() trả về dict ĐÃ SẮP XẾP theo kỳ tăng dần (dict Python
+    # giữ nguyên thứ tự chèn) — lấy key CUỐI CÙNG là kỳ mới nhất, không cần sắp xếp lại.
+    latest_period = list(all_agg.keys())[-1]
+    return build_banking_system_risk_section(all_agg[latest_period])
 
 
 def _yoy_from_level_series(level_by_period, source_url):
@@ -2915,6 +3033,15 @@ def run_vimo_analysis():
     print("[INFO] Tính bơm/hút ròng riêng kênh tín phiếu NHNN (KHÔNG lưu vào vimo_raw.json)...")
     _add_tin_phieu_net_operation(raw, trends)
 
+    print("[INFO] Tổng hợp rủi ro hệ thống ngân hàng (ALM) từ data/bank_alm/ (KHÔNG lưu vào vimo_raw.json)...")
+    banking_system_risk = _add_bank_alm_derived_indicators(raw, trends)
+    if banking_system_risk:
+        cov = banking_system_risk["coverage"]
+        print(f"  -> Kỳ {banking_system_risk['asOf']}: {cov['nBanksReported']}/{cov['nBanksTotal']} đã công bố, "
+              f"{cov['nBanksPatched']} vá, {cov['nBanksMissing']} chưa có")
+    else:
+        print("  -> Chưa có ngân hàng nào có dữ liệu ALM.")
+
     print("[INFO] Dựng bảng giám sát chỉ số vĩ mô hàng tháng (heatmap)...")
     monitoring_table = _build_monitoring_table(raw)
     if monitoring_table:
@@ -2932,7 +3059,8 @@ def run_vimo_analysis():
         print("  -> Chưa đủ dữ liệu để dựng biểu đồ tổng quan.")
 
     print("[INFO] Tổng hợp phân tích đa chỉ số (rule-based, dựa trên số liệu thật)...")
-    synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict)
+    synthesis = build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict,
+                                      banking_system_risk=banking_system_risk)
     print("  -> Đã sinh phân tích tổng hợp")
 
     out_dir = os.path.join(PROJECT_ROOT, "Bao cao", "VIMO")
@@ -2974,17 +3102,24 @@ def run_vimo_analysis():
     build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
                     charts, synthesis, verdict,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
-                    decision_text_headline=decision_text_headline)
+                    decision_text_headline=decision_text_headline, banking_system_risk=banking_system_risk)
     print(f"  [OK] PDF: {pdf_path}")
 
     print("[INFO] Saving JSON dashboard...")
     save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
                     decision_text_headline=decision_text_headline, monitoring_table=monitoring_table,
-                    macro_overview=macro_overview)
+                    macro_overview=macro_overview, banking_system_risk=banking_system_risk)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)
+
+    print("[INFO] Cập nhật sheet dữ liệu thô ALM ngân hàng (data/bank_alm/ -> Excel)...")
+    try:
+        from bank_system_risk import update_bank_alm_excel_sheet
+        update_bank_alm_excel_sheet(out_dir)
+    except Exception as e:
+        print(f"  [WARN] Bo qua sheet ALM ngan hang ({e})")
 
     for p in charts.values():
         try:

@@ -13,12 +13,19 @@ Dùng bởi:
 - bank_system_risk.py — vòng lặp kiểm tra độ mới (refresh_bank_alm_data) và tổng hợp hệ thống
   (recompute_system_aggregate_all_periods).
 
-Quy ước khóa kỳ (period_key): DÙNG CHUNG định dạng có gạch ngang của vimo ("YYYY-H1"/"YYYY-FY" cho
-2 bảng gap chỉ có ở BCTC đã kiểm toán/soát xét, "YYYY-Qn" cho dữ liệu bảng cân đối theo quý không
-cần OCR) — KHÔNG dùng định dạng "YYYYQn" không gạch ngang của segments_kcn, vì
-_PERIOD_SHEET_PATTERNS trong template_vimo.py đã nhận diện sẵn đúng định dạng có gạch ngang này để
-tự xếp đúng sheet Excel (Luy_Ke/Theo_Quy) khi dữ liệu chảy vào cơ chế indicator có sẵn của vimo,
-không cần code chuyển đổi gì thêm.
+Quy ước khóa kỳ (period_key) trong gap_periods (2026-08-31, sau khi xác nhận qua ảnh chụp BCTC quý
+thường thật MBB/TCB rằng 2 bảng gap CŨNG có ở báo cáo quý thường, không chỉ ở bản kiểm toán/soát
+xét): "YYYY-Qn" (n=1-4) cho MỌI báo cáo quý thường, "YYYY-FY" CHỈ cho báo cáo năm đã kiểm toán —
+KHÔNG BAO GIỜ dùng "YYYY-H1" nữa. Một ngân hàng có thể có ĐỒNG THỜI cả "YYYY-Q4" (báo cáo quý
+thường, công bố sớm) VÀ "YYYY-FY" (báo cáo năm kiểm toán, công bố sau, đáng tin hơn) cho CÙNG 1
+thời điểm cuối năm — đây là 2 LẦN CÔNG BỐ khác nhau nên KHÔNG ghi đè lên nhau trong dict này; việc
+gộp chúng lại thành 1 kỳ hệ thống duy nhất khi tổng hợp toàn ngành nằm ở
+bank_system_risk._ticker_gap_entry(), không phải ở đây. quarterly_balance_sheet LUÔN dùng "YYYY-Qn"
+(không bao giờ "-FY", vì đây là dữ liệu Vietcap theo quý, không phân biệt kiểm toán/soát xét).
+
+Định dạng có gạch ngang này khớp SẴN với _PERIOD_SHEET_PATTERNS trong template_vimo.py (không phải
+"YYYYQn" không gạch ngang của segments_kcn) để tự xếp đúng sheet Excel khi dữ liệu chảy vào cơ chế
+indicator có sẵn của vimo — không cần code chuyển đổi gì thêm.
 """
 import os
 import json
@@ -89,12 +96,18 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
 
 
 def gap_period_to_quarter(period_key):
-    """Ánh xạ kỳ gap ("YYYY-H1"/"YYYY-FY") sang khóa quý tương ứng trong quarterly_balance_sheet
-    ("YYYY-Qn") để lấy tổng tài sản/VCSH/NII/tiền gửi CÙNG THỜI ĐIỂM — bán niên = hết quý 2, cả năm
-    = hết quý 4."""
+    """Ánh xạ kỳ gap ("YYYY-Qn"/"YYYY-FY") sang khóa quý tương ứng trong quarterly_balance_sheet
+    ("YYYY-Qn") để lấy tổng tài sản/VCSH/NII/tiền gửi CÙNG THỜI ĐIỂM. Từ 2026-08 (sau khi xác nhận
+    BCTC quý thường CŨNG có đủ 2 bảng gap — xem bank_risk_notes.py _period_key_for_candidate), khóa
+    kỳ gap dùng CHUNG định dạng "YYYY-Qn" với bảng cân đối theo quý nên hầu hết đã KHỚP SẴN, chỉ
+    "YYYY-FY" (báo cáo năm đã kiểm toán, không có "Qn" tương ứng) mới cần ánh xạ riêng sang quý 4
+    (hết năm = hết quý 4)."""
     year_str, suffix = period_key.split("-", 1)
-    q = {"H1": 2, "FY": 4}.get(suffix)
-    return f"{year_str}-Q{q}" if q else None
+    if suffix == "FY":
+        return f"{year_str}-Q4"
+    if suffix.startswith("Q") and suffix[1:].isdigit():
+        return period_key
+    return None
 
 
 def upsert_patched_period(ticker, target_period_key, source_period_key):
@@ -144,12 +157,16 @@ def record_cheap_check(ticker, period_found):
     save_bank_store(ticker, store)
 
 
-_PERIOD_SORT_SUFFIX = {"H1": 1, "FY": 2}
-
-
 def _period_sort_key(period_key):
+    """Sắp xếp "YYYY-Qn" theo đúng thứ tự thời gian (Q1<Q2<Q3<Q4) — "YYYY-FY" (báo cáo năm đã kiểm
+    toán) xếp SAU Q4 CÙNG NĂM vì luôn công bố sau, dù cùng phản ánh thời điểm cuối năm."""
     year_str, suffix = period_key.split("-", 1)
-    return (int(year_str), _PERIOD_SORT_SUFFIX.get(suffix, 0))
+    year = int(year_str)
+    if suffix == "FY":
+        return (year, 5)
+    if suffix.startswith("Q") and suffix[1:].isdigit():
+        return (year, int(suffix[1:]))
+    return (year, 0)
 
 
 def latest_reported_period(ticker):

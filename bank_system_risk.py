@@ -3,15 +3,20 @@
 bank_system_risk.py — Tổng hợp rủi ro lãi suất/thanh khoản TOÀN HỆ THỐNG ngân hàng niêm yết/UPCoM
 (26 mã, xem bank_universe.py), dùng cho phần "Rủi ro hệ thống ngân hàng" trong báo cáo Vĩ mô.
 
-Kiến trúc (xem plan đã duyệt 2026-08-30):
+Kiến trúc (xem plan đã duyệt 2026-08-30, sửa lại 2026-08-31 sau khi xác nhận qua ảnh chụp thật
+MBB/TCB rằng 2 bảng gap CŨNG có ở BCTC quý thường, không chỉ ở bản kiểm toán/soát xét):
 - Dữ liệu THÔ (gap buckets từ 2 bảng thuyết minh BCTC + snapshot bảng cân đối) lưu RIÊNG TỪNG NGÂN
   HÀNG, TỪNG KỲ trong data/bank_alm/<TICKER>.json (bank_alm_store.py) — KHÔNG lưu số liệu tổng hợp
   hệ thống dạng lịch sử riêng, để tránh 2 nơi lưu cùng 1 con số có thể lệch nhau. Số liệu hệ thống
   LUÔN được tính lại (recompute_system_aggregate_all_periods) từ các file per-bank này.
-- 2 bảng gap (lãi suất, thanh khoản) CHỈ có ở BCTC đã kiểm toán năm (FY) hoặc soát xét bán niên
-  (H1) — KHÔNG có ở báo cáo quý thường. Vì vậy chỉ có ~2 điểm dữ liệu/năm cho 2 chỉ số này, khác
-  với các tỷ lệ bảng cân đối thuần (LDR/CASA/NIM/Loan-Assets) có đủ số liệu theo quý thật từ Vietcap
-  (không cần OCR).
+- 2 bảng gap (lãi suất, thanh khoản) có ở CẢ báo cáo quý thường (Q1-Q4) LẪN báo cáo đã kiểm
+  toán/soát xét — nên dữ liệu giờ là THEO QUÝ THẬT (không còn chỉ ~2 điểm/năm như thiết kế ban đầu).
+  Một ngân hàng có thể có ĐỒNG THỜI 2 bản ghi cho cùng 1 thời điểm cuối năm: "YYYY-Q4" (báo cáo quý
+  thường, công bố sớm) và "YYYY-FY" (báo cáo năm kiểm toán, công bố sau, đáng tin hơn) — 2 khóa
+  KHÁC NHAU trong gap_periods vì đây là 2 LẦN CÔNG BỐ khác nhau, không ghi đè lên nhau. Khi tổng hợp
+  hệ thống, MỌI so khớp kỳ giữa các ngân hàng PHẢI qua kỳ QUÝ CHUẨN HÓA (gap_period_to_quarter) —
+  xem _ticker_gap_entry() — KHÔNG BAO GIỜ so khớp period_key nguyên văn, nếu không sẽ tính nhầm 1
+  ngân hàng đã có "YYYY-Q4" là "thiếu dữ liệu" chỉ vì ngân hàng khác đang dùng để so là "YYYY-FY".
 - Kiểm tra độ mới: RẺ (chỉ gọi API liệt kê BCTC qua bank_risk_notes.latest_reviewed_period, không
   OCR) cho toàn bộ 26 ngân hàng mỗi lần chạy; CHỈ ngân hàng nào thực sự có kỳ mới hơn store hiện có
   mới bị OCR lại (refresh_bank_alm_data). Ngân hàng chưa công bố kỳ mới nhất của hệ thống được "vá"
@@ -30,11 +35,15 @@ import bank_alm_store
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Field code Vietcap (xem template_banking.py get_yr — CHIA /1e9 để ra tỷ đồng, khớp đơn vị dùng
-# xuyên suốt template_banking.py/bank_risk_notes.py).
+# xuyên suốt template_banking.py/bank_risk_notes.py). Nguồn BALANCE_SHEET, trừ khi ghi chú khác.
+# inv_sec_bs/von_cg/tctd_dep: chưa được dùng ở đâu trong file này — giữ lại vì rẻ (đã lấy sẵn cùng
+# 1 lượt fetch_data.fetch_all) và dành cho phần mở rộng LDR/CASA/NIM theo quý hệ thống (user đã
+# đồng ý phạm vi "từ Q1-2025 tới nay" 2026-08-30) — PHẦN ĐÓ CHƯA XÂY, đây chỉ là input để dành.
 _BS_FIELD_MAP = {
     "total_assets": "bsa53", "equity": "bsa78", "customer_deposits": "bsb113",
     "cash": "bsa2", "sbv_dep": "bsb97", "bank_dep": "bsb98", "interbank_liab": "bsb112",
-    "loans": "bsb103", "bonds_issued": "bsb116",
+    "loans": "bsb103", "bonds_issued": "bsb116", "inv_sec_bs": "bsb106",
+    "von_cg": "bsb115", "tctd_dep": "bsb270",
 }
 
 _IR_HORIZON_1Y_KEYS = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_thang"]
@@ -115,25 +124,30 @@ def refresh_bank_alm_data():
         print("  [SKIP] He thong ALM: khong kiem tra duoc ky nao cho ngan hang nao (loi mang toan bo?)")
         return {"changed": False, "target_period": None, "actions": {}}
     target_period = max(known_periods, key=bank_alm_store._period_sort_key)
-    print(f"  [INFO] He thong ALM: ky muc tieu hien tai = {target_period}")
+    target_canon = bank_alm_store.gap_period_to_quarter(target_period)
+    print(f"  [INFO] He thong ALM: ky muc tieu hien tai = {target_period} (quy chuan hoa {target_canon})")
 
     actions = {}
     changed = False
     for ticker in sorted(BANKING_TICKERS):
         try:
-            entry = bank_alm_store.get_period_entry(ticker, target_period)
-            if entry and entry.get("status") == "reported":
-                actions[ticker] = "skip_da_co"
+            store = bank_alm_store.load_bank_store(ticker)
+            # So khop qua QUY CHUAN HOA, KHONG so period_key nguyen van - 1 ngan hang co the da co
+            # du lieu dung thoi diem duoi dang bao cao quy thuong ("...-Q4") trong khi target_period
+            # he thong dang la ban kiem toan ("...-FY") cua ngan hang KHAC, hoac nguoc lai.
+            existing_entry, existing_pk = _ticker_gap_entry(store, target_canon)
+            if existing_entry and existing_entry.get("status") == "reported":
+                actions[ticker] = f"skip_da_co ({existing_pk})"
                 continue
 
             cp = cheap_periods.get(ticker)
-            if cp == target_period:
-                gaps = fetch_bank_risk_gaps_for_period(ticker, target_period)
+            if cp and bank_alm_store.gap_period_to_quarter(cp) == target_canon:
+                gaps = fetch_bank_risk_gaps_for_period(ticker, cp)
                 if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
                     source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
                               "fetched_year": gaps.get("fetched_year")}
-                    bank_alm_store.upsert_reported_period(ticker, target_period, gaps, source)
-                    actions[ticker] = "da_OCR_thanh_cong"
+                    bank_alm_store.upsert_reported_period(ticker, cp, gaps, source)
+                    actions[ticker] = f"da_OCR_thanh_cong ({cp})"
                     changed = True
                 else:
                     actions[ticker] = "OCR_that_bai"
@@ -141,15 +155,16 @@ def refresh_bank_alm_data():
 
             latest_reported = bank_alm_store.latest_reported_period(ticker)
             if latest_reported:
-                if entry and entry.get("status") == "patched" and entry.get("patched_from") == latest_reported:
+                if (existing_entry and existing_entry.get("status") == "patched"
+                        and existing_entry.get("patched_from") == latest_reported):
                     actions[ticker] = "skip_da_va_dung_nguon"
                 else:
-                    bank_alm_store.upsert_patched_period(ticker, target_period, latest_reported)
+                    bank_alm_store.upsert_patched_period(ticker, target_canon, latest_reported)
                     actions[ticker] = f"da_va_tu_{latest_reported}"
                     changed = True
             else:
-                if not entry:
-                    bank_alm_store.mark_missing_period(ticker, target_period)
+                if not existing_entry:
+                    bank_alm_store.mark_missing_period(ticker, target_canon)
                     actions[ticker] = "danh_dau_thieu"
                     changed = True
                 else:
@@ -198,12 +213,68 @@ def backfill_period(period_key):
 
 # ── Tổng hợp hệ thống (arithmetic thuần, luôn tính lại từ đầu, không cache riêng) ────────────────
 
+def _ticker_gap_entry(store, canonical_quarter):
+    """Trả (entry, period_key_thuc_te) của 1 ngân hàng tại kỳ QUÝ CHUẨN HÓA (vd "2025-Q4") — nếu
+    canonical_quarter là quý 4, ƯU TIÊN bản "YYYY-FY" (kiểm toán, công bố sau nhưng đáng tin hơn)
+    nếu ngân hàng đó đã có, chỉ dùng "YYYY-Q4" (báo cáo quý thường) khi chưa có bản FY. BẮT BUỘC
+    dùng hàm này thay vì so khớp period_key nguyên văn khi tổng hợp toàn hệ thống — 2 ngân hàng
+    cùng phản ánh 1 thời điểm cuối năm có thể đang ở 2 "giai đoạn công bố" khác nhau (1 bên đã có
+    FY, bên kia mới có Q4 thường), so khớp y hệt sẽ tính nhầm bên có Q4 là "thiếu dữ liệu"."""
+    gp = store.get("gap_periods", {})
+    if canonical_quarter.endswith("-Q4"):
+        fy_key = f"{canonical_quarter.split('-')[0]}-FY"
+        fy_entry = gp.get(fy_key)
+        if fy_entry and fy_entry.get("status") != "missing":
+            return fy_entry, fy_key
+    entry = gp.get(canonical_quarter)
+    return entry, (canonical_quarter if entry else None)
+
+
+def _bank_period_metrics(entry, bs_snap):
+    """Tính các chỉ số THÔ của 1 ngân hàng tại 1 kỳ từ (entry gap_periods, snapshot bảng cân đối
+    cùng kỳ) — dùng CHUNG cho cả _aggregate_for_period (cộng dồn hệ thống) và
+    update_bank_alm_excel_sheet (ghi hàng chi tiết từng ngân hàng), để 2 nơi này KHÔNG BAO GIỜ lệch
+    công thức nhau. Trả về {} nếu entry rỗng/missing hoặc thiếu snapshot bảng cân đối cùng kỳ."""
+    if not entry or entry.get("status") == "missing" or not bs_snap or not bs_snap.get("total_assets"):
+        return {}
+    ta = bs_snap["total_assets"]
+    ir_gap_ty = {k: (v or 0) / 1000 for k, v in (entry.get("interest_rate_gap") or {}).items()}
+    cum_1y = sum(ir_gap_ty.get(k, 0.0) for k in _IR_HORIZON_1Y_KEYS)
+    # "weighted" = gap đã nhân trọng số thời gian còn lại tới khi định giá lại (KHÔNG PHẢI đã ở 1
+    # mức sốc cụ thể) — nhân với bps/10000 mới ra đúng mức NII thay đổi tại 1 mức sốc — GIỮ Ở DẠNG
+    # THÔ (chưa nhân bp, chưa làm tròn) để _aggregate_for_period cộng dồn TRƯỚC rồi mới nhân/làm
+    # tròn 1 LẦN ở cấp hệ thống, tránh sai số cộng dồn của làm tròn từng ngân hàng riêng lẻ.
+    weighted = sum(ir_gap_ty.get(k, 0.0) * _IR_WEIGHTS[k] for k in _IR_HORIZON_1Y_KEYS)
+    liq_gap_ty = {k: (v or 0) / 1000 for k, v in (entry.get("liquidity_gap") or {}).items()}
+    cum_1m = sum(liq_gap_ty.get(k, 0.0) for k in _LIQ_ST_KEYS)
+    liquid_assets = (bs_snap.get("cash") or 0) + (bs_snap.get("sbv_dep") or 0) + (bs_snap.get("bank_dep") or 0)
+    cust_dep = bs_snap.get("customer_deposits") or 0.0
+    nii = bs_snap.get("nii") or 0.0
+    stress_nii_100 = round(weighted * 0.01)
+    return {
+        "total_assets": ta, "equity": bs_snap.get("equity"), "nii": bs_snap.get("nii"),
+        "customer_deposits": cust_dep, "liquid_assets": liquid_assets,
+        "cum_gap_1y": cum_1y, "cum_gap_1y_ratio": (cum_1y / ta) if ta else None,
+        "cum_gap_1m": cum_1m, "cum_gap_1m_ratio": (cum_1m / ta) if ta else None,
+        "weighted_gap_raw": weighted,
+        "stress_nii_100bp": stress_nii_100,
+        "stress_nii_ratio_100bp": (stress_nii_100 / nii) if nii else None,
+        "deposit_run_coverage_10pct": (liquid_assets / (cust_dep * 0.10)) if cust_dep else None,
+    }
+
+
 def _aggregate_for_period(period_key):
     """Tổng hợp CÓ TRỌNG SỐ THEO QUY MÔ (cộng dồn số tuyệt đối tỷ VND rồi mới chia ra tỷ lệ) — KHÔNG
     lấy trung bình cộng % của từng ngân hàng, vì cách đó coi 1 ngân hàng nhỏ ngang 1 ngân hàng lớn,
     sai lệch nghiêm trọng ý nghĩa "rủi ro của TOÀN HỆ THỐNG". Chỉ tính trên ngân hàng có
-    status in ("reported","patched") VÀ có snapshot bảng cân đối cùng kỳ (quý tương ứng qua
-    gap_period_to_quarter) — thiếu 1 trong 2 thì coi như thiếu dữ liệu cho kỳ này, không đoán."""
+    status in ("reported","patched") VÀ có snapshot bảng cân đối cùng kỳ — thiếu 1 trong 2 thì coi
+    như thiếu dữ liệu cho kỳ này, không đoán.
+
+    period_key ở đây LUÔN là KỲ QUÝ CHUẨN HÓA ("YYYY-Qn", không bao giờ "YYYY-FY") — xem
+    recompute_system_aggregate_all_periods(). Việc từng ngân hàng thực tế đã công bố dưới dạng báo
+    cáo quý thường hay báo cáo năm kiểm toán được giải quyết TRONG _ticker_gap_entry(), không ảnh
+    hưởng đến khóa period dùng để nhóm toàn hệ thống — nhờ vậy 1 bảng chỉ số không bị tách rời giữa
+    2 sheet Excel (Theo_Quy/Luy_Ke) và coverage không bị đếm thiếu ngân hàng do khác kiểu báo cáo."""
     from bank_universe import BANKING_TICKERS
 
     reported, patched, missing = [], [], []
@@ -214,8 +285,6 @@ def _aggregate_for_period(period_key):
     worst_liq = None
     by_bank = {}
 
-    qkey = bank_alm_store.gap_period_to_quarter(period_key)
-
     for ticker in sorted(BANKING_TICKERS):
         store = bank_alm_store.load_bank_store(ticker)
         qbs = store.get("quarterly_balance_sheet", {})
@@ -225,15 +294,16 @@ def _aggregate_for_period(period_key):
             if latest_ta:
                 all_ta_known += latest_ta
 
-        entry = store.get("gap_periods", {}).get(period_key)
+        entry, actual_pk = _ticker_gap_entry(store, period_key)
         if not entry or entry.get("status") == "missing":
             missing.append(ticker)
             by_bank[ticker] = {"status": "missing"}
             continue
 
         status = entry["status"]
-        bs_snap = qbs.get(qkey) if qkey else None
-        if not bs_snap or not bs_snap.get("total_assets"):
+        bs_snap = qbs.get(period_key)
+        m = _bank_period_metrics(entry, bs_snap)
+        if not m:
             by_bank[ticker] = {"status": status, "note": "thieu snapshot bang can doi cung ky"}
             continue
 
@@ -242,28 +312,17 @@ def _aggregate_for_period(period_key):
         else:
             patched.append(ticker)
 
-        ta = bs_snap["total_assets"]
-        ir_gap_ty = {k: v / 1000 for k, v in (entry.get("interest_rate_gap") or {}).items()}
-        cum_1y = sum(ir_gap_ty.get(k, 0.0) for k in _IR_HORIZON_1Y_KEYS)
-        weighted = sum(ir_gap_ty.get(k, 0.0) * _IR_WEIGHTS[k] for k in _IR_HORIZON_1Y_KEYS)
-        nii = bs_snap.get("nii") or 0.0
+        sum_ta += m["total_assets"]
+        sum_ir_net += m["cum_gap_1y"]
+        sum_ir_abs += abs(m["cum_gap_1y"])
+        sum_weighted += m["weighted_gap_raw"]
+        sum_nii += m["nii"] or 0.0
+        sum_liq_1m += m["cum_gap_1m"]
+        sum_liquid_assets += m["liquid_assets"]
+        sum_cust_dep += m["customer_deposits"]
 
-        liq_gap_ty = {k: v / 1000 for k, v in (entry.get("liquidity_gap") or {}).items()}
-        cum_1m = sum(liq_gap_ty.get(k, 0.0) for k in _LIQ_ST_KEYS)
-        liquid_assets = (bs_snap.get("cash") or 0) + (bs_snap.get("sbv_dep") or 0) + (bs_snap.get("bank_dep") or 0)
-        cust_dep = bs_snap.get("customer_deposits") or 0.0
-
-        sum_ta += ta
-        sum_ir_net += cum_1y
-        sum_ir_abs += abs(cum_1y)
-        sum_weighted += weighted
-        sum_nii += nii
-        sum_liq_1m += cum_1m
-        sum_liquid_assets += liquid_assets
-        sum_cust_dep += cust_dep
-
-        bank_ir_ratio = (cum_1y / ta) if ta else None
-        bank_cov10 = (liquid_assets / (cust_dep * 0.10)) if cust_dep else None
+        bank_ir_ratio = m["cum_gap_1y_ratio"]
+        bank_cov10 = m["deposit_run_coverage_10pct"]
         if bank_ir_ratio is not None and (worst_ir is None or abs(bank_ir_ratio) > abs(worst_ir[1])):
             worst_ir = (ticker, bank_ir_ratio)
         if bank_cov10 is not None and (worst_liq is None or bank_cov10 < worst_liq[1]):
@@ -271,7 +330,7 @@ def _aggregate_for_period(period_key):
 
         by_bank[ticker] = {
             "status": status,
-            "period_used": period_key if status == "reported" else entry.get("patched_from"),
+            "period_used": actual_pk if status == "reported" else entry.get("patched_from"),
             "cum_gap_1y_ratio": bank_ir_ratio,
             "deposit_run_coverage_10pct": bank_cov10,
         }
@@ -317,14 +376,22 @@ def _aggregate_for_period(period_key):
 
 
 def recompute_system_aggregate_all_periods():
-    """Trả về dict {period_key: aggregate_dict} cho MỌI kỳ gap từng xuất hiện ở BẤT KỲ ngân hàng nào
-    trong store — LUÔN tính lại từ đầu (rẻ, thuần cộng/chia trên vài chục file JSON nhỏ), không cache
-    riêng kết quả tổng hợp."""
+    """Trả về dict {period_key: aggregate_dict} cho MỌI kỳ QUÝ CHUẨN HÓA từng xuất hiện ở BẤT KỲ
+    ngân hàng nào trong store — LUÔN tính lại từ đầu (rẻ, thuần cộng/chia trên vài chục file JSON
+    nhỏ), không cache riêng kết quả tổng hợp.
+
+    Quy đổi MỌI period_key thô (có thể là "YYYY-Qn" HOẶC "YYYY-FY") sang quý chuẩn hóa qua
+    gap_period_to_quarter() TRƯỚC khi gom — nếu không, "2025-Q4" (ngân hàng A, báo cáo quý thường)
+    và "2025-FY" (ngân hàng B, báo cáo năm kiểm toán) sẽ bị coi là 2 KỲ HỆ THỐNG KHÁC NHAU dù cùng
+    phản ánh 1 thời điểm, khiến mỗi kỳ "thiếu" đúng những ngân hàng đang dùng kiểu báo cáo còn lại."""
     from bank_universe import BANKING_TICKERS
     all_periods = set()
     for ticker in BANKING_TICKERS:
         store = bank_alm_store.load_bank_store(ticker)
-        all_periods.update(store.get("gap_periods", {}).keys())
+        for pk in store.get("gap_periods", {}).keys():
+            canon = bank_alm_store.gap_period_to_quarter(pk)
+            if canon:
+                all_periods.add(canon)
     return {pk: _aggregate_for_period(pk) for pk in sorted(all_periods, key=bank_alm_store._period_sort_key)}
 
 
@@ -417,3 +484,79 @@ def build_banking_system_risk_section(agg):
         },
         "byBank": agg["by_bank"],
     }
+
+
+# ── Sheet Excel riêng lưu dữ liệu THÔ per-bank/per-kỳ (yêu cầu user 2026-08-30, mục 7 kế hoạch) ──
+
+_ALM_SHEET_NAME = "ALM_NganHang_Raw"
+_ALM_SHEET_HEADERS = [
+    "Ma", "Ky", "Trang thai", "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
+    "Tien gui KH (ty)", "Liquid Assets (ty)", "Gap lai suat rong <=1nam (ty)", "Gap lai suat/TTS (%)",
+    "Gap thanh khoan rong <=1thang (ty)", "Gap thanh khoan/TTS (%)", "Stress NII +100bp (ty)",
+    "Stress NII +100bp/NII (%)", "Che phu rut -10% tien gui (lan)", "Nguon (tieu de)", "Nguon (url)",
+    "Cap nhat luc",
+]
+
+
+def update_bank_alm_excel_sheet(out_dir):
+    """Ghi sheet "ALM_NganHang_Raw" (dạng tidy/long: 1 hàng = 1 (ngân hàng, kỳ)) trong CÙNG workbook
+    VIMO_Lich_Su_Chi_So.xlsx (out_dir/VIMO_Lich_Su_Chi_So.xlsx) trực tiếp từ data/bank_alm/, để dữ
+    liệu THÔ (gap buckets quy đổi tỷ đồng + snapshot bảng cân đối cùng kỳ) có thể tái sử dụng cho
+    phân tích từng mã lẻ mà KHÔNG cần OCR lại (yêu cầu user 2026-08-30).
+
+    GHI ĐÈ TOÀN BỘ sheet mỗi lần chạy (khác update_excel_history_vimo chỉ APPEND CỘT MỚI) — đây là
+    bảng tra cứu theo hàng (ticker, kỳ), không phải chuỗi thời gian theo cột, và luôn dựng lại từ
+    trạng thái MỚI NHẤT của store (rẻ — vài chục file JSON nhỏ) để không sót hàng cũ/lệch khi 1 kỳ
+    "patched" sau đó chuyển thành "reported" thật (cùng 1 (ticker, period_key), giá trị đổi nhưng
+    key không đổi — ghi đè cả sheet đảm bảo luôn phản ánh trạng thái mới nhất, không cần dò-sửa
+    từng ô như update_excel_history_vimo phải làm với chuỗi append-cột)."""
+    import openpyxl
+    from bank_universe import BANKING_TICKERS
+
+    xlsx_path = os.path.join(out_dir, "VIMO_Lich_Su_Chi_So.xlsx")
+    if os.path.exists(xlsx_path):
+        wb = openpyxl.load_workbook(xlsx_path)
+    else:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+
+    if _ALM_SHEET_NAME in wb.sheetnames:
+        wb.remove(wb[_ALM_SHEET_NAME])
+    ws = wb.create_sheet(title=_ALM_SHEET_NAME)
+    for c, h in enumerate(_ALM_SHEET_HEADERS, start=1):
+        ws.cell(row=1, column=c, value=h)
+
+    row_idx = 2
+    for ticker in sorted(BANKING_TICKERS):
+        store = bank_alm_store.load_bank_store(ticker)
+        gap_periods = store.get("gap_periods", {})
+        qbs = store.get("quarterly_balance_sheet", {})
+        for period_key in sorted(gap_periods.keys(), key=bank_alm_store._period_sort_key):
+            entry = gap_periods[period_key]
+            status = entry.get("status")
+            qkey = bank_alm_store.gap_period_to_quarter(period_key)
+            bs_snap = qbs.get(qkey) if qkey else None
+            m = _bank_period_metrics(entry, bs_snap)
+            source = entry.get("source") or {}
+            row = [
+                ticker, period_key, status, entry.get("patched_from"),
+                m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
+                m.get("liquid_assets"), m.get("cum_gap_1y"),
+                round(m["cum_gap_1y_ratio"] * 100, 3) if m.get("cum_gap_1y_ratio") is not None else None,
+                m.get("cum_gap_1m"),
+                round(m["cum_gap_1m_ratio"] * 100, 3) if m.get("cum_gap_1m_ratio") is not None else None,
+                m.get("stress_nii_100bp"),
+                round(m["stress_nii_ratio_100bp"] * 100, 3) if m.get("stress_nii_ratio_100bp") is not None else None,
+                round(m["deposit_run_coverage_10pct"], 3) if m.get("deposit_run_coverage_10pct") is not None else None,
+                source.get("title"), source.get("url"), entry.get("fetched_at"),
+            ]
+            for c, val in enumerate(row, start=1):
+                ws.cell(row=row_idx, column=c, value=val)
+            row_idx += 1
+
+    for c in range(1, len(_ALM_SHEET_HEADERS) + 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 16
+
+    os.makedirs(out_dir, exist_ok=True)
+    wb.save(xlsx_path)
+    print(f"  [OK] Sheet {_ALM_SHEET_NAME}: {row_idx - 2} hang")

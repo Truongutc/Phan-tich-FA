@@ -487,29 +487,35 @@ def _download_report_pdf(ticker, cand):
     return pdf_path
 
 
-def _period_key_for_candidate(cand):
-    """Trả về "YYYY-H1"/"YYYY-FY" nếu candidate là báo cáo đã kiểm toán/soát xét, None nếu là báo
-    cáo quý thường (không đáng tin cho 2 bảng gap). Dùng LÀM KHÓA để backfill/kiểm tra 1 kỳ lịch sử
-    cụ thể (xem fetch_bank_risk_gaps_for_period/latest_reviewed_period) — KHÁC hoàn toàn tên file
-    cache PDF (_download_report_pdf tự suy ra period_tag riêng, không dùng hàm này, dù logic tương
-    tự).
+def _is_reviewed_candidate(cand):
+    q = cand.get("Quarter")
+    return q in (5, 6) or _is_half_year(cand.get("Name", ""))
 
-    BUG THẬT phát hiện 2026-08 (qua ảnh chụp thật báo cáo MBB): trước đây hàm này CHỈ nhận Quarter
-    5/6 là "đã soát xét", loại thẳng mọi Quarter khác trước khi kịp xét tên — nhưng CafeF đôi khi
-    gắn báo cáo bán niên đã soát xét với Quarter=2 THẬT (không phải 5/6), tên vẫn có "đã soát xét"
-    rõ ràng (vd MBB: "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)", Quarter=2). Bản cũ
-    trả về None cho case này → bank_alm_store không lưu được (period_key=None bị bỏ qua ở
-    fetch_bank_risk_gaps_cached), dù chính fetch_bank_risk_gaps() vẫn đọc ĐÚNG số liệu (do
-    _recency_key ở _select_candidate_reports tính điểm mới/cũ độc lập, không bị bug này). Sửa: dùng
-    _is_half_year(tên) làm tín hiệu CHÍNH, Quarter chỉ để loại các Quarter chắc chắn không thể là
-    báo cáo giữa niên độ (1/3/4 — theo quy định chỉ báo cáo 6 tháng mới bắt buộc soát xét)."""
+
+def _period_key_for_candidate(cand):
+    """Trả về "YYYY-Qn" (n=1-4) hoặc "YYYY-FY" cho MỌI báo cáo hợp nhất hợp lệ — KỂ CẢ báo cáo quý
+    thường không soát xét — None nếu không map được vào 1 kỳ rõ ràng. Dùng LÀM KHÓA cho toàn bộ hệ
+    thống lưu trữ theo kỳ (bank_alm_store.py) — CÙNG quy ước "YYYY-Qn" với dữ liệu bảng cân đối theo
+    quý (không cần OCR), để 1 kỳ dù đến từ nguồn nào cũng gộp về đúng 1 khóa.
+
+    SỬA LỚN 2026-08 (user cung cấp ảnh chụp thật báo cáo Quý 3/2025 CỦA CẢ MBB và TCB): trước đây
+    hàm này chỉ coi báo cáo đã kiểm toán/soát xét là đáng tin cho 2 bảng khe hở lãi suất/thanh
+    khoản, dựa trên giả định BCTC quý thường không có thuyết minh này. Giả định đó SAI — verify
+    trực tiếp bằng cách tải THẬT 2 báo cáo Quý 3/2025 (KHÔNG soát xét) và render ẢNH từng trang
+    (KHÔNG dùng pdfplumber.extract_text() — phương pháp cũ từng cho kết luận sai vì các trang bảng
+    dạng này thường không trích xuất được bằng text, phải xem bằng ảnh/OCR): cả 2 ngân hàng đều CÓ
+    ĐẦY ĐỦ mục "RỦI RO THỊ TRƯỜNG" (lãi suất/tiền tệ/thanh khoản) ngay trong báo cáo quý thường. Vì
+    vậy giờ MỌI Quarter hợp lệ (1-6) đều là candidate khả dĩ — _extract_gaps_from_pdf tự trả về
+    "no_note" an toàn nếu 1 báo cáo cụ thể thực sự không có, không giả định trước theo loại kỳ nữa."""
     q = cand.get("Quarter")
     name = cand.get("Name", "")
     is_half = (q == 6) or (q in (2, 5) and _is_half_year(name))
     if is_half:
-        return f"{cand['Year']}-H1"
+        return f"{cand['Year']}-Q2"
     if q == 5:
         return f"{cand['Year']}-FY"
+    if q in (1, 2, 3, 4):
+        return f"{cand['Year']}-Q{q}"
     return None
 
 
@@ -518,12 +524,14 @@ def _select_candidate_reports(ticker):
     (mới nhất), fetch_bank_risk_gaps_for_period (1 kỳ lịch sử cụ thể), và latest_reviewed_period
     (kiểm tra rẻ, không tải/OCR). Trả về (newest_overall, newest_reviewed, reviewed_reports):
     - newest_overall: BCTC MỚI NHẤT bất kể loại kỳ (None nếu không lấy được danh sách/không có gì).
-    - newest_reviewed: BCTC đã kiểm toán/soát xét MỚI NHẤT (None nếu không có bản nào).
-    - reviewed_reports: list TẤT CẢ bản đã kiểm toán/soát xét, mỗi phần tử có thêm key "period_key"
-      ("YYYY-H1"/"YYYY-FY"), ĐÃ KHỬ TRÙNG theo period_key — 1 kỳ bán niên có thể xuất hiện 2 lần (1
-      từ CafeF gắn đúng Quarter=6, 1 từ 24hmoney gắn NHẦM Quarter=5 vì _parse_24hmoney_period không
-      phân biệt được "kiểm toán năm" với "soát xét 6 tháng" chỉ từ tiêu đề) — ưu tiên giữ bản
-      Quarter==6 (gắn đúng từ đầu) khi trùng period_key."""
+    - newest_reviewed: BCTC MỚI NHẤT có period_key xác định được (tên biến giữ nguyên từ trước khi
+      sửa 2026-08 — KHÔNG còn nghĩa "đã soát xét" nữa, giờ bao gồm CẢ báo cáo quý thường, xem
+      _period_key_for_candidate).
+    - reviewed_reports: list TẤT CẢ bản CÓ period_key xác định được (mọi Quarter 1-6), mỗi phần tử
+      có thêm key "period_key", ĐÃ KHỬ TRÙNG theo period_key — khi 1 kỳ có CẢ bản đã kiểm toán/soát
+      xét LẪN bản quý thường (hiếm, nhưng có thể xảy ra), ưu tiên giữ bản đã kiểm toán/soát xét
+      (đáng tin cậy hơn — số liệu chính thức, ít khả năng sai lệch do soát xét lại); nếu cùng mức độ
+      soát xét, ưu tiên Quarter==6 (gắn đúng từ đầu, không phải do 24hmoney gắn nhầm Quarter=5)."""
     try:
         items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
     except Exception:
@@ -540,17 +548,22 @@ def _select_candidate_reports(ticker):
         # ngang báo cáo NĂM dù thật ra chỉ mới tới giữa năm, có thể lấn át 1 báo cáo quý 3 thật sự mới
         # hơn (bug phát hiện qua unit test khi mô phỏng kịch bản Quý 3 xuất hiện sau bán niên).
         end_month = 6 if (x["Quarter"] == 5 and is_half) else _QUARTER_END_MONTH[x["Quarter"]]
-        reviewed = 1 if (x["Quarter"] in (5, 6) or is_half) else 0
+        reviewed = 1 if _is_reviewed_candidate(x) else 0
         return (x["Year"], end_month, reviewed)
 
     newest_overall = max(reports, key=_recency_key)
-    reviewed_candidates = [x for x in reports if x["Quarter"] in (5, 6) or _is_half_year(x.get("Name", ""))]
     by_period = {}
-    for cand in reviewed_candidates:
+    for cand in reports:
         pk = _period_key_for_candidate(cand)
         if pk is None:
             continue
-        if pk not in by_period or (cand.get("Quarter") == 6 and by_period[pk].get("Quarter") != 6):
+        existing = by_period.get(pk)
+        if existing is None:
+            by_period[pk] = cand
+        elif _is_reviewed_candidate(cand) and not _is_reviewed_candidate(existing):
+            by_period[pk] = cand
+        elif _is_reviewed_candidate(cand) == _is_reviewed_candidate(existing) and \
+                cand.get("Quarter") == 6 and existing.get("Quarter") != 6:
             by_period[pk] = cand
     reviewed_reports = []
     for pk, cand in by_period.items():
@@ -565,10 +578,11 @@ def _select_candidate_reports(ticker):
 
 def latest_reviewed_period(ticker):
     """Kiểm tra RẺ (chỉ gọi API liệt kê danh sách BCTC, KHÔNG tải PDF/KHÔNG OCR — vài giây) xem kỳ
-    đã kiểm toán/soát xét MỚI NHẤT hiện có của ticker này là gì (vd "2026-H1"). Dùng cho bước kiểm
-    tra "có dữ liệu mới hơn dữ liệu đã lưu chưa" trước khi quyết định có cần OCR lại hay không (xem
-    bank_system_risk.py). Trả về None nếu không lấy được danh sách BCTC hoặc không có bản đã kiểm
-    toán/soát xét nào."""
+    MỚI NHẤT hiện có của ticker này là gì (vd "2026-Q3") — tên hàm giữ nguyên từ trước khi sửa
+    2026-08 (không còn nghĩa "đã soát xét" nữa, xem _period_key_for_candidate: BCTC quý thường CŨNG
+    có 2 bảng gap, verify thật qua ảnh chụp MBB/TCB). Dùng cho bước kiểm tra "có dữ liệu mới hơn dữ
+    liệu đã lưu chưa" trước khi quyết định có cần OCR lại hay không (xem bank_system_risk.py). Trả
+    về None nếu không lấy được danh sách BCTC hoặc không có bản nào map được vào 1 kỳ rõ ràng."""
     ticker = ticker.upper()
     _, newest_reviewed, _ = _select_candidate_reports(ticker)
     return newest_reviewed.get("period_key") if newest_reviewed else None
@@ -580,13 +594,13 @@ def fetch_bank_risk_gaps(ticker):
     tesseract, không tìm thấy BCTC nào, không định vị được note, OCR không đọc đủ số...). KHÔNG BAO
     GIỜ raise — template_banking.py gọi hàm này trong try/except nhưng bản thân hàm đã tự an toàn.
 
-    Chỉ BCTC đã KIỂM TOÁN/SOÁT XÉT (Quarter=5 năm, Quarter=6 bán niên theo CafeF — báo cáo quý thường
-    KHÔNG soát xét thường rút gọn thuyết minh, không có 2 bảng này) mới ĐÁNG TIN CẬY để thử, nhưng
-    KHÔNG giả định trước loại nào chắc chắn có/không có — luôn ưu tiên thử bản MỚI NHẤT theo kỳ dữ
-    liệu thật sự (không phải theo ngày công bố) trước, chỉ rơi về bản kiểm toán/soát xét gần nhất khi
-    bản mới nhất đó thật sự không đọc được (xem _extract_gaps_from_pdf) — để số liệu luôn bám sát kỳ
-    gần nhất CÓ SẴN, không cố định cứng vào "báo cáo năm" hay "báo cáo bán niên" (verify 2026-08:
-    từng lỡ luôn dùng báo cáo năm cũ trong khi báo cáo bán niên mới hơn đã có đủ số liệu chi tiết).
+    SỬA 2026-08: trước đây giả định chỉ BCTC đã KIỂM TOÁN/SOÁT XÉT (Quarter=5 năm, Quarter=6 bán
+    niên) mới có đủ 2 bảng gap, báo cáo quý thường bị coi là "rút gọn thuyết minh" — giả định này
+    SAI, verify thật bằng ảnh chụp báo cáo Quý 3/2025 (không soát xét) của CẢ MBB và TCB: đều có đầy
+    đủ mục "RỦI RO THỊ TRƯỜNG". Giờ MỌI loại kỳ đều là candidate hợp lệ (xem
+    _period_key_for_candidate) — vẫn ưu tiên thử bản MỚI NHẤT theo kỳ dữ liệu thật sự trước, chỉ rơi
+    về bản đã kiểm toán/soát xét gần nhất (đáng tin hơn nếu có nghi ngờ chất lượng OCR) khi bản mới
+    nhất đó thật sự không đọc được.
 
     Chỉ lấy được kỳ MỚI NHẤT hiện có — xem fetch_bank_risk_gaps_for_period() để lấy 1 kỳ lịch sử cụ
     thể (dùng cho backfill hệ thống ngân hàng, bank_system_risk.py)."""
@@ -596,13 +610,12 @@ def fetch_bank_risk_gaps(ticker):
         print("  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC hoac khong tim thay BCTC nao")
         return None
     if newest_reviewed is None:
-        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam/ban nien da kiem toan/soat xet")
+        print("  [SKIP] Rui ro lai suat/thanh khoan: khong xac dinh duoc ky bao cao nao")
         return None
 
-    # Thử bản MỚI NHẤT (bất kể loại kỳ) trước để bám sát số liệu gần nhất có thể — thường TRÙNG với
-    # newest_reviewed (chưa có báo cáo quý nào mới hơn báo cáo kiểm toán/soát xét gần nhất), lúc đó chỉ
-    # tốn đúng 1 lượt thử như trước đây. Chỉ thử THÊM bản kiểm toán/soát xét khi bản mới nhất khác nó
-    # VÀ đọc không ra (vd 1 báo cáo quý thường không soát xét, rút gọn thuyết minh).
+    # Thử bản MỚI NHẤT (bất kể loại kỳ) trước — thường TRÙNG với newest_reviewed (cùng 1 candidate,
+    # vì giờ mọi loại kỳ đều hợp lệ), lúc đó chỉ tốn đúng 1 lượt thử. Chỉ thử THÊM bản kiểm toán/
+    # soát xét khi bản mới nhất khác nó VÀ đọc không ra (hiếm — vd lỗi OCR trang bị lật/mờ).
     os.makedirs(CACHE_DIR, exist_ok=True)
     candidates_to_try = [newest_overall]
     if newest_reviewed["Link"] != newest_overall["Link"]:
@@ -620,9 +633,8 @@ def fetch_bank_risk_gaps(ticker):
                   "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
             return None
         if status == "no_note":
-            print(f"  [DIAG] Rui ro lai suat/thanh khoan: '{cand['Name']}' khong co/khong doc du 2 "
-                  f"bang nay (co the la BCTC quy khong soat xet, rut gon thuyet minh)"
-                  + (" - thu ban kiem toan/soat xet gan nhat" if cand is newest_overall and len(candidates_to_try) > 1 else ""))
+            print(f"  [DIAG] Rui ro lai suat/thanh khoan: '{cand['Name']}' khong doc du 2 bang nay"
+                  + (" - thu ban khac" if cand is newest_overall and len(candidates_to_try) > 1 else ""))
             continue
         partial["source_title"] = cand["Name"]
         partial["source_url"] = cand["Link"]
