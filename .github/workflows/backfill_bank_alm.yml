@@ -1,0 +1,80 @@
+name: Backfill Lịch sử Rủi ro ALM Ngân hàng
+
+on:
+  workflow_dispatch:
+    inputs:
+      period:
+        description: 'Kỳ cần backfill (đã kiểm toán/soát xét), định dạng YYYY-H1 hoặc YYYY-FY, vd 2024-FY'
+        required: true
+        default: '2025-FY'
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    # 26 ngân hàng x tối đa vài phút OCR/ngân hàng cho 1 KỲ DUY NHẤT (không phải toàn bộ lịch sử —
+    # chạy input riêng cho từng kỳ, vd chạy tay 4 lần: 2024-FY, 2025-H1, 2025-FY, 2026-H1) — 90 phút
+    # đủ dư so với ước tính ~65 phút xấu nhất, cùng ngưỡng đã dùng cho analyze_stock.yml.
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          # tesseract-ocr-vie/tesseract-ocr-osd: xem giải thích chi tiết trong analyze_stock.yml —
+          # cùng lý do (bank_risk_notes.py cần cả 2 gói này để OCR tiếng Việt + tự sửa trang bị lật).
+          sudo apt-get update -qq && sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-vie tesseract-ocr-osd
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Backfill 1 kỳ lịch sử cho toàn bộ 26 ngân hàng
+        run: |
+          python -c "from bank_system_risk import backfill_period; backfill_period('${{ github.event.inputs.period }}')"
+
+      - name: Commit và push data/bank_alm/
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/bank_alm/
+
+          if git diff --staged --quiet; then
+            echo "Khong co thay doi de commit."
+          else
+            git commit -m "Backfill ALM ngan hang — ${{ github.event.inputs.period }} — $(date +'%Y-%m-%d')"
+
+            # Chi commit/push data/bank_alm/ (moi file rieng biet theo ticker, khong phai kieu "ghi
+            # de toan bo 1 file" nhu vimo.json) — rebase len remote an toan, giong pattern da dung o
+            # analyze_stock.yml, khac han pattern "reset --hard + restore" cua update_vimo.yml.
+            PUSHED=0
+            for i in 1 2 3 4 5; do
+              git fetch origin master
+              if git rebase origin/master; then
+                if git push origin HEAD:master; then
+                  PUSHED=1
+                  break
+                fi
+              else
+                git rebase --abort
+              fi
+              echo "Push attempt $i failed, retrying..."
+              sleep 10
+            done
+
+            if [ "$PUSHED" != "1" ]; then
+              echo "::error::Khong the push ket qua backfill sau 5 lan thu (remote lien tuc thay doi)."
+              exit 1
+            fi
+          fi
