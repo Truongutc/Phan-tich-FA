@@ -64,14 +64,6 @@
     "pdfUrl": "https://drive.google.com/file/d/1l9ETlsuWWBCjssZcE5baIR_OGR_ckiPW/view?usp=drivesdk"
   },
   {
-    "ticker": "TCB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-07-03 10:53",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1vzmiaN3yrrcqtQBhil40uhDOsdqbGw4T/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1jtkIFTDAdlKVtX0J-KhC0BXJJm2tgx_2/view?usp=drivesdk"
-  },
-  {
     "ticker": "TPB",
     "companyName": "Ngân hàng Thương mại Cổ phần Tiên Phong",
     "sector": "Ngân hàng",
@@ -174,5 +166,13 @@
     "lastUpdated": "2026-08-30 17:39",
     "excelUrl": null,
     "pdfUrl": null
+  },
+  {
+    "ticker": "TCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-08-30 10:57",
+    "excelUrl": "https://docs.google.com/spreadsheets/d/1Wxu6SWKfXq612giqGCSghgbWb3Rqjszg/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+    "pdfUrl": "https://drive.google.com/file/d/1PrNuRzAxL_k5Ye2mxS1PI-eZcjN5Lkv9/view?usp=drivesdk"
   }
 ]
