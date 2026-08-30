@@ -487,6 +487,7 @@ async function loadStockDashboard(ticker) {
 
     const q = localJson || {};
     renderThesisAndRisks(q.thesis, q.risks);
+    renderBankRiskAnalysis(q.bankRiskAnalysis, sectorKey);
     renderMoatScorecard(q.moats, cfg.color);
     renderPESTLE(q.pestle);
     renderCommentary(q.comments);
@@ -699,6 +700,65 @@ function renderThesisAndRisks(thesisList, risksList) {
 
     document.getElementById('thesis-list').innerHTML = thesis.map(t => `<li>${t}</li>`).join('');
     document.getElementById('risks-list').innerHTML  = risks.map(r => `<li>${r}</li>`).join('');
+}
+
+// Rủi ro lãi suất & thanh khoản (ALM) — trích từ bank_risk_notes.py (thuyết minh BCTC kiểm toán qua
+// OCR) + balanceSheetRatios (tính thẳng từ Vietcap, luôn có kể cả khi OCR chưa đọc được 2 bảng gap).
+function renderBankRiskAnalysis(data, sectorKey) {
+    const card = document.getElementById('bank-risk-card');
+    if (sectorKey !== 'banks' || !data) { card.classList.add('hidden'); return; }
+
+    const bs = data.balanceSheetRatios || {};
+    const ir = data.interestRateRisk;
+    const liq = data.liquidityRisk;
+    const hasAnything = ir || liq || bs.loan_to_assets != null || bs.wholesale_funding_ratio != null;
+    if (!hasAnything) { card.classList.add('hidden'); return; }
+    card.classList.remove('hidden');
+
+    const pct = (v, d = 1) => (v === null || v === undefined) ? '-' : (v * 100).toFixed(d) + '%';
+    const money = (v) => (v === null || v === undefined) ? '-' : Math.round(v).toLocaleString('vi-VN') + ' tỷ';
+
+    const items = [];
+    if (ir) {
+        items.push({ label: 'Gap lãi suất ≤1 năm', value: pct(ir.cumulative_gap_1y_ratio, 2),
+                     desc: `${ir.sensitive_type} · ${ir.sensitivity_level}` });
+        items.push({ label: 'NII nhạy cảm (+100bp)', value: money(ir.nii_sensitivity_per_shock),
+                     desc: 'Ước tính static gap' });
+    } else {
+        items.push({ label: 'Gap lãi suất ≤1 năm', value: '-', desc: 'Chưa đọc được từ BCTC' });
+    }
+    if (liq) {
+        items.push({ label: 'Gap thanh khoản ≤1 tháng', value: pct(liq.cumulative_gap_1m_ratio, 2),
+                     desc: `Mức độ: ${liq.risk_level}` });
+        if (liq.liquid_assets_ratio != null) {
+            items.push({ label: 'Liquid Assets/Tổng TS', value: pct(liq.liquid_assets_ratio, 1),
+                         desc: 'Tiền mặt + NHNN + TCTD' });
+        }
+    } else {
+        items.push({ label: 'Gap thanh khoản ≤1 tháng', value: '-', desc: 'Chưa đọc được từ BCTC' });
+    }
+    if (bs.loan_to_assets != null) {
+        items.push({ label: 'Cho vay/Tổng tài sản', value: pct(bs.loan_to_assets, 1),
+                     desc: 'Mức độ tập trung tín dụng' });
+    }
+    if (bs.wholesale_funding_ratio != null) {
+        items.push({ label: 'Wholesale Funding/TS', value: pct(bs.wholesale_funding_ratio, 1),
+                     desc: 'Vay liên NH + GTCG phát hành' });
+    }
+
+    document.getElementById('bank-risk-kpi-grid').innerHTML = items.map(it => `
+        <div class="bank-kpi-item">
+            <div class="bank-kpi-label">${it.label}</div>
+            <div class="bank-kpi-value">${it.value}</div>
+            <div style="font-size:0.7rem;color:var(--text-dim)">${it.desc}</div>
+        </div>
+    `).join('');
+
+    const sourceEl = document.getElementById('bank-risk-source');
+    sourceEl.textContent = data.source ? `Nguồn: ${data.source.title} (${data.source.year})` : '';
+
+    const notesList = document.getElementById('bank-risk-notes-list');
+    notesList.innerHTML = data.narrative ? `<li>${data.narrative}</li>` : '';
 }
 
 function renderMoatScorecard(moats, color) {
