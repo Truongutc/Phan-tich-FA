@@ -292,12 +292,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1K-WNSInQ3DNA5ldT217x80c6Jd7cewjY/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1RTN6egVuHe7bG_HMAfpVcUGRPvhaq04g/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1fnWUuQ6NBR5UNuOA5DH-07FDqGfIvaWl/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1hEcKTvLsO8FRBFYy2_ndrwyTun3IWTiK/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1206,
     "rf": 0.04534,
-    "fetchedAt": "2026-08-30 12:24"
+    "fetchedAt": "2026-08-30 12:45"
   },
   "pe_hist": [
     13.5226658764,
@@ -1814,10 +1814,64 @@
     ]
   },
   "bankRiskAnalysis": {
+    "source": {
+      "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+      "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260317_-_TCB_-_Techcombank-VAS-bao_cao_tai_chinh_hop_nhat-YE25_1773755161.pdf",
+      "year": 2025
+    },
+    "interestRateRisk": {
+      "gap_by_bucket": {
+        "qua_han": 128496.739,
+        "khong_anh_huong_lai_suat": 88862.676,
+        "den_1_thang": -99974.325,
+        "tu_1_3_thang": -31188.035,
+        "tu_3_6_thang": 34144.64,
+        "tu_6_12_thang": 1661.892,
+        "tu_1_5_nam": 1012842.695,
+        "tren_5_nam": 190609.272
+      },
+      "gap_ratio_by_bucket": {
+        "qua_han": 0.10776816441879312,
+        "khong_anh_huong_lai_suat": 0.07452770827018375,
+        "den_1_thang": -0.08384687096423403,
+        "tu_1_3_thang": -0.026156907248666244,
+        "tu_3_6_thang": 0.028636564679983826,
+        "tu_6_12_thang": 0.0013938022995453366,
+        "tu_1_5_nam": 0.849455005119885,
+        "tren_5_nam": 0.15986095463980965
+      },
+      "cumulative_gap_1y": -95355.82799999998,
+      "cumulative_gap_1y_ratio": -0.0799734112333711,
+      "gap_to_equity_1y": -0.5312259719896845,
+      "sensitive_type": "Liability-sensitive",
+      "nii_sensitivity_per_shock": -1000,
+      "shock_bps": 100,
+      "stress_scenarios_nii": {
+        "+100bp": -1000,
+        "-100bp": 1000,
+        "+200bp": -2001,
+        "-200bp": 2001
+      },
+      "sensitivity_level": "Cao",
+      "disclosed_sensitivity": {
+        "USD": {
+          "rate_increase_pct": 1.5,
+          "pbt_impact": -189357.0,
+          "equity_impact": -151486.0
+        },
+        "VND": {
+          "rate_increase_pct": 3.0,
+          "pbt_impact": 2287850.0,
+          "equity_impact": 1830280.0
+        }
+      }
+    },
+    "liquidityRisk": null,
     "balanceSheetRatios": {
       "loan_to_assets": 0.6349834141885834,
       "wholesale_funding_ratio": 0.3021888503654377
-    }
+    },
+    "narrative": "Rui ro lai suat: gap luy ke <=1 nam = -8.00% tong tai san, -53% VCSH (Liability-sensitive, muc do nhay cam: Cao). Stress NII theo kich ban: +100bp: -1,000 tr VND; -100bp: +1,000 tr VND; +200bp: -2,001 tr VND; -200bp: +2,001 tr VND. Do nhay lai suat NGAN HANG TU CONG BO (dang tin cay hon so uoc tinh tren): USD +1.50%: LNTT -189,357 tr, VCSH -151,486 tr; VND +3.00%: LNTT +2,287,850 tr, VCSH +1,830,280 tr. Co cau bang can doi: Cho vay/Tong tai san = 63.5%, Vay lien NH+GTCG/Tong tai san (wholesale funding) = 30.2%."
   },
-  "lastUpdated": "2026-08-30 12:25"
+  "lastUpdated": "2026-08-30 12:45"
 }
