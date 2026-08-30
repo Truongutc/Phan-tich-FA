@@ -1,6 +1,37 @@
 {
   "ticker": "STB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 42401515.0,
+        "qua_han_den_3t": 4658874.0,
+        "den_1_thang": -194486796.0,
+        "tu_1_3_thang": -24693152.0,
+        "tu_3_12_thang": -80228539.0,
+        "tu_1_5_nam": 97243785.0,
+        "tren_5_nam": 156730132.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 366757391.0,
+        "den_1_thang": 149203547.0,
+        "tu_1_3_thang": 317372735.0,
+        "tu_3_12_thang": 20956643.0,
+        "tu_1_5_nam": 2962743.0,
+        "tren_5_nam": 857253059.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260327_-_STB_-_BCTC_Hop_nhat_nam_2025_da_kiem_toan__1774863040.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:38:47+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 381252.451,

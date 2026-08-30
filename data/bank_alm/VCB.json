@@ -1,6 +1,30 @@
 {
   "ticker": "VCB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 436252.0,
+        "tu_1_3_thang": 44632.0,
+        "tu_3_6_thang": 339091.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260327_-_VCB_-_BCTC_hop_nhat_kiem_toan_nam_2025_1774870712.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:50:20+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 1003905.794,

@@ -1,6 +1,46 @@
 {
   "ticker": "CTG",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 44918275.0,
+        "khong_anh_huong_lai_suat": 61212381.0,
+        "den_1_thang": -340814659.0,
+        "tu_1_3_thang": 136177404.0,
+        "tu_3_6_thang": 319168518.0,
+        "tu_6_12_thang": -146688036.0,
+        "tu_1_5_nam": 54581120.0,
+        "tren_5_nam": 186060667.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 22509197.0,
+        "qua_han_den_3t": 17357811.0,
+        "den_1_thang": -110924755.0,
+        "tu_1_3_thang": 69754620.0,
+        "tu_3_12_thang": -71272299.0,
+        "tu_1_5_nam": -145586629.0,
+        "tren_5_nam": 433369307.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 25172069.0,
+        "tu_1_3_thang": 19023972.0,
+        "tu_3_12_thang": 10027482.0,
+        "tu_1_5_nam": 954956.0,
+        "tren_5_nam": 672037.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/CTG_HK_20260331_-_CTG_-_BCTC_hop_nhat_kiem_toan_nam_2025__18062026104622.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:14:15+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 1114094.907,

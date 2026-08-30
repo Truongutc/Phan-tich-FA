@@ -1,6 +1,30 @@
 {
   "ticker": "TPB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 2025.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 1704.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 1704.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260331_-_TPB_-_BCTC_hop_nhat_2025_da_kiem_toan_kem_giai_trinh_chenh_lech_LNST_signed_1774952109.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:43:30+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 121214.303,

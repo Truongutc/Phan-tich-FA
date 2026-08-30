@@ -1,6 +1,18 @@
 {
   "ticker": "ACB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "missing",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "balance_sheet_snapshot": null,
+      "source": null,
+      "fetched_at": "2026-08-31T01:05:37+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 299855.182,

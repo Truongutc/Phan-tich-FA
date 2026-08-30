@@ -1,6 +1,57 @@
 {
   "ticker": "TCB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 128496739.0,
+        "khong_anh_huong_lai_suat": 88862676.0,
+        "den_1_thang": -99974325.0,
+        "tu_1_3_thang": -31188035.0,
+        "tu_3_6_thang": 34144640.0,
+        "tu_6_12_thang": 1661892.0,
+        "tu_1_5_nam": 1012842695.0,
+        "tren_5_nam": 190609272.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1978657.0,
+        "qua_han_den_3t": 276891.0,
+        "den_1_thang": -33439423.0,
+        "tu_1_3_thang": -32600658.0,
+        "tu_3_12_thang": 22636985.0,
+        "tu_1_5_nam": -78518149.0,
+        "tren_5_nam": 310274969.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 276891.0,
+        "qua_han_den_3t": -33439423.0,
+        "den_1_thang": -32600658.0,
+        "tu_1_3_thang": 22636985.0,
+        "tu_3_12_thang": -78518149.0,
+        "tu_1_5_nam": 310274969.0,
+        "tren_5_nam": 190609272.0
+      },
+      "interest_rate_sensitivity_disclosed": {
+        "USD": {
+          "rate_increase_pct": 1.5,
+          "pbt_impact": -189357.0,
+          "equity_impact": -151486.0
+        },
+        "VND": {
+          "rate_increase_pct": 3.0,
+          "pbt_impact": 2287850.0,
+          "equity_impact": 1830280.0
+        }
+      },
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260317_-_TCB_-_Techcombank-VAS-bao_cao_tai_chinh_hop_nhat-YE25_1773755161.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:41:25+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 273152.696,

@@ -1,6 +1,38 @@
 {
   "ticker": "SGB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 833514.0,
+        "khong_anh_huong_lai_suat": 613983.0,
+        "den_1_thang": 21630.0,
+        "tu_1_3_thang": -845455.0,
+        "tu_3_6_thang": -2842488.0,
+        "tu_6_12_thang": 7058210.0,
+        "tu_1_5_nam": 8326.0,
+        "tren_5_nam": 8364162.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 705416.0,
+        "qua_han_den_3t": 124609.0,
+        "den_1_thang": 8035.0,
+        "tu_1_3_thang": -1195814.0,
+        "tu_3_12_thang": -3443838.0,
+        "tu_1_5_nam": 3532206.0,
+        "tren_5_nam": 5608765.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_604675_Bao_cao_tai_chinh_nam_2025_1776046299.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:33:44+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 20918.804,

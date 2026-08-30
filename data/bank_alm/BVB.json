@@ -1,6 +1,37 @@
 {
   "ticker": "BVB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2416659.0,
+        "qua_han_den_3t": 1225594.0,
+        "den_1_thang": -17534695.0,
+        "tu_1_3_thang": -14480063.0,
+        "tu_3_12_thang": -7001083.0,
+        "tu_1_5_nam": 4430134.0,
+        "tren_5_nam": 39906880.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 39521232.0,
+        "tu_1_3_thang": 27155486.0,
+        "tu_3_12_thang": 53919660.0,
+        "tu_1_5_nam": 3736.0,
+        "tren_5_nam": 1254457.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_603502_Bao_cao_tai_chinh_nam_2025_1776046380.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:11:30+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 36977.976,

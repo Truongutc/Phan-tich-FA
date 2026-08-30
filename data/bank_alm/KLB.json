@@ -1,6 +1,37 @@
 {
   "ticker": "KLB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1394939.0,
+        "qua_han_den_3t": 834107.0,
+        "den_1_thang": 1777.0,
+        "tu_1_3_thang": 868135.0,
+        "tu_3_12_thang": 146205.0,
+        "tu_1_5_nam": 9513942.0,
+        "tren_5_nam": 6769527.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 37576212.0,
+        "den_1_thang": 15344131.0,
+        "tu_1_3_thang": 23548520.0,
+        "tu_3_12_thang": 15001147.0,
+        "tu_1_5_nam": 3416176.0,
+        "tren_5_nam": 94886186.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260330_-_KLB_-_BCTC_KiemToan_2025_Hop_nhat_1774928715.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:20:50+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 39395.353,

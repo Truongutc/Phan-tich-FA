@@ -1,6 +1,30 @@
 {
   "ticker": "NVB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 6580.0,
+        "khong_anh_huong_lai_suat": 7323.0,
+        "den_1_thang": 67192067.0,
+        "tu_1_3_thang": 601178.0,
+        "tu_3_6_thang": 24376013.0,
+        "tu_6_12_thang": -47722186.0,
+        "tu_1_5_nam": -12245609.0,
+        "tren_5_nam": 19106972.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_604185_Bao_cao_tai_chinh_nam_2025_1774532924.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:30:26+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 72160.836,

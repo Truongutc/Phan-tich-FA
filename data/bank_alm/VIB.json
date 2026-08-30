@@ -1,6 +1,30 @@
 {
   "ticker": "VIB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 9616846.0,
+        "khong_anh_huong_lai_suat": 12368212.0,
+        "den_1_thang": -96064408.0,
+        "tu_1_3_thang": 38877683.0,
+        "tu_3_6_thang": 29134229.0,
+        "tu_6_12_thang": 54661401.0,
+        "tu_1_5_nam": -5209087.0,
+        "tren_5_nam": 8313006.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260302_-_VIB_-_BCTC_hop_nhat_kiem_toan_2025_1772443477.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:52:28+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 136025.737,

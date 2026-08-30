@@ -1,6 +1,46 @@
 {
   "ticker": "PGB",
-  "gap_periods": {},
+  "gap_periods": {
+    "2025-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 2583864.0,
+        "khong_anh_huong_lai_suat": 4118863.0,
+        "den_1_thang": -7460862.0,
+        "tu_1_3_thang": 6908381.0,
+        "tu_3_6_thang": -1630782.0,
+        "tu_6_12_thang": 1734551.0,
+        "tu_1_5_nam": -276884.0,
+        "tren_5_nam": 1885753.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1280573.0,
+        "qua_han_den_3t": 1302824.0,
+        "den_1_thang": -10528256.0,
+        "tu_1_3_thang": 1018836.0,
+        "tu_3_12_thang": -3158117.0,
+        "tu_1_5_nam": 8305151.0,
+        "tren_5_nam": 52047.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 438533748.0,
+        "den_1_thang": 15996884.0,
+        "tu_1_3_thang": 20612748.0,
+        "tu_3_12_thang": 2151539.0,
+        "tu_1_5_nam": 1280573.0,
+        "tren_5_nam": 1302824.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất đã kiểm toán năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-04-02/no-name-1775069400.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T01:31:51+07:00"
+    }
+  },
   "quarterly_balance_sheet": {
     "2018-Q1": {
       "total_assets": 28589.686,
