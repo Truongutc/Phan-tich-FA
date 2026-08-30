@@ -181,7 +181,16 @@ def fetch_bank_risk_gaps(ticker):
     except Exception as e:
         print(f"  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC ({e})")
         return None
-    annual = [x for x in select_best_reports(items) if x.get("Quarter") == 5]
+    # BUG THẬT (2026-08, phát hiện qua log TCB): fetch_24hmoney_list()/_parse_24hmoney_period() gắn
+    # Quarter=5 cho MỌI tiêu đề khớp "kiểm toán" + "năm YYYY" — kể cả báo cáo BÁN NIÊN "đã kiểm toán 6
+    # tháng đầu năm YYYY" (TCB có bản này cho 2026, Year=2026 > CN/2025 thật => bị chọn NHẦM làm "mới
+    # nhất"). Báo cáo bán niên rút gọn thuyết minh, không có 2 bảng rủi ro lãi suất/thanh khoản chi
+    # tiết — lọc thêm bằng tên để chỉ giữ BCTC CẢ NĂM thật (loại "6 tháng"/"bán niên"/"soát xét").
+    def _is_half_year(name):
+        n = _strip_accents(name)
+        return "6 thang" in n or "ban nien" in n or "soat xet" in n
+    annual = [x for x in select_best_reports(items)
+              if x.get("Quarter") == 5 and not _is_half_year(x.get("Name", ""))]
     if not annual:
         print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam (kiem toan) hop nhat")
         return None
@@ -211,10 +220,13 @@ def fetch_bank_risk_gaps(ticker):
         page_idx = pages.get(key)
         if page_idx is None:
             continue
-        # Bảng số thường nằm ở TRANG SAU trang tiêu đề/phương pháp luận (verify MBB: heading trang
-        # 90, bảng số trang 91) — OCR cả 2 trang, ưu tiên trang có nhãn dòng tổng hợp.
+        # Bảng số nằm CÁCH trang tiêu đề/phương pháp luận 1 SỐ trang KHÔNG CỐ ĐỊNH — verify thật: MBB
+        # 2025 cách đúng 1 trang (heading trang 90 -> bảng trang 91), nhưng TCB 2025 cách 2 trang vì
+        # có thêm 1 trang phụ "Độ nhạy đối với lãi suất" (bảng ảnh hưởng LNTT/VCSH theo % lãi suất
+        # tăng — khác bảng khe hở lãi suất theo kỳ hạn) chen giữa (heading trang 92 -> bảng trang 94).
+        # Quét rộng hơn (tới +4 trang) và DỪNG NGAY khi đọc đủ số — không OCR speculative quá xa.
         vals = None
-        for p in (page_idx, page_idx + 1):
+        for p in range(page_idx, page_idx + 5):
             text = _ocr_page_text(pdf_path, p)
             if not text:
                 continue
