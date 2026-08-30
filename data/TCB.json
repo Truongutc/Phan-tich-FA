@@ -292,12 +292,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/14HowBCmqMz_8ny88xS9tzlmPrXd0QsXa/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/18dYmbCWhMe9-0SgC1M045ERNtX-P0LRu/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1cipM5gFgUK6f23jE-eiFo8eR7nB716Ui/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1QexJuajkc3tgHYEdFXl17ZsI1O1J_LEa/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1206,
     "rf": 0.04534,
-    "fetchedAt": "2026-08-30 13:11"
+    "fetchedAt": "2026-08-30 14:12"
   },
   "pe_hist": [
     13.5226658764,
@@ -1814,10 +1814,135 @@
     ]
   },
   "bankRiskAnalysis": {
+    "source": {
+      "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+      "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/TCB_202608132020TCB2020Bao20cao20tai20chinh20hop20nhat20soat20xet202Q2026_19082026102705.pdf?v=1787110027315",
+      "year": 2026
+    },
+    "interestRateRisk": {
+      "gap_by_bucket": {
+        "qua_han": 3810.006,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 117529.579,
+        "tu_1_3_thang": 82009.904,
+        "tu_3_6_thang": -95304.106,
+        "tu_6_12_thang": -54611.182,
+        "tu_1_5_nam": 112586.199,
+        "tren_5_nam": 201473.389
+      },
+      "gap_ratio_by_bucket": {
+        "qua_han": 0.0031953912312481974,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.09857018234325414,
+        "tu_1_3_thang": 0.068780397751895,
+        "tu_3_6_thang": -0.07993003281736269,
+        "tu_6_12_thang": -0.04580152684560061,
+        "tu_1_5_nam": 0.09442424842484883,
+        "tren_5_nam": 0.16897251619563253
+      },
+      "cumulative_gap_by_horizon": {
+        "1m": {
+          "value": 117529.579,
+          "ratio": 0.09857018234325414
+        },
+        "3m": {
+          "value": 199539.483,
+          "ratio": 0.16735058009514914
+        },
+        "6m": {
+          "value": 104235.37700000001,
+          "ratio": 0.08742054727778646
+        },
+        "12m": {
+          "value": 49624.19500000001,
+          "ratio": 0.04161902043218585
+        }
+      },
+      "cumulative_gap_1y": 49624.19500000001,
+      "cumulative_gap_1y_ratio": 0.04161902043218585,
+      "gap_to_equity_1y": 0.2764556899771312,
+      "sensitive_type": "Asset-sensitive",
+      "nii_sensitivity_per_shock": 1078,
+      "shock_bps": 100,
+      "stress_scenarios_nii": {
+        "+100bp": 1078,
+        "-100bp": -1078,
+        "+200bp": 2155,
+        "-200bp": -2155
+      },
+      "sensitivity_level": "Trung binh",
+      "disclosed_sensitivity": {
+        "USD": {
+          "rate_increase_pct": 1.5,
+          "pbt_impact": -263935.0,
+          "equity_impact": -211148.0
+        },
+        "VND": {
+          "rate_increase_pct": 3.0,
+          "pbt_impact": 3135332.0,
+          "equity_impact": 2508266.0
+        }
+      },
+      "not_computed": [
+        "Delta EVE (can duration tung bucket, BCTC khong cong bo)"
+      ],
+      "qualitative_caveats": [
+        "Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen cung nhip du cung 1 bucket ky han.",
+        "Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh vi thuc te thuong on dinh (sticky) hon nhieu."
+      ]
+    },
+    "liquidityRisk": {
+      "gap_by_bucket": {
+        "qua_han_tren_3t": 2239.642,
+        "qua_han_den_3t": 1570.364,
+        "den_1_thang": -12272.99,
+        "tu_1_3_thang": -40971.293,
+        "tu_3_12_thang": -8121.078,
+        "tu_1_5_nam": 63256.072,
+        "tren_5_nam": 195772.672
+      },
+      "gap_ratio_by_bucket": {
+        "qua_han_tren_3t": 0.0018783520046779913,
+        "qua_han_den_3t": 0.001317039226570206,
+        "den_1_thang": -0.010293160857803588,
+        "tu_1_3_thang": -0.03436196960978556,
+        "tu_3_12_thang": -0.006811018520569955,
+        "tu_1_5_nam": 0.05305185813145823,
+        "tren_5_nam": 0.1641914158210852
+      },
+      "cumulative_gap_1m": -12272.99,
+      "cumulative_gap_1m_ratio": -0.010293160857803588,
+      "cumulative_gap_1y": -61365.361,
+      "cumulative_gap_1y_ratio": -0.051466148988159106,
+      "gap_to_equity_1m": -0.06837265407594886,
+      "risk_level": "Thap",
+      "liquid_assets_ratio": 0.16897965842893223,
+      "not_computed": [
+        "LCR (can phan loai HQLA chi tiet)",
+        "NSFR (can phan loai nguon von on dinh chi tiet)"
+      ],
+      "deposit_run_stress": {
+        "-5%": -170536,
+        "-10%": -139591,
+        "-20%": -77700
+      }
+    },
     "balanceSheetRatios": {
       "loan_to_assets": 0.6349834141885834,
       "wholesale_funding_ratio": 0.3021888503654377
-    }
+    },
+    "narrative": "Rui ro lai suat: gap luy ke <=1 nam = +4.16% tong tai san, +28% VCSH (Asset-sensitive, muc tham chieu do nhay cam: Trung binh — chi la moc dinh huong, khong phai nguong dat/khong dat). Stress NII theo kich ban (uoc tinh static gap): +100bp: +1,078 tr VND; -100bp: -1,078 tr VND; +200bp: +2,155 tr VND; -200bp: -2,155 tr VND. Gap luy ke tong tai san theo TUNG moc (khong chi nhin diem cuoi, vi 1 gap <=12 thang duong van co the che 1 gap am lon o moc gan hon): <=1m: +9.86%; <=3m: +16.74%; <=6m: +8.74%; <=12m: +4.16%. Do nhay lai suat NGAN HANG TU CONG BO (dang tin cay hon so uoc tinh tren): USD +1.50%: LNTT -263,935 tr, VCSH -211,148 tr; VND +3.00%: LNTT +3,135,332 tr, VCSH +2,508,266 tr. Rui ro thanh khoan: gap rong <=1 thang = -1.03% tong tai san, luy ke <=1 nam = -5.15% (muc tham chieu: Thap — chi la moc dinh huong). Liquid assets/Tong TS = 16.9%. Gap am nghia la ngan hang can tiep tuc tai tai tro/huy dong de bu dap phan chenh lech ky han — ap luc nay can duoc phan anh vao COE (phan bu rui ro dac thu) hoac P/B muc tieu neu ket hop voi liquid assets buffer mong (doc cap 2 chi so nay cung nhau, khong doc rieng le). Stress test rut tien gui: rut -5% tien gui KH: thieu hut -170,536 tr VND (am = liquid assets du bu); rut -10% tien gui KH: thieu hut -139,591 tr VND (am = liquid assets du bu); rut -20% tien gui KH: thieu hut -77,700 tr VND (am = liquid assets du bu). Co cau bang can doi (doc cung Liquid assets/Tong TS va LDR/CASA da co o phan khac): Cho vay/Tong tai san = 63.5%, Vay lien NH+GTCG/Tong tai san (wholesale funding) = 30.2%. KHONG tinh (BCTC khong cong bo du chi tiet de tinh dung, uoc luong se sai lech va tu tin gia tao hon la khong tinh): Delta EVE (can duration tung bucket, BCTC khong cong bo); LCR (can phan loai HQLA chi tiet); NSFR (can phan loai nguon von on dinh chi tiet). Luu y dinh tinh (khong the hien qua bang gap): Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen cung nhip du cung 1 bucket ky han. Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh vi thuc te thuong on dinh (sticky) hon nhieu. Cac muc do 'Thap/Trung binh/Cao' o tren chi la moc dinh huong tu 1 ky bao cao gan nhat, KHONG phai nguong dat/khong dat co dinh — de danh gia day du can so sanh voi peer cung nganh va xu huong qua nhieu ky (hien tai moi lay duoc 1 ky gan nhat tu thuyet minh BCTC).",
+    "narrativeLines": [
+      "Rui ro lai suat: gap luy ke <=1 nam = +4.16% tong tai san, +28% VCSH (Asset-sensitive, muc tham chieu do nhay cam: Trung binh — chi la moc dinh huong, khong phai nguong dat/khong dat). Stress NII theo kich ban (uoc tinh static gap): +100bp: +1,078 tr VND; -100bp: -1,078 tr VND; +200bp: +2,155 tr VND; -200bp: -2,155 tr VND.",
+      "Gap luy ke tong tai san theo TUNG moc (khong chi nhin diem cuoi, vi 1 gap <=12 thang duong van co the che 1 gap am lon o moc gan hon): <=1m: +9.86%; <=3m: +16.74%; <=6m: +8.74%; <=12m: +4.16%.",
+      "Do nhay lai suat NGAN HANG TU CONG BO (dang tin cay hon so uoc tinh tren): USD +1.50%: LNTT -263,935 tr, VCSH -211,148 tr; VND +3.00%: LNTT +3,135,332 tr, VCSH +2,508,266 tr.",
+      "Rui ro thanh khoan: gap rong <=1 thang = -1.03% tong tai san, luy ke <=1 nam = -5.15% (muc tham chieu: Thap — chi la moc dinh huong). Liquid assets/Tong TS = 16.9%. Gap am nghia la ngan hang can tiep tuc tai tai tro/huy dong de bu dap phan chenh lech ky han — ap luc nay can duoc phan anh vao COE (phan bu rui ro dac thu) hoac P/B muc tieu neu ket hop voi liquid assets buffer mong (doc cap 2 chi so nay cung nhau, khong doc rieng le).",
+      "Stress test rut tien gui: rut -5% tien gui KH: thieu hut -170,536 tr VND (am = liquid assets du bu); rut -10% tien gui KH: thieu hut -139,591 tr VND (am = liquid assets du bu); rut -20% tien gui KH: thieu hut -77,700 tr VND (am = liquid assets du bu).",
+      "Co cau bang can doi (doc cung Liquid assets/Tong TS va LDR/CASA da co o phan khac): Cho vay/Tong tai san = 63.5%, Vay lien NH+GTCG/Tong tai san (wholesale funding) = 30.2%.",
+      "KHONG tinh (BCTC khong cong bo du chi tiet de tinh dung, uoc luong se sai lech va tu tin gia tao hon la khong tinh): Delta EVE (can duration tung bucket, BCTC khong cong bo); LCR (can phan loai HQLA chi tiet); NSFR (can phan loai nguon von on dinh chi tiet).",
+      "Luu y dinh tinh (khong the hien qua bang gap): Basis risk: tai san/nguon von co the tham chieu lai suat khac nhau, khong di chuyen cung nhip du cung 1 bucket ky han. Rui ro hanh vi: CASA/tien gui khong ky han ghi nhan theo hop dong (qua dem) nhung hanh vi thuc te thuong on dinh (sticky) hon nhieu.",
+      "Cac muc do 'Thap/Trung binh/Cao' o tren chi la moc dinh huong tu 1 ky bao cao gan nhat, KHONG phai nguong dat/khong dat co dinh — de danh gia day du can so sanh voi peer cung nganh va xu huong qua nhieu ky (hien tai moi lay duoc 1 ky gan nhat tu thuyet minh BCTC)."
+    ]
   },
-  "lastUpdated": "2026-08-30 13:12"
+  "lastUpdated": "2026-08-30 14:13"
 }
