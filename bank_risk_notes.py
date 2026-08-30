@@ -114,11 +114,14 @@ def _ocr_page_words(pdf_path, page_index, dpi=300):
 def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     """Quét từ start_frac*tổng_số_trang tới hết tài liệu, OCR TỪNG TRANG (dừng ngay khi đã tìm đủ cả
     2 tiêu đề — không OCR speculative cả vùng). Trả về dict {"lai_suat": page_idx|None,
-    "thanh_khoan": page_idx|None} (0-based). Trả về {} nếu thiếu pytesseract."""
+    "thanh_khoan": page_idx|None} (0-based) — CÓ THỂ rỗng/thiếu 1 trong 2 key nếu tài liệu này thật
+    sự không có mục đó (vd BCTC quý không soát xét, rút gọn thuyết minh — không phải lỗi, gọi nơi
+    dùng cần thử BẢN KHÁC). Trả về None (khác {} rỗng — phân biệt RÕ 2 tình huống) NẾU THIẾU
+    pytesseract/tesseract-ocr binary — lúc đó dừng hẳn toàn bộ tính năng, thử bản khác cũng vô ích."""
     try:
         import pypdfium2 as pdfium
     except ImportError:
-        return {}
+        return None
     doc = pdfium.PdfDocument(pdf_path)
     total = len(doc)
     start = max(0, int(total * start_frac))
@@ -128,7 +131,7 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     for idx in pages_to_scan:
         text = _ocr_page_text(pdf_path, idx)
         if text is None:
-            return {}  # thiếu pytesseract - dừng hẳn, không quét tiếp vô ích
+            return None  # thiếu pytesseract - dừng hẳn, không quét tiếp vô ích
         flat = _strip_accents(text)
         if "lai_suat" not in found and "rui ro lai suat" in flat:
             found["lai_suat"] = idx
@@ -334,54 +337,29 @@ def _extract_rate_sensitivity_table(text):
     return result
 
 
-def fetch_bank_risk_gaps(ticker):
-    """Trả về dict {"interest_rate_gap": {bucket: value}, "liquidity_gap": {bucket: value},
-    "source_title":, "source_url":, "fetched_year":} hoặc None nếu bất kỳ bước nào thất bại (thiếu
-    tesseract, không tìm thấy BCTC năm, không định vị được note, OCR không đọc đủ số...). KHÔNG BAO
-    GIỜ raise — template_banking.py gọi hàm này trong try/except nhưng bản thân hàm đã tự an toàn."""
-    ticker = ticker.upper()
-    try:
-        items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
-    except Exception as e:
-        print(f"  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC ({e})")
-        return None
-    # fetch_24hmoney_list()/_parse_24hmoney_period() gắn Quarter=5 cho MỌI báo cáo đã KIỂM TOÁN/SOÁT
-    # XÉT — cả BCTC CẢ NĂM lẫn BÁN NIÊN (vd "đã kiểm toán 6 tháng đầu năm YYYY") — khác báo cáo quý
-    # thường KHÔNG soát xét, rút gọn thuyết minh. Ban đầu (2026-08) từng LOẠI HẲN báo cáo bán niên vì
-    # tưởng nó luôn rút gọn 2 bảng rủi ro lãi suất/thanh khoản — SAI: verify thật bằng ảnh chụp báo cáo
-    # bán niên TCB "Tại 30/6/2026" cho thấy 2 bảng vẫn ĐẦY ĐỦ chi tiết y hệt báo cáo năm. Quarter=5 đã
-    # đủ để xác định "có thuyết minh chi tiết" bất kể cả năm hay bán niên — ưu tiên bản MỚI NHẤT theo
-    # Year; nếu trùng Year (vd bán niên 2026 và cả năm 2026 khi cả 2 đã công bố) ưu tiên bản CẢ NĂM
-    # (đầy đủ hơn, luôn công bố SAU bản bán niên cùng năm).
-    def _is_half_year(name):
-        n = _strip_accents(name)
-        return "6 thang" in n or "ban nien" in n or "soat xet" in n
-    candidates = [x for x in select_best_reports(items) if x.get("Quarter") == 5]
-    if not candidates:
-        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam/ban nien da kiem toan/soat xet")
-        return None
-    latest = max(candidates, key=lambda x: (x["Year"], 0 if _is_half_year(x.get("Name", "")) else 1))
+def _is_half_year(name):
+    n = _strip_accents(name)
+    return "6 thang" in n or "ban nien" in n or "soat xet" in n
 
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    _period_tag = "H1" if _is_half_year(latest.get("Name", "")) else "FY"
-    pdf_path = os.path.join(CACHE_DIR, f"{ticker}_{latest['Year']}_{_period_tag}_CN_full.pdf")
-    try:
-        if not os.path.exists(pdf_path):
-            r = requests.get(latest["Link"].replace(" ", "%20"), headers=HEADERS, timeout=60)
-            r.raise_for_status()
-            with open(pdf_path, "wb") as f:
-                f.write(r.content)
-    except Exception as e:
-        print(f"  [SKIP] Rui ro lai suat/thanh khoan: tai BCTC that bai ({e})")
-        return None
 
+# Tháng kết thúc kỳ báo cáo theo Quarter (quy ước CafeF: 1-4 = quý thường, 5 = năm kiểm toán, 6 = bán
+# niên đã soát xét) — dùng để so sánh ĐỘ MỚI THẬT giữa các loại kỳ khác nhau (vd Quý 3 (tháng 9) mới
+# hơn bán niên (tháng 6) dù cùng 1 năm).
+_QUARTER_END_MONTH = {1: 3, 2: 6, 3: 9, 4: 12, 5: 12, 6: 6}
+
+
+def _extract_gaps_from_pdf(pdf_path):
+    """Định vị + trích 2 bảng gap từ 1 file PDF cụ thể đã tải sẵn. Trả về ("missing_tool", None) nếu
+    thiếu pytesseract/tesseract-ocr binary (dừng hẳn, thử file khác cũng vô ích), ("no_note", None)
+    nếu tài liệu này THẬT SỰ không có 1 trong 2 tiêu đề/không đọc đủ số (vd BCTC quý không soát xét,
+    rút gọn thuyết minh — không phải lỗi, bên gọi nên thử bản BCTC khác), hoặc ("ok", partial_dict)
+    với partial_dict chứa các key đã trích được trong {"interest_rate_gap", "liquidity_gap",
+    "interest_rate_sensitivity_disclosed"}."""
     pages = _find_note_pages(pdf_path)
-    if not pages:
-        print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
-              "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
-        return None
+    if pages is None:
+        return "missing_tool", None
 
-    result = {"source_title": latest["Name"], "source_url": latest["Link"], "fetched_year": latest["Year"]}
+    result = {}
     for key, bucket_list, n in (("lai_suat", INTEREST_RATE_BUCKETS, len(INTEREST_RATE_BUCKETS)),
                                  ("thanh_khoan", LIQUIDITY_BUCKETS, len(LIQUIDITY_BUCKETS))):
         page_idx = pages.get(key)
@@ -425,10 +403,106 @@ def fetch_bank_risk_gaps(ticker):
             result[gap_key] = dict(zip(bucket_list, vals))
 
     if "interest_rate_gap" not in result and "liquidity_gap" not in result:
-        print("  [SKIP] Rui ro lai suat/thanh khoan: dinh vi duoc trang nhung khong doc du so lieu "
-              "(OCR chat luong kem hoac dinh dang bang khac chuan)")
+        return "no_note", None
+    return "ok", result
+
+
+def _download_report_pdf(ticker, cand):
+    """Tải 1 báo cáo (dict từ select_best_reports) về cache, dùng lại nếu đã tải trước đó. Tên file
+    cache phân biệt theo (Year, loại kỳ) — KHÔNG chỉ theo Year — để 1 báo cáo bán niên và báo cáo cả
+    năm CÙNG NĂM (vd bán niên 2026 rồi cuối năm có thêm báo cáo năm 2026) không bị đè/dùng nhầm cache
+    của nhau."""
+    q = cand.get("Quarter")
+    if q in (5, 6):
+        period_tag = "H1" if (q == 6 or _is_half_year(cand.get("Name", ""))) else "FY"
+    else:
+        period_tag = f"Q{q}"
+    pdf_path = os.path.join(CACHE_DIR, f"{ticker}_{cand['Year']}_{period_tag}_CN_full.pdf")
+    if os.path.exists(pdf_path):
+        return pdf_path
+    r = requests.get(cand["Link"].replace(" ", "%20"), headers=HEADERS, timeout=60)
+    r.raise_for_status()
+    with open(pdf_path, "wb") as f:
+        f.write(r.content)
+    return pdf_path
+
+
+def fetch_bank_risk_gaps(ticker):
+    """Trả về dict {"interest_rate_gap": {bucket: value}, "liquidity_gap": {bucket: value},
+    "source_title":, "source_url":, "fetched_year":} hoặc None nếu bất kỳ bước nào thất bại (thiếu
+    tesseract, không tìm thấy BCTC nào, không định vị được note, OCR không đọc đủ số...). KHÔNG BAO
+    GIỜ raise — template_banking.py gọi hàm này trong try/except nhưng bản thân hàm đã tự an toàn.
+
+    Chỉ BCTC đã KIỂM TOÁN/SOÁT XÉT (Quarter=5 năm, Quarter=6 bán niên theo CafeF — báo cáo quý thường
+    KHÔNG soát xét thường rút gọn thuyết minh, không có 2 bảng này) mới ĐÁNG TIN CẬY để thử, nhưng
+    KHÔNG giả định trước loại nào chắc chắn có/không có — luôn ưu tiên thử bản MỚI NHẤT theo kỳ dữ
+    liệu thật sự (không phải theo ngày công bố) trước, chỉ rơi về bản kiểm toán/soát xét gần nhất khi
+    bản mới nhất đó thật sự không đọc được (xem _extract_gaps_from_pdf) — để số liệu luôn bám sát kỳ
+    gần nhất CÓ SẴN, không cố định cứng vào "báo cáo năm" hay "báo cáo bán niên" (verify 2026-08:
+    từng lỡ luôn dùng báo cáo năm cũ trong khi báo cáo bán niên mới hơn đã có đủ số liệu chi tiết)."""
+    ticker = ticker.upper()
+    try:
+        items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
+    except Exception as e:
+        print(f"  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC ({e})")
         return None
-    return result
+
+    reports = [x for x in select_best_reports(items) if x.get("Quarter") in _QUARTER_END_MONTH]
+    if not reports:
+        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nao cho ticker nay")
+        return None
+
+    def _recency_key(x):
+        is_half = _is_half_year(x.get("Name", ""))
+        # fetch_24hmoney_list()/_parse_24hmoney_period() gắn Quarter=5 CHO CẢ báo cáo bán niên đã
+        # kiểm toán/soát xét (kỳ THẬT kết thúc tháng 6) lẫn báo cáo năm (kỳ kết thúc tháng 12) — nếu
+        # cứ tra thẳng _QUARTER_END_MONTH[5]=12 cho case bán niên bị gắn nhầm này, nó sẽ trông "mới"
+        # ngang báo cáo NĂM dù thật ra chỉ mới tới giữa năm, có thể lấn át 1 báo cáo quý 3 thật sự mới
+        # hơn (bug phát hiện qua unit test khi mô phỏng kịch bản Quý 3 xuất hiện sau bán niên).
+        end_month = 6 if (x["Quarter"] == 5 and is_half) else _QUARTER_END_MONTH[x["Quarter"]]
+        reviewed = 1 if (x["Quarter"] in (5, 6) or is_half) else 0
+        return (x["Year"], end_month, reviewed)
+
+    newest_overall = max(reports, key=_recency_key)
+    reviewed_reports = [x for x in reports if x["Quarter"] in (5, 6) or _is_half_year(x.get("Name", ""))]
+    if not reviewed_reports:
+        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam/ban nien da kiem toan/soat xet")
+        return None
+    newest_reviewed = max(reviewed_reports, key=_recency_key)
+
+    # Thử bản MỚI NHẤT (bất kể loại kỳ) trước để bám sát số liệu gần nhất có thể — thường TRÙNG với
+    # newest_reviewed (chưa có báo cáo quý nào mới hơn báo cáo kiểm toán/soát xét gần nhất), lúc đó chỉ
+    # tốn đúng 1 lượt thử như trước đây. Chỉ thử THÊM bản kiểm toán/soát xét khi bản mới nhất khác nó
+    # VÀ đọc không ra (vd 1 báo cáo quý thường không soát xét, rút gọn thuyết minh).
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    candidates_to_try = [newest_overall]
+    if newest_reviewed is not newest_overall and newest_reviewed["Link"] != newest_overall["Link"]:
+        candidates_to_try.append(newest_reviewed)
+
+    for cand in candidates_to_try:
+        try:
+            pdf_path = _download_report_pdf(ticker, cand)
+        except Exception as e:
+            print(f"  [WARN] Rui ro lai suat/thanh khoan: tai '{cand['Name']}' that bai ({e})")
+            continue
+        status, partial = _extract_gaps_from_pdf(pdf_path)
+        if status == "missing_tool":
+            print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
+                  "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
+            return None
+        if status == "no_note":
+            print(f"  [DIAG] Rui ro lai suat/thanh khoan: '{cand['Name']}' khong co/khong doc du 2 "
+                  f"bang nay (co the la BCTC quy khong soat xet, rut gon thuyet minh)"
+                  + (" - thu ban kiem toan/soat xet gan nhat" if cand is newest_overall and len(candidates_to_try) > 1 else ""))
+            continue
+        partial["source_title"] = cand["Name"]
+        partial["source_url"] = cand["Link"]
+        partial["fetched_year"] = cand["Year"]
+        return partial
+
+    print("  [SKIP] Rui ro lai suat/thanh khoan: da thu (các) BCTC gan nhat, khong ban nao doc du so lieu "
+          "(OCR chat luong kem hoac dinh dang bang khac chuan)")
+    return None
 
 
 # ── Tính chỉ số từ gap đã trích ──────────────────────────────────────────────────────────────────
