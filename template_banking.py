@@ -479,12 +479,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # đã fetch sẵn phía trên (loans_hist/interbank_hist/bonds_hist/total_assets_hist), nên tính TRƯỚC,
     # độc lập với khối try/except OCR bên dưới (không phụ thuộc tesseract-ocr có cài hay không).
     bank_ir_metrics = bank_liq_metrics = bank_risk_narrative = bank_risk_source = None
+    bank_risk_narrative_lines = None
     from bank_risk_notes import compute_balance_sheet_alm_ratios
     bank_bs_ratios = compute_balance_sheet_alm_ratios(
         total_assets_hist[-1], loans_hist[-1], interbank_hist[-1], bonds_hist[-1])
     try:
         from bank_risk_notes import (fetch_bank_risk_gaps, compute_interest_rate_risk_metrics,
-                                      compute_liquidity_risk_metrics, build_risk_narrative)
+                                      compute_liquidity_risk_metrics, build_risk_narrative_lines)
         _risk_gaps = fetch_bank_risk_gaps(ticker)
         if _risk_gaps:
             _ta, _eq = total_assets_hist[-1], equity_hist[-1]
@@ -502,8 +503,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
                     _liq_gap_ty, _ta, equity=_eq, liquid_assets=_liquid_assets,
                     customer_deposits=cust_dep_hist[-1])
             if bank_ir_metrics or bank_liq_metrics:
-                bank_risk_narrative = build_risk_narrative(bank_ir_metrics, bank_liq_metrics, ticker,
-                                                             bs_ratios=bank_bs_ratios)
+                bank_risk_narrative_lines = build_risk_narrative_lines(
+                    bank_ir_metrics, bank_liq_metrics, ticker, bs_ratios=bank_bs_ratios)
+                bank_risk_narrative = " ".join(bank_risk_narrative_lines)
                 bank_risk_source = {"title": _risk_gaps["source_title"], "url": _risk_gaps["source_url"],
                                      "year": _risk_gaps["fetched_year"]}
                 print(f"  -> Rui ro lai suat/thanh khoan: da trich tu '{_risk_gaps['source_title']}'")
@@ -2011,6 +2013,186 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     except Exception as e:
         print(f"[Excel Warning] Failed to generate Sheet 15: {e}")
 
+    # ── Sheet 16: ALM — Rủi ro lãi suất & Rủi ro thanh khoản ─────────────
+    # Luôn tạo sheet này (kể cả khi chưa đọc được OCR) để người dùng thấy rõ trạng thái thay vì thiếu
+    # hẳn 1 sheet không rõ lý do — 2 tỷ lệ cơ cấu bảng cân đối (bank_bs_ratios) luôn có sẵn (không cần
+    # OCR), phần gap/stress chỉ có khi bank_ir_metrics/bank_liq_metrics đọc được từ thuyết minh BCTC.
+    try:
+        ws_alm = wb.create_sheet("16_ALM_LaiSuat_ThanhKhoan")
+        ws_alm.column_dimensions['A'].width = 32
+        for col_letter in "BCDEFGHIJ":
+            ws_alm.column_dimensions[col_letter].width = 15
+
+        r = 1
+        title_cell = ws_alm.cell(row=r, column=1, value="PHÂN TÍCH RỦI RO LÃI SUẤT & THANH KHOẢN (ALM)")
+        title_cell.font = Font(bold=True, size=13, name="Calibri")
+        r += 1
+        if bank_risk_source:
+            ws_alm.cell(row=r, column=1, value=(
+                f"Nguồn: {bank_risk_source['title']} (năm {bank_risk_source['year']})")).font = FMT_ITALIC
+            r += 1
+            ws_alm.cell(row=r, column=1, value=bank_risk_source.get("url", "")).font = FMT_ITALIC
+            r += 1
+        else:
+            ws_alm.cell(row=r, column=1, value=(
+                "Chưa đọc được 2 bảng khe hở lãi suất/thanh khoản từ BCTC kỳ này (thiếu OCR hoặc BCTC "
+                "quý không soát xét, rút gọn thuyết minh) — chỉ có cơ cấu bảng cân đối bên dưới, tính "
+                "thẳng từ số liệu Vietcap, không cần OCR.")).font = FMT_ITALIC
+            r += 1
+        r += 1
+
+        def _alm_section_header(row, text):
+            c = ws_alm.cell(row=row, column=1, value=text)
+            c.font = FMT_HDR_FONT
+            c.fill = FMT_HDR
+            last_col = get_column_letter(max(2, len(INTEREST_RATE_BUCKETS) + 1))
+            ws_alm.merge_cells(f"A{row}:{last_col}{row}")
+            return row + 1
+
+        def _alm_gap_table(row, bucket_dict, ratio_dict):
+            labels = [k.replace("_", " ") for k in bucket_dict.keys()]
+            write_header_row(ws_alm, row, 2, labels)
+            ws_alm.cell(row=row, column=1, value="Kỳ hạn").font = FMT_BOLD
+            ws_alm.cell(row=row, column=1).border = thin_border
+            row += 1
+            ws_alm.cell(row=row, column=1, value="Gap (tỷ VND)").font = FMT_BOLD
+            write_data_row(ws_alm, row, 2, list(bucket_dict.values()), fmt=FMT_NUM)
+            ws_alm.cell(row=row, column=1).border = thin_border
+            row += 1
+            ws_alm.cell(row=row, column=1, value="Gap/Tổng TS (%)").font = FMT_BOLD
+            write_data_row(ws_alm, row, 2, list(ratio_dict.values()), fmt=FMT_PCT)
+            ws_alm.cell(row=row, column=1).border = thin_border
+            row += 1
+            return row
+
+        r = _alm_section_header(r, "A. RỦI RO LÃI SUẤT — Khe hở nhạy cảm lãi suất theo kỳ hạn")
+        if bank_ir_metrics:
+            m = bank_ir_metrics
+            r = _alm_gap_table(r, m["gap_by_bucket"], m["gap_ratio_by_bucket"])
+            r += 1
+            hz = m.get("cumulative_gap_by_horizon") or {}
+            hz_labels = [f"≤{lbl}" for lbl in ("1m", "3m", "6m", "12m") if lbl in hz]
+            if hz_labels:
+                write_header_row(ws_alm, r, 2, hz_labels)
+                ws_alm.cell(row=r, column=1, value="Gap lũy kế theo mốc").font = FMT_BOLD
+                r += 1
+                write_data_row(ws_alm, r, 2,
+                                [hz[lbl.strip("≤")]["ratio"] for lbl in hz_labels], fmt=FMT_PCT)
+                ws_alm.cell(row=r, column=1, value="Gap lũy kế/Tổng TS (%)").font = FMT_BOLD
+                r += 2
+            ws_alm.cell(row=r, column=1, value="Gap lũy kế ≤12 tháng/Vốn chủ (%)").font = FMT_BOLD
+            _toe = m.get("gap_to_equity_1y")
+            if _toe is not None:
+                ws_alm.cell(row=r, column=2, value=_toe).number_format = FMT_PCT
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Loại hình nhạy cảm").font = FMT_BOLD
+            ws_alm.cell(row=r, column=2, value=m.get("sensitive_type", "-"))
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Mức tham chiếu (không phải ngưỡng đạt/không đạt)").font = FMT_BOLD
+            ws_alm.cell(row=r, column=2, value=m.get("sensitivity_level", "-"))
+            r += 2
+            sc = m.get("stress_scenarios_nii") or {}
+            if sc:
+                write_header_row(ws_alm, r, 2, list(sc.keys()))
+                ws_alm.cell(row=r, column=1, value="Stress NII (static gap, tỷ VND)").font = FMT_BOLD
+                r += 1
+                write_data_row(ws_alm, r, 2, list(sc.values()), fmt=FMT_NUM)
+                r += 2
+            disc = m.get("disclosed_sensitivity")
+            if disc:
+                ws_alm.cell(row=r, column=1, value="Độ nhạy lãi suất do NGÂN HÀNG TỰ CÔNG BỐ").font = FMT_BOLD
+                r += 1
+                write_header_row(ws_alm, r, 1, ["Đồng tiền", "Mức tăng LS (%)", "Ảnh hưởng LNTT (tỷ)", "Ảnh hưởng VCSH (tỷ)"])
+                r += 1
+                for ccy, v in disc.items():
+                    write_data_row(ws_alm, r, 1,
+                                    [ccy, v["rate_increase_pct"] / 100, v["pbt_impact"], v["equity_impact"]],
+                                    fmt=FMT_NUM)
+                    ws_alm.cell(row=r, column=2).number_format = FMT_PCT
+                    r += 1
+                r += 1
+        else:
+            ws_alm.cell(row=r, column=1, value="(Chưa đọc được)").font = FMT_ITALIC
+            r += 2
+
+        r = _alm_section_header(r, "B. RỦI RO THANH KHOẢN — Khe hở thanh khoản ròng theo kỳ hạn")
+        if bank_liq_metrics:
+            m = bank_liq_metrics
+            r = _alm_gap_table(r, m["gap_by_bucket"], m["gap_ratio_by_bucket"])
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Gap ròng ≤1 tháng/Tổng TS (%)").font = FMT_BOLD
+            ws_alm.cell(row=r, column=2, value=m.get("cumulative_gap_1m_ratio")).number_format = FMT_PCT
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Gap lũy kế ≤1 năm/Tổng TS (%)").font = FMT_BOLD
+            ws_alm.cell(row=r, column=2, value=m.get("cumulative_gap_1y_ratio")).number_format = FMT_PCT
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Liquid assets/Tổng TS (%)").font = FMT_BOLD
+            _la = m.get("liquid_assets_ratio")
+            if _la is not None:
+                ws_alm.cell(row=r, column=2, value=_la).number_format = FMT_PCT
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Mức tham chiếu (không phải ngưỡng đạt/không đạt)").font = FMT_BOLD
+            ws_alm.cell(row=r, column=2, value=m.get("risk_level", "-"))
+            r += 2
+            stress = m.get("deposit_run_stress")
+            if stress:
+                write_header_row(ws_alm, r, 2, list(stress.keys()))
+                ws_alm.cell(row=r, column=1, value="Stress rút tiền gửi — thiếu hụt (tỷ VND)").font = FMT_BOLD
+                r += 1
+                write_data_row(ws_alm, r, 2, list(stress.values()), fmt=FMT_NUM)
+                r += 2
+        else:
+            ws_alm.cell(row=r, column=1, value="(Chưa đọc được)").font = FMT_ITALIC
+            r += 2
+
+        r = _alm_section_header(r, "C. CƠ CẤU BẢNG CÂN ĐỐI (không cần OCR)")
+        if bank_bs_ratios:
+            ws_alm.cell(row=r, column=1, value="Cho vay/Tổng tài sản (%)").font = FMT_BOLD
+            _la2 = bank_bs_ratios.get("loan_to_assets")
+            if _la2 is not None:
+                ws_alm.cell(row=r, column=2, value=_la2).number_format = FMT_PCT
+            r += 1
+            ws_alm.cell(row=r, column=1, value="Wholesale funding/Tổng tài sản (%)").font = FMT_BOLD
+            _wf = bank_bs_ratios.get("wholesale_funding_ratio")
+            if _wf is not None:
+                ws_alm.cell(row=r, column=2, value=_wf).number_format = FMT_PCT
+            r += 2
+
+        _nc = []
+        for _m in (bank_ir_metrics, bank_liq_metrics):
+            if _m and _m.get("not_computed"):
+                _nc.extend(_m["not_computed"])
+        if _nc:
+            ws_alm.cell(row=r, column=1, value="KHÔNG TÍNH (BCTC không công bố đủ chi tiết)").font = FMT_BOLD
+            r += 1
+            for item in _nc:
+                ws_alm.cell(row=r, column=1, value=f"- {item}")
+                r += 1
+            r += 1
+        _cv = []
+        for _m in (bank_ir_metrics, bank_liq_metrics):
+            if _m and _m.get("qualitative_caveats"):
+                for c in _m["qualitative_caveats"]:
+                    if c not in _cv:
+                        _cv.append(c)
+        if _cv:
+            ws_alm.cell(row=r, column=1, value="LƯU Ý ĐỊNH TÍNH (không thể hiện qua bảng gap số)").font = FMT_BOLD
+            r += 1
+            for item in _cv:
+                ws_alm.cell(row=r, column=1, value=f"- {item}")
+                r += 1
+            r += 1
+
+        if bank_risk_narrative:
+            ws_alm.cell(row=r, column=1, value="ĐÁNH GIÁ TỔNG HỢP").font = FMT_BOLD
+            r += 1
+            narrative_cell = ws_alm.cell(row=r, column=1, value=bank_risk_narrative)
+            narrative_cell.alignment = Alignment(wrap_text=True, vertical='top')
+            ws_alm.merge_cells(f"A{r}:J{r+8}")
+            ws_alm.row_dimensions[r].height = 20
+    except Exception as e:
+        print(f"[Excel Warning] Failed to generate Sheet 16 (ALM): {e}")
+
     wb.save(excel_path)
     print(f"[Excel] Dynamic workbook successfully saved to {excel_path}")
 
@@ -3227,8 +3409,17 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             _toe_txt = f", {_toe*100:+.0f}% vốn chủ" if _toe is not None else ""
             story.append(Paragraph(
                 f"• <b>Độ nhạy lãi suất:</b> {m['sensitive_type']} trong 1 năm tới (gap lũy kế "
-                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% tổng tài sản{_toe_txt}, mức độ: "
-                f"<b>{m['sensitivity_level']}</b>).", bullet_style))
+                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% tổng tài sản{_toe_txt}, mức tham chiếu: "
+                f"<b>{m['sensitivity_level']}</b> — mốc định hướng, không phải ngưỡng đạt/không đạt).",
+                bullet_style))
+            _hz = m.get("cumulative_gap_by_horizon") or {}
+            _hz_parts = [f"≤{lbl}: {(_hz.get(lbl) or {}).get('ratio')*100:+.2f}%"
+                         for lbl in ("1m", "3m", "6m", "12m") if (_hz.get(lbl) or {}).get("ratio") is not None]
+            if _hz_parts:
+                story.append(Paragraph(
+                    "&nbsp;&nbsp;Gap lũy kế theo từng mốc (không chỉ nhìn điểm cuối, vì 1 gap ≤12 "
+                    "tháng dương vẫn có thể che 1 gap âm lớn ở mốc gần hơn): " + "; ".join(_hz_parts) + ".",
+                    bullet_style))
             _sc = m.get("stress_scenarios_nii") or {}
             if _sc:
                 _sc_txt = "; ".join(f"{k}: {v:+,.0f} tỷ" for k, v in _sc.items())
@@ -3248,10 +3439,11 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             story.append(Paragraph(
                 f"• <b>Rủi ro thanh khoản:</b> gap ròng kỳ hạn ≤1 tháng "
                 f"{m['cumulative_gap_1m_ratio']*100:+.2f}% tổng tài sản, lũy kế ≤1 năm "
-                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% (mức độ: <b>{m['risk_level']}</b>).{_la_txt} Gap âm "
-                "nghĩa là nguồn vốn đáo hạn ngắn hạn cần được tái tài trợ/huy động liên tục — mức độ "
-                "Cao nên được phản ánh vào phần bù rủi ro đặc thù khi tính COE hoặc chiết khấu thêm "
-                "vào P/B mục tiêu.", bullet_style))
+                f"{m['cumulative_gap_1y_ratio']*100:+.2f}% (mức tham chiếu: <b>{m['risk_level']}</b> — mốc "
+                f"định hướng).{_la_txt} Gap âm nghĩa là nguồn vốn đáo hạn ngắn hạn cần được tái tài trợ/"
+                "huy động liên tục — cần đọc CÙNG liquid assets buffer ở trên: mức tham chiếu Cao đi kèm "
+                "buffer mỏng nên được phản ánh vào phần bù rủi ro đặc thù khi tính COE hoặc chiết khấu "
+                "thêm vào P/B mục tiêu.", bullet_style))
             _stress = m.get("deposit_run_stress")
             if _stress:
                 _stress_txt = "; ".join(f"rút {k} tiền gửi KH: {v:+,.0f} tỷ (âm = liquid assets đủ bù)"
@@ -3263,6 +3455,26 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             _wf_txt = f", Wholesale funding/Tổng tài sản = {_wf*100:.1f}%" if _wf is not None else ""
             story.append(Paragraph(
                 f"• <b>Cơ cấu bảng cân đối:</b> Cho vay/Tổng tài sản = {_la2*100:.1f}%{_wf_txt}.", bullet_style))
+        _not_computed = []
+        for _m in (bank_ir_metrics, bank_liq_metrics):
+            if _m and _m.get("not_computed"):
+                _not_computed.extend(_m["not_computed"])
+        if _not_computed:
+            story.append(Paragraph(
+                "• <b>Không tính</b> (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin "
+                "giả tạo hơn là không tính): " + "; ".join(_not_computed) + ".", bullet_style))
+        _caveats = []
+        for _m in (bank_ir_metrics, bank_liq_metrics):
+            if _m and _m.get("qualitative_caveats"):
+                for _c in _m["qualitative_caveats"]:
+                    if _c not in _caveats:
+                        _caveats.append(_c)
+        if _caveats:
+            story.append(Paragraph("• <b>Lưu ý định tính</b> (không thể hiện qua bảng gap số): " +
+                                     " ".join(_caveats), bullet_style))
+        story.append(Paragraph(
+            "• Các mức tham chiếu 'Thấp/Trung bình/Cao' ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất — "
+            "đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ.", bullet_style))
         story.append(Spacer(1, 3))
 
         def _fmt_gap_row(label, gap_ratio_dict):
@@ -3696,6 +3908,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             "liquidityRisk": bank_liq_metrics,
             "balanceSheetRatios": bank_bs_ratios,
             "narrative": bank_risk_narrative,
+            "narrativeLines": bank_risk_narrative_lines,
         } if (bank_ir_metrics or bank_liq_metrics) else {"balanceSheetRatios": bank_bs_ratios}
     }
 

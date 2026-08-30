@@ -721,9 +721,18 @@ function renderBankRiskAnalysis(data, sectorKey) {
     const items = [];
     if (ir) {
         items.push({ label: 'Gap lãi suất ≤1 năm', value: pct(ir.cumulative_gap_1y_ratio, 2),
-                     desc: `${ir.sensitive_type} · ${ir.sensitivity_level}` });
+                     desc: `${ir.sensitive_type} · Mức tham chiếu: ${ir.sensitivity_level}` });
         items.push({ label: 'NII nhạy cảm (+100bp)', value: money(ir.nii_sensitivity_per_shock),
                      desc: 'Ước tính static gap' });
+        // Gap lũy kế theo TỪNG mốc (không chỉ điểm cuối ≤1 năm) — 1 gap dương ở mốc cuối vẫn có thể
+        // che 1 gap âm lớn ở mốc gần hơn, xem [[feedback_bank_alm_risk_framework]].
+        const hz = ir.cumulative_gap_by_horizon;
+        if (hz) {
+            const hzTxt = ['1m', '3m', '6m', '12m']
+                .filter(k => hz[k] && hz[k].ratio != null)
+                .map(k => `≤${k}: ${pct(hz[k].ratio, 1)}`).join(' · ');
+            if (hzTxt) items.push({ label: 'Gap lũy kế theo mốc', value: hzTxt, desc: 'Đọc cả chuỗi, không chỉ điểm cuối', wide: true });
+        }
     } else {
         items.push({ label: 'Gap lãi suất ≤1 năm', value: '-', desc: 'Chưa đọc được từ BCTC' });
     }
@@ -747,9 +756,9 @@ function renderBankRiskAnalysis(data, sectorKey) {
     }
 
     document.getElementById('bank-risk-kpi-grid').innerHTML = items.map(it => `
-        <div class="bank-kpi-item">
+        <div class="bank-kpi-item"${it.wide ? ' style="grid-column:1 / -1"' : ''}>
             <div class="bank-kpi-label">${it.label}</div>
-            <div class="bank-kpi-value">${it.value}</div>
+            <div class="bank-kpi-value"${it.wide ? ' style="font-size:1rem"' : ''}>${it.value}</div>
             <div style="font-size:0.7rem;color:var(--text-dim)">${it.desc}</div>
         </div>
     `).join('');
@@ -758,7 +767,15 @@ function renderBankRiskAnalysis(data, sectorKey) {
     sourceEl.textContent = data.source ? `Nguồn: ${data.source.title} (${data.source.year})` : '';
 
     const notesList = document.getElementById('bank-risk-notes-list');
-    notesList.innerHTML = data.narrative ? `<li>${data.narrative}</li>` : '';
+    // narrativeLines (mảng, mỗi phần tử 1 ý) đọc dễ hơn nhiều so với 1 đoạn văn dài — chỉ rơi về
+    // narrative (chuỗi gộp cũ) nếu dữ liệu tới từ 1 lần chạy Action cũ chưa có trường mới này.
+    if (Array.isArray(data.narrativeLines) && data.narrativeLines.length) {
+        notesList.innerHTML = data.narrativeLines.map(line => `<li>${line}</li>`).join('');
+    } else if (data.narrative) {
+        notesList.innerHTML = `<li>${data.narrative}</li>`;
+    } else {
+        notesList.innerHTML = '';
+    }
 }
 
 function renderMoatScorecard(moats, color) {
