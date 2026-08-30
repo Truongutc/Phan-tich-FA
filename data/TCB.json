@@ -7,7 +7,8 @@
     "profit_source_comment": "Lợi nhuận cốt lõi từ Thu nhập lãi thuần (NII) chiếm ưu thế tuyệt đối đóng góp 72.0% tổng thu nhập HĐ, khẳng định chất lượng nguồn thu cực kỳ bền vững và đi liền với quy mô tín dụng.",
     "provision_comment": "Bộ đệm hoàn nhập dự phòng hoặc cắt giảm chi phí trích lập dự phòng (chỉ chiếm 6.7% LNTT) là bệ phóng thúc đẩy lợi nhuận quý này thay vì do tăng trưởng quy mô kinh doanh cốt lõi.",
     "nii_latest_val": 10763.0,
-    "npat_latest_val": 7726.64
+    "npat_latest_val": 7726.64,
+    "risk_comment": "Rủi ro lãi suất: mức tham chiếu Cần theo dõi (gap +4.16% tổng tài sản), khả năng chống chịu VỪA PHẢI — NII biến động đáng kể nhưng chưa ở mức nghiêm trọng (kịch bản sốc mạnh nhất làm NII đổi khoảng 5.6%). Rủi ro thanh khoản: mức tham chiếu Thấp, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 163% ở kịch bản rút tiền gửi mạnh nhất)."
   },
   "credit_funding_growth": {
     "quarters": [
@@ -292,12 +293,12 @@
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1eClrLe5UszjLBopVpo09x0OTkT0sdgG6/edit?usp=drivesdk&ouid=102152071043512158095&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1mILUB1VqfMSWRjP5a73hAs04QJ5QVA_K/view?usp=drivesdk",
+  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1_Cn2GjlKlUikt8QQORytSOwwsu_SsBxy/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/1VVARcg4KF2tPbKWasmzyhWVUop5Nm3gw/view?usp=drivesdk",
   "betaRfCache": {
     "beta": 1.1206,
     "rf": 0.04534,
-    "fetchedAt": "2026-08-30 14:48"
+    "fetchedAt": "2026-08-30 15:14"
   },
   "pe_hist": [
     13.5226658764,
@@ -1972,7 +1973,12 @@
       "KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết).",
       "Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều.",
       "Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ."
-    ]
+    ],
+    "summary": {
+      "interest_rate_level": "Cần theo dõi",
+      "liquidity_level": "Thấp",
+      "summary_text": "Rủi ro lãi suất: mức tham chiếu Cần theo dõi (gap +4.16% tổng tài sản), khả năng chống chịu VỪA PHẢI — NII biến động đáng kể nhưng chưa ở mức nghiêm trọng (kịch bản sốc mạnh nhất làm NII đổi khoảng 5.6%). Rủi ro thanh khoản: mức tham chiếu Thấp, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 163% ở kịch bản rút tiền gửi mạnh nhất)."
+    }
   },
-  "lastUpdated": "2026-08-30 21:49"
+  "lastUpdated": "2026-08-30 22:15"
 }
