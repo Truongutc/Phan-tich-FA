@@ -212,7 +212,16 @@ def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=No
             label_line_idx = i  # lấy dòng ĐẦU tiên của cửa sổ khớp cuối cùng tìm được (label ổn định)
     if label_line_idx is None:
         if debug_tag:
-            print(f"  [DIAG] {debug_tag}: khong tim thay nhan '{label_flat}' tren trang nay")
+            # In thêm các dòng có chứa "chenh" (từ khoá chung của MỌI biến thể nhãn dòng gap: "muc
+            # chenh", "chenh lech"...) để biết ngay năm nay ngân hàng viết nhãn khác đi thế nào, thay
+            # vì chỉ báo "không thấy" — tránh phải đoán mù rồi chờ 1 vòng chạy CI nữa mới biết (bug
+            # thật, 2026-08: TCB dùng "nội bảng" thay vì "nội, ngoại bảng" cho nhãn lãi suất, phát
+            # hiện được nhờ preview tương tự; nhãn thanh khoản có thể cũng đổi cách viết tương tự).
+            candidates = [lines[i] for i in range(len(lines)) if "chenh" in flat_lines[i]]
+            preview = " | ".join(c.strip() for c in candidates[:3])[:250] if candidates else \
+                " ".join(lines).strip()[:200]
+            print(f"  [DIAG] {debug_tag}: khong tim thay nhan '{label_flat}' tren trang nay. "
+                  f"Dong co 'chenh' tren trang (neu co): \"{preview}\"")
         return None
     window_text = "\n".join(lines[label_line_idx:label_line_idx + 1 + lines_after])
     # Nhãn dòng gap LUÔN kèm công thức tham chiếu kiểu "(3) = (1) - (2)" hoặc "(5) = (3) + (4)" ngay
@@ -256,7 +265,13 @@ def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=No
                 break
     if anchor is None:
         if debug_tag:
-            print(f"  [DIAG] {debug_tag}: (toa do) khong tim thay tu neo '{a1}'+'{a2}' gan nhau tren trang nay")
+            # Tương tự preview "chenh" ở _extract_number_row: in các từ OCR đọc được có chứa 1 phần
+            # của từ neo (vd "khoan"/"rong" hoặc biến thể gần đúng) để biết OCR đọc nhãn thành gì thay
+            # vì chỉ báo "không thấy" — không đoán mù, chờ preview này ở log lần chạy sau.
+            near = [w["text"] for t, w in flat if a1[:3] in t or a2[:3] in t]
+            preview = ", ".join(near[:10]) if near else "(khong co tu nao gan giong)"
+            print(f"  [DIAG] {debug_tag}: (toa do) khong tim thay tu neo '{a1}'+'{a2}' gan nhau tren "
+                  f"trang nay. Tu OCR gan giong: {preview}")
         return None
     row_top, row_h = anchor["top"], max(anchor["height"], 1)
     # Bảng trải rất rộng hết bề ngang trang (~1700px) — 1 vài ô ở xa neo có thể lệch Y vài pixel do
@@ -371,9 +386,11 @@ def fetch_bank_risk_gaps(ticker):
         # 2025 cách đúng 1 trang (heading trang 90 -> bảng trang 91), nhưng TCB 2025 cách 2 trang vì
         # có thêm 1 trang phụ "Độ nhạy đối với lãi suất" (bảng ảnh hưởng LNTT/VCSH theo % lãi suất
         # tăng — khác bảng khe hở lãi suất theo kỳ hạn) chen giữa (heading trang 92 -> bảng trang 94).
-        # Quét rộng hơn (tới +4 trang) và DỪNG NGAY khi đọc đủ số — không OCR speculative quá xa.
+        # Mục thanh khoản TCB 2025 KHÔNG tìm thấy nhãn/từ neo trong +5 trang đầu (verify qua log CI
+        # thật) — có thể còn nhiều trang phụ hơn xen giữa so với mục lãi suất; nới lên +7 trang, vẫn
+        # DỪNG NGAY khi đọc đủ số, không OCR speculative quá xa.
         vals = None
-        for p in range(page_idx, page_idx + 5):
+        for p in range(page_idx, page_idx + 8):
             text = _ocr_page_text(pdf_path, p)
             if not text:
                 continue
