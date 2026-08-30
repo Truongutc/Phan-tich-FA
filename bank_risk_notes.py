@@ -6,9 +6,11 @@ loại ngành ngân hàng từ trước (run_analysis.py), nên module này khô
 
 Cơ chế (đã verify bằng dữ liệu THẬT — BCTC hợp nhất kiểm toán MBB năm 2025, 2026-08-30, xem chi tiết
 trong PR/commit message đi kèm):
-- 2 thuyết minh này chỉ có ĐẦY ĐỦ trong BCTC HỢP NHẤT ĐÃ KIỂM TOÁN (Quarter=5 theo quy ước CafeF) —
-  báo cáo quý/soát xét bán niên thường rút gọn thuyết minh, không có 2 bảng chi tiết này. Dùng lại
-  đúng cơ chế dò+tải PDF đã có ở bctc_pdf_tool.py (CafeF + 24hmoney, generic cho mọi ticker).
+- 2 thuyết minh này chỉ có ĐẦY ĐỦ trong BCTC HỢP NHẤT ĐÃ KIỂM TOÁN/SOÁT XÉT (Quarter=5 theo quy ước
+  CafeF) — báo cáo quý thường (không soát xét) mới rút gọn thuyết minh. Báo cáo BÁN NIÊN đã soát xét
+  CÓ ĐẦY ĐỦ 2 bảng này y hệt báo cáo năm (verify ảnh chụp thật TCB "Tại 30/6/2026", 2026-08 — ban đầu
+  từng nhầm loại hẳn báo cáo bán niên, xem fetch_bank_risk_gaps()). Dùng lại đúng cơ chế dò+tải PDF đã
+  có ở bctc_pdf_tool.py (CafeF + 24hmoney, generic cho mọi ticker).
 - Vị trí trong tài liệu: nằm trong khoảng ~72-100% cuối tài liệu (verify MBB 2025: trang 90-91/103 và
   95-96/103, tức 87-93%) — KHÔNG dùng số thứ tự thuyết minh cố định (số này đổi theo từng ngân
   hàng/năm — MBB 2025 là note 49/51) mà tìm theo TIÊU ĐỀ chữ.
@@ -343,23 +345,26 @@ def fetch_bank_risk_gaps(ticker):
     except Exception as e:
         print(f"  [SKIP] Rui ro lai suat/thanh khoan: khong lay duoc danh sach BCTC ({e})")
         return None
-    # BUG THẬT (2026-08, phát hiện qua log TCB): fetch_24hmoney_list()/_parse_24hmoney_period() gắn
-    # Quarter=5 cho MỌI tiêu đề khớp "kiểm toán" + "năm YYYY" — kể cả báo cáo BÁN NIÊN "đã kiểm toán 6
-    # tháng đầu năm YYYY" (TCB có bản này cho 2026, Year=2026 > CN/2025 thật => bị chọn NHẦM làm "mới
-    # nhất"). Báo cáo bán niên rút gọn thuyết minh, không có 2 bảng rủi ro lãi suất/thanh khoản chi
-    # tiết — lọc thêm bằng tên để chỉ giữ BCTC CẢ NĂM thật (loại "6 tháng"/"bán niên"/"soát xét").
+    # fetch_24hmoney_list()/_parse_24hmoney_period() gắn Quarter=5 cho MỌI báo cáo đã KIỂM TOÁN/SOÁT
+    # XÉT — cả BCTC CẢ NĂM lẫn BÁN NIÊN (vd "đã kiểm toán 6 tháng đầu năm YYYY") — khác báo cáo quý
+    # thường KHÔNG soát xét, rút gọn thuyết minh. Ban đầu (2026-08) từng LOẠI HẲN báo cáo bán niên vì
+    # tưởng nó luôn rút gọn 2 bảng rủi ro lãi suất/thanh khoản — SAI: verify thật bằng ảnh chụp báo cáo
+    # bán niên TCB "Tại 30/6/2026" cho thấy 2 bảng vẫn ĐẦY ĐỦ chi tiết y hệt báo cáo năm. Quarter=5 đã
+    # đủ để xác định "có thuyết minh chi tiết" bất kể cả năm hay bán niên — ưu tiên bản MỚI NHẤT theo
+    # Year; nếu trùng Year (vd bán niên 2026 và cả năm 2026 khi cả 2 đã công bố) ưu tiên bản CẢ NĂM
+    # (đầy đủ hơn, luôn công bố SAU bản bán niên cùng năm).
     def _is_half_year(name):
         n = _strip_accents(name)
         return "6 thang" in n or "ban nien" in n or "soat xet" in n
-    annual = [x for x in select_best_reports(items)
-              if x.get("Quarter") == 5 and not _is_half_year(x.get("Name", ""))]
-    if not annual:
-        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam (kiem toan) hop nhat")
+    candidates = [x for x in select_best_reports(items) if x.get("Quarter") == 5]
+    if not candidates:
+        print("  [SKIP] Rui ro lai suat/thanh khoan: khong tim thay BCTC nam/ban nien da kiem toan/soat xet")
         return None
-    latest = max(annual, key=lambda x: x["Year"])
+    latest = max(candidates, key=lambda x: (x["Year"], 0 if _is_half_year(x.get("Name", "")) else 1))
 
     os.makedirs(CACHE_DIR, exist_ok=True)
-    pdf_path = os.path.join(CACHE_DIR, f"{ticker}_{latest['Year']}_CN_full.pdf")
+    _period_tag = "H1" if _is_half_year(latest.get("Name", "")) else "FY"
+    pdf_path = os.path.join(CACHE_DIR, f"{ticker}_{latest['Year']}_{_period_tag}_CN_full.pdf")
     try:
         if not os.path.exists(pdf_path):
             r = requests.get(latest["Link"].replace(" ", "%20"), headers=HEADERS, timeout=60)
