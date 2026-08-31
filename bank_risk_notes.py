@@ -479,9 +479,15 @@ def _extract_gaps_from_pdf(pdf_path):
                 # 2 phương án khớp đúng chữ ở trên đều thất bại, dùng LẠI đúng `text` đã OCR sẵn
                 # (không tốn thêm lượt OCR nào).
                 vals = _extract_number_row_loose(text, n, debug_tag=f"{key} trang {p+1}")
-            if vals and key == "thanh_khoan" and "liabilities_by_bucket" not in result:
-                # Tranh thủ trích luôn dòng "Tổng nợ phải trả" trên CÙNG trang/text/wwords đã OCR cho
-                # dòng gap (KHÔNG tốn thêm lượt OCR nào) — dùng cho Liquid Assets/Nợ phải trả ngắn hạn.
+            # Tranh thủ trích luôn dòng "Tổng nợ phải trả" trên CÙNG trang/text/wwords đã OCR cho dòng
+            # gap (KHÔNG tốn thêm lượt OCR nào) — dùng để suy ra TÀI SẢN theo bucket (= gap + nợ phải
+            # trả) cho CẢ 2 bảng: bảng thanh khoản -> Liquid Assets/Cumulative Liquidity Gap Ratio;
+            # bảng lãi suất -> RSA (Rate Sensitive Assets) để tính RSA/RSL (user 2026-08-31 yêu cầu
+            # bộ chỉ số rủi ro lãi suất đầy đủ, xem plan). Lưu 2 KEY KHÁC NHAU (liabilities_by_bucket
+            # cho thanh_khoan giữ NGUYÊN tên cũ — tương thích dữ liệu đã backfill; interest_rate_
+            # liabilities_by_bucket cho lai_suat là key MỚI) vì 2 bảng có cấu trúc bucket khác nhau.
+            liab_result_key = "liabilities_by_bucket" if key == "thanh_khoan" else "interest_rate_liabilities_by_bucket"
+            if vals and liab_result_key not in result:
                 liab_vals = _extract_number_row(text, _ROW_LABEL_FLAT_LIAB, n, debug_tag=f"no_phai_tra trang {p+1}")
                 if not liab_vals:
                     if wwords is None:
@@ -489,8 +495,17 @@ def _extract_gaps_from_pdf(pdf_path):
                     if wwords:
                         liab_vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS_LIAB, n,
                                                                      debug_tag=f"no_phai_tra trang {p+1}")
+                if liab_vals and liab_vals == vals:
+                    # Bug that phat hien 2026-08-31 (ABB/STB 2025-Q1): khi 2 dong "Tong no phai tra"
+                    # va "Muc chenh..." nam qua gan nhau theo truc doc, buoc dung sai tang dan cua
+                    # _extract_number_row_by_position co the gom NHAM dung dong gap lam dong no phai
+                    # tra (7/7 gia tri trung khop tuyet doi voi dong gap — khong the la trung hop that
+                    # voi so lieu ngan hang thuc). Coi nhu CHUA trich duoc, KHONG luu du lieu hong.
+                    print(f"  [DIAG] no_phai_tra trang {p+1}: bo qua vi trung khop tuyet doi voi dong "
+                          f"gap (nghi ngo gom nham hang)")
+                    liab_vals = None
                 if liab_vals:
-                    result["liabilities_by_bucket"] = dict(zip(bucket_list, liab_vals))
+                    result[liab_result_key] = dict(zip(bucket_list, liab_vals))
             if vals:
                 break
         if vals:

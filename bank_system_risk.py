@@ -75,6 +75,29 @@ _IR_HORIZON_1Y_KEYS = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_t
 _IR_WEIGHTS = {"den_1_thang": 11.5 / 12, "tu_1_3_thang": 10 / 12, "tu_3_6_thang": 7.5 / 12, "tu_6_12_thang": 3 / 12}
 _LIQ_ST_KEYS = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang"]
 
+# Thu tu ky han dung de dung DUONG CONG gap luy ke (user 2026-08-31) — "khong anh huong lai suat"
+# va "qua han" (bang lai suat) bi LOAI khoi duong cong IR vi khong phai muc dinh gia lai theo thoi
+# gian (tai san/no khong nhay cam lai suat), khop voi _IR_HORIZON_1Y_KEYS da dung tu truoc. Bang
+# thanh khoan giu ca 2 bucket "qua han" (coi nhu ky han ngan nhat, can thanh khoan ngay).
+_LIQ_CUMULATIVE_ORDER = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu_1_3_thang",
+                         "tu_3_12_thang", "tu_1_5_nam", "tren_5_nam"]
+_LIQ_ST_1Y_KEYS = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu_1_3_thang", "tu_3_12_thang"]
+_LIQ_LT_KEYS = ["tu_1_5_nam", "tren_5_nam"]
+_IR_CUMULATIVE_ORDER = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_thang", "tu_1_5_nam", "tren_5_nam"]
+
+
+def _cumulative_curve(gap_ty, order, ta):
+    """Duong cong gap luy ke theo tung moc ky han trong `order` — moi diem la TONG DON (khong phai
+    trung binh) cac bucket TU DAU DEN diem do, chia cho tong tai san. Dung chung cho ca lai suat va
+    thanh khoan de tranh viet trung logic."""
+    curve_abs, curve_ratio = {}, {}
+    running = 0.0
+    for k in order:
+        running += gap_ty.get(k, 0.0)
+        curve_abs[k] = running
+        curve_ratio[k] = (running / ta) if ta else None
+    return curve_abs, curve_ratio
+
 
 def _quarter_key_from_record(rec):
     y = rec.get("yearReport")
@@ -302,16 +325,81 @@ def _bank_period_metrics(entry, bs_snap):
     cum_1m = sum(liq_gap_ty.get(k, 0.0) for k in _LIQ_ST_KEYS)
     liquid_assets = (bs_snap.get("cash") or 0) + (bs_snap.get("sbv_dep") or 0) + (bs_snap.get("bank_dep") or 0)
     cust_dep = bs_snap.get("customer_deposits") or 0.0
+    equity = bs_snap.get("equity") or 0.0
     nii = bs_snap.get("nii") or 0.0
     stress_nii_100 = round(weighted * 0.01)
+
+    # ── Duong cong gap luy ke + cac moc ≤1 thang/≤3 thang/≤1 nam (user 2026-08-31, khung phan tich
+    # day du rui ro thanh khoan + rui ro lai suat) — dung _cumulative_curve() chung cho ca 2 bang.
+    liq_curve_abs, liq_curve_ratio = _cumulative_curve(liq_gap_ty, _LIQ_CUMULATIVE_ORDER, ta)
+    ir_curve_abs, ir_curve_ratio = _cumulative_curve(ir_gap_ty, _IR_CUMULATIVE_ORDER, ta)
+    liq_cum_3m, liq_cum_3m_ratio = liq_curve_abs["tu_1_3_thang"], liq_curve_ratio["tu_1_3_thang"]
+    liq_cum_1y, liq_cum_1y_ratio = liq_curve_abs["tu_3_12_thang"], liq_curve_ratio["tu_3_12_thang"]
+    ir_cum_1m, ir_cum_1m_ratio = ir_curve_abs["den_1_thang"], ir_curve_ratio["den_1_thang"]
+    ir_cum_3m, ir_cum_3m_ratio = ir_curve_abs["tu_1_3_thang"], ir_curve_ratio["tu_1_3_thang"]
+
+    # ── Tai dung TAI SAN theo bucket = gap + no phai tra cung bucket (gap = TS - No), cho CA 2
+    # bang, de tinh Short-term Funding/LT Assets, NSFR proxy, LMI, RSA/RSL — CHI tinh khi da trich
+    # duoc dong "Tong no phai tra" tuong ung (interest_rate_liabilities_by_bucket moi them
+    # 2026-08-31), neu khong co thi de None thay vi coi No=0 (se lam sai lech nghiem trong).
+    #
+    # KIEM TRA DU LIEU HONG (bug that phat hien 2026-08-31 qua ABB/STB 2025-Q1): doi luc buoc trich
+    # dong "Tong no phai tra" theo toa do bi LAY NHAM chinh dong gap (7 gia tri "no phai tra" trung
+    # KHOP TUYET DOI voi 7 gia tri gap) — coi nhu chua trich duoc gi, KHONG dung de tinh (se ra
+    # Short-term Funding am/NSFR sai lech nghiem trong, xem thao luan voi user).
+    liab_liq_raw = entry.get("liabilities_by_bucket") or {}
+    if liab_liq_raw and liab_liq_raw == (entry.get("liquidity_gap") or {}):
+        liab_liq_raw = {}
+    liab_ir_raw = entry.get("interest_rate_liabilities_by_bucket") or {}
+    if liab_ir_raw and liab_ir_raw == (entry.get("interest_rate_gap") or {}):
+        liab_ir_raw = {}
+
+    if liab_liq_raw:
+        liab_liq_ty = {k: (v or 0) / 1000 for k, v in liab_liq_raw.items()}
+        assets_liq_ty = {k: liq_gap_ty.get(k, 0.0) + liab_liq_ty.get(k, 0.0)
+                          for k in set(liq_gap_ty) | set(liab_liq_ty)}
+        short_term_funding = sum(liab_liq_ty.get(k, 0.0) for k in _LIQ_ST_1Y_KEYS)
+        long_term_assets_liq = sum(assets_liq_ty.get(k, 0.0) for k in _LIQ_LT_KEYS)
+        stable_funding = sum(liab_liq_ty.get(k, 0.0) for k in _LIQ_LT_KEYS) + equity
+        st_funding_lt_assets_ratio = (short_term_funding / long_term_assets_liq) if long_term_assets_liq else None
+        nsfr_proxy = (stable_funding / long_term_assets_liq) if long_term_assets_liq else None
+        lmi = (long_term_assets_liq / stable_funding) if stable_funding else None
+    else:
+        short_term_funding = long_term_assets_liq = stable_funding = None
+        st_funding_lt_assets_ratio = nsfr_proxy = lmi = None
+
+    if liab_ir_raw:
+        liab_ir_ty = {k: (v or 0) / 1000 for k, v in liab_ir_raw.items()}
+        assets_ir_ty = {k: ir_gap_ty.get(k, 0.0) + liab_ir_ty.get(k, 0.0)
+                         for k in set(ir_gap_ty) | set(liab_ir_ty)}
+        rsa = sum(assets_ir_ty.get(k, 0.0) for k in _IR_CUMULATIVE_ORDER)
+        rsl = sum(liab_ir_ty.get(k, 0.0) for k in _IR_CUMULATIVE_ORDER)
+        rsa_rsl_ratio = (rsa / rsl) if rsl else None
+    else:
+        rsa = rsl = rsa_rsl_ratio = None
+
+    loans = bs_snap.get("loans")
+    ldr = (loans / cust_dep) if (loans and cust_dep) else None
+
     return {
         "total_assets": ta, "equity": bs_snap.get("equity"), "nii": bs_snap.get("nii"),
-        "customer_deposits": cust_dep, "liquid_assets": liquid_assets,
+        "customer_deposits": cust_dep, "liquid_assets": liquid_assets, "loans": loans, "ldr": ldr,
         "cum_gap_1y": cum_1y, "cum_gap_1y_ratio": (cum_1y / ta) if ta else None,
         "cum_gap_1m": cum_1m, "cum_gap_1m_ratio": (cum_1m / ta) if ta else None,
+        "liq_cum_gap_3m": liq_cum_3m, "liq_cum_gap_3m_ratio": liq_cum_3m_ratio,
+        "liq_cum_gap_1y": liq_cum_1y, "liq_cum_gap_1y_ratio": liq_cum_1y_ratio,
+        "liq_cum_gap_curve_ratio": liq_curve_ratio,
+        "ir_cum_gap_1m": ir_cum_1m, "ir_cum_gap_1m_ratio": ir_cum_1m_ratio,
+        "ir_cum_gap_3m": ir_cum_3m, "ir_cum_gap_3m_ratio": ir_cum_3m_ratio,
+        "ir_cum_gap_curve_ratio": ir_curve_ratio,
+        "short_term_funding": short_term_funding, "long_term_assets": long_term_assets_liq,
+        "st_funding_lt_assets_ratio": st_funding_lt_assets_ratio,
+        "stable_funding": stable_funding, "nsfr_proxy": nsfr_proxy, "lmi": lmi,
+        "rsa": rsa, "rsl": rsl, "rsa_rsl_ratio": rsa_rsl_ratio,
         "weighted_gap_raw": weighted,
         "stress_nii_100bp": stress_nii_100,
         "stress_nii_ratio_100bp": (stress_nii_100 / nii) if nii else None,
+        "stress_nii_ratio_equity_100bp": (stress_nii_100 / equity) if equity else None,
         "deposit_run_coverage_10pct": (liquid_assets / (cust_dep * 0.10)) if cust_dep else None,
     }
 
@@ -544,10 +632,17 @@ def build_banking_system_risk_section(agg):
 _ALM_SHEET_NAME = "ALM_NganHang_Raw"
 _ALM_SHEET_HEADERS = [
     "Ma", "Ky", "Trang thai", "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
-    "Tien gui KH (ty)", "Liquid Assets (ty)", "Gap lai suat rong <=1nam (ty)", "Gap lai suat/TTS (%)",
-    "Gap thanh khoan rong <=1thang (ty)", "Gap thanh khoan/TTS (%)", "Stress NII +100bp (ty)",
-    "Stress NII +100bp/NII (%)", "Che phu rut -10% tien gui (lan)", "Nguon (tieu de)", "Nguon (url)",
-    "Cap nhat luc",
+    "Tien gui KH (ty)", "Cho vay KH (ty)", "LDR (%)", "Liquid Assets (ty)",
+    # -- Rui ro thanh khoan --
+    "Gap thanh khoan rong <=1thang (ty)", "Gap thanh khoan/TTS <=1thang (%)",
+    "Gap thanh khoan/TTS <=3thang (%)", "Gap thanh khoan/TTS <=1nam (%)",
+    "Short-term Funding (ty)", "Long-term Assets (ty)", "ST Funding/LT Assets (%)",
+    "NSFR proxy (%)", "LMI (%)", "Che phu rut -10% tien gui (lan)",
+    # -- Rui ro lai suat --
+    "Gap lai suat rong <=1nam (ty)", "Gap lai suat/TTS <=1thang (%)", "Gap lai suat/TTS <=3thang (%)",
+    "Gap lai suat/TTS <=1nam (%)", "RSA (ty)", "RSL (ty)", "RSA/RSL (%)",
+    "Stress NII +100bp (ty)", "Stress NII +100bp/NII (%)", "Stress NII +100bp/VCSH (%)",
+    "Nguon (tieu de)", "Nguon (url)", "Cap nhat luc",
 ]
 
 
@@ -591,16 +686,28 @@ def update_bank_alm_excel_sheet(out_dir):
             bs_snap = qbs.get(qkey) if qkey else None
             m = _bank_period_metrics(entry, bs_snap)
             source = entry.get("source") or {}
+
+            def _pct(key):
+                v = m.get(key)
+                return round(v * 100, 3) if v is not None else None
+
+            def _rnd(key, nd=3):
+                v = m.get(key)
+                return round(v, nd) if v is not None else None
+
             row = [
                 ticker, period_key, status, entry.get("patched_from"),
                 m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
-                m.get("liquid_assets"), m.get("cum_gap_1y"),
-                round(m["cum_gap_1y_ratio"] * 100, 3) if m.get("cum_gap_1y_ratio") is not None else None,
-                m.get("cum_gap_1m"),
-                round(m["cum_gap_1m_ratio"] * 100, 3) if m.get("cum_gap_1m_ratio") is not None else None,
-                m.get("stress_nii_100bp"),
-                round(m["stress_nii_ratio_100bp"] * 100, 3) if m.get("stress_nii_ratio_100bp") is not None else None,
-                round(m["deposit_run_coverage_10pct"], 3) if m.get("deposit_run_coverage_10pct") is not None else None,
+                m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
+                # -- Rui ro thanh khoan --
+                m.get("cum_gap_1m"), _pct("cum_gap_1m_ratio"), _pct("liq_cum_gap_3m_ratio"),
+                _pct("liq_cum_gap_1y_ratio"), _rnd("short_term_funding"), _rnd("long_term_assets"),
+                _pct("st_funding_lt_assets_ratio"), _pct("nsfr_proxy"), _pct("lmi"),
+                _rnd("deposit_run_coverage_10pct"),
+                # -- Rui ro lai suat --
+                m.get("cum_gap_1y"), _pct("ir_cum_gap_1m_ratio"), _pct("ir_cum_gap_3m_ratio"),
+                _pct("cum_gap_1y_ratio"), _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
+                m.get("stress_nii_100bp"), _pct("stress_nii_ratio_100bp"), _pct("stress_nii_ratio_equity_100bp"),
                 source.get("title"), source.get("url"), entry.get("fetched_at"),
             ]
             for c, val in enumerate(row, start=1):
