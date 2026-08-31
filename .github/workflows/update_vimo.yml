@@ -54,7 +54,7 @@ jobs:
       - name: Tính toán Scorecard + Tổng hợp phân tích + xuất PDF/JSON
         run: python -c "from template_vimo import run_vimo_analysis; run_vimo_analysis()"
 
-      - name: Upload PDF lên Google Drive
+      - name: Upload PDF + Excel lên Google Drive
         env:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
@@ -80,6 +80,24 @@ jobs:
                   with open(json_path, "w", encoding="utf-8") as f:
                       json.dump(data, f, ensure_ascii=False, indent=2)
                   print(f"[OK] Đã gắn gdrivePdfUrl vào data/vimo.json: {pdf_url}")
+
+          # SỬA (2026-08-31, user chỉ ra file Excel lịch sử chỉ số + sheet ALM ngân hàng không thấy
+          # trên Drive): update_excel_history_vimo()/update_bank_alm_excel_sheet() (template_vimo.py)
+          # đã lưu đúng "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx" (được commit vào git đầy đủ qua bước
+          # sau), nhưng bước upload Drive ở trên CHỈ glob "*.pdf" — bỏ sót hoàn toàn xlsx, chưa bao
+          # giờ được upload. File này GHI ĐÈ TẠI CHỖ (tên cố định, không có ngày trong tên) — mỗi
+          # tuần cùng 1 file trên Drive được CẬP NHẬT (google_drive_uploader.upload_file() tự tìm
+          # file trùng tên trong đúng folder rồi update thay vì tạo bản mới).
+          xlsxs = sorted(glob.glob("Bao cao/VIMO/*.xlsx"))
+          if not xlsxs:
+              print("[WARN] Không tìm thấy file Excel vĩ mô, bỏ qua upload.")
+          else:
+              xlsx_path = xlsxs[-1]
+              _, xlsx_url = google_drive_uploader.upload_file(xlsx_path, sector="Vĩ mô", ticker="VIMO")
+              if xlsx_url:
+                  print(f"[OK] Đã upload Excel vĩ mô: {xlsx_url}")
+              else:
+                  print("[WARN] Upload Excel vĩ mô thất bại.")
           PYEOF
 
       - name: Commit và push kết quả

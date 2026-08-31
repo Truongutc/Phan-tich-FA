@@ -44,12 +44,36 @@ jobs:
         run: |
           python -c "from bank_system_risk import backfill_period; backfill_period('${{ github.event.inputs.period }}')"
 
-      - name: Commit và push data/bank_alm/
+      # SỬA (2026-08-31, user muốn có bản Excel lưu lại "tiện import khi xóa trắng cập nhật lại" —
+      # trước đây sheet ALM_NganHang_Raw chỉ được ghi khi chạy TOÀN BỘ pipeline vĩ mô hàng tuần
+      # (template_vimo.py), không có ở workflow backfill riêng lẻ này — nghĩa là sau khi backfill 1
+      # kỳ lịch sử, phải đợi tới lần chạy vĩ mô kế tiếp mới thấy trong Excel). update_bank_alm_excel_
+      # sheet() tự đọc lại TOÀN BỘ data/bank_alm/*.json (nguồn dữ liệu gốc, không phụ thuộc file
+      # Excel cũ) nên chạy độc lập được ngay tại đây, không cần đợi pipeline vĩ mô.
+      - name: Cập nhật sheet Excel dữ liệu thô ALM + upload Google Drive
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
+        run: |
+          python -c "from bank_system_risk import update_bank_alm_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO')"
+          python3 - << 'PYEOF'
+          import glob
+          import google_drive_uploader
+
+          xlsxs = sorted(glob.glob("Bao cao/VIMO/*.xlsx"))
+          if not xlsxs:
+              print("[WARN] Khong tim thay file Excel de upload.")
+          else:
+              _, url = google_drive_uploader.upload_file(xlsxs[-1], sector="Vĩ mô", ticker="VIMO")
+              print(f"[OK] Da upload Excel: {url}" if url else "[WARN] Upload Excel that bai.")
+          PYEOF
+
+      - name: Commit và push data/bank_alm/ + Excel
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/bank_alm/
+          git add data/bank_alm/ "Bao cao/VIMO/"
 
           if git diff --staged --quiet; then
             echo "Khong co thay doi de commit."
