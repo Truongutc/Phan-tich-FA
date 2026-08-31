@@ -42,7 +42,7 @@ if hasattr(sys.stderr, "reconfigure"):
 
 import requests
 
-from bctc_pdf_tool import fetch_cafef_list, fetch_24hmoney_list, select_best_reports, HEADERS
+from bctc_pdf_tool import fetch_cafef_list, fetch_24hmoney_list, select_ranked_reports, HEADERS
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(PROJECT_ROOT, ".cache")
@@ -468,7 +468,7 @@ def _extract_gaps_from_pdf(pdf_path):
 
 
 def _download_report_pdf(ticker, cand):
-    """Tải 1 báo cáo (dict từ select_best_reports) về cache, dùng lại nếu đã tải trước đó. Tên file
+    """Tải 1 báo cáo (dict từ select_ranked_reports) về cache, dùng lại nếu đã tải trước đó. Tên file
     cache phân biệt theo (Year, loại kỳ) — KHÔNG chỉ theo Year — để 1 báo cáo bán niên và báo cáo cả
     năm CÙNG NĂM (vd bán niên 2026 rồi cuối năm có thêm báo cáo năm 2026) không bị đè/dùng nhầm cache
     của nhau."""
@@ -536,7 +536,12 @@ def _select_candidate_reports(ticker):
         items = fetch_cafef_list(ticker) + fetch_24hmoney_list(ticker)
     except Exception:
         return None, None, []
-    reports = [x for x in select_best_reports(items) if x.get("Quarter") in _QUARTER_END_MONTH]
+    # select_ranked_reports() (KHÔNG phải select_best_reports()) — GIỮ LẠI mọi ứng viên hợp lệ cho
+    # mỗi (Year, Quarter) thay vì chỉ 1 bản thắng cuộc, để fetch_bank_risk_gaps_for_period() có bản
+    # THAY THẾ nếu bản ưu tiên nhất tải/đọc thất bại (xem docstring select_ranked_reports — user
+    # 2026-08-31 chứng minh bằng ảnh chụp thật ACB/BID/HDB rằng dữ liệu THỰC SỰ tồn tại dù trước đó
+    # bị báo "thiếu" chỉ vì thử đúng 1 nguồn rồi bỏ cuộc).
+    reports = [x for x in select_ranked_reports(items) if x.get("Quarter") in _QUARTER_END_MONTH]
     if not reports:
         return None, None, []
 
@@ -552,24 +557,28 @@ def _select_candidate_reports(ticker):
         return (x["Year"], end_month, reviewed)
 
     newest_overall = max(reports, key=_recency_key)
+
+    def _cand_priority(x):
+        # Độ ưu tiên trong SỐ CÁC BẢN CÙNG 1 KỲ (period_key) — bản đã soát xét/kiểm toán hơn bản
+        # chưa, cùng mức soát xét thì Quarter==6 (gắn đúng từ đầu) hơn Quarter khác — giữ NGUYÊN
+        # thứ tự ưu tiên cũ (trước đây dùng để CHỌN 1 bản duy nhất), giờ dùng để SẮP XẾP list cho
+        # fetch_bank_risk_gaps_for_period() thử lần lượt.
+        return (1 if _is_reviewed_candidate(x) else 0, 1 if x.get("Quarter") == 6 else 0)
+
     by_period = {}
     for cand in reports:
         pk = _period_key_for_candidate(cand)
         if pk is None:
             continue
-        existing = by_period.get(pk)
-        if existing is None:
-            by_period[pk] = cand
-        elif _is_reviewed_candidate(cand) and not _is_reviewed_candidate(existing):
-            by_period[pk] = cand
-        elif _is_reviewed_candidate(cand) == _is_reviewed_candidate(existing) and \
-                cand.get("Quarter") == 6 and existing.get("Quarter") != 6:
-            by_period[pk] = cand
+        by_period.setdefault(pk, []).append(cand)
+
     reviewed_reports = []
-    for pk, cand in by_period.items():
-        tagged = dict(cand)
-        tagged["period_key"] = pk
-        reviewed_reports.append(tagged)
+    for pk, cands in by_period.items():
+        cands.sort(key=_cand_priority, reverse=True)
+        for cand in cands:
+            tagged = dict(cand)
+            tagged["period_key"] = pk
+            reviewed_reports.append(tagged)
     if not reviewed_reports:
         return newest_overall, None, []
     newest_reviewed = max(reviewed_reports, key=_recency_key)
@@ -656,33 +665,45 @@ def fetch_bank_risk_gaps_for_period(ticker, period_key):
     None nếu ticker này KHÔNG CÓ báo cáo đã kiểm toán/soát xét đúng kỳ đó (KHÔNG PHẢI lỗi — ngân
     hàng có thể chưa niêm yết lúc đó, hoặc CafeF/24hmoney không còn lưu bản cũ) — không thử "kỳ gần
     đúng nhất", chỉ khớp CHÍNH XÁC period_key hoặc trả về None, để backfill không tự đoán số liệu.
-    KHÔNG BAO GIỜ raise, giống fetch_bank_risk_gaps()."""
+    KHÔNG BAO GIỜ raise, giống fetch_bank_risk_gaps().
+
+    SỬA 2026-08-31 (user cung cấp ảnh chụp thật ACB/BID chứng minh dữ liệu tồn tại dù trước đó báo
+    "thiếu"): _select_candidate_reports() giờ trả về NHIỀU ứng viên cho cùng 1 period_key (sắp xếp
+    ưu tiên giảm dần) thay vì chỉ 1 — THỬ LẦN LƯỢT từng ứng viên (tải + đọc), dùng bản ĐẦU TIÊN
+    thành công, chỉ bỏ cuộc khi TẤT CẢ đều thất bại. Lỗi tải (link hỏng/404) hay "no_note" (tài liệu
+    này thật sự không đọc đủ 2 bảng) đều đáng thử bản khác; "missing_tool" (thiếu tesseract) là lỗi
+    MÔI TRƯỜNG — thử bản khác cũng vô ích, dừng ngay."""
     ticker = ticker.upper()
     _, _, reviewed_reports = _select_candidate_reports(ticker)
-    cand = next((c for c in reviewed_reports if c.get("period_key") == period_key), None)
-    if cand is None:
+    candidates = [c for c in reviewed_reports if c.get("period_key") == period_key]
+    if not candidates:
         print(f"  [SKIP] Rui ro lai suat/thanh khoan ({period_key}): khong tim thay BCTC dung ky nay cho {ticker}")
         return None
 
     os.makedirs(CACHE_DIR, exist_ok=True)
-    try:
-        pdf_path = _download_report_pdf(ticker, cand)
-    except Exception as e:
-        print(f"  [WARN] Rui ro lai suat/thanh khoan ({period_key}): tai '{cand['Name']}' that bai ({e})")
-        return None
-    status, partial = _extract_gaps_from_pdf(pdf_path)
-    if status == "missing_tool":
-        print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
-              "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
-        return None
-    if status == "no_note":
-        print(f"  [DIAG] Rui ro lai suat/thanh khoan ({period_key}): '{cand['Name']}' khong doc du 2 bang")
-        return None
-    partial["source_title"] = cand["Name"]
-    partial["source_url"] = cand["Link"]
-    partial["fetched_year"] = cand["Year"]
-    partial["period_key"] = period_key
-    return partial
+    for i, cand in enumerate(candidates):
+        n_left = len(candidates) - i - 1
+        try:
+            pdf_path = _download_report_pdf(ticker, cand)
+        except Exception as e:
+            print(f"  [WARN] Rui ro lai suat/thanh khoan ({period_key}): tai '{cand['Name']}' that bai ({e})"
+                  + (f" - thu ban thay the ({n_left} con lai)" if n_left else ""))
+            continue
+        status, partial = _extract_gaps_from_pdf(pdf_path)
+        if status == "missing_tool":
+            print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
+                  "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
+            return None
+        if status == "no_note":
+            print(f"  [DIAG] Rui ro lai suat/thanh khoan ({period_key}): '{cand['Name']}' khong doc du 2 bang"
+                  + (f" - thu ban thay the ({n_left} con lai)" if n_left else ""))
+            continue
+        partial["source_title"] = cand["Name"]
+        partial["source_url"] = cand["Link"]
+        partial["fetched_year"] = cand["Year"]
+        partial["period_key"] = period_key
+        return partial
+    return None
 
 
 def fetch_bank_risk_gaps_cached(ticker):

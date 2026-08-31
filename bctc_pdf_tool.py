@@ -96,6 +96,42 @@ def select_best_reports(items):
     return consolidated
 
 
+def select_ranked_reports(items):
+    """Như select_best_reports() nhưng GIỮ LẠI TẤT CẢ ứng viên hợp lệ cho MỖI (Year, Quarter), sắp
+    xếp theo độ ưu tiên GIẢM DẦN (bản tốt nhất trước) thay vì chỉ giữ 1 bản thắng cuộc — dùng khi
+    bên gọi cần THỬ LẦN LƯỢT nhiều nguồn/bản khác nhau cho CÙNG 1 kỳ nếu bản đầu tiên tải/đọc thất
+    bại (vd link PDF CafeF trả về bị 404 dù CafeF vẫn liệt kê nó, nhưng 24hmoney có bản khác cho
+    ĐÚNG kỳ đó) — xem bank_risk_notes._select_candidate_reports()/fetch_bank_risk_gaps_for_period().
+    User (2026-08-31) cung cấp ảnh chụp thật báo cáo ACB/BID/HDB chứng minh dữ liệu THỰC SỰ tồn tại
+    dù backfill trước đó báo "thiếu" — nguyên nhân là chỉ thử ĐÚNG 1 nguồn rồi bỏ cuộc.
+    select_best_reports() (chỉ trả 1 bản/kỳ) GIỮ NGUYÊN cho công cụ segment KCN (bctc_pdf_tool.py
+    CLI) — nơi đó không cần fallback."""
+    grouped = {}
+    for x in items:
+        y, q = x.get("Year"), x.get("Quarter")
+        if y is None or q is None:
+            continue
+        grouped.setdefault((y, q), []).append(x)
+
+    def get_priority(x):
+        name_norm = _strip_diacritics(x.get("Name", "")).lower()
+        p = 0
+        if "hop nhat" in name_norm:
+            p += 10
+        if "kiem toan" in name_norm or "soat xet" in name_norm:
+            p += 5
+        return p
+
+    out = []
+    for key, cands in grouped.items():
+        valid_cands = [x for x in cands if "cong ty me" not in _strip_diacritics(x.get("Name", "")).lower()
+                       and "cty me" not in _strip_diacritics(x.get("Name", "")).lower()
+                       and "c.ty me" not in _strip_diacritics(x.get("Name", "")).lower()]
+        valid_cands.sort(key=get_priority, reverse=True)
+        out.extend(valid_cands)
+    return out
+
+
 def _parse_24hmoney_period(title):
     """Trích (year, quarter) từ tiêu đề 24hmoney dạng '...hợp nhất Quý N năm YYYY' hoặc '...hợp
     nhất đã kiểm toán năm YYYY' — chỉ nhận bản HỢP NHẤT (bỏ qua 'riêng lẻ'/công ty mẹ). quarter=5
