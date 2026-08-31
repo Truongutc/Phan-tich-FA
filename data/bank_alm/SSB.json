@@ -69,6 +69,28 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T10:31:02+07:00"
+    },
+    "2025-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 4339091.0,
+        "qua_han_den_3t": 1358912.0,
+        "den_1_thang": 20302340.0,
+        "tu_1_3_thang": -20623626.0,
+        "tu_3_12_thang": -12371088.0,
+        "tu_1_5_nam": 10189975.0,
+        "tren_5_nam": 35471032.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20250905_-_SSB_-_Bao_cao_tai_chinh_hop_nhat_soat_xet_ban_nien_2025_va_Giai_trinh_bien_dong_LNST_signed_1757323427.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T12:30:19+07:00"
     }
   },
   "quarterly_balance_sheet": {

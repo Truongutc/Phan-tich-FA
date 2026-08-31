@@ -69,6 +69,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T09:57:27+07:00"
+    },
+    "2025-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 1946621.0,
+        "khong_anh_huong_lai_suat": 4121711.0,
+        "den_1_thang": 8790521.0,
+        "tu_1_3_thang": 43933020.0,
+        "tu_3_6_thang": -16088431.0,
+        "tu_6_12_thang": -18587280.0,
+        "tu_1_5_nam": 9202.0,
+        "tren_5_nam": -1209687.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1442542.0,
+        "qua_han_den_3t": 504079.0,
+        "den_1_thang": 8438807.0,
+        "tu_1_3_thang": -10096317.0,
+        "tu_3_12_thang": -36680438.0,
+        "tu_1_5_nam": 20783650.0,
+        "tren_5_nam": 29311541.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 46123303.0,
+        "qua_han_den_3t": 25759234.0,
+        "den_1_thang": 76683503.0,
+        "tu_1_3_thang": 19970141.0,
+        "tu_3_12_thang": 4217700.0,
+        "tu_1_5_nam": 172753881.0,
+        "tren_5_nam": 1442542.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00015520282186948853ngn-hng-tmcp-bc-30072025-000000bo-co-ti-chnh-qu-2-2025_3_0910.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T11:44:48+07:00"
     }
   },
   "quarterly_balance_sheet": {

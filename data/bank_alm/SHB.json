@@ -22,6 +22,45 @@
       "balance_sheet_snapshot": null,
       "source": null,
       "fetched_at": "2026-08-31T10:28:16+07:00"
+    },
+    "2025-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 74000456.0,
+        "khong_anh_huong_lai_suat": 17176572.0,
+        "den_1_thang": 2110962.0,
+        "tu_1_3_thang": 155235.0,
+        "tu_3_6_thang": 244762972.0,
+        "tu_6_12_thang": -145977093.0,
+        "tu_1_5_nam": -131051946.0,
+        "tren_5_nam": -2866465.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 17176572.0,
+        "qua_han_den_3t": 2110962.0,
+        "den_1_thang": -12285685.0,
+        "tu_1_3_thang": -39512373.0,
+        "tu_3_12_thang": -66160472.0,
+        "tu_1_5_nam": 36639181.0,
+        "tren_5_nam": 135626078.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 17176572.0,
+        "qua_han_den_3t": 2110962.0,
+        "den_1_thang": -12285685.0,
+        "tu_1_3_thang": 15714222.0,
+        "tu_3_12_thang": -39512373.0,
+        "tu_1_5_nam": -66160472.0,
+        "tren_5_nam": 214880696.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20250903_-_SHB_-_Bao_Cao_Tai_Chinh_Hop_Nhat_Soat_Xet_Ban_nien_30.6.2025_1756910753.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T12:28:17+07:00"
     }
   },
   "quarterly_balance_sheet": {

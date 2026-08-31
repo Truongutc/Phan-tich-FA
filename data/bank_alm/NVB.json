@@ -62,6 +62,29 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T10:20:53+07:00"
+    },
+    "2025-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 7665493.0,
+        "khong_anh_huong_lai_suat": 54870771.0,
+        "den_1_thang": -4279969.0,
+        "tu_1_3_thang": 16668.0,
+        "tu_3_6_thang": -38328755.0,
+        "tu_6_12_thang": -15482008.0,
+        "tu_1_5_nam": 31495940.0,
+        "tren_5_nam": 55937808.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00000617283950617284ngn-hng-tmcp-quc-dn27082025-000000bo-co-ti-chnh-bn-nin-2025_1_0915.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T12:16:11+07:00"
     }
   },
   "quarterly_balance_sheet": {

@@ -69,6 +69,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T10:05:00+07:00"
+    },
+    "2025-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 44918275.0,
+        "khong_anh_huong_lai_suat": 61212381.0,
+        "den_1_thang": -340814659.0,
+        "tu_1_3_thang": 136177404.0,
+        "tu_3_6_thang": 319168519.0,
+        "tu_6_12_thang": -146688036.0,
+        "tu_1_5_nam": 54581120.0,
+        "tren_5_nam": 57505563.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 25412125.0,
+        "qua_han_den_3t": 18316525.0,
+        "den_1_thang": 367629955.0,
+        "tu_1_3_thang": 119352555.0,
+        "tu_3_12_thang": -69305895.0,
+        "tu_1_5_nam": 932763988.0,
+        "tren_5_nam": -183512218.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 25412125.0,
+        "qua_han_den_3t": 18316525.0,
+        "den_1_thang": 20386037.0,
+        "tu_1_3_thang": 367629955.0,
+        "tu_3_12_thang": 119352555.0,
+        "tu_1_5_nam": 16473767.0,
+        "tren_5_nam": -69305895.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/CTG_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_03102025145719.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T11:55:46+07:00"
     }
   },
   "quarterly_balance_sheet": {

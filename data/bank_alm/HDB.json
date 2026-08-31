@@ -22,6 +22,17 @@
       "balance_sheet_snapshot": null,
       "source": null,
       "fetched_at": "2026-08-31T10:08:58+07:00"
+    },
+    "2025-Q2": {
+      "status": "missing",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "balance_sheet_snapshot": null,
+      "source": null,
+      "fetched_at": "2026-08-31T12:01:17+07:00"
     }
   },
   "quarterly_balance_sheet": {

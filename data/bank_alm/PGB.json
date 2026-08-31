@@ -62,6 +62,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T10:25:19+07:00"
+    },
+    "2025-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 1050.0,
+        "khong_anh_huong_lai_suat": 1050443.0,
+        "den_1_thang": 1293.0,
+        "tu_1_3_thang": 1193.0,
+        "tu_3_6_thang": 1415.0,
+        "tu_6_12_thang": 1415285.0,
+        "tu_1_5_nam": 141552.0,
+        "tren_5_nam": -1688143.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1542573.0,
+        "qua_han_den_3t": 1823.0,
+        "den_1_thang": -4644484.0,
+        "tu_1_3_thang": -4960296.0,
+        "tu_3_12_thang": 3256.0,
+        "tu_1_5_nam": 8726252.0,
+        "tren_5_nam": 9258442.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 1542573.0,
+        "qua_han_den_3t": 1823.0,
+        "den_1_thang": 30109359.0,
+        "tu_1_3_thang": -4644484.0,
+        "tu_3_12_thang": 403206.0,
+        "tu_1_5_nam": 17513461.0,
+        "tren_5_nam": -4960296.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất Quý 2 năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2025-3/2025-08-19/no-name-1755541972.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T12:25:04+07:00"
     }
   },
   "quarterly_balance_sheet": {
