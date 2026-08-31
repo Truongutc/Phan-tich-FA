@@ -76,6 +76,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T11:53:16+07:00"
+    },
+    "2025-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 4448455.0,
+        "khong_anh_huong_lai_suat": -4416494.0,
+        "den_1_thang": 14798532.0,
+        "tu_1_3_thang": -22324681.0,
+        "tu_3_6_thang": 5403236.0,
+        "tu_6_12_thang": -3724080.0,
+        "tu_1_5_nam": 11345577.0,
+        "tren_5_nam": 8840447.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2500421.0,
+        "qua_han_den_3t": 812341.0,
+        "den_1_thang": -14375412.0,
+        "tu_1_3_thang": -11285434.0,
+        "tu_3_12_thang": -9983362.0,
+        "tu_1_5_nam": 3199473.0,
+        "tren_5_nam": 37972420.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 33588139.0,
+        "qua_han_den_3t": 23892603.0,
+        "den_1_thang": 51186477.0,
+        "tu_1_3_thang": 5302098.0,
+        "tu_3_12_thang": 1254457.0,
+        "tu_1_5_nam": 115223774.0,
+        "tren_5_nam": 0.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_585337_Bao_cao_tai_chinh_quy_32025_1761821099.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T15:17:24+07:00"
     }
   },
   "quarterly_balance_sheet": {

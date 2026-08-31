@@ -85,6 +85,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T12:52:16+07:00"
+    },
+    "2025-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 9397147.0,
+        "khong_anh_huong_lai_suat": 6220406.0,
+        "den_1_thang": -65210908.0,
+        "tu_1_3_thang": 7816123.0,
+        "tu_3_6_thang": -5337548.0,
+        "tu_6_12_thang": 80938238.0,
+        "tu_1_5_nam": 684981.0,
+        "tren_5_nam": 15243290.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 9397147.0,
+        "qua_han_den_3t": 6220406.0,
+        "den_1_thang": -65210908.0,
+        "tu_1_3_thang": 7816123.0,
+        "tu_3_12_thang": -5337548.0,
+        "tu_1_5_nam": 80938238.0,
+        "tren_5_nam": 684981.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 11542885.0,
+        "den_1_thang": 209336573.0,
+        "tu_1_3_thang": 109607169.0,
+        "tu_3_12_thang": 86036553.0,
+        "tu_1_5_nam": 31476087.0,
+        "tren_5_nam": 49090638.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất đã kiểm toán Quý 3 năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2025-4/2025-10-30/no-name-1761766923.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T16:03:19+07:00"
     }
   },
   "quarterly_balance_sheet": {
