@@ -124,6 +124,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T15:34:40+07:00"
+    },
+    "2026-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 598963.0,
+        "khong_anh_huong_lai_suat": 67085903.0,
+        "den_1_thang": 1152.0,
+        "tu_1_3_thang": 20042.0,
+        "tu_3_6_thang": -33623474.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": -21052756.0,
+        "tren_5_nam": 0.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 317650.0,
+        "qua_han_den_3t": 6281314.0,
+        "den_1_thang": -12116591.0,
+        "tu_1_3_thang": -7688840.0,
+        "tu_3_12_thang": -1442975.0,
+        "tu_1_5_nam": -20350733.0,
+        "tren_5_nam": 52514932.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 38018017.0,
+        "tu_3_12_thang": 18227289.0,
+        "tu_1_5_nam": 42413141.0,
+        "tren_5_nam": 60469978.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2026",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_612736_Bao_cao_tai_chinh_quy_12026_1777882908.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-08-31T23:39:44+07:00"
     }
   },
   "quarterly_balance_sheet": {

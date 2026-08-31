@@ -56,6 +56,17 @@
       "balance_sheet_snapshot": null,
       "source": null,
       "fetched_at": "2026-08-31T15:53:04+07:00"
+    },
+    "2026-Q1": {
+      "status": "missing",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "balance_sheet_snapshot": null,
+      "source": null,
+      "fetched_at": "2026-09-01T00:02:09+07:00"
     }
   },
   "quarterly_balance_sheet": {

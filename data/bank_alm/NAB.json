@@ -156,6 +156,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T15:32:56+07:00"
+    },
+    "2026-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 4727509.0,
+        "khong_anh_huong_lai_suat": 25850.0,
+        "den_1_thang": -17994254.0,
+        "tu_1_3_thang": 45996475.0,
+        "tu_3_6_thang": 23301.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": 54346.0,
+        "tren_5_nam": -9247048.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3652.0,
+        "qua_han_den_3t": 1074878.0,
+        "den_1_thang": -45878628.0,
+        "tu_1_3_thang": -24888617.0,
+        "tu_3_12_thang": -18042356.0,
+        "tu_1_5_nam": 18226168.0,
+        "tren_5_nam": 84841.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 68778648.0,
+        "qua_han_den_3t": 116165816.0,
+        "den_1_thang": 16229443.0,
+        "tu_1_3_thang": 834222.0,
+        "tu_3_12_thang": 4527694.0,
+        "tu_1_5_nam": 3652.0,
+        "tren_5_nam": 1074878.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2026",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-05-05/no-name-1777925637.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-08-31T23:37:58+07:00"
     }
   },
   "quarterly_balance_sheet": {
