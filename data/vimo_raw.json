@@ -82,6 +82,12 @@
         "total": 1,
         "valuation_label": "Hợp lý",
         "decision_label": "Duy trì, chọn lọc"
+      },
+      {
+        "date": "2026-08-31",
+        "total": 1,
+        "valuation_label": "Hợp lý",
+        "decision_label": "Tăng tỷ trọng vừa phải"
       }
     ]
   },
