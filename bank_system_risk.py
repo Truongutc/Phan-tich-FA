@@ -30,9 +30,34 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
+import re
+
 import bank_alm_store
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+def _normalize_period_input(raw):
+    """Chuẩn hóa nhiều cách nhập kỳ backfill khác nhau về ĐÚNG 1 định dạng chuẩn "YYYY-Qn" hoặc
+    "YYYY-FY" mà toàn bộ hệ thống (bank_alm_store, workflow_dispatch) đang dùng — user (2026-08-31)
+    muốn ô nhập trong workflow chấp nhận "Q1-2025", "2025-Q1", "1-2025", "2025-1", "FY-2025",
+    "2025-FY", "2025FY"... đều hiểu đúng ý, không cần nhớ đúng thứ tự năm/quý. Không phân biệt hoa
+    thường, khoảng trắng/dấu gạch ngang tùy ý. Trả None nếu không nhận diện được năm HOẶC không
+    nhận diện được quý/FY (không đoán bừa khi mơ hồ, vd chỉ nhập "2025")."""
+    if not raw:
+        return None
+    s = raw.strip().upper()
+    year_m = re.search(r"(20\d{2})", s)
+    if not year_m:
+        return None
+    year = year_m.group(1)
+    rest = (s[:year_m.start()] + s[year_m.end():]).strip(" -_/")
+    if "FY" in rest:
+        return f"{year}-FY"
+    q_m = re.search(r"Q?\s*([1-4])", rest)
+    if q_m:
+        return f"{year}-Q{q_m.group(1)}"
+    return None
 
 # Field code Vietcap (xem template_banking.py get_yr — CHIA /1e9 để ra tỷ đồng, khớp đơn vị dùng
 # xuyên suốt template_banking.py/bank_risk_notes.py). Nguồn BALANCE_SHEET, trừ khi ghi chú khác.
@@ -183,25 +208,53 @@ def backfill_period(period_key):
     .github/workflows/backfill_bank_alm.yml (workflow_dispatch thủ công, KHÔNG chạy tự động).
     Bỏ qua ngân hàng đã có status="reported" đúng kỳ này (không OCR lại vô ích). Ghi "missing" cho
     ngân hàng không có báo cáo đúng kỳ (không phải lỗi — có thể chưa niêm yết lúc đó, hoặc
-    CafeF/24hmoney không còn lưu bản cũ, xem fetch_bank_risk_gaps_for_period)."""
+    CafeF/24hmoney không còn lưu bản cũ, xem fetch_bank_risk_gaps_for_period).
+
+    2 SỬA (user 2026-08-31):
+    1. period_key được CHUẨN HÓA qua _normalize_period_input() trước — chấp nhận "Q1-2025",
+       "2025-Q1", "1-2025", "2025-1", "FY-2025", "2025-FY"... đều hiểu đúng, không cần đúng thứ tự.
+    2. Nếu kỳ chuẩn hóa ra là quý 4 ("YYYY-Q4"), CHỦ ĐỘNG thử bản báo cáo NĂM ("YYYY-FY", đã kiểm
+       toán, đáng tin hơn) TRƯỚC, chỉ fallback về đúng "YYYY-Q4" (báo cáo quý thường) nếu ngân hàng
+       đó chưa có bản năm — nhất quán với thứ tự ưu tiên FY>Q4 đã dùng khi TỔNG HỢP hệ thống (xem
+       _ticker_gap_entry), giờ áp dụng luôn từ bước BACKFILL/FETCH thay vì chỉ ở bước tổng hợp."""
     from bank_universe import BANKING_TICKERS
     from bank_risk_notes import fetch_bank_risk_gaps_for_period
+
+    normalized = _normalize_period_input(period_key)
+    if normalized is None:
+        raise ValueError(
+            f"Khong nhan dien duoc ky '{period_key}' - nhap dang YYYY-Qn (vd 2025-Q1, Q1-2025, "
+            f"1-2025 deu duoc) hoac YYYY-FY (vd 2025-FY, FY-2025)."
+        )
+    if normalized != period_key:
+        print(f"  [INFO] Chuan hoa ky nhap '{period_key}' -> '{normalized}'")
+    period_key = normalized
+
+    year = period_key.split("-")[0]
+    # Uu tien ban NAM khi ky la quy 4 (xem docstring) — thu tung candidate theo dung thu tu, dung
+    # ban DAU TIEN thanh cong, chi ghi "thieu" khi CA 2 deu khong co.
+    candidates = [f"{year}-FY", f"{year}-Q4"] if period_key.endswith("-Q4") else [period_key]
 
     results = {}
     for ticker in sorted(BANKING_TICKERS):
         try:
-            existing = bank_alm_store.get_period_entry(ticker, period_key)
-            if existing and existing.get("status") == "reported":
-                print(f"  [SKIP] {ticker} {period_key}: da co du lieu that, bo qua")
-                results[ticker] = "da_co"
-                continue
-            gaps = fetch_bank_risk_gaps_for_period(ticker, period_key)
-            if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
-                source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
-                          "fetched_year": gaps.get("fetched_year")}
-                bank_alm_store.upsert_reported_period(ticker, period_key, gaps, source)
-                results[ticker] = "da_co_du_lieu"
-            else:
+            found = False
+            for try_period in candidates:
+                existing = bank_alm_store.get_period_entry(ticker, try_period)
+                if existing and existing.get("status") == "reported":
+                    print(f"  [SKIP] {ticker} {try_period}: da co du lieu that, bo qua")
+                    results[ticker] = f"da_co ({try_period})"
+                    found = True
+                    break
+                gaps = fetch_bank_risk_gaps_for_period(ticker, try_period)
+                if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
+                    source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
+                              "fetched_year": gaps.get("fetched_year")}
+                    bank_alm_store.upsert_reported_period(ticker, try_period, gaps, source)
+                    results[ticker] = f"da_co_du_lieu ({try_period})"
+                    found = True
+                    break
+            if not found:
                 bank_alm_store.mark_missing_period(ticker, period_key)
                 results[ticker] = "thieu"
         except Exception as e:

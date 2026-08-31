@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       period:
-        description: 'Ky can backfill, dinh dang YYYY-Qn (vd 2025-Q1, Q1-Q4 deu duoc, xac nhan 2026-08 la BCTC quy thuong CUNG co bang gap) hoac YYYY-FY (bao cao nam da kiem toan)'
+        description: 'Ky can backfill, dinh dang YYYY-Qn (vd 2025-Q1, Q1-Q4 deu duoc, xac nhan 2026-08 la BCTC quy thuong CUNG co bang gap) hoac YYYY-FY (bao cao nam da kiem toan). Nhap kieu nao cung duoc: 2025-Q1, Q1-2025, 1-2025 deu hieu la Quy 1/2025; 2025-FY hoac FY-2025 deu la bao cao nam. Nhap ky Quy 4 se tu dong uu tien thu ban NAM (dang tin hon) truoc, chi dung ban Quy 4 neu ngan hang do chua co ban nam.'
         required: true
         default: '2025-FY'
 
