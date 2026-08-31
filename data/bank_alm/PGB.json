@@ -39,6 +39,29 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T01:31:51+07:00"
+    },
+    "2025-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 1688.0,
+        "khong_anh_huong_lai_suat": 21014.0,
+        "den_1_thang": 1655.0,
+        "tu_1_3_thang": 655346.0,
+        "tu_3_6_thang": 4881301.0,
+        "tu_6_12_thang": -557948.0,
+        "tu_1_5_nam": -557968.0,
+        "tren_5_nam": 1301.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-18/no-name-1744937049.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T10:25:19+07:00"
     }
   },
   "quarterly_balance_sheet": {

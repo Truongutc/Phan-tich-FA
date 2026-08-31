@@ -11,6 +11,45 @@
       "balance_sheet_snapshot": null,
       "source": null,
       "fetched_at": "2026-08-31T01:05:37+07:00"
+    },
+    "2025-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 13417335.0,
+        "khong_anh_huong_lai_suat": 14457760.0,
+        "den_1_thang": 1216726.0,
+        "tu_1_3_thang": -77913625.0,
+        "tu_3_6_thang": 329002203.0,
+        "tu_6_12_thang": -1407.0,
+        "tu_1_5_nam": -92547945.0,
+        "tren_5_nam": -171142.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 7569104.0,
+        "den_1_thang": 5848231.0,
+        "tu_1_3_thang": -199449984.0,
+        "tu_3_12_thang": 13038603.0,
+        "tu_1_5_nam": 44441514.0,
+        "tren_5_nam": 25139980.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 380451574.0,
+        "tu_1_3_thang": 20047729.0,
+        "tu_3_12_thang": 157274664.0,
+        "tu_1_5_nam": 233443924.0,
+        "tren_5_nam": 33423143.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ACB_Baocaotaichinh_Q1_2025_Hopnhat_13052025091456.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T09:55:57+07:00"
     }
   },
   "quarterly_balance_sheet": {

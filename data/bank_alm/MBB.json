@@ -39,6 +39,45 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-08-31T01:24:23+07:00"
+    },
+    "2025-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 25732143.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 7749506.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": -135791407.0,
+        "tren_5_nam": 748018.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 28132113.0,
+        "qua_han_den_3t": -375849413.0,
+        "den_1_thang": 531640488.0,
+        "tu_1_3_thang": 162465305.0,
+        "tu_3_12_thang": 10188036.0,
+        "tu_1_5_nam": 104702857.0,
+        "tren_5_nam": 264816209.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 531640488.0,
+        "qua_han_den_3t": 162465305.0,
+        "den_1_thang": 10188036.0,
+        "tu_1_3_thang": 264816209.0,
+        "tu_3_12_thang": 58994701.0,
+        "tu_1_5_nam": 15322781.0,
+        "tren_5_nam": 45980601.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00012345679012345679ngn-hng-tmcp-qun-i24042025-000000bo-co-ti-chnh-hp-nht-qu.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T10:15:17+07:00"
     }
   },
   "quarterly_balance_sheet": {
