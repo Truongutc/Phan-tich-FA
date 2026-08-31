@@ -290,6 +290,36 @@ def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=No
     return _tokens_to_values(toks)
 
 
+def _extract_number_row_loose(text, n_buckets, debug_tag=None):
+    """Phương án CUỐI CÙNG khi cả _extract_number_row (khớp đúng cụm nhãn "mức chênh nhạy cảm.../mức
+    chênh thanh khoản ròng") lẫn _extract_number_row_by_position (khớp đúng cụm nhãn + tọa độ) đều
+    thất bại. User (2026-08-31) chỉ ra: bắt cứng đúng 1 cụm nhãn dòng SỐ LIỆU rất dễ trượt (ngân hàng
+    viết tắt/khác cách hành văn 1 chút, hoặc OCR đọc lệch vài ký tự trong cụm dài) — trong khi MỤC
+    LỚN (rủi ro lãi suất/rủi ro thanh khoản) đã được xác định CHẮC CHẮN từ bước tìm trang
+    (_find_note_pages, khớp qua tiêu đề mục ổn định hơn nhiều). Nới lỏng: CHỈ cần dòng chứa "chênh"
+    (từ khoá chung mọi biến thể: "mức chênh", "chênh lệch"...) rồi thử trích số trên MỌI dòng ứng
+    viên — không đòi khớp đúng chữ nữa. CHỈ được gọi SAU KHI đã ở đúng trang mục cần tìm (page_idx
+    từ _find_note_pages), giảm rủi ro khớp nhầm dòng "chênh lệch tỷ giá"/"chênh lệch đánh giá lại
+    tài sản" ở mục khác trên cùng trang — vẫn có rủi ro khớp nhầm cao hơn 2 phương án chính xác ở
+    trên (đây là lý do dùng SAU CÙNG, không thay thế), nên LUÔN in rõ dòng đã khớp để tự soát lại
+    được qua log nếu nghi ngờ.
+
+    Thử theo thứ tự TỪ DƯỚI LÊN (dòng xuất hiện sau trước) — nhất quán với _extract_number_row (ưu
+    tiên dòng "nội, ngoại bảng" gộp, luôn nằm SAU dòng "nội bảng" riêng, nếu bảng có cả 2)."""
+    lines = text.split("\n")
+    flat_lines = [_strip_accents(l) for l in lines]
+    candidate_idxs = [i for i in range(len(lines)) if "chenh" in flat_lines[i]]
+    for idx in reversed(candidate_idxs):
+        window_text = "\n".join(lines[idx:idx + 3])
+        window_text = re.sub(r"\(\s*\d\s*\)\s*=\s*\(\s*\d\s*\)(?:\s*[+\-]\s*\(\s*\d\s*\))*", " ", window_text)
+        toks = _extract_cell_tokens(window_text, n_buckets)
+        if toks is not None:
+            if debug_tag:
+                print(f"  [DIAG] {debug_tag}: khop qua fallback noi long, dong \"{lines[idx].strip()[:80]}\"")
+            return _tokens_to_values(toks)
+    return None
+
+
 def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=None):
     """Định vị dòng gap bằng TỌA ĐỘ PIXEL thay vì thứ tự đọc tuyến tính của image_to_string() — BUG
     THẬT phát hiện 2026-08 qua log CI thật của TCB: với bảng rộng 9 cột trải hết bề ngang trang,
@@ -444,6 +474,11 @@ def _extract_gaps_from_pdf(pdf_path):
                 if wwords:
                     vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
                                                             debug_tag=f"{key} trang {p+1}")
+            if not vals:
+                # Lớp dự phòng CUỐI CÙNG (xem docstring _extract_number_row_loose) — chỉ chạy khi cả
+                # 2 phương án khớp đúng chữ ở trên đều thất bại, dùng LẠI đúng `text` đã OCR sẵn
+                # (không tốn thêm lượt OCR nào).
+                vals = _extract_number_row_loose(text, n, debug_tag=f"{key} trang {p+1}")
             if vals and key == "thanh_khoan" and "liabilities_by_bucket" not in result:
                 # Tranh thủ trích luôn dòng "Tổng nợ phải trả" trên CÙNG trang/text/wwords đã OCR cho
                 # dòng gap (KHÔNG tốn thêm lượt OCR nào) — dùng cho Liquid Assets/Nợ phải trả ngắn hạn.
