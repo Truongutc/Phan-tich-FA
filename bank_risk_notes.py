@@ -29,6 +29,7 @@ trong PR/commit message đi kèm):
   tác). Module KHÔNG BAO GIỜ crash nếu thiếu tesseract — trả về None, template_banking.py tự bỏ qua
   phần này và không in cảnh báo gây nhiễu (in 1 dòng [SKIP] rõ ràng để user biết cần cài gì).
 """
+import difflib
 import os
 import re
 import sys
@@ -170,10 +171,31 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     # giới hạn độ dài cho riêng trường hợp này.
     _TABLE_CAPTION_PREFIX = "bang sau trinh bay"
 
+    def _fuzzy_phrase_in_line(line_flat, phrase, min_ratio=0.82):
+        """OCR đôi khi đọc sai 1-2 ký tự ngay trong CỤM TỪ TIÊU ĐỀ NGẮN (không phải lỗi cắt dòng/vị
+        trí như 2 bug trên) — bug thật phát hiện 2026-08-31 qua BID Quý 3/2025: dùng easyocr đối
+        chiếu (proxy cho tesseract, không cài được tesseract thật trong sandbox) đọc chính xác dòng
+        "23.1. Rủi ro lãi suất" thành "23.1 Rủi ro lui suẩt" — dấu "ã" (thanh ngã) bị đọc nhầm thành
+        "u", khiến so khớp CHÍNH XÁC "rui ro lai suat" thất bại hoàn toàn dù tiêu đề THẬT SỰ có mặt
+        rõ ràng trên trang (verify bằng ảnh chụp trực tiếp trang PDF, không phải suy đoán) — đây
+        chính là điều user cảnh báo trước (2026-08-31): khớp cứng 1 cụm từ chính xác rất dễ trượt vì
+        OCR luôn có khả năng đọc sai vài ký tự. So khớp GẦN ĐÚNG (tỷ lệ giống ký tự, không cần khớp
+        tuyệt đối) CHỈ cho bước TÌM TRANG này (không áp dụng cho bước trích SỐ LIỆU sau đó — nơi cần
+        độ chính xác cao hơn, đã có 3 tầng dự phòng riêng) — ngưỡng 0.82 đủ để chấp nhận 1-2 ký tự sai
+        lệch nhưng vẫn đủ hẹp để không khớp nhầm cụm từ khác."""
+        words = line_flat.split()
+        phrase_words = phrase.split()
+        n = len(phrase_words)
+        for i in range(len(words) - n + 1):
+            window = " ".join(words[i:i + n])
+            if difflib.SequenceMatcher(None, window, phrase).ratio() >= min_ratio:
+                return True
+        return False
+
     def _has_heading_line(text, phrase):
         for line in text.split("\n"):
             line_flat = _strip_accents(line).strip()
-            if phrase not in line_flat:
+            if not _fuzzy_phrase_in_line(line_flat, phrase):
                 continue
             if len(line_flat) <= _HEADING_MAX_LEN or line_flat.startswith(_TABLE_CAPTION_PREFIX):
                 return True
