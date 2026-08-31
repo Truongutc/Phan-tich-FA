@@ -160,11 +160,22 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     # đúng 1 trang TRƯỚC khi tới được bảng thật. Ngưỡng 50 ký tự đủ rộng cho tiêu đề có số mục + tên
     # ("45.1   Rủi ro lãi suất" ~21 ký tự) nhưng đủ hẹp để loại câu văn xuôi (luôn dài hơn nhiều).
     _HEADING_MAX_LEN = 50
+    # Mẫu B05a/TCTD-HN (BIDV xác nhận qua ảnh chụp thật 2026-08-31, rất có thể LPB/HDB/OCB — vốn
+    # cùng thiếu dai dẳng cả 3 kỳ đã backfill — cũng dùng chung mẫu chuẩn NHNN này) KHÔNG dùng tiêu
+    # đề số mục ngắn mà viết thành 1 câu dẫn ĐẦY ĐỦ đứng ngay TRÊN bảng, vd "Bảng sau trình bày rủi ro
+    # thanh khoản của Ngân hàng tại ngày 30 tháng 6 năm 2025:" (~82 ký tự) — dài hơn hẳn ngưỡng 50 nên
+    # bị bộ lọc trên loại bỏ dù ĐÚNG LÀ tiêu đề bảng thật (không phải câu văn xuôi tổng quan như bug
+    # TCB). Nhận diện riêng mẫu câu này qua tiền tố "bang sau trinh bay" — CHỈ xuất hiện ở đúng câu dẫn
+    # bảng thật (không lẫn với câu tổng quan liệt kê nhiều loại rủi ro như bug TCB), nên an toàn để bỏ
+    # giới hạn độ dài cho riêng trường hợp này.
+    _TABLE_CAPTION_PREFIX = "bang sau trinh bay"
 
     def _has_heading_line(text, phrase):
         for line in text.split("\n"):
             line_flat = _strip_accents(line).strip()
-            if phrase in line_flat and len(line_flat) <= _HEADING_MAX_LEN:
+            if phrase not in line_flat:
+                continue
+            if len(line_flat) <= _HEADING_MAX_LEN or line_flat.startswith(_TABLE_CAPTION_PREFIX):
                 return True
         return False
 
