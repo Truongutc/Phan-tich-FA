@@ -13,15 +13,34 @@
       "fetched_at": "2026-08-31T01:22:06+07:00"
     },
     "2025-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
       "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3078422.0,
+        "qua_han_den_3t": 1231.0,
+        "den_1_thang": 1552.0,
+        "tu_1_3_thang": -61434305.0,
+        "tu_3_12_thang": -24477866.0,
+        "tu_1_5_nam": -26182899.0,
+        "tren_5_nam": 111841229.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 67513874.0,
+        "qua_han_den_3t": 26631.0,
+        "den_1_thang": 61217.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 2582.0,
+        "tu_1_5_nam": 35838.0,
+        "tren_5_nam": 91179697.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T10:13:34+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2025-3/2025-07-22/no-name-1753123076.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-08-31T16:55:44+07:00"
     },
     "2025-Q2": {
       "status": "missing",
