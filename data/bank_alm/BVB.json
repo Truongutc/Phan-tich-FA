@@ -154,6 +154,45 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-08-31T23:20:32+07:00"
+    },
+    "2026-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 5227507.0,
+        "khong_anh_huong_lai_suat": 4501782.0,
+        "den_1_thang": 5918028.0,
+        "tu_1_3_thang": 17405735.0,
+        "tu_3_6_thang": -24667989.0,
+        "tu_6_12_thang": -8783702.0,
+        "tu_1_5_nam": -2653266.0,
+        "tren_5_nam": 12703274.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2763426.0,
+        "qua_han_den_3t": 2489757.0,
+        "den_1_thang": -13276544.0,
+        "tu_1_3_thang": -8732051.0,
+        "tu_3_12_thang": -16209886.0,
+        "tu_1_5_nam": 4571607.0,
+        "tren_5_nam": 38045060.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 2763426.0,
+        "qua_han_den_3t": 2489757.0,
+        "den_1_thang": -13276544.0,
+        "tu_1_3_thang": 41700966.0,
+        "tu_3_12_thang": -8732051.0,
+        "tu_1_5_nam": 29879680.0,
+        "tren_5_nam": -16209886.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/BVB_202608132020BVB2020Bao20cao20tai20chinh20hop20nhat20ban20nien20202620da20soat20xet20kem20giai20trinh20bien20dong20loi20nhuan_20082026095227.pdf?v=1787194349784",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-01T09:38:24+07:00"
     }
   },
   "quarterly_balance_sheet": {

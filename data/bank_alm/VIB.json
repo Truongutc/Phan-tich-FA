@@ -163,6 +163,29 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T00:07:17+07:00"
+    },
+    "2026-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 10029081.0,
+        "khong_anh_huong_lai_suat": 10720999.0,
+        "den_1_thang": -39508044.0,
+        "tu_1_3_thang": 31320018.0,
+        "tu_3_6_thang": -3931255.0,
+        "tu_6_12_thang": 56494640.0,
+        "tu_1_5_nam": -19189134.0,
+        "tren_5_nam": 6799405.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VIB_202608062020VIB2020BCTC20hop20nhat20soat20xet20ban20nien202026_12082026154930.pdf?v=1786524571501",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-01T10:23:21+07:00"
     }
   },
   "quarterly_balance_sheet": {

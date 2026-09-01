@@ -200,6 +200,56 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-08-31T23:55:42+07:00"
+    },
+    "2026-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 3810006.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 117529579.0,
+        "tu_1_3_thang": 82009904.0,
+        "tu_3_6_thang": -95304106.0,
+        "tu_6_12_thang": -54611182.0,
+        "tu_1_5_nam": 112586199.0,
+        "tren_5_nam": 201473389.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2239642.0,
+        "qua_han_den_3t": 1570364.0,
+        "den_1_thang": -12272990.0,
+        "tu_1_3_thang": -40971293.0,
+        "tu_3_12_thang": -8121078.0,
+        "tu_1_5_nam": 63256072.0,
+        "tren_5_nam": 195772672.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 234592280.0,
+        "tu_1_3_thang": 186557109.0,
+        "tu_3_12_thang": 318408402.0,
+        "tu_1_5_nam": 223774.0,
+        "tren_5_nam": 3417.0
+      },
+      "interest_rate_sensitivity_disclosed": {
+        "USD": {
+          "rate_increase_pct": 1.5,
+          "pbt_impact": -263935.0,
+          "equity_impact": -211148.0
+        },
+        "VND": {
+          "rate_increase_pct": 3.0,
+          "pbt_impact": 3135332.0,
+          "equity_impact": 2508266.0
+        }
+      },
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/TCB_202608132020TCB2020Bao20cao20tai20chinh20hop20nhat20soat20xet202Q2026_19082026102705.pdf?v=1787110027315",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-01T10:12:04+07:00"
     }
   },
   "quarterly_balance_sheet": {

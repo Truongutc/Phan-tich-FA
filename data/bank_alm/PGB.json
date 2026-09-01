@@ -147,6 +147,45 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-08-31T23:44:08+07:00"
+    },
+    "2026-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 2772759.0,
+        "tu_1_3_thang": 2743479.0,
+        "tu_3_6_thang": -810177.0,
+        "tu_6_12_thang": -3336683.0,
+        "tu_1_5_nam": 3498382.0,
+        "tren_5_nam": 3330585.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1411786.0,
+        "qua_han_den_3t": 1360973.0,
+        "den_1_thang": 623213.0,
+        "tu_1_3_thang": -5089418.0,
+        "tu_3_12_thang": 10511315.0,
+        "tu_1_5_nam": 9850151.0,
+        "tren_5_nam": 9073374.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 1360973.0,
+        "den_1_thang": 13167433.0,
+        "tu_1_3_thang": 623213.0,
+        "tu_3_12_thang": -5089418.0,
+        "tu_1_5_nam": 23750357.0,
+        "tren_5_nam": 10511315.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/PGB_000000016752911_VI_Baocaotaichinh_bannien_nam_2026_18082026140441.pdf?v=1787036682987",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-01T09:58:24+07:00"
     }
   },
   "quarterly_balance_sheet": {

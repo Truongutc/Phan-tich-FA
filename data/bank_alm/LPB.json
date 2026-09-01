@@ -86,6 +86,45 @@
       "balance_sheet_snapshot": null,
       "source": null,
       "fetched_at": "2026-08-31T23:33:10+07:00"
+    },
+    "2026-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 8643389.0,
+        "khong_anh_huong_lai_suat": 31545048.0,
+        "den_1_thang": -12109014.0,
+        "tu_1_3_thang": 33410113.0,
+        "tu_3_6_thang": -2451811.0,
+        "tu_6_12_thang": -43699098.0,
+        "tu_1_5_nam": 16980122.0,
+        "tren_5_nam": 16092632.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 8643389.0,
+        "qua_han_den_3t": 31545048.0,
+        "den_1_thang": -12109014.0,
+        "tu_1_3_thang": 33410113.0,
+        "tu_3_12_thang": -2451811.0,
+        "tu_1_5_nam": -43699098.0,
+        "tren_5_nam": 16980122.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 11090823.0,
+        "den_1_thang": 164283801.0,
+        "tu_1_3_thang": 87587495.0,
+        "tu_3_12_thang": 105660426.0,
+        "tu_1_5_nam": 164541735.0,
+        "tren_5_nam": 39163354.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/LPB_202608142020LPB2020Bao20cao20tai20chinh20ban20nien20nam20202620CA_19082026155038.pdf?v=1787129440187",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-01T09:48:15+07:00"
     }
   },
   "quarterly_balance_sheet": {

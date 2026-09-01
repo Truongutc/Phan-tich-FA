@@ -163,6 +163,37 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-08-31T23:39:44+07:00"
+    },
+    "2026-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 6648210.0,
+        "khong_anh_huong_lai_suat": 30571806.0,
+        "den_1_thang": 44433855.0,
+        "tu_1_3_thang": 44213679.0,
+        "tu_3_6_thang": 304699064.0,
+        "tu_6_12_thang": 14892518.0,
+        "tu_1_5_nam": 21851002.0,
+        "tren_5_nam": 68632820.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 287598.0,
+        "qua_han_den_3t": 6360611.0,
+        "den_1_thang": -3375003.0,
+        "tu_1_3_thang": 1183.0,
+        "tu_3_12_thang": -17481961.0,
+        "tu_1_5_nam": 184576515.0,
+        "tren_5_nam": 18121014.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/NVB_000000016801581_BAO_CAO_TAI_CHINH_HOP_NHAT__TV__SAU_SOAT_XET_BAN_NIEN_2026signed_28082026161720.pdf?v=1787908641915",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-01T09:54:37+07:00"
     }
   },
   "quarterly_balance_sheet": {
