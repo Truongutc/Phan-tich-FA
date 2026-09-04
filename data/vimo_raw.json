@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-09-04 01:22",
+    "last_auto_update": "2026-09-04 13:10",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -91,7 +91,7 @@
       },
       {
         "date": "2026-09-04",
-        "total": -2,
+        "total": -3,
         "valuation_label": "Hợp lý",
         "decision_label": "Giải ngân một phần"
       }
@@ -166,11 +166,6 @@
     "auto_source": "nso_chart_embed",
     "series": [
       {
-        "period": "2025-07",
-        "value": 7.5,
-        "source_url": "https://www.nso.gov.vn/iip-vi/"
-      },
-      {
         "period": "2025-08",
         "value": 8.7,
         "source_url": "https://www.nso.gov.vn/iip-vi/"
@@ -227,7 +222,12 @@
       },
       {
         "period": "2026-07",
-        "value": 14.5,
+        "value": 15.4,
+        "source_url": "https://www.nso.gov.vn/iip-vi/"
+      },
+      {
+        "period": "2026-08",
+        "value": 14.4,
         "source_url": "https://www.nso.gov.vn/iip-vi/"
       }
     ],
@@ -1843,7 +1843,7 @@
       },
       {
         "period": "2026-W36",
-        "value": 7.14,
+        "value": 7.32,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -4687,7 +4687,7 @@
       },
       {
         "period": "2026-W36",
-        "value": 7.0,
+        "value": 7.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
@@ -4738,7 +4738,7 @@
       },
       {
         "period": "2026-W36",
-        "value": 6.13,
+        "value": 6.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
@@ -5281,6 +5281,11 @@
         "period": "2026-07",
         "value": 15.2,
         "source_url": "https://www.nso.gov.vn/bai-top/2026/08/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2026/"
+      },
+      {
+        "period": "2026-08",
+        "value": 17.25,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
       }
     ],
     "note": "Cùng đặc điểm lũy kế như trade_balance — xem note_period từng điểm.",
@@ -5815,7 +5820,7 @@
       },
       {
         "period": "2026-09",
-        "value": 11.127541730948762,
+        "value": 11.135515380481968,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -5841,7 +5846,7 @@
       },
       {
         "period": "2026-09",
-        "value": 1.7281036360794058,
+        "value": 1.7293419412760362,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -6491,6 +6496,11 @@
       {
         "period": "2026-08-28",
         "value": 322.87,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=04/09/2026"
+      },
+      {
+        "period": "2026-09-03",
+        "value": -1529.09,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=04/09/2026"
       }
     ],
@@ -11750,6 +11760,11 @@
         "period": "2026-07",
         "value": 39.0,
         "source_url": "https://www.nso.gov.vn/bai-top/2026/08/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2026/"
+      },
+      {
+        "period": "2026-08",
+        "value": 50.5,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
       }
     ],
     "note": "Vốn đầu tư THỰC HIỆN từ nguồn NGÂN SÁCH NHÀ NƯỚC (không phải toàn xã hội) LŨY KẾ từ đầu năm, tính theo % KẾ HOẠCH NĂM Quốc hội/Chính phủ giao — nguồn nso.gov.vn (báo cáo KT-XH hàng THÁNG, câu 'Tính chung N tháng đầu năm..., vốn đầu tư thực hiện từ nguồn ngân sách Nhà nước ước đạt..., bằng X% kế hoạch năm'). CHỈ có ở báo cáo THÁNG (không có ở báo cáo QUÝ/6 THÁNG/9 THÁNG/CẢ NĂM — các báo cáo đó trình bày đầu tư công theo cơ cấu % tổng vốn toàn xã hội, khác hẳn ý nghĩa với chỉ báo này) — nên chuỗi có KHOẢNG TRỐNG đều đặn ở các tháng 3/6/9/12 mỗi năm, KHÔNG phải lỗi/thiếu dữ liệu. Reset về gần 0 mỗi tháng 1 (lũy kế tính lại từ đầu năm) — giống quy ước fdi_registered_usd_bn. CẬP NHẬT 2026-07-28: pipeline giờ TỰ ĐỘNG lấp khoảng trống tháng 3/6/9/12 bằng số ƯỚC TÍNH (chia đều lũy kế cho giá trị; nội suy kế hoạch năm cho %) ngay khi hiển thị — xem _fill_disbursement_gaps() trong template_vimo.py. Các điểm ước tính có source_url bắt đầu bằng \"ƯỚC TÍNH:\" để phân biệt.",
@@ -12174,6 +12189,11 @@
         "period": "2026-07",
         "value": 445.5,
         "source_url": "https://www.nso.gov.vn/bai-top/2026/08/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-bay-va-7-thang-nam-2026/"
+      },
+      {
+        "period": "2026-08",
+        "value": 546.8,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
       }
     ],
     "note": "Giá trị TUYỆT ĐỐI (nghìn tỷ đồng — 1 nghìn tỷ = 1.000 tỷ, để đối chiếu với báo chí hay nêu đơn vị 'tỷ đồng') của vốn đầu tư THỰC HIỆN từ nguồn NGÂN SÁCH NHÀ NƯỚC, LŨY KẾ từ đầu năm — cùng nguồn/cùng đoạn văn với public_investment_disbursement_rate (chỉ khác là lấy số TUYỆT ĐỐI thay vì %). Cùng lý do có khoảng trống ở tháng 3/6/9/12 mỗi năm (báo cáo quý/6 tháng/9 tháng/cả năm không nêu số NSNN riêng theo cách này, chỉ báo cáo THÁNG mới có). Reset về gần 0 mỗi tháng 1. CẬP NHẬT 2026-07-28: pipeline giờ TỰ ĐỘNG lấp khoảng trống tháng 3/6/9/12 bằng số ƯỚC TÍNH (chia đều lũy kế cho giá trị; nội suy kế hoạch năm cho %) ngay khi hiển thị — xem _fill_disbursement_gaps() trong template_vimo.py. Các điểm ước tính có source_url bắt đầu bằng \"ƯỚC TÍNH:\" để phân biệt.",
@@ -12670,11 +12690,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-08-11",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
         "period": "2026-08-12",
         "value": 2.25,
         "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
@@ -12788,6 +12803,11 @@
         "period": "2026-09-03",
         "value": 2.25,
         "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-04",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
       }
     ],
     "note": "ECB Deposit Facility Rate (FRED series ECBDFR) — lãi suất NHTW Châu Âu trả cho tiền gửi qua đêm của ngân hàng thương mại, ĐANG LÀ lãi suất điều hành THỰC TẾ quan trọng nhất của ECB từ sau khủng hoảng 2008 (khác Main Refinancing Rate truyền thống) — dùng để đối chiếu xu hướng chính sách tiền tệ Eurozone với Fed.",
@@ -12800,11 +12820,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-07-30",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
       {
         "period": "2026-07-31",
         "value": 3.73,
@@ -12912,6 +12927,11 @@
       },
       {
         "period": "2026-09-01",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-09-02",
         "value": 3.73,
         "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
       }
