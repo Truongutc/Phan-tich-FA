@@ -207,6 +207,9 @@
       "interbank_liab": 13346.022,
       "loans": 32965.443,
       "bonds_issued": 10100.81,
+      "inv_sec_bs": 17362.949,
+      "von_cg": 206.936,
+      "tctd_dep": 11559.559,
       "nii": 225.428
     },
     "2018-Q2": {
@@ -219,6 +222,9 @@
       "interbank_liab": 12677.379,
       "loans": 34868.448,
       "bonds_issued": 11123.516,
+      "inv_sec_bs": 16637.923,
+      "von_cg": 198.536,
+      "tctd_dep": 11598.793,
       "nii": 262.321
     },
     "2018-Q3": {
@@ -231,6 +237,9 @@
       "interbank_liab": 5621.047,
       "loans": 34346.415,
       "bonds_issued": 11735.019,
+      "inv_sec_bs": 15978.257,
+      "von_cg": 186.141,
+      "tctd_dep": 5324.087,
       "nii": 253.041
     },
     "2018-Q4": {
@@ -243,6 +252,9 @@
       "interbank_liab": 9757.537,
       "loans": 35281.529,
       "bonds_issued": 9184.275,
+      "inv_sec_bs": 16132.945,
+      "von_cg": 170.063,
+      "tctd_dep": 8456.393,
       "nii": 240.383
     },
     "2019-Q1": {
@@ -255,6 +267,9 @@
       "interbank_liab": 7166.336,
       "loans": 34390.541,
       "bonds_issued": 5734.4,
+      "inv_sec_bs": 15067.73,
+      "von_cg": 156.53,
+      "tctd_dep": 6767.231,
       "nii": 173.861
     },
     "2019-Q2": {
@@ -267,6 +282,9 @@
       "interbank_liab": 5964.444,
       "loans": 35845.505,
       "bonds_issued": 3954.5,
+      "inv_sec_bs": 13917.855,
+      "von_cg": 141.04,
+      "tctd_dep": 5964.444,
       "nii": 288.936
     },
     "2019-Q3": {
@@ -279,6 +297,9 @@
       "interbank_liab": 2857.596,
       "loans": 37219.427,
       "bonds_issued": 3027.753,
+      "inv_sec_bs": 13540.721,
+      "von_cg": 129.37,
+      "tctd_dep": 2857.596,
       "nii": 241.988
     },
     "2019-Q4": {
@@ -291,6 +312,9 @@
       "interbank_liab": 12414.097,
       "loans": 37483.427,
       "bonds_issued": 2704.19,
+      "inv_sec_bs": 13195.518,
+      "von_cg": 116.477,
+      "tctd_dep": 11580.289,
       "nii": 453.623
     },
     "2020-Q1": {
@@ -303,6 +327,9 @@
       "interbank_liab": 1827.62,
       "loans": 37359.437,
       "bonds_issued": 1784.255,
+      "inv_sec_bs": 14699.938,
+      "von_cg": 103.049,
+      "tctd_dep": 1827.62,
       "nii": 235.912
     },
     "2020-Q2": {
@@ -315,6 +342,9 @@
       "interbank_liab": 828.805,
       "loans": 38396.146,
       "bonds_issued": 2336.326,
+      "inv_sec_bs": 13971.701,
+      "von_cg": 90.605,
+      "tctd_dep": 828.805,
       "nii": 244.411
     },
     "2020-Q3": {
@@ -327,6 +357,9 @@
       "interbank_liab": 829.226,
       "loans": 39588.694,
       "bonds_issued": 2690.936,
+      "inv_sec_bs": 14025.687,
+      "von_cg": 81.269,
+      "tctd_dep": 829.226,
       "nii": 351.035
     },
     "2020-Q4": {
@@ -339,6 +372,9 @@
       "interbank_liab": 9027.173,
       "loans": 39854.967,
       "bonds_issued": 2127.22,
+      "inv_sec_bs": 13440.926,
+      "von_cg": 71.066,
+      "tctd_dep": 9027.173,
       "nii": 602.384
     },
     "2021-Q1": {
@@ -351,6 +387,9 @@
       "interbank_liab": 827.843,
       "loans": 40401.296,
       "bonds_issued": 2480.57,
+      "inv_sec_bs": 13207.988,
+      "von_cg": 63.024,
+      "tctd_dep": 827.843,
       "nii": 394.884
     },
     "2021-Q2": {
@@ -363,6 +402,9 @@
       "interbank_liab": 6818.83,
       "loans": 41266.559,
       "bonds_issued": 2027.247,
+      "inv_sec_bs": 11949.0,
+      "von_cg": 55.896,
+      "tctd_dep": 6818.83,
       "nii": 253.803
     },
     "2021-Q3": {
@@ -375,6 +417,9 @@
       "interbank_liab": 3295.839,
       "loans": 40735.225,
       "bonds_issued": 2023.7,
+      "inv_sec_bs": 11406.42,
+      "von_cg": 49.527,
+      "tctd_dep": 2840.639,
       "nii": 439.391
     },
     "2021-Q4": {
@@ -387,6 +432,9 @@
       "interbank_liab": 609.295,
       "loans": 40923.404,
       "bonds_issued": 2013.181,
+      "inv_sec_bs": 10108.282,
+      "von_cg": 43.684,
+      "tctd_dep": 472.675,
       "nii": 171.141
     },
     "2022-Q1": {
@@ -399,6 +447,9 @@
       "interbank_liab": 4402.176,
       "loans": 39623.241,
       "bonds_issued": 2010.831,
+      "inv_sec_bs": 9840.843,
+      "von_cg": 38.541,
+      "tctd_dep": 4265.076,
       "nii": 259.97
     },
     "2022-Q2": {
@@ -411,6 +462,9 @@
       "interbank_liab": 2515.031,
       "loans": 43496.142,
       "bonds_issued": 2010.561,
+      "inv_sec_bs": 8364.22,
+      "von_cg": 33.49,
+      "tctd_dep": 2515.031,
       "nii": 193.037
     },
     "2022-Q3": {
@@ -423,6 +477,9 @@
       "interbank_liab": 4516.54,
       "loans": 44257.633,
       "bonds_issued": 2000.465,
+      "inv_sec_bs": 8433.273,
+      "von_cg": 29.077,
+      "tctd_dep": 4516.54,
       "nii": -2.134
     },
     "2022-Q4": {
@@ -435,6 +492,9 @@
       "interbank_liab": 8517.244,
       "loans": 46762.611,
       "bonds_issued": 1996.755,
+      "inv_sec_bs": 11452.483,
+      "von_cg": 22.24,
+      "tctd_dep": 8517.244,
       "nii": 480.904
     },
     "2023-Q1": {
@@ -447,6 +507,9 @@
       "interbank_liab": 2518.394,
       "loans": 46700.877,
       "bonds_issued": 1992.215,
+      "inv_sec_bs": 12107.096,
+      "von_cg": 20.828,
+      "tctd_dep": 2518.394,
       "nii": 259.595
     },
     "2023-Q2": {
@@ -459,6 +522,9 @@
       "interbank_liab": 4019.683,
       "loans": 47244.734,
       "bonds_issued": 1991.655,
+      "inv_sec_bs": 11429.645,
+      "von_cg": 19.31,
+      "tctd_dep": 4019.683,
       "nii": 211.221
     },
     "2023-Q3": {
@@ -471,6 +537,9 @@
       "interbank_liab": 5698.884,
       "loans": 50089.504,
       "bonds_issued": 2004.136,
+      "inv_sec_bs": 12780.247,
+      "von_cg": 18.044,
+      "tctd_dep": 5698.884,
       "nii": 7.04
     },
     "2023-Q4": {
@@ -483,6 +552,9 @@
       "interbank_liab": 9030.301,
       "loans": 54266.164,
       "bonds_issued": 3166.906,
+      "inv_sec_bs": 13111.761,
+      "von_cg": 16.658,
+      "tctd_dep": 9030.301,
       "nii": -20.627
     },
     "2024-Q1": {
@@ -495,6 +567,9 @@
       "interbank_liab": 6525.137,
       "loans": 57286.28,
       "bonds_issued": 2843.821,
+      "inv_sec_bs": 11604.268,
+      "von_cg": 15.208,
+      "tctd_dep": 6525.137,
       "nii": 221.608
     },
     "2024-Q2": {
@@ -507,6 +582,9 @@
       "interbank_liab": 7930.786,
       "loans": 63041.208,
       "bonds_issued": 3186.371,
+      "inv_sec_bs": 10764.863,
+      "von_cg": 13.438,
+      "tctd_dep": 7528.646,
       "nii": 272.938
     },
     "2024-Q3": {
@@ -519,6 +597,9 @@
       "interbank_liab": 7918.539,
       "loans": 63239.252,
       "bonds_issued": 4098.823,
+      "inv_sec_bs": 13316.936,
+      "von_cg": 12.377,
+      "tctd_dep": 7532.443,
       "nii": 274.23
     },
     "2024-Q4": {
@@ -531,6 +612,9 @@
       "interbank_liab": 10036.45,
       "loans": 69978.404,
       "bonds_issued": 4304.643,
+      "inv_sec_bs": 18718.304,
+      "von_cg": 11.15,
+      "tctd_dep": 10036.45,
       "nii": -2550.969
     },
     "2025-Q1": {
@@ -543,6 +627,9 @@
       "interbank_liab": 14940.935,
       "loans": 76816.268,
       "bonds_issued": 4760.393,
+      "inv_sec_bs": 21464.073,
+      "von_cg": 10.028,
+      "tctd_dep": 14740.935,
       "nii": 504.861
     },
     "2025-Q2": {
@@ -555,6 +642,9 @@
       "interbank_liab": 14161.574,
       "loans": 85556.842,
       "bonds_issued": 5403.303,
+      "inv_sec_bs": 20971.262,
+      "von_cg": 9.094,
+      "tctd_dep": 13691.574,
       "nii": 757.676
     },
     "2025-Q3": {
@@ -567,6 +657,9 @@
       "interbank_liab": 18217.093,
       "loans": 93642.421,
       "bonds_issued": 7530.846,
+      "inv_sec_bs": 20691.278,
+      "von_cg": 8.105,
+      "tctd_dep": 17477.093,
       "nii": 685.225
     },
     "2025-Q4": {
@@ -579,6 +672,9 @@
       "interbank_liab": 13003.521,
       "loans": 96302.761,
       "bonds_issued": 6210.814,
+      "inv_sec_bs": 21540.998,
+      "von_cg": 7.365,
+      "tctd_dep": 12733.521,
       "nii": 423.627
     },
     "2026-Q1": {
@@ -591,6 +687,9 @@
       "interbank_liab": 16710.846,
       "loans": 115345.581,
       "bonds_issued": 4790.611,
+      "inv_sec_bs": 21455.308,
+      "von_cg": 6.574,
+      "tctd_dep": 16510.846,
       "nii": 792.048
     },
     "2026-Q2": {
@@ -603,8 +702,14 @@
       "interbank_liab": 19216.185,
       "loans": 131904.88,
       "bonds_issued": 6631.441,
+      "inv_sec_bs": 21396.499,
+      "von_cg": 6.065,
+      "tctd_dep": 18246.185,
       "nii": 1033.636
     }
   },
-  "last_cheap_check": null
+  "last_cheap_check": {
+    "period_found": "2026-Q2",
+    "checked_at": "2026-09-04T08:25:33+07:00"
+  }
 }
