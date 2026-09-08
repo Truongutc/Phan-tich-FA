@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "updated": "2026-08-30",
+    "updated": "2026-09-08",
     "source": "Vietcap Live API Engine"
   },
   "peers": [
@@ -11,11 +11,11 @@
       "casa": 32.35,
       "roe": 23.42,
       "cir": 32.04,
-      "pb": 2.02,
+      "pb": 1.95,
       "cg": 0.05,
-      "mcap": 502176.0731494,
+      "mcap": 484629.155452,
       "name": "Vietcombank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "BID",
@@ -24,11 +24,11 @@
       "casa": 20.12,
       "roe": 16.69,
       "cir": 31.66,
-      "pb": 1.44,
+      "pb": 1.41,
       "cg": 3.12,
-      "mcap": 286627.75608005,
+      "mcap": 280016.261028,
       "name": "BIDV",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "CTG",
@@ -37,11 +37,11 @@
       "casa": 22.72,
       "roe": 23.54,
       "cir": 24.09,
-      "pb": 1.24,
+      "pb": 1.19,
       "cg": 3.26,
-      "mcap": 248153.88115215,
+      "mcap": 239221.8948196,
       "name": "VietinBank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "TCB",
@@ -50,11 +50,11 @@
       "casa": 33.81,
       "roe": 16.35,
       "cir": 30.92,
-      "pb": 1.25,
+      "pb": 1.2,
       "cg": 6.39,
-      "mcap": 236680.4298276,
+      "mcap": 226051.0692066,
       "name": "Techcombank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "MBB",
@@ -63,11 +63,11 @@
       "casa": 33.62,
       "roe": 21.55,
       "cir": 27.54,
-      "pb": 1.35,
+      "pb": 1.3,
       "cg": 9.5,
-      "mcap": 211947.18507925,
+      "mcap": 203388.747677,
       "name": "MBBank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "ACB",
@@ -76,11 +76,11 @@
       "casa": 20.03,
       "roe": 17.29,
       "cir": 29.7,
-      "pb": 1.32,
+      "pb": 1.3,
       "cg": 5.2,
-      "mcap": 131470.15732605,
+      "mcap": 129148.38854325,
       "name": "ACB",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "VIB",
@@ -91,9 +91,9 @@
       "cir": 31.74,
       "pb": 1.06,
       "cg": 2.79,
-      "mcap": 50889.8853645,
+      "mcap": 50719.685079,
       "name": "VIB",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "HDB",
@@ -102,11 +102,11 @@
       "casa": 10.81,
       "roe": 25.69,
       "cir": 24.11,
-      "pb": 1.54,
+      "pb": 1.52,
       "cg": 9.52,
-      "mcap": 139146.6817794,
+      "mcap": 136894.30743405,
       "name": "HDBank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "STB",
@@ -115,11 +115,11 @@
       "casa": 16.43,
       "roe": 8.58,
       "cir": 28.39,
-      "pb": 2.27,
+      "pb": 2.3,
       "cg": 0.66,
-      "mcap": 142333.786558,
+      "mcap": 144407.5238456,
       "name": "Sacombank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "VPB",
@@ -128,11 +128,11 @@
       "casa": 11.49,
       "roe": 18.36,
       "cir": 19.65,
-      "pb": 1.15,
+      "pb": 1.13,
       "cg": 11.63,
-      "mcap": 220563.0761078,
+      "mcap": 216596.1143073,
       "name": "VPBank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "TPB",
@@ -141,11 +141,11 @@
       "casa": 18.32,
       "roe": 15.26,
       "cir": 39.33,
-      "pb": 0.82,
+      "pb": 0.81,
       "cg": 7.03,
-      "mcap": 40639.78668945,
+      "mcap": 40362.38200215,
       "name": "TPBank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "MSB",
@@ -154,11 +154,11 @@
       "casa": 21.91,
       "roe": 11.06,
       "cir": 39.02,
-      "pb": 1.1,
+      "pb": 1.09,
       "cg": 7.4,
-      "mcap": 49982.4,
+      "mcap": 49233.6,
       "name": "MSB",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "EIB",
@@ -167,11 +167,11 @@
       "casa": 13.8,
       "roe": 3.78,
       "cir": 55.01,
-      "pb": 1.22,
+      "pb": 1.19,
       "cg": -0.51,
-      "mcap": 32225.0665011,
+      "mcap": 31479.9782583,
       "name": "Eximbank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "LPB",
@@ -180,24 +180,24 @@
       "casa": 6.31,
       "roe": 23.43,
       "cir": 35.23,
-      "pb": 3.47,
+      "pb": 3.45,
       "cg": 6.6,
-      "mcap": 149214.740895,
+      "mcap": 148318.556265,
       "name": "LienVietPostBank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "SHB",
-      "npl": 2.11,
-      "nim": 4.14,
+      "npl": 2.22,
+      "nim": 4.17,
       "casa": 7.77,
-      "roe": 18.96,
-      "cir": 15.01,
-      "pb": 0.87,
-      "cg": 5.16,
-      "mcap": 65193.1868236,
+      "roe": 19.13,
+      "cir": 14.93,
+      "pb": 0.84,
+      "cg": 5.19,
+      "mcap": 63590.0756722,
       "name": "SHB",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "OCB",
@@ -206,11 +206,11 @@
       "casa": 10.86,
       "roe": 10.86,
       "cir": 32.89,
-      "pb": 0.94,
+      "pb": 0.88,
       "cg": 7.62,
-      "mcap": 33687.611386,
+      "mcap": 31390.7287915,
       "name": "OCB",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "BAB",
@@ -223,7 +223,7 @@
       "cg": 4.87,
       "mcap": 12332.2926612,
       "name": "BacABank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     },
     {
       "ticker": "NAB",
@@ -232,11 +232,11 @@
       "casa": 5.27,
       "roe": 18.69,
       "cir": 41.66,
-      "pb": 0.96,
+      "pb": 0.94,
       "cg": 8.8,
-      "mcap": 24934.3973571,
+      "mcap": 24394.6917866,
       "name": "NamABank",
-      "date_updated": "2026-08-30"
+      "date_updated": "2026-09-08"
     }
   ]
 }
