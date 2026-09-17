@@ -114,26 +114,102 @@
       "fetched_at": "2026-08-31T15:46:18+07:00"
     },
     "2026-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 49692466,
+        "khong_anh_huong_lai_suat": 17920532,
+        "den_1_thang": 16429179,
+        "tu_1_3_thang": 223367764,
+        "tu_3_6_thang": -177393917,
+        "tu_6_12_thang": -100530292,
+        "tu_1_5_nam": 30772370,
+        "tren_5_nam": 34952699
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 43763568,
+        "qua_han_den_3t": 5928897,
+        "den_1_thang": -103619396,
+        "tu_1_3_thang": -35638995,
+        "tu_3_12_thang": -75878212,
+        "tu_1_5_nam": 100659155,
+        "tren_5_nam": 159995784
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 312985907,
+        "tu_1_3_thang": 163632716,
+        "tu_3_12_thang": 300342054,
+        "tu_1_5_nam": 18585598,
+        "tren_5_nam": 2548641
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0,
+        "khong_anh_huong_lai_suat": 21760382,
+        "den_1_thang": 307802567,
+        "tu_1_3_thang": 160455504,
+        "tu_3_6_thang": 181607372,
+        "tu_6_12_thang": 114811754,
+        "tu_1_5_nam": 11626073,
+        "tren_5_nam": 31264
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-17T09:53:19+07:00"
+      "source": {
+        "title": "Nhap thu cong tu anh chup BCTC that (STB BCTC hop nhat GND Quy I 2026, OCR khong doc duoc)",
+        "url": null,
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-17T14:38:33+07:00"
     },
     "2026-Q2": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 67033195,
+        "khong_anh_huong_lai_suat": 22348525,
+        "den_1_thang": 20635057,
+        "tu_1_3_thang": 246915562,
+        "tu_3_6_thang": -172132500,
+        "tu_6_12_thang": -102605519,
+        "tu_1_5_nam": -2549322,
+        "tren_5_nam": 21567785
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 50222494,
+        "qua_han_den_3t": 16810701,
+        "den_1_thang": -99701968,
+        "tu_1_3_thang": -19820774,
+        "tu_3_12_thang": -74129636,
+        "tu_1_5_nam": 82486569,
+        "tren_5_nam": 145345397
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 318790004,
+        "tu_1_3_thang": 134589655,
+        "tu_3_12_thang": 323144133,
+        "tu_1_5_nam": 45277742,
+        "tren_5_nam": 7439783
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0,
+        "khong_anh_huong_lai_suat": 21051700,
+        "den_1_thang": 314888655,
+        "tu_1_3_thang": 132431244,
+        "tu_3_6_thang": 186730005,
+        "tu_6_12_thang": 131176046,
+        "tu_1_5_nam": 38029996,
+        "tren_5_nam": 4933671
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-01T10:10:24+07:00"
+      "source": {
+        "title": "Nhap thu cong tu anh chup BCTC that (STB BCTC hop nhat GND Quy II 2026, OCR khong doc duoc)",
+        "url": null,
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-17T14:38:33+07:00"
     }
   },
   "quarterly_balance_sheet": {
