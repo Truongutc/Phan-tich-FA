@@ -585,13 +585,27 @@ def _download_report_pdf(ticker, cand):
     """Tải 1 báo cáo (dict từ select_ranked_reports) về cache, dùng lại nếu đã tải trước đó. Tên file
     cache phân biệt theo (Year, loại kỳ) — KHÔNG chỉ theo Year — để 1 báo cáo bán niên và báo cáo cả
     năm CÙNG NĂM (vd bán niên 2026 rồi cuối năm có thêm báo cáo năm 2026) không bị đè/dùng nhầm cache
-    của nhau."""
+    của nhau.
+
+    BUG THẬT phát hiện 2026-09-17 (qua OCB Quý 1/2025 — user chụp ảnh chứng minh bảng gap TIẾNG VIỆT
+    tồn tại rõ ràng, trong khi hệ thống báo "thiếu" mãi không sửa được): tên file cache TRƯỚC ĐÂY chỉ
+    dựa vào (ticker, năm, loại kỳ) — KHÔNG phân biệt theo NGUỒN (cafef vs 24hmoney có thể là 2 tài
+    liệu HOÀN TOÀN KHÁC NHAU cho cùng 1 kỳ, verify thật: candidate cafef của OCB là bản TIẾNG ANH 79
+    trang, candidate 24hmoney là bản TIẾNG VIỆT 41 trang). fetch_bank_risk_gaps_for_period() thử
+    candidate[0] thất bại rồi chuyển sang candidate[1] — nhưng vì CÙNG 1 tên file cache, bước tải
+    candidate[1] thấy file "đã tồn tại" (từ candidate[0]) nên BỎ QUA TẢI LUÔN, tái sử dụng NHẦM đúng
+    file candidate[0] đã thất bại — toàn bộ cơ chế "thử nguồn thay thế" (select_ranked_reports, thêm
+    2026-08-31) bị VÔ HIỆU HÓA hoàn toàn bởi bug này bất cứ khi nào 2 nguồn thực sự khác nội dung.
+    Fix: thêm 8 ký tự đầu mã băm MD5 của URL vào tên file — mỗi URL nguồn khác nhau chắc chắn có file
+    cache RIÊNG, không còn đụng độ."""
+    import hashlib
     q = cand.get("Quarter")
     if q in (5, 6):
         period_tag = "H1" if (q == 6 or _is_half_year(cand.get("Name", ""))) else "FY"
     else:
         period_tag = f"Q{q}"
-    pdf_path = os.path.join(CACHE_DIR, f"{ticker}_{cand['Year']}_{period_tag}_CN_full.pdf")
+    link_hash = hashlib.md5(cand["Link"].encode("utf-8")).hexdigest()[:8]
+    pdf_path = os.path.join(CACHE_DIR, f"{ticker}_{cand['Year']}_{period_tag}_{link_hash}_CN_full.pdf")
     if os.path.exists(pdf_path):
         return pdf_path
     r = requests.get(cand["Link"].replace(" ", "%20"), headers=HEADERS, timeout=60)
