@@ -123,15 +123,53 @@
       "fetched_at": "2026-09-17T16:32:56+07:00"
     },
     "2025-Q3": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": -166162775.0,
+        "khong_anh_huong_lai_suat": -48288909.0,
+        "den_1_thang": -10155319.0,
+        "tu_1_3_thang": -18970122.0,
+        "tu_3_6_thang": 79471536.0,
+        "tu_6_12_thang": -313478141.0,
+        "tu_1_5_nam": 108737981.0,
+        "tren_5_nam": 456027012.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": -166162775.0,
+        "qua_han_den_3t": -48288909.0,
+        "den_1_thang": -10155319.0,
+        "tu_1_3_thang": -18970122.0,
+        "tu_3_12_thang": 79471536.0,
+        "tu_1_5_nam": -313478141.0,
+        "tren_5_nam": 108737981.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 167236918.0,
+        "qua_han_den_3t": 49581048.0,
+        "den_1_thang": 120480827.0,
+        "tu_1_3_thang": 61619404.0,
+        "tu_3_12_thang": 12981758.0,
+        "tu_1_5_nam": 411899955.0,
+        "tren_5_nam": 1074143.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 167236918.0,
+        "khong_anh_huong_lai_suat": 49581048.0,
+        "den_1_thang": 120480827.0,
+        "tu_1_3_thang": 61619404.0,
+        "tu_3_6_thang": 12981758.0,
+        "tu_6_12_thang": 411899955.0,
+        "tu_1_5_nam": 1074143.0,
+        "tren_5_nam": 1292.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T15:53:04+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251030_-_TPB_-_Bao_cao_tai_chinh_hop_nhat_Q3.2025_signed_1761832307.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T17:36:04+07:00"
     },
     "2026-Q1": {
       "status": "missing",
