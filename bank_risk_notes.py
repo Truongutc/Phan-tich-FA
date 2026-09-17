@@ -136,13 +136,25 @@ def _ocr_page_words(pdf_path, page_index, dpi=300):
         return []
 
 
+_HEADING_PHRASE_EN = {"lai_suat": "interest rate risk", "thanh_khoan": "liquidity risk"}
+
+
 def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
     """Quét từ start_frac*tổng_số_trang tới hết tài liệu, OCR TỪNG TRANG (dừng ngay khi đã tìm đủ cả
-    2 tiêu đề — không OCR speculative cả vùng). Trả về dict {"lai_suat": page_idx|None,
-    "thanh_khoan": page_idx|None} (0-based) — CÓ THỂ rỗng/thiếu 1 trong 2 key nếu tài liệu này thật
-    sự không có mục đó (vd BCTC quý không soát xét, rút gọn thuyết minh — không phải lỗi, gọi nơi
-    dùng cần thử BẢN KHÁC). Trả về None (khác {} rỗng — phân biệt RÕ 2 tình huống) NẾU THIẾU
-    pytesseract/tesseract-ocr binary — lúc đó dừng hẳn toàn bộ tính năng, thử bản khác cũng vô ích."""
+    2 tiêu đề — không OCR speculative cả vùng). Trả về dict {"lai_suat": (page_idx, lang)|None,
+    "thanh_khoan": (page_idx, lang)|None} (0-based; lang="vi"|"en") — CÓ THỂ rỗng/thiếu 1 trong 2 key
+    nếu tài liệu này thật sự không có mục đó (vd BCTC quý không soát xét, rút gọn thuyết minh —
+    không phải lỗi, gọi nơi dùng cần thử BẢN KHÁC). Trả về None (khác {} rỗng — phân biệt RÕ 2 tình
+    huống) NẾU THIẾU pytesseract/tesseract-ocr binary — lúc đó dừng hẳn toàn bộ tính năng, thử bản
+    khác cũng vô ích.
+
+    SỬA (user 2026-09-17, sau khi xác nhận qua ảnh chụp trực tiếp OCB Quý 1+2/2025): một số ngân
+    hàng (xác nhận OCB) công bố BCTC hoàn toàn bằng TIẾNG ANH tùy kỳ — không cố định 1 ngôn ngữ,
+    KHÔNG đoán trước được kỳ nào sẽ là tiếng gì. Tìm kiếm CHỈ tiếng Việt trước đây khiến những kỳ
+    tiếng Anh này LUÔN LUÔN thất bại dù bảng gap tồn tại rõ ràng — không phải lỗi tìm nhầm trang, mà
+    là không tìm bằng đúng ngôn ngữ tài liệu. Giờ thử CẢ 2 ngôn ngữ cho mỗi trang, ghi nhận rõ ngôn
+    ngữ nào khớp (dùng ở _extract_gaps_from_pdf để quyết định đơn vị tiền — bản tiếng Anh của OCB
+    xác nhận dùng VND thực, không phải "Triệu đồng" như bản tiếng Việt chuẩn, xem ghi chú ở đó)."""
     try:
         import pypdfium2 as pdfium
     except ImportError:
@@ -206,10 +218,13 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
         text = _ocr_page_text(pdf_path, idx)
         if text is None:
             return None  # thiếu pytesseract - dừng hẳn, không quét tiếp vô ích
-        if "lai_suat" not in found and _has_heading_line(text, "rui ro lai suat"):
-            found["lai_suat"] = idx
-        if "thanh_khoan" not in found and _has_heading_line(text, "rui ro thanh khoan"):
-            found["thanh_khoan"] = idx
+        for key, phrase_vi in (("lai_suat", "rui ro lai suat"), ("thanh_khoan", "rui ro thanh khoan")):
+            if key in found:
+                continue
+            if _has_heading_line(text, phrase_vi):
+                found[key] = (idx, "vi")
+            elif _has_heading_line(text, _HEADING_PHRASE_EN[key]):
+                found[key] = (idx, "en")
         if "lai_suat" in found and "thanh_khoan" in found:
             break
     return found
@@ -241,6 +256,15 @@ _ROW_ANCHOR_WORDS_LIAB = ("no", "phai")
 # sản - Tổng nợ phải trả thay vì cố đọc đúng dòng "Mức chênh" đã có sẵn.
 _ROW_LABEL_FLAT_ASSETS = "tong tai san"
 _ROW_ANCHOR_WORDS_ASSETS = ("tong", "tai")
+# Bản tiếng Anh (OCB xác nhận 2026-09-17) dùng "Total assets"/"Total liabilities" — GIỐNG HỆT vai trò
+# 2 dòng trên nhưng viết tiếng Anh. Chỉ cần 2 dòng TỔNG này (không cần bản tiếng Anh của dòng "Mức
+# chênh..." — tên dòng đó đổi khác nhau tùy ngân hàng, "Net liquidity gap"/"Total interest
+# sensitivity gap"... kém ổn định hơn) vì lớp dự phòng thứ 4 (tự tính Tài sản - Nợ phải trả) đã đủ
+# dùng cho CẢ 2 ngôn ngữ.
+_ROW_LABEL_FLAT_LIAB_EN = "total liabilities"
+_ROW_ANCHOR_WORDS_LIAB_EN = ("total", "liabilities")
+_ROW_LABEL_FLAT_ASSETS_EN = "total assets"
+_ROW_ANCHOR_WORDS_ASSETS_EN = ("total", "assets")
 
 
 # Ô số: số VN chuẩn (dấu chấm phân cách nghìn, ngoặc = âm) HOẶC dấu gạch ngang đơn (= 0) HOẶC — dự
@@ -251,26 +275,33 @@ _ROW_ANCHOR_WORDS_ASSETS = ("tong", "tai")
 # hàng bù vào chỗ trống), lấy nhầm cột forecast/tổng thay cho ô lỗi — 1 regex duy nhất giữ đúng THỨ TỰ
 # trái→phải nên ô mất dấu chấm được điền lại ĐÚNG VỊ TRÍ của nó, không bị cột sau đó nhảy vào thế chỗ.
 _CELL_RE = re.compile(r"\(?-?[\d]{1,3}(?:\.[\d]{3})+\)?|(?<![\w.])-(?![\w.])|\(?[\d]{4,}\)?")
+# Bản tiếng Anh (OCB xác nhận 2026-09-17) dùng dấu PHẨY phân cách nghìn (chuẩn US/UK, vd
+# "5,962,953,436,151") — NGƯỢC với chuẩn Việt Nam (dấu chấm). Cần regex + hàm parse RIÊNG (không thể
+# dùng chung 1 regex cho cả 2 dấu phân cách khác nhau) — chọn qua tham số `lang`, xác định từ ngôn
+# ngữ của TIÊU ĐỀ mục đã tìm thấy (_find_note_pages), không đoán mù từ nội dung số.
+_CELL_RE_EN = re.compile(r"\(?-?[\d]{1,3}(?:,[\d]{3})+\)?|(?<![\w,])-(?![\w,])|\(?[\d]{4,}\)?")
 
 
-def _extract_cell_tokens(text, n_buckets):
+def _extract_cell_tokens(text, n_buckets, lang="vi"):
     """Trích đúng `n_buckets` "ô số" đầu tiên từ `text` theo ĐÚNG thứ tự trái→phải (xem _CELL_RE ở
     trên). Trả về None nếu không đủ số lượng — KHÔNG ĐOÁN số liệu thiếu."""
-    toks = [m.group(0) for m in _CELL_RE.finditer(text)]
+    cell_re = _CELL_RE if lang == "vi" else _CELL_RE_EN
+    toks = [m.group(0) for m in cell_re.finditer(text)]
     return toks[:n_buckets] if len(toks) >= n_buckets else None
 
 
-def _tokens_to_values(toks):
+def _tokens_to_values(toks, lang="vi"):
     """Chuyển list token chuỗi (từ _extract_cell_tokens) sang list float — "-" = 0.0, ngoặc = âm,
-    bỏ dấu chấm phân cách nghìn. Trả về None nếu có token không parse được (không nên xảy ra vì
-    toks đã qua 2 regex ở trên, nhưng phòng hờ)."""
+    bỏ dấu phân cách nghìn (chấm cho tiếng Việt, phẩy cho tiếng Anh). Trả về None nếu có token không
+    parse được (không nên xảy ra vì toks đã qua 2 regex ở trên, nhưng phòng hờ)."""
+    sep = "." if lang == "vi" else ","
     vals = []
     for tok in toks:
         if tok == "-":
             vals.append(0.0)
             continue
         neg = tok.startswith("(") and tok.endswith(")")
-        clean = tok.strip("()").replace(".", "")
+        clean = tok.strip("()").replace(sep, "")
         try:
             v = float(clean)
         except ValueError:
@@ -279,7 +310,7 @@ def _tokens_to_values(toks):
     return vals
 
 
-def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=None):
+def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=None, lang="vi"):
     """Tìm DÒNG có nhãn `label_flat` (đã strip dấu) trong `text`, trích các "ô số" trong nhãn đó +
     `lines_after` dòng kế tiếp. Chỉ trả về kết quả nếu số lượng ô trích được >= n_buckets (lấy đúng
     n_buckets ô ĐẦU TIÊN — cột "Tổng cộng" dư nếu có sẽ bị bỏ qua vì không cần). Trả về None nếu
@@ -322,13 +353,13 @@ def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=No
     # khi tìm "ô số" (bug thật, 2026-08: dấu "-" của công thức bị đếm nhầm thành cột đầu tiên, làm
     # lệch toàn bộ các cột phía sau 1 vị trí).
     window_text = re.sub(r"\(\s*\d\s*\)\s*=\s*\(\s*\d\s*\)(?:\s*[+\-]\s*\(\s*\d\s*\))*", " ", window_text)
-    toks = _extract_cell_tokens(window_text, n_buckets)
+    toks = _extract_cell_tokens(window_text, n_buckets, lang=lang)
     if toks is None:
         if debug_tag:
             preview = window_text.replace("\n", " | ")[:300]
             print(f"  [DIAG] {debug_tag}: tim thay nhan nhung khong du so lieu. Cua so OCR: \"{preview}\"")
         return None
-    return _tokens_to_values(toks)
+    return _tokens_to_values(toks, lang=lang)
 
 
 def _extract_number_row_loose(text, n_buckets, debug_tag=None):
@@ -361,7 +392,7 @@ def _extract_number_row_loose(text, n_buckets, debug_tag=None):
     return None
 
 
-def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=None):
+def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=None, lang="vi"):
     """Định vị dòng gap bằng TỌA ĐỘ PIXEL thay vì thứ tự đọc tuyến tính của image_to_string() — BUG
     THẬT phát hiện 2026-08 qua log CI thật của TCB: với bảng rộng 9 cột trải hết bề ngang trang,
     tesseract đọc lộn xộn — nhãn dòng gap bị nối liền với footnote/tiêu đề cột nằm Ở VỊ TRÍ KHÁC trên
@@ -406,7 +437,7 @@ def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=No
         row_words = sorted((w for w in words if abs(w["top"] - row_top) < row_h * tol_mult),
                             key=lambda w: w["left"])
         row_text = " ".join(w["text"] for w in row_words)
-        toks = _extract_cell_tokens(row_text, n_buckets)
+        toks = _extract_cell_tokens(row_text, n_buckets, lang=lang)
         if toks is not None:
             break
     if toks is None:
@@ -415,7 +446,7 @@ def _extract_number_row_by_position(words, anchor_words, n_buckets, debug_tag=No
             print(f"  [DIAG] {debug_tag}: (toa do) tim thay hang neo nhung khong du so lieu du moi nguong "
                   f"dung sai da thu. Hang rong nhat: \"{preview}\"")
         return None
-    return _tokens_to_values(toks)
+    return _tokens_to_values(toks, lang=lang)
 
 
 _CURRENCY_ROW_RE = re.compile(
@@ -481,9 +512,16 @@ def _extract_gaps_from_pdf(pdf_path):
     result = {}
     for key, bucket_list, n in (("lai_suat", INTEREST_RATE_BUCKETS, len(INTEREST_RATE_BUCKETS)),
                                  ("thanh_khoan", LIQUIDITY_BUCKETS, len(LIQUIDITY_BUCKETS))):
-        page_idx = pages.get(key)
-        if page_idx is None:
+        found_key = pages.get(key)
+        if found_key is None:
             continue
+        page_idx, lang = found_key
+        # Ban tieng Anh (OCB xac nhan 2026-09-17) dung don vi VND THUC, khong phai "Trieu dong" nhu
+        # ban tieng Viet chuan - can chia 1.000.000 truoc khi luu de khop quy uoc chung he thong
+        # (raw = trieu dong). Ghep voi ngon ngu tim thay TIEU DE (dang tin cay hon doan tu noi dung
+        # trang, vi 2 ban tieng Anh da xac nhan THAT deu dung VND thuc) thay vi tu do phan tich don
+        # vi tu OCR (rui ro cao hon, xem thao luan voi user truoc khi lam).
+        unit_divisor = 1_000_000 if lang == "en" else 1
         # Bảng số nằm CÁCH trang tiêu đề/phương pháp luận 1 SỐ trang KHÔNG CỐ ĐỊNH — verify thật: MBB
         # 2025 cách đúng 1 trang (heading trang 90 -> bảng trang 91), nhưng TCB 2025 cách 2 trang vì
         # có thêm 1 trang phụ "Độ nhạy đối với lãi suất" (bảng ảnh hưởng LNTT/VCSH theo % lãi suất
@@ -505,41 +543,51 @@ def _extract_gaps_from_pdf(pdf_path):
                 if sens:
                     result["interest_rate_sensitivity_disclosed"] = sens
             wwords = None
-            vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}")
-            if not vals:
-                # Fallback theo TỌA ĐỘ (xem docstring _extract_number_row_by_position) — CHỈ chạy khi
-                # cách đọc tuyến tính ở trên thất bại, vì OCR theo tọa độ tốn thêm 1 lượt OCR trang
-                # (chậm hơn) — hầu hết trang không phải bảng gap sẽ bị loại ngay ở bước tuyến tính (rẻ)
-                # phía trên mà không cần OCR lại theo tọa độ.
-                wwords = _ocr_page_words(pdf_path, p)
-                if wwords:
-                    vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
-                                                            debug_tag=f"{key} trang {p+1}")
-            if not vals:
-                # Lớp dự phòng CUỐI CÙNG (xem docstring _extract_number_row_loose) — chỉ chạy khi cả
-                # 2 phương án khớp đúng chữ ở trên đều thất bại, dùng LẠI đúng `text` đã OCR sẵn
-                # (không tốn thêm lượt OCR nào).
-                vals = _extract_number_row_loose(text, n, debug_tag=f"{key} trang {p+1}")
-            # Tranh thủ trích luôn dòng "Tổng nợ phải trả" trên CÙNG trang/text/wwords đã OCR cho dòng
-            # gap (KHÔNG tốn thêm lượt OCR nào) — dùng để suy ra TÀI SẢN theo bucket (= gap + nợ phải
-            # trả) cho CẢ 2 bảng: bảng thanh khoản -> Liquid Assets/Cumulative Liquidity Gap Ratio;
-            # bảng lãi suất -> RSA (Rate Sensitive Assets) để tính RSA/RSL (user 2026-08-31 yêu cầu
-            # bộ chỉ số rủi ro lãi suất đầy đủ, xem plan). Lưu 2 KEY KHÁC NHAU (liabilities_by_bucket
-            # cho thanh_khoan giữ NGUYÊN tên cũ — tương thích dữ liệu đã backfill; interest_rate_
-            # liabilities_by_bucket cho lai_suat là key MỚI) vì 2 bảng có cấu trúc bucket khác nhau.
+            vals = None
+            if lang == "vi":
+                # 3 tang chinh xac cao chi thu duoc khi tieu de la TIENG VIET - nhan dong "Muc
+                # chenh..." tieng Anh doi ten tuy ngan hang ("Net liquidity gap"/"Total interest
+                # sensitivity gap"...) kem on dinh hon, nen ban tieng Anh bo qua thang 3 tang nay,
+                # di thang toi lop du phong thu 4 (Tong tai san - Tong no phai tra, on dinh ca 2
+                # ngon ngu) - vua nhanh hon (khong tom ocr toa do vo ich) vua tranh khop nham.
+                vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}")
+                if not vals:
+                    # Fallback theo TỌA ĐỘ (xem docstring _extract_number_row_by_position) — CHỈ chạy
+                    # khi cách đọc tuyến tính ở trên thất bại, vì OCR theo tọa độ tốn thêm 1 lượt OCR
+                    # trang (chậm hơn) — hầu hết trang không phải bảng gap sẽ bị loại ngay ở bước
+                    # tuyến tính (rẻ) phía trên mà không cần OCR lại theo tọa độ.
+                    wwords = _ocr_page_words(pdf_path, p)
+                    if wwords:
+                        vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
+                                                                debug_tag=f"{key} trang {p+1}")
+                if not vals:
+                    # Lớp dự phòng thứ 3 (xem docstring _extract_number_row_loose) — chỉ chạy khi cả
+                    # 2 phương án khớp đúng chữ ở trên đều thất bại, dùng LẠI đúng `text` đã OCR sẵn
+                    # (không tốn thêm lượt OCR nào).
+                    vals = _extract_number_row_loose(text, n, debug_tag=f"{key} trang {p+1}")
+            # Tranh thủ trích luôn dòng "Tổng nợ phải trả"/"Total liabilities" trên CÙNG trang/text/
+            # wwords đã OCR cho dòng gap (KHÔNG tốn thêm lượt OCR nào) — dùng để suy ra TÀI SẢN theo
+            # bucket (= gap + nợ phải trả) cho CẢ 2 bảng: bảng thanh khoản -> Liquid Assets/Cumulative
+            # Liquidity Gap Ratio; bảng lãi suất -> RSA (Rate Sensitive Assets) để tính RSA/RSL (user
+            # 2026-08-31 yêu cầu bộ chỉ số rủi ro lãi suất đầy đủ, xem plan). Lưu 2 KEY KHÁC NHAU
+            # (liabilities_by_bucket cho thanh_khoan giữ NGUYÊN tên cũ — tương thích dữ liệu đã
+            # backfill; interest_rate_liabilities_by_bucket cho lai_suat là key MỚI) vì 2 bảng có cấu
+            # trúc bucket khác nhau.
             # SỬA (user 2026-09-17): trích "Tổng nợ phải trả" LUÔN LUÔN (không chỉ khi `vals` đã có) —
             # cần sẵn cho lớp dự phòng thứ 4 ngay dưới đây (tự tính gap = Tổng tài sản - Tổng nợ phải
-            # trả khi đọc thẳng dòng "Mức chênh..." thất bại cả 3 cách).
+            # trả khi đọc thẳng dòng "Mức chênh..." thất bại, hoặc bản tiếng Anh luôn cần đường này).
             liab_result_key = "liabilities_by_bucket" if key == "thanh_khoan" else "interest_rate_liabilities_by_bucket"
+            liab_label = _ROW_LABEL_FLAT_LIAB if lang == "vi" else _ROW_LABEL_FLAT_LIAB_EN
+            liab_anchor = _ROW_ANCHOR_WORDS_LIAB if lang == "vi" else _ROW_ANCHOR_WORDS_LIAB_EN
             liab_vals = None
             if liab_result_key not in result:
-                liab_vals = _extract_number_row(text, _ROW_LABEL_FLAT_LIAB, n, debug_tag=f"no_phai_tra trang {p+1}")
+                liab_vals = _extract_number_row(text, liab_label, n, debug_tag=f"no_phai_tra trang {p+1}", lang=lang)
                 if not liab_vals:
                     if wwords is None:
                         wwords = _ocr_page_words(pdf_path, p)
                     if wwords:
-                        liab_vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS_LIAB, n,
-                                                                     debug_tag=f"no_phai_tra trang {p+1}")
+                        liab_vals = _extract_number_row_by_position(wwords, liab_anchor, n,
+                                                                     debug_tag=f"no_phai_tra trang {p+1}", lang=lang)
                 if liab_vals and liab_vals == vals:
                     # Bug that phat hien 2026-08-31 (ABB/STB 2025-Q1): khi 2 dong "Tong no phai tra"
                     # va "Muc chenh..." nam qua gan nhau theo truc doc, buoc dung sai tang dan cua
@@ -551,26 +599,34 @@ def _extract_gaps_from_pdf(pdf_path):
                     liab_vals = None
             if not vals and liab_vals:
                 # Lớp dự phòng THỨ 4 (user 2026-09-17 đề xuất, sau khi thấy dòng "Mức chênh..." của
-                # BID/STB thất bại dù dòng nằm rõ ràng trên trang): thay vì cố đọc đúng dòng TỔNG HỢP
-                # "Mức chênh..." (thường nằm sát dòng "Tổng nợ phải trả" + 1 dòng ghi chú (*), dễ bị
-                # OCR gom nhầm — xem bug BID/STB ở guard phía trên), đọc dòng "Tổng tài sản" (TÁCH
-                # BIỆT rõ ràng khỏi các dòng xung quanh — kết thúc phần liệt kê tài sản, luôn in
-                # đậm/gạch chân) rồi TỰ TÍNH gap = Tổng tài sản - Tổng nợ phải trả. Đã có `liab_vals`
-                # sẵn (vừa trích ở trên) nên chỉ cần trích thêm đúng 1 dòng "Tổng tài sản".
-                assets_vals = _extract_number_row(text, _ROW_LABEL_FLAT_ASSETS, n, debug_tag=f"tong_tai_san trang {p+1}")
+                # BID/STB thất bại dù dòng nằm rõ ràng trên trang, VÀ là đường DUY NHẤT cho bản tiếng
+                # Anh — xem nhánh lang=="en" ở trên): thay vì cố đọc đúng dòng TỔNG HỢP "Mức chênh..."
+                # (thường nằm sát dòng "Tổng nợ phải trả" + 1 dòng ghi chú (*), dễ bị OCR gom nhầm —
+                # xem bug BID/STB ở guard phía trên; tên dòng tiếng Anh cũng đổi khác nhau tùy ngân
+                # hàng), đọc dòng "Tổng tài sản"/"Total assets" (TÁCH BIỆT rõ ràng khỏi các dòng xung
+                # quanh — kết thúc phần liệt kê tài sản, luôn in đậm/gạch chân) rồi TỰ TÍNH gap = Tổng
+                # tài sản - Tổng nợ phải trả. Đã có `liab_vals` sẵn (vừa trích ở trên) nên chỉ cần
+                # trích thêm đúng 1 dòng "Tổng tài sản".
+                assets_label = _ROW_LABEL_FLAT_ASSETS if lang == "vi" else _ROW_LABEL_FLAT_ASSETS_EN
+                assets_anchor = _ROW_ANCHOR_WORDS_ASSETS if lang == "vi" else _ROW_ANCHOR_WORDS_ASSETS_EN
+                assets_vals = _extract_number_row(text, assets_label, n, debug_tag=f"tong_tai_san trang {p+1}", lang=lang)
                 if not assets_vals:
                     if wwords is None:
                         wwords = _ocr_page_words(pdf_path, p)
                     if wwords:
-                        assets_vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS_ASSETS, n,
-                                                                       debug_tag=f"tong_tai_san trang {p+1}")
+                        assets_vals = _extract_number_row_by_position(wwords, assets_anchor, n,
+                                                                       debug_tag=f"tong_tai_san trang {p+1}", lang=lang)
                 if assets_vals:
                     vals = [a - l for a, l in zip(assets_vals, liab_vals)]
                     print(f"  [DIAG] {key} trang {p+1}: tinh gap = Tong tai san - Tong no phai tra "
                           f"(lop du phong thu 4, khong doc truc tiep duoc dong Muc chenh)")
             if vals and liab_result_key not in result and liab_vals:
+                if unit_divisor != 1:
+                    liab_vals = [v / unit_divisor for v in liab_vals]
                 result[liab_result_key] = dict(zip(bucket_list, liab_vals))
             if vals:
+                if unit_divisor != 1:
+                    vals = [v / unit_divisor for v in vals]
                 break
         if vals:
             gap_key = "interest_rate_gap" if key == "lai_suat" else "liquidity_gap"
