@@ -153,15 +153,35 @@
       "fetched_at": "2026-08-31T15:27:56+07:00"
     },
     "2026-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
       "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": -337053618.0,
+        "qua_han_den_3t": -9946382.0,
+        "den_1_thang": 15748121.0,
+        "tu_1_3_thang": 8401139.0,
+        "tu_3_12_thang": 60003.0,
+        "tu_1_5_nam": 562335005.0,
+        "tren_5_nam": -41391.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 337053618.0,
+        "qua_han_den_3t": 10518102.0,
+        "den_1_thang": 26719.0,
+        "tu_1_3_thang": 5441.0,
+        "tu_3_12_thang": 3342.0,
+        "tu_1_5_nam": 23748800.0,
+        "tren_5_nam": 42049.0
+      },
+      "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-17T09:43:14+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2026",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-04-22/no-name-1776797412.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-17T19:14:13+07:00"
     },
     "2026-Q2": {
       "status": "reported",

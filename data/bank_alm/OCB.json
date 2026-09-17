@@ -160,15 +160,53 @@
       "fetched_at": "2026-09-17T17:33:01+07:00"
     },
     "2026-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 1187635.03418,
+        "khong_anh_huong_lai_suat": 6.435381,
+        "den_1_thang": -0.0298,
+        "tu_1_3_thang": -192.615587,
+        "tu_3_6_thang": -0.295866,
+        "tu_6_12_thang": 0.243835,
+        "tu_1_5_nam": 92949.606706,
+        "tren_5_nam": -30.131635
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1187635.03418,
+        "qua_han_den_3t": 6.435381,
+        "den_1_thang": -0.0298,
+        "tu_1_3_thang": -192.615587,
+        "tu_3_12_thang": -0.295866,
+        "tu_1_5_nam": 0.243835,
+        "tren_5_nam": 92949.606706
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.005782,
+        "den_1_thang": 0.124573,
+        "tu_1_3_thang": 192.635916,
+        "tu_3_12_thang": 0.360325,
+        "tu_1_5_nam": 0.426039,
+        "tren_5_nam": 0.003102
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.005782,
+        "den_1_thang": 0.124573,
+        "tu_1_3_thang": 192.635916,
+        "tu_3_6_thang": 0.360325,
+        "tu_6_12_thang": 0.426039,
+        "tu_1_5_nam": 0.003102,
+        "tren_5_nam": 30.170884
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-17T09:46:33+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2026",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260422_-_OCB_-_BCTC_hop_nhat_Quy_1_2026_1776854955.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-17T19:15:32+07:00"
     },
     "2026-Q2": {
       "status": "reported",

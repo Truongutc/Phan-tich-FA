@@ -172,15 +172,53 @@
       "fetched_at": "2026-09-17T17:36:04+07:00"
     },
     "2026-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 1089849.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": -4824650.0,
+        "tu_3_6_thang": 34984608.0,
+        "tu_6_12_thang": -7943171.0,
+        "tu_1_5_nam": 98364906.0,
+        "tren_5_nam": 17559975.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 293988.0,
+        "qua_han_den_3t": 5233.0,
+        "den_1_thang": 562440.0,
+        "tu_1_3_thang": 56016.0,
+        "tu_3_12_thang": 917677.0,
+        "tu_1_5_nam": 23737197.0,
+        "tren_5_nam": -5233.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 33826281.0,
+        "qua_han_den_3t": 132135.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 224833.0,
+        "tu_3_12_thang": 34183249.0,
+        "tu_1_5_nam": 293988.0,
+        "tren_5_nam": 5233.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 3118334.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 34984608.0,
+        "tu_3_6_thang": 9570280.0,
+        "tu_6_12_thang": 9570280.0,
+        "tu_1_5_nam": 150021.0,
+        "tren_5_nam": 9570280.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-17T09:59:43+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2026",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260429_-_TPB_-_BCTC_hop_nhat_Quy_1_2026_signed_1777457982.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-17T19:18:12+07:00"
     },
     "2026-Q2": {
       "status": "reported",
