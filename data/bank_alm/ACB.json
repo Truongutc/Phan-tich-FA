@@ -159,15 +159,35 @@
       "fetched_at": "2026-08-31T15:12:08+07:00"
     },
     "2026-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
       "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2695316.0,
+        "qua_han_den_3t": -2356263.0,
+        "den_1_thang": -610314.0,
+        "tu_1_3_thang": 389882.0,
+        "tu_3_12_thang": 816078.0,
+        "tu_1_5_nam": 2482527.0,
+        "tren_5_nam": 48219750.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 46634618.0,
+        "qua_han_den_3t": 2695316.0,
+        "den_1_thang": 674577.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": -80095.0,
+        "tu_1_5_nam": -2223934.0,
+        "tren_5_nam": 2738215.0
+      },
+      "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-17T09:37:41+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2026",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260422_-_ACB_-_BCTC_Hop_nhat_Quy_1_nam_2026_1776932823.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-09-17T15:01:42+07:00"
     },
     "2026-Q2": {
       "status": "reported",
