@@ -43,15 +43,53 @@
       "fetched_at": "2026-08-31T16:55:44+07:00"
     },
     "2025-Q2": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 5234335.0,
+        "khong_anh_huong_lai_suat": 5234335.0,
+        "den_1_thang": 18038211.0,
+        "tu_1_3_thang": 18038211.0,
+        "tu_3_6_thang": -57753145.0,
+        "tu_6_12_thang": -8330857.0,
+        "tu_1_5_nam": 112468582.0,
+        "tren_5_nam": 67317472.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3644573.0,
+        "qua_han_den_3t": 1588.0,
+        "den_1_thang": 4461.0,
+        "tu_1_3_thang": 1284851.0,
+        "tu_3_12_thang": 58857284.0,
+        "tu_1_5_nam": 13332120.0,
+        "tren_5_nam": 40664028.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 148012081.0,
+        "den_1_thang": 224582145.0,
+        "tu_1_3_thang": 8383581.0,
+        "tu_3_12_thang": 472312882.0,
+        "tu_1_5_nam": 3644573.0,
+        "tren_5_nam": 1588.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 1747572.0,
+        "khong_anh_huong_lai_suat": 57753145.0,
+        "den_1_thang": 137746186.0,
+        "tu_1_3_thang": -9830857.0,
+        "tu_3_6_thang": 73280082.0,
+        "tu_6_12_thang": -8673031.0,
+        "tu_1_5_nam": 30082530.0,
+        "tren_5_nam": 123334147.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T12:07:34+07:00"
+      "source": {
+        "title": "Báo cáo tài chính quý 2 năm 2025 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/LPB_Baocaotaichinh_6T_2025_Soatxet_06102025090900.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T16:28:03+07:00"
     },
     "2025-Q3": {
       "status": "reported",

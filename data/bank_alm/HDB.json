@@ -52,15 +52,53 @@
       "fetched_at": "2026-08-31T16:53:47+07:00"
     },
     "2025-Q2": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 33042808.0,
+        "khong_anh_huong_lai_suat": 14247571.0,
+        "den_1_thang": 3048538.0,
+        "tu_1_3_thang": 30663328.0,
+        "tu_3_6_thang": 64243356.0,
+        "tu_6_12_thang": 74045793.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 83071.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 1316708.0,
+        "den_1_thang": 2002.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 348514834.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 113472208.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 93364.0,
+        "den_1_thang": 205731103.0,
+        "tu_1_3_thang": 182658293.0,
+        "tu_3_6_thang": 121300115.0,
+        "tu_6_12_thang": 35628404.0,
+        "tu_1_5_nam": 32532.0,
+        "tren_5_nam": 718468324.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T12:01:17+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/HDB_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_03102025151254.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T16:27:10+07:00"
     },
     "2025-Q3": {
       "status": "missing",
