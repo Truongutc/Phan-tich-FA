@@ -1,0 +1,108 @@
+name: Cập nhật ALM Ngân hàng - 1 mã
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: 'Ma co phieu ngan hang can cap nhat (vd BID, STB, ACB - phai nam trong danh sach 26 ngan hang niem yet/UPCoM dang theo doi).'
+        required: true
+      period:
+        description: 'Quy va nam can cap nhat, dinh dang YYYY-Qn hoac YYYY-FY. Nhap kieu nao cung duoc: 2025-Q1, Q1-2025, 1-2025 deu hieu la Quy 1/2025; 2025-FY hoac FY-2025 deu la bao cao nam. Nhap ky Quy 4 se tu dong uu tien thu ban NAM (dang tin hon) truoc, chi dung ban Quy 4 neu ngan hang do chua co ban nam.'
+        required: true
+      force:
+        description: 'Luon OCR lai du da co du lieu "reported" san (dung khi biet du lieu cu bi thieu/sai, vd sau khi sua 1 fix OCR). Bo chon de chi chay khi ma nay THAT SU dang thieu kỳ nay.'
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  backfill-single:
+    runs-on: ubuntu-latest
+    # 1 ngan hang x 1 ky duy nhat - nhanh hon han backfill_bank_alm.yml (26 ma), nhung van giu du
+    # thoi gian OCR nhieu trang thu (xem bank_risk_notes.py _extract_gaps_from_pdf: co the thu quet
+    # toi 8 trang x 2 bang x nhieu candidate BCTC thay the).
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          # tesseract-ocr-vie/tesseract-ocr-osd: xem giai thich chi tiet trong analyze_stock.yml -
+          # cung ly do (bank_risk_notes.py can ca 2 goi nay de OCR tieng Viet + tu sua trang bi lat).
+          sudo apt-get update -qq && sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-vie tesseract-ocr-osd
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cap nhat ALM cho 1 ma
+        run: |
+          python -c "
+          from bank_system_risk import backfill_single_ticker
+          backfill_single_ticker('${{ github.event.inputs.ticker }}', '${{ github.event.inputs.period }}', force='${{ github.event.inputs.force }}'.lower() == 'true')
+          "
+
+      # Sheet ALM_NganHang_Raw tu doc lai TOAN BO data/bank_alm/*.json (nguon du lieu goc) moi lan
+      # chay nen ghi de an toan, luon phan anh dung trang thai moi nhat - giong het buoc tuong ung
+      # trong backfill_bank_alm.yml.
+      - name: Cap nhat sheet Excel du lieu tho ALM + upload Google Drive
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
+        run: |
+          python -c "from bank_system_risk import update_bank_alm_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO')"
+          python3 - << 'PYEOF'
+          import glob
+          import google_drive_uploader
+
+          xlsxs = sorted(glob.glob("Bao cao/VIMO/*.xlsx"))
+          if not xlsxs:
+              print("[WARN] Khong tim thay file Excel de upload.")
+          else:
+              _, url = google_drive_uploader.upload_file(xlsxs[-1], sector="Vĩ mô", ticker="VIMO")
+              print(f"[OK] Da upload Excel: {url}" if url else "[WARN] Upload Excel that bai.")
+          PYEOF
+
+      - name: Commit va push data/bank_alm/ + Excel
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/bank_alm/ "Bao cao/VIMO/"
+
+          if git diff --staged --quiet; then
+            echo "Khong co thay doi de commit."
+          else
+            git commit -m "Cap nhat ALM ${{ github.event.inputs.ticker }} — ${{ github.event.inputs.period }} — $(date +'%Y-%m-%d')"
+
+            PUSHED=0
+            for i in 1 2 3 4 5; do
+              git fetch origin master
+              if git rebase origin/master; then
+                if git push origin HEAD:master; then
+                  PUSHED=1
+                  break
+                fi
+              else
+                git rebase --abort
+              fi
+              echo "Push attempt $i failed, retrying..."
+              sleep 10
+            done
+
+            if [ "$PUSHED" != "1" ]; then
+              echo "::error::Khong the push ket qua cap nhat sau 5 lan thu (remote lien tuc thay doi)."
+              exit 1
+            fi
+          fi

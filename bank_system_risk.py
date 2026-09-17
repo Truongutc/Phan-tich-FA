@@ -241,7 +241,6 @@ def backfill_period(period_key):
        đó chưa có bản năm — nhất quán với thứ tự ưu tiên FY>Q4 đã dùng khi TỔNG HỢP hệ thống (xem
        _ticker_gap_entry), giờ áp dụng luôn từ bước BACKFILL/FETCH thay vì chỉ ở bước tổng hợp."""
     from bank_universe import BANKING_TICKERS
-    from bank_risk_notes import fetch_bank_risk_gaps_for_period
 
     normalized = _normalize_period_input(period_key)
     if normalized is None:
@@ -258,33 +257,80 @@ def backfill_period(period_key):
     # ban DAU TIEN thanh cong, chi ghi "thieu" khi CA 2 deu khong co.
     candidates = [f"{year}-FY", f"{year}-Q4"] if period_key.endswith("-Q4") else [period_key]
 
-    results = {}
-    for ticker in sorted(BANKING_TICKERS):
-        try:
-            found = False
-            for try_period in candidates:
+    results = {ticker: _backfill_ticker_period(ticker, period_key, candidates)
+               for ticker in sorted(BANKING_TICKERS)}
+    print(f"[DONE] Backfill {period_key}: {results}")
+    return results
+
+
+def _backfill_ticker_period(ticker, period_key, candidates, force=False):
+    """Phần thân DÙNG CHUNG cho cả backfill_period() (lặp qua 26 ngân hàng) và backfill_single_ticker()
+    (1 ngân hàng lẻ) — thử từng candidate trong `candidates` (đã tính sẵn thứ tự ưu tiên FY>Q4 nếu
+    cần) cho ĐÚNG 1 ticker, trả về chuỗi mô tả kết quả. force=True bỏ qua kiểm tra "đã có dữ liệu
+    thật" (luôn OCR lại) — dùng khi biết dữ liệu cũ sai/thiếu (vd sau khi sửa 1 fix OCR, muốn lấy lại
+    đúng 1 mã cụ thể mà không phải chờ/đợi toàn bộ 26 mã chạy lại)."""
+    from bank_risk_notes import fetch_bank_risk_gaps_for_period
+    try:
+        for try_period in candidates:
+            if not force:
                 existing = bank_alm_store.get_period_entry(ticker, try_period)
                 if existing and existing.get("status") == "reported":
                     print(f"  [SKIP] {ticker} {try_period}: da co du lieu that, bo qua")
-                    results[ticker] = f"da_co ({try_period})"
-                    found = True
-                    break
-                gaps = fetch_bank_risk_gaps_for_period(ticker, try_period)
-                if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
-                    source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
-                              "fetched_year": gaps.get("fetched_year")}
-                    bank_alm_store.upsert_reported_period(ticker, try_period, gaps, source)
-                    results[ticker] = f"da_co_du_lieu ({try_period})"
-                    found = True
-                    break
-            if not found:
-                bank_alm_store.mark_missing_period(ticker, period_key)
-                results[ticker] = "thieu"
-        except Exception as e:
-            print(f"  [WARN] Backfill {ticker} {period_key}: loi ({e})")
-            results[ticker] = f"loi: {e}"
-    print(f"[DONE] Backfill {period_key}: {results}")
-    return results
+                    return f"da_co ({try_period})"
+            gaps = fetch_bank_risk_gaps_for_period(ticker, try_period)
+            if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
+                source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
+                          "fetched_year": gaps.get("fetched_year")}
+                bank_alm_store.upsert_reported_period(ticker, try_period, gaps, source)
+                return f"da_co_du_lieu ({try_period})"
+        # KHONG candidate nao thanh cong — TRUOC KHI ghi "missing", kiem tra xem da co du lieu
+        # "reported" TOT tu truoc chua (bug that phat hien 2026-09-17 khi test cuc bo
+        # backfill_single_ticker(force=True) tren BID 2025-Q1: OCR lai that bai vi may test khong co
+        # tesseract, roi mark_missing_period() GHI DE THANG len du lieu that/nhap tay tot da co san,
+        # xoa mat du lieu dung — mark_missing_period() KHONG tu kiem tra, ghi de VO DIEU KIEN). CHI
+        # ghi "missing" khi truoc do THAT SU chua co gi (hoac da la "missing"/"patched") — force=True
+        # + OCR lai that bai thi GIU NGUYEN du lieu tot cu, khong lam mat du lieu vi 1 lan thu lai
+        # khong thanh cong (vd tam thoi mat mang, hoac OCR khong on dinh giua cac lan chay).
+        existing = bank_alm_store.get_period_entry(ticker, period_key)
+        if existing and existing.get("status") == "reported":
+            print(f"  [WARN] {ticker} {period_key}: OCR lai that bai, GIU NGUYEN du lieu that/nhap "
+                  f"tay cu da co (khong ghi de thanh missing)")
+            return f"giu_nguyen_du_lieu_cu ({period_key})"
+        bank_alm_store.mark_missing_period(ticker, period_key)
+        return "thieu"
+    except Exception as e:
+        print(f"  [WARN] Backfill {ticker} {period_key}: loi ({e})")
+        return f"loi: {e}"
+
+
+def backfill_single_ticker(ticker, period_key, force=False):
+    """Backfill/cập nhật lại ĐÚNG 1 ngân hàng cho 1 kỳ cụ thể — dùng cho workflow riêng
+    backfill_bank_alm_single.yml (workflow_dispatch nhập tay 1 mã + 1 kỳ, KHÔNG cần chờ chạy qua cả
+    26 mã như backfill_period()/backfill_bank_alm.yml — user 2026-09-17 muốn 1 action riêng để sửa
+    nhanh 1 mã cụ thể đang thiếu/sai, đặc biệt sau khi đã sửa 1 fix OCR và muốn thử lại ngay 1 mã mà
+    không tốn thời gian chờ + OCR lại 25 mã khác đã đúng."""
+    from bank_universe import BANKING_TICKERS
+    ticker = ticker.upper().strip()
+    if ticker not in BANKING_TICKERS:
+        raise ValueError(
+            f"'{ticker}' khong nam trong danh sach 26 ngan hang niem yet/UPCoM dang theo doi "
+            f"(xem bank_universe.BANKING_TICKERS) - kiem tra lai ma vua nhap."
+        )
+    normalized = _normalize_period_input(period_key)
+    if normalized is None:
+        raise ValueError(
+            f"Khong nhan dien duoc ky '{period_key}' - nhap dang YYYY-Qn (vd 2025-Q1, Q1-2025, "
+            f"1-2025 deu duoc) hoac YYYY-FY (vd 2025-FY, FY-2025)."
+        )
+    if normalized != period_key:
+        print(f"  [INFO] Chuan hoa ky nhap '{period_key}' -> '{normalized}'")
+    period_key = normalized
+
+    year = period_key.split("-")[0]
+    candidates = [f"{year}-FY", f"{year}-Q4"] if period_key.endswith("-Q4") else [period_key]
+    result = _backfill_ticker_period(ticker, period_key, candidates, force=force)
+    print(f"[DONE] Backfill {ticker} {period_key}: {result}")
+    return {ticker: result}
 
 
 # ── Tổng hợp hệ thống (arithmetic thuần, luôn tính lại từ đầu, không cache riêng) ────────────────
