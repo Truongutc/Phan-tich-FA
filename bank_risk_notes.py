@@ -233,6 +233,14 @@ _ROW_ANCHOR_WORDS = {
 # cần tổng nợ phải trả theo kỳ hạn, không cần phân loại HQLA/outflow rate như LCR thật).
 _ROW_LABEL_FLAT_LIAB = "tong no phai tra"
 _ROW_ANCHOR_WORDS_LIAB = ("no", "phai")
+# "Tổng tài sản" — dòng TỔNG của phần Tài sản, đứng NGAY TRÊN "Tổng nợ phải trả" trong cùng bảng, LUÔN
+# in đậm/gạch chân đứng RIÊNG 1 dòng (kết thúc phần liệt kê từng khoản mục tài sản) — user (2026-09)
+# chỉ ra đúng: đi tìm dòng "Mức chênh..." (nằm sát 1-2 dòng ghi chú/dòng Tổng nợ, dễ bị OCR gom nhầm
+# — xem bug BID/STB 2025-Q1/Q2 đã fix qua guard trùng khớp) kém ổn định hơn 2 dòng TỔNG này, vốn tách
+# biệt rõ ràng khỏi các dòng xung quanh bằng viền kẻ. Dùng làm phương án CUỐI: TỰ TÍNH gap = Tổng tài
+# sản - Tổng nợ phải trả thay vì cố đọc đúng dòng "Mức chênh" đã có sẵn.
+_ROW_LABEL_FLAT_ASSETS = "tong tai san"
+_ROW_ANCHOR_WORDS_ASSETS = ("tong", "tai")
 
 
 # Ô số: số VN chuẩn (dấu chấm phân cách nghìn, ngoặc = âm) HOẶC dấu gạch ngang đơn (= 0) HOẶC — dự
@@ -519,8 +527,12 @@ def _extract_gaps_from_pdf(pdf_path):
             # bộ chỉ số rủi ro lãi suất đầy đủ, xem plan). Lưu 2 KEY KHÁC NHAU (liabilities_by_bucket
             # cho thanh_khoan giữ NGUYÊN tên cũ — tương thích dữ liệu đã backfill; interest_rate_
             # liabilities_by_bucket cho lai_suat là key MỚI) vì 2 bảng có cấu trúc bucket khác nhau.
+            # SỬA (user 2026-09-17): trích "Tổng nợ phải trả" LUÔN LUÔN (không chỉ khi `vals` đã có) —
+            # cần sẵn cho lớp dự phòng thứ 4 ngay dưới đây (tự tính gap = Tổng tài sản - Tổng nợ phải
+            # trả khi đọc thẳng dòng "Mức chênh..." thất bại cả 3 cách).
             liab_result_key = "liabilities_by_bucket" if key == "thanh_khoan" else "interest_rate_liabilities_by_bucket"
-            if vals and liab_result_key not in result:
+            liab_vals = None
+            if liab_result_key not in result:
                 liab_vals = _extract_number_row(text, _ROW_LABEL_FLAT_LIAB, n, debug_tag=f"no_phai_tra trang {p+1}")
                 if not liab_vals:
                     if wwords is None:
@@ -537,8 +549,27 @@ def _extract_gaps_from_pdf(pdf_path):
                     print(f"  [DIAG] no_phai_tra trang {p+1}: bo qua vi trung khop tuyet doi voi dong "
                           f"gap (nghi ngo gom nham hang)")
                     liab_vals = None
-                if liab_vals:
-                    result[liab_result_key] = dict(zip(bucket_list, liab_vals))
+            if not vals and liab_vals:
+                # Lớp dự phòng THỨ 4 (user 2026-09-17 đề xuất, sau khi thấy dòng "Mức chênh..." của
+                # BID/STB thất bại dù dòng nằm rõ ràng trên trang): thay vì cố đọc đúng dòng TỔNG HỢP
+                # "Mức chênh..." (thường nằm sát dòng "Tổng nợ phải trả" + 1 dòng ghi chú (*), dễ bị
+                # OCR gom nhầm — xem bug BID/STB ở guard phía trên), đọc dòng "Tổng tài sản" (TÁCH
+                # BIỆT rõ ràng khỏi các dòng xung quanh — kết thúc phần liệt kê tài sản, luôn in
+                # đậm/gạch chân) rồi TỰ TÍNH gap = Tổng tài sản - Tổng nợ phải trả. Đã có `liab_vals`
+                # sẵn (vừa trích ở trên) nên chỉ cần trích thêm đúng 1 dòng "Tổng tài sản".
+                assets_vals = _extract_number_row(text, _ROW_LABEL_FLAT_ASSETS, n, debug_tag=f"tong_tai_san trang {p+1}")
+                if not assets_vals:
+                    if wwords is None:
+                        wwords = _ocr_page_words(pdf_path, p)
+                    if wwords:
+                        assets_vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS_ASSETS, n,
+                                                                       debug_tag=f"tong_tai_san trang {p+1}")
+                if assets_vals:
+                    vals = [a - l for a, l in zip(assets_vals, liab_vals)]
+                    print(f"  [DIAG] {key} trang {p+1}: tinh gap = Tong tai san - Tong no phai tra "
+                          f"(lop du phong thu 4, khong doc truc tiep duoc dong Muc chenh)")
+            if vals and liab_result_key not in result and liab_vals:
+                result[liab_result_key] = dict(zip(bucket_list, liab_vals))
             if vals:
                 break
         if vals:

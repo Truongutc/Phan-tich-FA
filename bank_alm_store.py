@@ -87,6 +87,7 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
         "interest_rate_gap": gaps_dict.get("interest_rate_gap"),
         "liquidity_gap": gaps_dict.get("liquidity_gap"),
         "liabilities_by_bucket": gaps_dict.get("liabilities_by_bucket"),
+        "interest_rate_liabilities_by_bucket": gaps_dict.get("interest_rate_liabilities_by_bucket"),
         "interest_rate_sensitivity_disclosed": gaps_dict.get("interest_rate_sensitivity_disclosed"),
         "source": source,
         "fetched_at": _now_iso(),
