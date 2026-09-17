@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       ticker:
-        description: 'Ma co phieu ngan hang can cap nhat (vd BID, STB, ACB - phai nam trong danh sach 26 ngan hang niem yet/UPCoM dang theo doi).'
-        required: true
+        description: 'Ma co phieu ngan hang can cap nhat (vd BID, STB, ACB). DE TRONG: tu dong quet ca 26 ma o ky ben duoi, CHI OCR lai nhung ma dang "missing" (bo qua het cac ma da co du lieu that/da nhap tay) - luc do input "force" ben duoi khong ap dung.'
+        required: false
       period:
         description: 'Quy va nam can cap nhat, dinh dang YYYY-Qn hoac YYYY-FY. Nhap kieu nao cung duoc: 2025-Q1, Q1-2025, 1-2025 deu hieu la Quy 1/2025; 2025-FY hoac FY-2025 deu la bao cao nam. Nhap ky Quy 4 se tu dong uu tien thu ban NAM (dang tin hon) truoc, chi dung ban Quy 4 neu ngan hang do chua co ban nam.'
         required: true
       force:
-        description: 'Luon OCR lai du da co du lieu "reported" san (dung khi biet du lieu cu bi thieu/sai, vd sau khi sua 1 fix OCR). Bo chon de chi chay khi ma nay THAT SU dang thieu kỳ nay.'
+        description: 'CHI ap dung khi co nhap ma o tren. Luon OCR lai du ma do da co du lieu "reported" san (dung khi biet du lieu cu bi thieu/sai, vd sau khi sua 1 fix OCR). Bo chon de chi chay khi ma nay THAT SU dang thieu kỳ nay.'
         required: true
         type: boolean
         default: true
@@ -21,10 +21,10 @@ permissions:
 jobs:
   backfill-single:
     runs-on: ubuntu-latest
-    # 1 ngan hang x 1 ky duy nhat - nhanh hon han backfill_bank_alm.yml (26 ma), nhung van giu du
-    # thoi gian OCR nhieu trang thu (xem bank_risk_notes.py _extract_gaps_from_pdf: co the thu quet
-    # toi 8 trang x 2 bang x nhieu candidate BCTC thay the).
-    timeout-minutes: 20
+    # Truong hop nhap 1 ma: nhanh (vai phut). Truong hop DE TRONG ma (quet tim + OCR lai TAT CA ma
+    # dang "missing"): co the gan bang ca backfill_bank_alm.yml (26 ma) neu dang thieu nhieu - giu
+    # cung nguong 90 phut de an toan, khong bi cat ngang giua chung.
+    timeout-minutes: 90
 
     steps:
       - name: Checkout Repository
@@ -46,11 +46,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Cap nhat ALM cho 1 ma
+      # Nhap ma -> chi OCR lai dung 1 ma do (backfill_single_ticker). De trong ma -> quet ca 26 ma,
+      # TU DONG bo qua ma nao da co du lieu that ("reported", ke ca du lieu nhap tay - da luu cung
+      # status nay), CHI OCR lai dung nhung ma dang "missing" o ky nay (backfill_period() - ham DUNG
+      # CHUNG voi backfill_bank_alm.yml, doc thang tu data/bank_alm/*.json - nguon du lieu goc sinh
+      # ra sheet Excel, KHONG can doc lai file Google Sheet qua mang vi ket qua giong het nhau).
+      - name: Cap nhat ALM (1 ma hoac tat ca ma dang thieu)
         run: |
           python -c "
-          from bank_system_risk import backfill_single_ticker
-          backfill_single_ticker('${{ github.event.inputs.ticker }}', '${{ github.event.inputs.period }}', force='${{ github.event.inputs.force }}'.lower() == 'true')
+          from bank_system_risk import backfill_period, backfill_single_ticker
+          ticker = '${{ github.event.inputs.ticker }}'.strip()
+          period = '${{ github.event.inputs.period }}'
+          if ticker:
+              backfill_single_ticker(ticker, period, force='${{ github.event.inputs.force }}'.lower() == 'true')
+          else:
+              print('[INFO] Khong nhap ma - tu dong quet + OCR lai TAT CA ma dang missing o ky nay.')
+              backfill_period(period)
           "
 
       # Sheet ALM_NganHang_Raw tu doc lai TOAN BO data/bank_alm/*.json (nguon du lieu goc) moi lan
@@ -84,7 +95,11 @@ jobs:
           if git diff --staged --quiet; then
             echo "Khong co thay doi de commit."
           else
-            git commit -m "Cap nhat ALM ${{ github.event.inputs.ticker }} — ${{ github.event.inputs.period }} — $(date +'%Y-%m-%d')"
+            TICKER_LABEL="${{ github.event.inputs.ticker }}"
+            if [ -z "$TICKER_LABEL" ]; then
+              TICKER_LABEL="cac ma dang missing"
+            fi
+            git commit -m "Cap nhat ALM ${TICKER_LABEL} — ${{ github.event.inputs.period }} — $(date +'%Y-%m-%d')"
 
             PUSHED=0
             for i in 1 2 3 4 5; do
