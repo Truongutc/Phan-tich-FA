@@ -2,15 +2,53 @@
   "ticker": "BID",
   "gap_periods": {
     "2025-FY": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 57538154.0,
+        "khong_anh_huong_lai_suat": 119944222.0,
+        "den_1_thang": -450665670.0,
+        "tu_1_3_thang": 404537250.0,
+        "tu_3_6_thang": 279965126.0,
+        "tu_6_12_thang": -270588700.0,
+        "tu_1_5_nam": -7128177.0,
+        "tren_5_nam": 75352419.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 38309096.0,
+        "qua_han_den_3t": 19229058.0,
+        "den_1_thang": -279173910.0,
+        "tu_1_3_thang": -65355789.0,
+        "tu_3_12_thang": -12227173.0,
+        "tu_1_5_nam": -3478323.0,
+        "tren_5_nam": 511651665.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 1019125254.0,
+        "den_1_thang": 556504780.0,
+        "tu_1_3_thang": 1045468988.0,
+        "tu_3_12_thang": 472216912.0,
+        "tu_1_5_nam": 63956884.0,
+        "tren_5_nam": 3157272818.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 68757698.0,
+        "den_1_thang": 1388247938.0,
+        "tu_1_3_thang": 537133335.0,
+        "tu_3_6_thang": 524124629.0,
+        "tu_6_12_thang": 514037302.0,
+        "tu_1_5_nam": 113771557.0,
+        "tren_5_nam": 11200359.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T01:08:21+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất đã kiểm toán năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-04-02/no-name-1775069592.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T18:18:58+07:00"
     },
     "2025-Q1": {
       "status": "reported",

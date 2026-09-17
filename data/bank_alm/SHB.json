@@ -2,15 +2,53 @@
   "ticker": "SHB",
   "gap_periods": {
     "2025-FY": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 104828045.0,
+        "khong_anh_huong_lai_suat": 14584801.0,
+        "den_1_thang": 117743.0,
+        "tu_1_3_thang": 205158718.0,
+        "tu_3_6_thang": 173386.0,
+        "tu_6_12_thang": 7045.0,
+        "tu_1_5_nam": 106812119.0,
+        "tren_5_nam": 7221000.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": -120626761.0,
+        "qua_han_den_3t": -225570.0,
+        "den_1_thang": 204277116.0,
+        "tu_1_3_thang": 2343041.0,
+        "tu_3_12_thang": -97282641.0,
+        "tu_1_5_nam": -127100.0,
+        "tren_5_nam": 32971052.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 124744004.0,
+        "qua_han_den_3t": 225570.0,
+        "den_1_thang": 6407.0,
+        "tu_1_3_thang": 29277.0,
+        "tu_3_12_thang": 187583904.0,
+        "tu_1_5_nam": 172820.0,
+        "tren_5_nam": 168824804.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 17573408.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 141120.0,
+        "tu_3_6_thang": 7290.0,
+        "tu_6_12_thang": 377207.0,
+        "tu_1_5_nam": 821877771.0,
+        "tren_5_nam": 14584801.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T01:34:56+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260331_-_SHB_-_Bao_cao_tai_chinh_nam_2025_Hop_nhat_1775015883.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T18:25:58+07:00"
     },
     "2025-Q1": {
       "status": "missing",

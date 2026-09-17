@@ -2,15 +2,53 @@
   "ticker": "LPB",
   "gap_periods": {
     "2025-FY": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 4311804.0,
+        "khong_anh_huong_lai_suat": 4330804.0,
+        "den_1_thang": 48885381.0,
+        "tu_1_3_thang": 5021.0,
+        "tu_3_6_thang": 48565021.0,
+        "tu_6_12_thang": 32803778.0,
+        "tu_1_5_nam": 32813778.0,
+        "tren_5_nam": 13751808.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3318781.0,
+        "qua_han_den_3t": 1012123.0,
+        "den_1_thang": -47284248.0,
+        "tu_1_3_thang": -52008587.0,
+        "tu_3_12_thang": 3114868.0,
+        "tu_1_5_nam": 85455553.0,
+        "tren_5_nam": 54775653.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 8208.0,
+        "den_1_thang": 99558500.0,
+        "tu_1_3_thang": 204477.0,
+        "tu_3_12_thang": 3993.0,
+        "tu_1_5_nam": 28255408.0,
+        "tren_5_nam": 9893805.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 4350804.0,
+        "khong_anh_huong_lai_suat": 1155008.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 133433488.0,
+        "tu_3_6_thang": 8853380.0,
+        "tu_6_12_thang": 48200388.0,
+        "tu_1_5_nam": 48880810.0,
+        "tren_5_nam": 13582.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-08-31T01:22:06+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất đã kiểm toán năm 2025",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-04-01/no-name-1774985279.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T18:21:20+07:00"
     },
     "2025-Q1": {
       "status": "reported",

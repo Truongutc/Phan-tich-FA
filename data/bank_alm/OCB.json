@@ -208,6 +208,55 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T09:56:57+07:00"
+    },
+    "2025-Q4": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 6771483.219116,
+        "khong_anh_huong_lai_suat": -96209847.556471,
+        "den_1_thang": 81084258.652077,
+        "tu_1_3_thang": 63872142.089406,
+        "tu_3_6_thang": 29185150.528892,
+        "tu_6_12_thang": -24694565.890199,
+        "tu_1_5_nam": -25748864.263504,
+        "tren_5_nam": 11209999.654756
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 6771483.219116,
+        "qua_han_den_3t": -96209847.556471,
+        "den_1_thang": 81084258.652077,
+        "tu_1_3_thang": 63872142.089406,
+        "tu_3_12_thang": 29185150.528892,
+        "tu_1_5_nam": -24694565.890199,
+        "tren_5_nam": -25748864.263504
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 5369.637847,
+        "qua_han_den_3t": 114071247.142879,
+        "den_1_thang": 0.500216,
+        "tu_1_3_thang": 0.685006,
+        "tu_3_12_thang": 50290878.126672,
+        "tu_1_5_nam": 32244242.256663,
+        "tren_5_nam": 44555505.92323
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 5369.637847,
+        "khong_anh_huong_lai_suat": 114071247.142879,
+        "den_1_thang": 0.500216,
+        "tu_1_3_thang": 0.685006,
+        "tu_3_6_thang": 50290878.126672,
+        "tu_6_12_thang": 32244242.256663,
+        "tu_1_5_nam": 44555505.92323,
+        "tren_5_nam": 0.345244
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 4 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260130_-_OCB_-_BCTC_hop_nhat_Quy_4_2025_1770023477.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-17T18:24:55+07:00"
     }
   },
   "quarterly_balance_sheet": {
