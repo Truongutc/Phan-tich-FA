@@ -266,6 +266,19 @@ _ROW_ANCHOR_WORDS_LIAB_EN = ("total", "liabilities")
 _ROW_LABEL_FLAT_ASSETS_EN = "total assets"
 _ROW_ANCHOR_WORDS_ASSETS_EN = ("total", "assets")
 
+# 3 dòng TÀI SẢN/NỢ chi tiết trong CHÍNH bảng thanh khoản (user 2026-09-18, xác nhận qua ảnh chụp
+# thật TCB — nằm SẴN trên trang đã OCR cho bảng gap, không cần tìm trang mới) — phục vụ 2 chỉ số theo
+# "danh gia rui ro thanh khoan.docx": "tài sản gần tiền" ≤1 tháng (mục 9, dùng Tiền mặt+NHNN — CHƯA
+# thêm Tiền gửi TCTD, xem lý do dưới) và cơ cấu kỳ hạn tiền gửi khách hàng (mục 12). CHỈ trích qua
+# khớp CHỮ TUYẾN TÍNH (KHÔNG có tầng dự phòng theo tọa độ như 2 dòng Tổng) — đây là dữ liệu BỔ SUNG
+# (không bắt buộc để có gap chính), chấp nhận tỷ lệ trích thành công thấp hơn thay vì rủi ro khớp
+# nhầm. CỐ Ý bỏ dòng "Tiền gửi/cấp tín dụng cho các TCTD khác" (dù mục 9 có nhắc) — nhãn dòng NÀY quá
+# giống dòng NỢ PHẢI TRẢ tương ứng ("Tiền gửi và vay các TCTD khác") ở nhiều ngân hàng, rủi ro khớp
+# nhầm sang phía Nợ cao hơn giá trị dữ liệu thêm được — thà thiếu còn hơn sai.
+_ROW_LABELS_CASH = ["tien mat"]
+_ROW_LABELS_SBV_DEP = ["tien gui tai nhnn", "tien gui tai ngan hang nha nuoc"]
+_ROW_LABELS_CUST_DEP = ["tien gui cua khach hang"]
+
 _COMMA_NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+")
 _PERIOD_NUM_RE = re.compile(r"\d{1,3}(?:\.\d{3})+")
 # Ngân hàng thật KHÔNG BAO GIỜ có tổng nợ phải trả VƯỢT QUÁ mức này nếu số liệu THẬT SỰ đã ở đơn vị
@@ -409,6 +422,21 @@ def _extract_number_row_loose(text, n_buckets, debug_tag=None, lang="vi"):
             if debug_tag:
                 print(f"  [DIAG] {debug_tag}: khop qua fallback noi long, dong \"{lines[idx].strip()[:80]}\"")
             return _tokens_to_values(toks, lang=lang)
+    return None
+
+
+def _extract_number_row_multi_label(text, label_candidates, n_buckets, lang="vi", debug_tag=None):
+    """Thử LẦN LƯỢT từng cụm nhãn trong `label_candidates` qua _extract_number_row() (khớp tuyến
+    tính, KHÔNG có tầng dự phòng theo tọa độ) — dùng cho các dòng CHI TIẾT bổ sung (Tiền mặt/Tiền gửi
+    NHNN/Tiền gửi khách hàng, user 2026-09-18) mà cách viết nhãn khác nhau tùy ngân hàng/kỳ (vd
+    "Tiền gửi tại NHNN" hay "Tiền gửi tại Ngân hàng Nhà nước"). Đây là dữ liệu BỔ SUNG (không bắt
+    buộc để có gap chính) nên chấp nhận tỷ lệ trích thành công thấp hơn 3 tầng chính, không cố thêm
+    tầng tọa độ (khó chọn từ neo đủ riêng biệt cho các nhãn này — dễ khớp nhầm sang dòng khác có từ
+    tương tự, vd dòng nợ phải trả cũng nhắc "NHNN"/"các TCTD khác")."""
+    for label in label_candidates:
+        vals = _extract_number_row(text, label, n_buckets, lang=lang, debug_tag=debug_tag)
+        if vals:
+            return vals
     return None
 
 
@@ -664,6 +692,21 @@ def _extract_gaps_from_pdf(pdf_path):
                 if unit_divisor != 1:
                     liab_vals = [v / unit_divisor for v in liab_vals]
                 result[liab_result_key] = dict(zip(bucket_list, liab_vals))
+            # 3 dong chi tiet bo sung (xem _ROW_LABELS_CASH/...) — CHI trich tu bang THANH KHOAN (muc
+            # 9/12 file huong dan la khai niem thanh khoan theo ky han, khac ban chat voi bang lai
+            # suat tai dinh gia) — dung LAI chinh `text` da OCR cho dong gap, khong ton them OCR nao.
+            if vals and key == "thanh_khoan":
+                for result_key, labels in (("cash_by_bucket", _ROW_LABELS_CASH),
+                                            ("sbv_dep_by_bucket", _ROW_LABELS_SBV_DEP),
+                                            ("customer_deposits_by_bucket", _ROW_LABELS_CUST_DEP)):
+                    if result_key in result:
+                        continue
+                    extra_vals = _extract_number_row_multi_label(text, labels, n, lang=numfmt,
+                                                                  debug_tag=f"{result_key} trang {p+1}")
+                    if extra_vals:
+                        if unit_divisor != 1:
+                            extra_vals = [v / unit_divisor for v in extra_vals]
+                        result[result_key] = dict(zip(bucket_list, extra_vals))
             if vals:
                 if unit_divisor != 1:
                     vals = [v / unit_divisor for v in vals]

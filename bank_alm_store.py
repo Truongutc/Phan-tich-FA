@@ -79,8 +79,15 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
     từ `quarterly_balance_sheet` (xem gap_period_to_quarter()) vì đó là nguồn ĐỘC LẬP, luôn cập
     nhật sẵn từ Vietcap (không cần OCR) bất kể lệnh ghi gap đến từ pipeline nào — tránh phải xác
     định "ai chịu trách nhiệm ghi balance_sheet_snapshot" giữa 2 nơi gọi khác nhau
-    (template_banking.py cho 1 mã lẻ, bank_system_risk.py cho toàn hệ thống)."""
+    (template_banking.py cho 1 mã lẻ, bank_system_risk.py cho toàn hệ thống).
+
+    SỬA (user 2026-09-18): GIỮ LẠI fx_position/fx_source từ entry CŨ nếu có — bug thật tự phát hiện
+    khi thêm upsert_fx_position() (ghi RIÊNG, không qua hàm này): hàm này trước đây THAY THẾ TOÀN BỘ
+    entry bằng dict MỚI không hề biết tới 2 field đó, nên bất kỳ lần OCR lại nào sau khi đã có FX
+    (vd backfill force=True, hoặc refresh hàng tuần phát hiện kỳ mới) sẽ ÂM THẦM XÓA MẤT dữ liệu FX
+    đã nhập, dù OCR gap chính vẫn thành công bình thường."""
     store = load_bank_store(ticker)
+    existing = store["gap_periods"].get(period_key) or {}
     store["gap_periods"][period_key] = {
         "status": "reported",
         "patched_from": None,
@@ -89,6 +96,14 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
         "liabilities_by_bucket": gaps_dict.get("liabilities_by_bucket"),
         "interest_rate_liabilities_by_bucket": gaps_dict.get("interest_rate_liabilities_by_bucket"),
         "interest_rate_sensitivity_disclosed": gaps_dict.get("interest_rate_sensitivity_disclosed"),
+        # 3 dong chi tiet bo sung tu bang thanh khoan (user 2026-09-18, xem bank_risk_notes.py
+        # _ROW_LABELS_CASH/_SBV_DEP/_CUST_DEP) — CHUA CHAC luon trich duoc (chi khop tuyen tinh,
+        # khong co tang du phong), None neu khong trich duoc thay vi doan.
+        "cash_by_bucket": gaps_dict.get("cash_by_bucket"),
+        "sbv_dep_by_bucket": gaps_dict.get("sbv_dep_by_bucket"),
+        "customer_deposits_by_bucket": gaps_dict.get("customer_deposits_by_bucket"),
+        "fx_position": gaps_dict.get("fx_position", existing.get("fx_position")),
+        "fx_source": gaps_dict.get("fx_source", existing.get("fx_source")),
         "source": source,
         "fetched_at": _now_iso(),
     }

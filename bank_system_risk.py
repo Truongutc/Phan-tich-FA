@@ -467,6 +467,35 @@ def _bank_period_metrics(entry, bs_snap):
         # <1 thang), nhung van la 1 chi so huu ich, KHONG phai LCR that (file nhan manh ro diem nay).
         liquidity_buffer_coverage_1m = (liquid_assets / liab_liq_ty["den_1_thang"]) \
             if liab_liq_ty.get("den_1_thang") else None
+
+        # ── Ban CHINH XAC HON cua "tai san gan tien <=1 thang" (muc 9 file huong dan) — dung DUNG
+        # dong Tien mat + Tien gui NHNN trich truc tiep tu bang thanh khoan (user 2026-09-18), thay vi
+        # xap xi bang liquid_assets toan bo bang can doi nhu tren. KHONG THAY THE
+        # liquidity_buffer_coverage_1m (giu de tuong thich/luon co san du thieu du lieu chi tiet) —
+        # them MOI, chinh xac hon, CHI co khi da trich duoc ca 2 dong chi tiet.
+        cash_raw = entry.get("cash_by_bucket") or {}
+        sbv_raw = entry.get("sbv_dep_by_bucket") or {}
+        if cash_raw and sbv_raw and liab_liq_ty.get("den_1_thang"):
+            near_cash_1m = ((cash_raw.get("den_1_thang") or 0) + (sbv_raw.get("den_1_thang") or 0)) / 1000
+            near_cash_coverage_1m_precise = near_cash_1m / liab_liq_ty["den_1_thang"]
+        else:
+            near_cash_1m = None
+            near_cash_coverage_1m_precise = None
+
+        # ── Co cau ky han tien gui khach hang (muc 12 file huong dan) — % tien gui <=1 thang va
+        # <=1 nam tren TONG tien gui khach hang (khong phai tren tong tai san) — CHI co khi da trich
+        # duoc dong "Tien gui cua khach hang" theo bucket.
+        cust_dep_raw = entry.get("customer_deposits_by_bucket") or {}
+        if cust_dep_raw:
+            cust_dep_bucket_ty = {k: (v or 0) / 1000 for k, v in cust_dep_raw.items()}
+            cust_dep_total_bucketed = sum(cust_dep_bucket_ty.values())
+            if cust_dep_total_bucketed:
+                cust_dep_pct_1m = sum(cust_dep_bucket_ty.get(k, 0.0) for k in _LIQ_ST_KEYS) / cust_dep_total_bucketed
+                cust_dep_pct_1y = sum(cust_dep_bucket_ty.get(k, 0.0) for k in _LIQ_ST_1Y_KEYS) / cust_dep_total_bucketed
+            else:
+                cust_dep_pct_1m = cust_dep_pct_1y = None
+        else:
+            cust_dep_pct_1m = cust_dep_pct_1y = None
     else:
         short_term_funding = long_term_assets_liq = stable_funding = None
         st_funding_lt_assets_ratio = nsfr_proxy = lmi = None
@@ -475,6 +504,8 @@ def _bank_period_metrics(entry, bs_snap):
         liq_cum_1y_cons = liq_cum_1y_cons_ratio = None
         liq_al_ratio_1m = liq_al_ratio_3m = liq_al_ratio_12m = None
         liquidity_buffer_coverage_1m = None
+        near_cash_1m = near_cash_coverage_1m_precise = None
+        cust_dep_pct_1m = cust_dep_pct_1y = None
 
     if liab_ir_raw:
         liab_ir_ty = {k: (v or 0) / 1000 for k, v in liab_ir_raw.items()}
@@ -577,6 +608,8 @@ def _bank_period_metrics(entry, bs_snap):
         "liq_cum_gap_1y_conservative": liq_cum_1y_cons, "liq_cum_gap_1y_conservative_ratio": liq_cum_1y_cons_ratio,
         "liq_al_ratio_1m": liq_al_ratio_1m, "liq_al_ratio_3m": liq_al_ratio_3m, "liq_al_ratio_12m": liq_al_ratio_12m,
         "liquidity_buffer_coverage_1m": liquidity_buffer_coverage_1m,
+        "near_cash_1m": near_cash_1m, "near_cash_coverage_1m_precise": near_cash_coverage_1m_precise,
+        "customer_deposits_pct_1m": cust_dep_pct_1m, "customer_deposits_pct_1y": cust_dep_pct_1y,
         # ── Rui ro tien te (FX Position) — xem ghi chu chi tiet cong thuc o khoi tinh toan phia tren.
         "fx_assets_total": fx_assets_total, "fx_liabilities_total": fx_liab_total,
         "fx_onbalance_gap": fx_onbalance, "fx_offbalance_position": fx_offbalance, "fx_net_position": fx_net,
@@ -827,7 +860,8 @@ _ALM_SHEET_HEADERS = [
     "Short-term Funding (ty)", "Long-term Assets (ty)", "ST Funding/LT Assets (%)",
     "NSFR proxy (%)", "LMI (%)",
     "A/L <=1thang (%)", "A/L 1-3thang (%)", "A/L 3-12thang (%)",
-    "Buffer thanh khoan/No <=1thang (lan)",
+    "Buffer thanh khoan/No <=1thang (lan)", "Tai san gan tien (Tien mat+NHNN)/No <=1thang (lan)",
+    "Tien gui KH <=1thang/Tong tien gui (%)", "Tien gui KH <=1nam/Tong tien gui (%)",
     "Che phu rut -5% tien gui (lan)", "Che phu rut -10% tien gui (lan)", "Che phu rut -20% tien gui (lan)",
     # -- Rui ro lai suat --
     "Gap lai suat rong <=1nam (ty)", "Gap lai suat/TTS <=1thang (%)", "Gap lai suat/TTS <=3thang (%)",
@@ -903,7 +937,8 @@ def update_bank_alm_excel_sheet(out_dir):
                 _rnd("short_term_funding"), _rnd("long_term_assets"),
                 _pct("st_funding_lt_assets_ratio"), _pct("nsfr_proxy"), _pct("lmi"),
                 _pct("liq_al_ratio_1m"), _pct("liq_al_ratio_3m"), _pct("liq_al_ratio_12m"),
-                _rnd("liquidity_buffer_coverage_1m"),
+                _rnd("liquidity_buffer_coverage_1m"), _rnd("near_cash_coverage_1m_precise"),
+                _pct("customer_deposits_pct_1m"), _pct("customer_deposits_pct_1y"),
                 _rnd("deposit_run_coverage_5pct"), _rnd("deposit_run_coverage_10pct"), _rnd("deposit_run_coverage_20pct"),
                 # -- Rui ro lai suat --
                 m.get("cum_gap_1y"), _pct("ir_cum_gap_1m_ratio"), _pct("ir_cum_gap_3m_ratio"),
@@ -969,7 +1004,9 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
 
     headers = ["Ma", "Ky", "Trang thai"]
     for prefix, buckets in (("Gap TK", _LIQ_BUCKETS_ALL), ("No TK", _LIQ_BUCKETS_ALL), ("TS TK", _LIQ_BUCKETS_ALL),
-                            ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL)):
+                            ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL),
+                            ("Tien mat", _LIQ_BUCKETS_ALL), ("Tien gui NHNN", _LIQ_BUCKETS_ALL),
+                            ("Tien gui KH", _LIQ_BUCKETS_ALL)):
         headers += [f"{prefix} {b}" for b in buckets]
     for ccy in _FX_CCY_COLS:
         headers += [f"FX TS {ccy}", f"FX No {ccy}", f"FX Net {ccy}"]
@@ -990,6 +1027,9 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
             liq_liab = entry.get("liabilities_by_bucket") or {}
             ir_gap = entry.get("interest_rate_gap") or {}
             ir_liab = entry.get("interest_rate_liabilities_by_bucket") or {}
+            cash_b = entry.get("cash_by_bucket") or {}
+            sbv_b = entry.get("sbv_dep_by_bucket") or {}
+            cust_dep_b = entry.get("customer_deposits_by_bucket") or {}
             fx = entry.get("fx_position") or {}
             source = entry.get("source") or {}
 
@@ -1008,6 +1048,9 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
             row += [_ty(ir_gap, k) for k in _IR_BUCKETS_ALL]
             row += [_ty(ir_liab, k) for k in _IR_BUCKETS_ALL]
             row += [_assets_ty(ir_gap, ir_liab, k) for k in _IR_BUCKETS_ALL]
+            row += [_ty(cash_b, k) for k in _LIQ_BUCKETS_ALL]
+            row += [_ty(sbv_b, k) for k in _LIQ_BUCKETS_ALL]
+            row += [_ty(cust_dep_b, k) for k in _LIQ_BUCKETS_ALL]
             for ccy in _FX_CCY_COLS:
                 c = fx.get(ccy) or {}
                 row += [round(c["assets"] / 1000, 3) if c.get("assets") is not None else None,
