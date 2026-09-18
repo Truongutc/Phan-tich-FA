@@ -251,14 +251,43 @@
       "cash_by_bucket": null,
       "sbv_dep_by_bucket": null,
       "customer_deposits_by_bucket": null,
-      "fx_position": null,
+      "fx_position": {
+        "OTHER": {
+          "assets": 136112.0,
+          "liabilities": 197574.0,
+          "onbalance": -61462.0,
+          "offbalance": 67350.0,
+          "net": 5888.0
+        },
+        "USD": {
+          "assets": 32833823.0,
+          "liabilities": 30589584.0,
+          "onbalance": 2244239.0,
+          "offbalance": -1362919.0,
+          "net": 881320.0
+        },
+        "EUR": {
+          "assets": 321626.0,
+          "liabilities": 1297821.0,
+          "onbalance": -976198.0,
+          "offbalance": 1121081.0,
+          "net": 144886.0
+        },
+        "JPY": {
+          "assets": 33291561.0,
+          "liabilities": 32084979.0,
+          "onbalance": 4206582.0,
+          "offbalance": -174488.0,
+          "net": 4032094.0
+        }
+      },
       "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-hng-hi-vit-nam14082024-182143bo-co-ti-chnh-hp-nht-bn-nin-nm-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T15:01:04+07:00"
+      "fetched_at": "2026-09-18T18:49:47+07:00"
     }
   },
   "quarterly_balance_sheet": {

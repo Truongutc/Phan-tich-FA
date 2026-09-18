@@ -261,14 +261,29 @@
       "cash_by_bucket": null,
       "sbv_dep_by_bucket": null,
       "customer_deposits_by_bucket": null,
-      "fx_position": null,
+      "fx_position": {
+        "USD": {
+          "assets": 41781830.0,
+          "liabilities": 41304070.0,
+          "onbalance": 4717.0,
+          "offbalance": 200582.0,
+          "net": 678342.0
+        },
+        "OTHER": {
+          "assets": 368350.0,
+          "liabilities": 431881.0,
+          "onbalance": -63531.0,
+          "offbalance": 68206.0,
+          "net": 4675.0
+        }
+      },
       "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20240806__VIB__BCTC_hop_nhat_soat_xet_ban_nien_2024_06082024163739.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T15:32:54+07:00"
+      "fetched_at": "2026-09-18T19:04:54+07:00"
     }
   },
   "quarterly_balance_sheet": {
