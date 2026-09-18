@@ -207,14 +207,36 @@
       "cash_by_bucket": null,
       "sbv_dep_by_bucket": null,
       "customer_deposits_by_bucket": null,
-      "fx_position": null,
+      "fx_position": {
+        "USD": {
+          "assets": 136890862.0,
+          "liabilities": 0.0,
+          "onbalance": 136890862.0,
+          "offbalance": 0.0,
+          "net": 136890862.0
+        },
+        "EUR": {
+          "assets": 2722808.0,
+          "liabilities": 3164379.0,
+          "onbalance": -441571.0,
+          "offbalance": 0.0,
+          "net": -441571.0
+        },
+        "OTHER": {
+          "assets": 6061.0,
+          "liabilities": 107811536.0,
+          "onbalance": -107805475.0,
+          "offbalance": 0.0,
+          "net": -107805475.0
+        }
+      },
       "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-vit-nam-thng-tn03052024-000000bo-co-ti-chnh-qu-1-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T16:54:28+07:00"
+      "fetched_at": "2026-09-18T18:03:26+07:00"
     },
     "2024-Q2": {
       "status": "reported",
