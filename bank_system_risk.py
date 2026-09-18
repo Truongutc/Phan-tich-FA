@@ -931,3 +931,96 @@ def update_bank_alm_excel_sheet(out_dir):
     os.makedirs(out_dir, exist_ok=True)
     wb.save(xlsx_path)
     print(f"  [OK] Sheet {_ALM_SHEET_NAME}: {row_idx - 2} hang")
+
+    _update_bank_alm_raw_buckets_sheet(xlsx_path)
+
+
+# ── Sheet DU LIEU THO THEO TUNG BUCKET (user 2026-09-18: sheet ALM_NganHang_Raw hien co chi hien ty
+# le/chi so DA TINH — muon xem duoc DUNG gia tri tho OCR trich duoc cho tung ky han, de tu kiem soat
+# bucket nao con thieu du lieu can bo sung, khong chi nhin ket qua tinh cuoi cung) ────────────────
+
+_ALM_RAW_BUCKETS_SHEET_NAME = "ALM_NganHang_RawBuckets"
+
+# Nhan ngan gon cho tung bucket (dung lam hau to ten cot) — GIU NGUYEN ten bucket goc (khong dich)
+# de doi chieu truc tiep voi key trong data/bank_alm/*.json khi can tra cuu.
+_LIQ_BUCKETS_ALL = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu_1_3_thang",
+                    "tu_3_12_thang", "tu_1_5_nam", "tren_5_nam"]
+_IR_BUCKETS_ALL = ["qua_han", "khong_anh_huong_lai_suat", "den_1_thang", "tu_1_3_thang",
+                   "tu_3_6_thang", "tu_6_12_thang", "tu_1_5_nam", "tren_5_nam"]
+# Bo dong tien PHO BIEN NHAT (xac nhan qua TCB Quy 1/2026) — bang FX co so luong dong tien KHAC NHAU
+# tuy ngan hang (khong co bucket co dinh nhu 2 bang tren), nen chi danh rieng cot cho 3 dong tien hay
+# gap nhat; dong tien khac (hiem) se KHONG hien rieng o day (van tinh dung trong _bank_period_metrics,
+# chi khong co cot rieng trong sheet nay).
+_FX_CCY_COLS = ["USD", "EUR", "OTHER"]
+
+
+def _update_bank_alm_raw_buckets_sheet(xlsx_path):
+    """Ghi sheet "ALM_NganHang_RawBuckets" (tidy: 1 hang = 1 (ngan hang, ky)) — hien THANG gia tri THO
+    da trich duoc cho TUNG BUCKET rieng le (khac han sheet ALM_NganHang_Raw chi hien ty le/chi so DA
+    TINH), de nguoi dung tu kiem tra duoc bucket/dong nao con thieu du lieu OCR can bo sung thu cong.
+    Assets theo bucket = Gap + No phai tra (suy ra, KHONG phai OCR truc tiep) — de TRONG (None) neu
+    thieu 1 trong 2 phia thay vi doan, dung nguyen tac "khong doan mu" xuyen suot he thong."""
+    import openpyxl
+
+    wb = openpyxl.load_workbook(xlsx_path)
+    if _ALM_RAW_BUCKETS_SHEET_NAME in wb.sheetnames:
+        wb.remove(wb[_ALM_RAW_BUCKETS_SHEET_NAME])
+    ws = wb.create_sheet(title=_ALM_RAW_BUCKETS_SHEET_NAME)
+
+    headers = ["Ma", "Ky", "Trang thai"]
+    for prefix, buckets in (("Gap TK", _LIQ_BUCKETS_ALL), ("No TK", _LIQ_BUCKETS_ALL), ("TS TK", _LIQ_BUCKETS_ALL),
+                            ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL)):
+        headers += [f"{prefix} {b}" for b in buckets]
+    for ccy in _FX_CCY_COLS:
+        headers += [f"FX TS {ccy}", f"FX No {ccy}", f"FX Net {ccy}"]
+    headers += ["Nguon (tieu de)", "Cap nhat luc"]
+    for c, h in enumerate(headers, start=1):
+        ws.cell(row=1, column=c, value=h)
+
+    from bank_universe import BANKING_TICKERS
+    row_idx = 2
+    for ticker in sorted(BANKING_TICKERS):
+        store = bank_alm_store.load_bank_store(ticker)
+        gap_periods = store.get("gap_periods", {})
+        for period_key in sorted(gap_periods.keys(), key=bank_alm_store._period_sort_key):
+            entry = gap_periods[period_key]
+            # KHONG bo qua status="missing" — chinh nhung hang nay moi la tin hieu ro nhat cho biet
+            # ngan hang/ky nao dang HOAN TOAN thieu du lieu tho, dung muc dich chinh cua sheet nay.
+            liq_gap = entry.get("liquidity_gap") or {}
+            liq_liab = entry.get("liabilities_by_bucket") or {}
+            ir_gap = entry.get("interest_rate_gap") or {}
+            ir_liab = entry.get("interest_rate_liabilities_by_bucket") or {}
+            fx = entry.get("fx_position") or {}
+            source = entry.get("source") or {}
+
+            def _ty(d, k):
+                v = d.get(k)
+                return round(v / 1000, 3) if v is not None else None
+
+            def _assets_ty(gap_d, liab_d, k):
+                g, l = gap_d.get(k), liab_d.get(k)
+                return round((g + l) / 1000, 3) if (g is not None and l is not None) else None
+
+            row = [ticker, period_key, entry.get("status")]
+            row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
+            row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
+            row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
+            row += [_ty(ir_gap, k) for k in _IR_BUCKETS_ALL]
+            row += [_ty(ir_liab, k) for k in _IR_BUCKETS_ALL]
+            row += [_assets_ty(ir_gap, ir_liab, k) for k in _IR_BUCKETS_ALL]
+            for ccy in _FX_CCY_COLS:
+                c = fx.get(ccy) or {}
+                row += [round(c["assets"] / 1000, 3) if c.get("assets") is not None else None,
+                        round(c["liabilities"] / 1000, 3) if c.get("liabilities") is not None else None,
+                        round(c["net"] / 1000, 3) if c.get("net") is not None else None]
+            row += [source.get("title"), entry.get("fetched_at")]
+
+            for c, val in enumerate(row, start=1):
+                ws.cell(row=row_idx, column=c, value=val)
+            row_idx += 1
+
+    for c in range(1, len(headers) + 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 14
+
+    wb.save(xlsx_path)
+    print(f"  [OK] Sheet {_ALM_RAW_BUCKETS_SHEET_NAME}: {row_idx - 2} hang")
