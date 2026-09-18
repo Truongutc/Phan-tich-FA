@@ -244,6 +244,59 @@
       "balance_sheet_snapshot": null,
       "source": null,
       "fetched_at": "2026-09-18T21:03:12+07:00"
+    },
+    "2024-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 58495522.0,
+        "khong_anh_huong_lai_suat": 15631049.0,
+        "den_1_thang": 8782378.0,
+        "tu_1_3_thang": -1353861.0,
+        "tu_3_6_thang": 187518745.0,
+        "tu_6_12_thang": -113905020.0,
+        "tu_1_5_nam": -107872441.0,
+        "tren_5_nam": 4016142.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 13502455.0,
+        "khong_anh_huong_lai_suat": 13440528.0,
+        "den_1_thang": 15631048.0,
+        "tu_1_3_thang": 8782378.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 228811060.0,
+        "tu_1_5_nam": -1353861.0,
+        "tren_5_nam": 689410725.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "EUR": {
+          "assets": 632485.0,
+          "liabilities": 631330.0,
+          "onbalance": 1155.0,
+          "offbalance": 0.0,
+          "net": 1155.0
+        },
+        "USD": {
+          "assets": 31372294.0,
+          "liabilities": 31698785.0,
+          "onbalance": -326491.0,
+          "offbalance": 251678.0,
+          "net": -74813.0
+        }
+      },
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/SHB_Baocaotaichinh_2024_Kiemtoan_Hopnhat_14042025143003.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T23:15:22+07:00"
     }
   },
   "quarterly_balance_sheet": {

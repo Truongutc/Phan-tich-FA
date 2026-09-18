@@ -456,6 +456,73 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T19:25:37+07:00"
+    },
+    "2024-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 3321.0,
+        "khong_anh_huong_lai_suat": -1931149.0,
+        "den_1_thang": 52750.0,
+        "tu_1_3_thang": -1874512.0,
+        "tu_3_6_thang": -3321.0,
+        "tu_6_12_thang": 4500136.0,
+        "tu_1_5_nam": -52750.0,
+        "tren_5_nam": 1874512.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 6361.0,
+        "khong_anh_huong_lai_suat": 4653164.0,
+        "den_1_thang": 12682.0,
+        "tu_1_3_thang": 4672207.0,
+        "tu_3_6_thang": 3321.0,
+        "tu_6_12_thang": -1931149.0,
+        "tu_1_5_nam": 52750.0,
+        "tren_5_nam": -1874512.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "EUR": {
+          "assets": 9682.0,
+          "liabilities": 6361.0,
+          "onbalance": 3321.0,
+          "offbalance": 0.0,
+          "net": 3321.0
+        },
+        "USD": {
+          "assets": 2722015.0,
+          "liabilities": 4653164.0,
+          "onbalance": -1931149.0,
+          "offbalance": 0.0,
+          "net": -1931149.0
+        },
+        "GOLD": {
+          "assets": 65432.0,
+          "liabilities": 12682.0,
+          "onbalance": 52750.0,
+          "offbalance": 0.0,
+          "net": 52750.0
+        },
+        "OTHER": {
+          "assets": 2797695.0,
+          "liabilities": 4672207.0,
+          "onbalance": -1874512.0,
+          "offbalance": 0.0,
+          "net": -1874512.0
+        }
+      },
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-nam-06032025-000000bo-co-ti-chnh-hp-nht-nm.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T23:04:24+07:00"
     }
   },
   "quarterly_balance_sheet": {

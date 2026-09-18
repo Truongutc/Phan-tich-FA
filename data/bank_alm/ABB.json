@@ -356,6 +356,82 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T19:09:54+07:00"
+    },
+    "2024-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 1014680.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": -267711.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": -16943169.0,
+        "den_1_thang": -10282746.0,
+        "tu_1_3_thang": -14437276.0,
+        "tu_3_12_thang": 24022012.0,
+        "tu_1_5_nam": 29112701.0,
+        "tren_5_nam": 17048742.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 67441074.0,
+        "qua_han_den_3t": 31772834.0,
+        "den_1_thang": 55651054.0,
+        "tu_1_3_thang": 7866935.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 14646.0,
+        "tren_5_nam": 162746543.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 3066788.0,
+        "den_1_thang": 64755976.0,
+        "tu_1_3_thang": 31494695.0,
+        "tu_3_6_thang": 30467711.0,
+        "tu_6_12_thang": 25022130.0,
+        "tu_1_5_nam": 7866935.0,
+        "tren_5_nam": 14646.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "USD": {
+          "assets": 11728697.0,
+          "liabilities": 10625269.0,
+          "onbalance": 1103428.0,
+          "offbalance": 707064.0,
+          "net": 1810492.0
+        },
+        "EUR": {
+          "assets": 350557.0,
+          "liabilities": 347960.0,
+          "onbalance": 2588.0,
+          "offbalance": 0.0,
+          "net": 2588.0
+        },
+        "OTHER": {
+          "assets": 36378.0,
+          "liabilities": 27571.0,
+          "onbalance": 8807.0,
+          "offbalance": 1558.0,
+          "net": 10365.0
+        }
+      },
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00034567901234567903ngn-hng-tmcp-an-bnh31032025-000000bo-co-ti-chnh-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T22:39:21+07:00"
     }
   },
   "quarterly_balance_sheet": {

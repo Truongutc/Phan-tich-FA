@@ -355,6 +355,68 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T19:15:29+07:00"
+    },
+    "2024-FY": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 5958680.0,
+        "den_1_thang": -4759103.0,
+        "tu_1_3_thang": 4854027.0,
+        "tu_3_6_thang": -7437509.0,
+        "tu_6_12_thang": -6604203.0,
+        "tu_1_5_nam": 1422821.0,
+        "tren_5_nam": 10808332.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 889852.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": -13077388.0,
+        "tu_1_3_thang": -9857938.0,
+        "tu_3_12_thang": -7479498.0,
+        "tu_1_5_nam": 6102049.0,
+        "tren_5_nam": 0.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 2060908.0,
+        "den_1_thang": 27853749.0,
+        "tu_1_3_thang": 24080750.0,
+        "tu_3_6_thang": 20811505.0,
+        "tu_6_12_thang": 18334468.0,
+        "tu_1_5_nam": 2771391.0,
+        "tren_5_nam": 4468600.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 2184624.0,
+        "tren_5_nam": 889837.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 2184624.0,
+        "tu_3_12_thang": 889837.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000000014719987_VI_BaoCaoTaiChinhHopNhat_Kiemtoan_2024_09042025110500.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T22:47:11+07:00"
     }
   },
   "quarterly_balance_sheet": {
