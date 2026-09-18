@@ -84,6 +84,12 @@ _LIQ_CUMULATIVE_ORDER = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu
 _LIQ_ST_1Y_KEYS = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu_1_3_thang", "tu_3_12_thang"]
 _LIQ_LT_KEYS = ["tu_1_5_nam", "tren_5_nam"]
 _IR_CUMULATIVE_ORDER = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_thang", "tu_1_5_nam", "tren_5_nam"]
+# 2 bucket "qua han" cua bang thanh khoan (tai san da qua han hop dong) — theo huong dan phan tich
+# rui ro thanh khoan (user 2026-09-18, file "Danh gia rui ro thanh khoan.docx"): tai san DA QUA HAN
+# KHONG NEN mac nhien coi la nguon thanh khoan kha dung (mot khoan vay qua han 500 ty khong co nghia
+# ngan hang co 500 ty tien mat de tra nguoi gui) — dung de tinh them 1 phien ban THAN TRONG cua gap
+# luy ke (loai tai san qua han khoi nguon bu dap), song song ban "hop dong" (contractual) hien co.
+_LIQ_OVERDUE_KEYS = ["qua_han_tren_3t", "qua_han_den_3t"]
 
 
 def _cumulative_curve(gap_ty, order, ta):
@@ -410,9 +416,47 @@ def _bank_period_metrics(entry, bs_snap):
         st_funding_lt_assets_ratio = (short_term_funding / long_term_assets_liq) if long_term_assets_liq else None
         nsfr_proxy = (stable_funding / long_term_assets_liq) if long_term_assets_liq else None
         lmi = (long_term_assets_liq / stable_funding) if stable_funding else None
+
+        # ── Gap luy ke THAN TRONG (Conservative Gap, xem "Danh gia rui ro thanh khoan.docx" muc 5) —
+        # loai TAI SAN qua han khoi nguon bu dap (gan gia tri 0), GIU NGUYEN phia no phai tra (thuong
+        # cung la 0, nhung khong gia dinh) — chi khac ban "hop dong" (contractual, cac bien cum_gap_1m/
+        # liq_cum_gap_3m/1y phia tren) o 2 bucket qua han. Verify khop CHINH XAC vi du that trong file
+        # huong dan (VAB Quy 1/2026: Conservative Gap 12 thang = -13.832 ty, tuong duong -9,62% tong
+        # tai san — khop dung so lieu "-13,8 nghin ty"/"-9,6%" trong file).
+        conservative_liq_gap_ty = dict(liq_gap_ty)
+        for k in _LIQ_OVERDUE_KEYS:
+            conservative_liq_gap_ty[k] = -liab_liq_ty.get(k, 0.0)
+        cons_curve_abs, cons_curve_ratio = _cumulative_curve(conservative_liq_gap_ty, _LIQ_CUMULATIVE_ORDER, ta)
+        liq_cum_1m_cons, liq_cum_1m_cons_ratio = cons_curve_abs["den_1_thang"], cons_curve_ratio["den_1_thang"]
+        liq_cum_3m_cons, liq_cum_3m_cons_ratio = cons_curve_abs["tu_1_3_thang"], cons_curve_ratio["tu_1_3_thang"]
+        liq_cum_1y_cons, liq_cum_1y_cons_ratio = cons_curve_abs["tu_3_12_thang"], cons_curve_ratio["tu_3_12_thang"]
+
+        # ── Ty le Tai san/No phai tra THEO TUNG BUCKET RIENG LE (khac han cac ty le luy ke o tren) —
+        # xem muc 7 file huong dan: "<1 thang = 154,9%"/"1-3 thang = 60,6%"/"3-12 thang = 61,6%" — chỉ
+        # 3 bucket nay duoc chon vi la 3 moc quan trong nhat de danh gia (< 1 thang = an toan tuc thoi,
+        # 1-3 va 3-12 thang = vung ap luc chinh theo huong dan).
+        liq_al_ratio_1m = (assets_liq_ty.get("den_1_thang", 0.0) / liab_liq_ty["den_1_thang"]) \
+            if liab_liq_ty.get("den_1_thang") else None
+        liq_al_ratio_3m = (assets_liq_ty.get("tu_1_3_thang", 0.0) / liab_liq_ty["tu_1_3_thang"]) \
+            if liab_liq_ty.get("tu_1_3_thang") else None
+        liq_al_ratio_12m = (assets_liq_ty.get("tu_3_12_thang", 0.0) / liab_liq_ty["tu_3_12_thang"]) \
+            if liab_liq_ty.get("tu_3_12_thang") else None
+
+        # ── Liquidity Buffer Coverage <1 thang (xem muc 9 file huong dan: "tai san gan tien" — tien
+        # mat/tien gui NHNN/TCTD — so voi nghia vu <1 thang) — dung `liquid_assets` da co san (toan bo
+        # bang can doi, tu bs_snap) thay vi chi rieng phan <1 thang trong bang gap (chua trich duoc o
+        # muc do dong rieng le) — XAP XI rong hon dinh nghia trong file (dung toan bo thay vi chi phan
+        # <1 thang), nhung van la 1 chi so huu ich, KHONG phai LCR that (file nhan manh ro diem nay).
+        liquidity_buffer_coverage_1m = (liquid_assets / liab_liq_ty["den_1_thang"]) \
+            if liab_liq_ty.get("den_1_thang") else None
     else:
         short_term_funding = long_term_assets_liq = stable_funding = None
         st_funding_lt_assets_ratio = nsfr_proxy = lmi = None
+        liq_cum_1m_cons = liq_cum_1m_cons_ratio = None
+        liq_cum_3m_cons = liq_cum_3m_cons_ratio = None
+        liq_cum_1y_cons = liq_cum_1y_cons_ratio = None
+        liq_al_ratio_1m = liq_al_ratio_3m = liq_al_ratio_12m = None
+        liquidity_buffer_coverage_1m = None
 
     if liab_ir_raw:
         liab_ir_ty = {k: (v or 0) / 1000 for k, v in liab_ir_raw.items()}
@@ -446,7 +490,17 @@ def _bank_period_metrics(entry, bs_snap):
         "stress_nii_100bp": stress_nii_100,
         "stress_nii_ratio_100bp": (stress_nii_100 / nii) if nii else None,
         "stress_nii_ratio_equity_100bp": (stress_nii_100 / equity) if equity else None,
+        "deposit_run_coverage_5pct": (liquid_assets / (cust_dep * 0.05)) if cust_dep else None,
         "deposit_run_coverage_10pct": (liquid_assets / (cust_dep * 0.10)) if cust_dep else None,
+        "deposit_run_coverage_20pct": (liquid_assets / (cust_dep * 0.20)) if cust_dep else None,
+        # ── Bo sung theo "Danh gia rui ro thanh khoan.docx" (user 2026-09-18) — xem cac ghi chu chi
+        # tiet cong thuc o khoi tinh toan phia tren. Da verify khop CHINH XAC voi vi du that trong
+        # file (VAB Quy 1/2026).
+        "liq_cum_gap_1m_conservative": liq_cum_1m_cons, "liq_cum_gap_1m_conservative_ratio": liq_cum_1m_cons_ratio,
+        "liq_cum_gap_3m_conservative": liq_cum_3m_cons, "liq_cum_gap_3m_conservative_ratio": liq_cum_3m_cons_ratio,
+        "liq_cum_gap_1y_conservative": liq_cum_1y_cons, "liq_cum_gap_1y_conservative_ratio": liq_cum_1y_cons_ratio,
+        "liq_al_ratio_1m": liq_al_ratio_1m, "liq_al_ratio_3m": liq_al_ratio_3m, "liq_al_ratio_12m": liq_al_ratio_12m,
+        "liquidity_buffer_coverage_1m": liquidity_buffer_coverage_1m,
     }
 
 
@@ -682,8 +736,12 @@ _ALM_SHEET_HEADERS = [
     # -- Rui ro thanh khoan --
     "Gap thanh khoan rong <=1thang (ty)", "Gap thanh khoan/TTS <=1thang (%)",
     "Gap thanh khoan/TTS <=3thang (%)", "Gap thanh khoan/TTS <=1nam (%)",
+    "Gap thanh khoan/TTS <=1nam THAN TRONG (%)",
     "Short-term Funding (ty)", "Long-term Assets (ty)", "ST Funding/LT Assets (%)",
-    "NSFR proxy (%)", "LMI (%)", "Che phu rut -10% tien gui (lan)",
+    "NSFR proxy (%)", "LMI (%)",
+    "A/L <=1thang (%)", "A/L 1-3thang (%)", "A/L 3-12thang (%)",
+    "Buffer thanh khoan/No <=1thang (lan)",
+    "Che phu rut -5% tien gui (lan)", "Che phu rut -10% tien gui (lan)", "Che phu rut -20% tien gui (lan)",
     # -- Rui ro lai suat --
     "Gap lai suat rong <=1nam (ty)", "Gap lai suat/TTS <=1thang (%)", "Gap lai suat/TTS <=3thang (%)",
     "Gap lai suat/TTS <=1nam (%)", "RSA (ty)", "RSL (ty)", "RSA/RSL (%)",
@@ -747,9 +805,12 @@ def update_bank_alm_excel_sheet(out_dir):
                 m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
                 # -- Rui ro thanh khoan --
                 m.get("cum_gap_1m"), _pct("cum_gap_1m_ratio"), _pct("liq_cum_gap_3m_ratio"),
-                _pct("liq_cum_gap_1y_ratio"), _rnd("short_term_funding"), _rnd("long_term_assets"),
+                _pct("liq_cum_gap_1y_ratio"), _pct("liq_cum_gap_1y_conservative_ratio"),
+                _rnd("short_term_funding"), _rnd("long_term_assets"),
                 _pct("st_funding_lt_assets_ratio"), _pct("nsfr_proxy"), _pct("lmi"),
-                _rnd("deposit_run_coverage_10pct"),
+                _pct("liq_al_ratio_1m"), _pct("liq_al_ratio_3m"), _pct("liq_al_ratio_12m"),
+                _rnd("liquidity_buffer_coverage_1m"),
+                _rnd("deposit_run_coverage_5pct"), _rnd("deposit_run_coverage_10pct"), _rnd("deposit_run_coverage_20pct"),
                 # -- Rui ro lai suat --
                 m.get("cum_gap_1y"), _pct("ir_cum_gap_1m_ratio"), _pct("ir_cum_gap_3m_ratio"),
                 _pct("cum_gap_1y_ratio"), _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
