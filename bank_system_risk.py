@@ -888,8 +888,15 @@ def build_banking_system_risk_section(agg):
 # ── Sheet Excel riêng lưu dữ liệu THÔ per-bank/per-kỳ (yêu cầu user 2026-08-30, mục 7 kế hoạch) ──
 
 _ALM_SHEET_NAME = "ALM_NganHang_Raw"
+# SUA (user 2026-09-18): cot "Trang thai" chung TRUOC DAY co the gay hieu lam — status="reported"
+# chi can 1 TRONG 2 bang (lai suat/thanh khoan) thanh cong la du (xem is_fully_reported()), khien
+# nguoi dung tuong da co du du lieu du that ra chi co 1 nua (bug that phat hien qua VIB/VAB). Them 3
+# cot trang thai RIENG BIET theo tung loai du lieu (lai suat/thanh khoan/tien te), tinh TRUC TIEP tu
+# viec co du lieu hay khong (khong phu thuoc status tong the) - nguoi dung nhin thang vao sheet la
+# biet CHINH XAC dang thieu gi, khong can doan qua status chung.
 _ALM_SHEET_HEADERS = [
-    "Ma", "Ky", "Trang thai", "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
+    "Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Trang thai Tien te",
+    "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
     "Tien gui KH (ty)", "Cho vay KH (ty)", "LDR (%)", "Liquid Assets (ty)",
     # -- Rui ro thanh khoan --
     "Gap thanh khoan rong <=1thang (ty)", "Gap thanh khoan/TTS <=1thang (%)",
@@ -965,8 +972,12 @@ def update_bank_alm_excel_sheet(out_dir):
                 v = m.get(key)
                 return round(v, nd) if v is not None else None
 
+            status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
+            status_tk = "reported" if entry.get("liquidity_gap") else "missing"
+            status_fx = "reported" if entry.get("fx_position") else "missing"
+
             row = [
-                ticker, period_key, status, entry.get("patched_from"),
+                ticker, period_key, status, status_ls, status_tk, status_fx, entry.get("patched_from"),
                 m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
                 m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
                 # -- Rui ro thanh khoan --
@@ -1040,7 +1051,7 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
         wb.remove(wb[_ALM_RAW_BUCKETS_SHEET_NAME])
     ws = wb.create_sheet(title=_ALM_RAW_BUCKETS_SHEET_NAME)
 
-    headers = ["Ma", "Ky", "Trang thai"]
+    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Trang thai Tien te"]
     for prefix, buckets in (("Gap TK", _LIQ_BUCKETS_ALL), ("No TK", _LIQ_BUCKETS_ALL), ("TS TK", _LIQ_BUCKETS_ALL),
                             ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL),
                             ("Tien mat", _LIQ_BUCKETS_ALL), ("Tien gui NHNN", _LIQ_BUCKETS_ALL),
@@ -1079,7 +1090,10 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
                 g, l = gap_d.get(k), liab_d.get(k)
                 return round((g + l) / 1000, 3) if (g is not None and l is not None) else None
 
-            row = [ticker, period_key, entry.get("status")]
+            status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
+            status_tk = "reported" if entry.get("liquidity_gap") else "missing"
+            status_fx = "reported" if entry.get("fx_position") else "missing"
+            row = [ticker, period_key, entry.get("status"), status_ls, status_tk, status_fx]
             row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
             row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
             row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
