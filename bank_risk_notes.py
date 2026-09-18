@@ -266,6 +266,28 @@ _ROW_ANCHOR_WORDS_LIAB_EN = ("total", "liabilities")
 _ROW_LABEL_FLAT_ASSETS_EN = "total assets"
 _ROW_ANCHOR_WORDS_ASSETS_EN = ("total", "assets")
 
+_BARE_VND_RE = re.compile(r"(?<![a-z0-9])vnd(?![a-z0-9])")
+
+
+def _looks_like_raw_vnd_unit(text):
+    """Phát hiện đơn vị VND THỰC (không phải "Triệu đồng") qua BẰNG CHỨNG VĂN BẢN CỤ THỂ trên trang
+    — cột kỳ hạn lặp lại riêng chữ "VND"/"VNĐ" (không kèm "Triệu") ngay dưới mỗi tên bucket.
+
+    SỬA (user 2026-09-18, phát hiện qua VAB Quý 1/2026): ban đầu tưởng đơn vị VND thực CHỈ xảy ra ở
+    bản TIẾNG ANH (OCB) nên gắn cứng theo ngôn ngữ tiêu đề — SAI: VAB công bố bằng TIẾNG VIỆT nhưng
+    VẪN dùng VND thực (ảnh chụp thật xác nhận, cột "VNĐ" lặp lại y hệt cách OCB làm) — đơn vị KHÔNG
+    liên quan gì đến ngôn ngữ tài liệu. Giờ đoán trực tiếp từ VĂN BẢN THẬT trên trang thay vì suy diễn
+    qua ngôn ngữ.
+
+    Mặc định AN TOÀN là KHÔNG chia (coi như đã là "triệu đồng" — đúng quy ước chuẩn của hầu hết ngân
+    hàng đã chạy đúng từ trước) — CHỈ chia 1.000.000 khi có bằng chứng RÕ RÀNG (chữ "vnd" độc lập lặp
+    lại ≥4 lần — khớp gần đủ số bucket — VÀ không có "triệu" ở gần), để không làm sai lệch dữ liệu của
+    những ngân hàng đang chạy đúng chỉ vì tình cờ nhắc "VND" 1-2 lần ở chỗ khác trên trang."""
+    flat = _strip_accents(text).lower()
+    if "trieu dong" in flat or "trieu vnd" in flat or "trieu vnđ" in flat:
+        return False
+    return len(_BARE_VND_RE.findall(flat)) >= 4
+
 
 # Ô số: số VN chuẩn (dấu chấm phân cách nghìn, ngoặc = âm) HOẶC dấu gạch ngang đơn (= 0) HOẶC — dự
 # phòng — 1 dãy ≥4 chữ số THUẦN không dấu chấm (OCR thỉnh thoảng làm mất dấu chấm ở 1 vài ô riêng lẻ,
@@ -362,7 +384,7 @@ def _extract_number_row(text, label_flat, n_buckets, lines_after=6, debug_tag=No
     return _tokens_to_values(toks, lang=lang)
 
 
-def _extract_number_row_loose(text, n_buckets, debug_tag=None):
+def _extract_number_row_loose(text, n_buckets, debug_tag=None, lang="vi"):
     """Phương án CUỐI CÙNG khi cả _extract_number_row (khớp đúng cụm nhãn "mức chênh nhạy cảm.../mức
     chênh thanh khoản ròng") lẫn _extract_number_row_by_position (khớp đúng cụm nhãn + tọa độ) đều
     thất bại. User (2026-08-31) chỉ ra: bắt cứng đúng 1 cụm nhãn dòng SỐ LIỆU rất dễ trượt (ngân hàng
@@ -384,11 +406,11 @@ def _extract_number_row_loose(text, n_buckets, debug_tag=None):
     for idx in reversed(candidate_idxs):
         window_text = "\n".join(lines[idx:idx + 3])
         window_text = re.sub(r"\(\s*\d\s*\)\s*=\s*\(\s*\d\s*\)(?:\s*[+\-]\s*\(\s*\d\s*\))*", " ", window_text)
-        toks = _extract_cell_tokens(window_text, n_buckets)
+        toks = _extract_cell_tokens(window_text, n_buckets, lang=lang)
         if toks is not None:
             if debug_tag:
                 print(f"  [DIAG] {debug_tag}: khop qua fallback noi long, dong \"{lines[idx].strip()[:80]}\"")
-            return _tokens_to_values(toks)
+            return _tokens_to_values(toks, lang=lang)
     return None
 
 
@@ -516,12 +538,6 @@ def _extract_gaps_from_pdf(pdf_path):
         if found_key is None:
             continue
         page_idx, lang = found_key
-        # Ban tieng Anh (OCB xac nhan 2026-09-17) dung don vi VND THUC, khong phai "Trieu dong" nhu
-        # ban tieng Viet chuan - can chia 1.000.000 truoc khi luu de khop quy uoc chung he thong
-        # (raw = trieu dong). Ghep voi ngon ngu tim thay TIEU DE (dang tin cay hon doan tu noi dung
-        # trang, vi 2 ban tieng Anh da xac nhan THAT deu dung VND thuc) thay vi tu do phan tich don
-        # vi tu OCR (rui ro cao hon, xem thao luan voi user truoc khi lam).
-        unit_divisor = 1_000_000 if lang == "en" else 1
         # Bảng số nằm CÁCH trang tiêu đề/phương pháp luận 1 SỐ trang KHÔNG CỐ ĐỊNH — verify thật: MBB
         # 2025 cách đúng 1 trang (heading trang 90 -> bảng trang 91), nhưng TCB 2025 cách 2 trang vì
         # có thêm 1 trang phụ "Độ nhạy đối với lãi suất" (bảng ảnh hưởng LNTT/VCSH theo % lãi suất
@@ -542,6 +558,16 @@ def _extract_gaps_from_pdf(pdf_path):
                 sens = _extract_rate_sensitivity_table(text)
                 if sens:
                     result["interest_rate_sensitivity_disclosed"] = sens
+            # SỬA (user 2026-09-18, phát hiện qua VAB Quý 1/2026): ban đầu gắn định dạng số (dấu
+            # phẩy/chấm phân cách nghìn) VÀ đơn vị tiền (VND thực/Triệu đồng) THEO NGÔN NGỮ tiêu đề
+            # (lang) — SAI, vì VAB công bố bằng TIẾNG VIỆT nhưng số lại dùng dấu PHẨY + đơn vị VND
+            # thực (giống hệt OCB tiếng Anh) — 2 thứ này đi cùng nhau NHƯNG hoàn toàn ĐỘC LẬP với
+            # ngôn ngữ nhãn dòng/tiêu đề. Giờ đoán riêng qua bằng chứng văn bản THẬT trên từng trang
+            # (_looks_like_raw_vnd_unit) — `lang` (tiếng Việt/Anh) CHỈ còn dùng để chọn CHỮ nhãn dòng
+            # cần tìm ("Mức chênh..." hay "Net liquidity gap"...), không còn quyết định gì về số.
+            raw_vnd = _looks_like_raw_vnd_unit(text)
+            numfmt = "en" if raw_vnd else "vi"
+            unit_divisor = 1_000_000 if raw_vnd else 1
             wwords = None
             vals = None
             if lang == "vi":
@@ -550,7 +576,7 @@ def _extract_gaps_from_pdf(pdf_path):
                 # sensitivity gap"...) kem on dinh hon, nen ban tieng Anh bo qua thang 3 tang nay,
                 # di thang toi lop du phong thu 4 (Tong tai san - Tong no phai tra, on dinh ca 2
                 # ngon ngu) - vua nhanh hon (khong tom ocr toa do vo ich) vua tranh khop nham.
-                vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}")
+                vals = _extract_number_row(text, _ROW_LABEL_FLAT[key], n, debug_tag=f"{key} trang {p+1}", lang=numfmt)
                 if not vals:
                     # Fallback theo TỌA ĐỘ (xem docstring _extract_number_row_by_position) — CHỈ chạy
                     # khi cách đọc tuyến tính ở trên thất bại, vì OCR theo tọa độ tốn thêm 1 lượt OCR
@@ -559,12 +585,12 @@ def _extract_gaps_from_pdf(pdf_path):
                     wwords = _ocr_page_words(pdf_path, p)
                     if wwords:
                         vals = _extract_number_row_by_position(wwords, _ROW_ANCHOR_WORDS[key], n,
-                                                                debug_tag=f"{key} trang {p+1}")
+                                                                debug_tag=f"{key} trang {p+1}", lang=numfmt)
                 if not vals:
                     # Lớp dự phòng thứ 3 (xem docstring _extract_number_row_loose) — chỉ chạy khi cả
                     # 2 phương án khớp đúng chữ ở trên đều thất bại, dùng LẠI đúng `text` đã OCR sẵn
                     # (không tốn thêm lượt OCR nào).
-                    vals = _extract_number_row_loose(text, n, debug_tag=f"{key} trang {p+1}")
+                    vals = _extract_number_row_loose(text, n, debug_tag=f"{key} trang {p+1}", lang=numfmt)
             # Tranh thủ trích luôn dòng "Tổng nợ phải trả"/"Total liabilities" trên CÙNG trang/text/
             # wwords đã OCR cho dòng gap (KHÔNG tốn thêm lượt OCR nào) — dùng để suy ra TÀI SẢN theo
             # bucket (= gap + nợ phải trả) cho CẢ 2 bảng: bảng thanh khoản -> Liquid Assets/Cumulative
@@ -581,13 +607,13 @@ def _extract_gaps_from_pdf(pdf_path):
             liab_anchor = _ROW_ANCHOR_WORDS_LIAB if lang == "vi" else _ROW_ANCHOR_WORDS_LIAB_EN
             liab_vals = None
             if liab_result_key not in result:
-                liab_vals = _extract_number_row(text, liab_label, n, debug_tag=f"no_phai_tra trang {p+1}", lang=lang)
+                liab_vals = _extract_number_row(text, liab_label, n, debug_tag=f"no_phai_tra trang {p+1}", lang=numfmt)
                 if not liab_vals:
                     if wwords is None:
                         wwords = _ocr_page_words(pdf_path, p)
                     if wwords:
                         liab_vals = _extract_number_row_by_position(wwords, liab_anchor, n,
-                                                                     debug_tag=f"no_phai_tra trang {p+1}", lang=lang)
+                                                                     debug_tag=f"no_phai_tra trang {p+1}", lang=numfmt)
                 if liab_vals and liab_vals == vals:
                     # Bug that phat hien 2026-08-31 (ABB/STB 2025-Q1): khi 2 dong "Tong no phai tra"
                     # va "Muc chenh..." nam qua gan nhau theo truc doc, buoc dung sai tang dan cua
@@ -609,13 +635,13 @@ def _extract_gaps_from_pdf(pdf_path):
                 # trích thêm đúng 1 dòng "Tổng tài sản".
                 assets_label = _ROW_LABEL_FLAT_ASSETS if lang == "vi" else _ROW_LABEL_FLAT_ASSETS_EN
                 assets_anchor = _ROW_ANCHOR_WORDS_ASSETS if lang == "vi" else _ROW_ANCHOR_WORDS_ASSETS_EN
-                assets_vals = _extract_number_row(text, assets_label, n, debug_tag=f"tong_tai_san trang {p+1}", lang=lang)
+                assets_vals = _extract_number_row(text, assets_label, n, debug_tag=f"tong_tai_san trang {p+1}", lang=numfmt)
                 if not assets_vals:
                     if wwords is None:
                         wwords = _ocr_page_words(pdf_path, p)
                     if wwords:
                         assets_vals = _extract_number_row_by_position(wwords, assets_anchor, n,
-                                                                       debug_tag=f"tong_tai_san trang {p+1}", lang=lang)
+                                                                       debug_tag=f"tong_tai_san trang {p+1}", lang=numfmt)
                 if assets_vals:
                     vals = [a - l for a, l in zip(assets_vals, liab_vals)]
                     print(f"  [DIAG] {key} trang {p+1}: tinh gap = Tong tai san - Tong no phai tra "
