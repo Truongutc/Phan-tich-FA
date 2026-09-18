@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-09-11 13:14",
+    "last_auto_update": "2026-09-18 13:24",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -106,6 +106,12 @@
         "total": 0,
         "valuation_label": "Hợp lý",
         "decision_label": "Tăng tỷ trọng vừa phải"
+      },
+      {
+        "date": "2026-09-18",
+        "total": -2,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Nên mua vào"
       }
     ]
   },
@@ -1811,6 +1817,11 @@
         "period": "2026-W37",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W38",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật.",
@@ -1871,6 +1882,11 @@
       {
         "period": "2026-W37",
         "value": 6.42,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W38",
+        "value": 6.89,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -2303,6 +2319,26 @@
         "period": "2026-09-10",
         "value": 1.5,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 5.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 3.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 3.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -2734,6 +2770,26 @@
         "period": "2026-09-10",
         "value": 3.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 5.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 3.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3165,6 +3221,26 @@
         "period": "2026-09-10",
         "value": 3.8,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 5.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 5.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3596,6 +3672,26 @@
         "period": "2026-09-10",
         "value": 5.5,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 6.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 6.03,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 6.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 6.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3652,6 +3748,11 @@
         "period": "2026-W37",
         "value": 7.76,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W38",
+        "value": 7.47,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3706,6 +3807,11 @@
       },
       {
         "period": "2026-W37",
+        "value": 8.12,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W38",
         "value": 8.12,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -4140,6 +4246,11 @@
         "period": "2026-W37",
         "value": 5.9,
         "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+      },
+      {
+        "period": "2026-W38",
+        "value": 5.9,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
       }
     ],
     "note": "Nguồn: API JSON thật của Vietcombank (vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal, field tenor='12-months'/currencyCode='VND'/tenorType='Savings') — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. 'lower=better' mang tính quy ước (giống các lãi suất khác trong dashboard) — thực ra lãi suất huy động tăng có thể là tín hiệu TỐT (thu hút tiết kiệm) hoặc XẤU (ngân hàng cạnh tranh thanh khoản), không kết luận một chiều — CHỈ BÁO THAM CHIẾU, không tính vào Scorecard 5 nhóm. Đã khảo sát nhưng KHÔNG tìm được nguồn ổn định cho lãi suất cho vay SXKD/mua nhà của VCB (không có endpoint tương ứng).",
@@ -4225,6 +4336,11 @@
       },
       {
         "period": "2026-W37",
+        "value": 6.2,
+        "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
+      },
+      {
+        "period": "2026-W38",
         "value": 6.2,
         "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
       }
@@ -4846,6 +4962,11 @@
         "period": "2026-W37",
         "value": 7.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W38",
+        "value": 7.15,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
     "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max.",
@@ -4900,6 +5021,11 @@
       },
       {
         "period": "2026-W37",
+        "value": 6.15,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W38",
         "value": 6.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
@@ -5189,7 +5315,7 @@
       },
       {
         "period": "2026-09",
-        "value": 25879.19,
+        "value": 25964.16,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -5783,26 +5909,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-08-25",
-        "value": 88.24,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-08-26",
-        "value": 87.77,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-08-27",
-        "value": 90.18,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-08-28",
-        "value": 89.75,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
         "period": "2026-09-01",
         "value": 96.02,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
@@ -5836,6 +5942,26 @@
         "period": "2026-09-09",
         "value": 109.51,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 120.98,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 118.06,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 121.25,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 130.8,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
       }
     ],
     "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu.",
@@ -5848,31 +5974,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-20",
-        "value": 118.25,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-08-21",
-        "value": 118.06,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-08-24",
-        "value": 118.32,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-08-25",
-        "value": 118.23,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-08-26",
-        "value": 118.45,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
       {
         "period": "2026-08-27",
         "value": 118.36,
@@ -5906,6 +6007,26 @@
       {
         "period": "2026-09-04",
         "value": 118.07,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-09-08",
+        "value": 117.91,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-09-09",
+        "value": 117.88,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 118.08,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 118.21,
         "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       }
     ],
@@ -5982,7 +6103,7 @@
       },
       {
         "period": "2026-09",
-        "value": 10.873641910925713,
+        "value": 10.718444622790036,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -6008,7 +6129,7 @@
       },
       {
         "period": "2026-09",
-        "value": 1.6886730760518114,
+        "value": 1.681230884357004,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -6679,6 +6800,11 @@
         "period": "2026-09-10",
         "value": 367.01,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=11/09/2026"
+      },
+      {
+        "period": "2026-09-17",
+        "value": -358.85,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=18/09/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -6734,6 +6860,11 @@
       {
         "period": "2026-W37",
         "value": 316,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+      },
+      {
+        "period": "2026-W38",
+        "value": 323,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],
@@ -9386,7 +9517,7 @@
       },
       {
         "period": "2026-09",
-        "value": 12.48,
+        "value": 12.44,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -9412,7 +9543,7 @@
       },
       {
         "period": "2026-09",
-        "value": 2.05,
+        "value": 2.04,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -9861,6 +9992,26 @@
         "period": "2026-09-10",
         "value": 3.7,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 3.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 3.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 3.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 3.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -10292,6 +10443,26 @@
         "period": "2026-09-10",
         "value": 4.27,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.287,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.287,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 4.29,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -10723,6 +10894,26 @@
         "period": "2026-09-10",
         "value": 4.33,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.33,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11154,6 +11345,26 @@
         "period": "2026-09-10",
         "value": 4.46,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.46,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.46,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.46,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 4.46,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11585,6 +11796,26 @@
         "period": "2026-09-10",
         "value": 4.58,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11996,6 +12227,26 @@
         "period": "2026-09-10",
         "value": -2577.59,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": -24884.16,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": -14266.03,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": -12829.17,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": -11853.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
@@ -13059,6 +13310,26 @@
         "period": "2026-09-10",
         "value": 252649.14,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 190147.03,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 175881.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 163051.83,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 151198.26,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ],
     "note": "Tổng khối lượng OMO (kênh cầm cố/mua kỳ hạn) đang LƯU HÀNH — TỒN KHO thanh khoản NHNN đã bơm ra thị trường qua kênh này TẠI THỜI ĐIỂM đó, khác omo_net_operation (DÒNG CHẢY ròng bơm/hút MỖI NGÀY — chênh lệch trúng thầu/đáo hạn). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). good_direction='lower' mang tính THAM KHẢO: số dư lưu hành cao kéo dài phản ánh NHNN phải bơm thanh khoản LIÊN TỤC để bù đắp thiếu hụt hệ thống (thanh khoản căng), KHÔNG có nghĩa số dư thấp luôn tốt hơn (có thể chỉ đơn giản là ít nhu cầu vay mượn hơn).",
@@ -13071,41 +13342,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-19",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-08-20",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-08-21",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-08-22",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-08-23",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-08-24",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-08-25",
-        "value": 2.25,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
       {
         "period": "2026-08-26",
         "value": 2.25,
@@ -13190,6 +13426,41 @@
         "period": "2026-09-11",
         "value": 2.25,
         "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-12",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-13",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 2.25,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-09-18",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
       }
     ],
     "note": "ECB Deposit Facility Rate (FRED series ECBDFR) — lãi suất NHTW Châu Âu trả cho tiền gửi qua đêm của ngân hàng thương mại, ĐANG LÀ lãi suất điều hành THỰC TẾ quan trọng nhất của ECB từ sau khủng hoảng 2008 (khác Main Refinancing Rate truyền thống) — dùng để đối chiếu xu hướng chính sách tiền tệ Eurozone với Fed.",
@@ -13202,31 +13473,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
       {
         "period": "2026-08-14",
         "value": 3.73,
@@ -13316,6 +13562,31 @@
         "period": "2026-09-09",
         "value": 3.73,
         "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
       }
     ],
     "note": "Sterling Overnight Index Average (FRED series IUDSOIA) — lãi suất THỊ TRƯỜNG qua đêm bám rất sát Bank Rate chính thức của Bank of England (không phải chính Bank Rate, nhưng chênh lệch thường dưới 0,1 điểm %) — dùng làm đại diện xu hướng chính sách tiền tệ Anh khi FRED không có series Bank Rate chính thức trực tiếp.",
@@ -13328,16 +13599,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-07-01",
-        "value": 0.08,
-        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
-      },
-      {
-        "period": "2024-08-01",
-        "value": 0.23,
-        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
-      },
       {
         "period": "2024-09-01",
         "value": 0.23,
@@ -13447,6 +13708,16 @@
         "period": "2026-06-01",
         "value": 0.84,
         "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 0.98,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 0.98,
+        "source_url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N"
       }
     ],
     "note": "Immediate Rates: Call Money/Interbank Rate cho Nhật Bản (FRED series IRSTCI01JPM156N) — lãi suất THỊ TRƯỜNG LIÊN NGÂN HÀNG bám sát mục tiêu chính sách của BOJ, KHÔNG PHẢI chính lãi suất điều hành chính thức BOJ công bố (BOJ neo lãi suất âm/gần 0 nhiều năm, chỉ mới thoát âm gần đây — số liệu này giúp thấy rõ thời điểm BOJ thực sự bắt đầu tăng lãi suất).",
@@ -13459,31 +13730,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 4.65,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 4.72,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 4.7,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 4.68,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 4.63,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
       {
         "period": "2026-08-14",
         "value": 4.68,
@@ -13573,6 +13819,31 @@
         "period": "2026-09-09",
         "value": 4.83,
         "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 4.95,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 4.96,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.97,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 5.0,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 5.01,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
       }
     ],
     "note": "10-Year Treasury Constant Maturity Rate (FRED series DGS10) — lãi suất phi rủi ro tham chiếu toàn cầu, ảnh hưởng định giá mọi tài sản rủi ro (kể cả VN-Index) qua kênh chi phí vốn.",
@@ -13585,16 +13856,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-07-01",
-        "value": 2.46,
-        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
-      },
-      {
-        "period": "2024-08-01",
-        "value": 2.21,
-        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
-      },
       {
         "period": "2024-09-01",
         "value": 2.17,
@@ -13702,7 +13963,17 @@
       },
       {
         "period": "2026-06-01",
-        "value": 2.97,
+        "value": 2.96,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 3.07,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 3.18,
         "source_url": "https://fred.stlouisfed.org/series/IRLTLT01DEM156N"
       }
     ],
@@ -13716,16 +13987,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-07-01",
-        "value": 1.04,
-        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
-      },
-      {
-        "period": "2024-08-01",
-        "value": 0.89,
-        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
-      },
       {
         "period": "2024-09-01",
         "value": 0.85,
@@ -13835,6 +14096,16 @@
         "period": "2026-06-01",
         "value": 2.67,
         "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 2.79,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 2.94,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N"
       }
     ],
     "note": "OECD Long-term interest rates cho Nhật Bản (FRED series IRLTLT01JPM156N) — Nhật giữ lợi suất cực thấp/gần 0 suốt nhiều năm (Yield Curve Control), nên xu hướng tăng gần đây là tín hiệu chính sách rất đáng chú ý.",
@@ -13847,16 +14118,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-07-01",
-        "value": 4.14,
-        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
-      },
-      {
-        "period": "2024-08-01",
-        "value": 3.94,
-        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
-      },
       {
         "period": "2024-09-01",
         "value": 3.91,
@@ -13965,6 +14226,16 @@
       {
         "period": "2026-06-01",
         "value": 4.8,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 4.93,
+        "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 4.99,
         "source_url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N"
       }
     ],
@@ -14236,11 +14507,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2024-08-01",
-        "value": 2.61,
-        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
-      },
-      {
         "period": "2024-09-01",
         "value": 2.43,
         "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
@@ -14349,6 +14615,11 @@
         "period": "2026-07-01",
         "value": 3.3,
         "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 3.35,
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
       }
     ],
     "note": "Consumer Price Index, All Items (FRED series CPIAUCSL, units=pc1 — FRED tự tính %YoY từ chỉ số gốc).",
@@ -14361,11 +14632,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-08-01",
-        "value": 3.29,
-        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
-      },
       {
         "period": "2024-09-01",
         "value": 3.28,
@@ -14474,6 +14740,11 @@
       {
         "period": "2026-07-01",
         "value": 2.47,
+        "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 2.45,
         "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
       }
     ],
@@ -14881,11 +15152,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2024-08-01",
-        "value": -0.41,
-        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
-      },
-      {
         "period": "2024-09-01",
         "value": -1.2,
         "source_url": "https://fred.stlouisfed.org/series/INDPRO"
@@ -14977,27 +15243,32 @@
       },
       {
         "period": "2026-03-01",
-        "value": 0.71,
+        "value": 0.69,
         "source_url": "https://fred.stlouisfed.org/series/INDPRO"
       },
       {
         "period": "2026-04-01",
-        "value": 1.38,
+        "value": 1.43,
         "source_url": "https://fred.stlouisfed.org/series/INDPRO"
       },
       {
         "period": "2026-05-01",
-        "value": 1.53,
+        "value": 1.66,
         "source_url": "https://fred.stlouisfed.org/series/INDPRO"
       },
       {
         "period": "2026-06-01",
-        "value": 1.29,
+        "value": 1.34,
         "source_url": "https://fred.stlouisfed.org/series/INDPRO"
       },
       {
         "period": "2026-07-01",
-        "value": 1.08,
+        "value": 1.13,
+        "source_url": "https://fred.stlouisfed.org/series/INDPRO"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 1.42,
         "source_url": "https://fred.stlouisfed.org/series/INDPRO"
       }
     ],
@@ -15011,31 +15282,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 3.87,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 3.89,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 3.89,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 3.87,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 3.87,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
       {
         "period": "2026-08-14",
         "value": 3.86,
@@ -15125,6 +15371,31 @@
         "period": "2026-09-09",
         "value": 3.95,
         "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 4.0,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 4.07,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.11,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.11,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.14,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
       }
     ],
     "note": "3-Month Treasury Constant Maturity Rate (FRED series DGS3MO) — đầu ngắn đường cong lợi suất, dùng tính spread 10Y-3M (1 trong 2 chỉ báo đảo ngược đường cong kinh điển).",
@@ -15137,31 +15408,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 4.01,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 4.04,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 4.03,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 4.0,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 3.97,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
       {
         "period": "2026-08-14",
         "value": 3.98,
@@ -15251,6 +15497,31 @@
         "period": "2026-09-09",
         "value": 4.17,
         "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 4.28,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 4.35,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.37,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.39,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.45,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
       }
     ],
     "note": "1-Year Treasury Constant Maturity Rate (FRED series DGS1) — điểm giữa đường cong, tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
@@ -15263,31 +15534,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 4.19,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 4.25,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 4.22,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 4.2,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 4.15,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
       {
         "period": "2026-08-14",
         "value": 4.17,
@@ -15377,6 +15623,31 @@
         "period": "2026-09-09",
         "value": 4.43,
         "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 4.56,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 4.63,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.65,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.67,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.74,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
       }
     ],
     "note": "2-Year Treasury Constant Maturity Rate (FRED series DGS2) — dùng tính spread 10Y-2Y, chỉ báo đảo ngược đường cong ĐƯỢC THEO DÕI NHIỀU NHẤT bởi thị trường tài chính toàn cầu.",
@@ -15389,31 +15660,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 4.35,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 4.41,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 4.39,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 4.38,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 4.32,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
       {
         "period": "2026-08-14",
         "value": 4.36,
@@ -15503,6 +15749,31 @@
         "period": "2026-09-09",
         "value": 4.61,
         "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 4.75,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 4.78,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 4.8,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 4.83,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 4.86,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
       }
     ],
     "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
@@ -15515,31 +15786,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-08-07",
-        "value": 5.19,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-08-10",
-        "value": 5.25,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-08-11",
-        "value": 5.24,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-08-12",
-        "value": 5.24,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-08-13",
-        "value": 5.21,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
       {
         "period": "2026-08-14",
         "value": 5.25,
@@ -15628,6 +15874,31 @@
       {
         "period": "2026-09-09",
         "value": 5.28,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 5.37,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 5.35,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 5.34,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 5.36,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 5.35,
         "source_url": "https://fred.stlouisfed.org/series/DGS30"
       }
     ],
@@ -15773,11 +16044,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2024-08-01",
-        "value": 2.16,
-        "source_url": "https://fred.stlouisfed.org/series/CP0000EZ19M086NEST"
-      },
-      {
         "period": "2024-09-01",
         "value": 1.73,
         "source_url": "https://fred.stlouisfed.org/series/CP0000EZ19M086NEST"
@@ -15890,6 +16156,11 @@
       {
         "period": "2026-07-01",
         "value": 2.93,
+        "source_url": "https://fred.stlouisfed.org/series/CP0000EZ19M086NEST"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 3.23,
         "source_url": "https://fred.stlouisfed.org/series/CP0000EZ19M086NEST"
       }
     ],
@@ -19047,6 +19318,26 @@
         "period": "2026-09-10",
         "value": 0.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-11-09-2026-.html"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-15-09-2026-.html"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-16-09-2026-.html"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-17-09-2026-.html"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-18-09-2026-.html"
       }
     ]
   },
