@@ -81,34 +81,56 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
     định "ai chịu trách nhiệm ghi balance_sheet_snapshot" giữa 2 nơi gọi khác nhau
     (template_banking.py cho 1 mã lẻ, bank_system_risk.py cho toàn hệ thống).
 
-    SỬA (user 2026-09-18): GIỮ LẠI fx_position/fx_source từ entry CŨ nếu có — bug thật tự phát hiện
-    khi thêm upsert_fx_position() (ghi RIÊNG, không qua hàm này): hàm này trước đây THAY THẾ TOÀN BỘ
-    entry bằng dict MỚI không hề biết tới 2 field đó, nên bất kỳ lần OCR lại nào sau khi đã có FX
-    (vd backfill force=True, hoặc refresh hàng tuần phát hiện kỳ mới) sẽ ÂM THẦM XÓA MẤT dữ liệu FX
-    đã nhập, dù OCR gap chính vẫn thành công bình thường."""
+    SỬA (user 2026-09-18): MỌI field OCR đều ưu tiên giá trị MỚI, nhưng GIỮ LẠI giá trị CŨ nếu lần
+    này không trích được (thay vì luôn ghi đè bằng None) — bug thật tự phát hiện 2 lần liên tiếp:
+    (1) fx_position/fx_source (ghi RIÊNG qua upsert_fx_position(), hàm này trước đây không biết tới
+    2 field đó, OCR lại sẽ âm thầm xóa mất FX đã nhập); (2) VIB/VAB — nhiều kỳ có status="reported"
+    (báo "đã xong") nhưng CHỈ interest_rate_gap thành công, liquidity_gap ÂM THẦM là None — nếu sau
+    này sửa fix rồi backfill_period() bỏ qua các kỳ này (coi status="reported" là XONG, không thử
+    lại), sẽ KHÔNG BAO GIỜ tự lấy được phần thiếu (xem is_fully_reported() ở dưới, dùng để quyết định
+    có bỏ qua hay thử lại). Giờ MỌI lần OCR lại chỉ có thể THÊM/CẢI THIỆN dữ liệu, không bao giờ làm
+    MẤT field đã trích được trước đó chỉ vì lần này không trích lại được field đó."""
     store = load_bank_store(ticker)
     existing = store["gap_periods"].get(period_key) or {}
+
+    def _merge(key):
+        new_val = gaps_dict.get(key)
+        return new_val if new_val is not None else existing.get(key)
+
     store["gap_periods"][period_key] = {
         "status": "reported",
         "patched_from": None,
-        "interest_rate_gap": gaps_dict.get("interest_rate_gap"),
-        "liquidity_gap": gaps_dict.get("liquidity_gap"),
-        "liabilities_by_bucket": gaps_dict.get("liabilities_by_bucket"),
-        "interest_rate_liabilities_by_bucket": gaps_dict.get("interest_rate_liabilities_by_bucket"),
-        "interest_rate_sensitivity_disclosed": gaps_dict.get("interest_rate_sensitivity_disclosed"),
+        "interest_rate_gap": _merge("interest_rate_gap"),
+        "liquidity_gap": _merge("liquidity_gap"),
+        "liabilities_by_bucket": _merge("liabilities_by_bucket"),
+        "interest_rate_liabilities_by_bucket": _merge("interest_rate_liabilities_by_bucket"),
+        "interest_rate_sensitivity_disclosed": _merge("interest_rate_sensitivity_disclosed"),
         # 3 dong chi tiet bo sung tu bang thanh khoan (user 2026-09-18, xem bank_risk_notes.py
         # _ROW_LABELS_CASH/_SBV_DEP/_CUST_DEP) — CHUA CHAC luon trich duoc (chi khop tuyen tinh,
         # khong co tang du phong), None neu khong trich duoc thay vi doan.
-        "cash_by_bucket": gaps_dict.get("cash_by_bucket"),
-        "sbv_dep_by_bucket": gaps_dict.get("sbv_dep_by_bucket"),
-        "customer_deposits_by_bucket": gaps_dict.get("customer_deposits_by_bucket"),
-        "fx_position": gaps_dict.get("fx_position", existing.get("fx_position")),
-        "fx_source": gaps_dict.get("fx_source", existing.get("fx_source")),
+        "cash_by_bucket": _merge("cash_by_bucket"),
+        "sbv_dep_by_bucket": _merge("sbv_dep_by_bucket"),
+        "customer_deposits_by_bucket": _merge("customer_deposits_by_bucket"),
+        "fx_position": _merge("fx_position"),
+        "fx_source": _merge("fx_source"),
         "source": source,
         "fetched_at": _now_iso(),
     }
     save_bank_store(ticker, store)
     return store["gap_periods"][period_key]
+
+
+def is_fully_reported(entry):
+    """Kiểm tra entry có THẬT SỰ đầy đủ CẢ 2 bảng gap (lãi suất + thanh khoản) hay chỉ 1 trong 2 —
+    status="reported" KHÔNG đảm bảo cả 2 đều có (bug thật phát hiện 2026-09-18 qua VIB/VAB: bảng lãi
+    suất trích thành công trong khi bảng thanh khoản ÂM THẦM thất bại, entry vẫn được đánh dấu
+    "reported" như thể đã xong hoàn toàn). Dùng để quyết định "bỏ qua vì đã xong" hay "vẫn nên thử
+    lại" khi backfill — CHỈ coi là xong khi CẢ 2 đều có, nếu chỉ có 1 thì vẫn còn cơ hội lấy nốt phần
+    thiếu (đặc biệt hữu ích sau khi sửa 1 fix OCR — tự động thử lại đúng những kỳ còn dở dang thay vì
+    mãi mãi bị coi là "đã xong")."""
+    if not entry or entry.get("status") != "reported":
+        return False
+    return bool(entry.get("interest_rate_gap")) and bool(entry.get("liquidity_gap"))
 
 
 def gap_period_to_quarter(period_key):

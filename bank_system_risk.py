@@ -316,9 +316,19 @@ def _backfill_ticker_period(ticker, period_key, candidates, force=False):
         for try_period in candidates:
             if not force:
                 existing = bank_alm_store.get_period_entry(ticker, try_period)
-                if existing and existing.get("status") == "reported":
-                    print(f"  [SKIP] {ticker} {try_period}: da co du lieu that, bo qua")
+                # SUA (user 2026-09-18, phat hien qua VIB/VAB): status="reported" KHONG dam bao ca 2
+                # bang (lai suat + thanh khoan) deu co - dung is_fully_reported() thay vi chi kiem
+                # tra status, de tu dong THU LAI dung nhung ky con do dang (1 trong 2 bang bi thieu)
+                # thay vi mai mai bi coi la "da xong". upsert_reported_period() gio da MERGE (uu tien
+                # gia tri moi, giu gia tri cu neu lan nay khong trich lai duoc) nen thu lai an toan,
+                # khong lam mat field da co truoc do.
+                if bank_alm_store.is_fully_reported(existing):
+                    print(f"  [SKIP] {ticker} {try_period}: da co du lieu that DAY DU (ca lai suat + "
+                          f"thanh khoan), bo qua")
                     return f"da_co ({try_period})"
+                if existing and existing.get("status") == "reported":
+                    print(f"  [INFO] {ticker} {try_period}: da 'reported' nhung con thieu 1 trong 2 "
+                          f"bang gap - thu lai de lay not phan thieu")
             gaps = fetch_bank_risk_gaps_for_period(ticker, try_period)
             if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
                 source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
