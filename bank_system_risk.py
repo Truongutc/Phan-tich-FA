@@ -975,9 +975,20 @@ def update_bank_alm_excel_sheet(out_dir):
             status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
             status_tk = "reported" if entry.get("liquidity_gap") else "missing"
             status_fx = "reported" if entry.get("fx_position") else "missing"
+            # Cot C tong hop: chi xet Lai suat + Thanh khoan (2 bang co OCR tu dong, backfill sua
+            # duoc) - KHONG xet Tien te vao day vi FX chua co OCR tu dong (chi nhap tay cho vai ma
+            # nhu TCB/VIB), neu bat buoc ca FX thi cot C se bao "missing" gan het moi dong, mat tac
+            # dung loc "co can chay lai backfill khong". "patched" giu nguyen rieng (du lieu ke thua
+            # tu ky truoc, khong phai dang thieu can OCR lai).
+            if status == "patched":
+                status_overall = "patched"
+            elif status_ls == "reported" and status_tk == "reported":
+                status_overall = "reported"
+            else:
+                status_overall = "missing"
 
             row = [
-                ticker, period_key, status, status_ls, status_tk, status_fx, entry.get("patched_from"),
+                ticker, period_key, status_overall, status_ls, status_tk, status_fx, entry.get("patched_from"),
                 m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
                 m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
                 # -- Rui ro thanh khoan --
@@ -1093,7 +1104,17 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
             status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
             status_tk = "reported" if entry.get("liquidity_gap") else "missing"
             status_fx = "reported" if entry.get("fx_position") else "missing"
-            row = [ticker, period_key, entry.get("status"), status_ls, status_tk, status_fx]
+            # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - chi xet Lai
+            # suat + Thanh khoan (2 bang co OCR tu dong), KHONG xet Tien te (chua co OCR tu dong cho
+            # da so ma, se lam cot C bao "missing" gan het).
+            raw_status = entry.get("status")
+            if raw_status == "patched":
+                status_overall = "patched"
+            elif status_ls == "reported" and status_tk == "reported":
+                status_overall = "reported"
+            else:
+                status_overall = "missing"
+            row = [ticker, period_key, status_overall, status_ls, status_tk, status_fx]
             row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
             row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
             row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
