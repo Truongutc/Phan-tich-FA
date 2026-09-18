@@ -133,15 +133,53 @@
       "fetched_at": "2026-09-17T15:06:22+07:00"
     },
     "2025-Q3": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 36785110.0,
+        "khong_anh_huong_lai_suat": -450709484.0,
+        "den_1_thang": 234029401.0,
+        "tu_1_3_thang": 476663401.0,
+        "tu_3_6_thang": -333046384.0,
+        "tu_6_12_thang": 81571502.0,
+        "tu_1_5_nam": 75943341.0,
+        "tren_5_nam": 209280849.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 10421950.0,
+        "qua_han_den_3t": -280847.0,
+        "den_1_thang": 10370023.0,
+        "tu_1_3_thang": 48205146.0,
+        "tu_3_12_thang": 41889235.0,
+        "tu_1_5_nam": -61408.0,
+        "tren_5_nam": -4896113.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 111195.0,
+        "qua_han_den_3t": 280847.0,
+        "den_1_thang": 143722.0,
+        "tu_1_3_thang": 98225.0,
+        "tu_3_12_thang": 6414136.0,
+        "tu_1_5_nam": 61408.0,
+        "tren_5_nam": 4896113.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 36785110.0,
+        "khong_anh_huong_lai_suat": -450709484.0,
+        "den_1_thang": 21834150.0,
+        "tu_1_3_thang": 234029401.0,
+        "tu_3_6_thang": 28677335.0,
+        "tu_6_12_thang": 476663401.0,
+        "tu_1_5_nam": 13571680.0,
+        "tren_5_nam": -333046384.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-17T18:09:51+07:00"
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251030_-_BID_-_CBTT_BCTC_HN_giua_nien_do_QIII_1761898492.pdf",
+        "fetched_year": 2025
+      },
+      "fetched_at": "2026-09-18T08:44:10+07:00"
     },
     "2026-Q1": {
       "status": "reported",
