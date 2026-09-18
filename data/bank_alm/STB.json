@@ -112,7 +112,16 @@
     "2025-Q2": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 806187.0,
+        "khong_anh_huong_lai_suat": -225045792.0,
+        "den_1_thang": 180034066.0,
+        "tu_1_3_thang": 223225493.0,
+        "tu_3_6_thang": -162767898.0,
+        "tu_6_12_thang": -5130022.0,
+        "tu_1_5_nam": 32249028.0,
+        "tren_5_nam": -704873381.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 16711567.0,
         "qua_han_den_3t": 4293844.0,
@@ -131,13 +140,52 @@
         "tu_1_5_nam": 747518417.0,
         "tren_5_nam": 16711567.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 20199224.0,
+        "khong_anh_huong_lai_suat": 268284574.0,
+        "den_1_thang": 126555107.0,
+        "tu_1_3_thang": 146500930.0,
+        "tu_3_6_thang": 168406019.0,
+        "tu_6_12_thang": 17208777.0,
+        "tu_1_5_nam": 363386.0,
+        "tren_5_nam": 747518017.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 8185140.0,
+        "qua_han_den_3t": 8185140.0,
+        "den_1_thang": 17032478.0,
+        "tu_1_3_thang": 17032478.0,
+        "tu_3_12_thang": 98170331.0,
+        "tu_1_5_nam": 2180363.0,
+        "tren_5_nam": 251626.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 17032478.0,
+        "qua_han_den_3t": 17032478.0,
+        "den_1_thang": 98170331.0,
+        "tu_1_3_thang": 2180363.0,
+        "tu_3_12_thang": 251626.0,
+        "tu_1_5_nam": 100602320.0,
+        "tren_5_nam": 14472589.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 210788713.0,
+        "qua_han_den_3t": 116926314.0,
+        "den_1_thang": 284845708.0,
+        "tu_1_3_thang": 11726838.0,
+        "tu_3_12_thang": 27204.0,
+        "tu_1_5_nam": 624314771.0,
+        "tren_5_nam": 28358.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/STB_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_06102025100208.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T12:33:00+07:00"
+      "fetched_at": "2026-09-19T06:47:55+07:00"
     },
     "2025-Q3": {
       "status": "reported",

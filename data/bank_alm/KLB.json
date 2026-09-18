@@ -88,7 +88,16 @@
     "2025-Q2": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 2512305.0,
+        "khong_anh_huong_lai_suat": 6572541.0,
+        "den_1_thang": -9490182.0,
+        "tu_1_3_thang": -6828639.0,
+        "tu_3_6_thang": -13950996.0,
+        "tu_6_12_thang": 7065691.0,
+        "tu_1_5_nam": 17930789.0,
+        "tren_5_nam": 4659878.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 1431430.0,
         "qua_han_den_3t": 1080875.0,
@@ -107,13 +116,74 @@
         "tu_1_5_nam": 90384340.0,
         "tren_5_nam": 1431430.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 3026.0,
+        "den_1_thang": 27473683.0,
+        "tu_1_3_thang": 17501418.0,
+        "tu_3_6_thang": 20672063.0,
+        "tu_6_12_thang": 19320713.0,
+        "tu_1_5_nam": 285534.0,
+        "tren_5_nam": 2104037.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 769709.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 6340928.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 18941393.0,
+        "qua_han_den_3t": 15940218.0,
+        "den_1_thang": 38064593.0,
+        "tu_1_3_thang": 226533.0,
+        "tu_3_12_thang": 73173554.0,
+        "tu_1_5_nam": 35876.0,
+        "tren_5_nam": 0.0
+      },
+      "fx_position": {
+        "USD": {
+          "assets": 1861741.0,
+          "liabilities": 3500874.0,
+          "onbalance": 1639133.0,
+          "offbalance": 0.0,
+          "net": 1639133.0
+        },
+        "EUR": {
+          "assets": 4650.0,
+          "liabilities": 3501523.0,
+          "onbalance": 4045.0,
+          "offbalance": 0.0,
+          "net": 4045.0
+        },
+        "OTHER": {
+          "assets": 11394.0,
+          "liabilities": 1639133.0,
+          "onbalance": 11350.0,
+          "offbalance": 0.0,
+          "net": 11350.0
+        }
+      },
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00000617283950617284ngn-hng-tmcp-kin-long28082025-000000bo-co-ti-chnh-bn-nin-2025_1_0929.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T12:03:05+07:00"
+      "fetched_at": "2026-09-19T06:34:36+07:00"
     },
     "2025-Q3": {
       "status": "reported",

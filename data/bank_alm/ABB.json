@@ -76,15 +76,62 @@
         "tu_1_5_nam": 0.0,
         "tren_5_nam": 0.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3592453.0,
+        "qua_han_den_3t": -75300453.0,
+        "den_1_thang": 24607866.0,
+        "tu_1_3_thang": -29090424.0,
+        "tu_3_12_thang": 28069640.0,
+        "tu_1_5_nam": 33079211.0,
+        "tren_5_nam": -155975425.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 76103884.0,
+        "den_1_thang": 34602952.0,
+        "tu_1_3_thang": 60211867.0,
+        "tu_3_12_thang": 18609253.0,
+        "tu_1_5_nam": 15697.0,
+        "tren_5_nam": 189543653.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 47134423.0,
+        "den_1_thang": 69569984.0,
+        "tu_1_3_thang": 36691533.0,
+        "tu_3_6_thang": 43246254.0,
+        "tu_6_12_thang": 16697509.0,
+        "tu_1_5_nam": 18609253.0,
+        "tren_5_nam": 15697.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 487573.0,
+        "tu_1_3_thang": 487573.0,
+        "tu_3_12_thang": 11618437.0,
+        "tu_1_5_nam": 11618437.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 38465859.0,
+        "tu_1_3_thang": 27484600.0,
+        "tu_3_12_thang": 52731475.0,
+        "tu_1_5_nam": 4358910.0,
+        "tren_5_nam": 15697.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00012345679012345679ngn-hng-tmcp-an-bnh04092025-000000bo-co-ti-chnh-bn-nin-2025_1_0945.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T11:41:33+07:00"
+      "fetched_at": "2026-09-19T06:28:26+07:00"
     },
     "2025-Q3": {
       "status": "reported",

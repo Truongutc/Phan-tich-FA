@@ -76,15 +76,62 @@
         "tu_1_5_nam": 207311011.0,
         "tren_5_nam": 27428304.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 13468322.0,
+        "qua_han_den_3t": 21582775.0,
+        "den_1_thang": -554123662.0,
+        "tu_1_3_thang": 193779289.0,
+        "tu_3_12_thang": 12393292.0,
+        "tu_1_5_nam": 264081218.0,
+        "tren_5_nam": 296247381.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 1140726189.0,
+        "tu_1_3_thang": 25989132.0,
+        "tu_3_12_thang": 594732081.0,
+        "tu_1_5_nam": 9662557.0,
+        "tren_5_nam": 7777219.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 34209.0,
+        "den_1_thang": 1117549830.0,
+        "tu_1_3_thang": 251682484.0,
+        "tu_3_6_thang": 238062294.0,
+        "tu_6_12_thang": 352751991.0,
+        "tu_1_5_nam": 8241661.0,
+        "tren_5_nam": 1389169.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 13468322.0,
+        "tren_5_nam": 21582775.0
+      },
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VCB_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_06102025111259.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T12:50:26+07:00"
+      "fetched_at": "2026-09-19T06:55:48+07:00"
     },
     "2025-Q3": {
       "status": "reported",

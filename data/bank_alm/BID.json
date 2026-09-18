@@ -125,12 +125,17 @@
         "tren_5_nam": 2828.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/BID_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_03102025143111.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-17T15:06:22+07:00"
+      "fetched_at": "2026-09-19T06:30:29+07:00"
     },
     "2025-Q3": {
       "status": "reported",

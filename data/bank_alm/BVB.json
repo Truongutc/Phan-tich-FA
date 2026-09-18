@@ -98,15 +98,68 @@
         "tu_1_5_nam": 749086.0,
         "tren_5_nam": 10225360.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": -15335027.0,
+        "qua_han_den_3t": -1370063.0,
+        "den_1_thang": -4063433.0,
+        "tu_1_3_thang": -962484.0,
+        "tu_3_12_thang": -115391.0,
+        "tu_1_5_nam": -20204963.0,
+        "tren_5_nam": 183677.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 15335027.0,
+        "qua_han_den_3t": 2285970.0,
+        "den_1_thang": 4810883.0,
+        "tu_1_3_thang": 1341068.0,
+        "tu_3_12_thang": 970179.0,
+        "tu_1_5_nam": 21116089.0,
+        "tren_5_nam": 3627038.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 247229.0,
+        "khong_anh_huong_lai_suat": 2043022.0,
+        "den_1_thang": 2069549.0,
+        "tu_1_3_thang": 4196967.0,
+        "tu_3_6_thang": 1330095.0,
+        "tu_6_12_thang": 12609792.0,
+        "tu_1_5_nam": 2212600.0,
+        "tren_5_nam": 8299328.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "USD": {
+          "assets": 503959.0,
+          "liabilities": 1083077.0,
+          "onbalance": -579118.0,
+          "offbalance": 677918.0,
+          "net": 98800.0
+        },
+        "EUR": {
+          "assets": 1856.0,
+          "liabilities": 1084113.0,
+          "onbalance": 1649.0,
+          "offbalance": -3558.0,
+          "net": -1909.0
+        },
+        "OTHER": {
+          "assets": 6210.0,
+          "liabilities": -579118.0,
+          "onbalance": 5381.0,
+          "offbalance": 673817.0,
+          "net": 679198.0
+        }
+      },
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00000617283950617284ngn-hng-tmcp-bn-vit15082025-000000bo-co-ti-chnh-bn-nin-2025_5_1133.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T11:53:16+07:00"
+      "fetched_at": "2026-09-19T06:32:46+07:00"
     },
     "2025-Q3": {
       "status": "reported",

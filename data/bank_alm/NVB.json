@@ -76,15 +76,37 @@
         "tu_1_5_nam": 31495940.0,
         "tren_5_nam": 55937808.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": -18109589.0,
+        "qua_han_den_3t": 10218991.0,
+        "den_1_thang": 8281761.0,
+        "tu_1_3_thang": 6478999.0,
+        "tu_3_12_thang": -4979628.0,
+        "tu_1_5_nam": 38627491.0,
+        "tren_5_nam": 15159346.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 18508944.0,
+        "qua_han_den_3t": 21763.0,
+        "den_1_thang": 12492980.0,
+        "tu_1_3_thang": 29177.0,
+        "tu_3_12_thang": 25212153.0,
+        "tu_1_5_nam": 35373.0,
+        "tren_5_nam": 9902556.0
+      },
+      "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00000617283950617284ngn-hng-tmcp-quc-dn27082025-000000bo-co-ti-chnh-bn-nin-2025_1_0915.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T12:16:11+07:00"
+      "fetched_at": "2026-09-19T06:39:30+07:00"
     },
     "2025-Q3": {
       "status": "reported",

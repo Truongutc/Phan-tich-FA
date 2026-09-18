@@ -112,7 +112,16 @@
     "2025-Q2": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": -40561429.0,
+        "den_1_thang": -2839985.0,
+        "tu_1_3_thang": 11668074.0,
+        "tu_3_6_thang": 60989247.0,
+        "tu_6_12_thang": -52546689.0,
+        "tu_1_5_nam": 47239150.0,
+        "tren_5_nam": -339525772.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 4339091.0,
         "qua_han_den_3t": 1358912.0,
@@ -123,13 +132,43 @@
         "tren_5_nam": 35471032.0
       },
       "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 47091449.0,
+        "den_1_thang": 2839985.0,
+        "tu_1_3_thang": 57322882.0,
+        "tu_3_6_thang": 75000833.0,
+        "tu_6_12_thang": 52546689.0,
+        "tu_1_5_nam": 24723195.0,
+        "tren_5_nam": 339525772.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "EUR": {
+          "assets": 53530000.0,
+          "liabilities": 53825000.0,
+          "onbalance": 497837000.0,
+          "offbalance": -508539000.0,
+          "net": -10702000.0
+        },
+        "USD": {
+          "assets": 34648620000.0,
+          "liabilities": 34150783000.0,
+          "onbalance": 86251000.0,
+          "offbalance": -9631000.0,
+          "net": 76620000.0
+        }
+      },
+      "fx_source": null,
       "source": {
-        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20250905_-_SSB_-_Bao_cao_tai_chinh_hop_nhat_soat_xet_ban_nien_2025_va_Giai_trinh_bien_dong_LNST_signed_1757323427.pdf",
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/SSB_Baocaotaichinh_Q2_2025_Hopnhat_04082025105259.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T12:30:19+07:00"
+      "fetched_at": "2026-09-19T06:45:21+07:00"
     },
     "2025-Q3": {
       "status": "reported",
