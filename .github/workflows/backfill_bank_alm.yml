@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       period:
-        description: 'Ky can backfill, dinh dang YYYY-Qn (vd 2025-Q1, Q1-Q4 deu duoc, xac nhan 2026-08 la BCTC quy thuong CUNG co bang gap) hoac YYYY-FY (bao cao nam da kiem toan). Nhap kieu nao cung duoc: 2025-Q1, Q1-2025, 1-2025 deu hieu la Quy 1/2025; 2025-FY hoac FY-2025 deu la bao cao nam. Nhap ky Quy 4 se tu dong uu tien thu ban NAM (dang tin hon) truoc, chi dung ban Quy 4 neu ngan hang do chua co ban nam.'
-        required: true
-        default: '2025-FY'
+        description: 'Ky can backfill, dinh dang YYYY-Qn (vd 2025-Q1, Q1-Q4 deu duoc, xac nhan 2026-08 la BCTC quy thuong CUNG co bang gap) hoac YYYY-FY (bao cao nam da kiem toan). Nhap kieu nao cung duoc: 2025-Q1, Q1-2025, 1-2025 deu hieu la Quy 1/2025; 2025-FY hoac FY-2025 deu la bao cao nam. Nhap ky Quy 4 se tu dong uu tien thu ban NAM (dang tin hon) truoc, chi dung ban Quy 4 neu ngan hang do chua co ban nam. DE TRONG: tu dong quet lai TAT CA cac ky da tung backfill truoc day (moi ky, CHI OCR lai dung nhung ma dang thieu, bo qua ma da co du lieu that) - dung khi muon "don" het nhung gi con thieu tren toan bo lich su trong 1 lan chay, khong phai tu tay chay lai tung ky.'
+        required: false
 
 permissions:
   contents: write
@@ -14,11 +13,13 @@ permissions:
 jobs:
   backfill:
     runs-on: ubuntu-latest
-    # 26 ngân hàng x tối đa vài phút OCR/ngân hàng cho 1 KỲ DUY NHẤT (không phải toàn bộ lịch sử —
-    # chạy input riêng cho từng kỳ, vd chạy tay lần lượt 2025-Q1, 2025-Q2, 2025-Q3, 2025-FY... —
-    # BCTC quý thường CŨNG có đủ 2 bảng gap, xem bank_risk_notes.py) — 90 phút đủ dư so với ước
-    # tính ~65 phút xấu nhất, cùng ngưỡng đã dùng cho analyze_stock.yml.
-    timeout-minutes: 90
+    # Nhap 1 ky cu the: 26 ngan hang x toi da vai phut OCR/ngan hang cho 1 KY DUY NHAT - 90 phut du
+    # du so voi uoc tinh ~65 phut xau nhat (giong nguong dung cho analyze_stock.yml). DE TRONG ky
+    # (quet lai TAT CA ky da tung backfill, xem backfill_all_missing_periods()): moi ky da co da
+    # dang "reported" duoc bo qua NGAY (khong OCR, chi 1 lan doc JSON) nen tong thoi gian phu thuoc
+    # SO LUONG TO HOP (ngan hang, ky) DANG THIEU thuc te, khong phai tong so ky x 26 - van giu nguong
+    # rong (240 phut) de an toan cho truong hop thieu nhieu dot dau.
+    timeout-minutes: 240
 
     steps:
       - name: Checkout Repository
@@ -40,9 +41,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Backfill 1 kỳ lịch sử cho toàn bộ 26 ngân hàng
+      # Nhap ky -> backfill dung 1 ky do cho ca 26 ma. De trong ky -> quet lai TAT CA ky da tung
+      # backfill truoc day (backfill_all_missing_periods() - moi ky TU DONG bo qua ma da co du lieu
+      # that, chi OCR lai dung ma dang thieu).
+      - name: Backfill ALM ngan hang (1 ky hoac tat ca ky con thieu)
         run: |
-          python -c "from bank_system_risk import backfill_period; backfill_period('${{ github.event.inputs.period }}')"
+          python -c "
+          from bank_system_risk import backfill_period, backfill_all_missing_periods
+          period = '${{ github.event.inputs.period }}'.strip()
+          if period:
+              backfill_period(period)
+          else:
+              print('[INFO] Khong nhap ky - tu dong quet lai TAT CA ky da tung backfill, chi lay phan con thieu.')
+              backfill_all_missing_periods()
+          "
 
       # SỬA (2026-08-31, user muốn có bản Excel lưu lại "tiện import khi xóa trắng cập nhật lại" —
       # trước đây sheet ALM_NganHang_Raw chỉ được ghi khi chạy TOÀN BỘ pipeline vĩ mô hàng tuần
@@ -78,7 +90,11 @@ jobs:
           if git diff --staged --quiet; then
             echo "Khong co thay doi de commit."
           else
-            git commit -m "Backfill ALM ngan hang — ${{ github.event.inputs.period }} — $(date +'%Y-%m-%d')"
+            PERIOD_LABEL="${{ github.event.inputs.period }}"
+            if [ -z "$PERIOD_LABEL" ]; then
+              PERIOD_LABEL="quet lai tat ca ky con thieu"
+            fi
+            git commit -m "Backfill ALM ngan hang — ${PERIOD_LABEL} — $(date +'%Y-%m-%d')"
 
             # Chi commit/push data/bank_alm/ (moi file rieng biet theo ticker, khong phai kieu "ghi
             # de toan bo 1 file" nhu vimo.json) — rebase len remote an toan, giong pattern da dung o

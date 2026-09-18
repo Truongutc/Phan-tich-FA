@@ -277,6 +277,34 @@ def backfill_period(period_key):
     return results
 
 
+def backfill_all_missing_periods():
+    """Quét TẤT CẢ kỳ đã từng được backfill/nhập ít nhất 1 lần (bất kỳ trạng thái gì, ở BẤT KỲ ngân
+    hàng nào — tức UNION của mọi period_key xuất hiện trong data/bank_alm/*.json) rồi chạy
+    backfill_period() cho TỪNG kỳ đó — mỗi kỳ TỰ ĐỘNG bỏ qua (ticker, kỳ) đã có dữ liệu thật
+    ("reported"), CHỈ tốn OCR cho đúng những tổ hợp đang "missing". Dùng cho workflow_dispatch
+    backfill_bank_alm.yml khi để trống ô "period" — user (2026-09-18) muốn 1 lần chạy tự kiểm tra +
+    lấy đúng phần dữ liệu còn thiếu trên TOÀN BỘ lịch sử đã backfill, thay vì phải tự tay chạy lại
+    riêng từng kỳ (Q1, Q2, Q3...) mỗi khi có 1 fix OCR mới.
+
+    KHÔNG tự "phát minh" thêm kỳ chưa ai từng backfill (vd sẽ không tự chạy kỳ tương lai chưa có báo
+    cáo) — chỉ quét lại đúng các kỳ ĐÃ CÓ ít nhất 1 bản ghi (kể cả "missing") trong store, tức đúng
+    những kỳ user đã từng chủ động backfill trước đây."""
+    from bank_universe import BANKING_TICKERS
+    all_periods = set()
+    for ticker in BANKING_TICKERS:
+        store = bank_alm_store.load_bank_store(ticker)
+        all_periods.update(store.get("gap_periods", {}).keys())
+    if not all_periods:
+        print("[SKIP] Chua co ky nao tung duoc backfill - khong co gi de quet lai.")
+        return {}
+    sorted_periods = sorted(all_periods, key=bank_alm_store._period_sort_key)
+    print(f"[INFO] Quet lai {len(sorted_periods)} ky da tung backfill: {sorted_periods}")
+    results = {}
+    for period_key in sorted_periods:
+        results[period_key] = backfill_period(period_key)
+    return results
+
+
 def _backfill_ticker_period(ticker, period_key, candidates, force=False):
     """Phần thân DÙNG CHUNG cho cả backfill_period() (lặp qua 26 ngân hàng) và backfill_single_ticker()
     (1 ngân hàng lẻ) — thử từng candidate trong `candidates` (đã tính sẵn thứ tự ưu tiên FY>Q4 nếu
