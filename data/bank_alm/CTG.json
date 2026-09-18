@@ -43,7 +43,16 @@
     "2025-Q1": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 45301278.0,
+        "khong_anh_huong_lai_suat": 28570767.0,
+        "den_1_thang": 23759668.0,
+        "tu_1_3_thang": -350165374.0,
+        "tu_3_6_thang": 226756431.0,
+        "tu_6_12_thang": 283401778.0,
+        "tu_1_5_nam": -217281032.0,
+        "tren_5_nam": 95478577.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 28570767.0,
         "qua_han_den_3t": 23759668.0,
@@ -62,13 +71,28 @@
         "tu_1_5_nam": 403713504.0,
         "tren_5_nam": 53381425.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 41036298.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 1131793672.0,
+        "tu_3_6_thang": 326799271.0,
+        "tu_6_12_thang": 327960561.0,
+        "tu_1_5_nam": 463844206.0,
+        "tren_5_nam": 15692.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2025",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/CTG_Baocaotaichinh_Q1_2025_Hopnhat_23052025140616.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T10:05:00+07:00"
+      "fetched_at": "2026-09-18T23:55:10+07:00"
     },
     "2025-Q2": {
       "status": "reported",

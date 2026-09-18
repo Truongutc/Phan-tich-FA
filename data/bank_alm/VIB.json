@@ -37,15 +37,70 @@
         "tu_1_5_nam": -8436.0,
         "tren_5_nam": 9882232.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 7056957.0,
+        "qua_han_den_3t": 8872085.0,
+        "den_1_thang": -60083717.0,
+        "tu_1_3_thang": 48779848.0,
+        "tu_3_12_thang": 2346338.0,
+        "tu_1_5_nam": 82040322.0,
+        "tren_5_nam": 4604410.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 10029053.0,
+        "qua_han_den_3t": 203504222.0,
+        "den_1_thang": 86112759.0,
+        "tu_1_3_thang": 84875948.0,
+        "tu_3_12_thang": 22920995.0,
+        "tu_1_5_nam": 41853584.0,
+        "tren_5_nam": 2000000.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 10478059.0,
+        "den_1_thang": 10364606.0,
+        "tu_1_3_thang": 220113478.0,
+        "tu_3_6_thang": 91474493.0,
+        "tu_6_12_thang": 8679192.0,
+        "tu_1_5_nam": 37044940.0,
+        "tren_5_nam": 73283674.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 1639368.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 1639368.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 9909074.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 9909074.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 96237.0,
+        "qua_han_den_3t": 95621445.0,
+        "den_1_thang": 55783298.0,
+        "tu_1_3_thang": 79680776.0,
+        "tu_3_12_thang": 20920995.0,
+        "tu_1_5_nam": 24205571.0,
+        "tren_5_nam": 276308322.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất đã kiểm toán Quý 1 năm 2025",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-3/2025-07-29/no-name-1753727617.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T10:48:45+07:00"
+      "fetched_at": "2026-09-19T00:13:49+07:00"
     },
     "2025-Q2": {
       "status": "reported",

@@ -72,13 +72,19 @@
         "tu_1_5_nam": 35838.0,
         "tren_5_nam": 91179697.0
       },
+      "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2025",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-3/2025-07-22/no-name-1753123076.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T16:55:44+07:00"
+      "fetched_at": "2026-09-18T23:58:49+07:00"
     },
     "2025-Q2": {
       "status": "reported",

@@ -53,15 +53,92 @@
         "tu_1_5_nam": -557968.0,
         "tren_5_nam": 1301.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1261922.0,
+        "qua_han_den_3t": 24121318.0,
+        "den_1_thang": 9390116.0,
+        "tu_1_3_thang": -10369922.0,
+        "tu_3_12_thang": -10706606.0,
+        "tu_1_5_nam": -16382439.0,
+        "tren_5_nam": 70783278.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 28625210.0,
+        "tu_3_12_thang": 10708132.0,
+        "tu_1_5_nam": 25153085.0,
+        "tren_5_nam": 3822564.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 110149.0,
+        "khong_anh_huong_lai_suat": 16678.0,
+        "den_1_thang": 196618.0,
+        "tu_1_3_thang": 226135.0,
+        "tu_3_6_thang": 1655.0,
+        "tu_6_12_thang": 10498598.0,
+        "tu_1_5_nam": 4881301.0,
+        "tren_5_nam": -557948.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 219182.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 219182.0,
+        "tu_1_5_nam": 951908.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 951908.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 951908.0,
+        "tu_1_5_nam": 20108220.0,
+        "tren_5_nam": 1300000.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 12552522.0,
+        "tu_1_3_thang": 8998598.0,
+        "tu_3_12_thang": 22695366.0,
+        "tu_1_5_nam": 2411.0,
+        "tren_5_nam": 0.0
+      },
+      "fx_position": {
+        "EUR": {
+          "assets": 16997.0,
+          "liabilities": 4970430.0,
+          "onbalance": 3650.0,
+          "offbalance": 0.0,
+          "net": 3650.0
+        },
+        "USD": {
+          "assets": 4990504.0,
+          "liabilities": 1240.0,
+          "onbalance": 200725.0,
+          "offbalance": 25575.0,
+          "net": 45650.0
+        },
+        "OTHER": {
+          "assets": 14184.0,
+          "liabilities": 4985016.0,
+          "onbalance": 12944.0,
+          "offbalance": 0.0,
+          "net": 12944.0
+        }
+      },
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2025",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-18/no-name-1744937049.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T10:25:19+07:00"
+      "fetched_at": "2026-09-19T00:00:17+07:00"
     },
     "2025-Q2": {
       "status": "reported",

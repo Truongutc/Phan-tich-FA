@@ -44,15 +44,46 @@
         "tu_1_5_nam": -667385.0,
         "tren_5_nam": 10094202.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2434975.0,
+        "qua_han_den_3t": 1271597.0,
+        "den_1_thang": 7277.0,
+        "tu_1_3_thang": 299.0,
+        "tu_3_12_thang": -7493199.0,
+        "tu_1_5_nam": -16449142.0,
+        "tren_5_nam": 4435093.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 24395.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 25810052.0,
+        "tu_1_3_thang": 46282531.0,
+        "tu_3_12_thang": 4080729.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 2723004.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 23066175.0,
+        "khong_anh_huong_lai_suat": 25441443.0,
+        "den_1_thang": 25822175.0,
+        "tu_1_3_thang": 19860574.0,
+        "tu_3_6_thang": 4618.0,
+        "tu_6_12_thang": 2722980.0,
+        "tu_1_5_nam": 103898.0,
+        "tren_5_nam": 5920.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2025",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-29/no-name-1745876078.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T10:02:43+07:00"
+      "fetched_at": "2026-09-18T23:52:29+07:00"
     },
     "2025-Q2": {
       "status": "reported",
