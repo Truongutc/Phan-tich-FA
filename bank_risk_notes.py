@@ -266,27 +266,25 @@ _ROW_ANCHOR_WORDS_LIAB_EN = ("total", "liabilities")
 _ROW_LABEL_FLAT_ASSETS_EN = "total assets"
 _ROW_ANCHOR_WORDS_ASSETS_EN = ("total", "assets")
 
-_BARE_VND_RE = re.compile(r"(?<![a-z0-9])vnd(?![a-z0-9])")
+_COMMA_NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+")
+_PERIOD_NUM_RE = re.compile(r"\d{1,3}(?:\.\d{3})+")
+# Ngân hàng thật KHÔNG BAO GIỜ có tổng nợ phải trả VƯỢT QUÁ mức này nếu số liệu THẬT SỰ đã ở đơn vị
+# "triệu đồng" — ngân hàng lớn nhất Việt Nam (BIDV) cũng chỉ ~2,7 tỷ TRIỆU đồng (2,7 triệu tỷ đồng)
+# — cách ngưỡng này hơn 100 lần. Ngược lại, CÙNG 1 ngân hàng biểu diễn bằng VND THỰC (không rút gọn)
+# sẽ vượt ngưỡng này ít nhất 1.000.000 lần. Khoảng cách 2 tình huống rất xa (không có vùng xám), nên
+# 1 ngưỡng đơn giản dựa vào ĐỘ LỚN SỐ THẬT đáng tin cậy hơn NHIỀU so với đoán qua chữ trên trang.
+_RAW_VND_MAGNITUDE_THRESHOLD = 1_000_000_000_000  # 1.000 tỷ (10^12) nếu hiểu lầm là "triệu đồng"
 
 
-def _looks_like_raw_vnd_unit(text):
-    """Phát hiện đơn vị VND THỰC (không phải "Triệu đồng") qua BẰNG CHỨNG VĂN BẢN CỤ THỂ trên trang
-    — cột kỳ hạn lặp lại riêng chữ "VND"/"VNĐ" (không kèm "Triệu") ngay dưới mỗi tên bucket.
-
-    SỬA (user 2026-09-18, phát hiện qua VAB Quý 1/2026): ban đầu tưởng đơn vị VND thực CHỈ xảy ra ở
-    bản TIẾNG ANH (OCB) nên gắn cứng theo ngôn ngữ tiêu đề — SAI: VAB công bố bằng TIẾNG VIỆT nhưng
-    VẪN dùng VND thực (ảnh chụp thật xác nhận, cột "VNĐ" lặp lại y hệt cách OCB làm) — đơn vị KHÔNG
-    liên quan gì đến ngôn ngữ tài liệu. Giờ đoán trực tiếp từ VĂN BẢN THẬT trên trang thay vì suy diễn
-    qua ngôn ngữ.
-
-    Mặc định AN TOÀN là KHÔNG chia (coi như đã là "triệu đồng" — đúng quy ước chuẩn của hầu hết ngân
-    hàng đã chạy đúng từ trước) — CHỈ chia 1.000.000 khi có bằng chứng RÕ RÀNG (chữ "vnd" độc lập lặp
-    lại ≥4 lần — khớp gần đủ số bucket — VÀ không có "triệu" ở gần), để không làm sai lệch dữ liệu của
-    những ngân hàng đang chạy đúng chỉ vì tình cờ nhắc "VND" 1-2 lần ở chỗ khác trên trang."""
-    flat = _strip_accents(text).lower()
-    if "trieu dong" in flat or "trieu vnd" in flat or "trieu vnđ" in flat:
-        return False
-    return len(_BARE_VND_RE.findall(flat)) >= 4
+def _detect_numfmt(text):
+    """Xác định dấu phân cách nghìn THỰC SỰ dùng trên trang (phẩy kiểu Mỹ hay chấm kiểu Việt Nam) —
+    đếm số lần mỗi kiểu xuất hiện, chọn kiểu PHỔ BIẾN HƠN. Việc này ĐỘC LẬP với ngôn ngữ nhãn dòng và
+    đơn vị tiền — bug thật phát hiện 2026-09-18 qua VAB (nhãn dòng tiếng Việt nhưng số theo kiểu phẩy
+    Mỹ, y hệt OCB tiếng Anh) chứng minh không thể gộp chung 3 quyết định (chữ nhãn/dấu tách số/đơn vị
+    tiền) vào cùng 1 cờ ngôn ngữ như bản sửa trước (130aef4) đã làm."""
+    if len(_COMMA_NUM_RE.findall(text)) > len(_PERIOD_NUM_RE.findall(text)):
+        return "en"
+    return "vi"
 
 
 # Ô số: số VN chuẩn (dấu chấm phân cách nghìn, ngoặc = âm) HOẶC dấu gạch ngang đơn (= 0) HOẶC — dự
@@ -560,14 +558,18 @@ def _extract_gaps_from_pdf(pdf_path):
                     result["interest_rate_sensitivity_disclosed"] = sens
             # SỬA (user 2026-09-18, phát hiện qua VAB Quý 1/2026): ban đầu gắn định dạng số (dấu
             # phẩy/chấm phân cách nghìn) VÀ đơn vị tiền (VND thực/Triệu đồng) THEO NGÔN NGỮ tiêu đề
-            # (lang) — SAI, vì VAB công bố bằng TIẾNG VIỆT nhưng số lại dùng dấu PHẨY + đơn vị VND
-            # thực (giống hệt OCB tiếng Anh) — 2 thứ này đi cùng nhau NHƯNG hoàn toàn ĐỘC LẬP với
-            # ngôn ngữ nhãn dòng/tiêu đề. Giờ đoán riêng qua bằng chứng văn bản THẬT trên từng trang
-            # (_looks_like_raw_vnd_unit) — `lang` (tiếng Việt/Anh) CHỈ còn dùng để chọn CHỮ nhãn dòng
-            # cần tìm ("Mức chênh..." hay "Net liquidity gap"...), không còn quyết định gì về số.
-            raw_vnd = _looks_like_raw_vnd_unit(text)
-            numfmt = "en" if raw_vnd else "vi"
-            unit_divisor = 1_000_000 if raw_vnd else 1
+            # (lang) — SAI, vì VAB công bố bằng TIẾNG VIỆT nhưng số lại dùng dấu PHẨY (giống OCB tiếng
+            # Anh). Định dạng tách số giờ đoán từ BẰNG CHỨNG TRỰC TIẾP trên trang (_detect_numfmt) —
+            # độc lập hoàn toàn với `lang` (giờ CHỈ còn dùng để chọn CHỮ nhãn dòng cần tìm).
+            #
+            # SỬA THÊM (cùng ngày, phát hiện tiếp qua chính VAB): đoán ĐƠN VỊ TIỀN (VND thực hay Triệu
+            # đồng) qua CHỮ "VNĐ" lặp lại trên trang CŨNG SAI — VAB in "VNĐ" lặp lại y hệt OCB nhưng
+            # dữ liệu THỰC RA đã là "Triệu đồng" (đối chiếu Tổng tài sản suy ra ăn khớp với
+            # quarterly_balance_sheet độc lập từ Vietcap: ~143.740 tỷ vs ~142.390 tỷ, hợp lý; nếu chia
+            # thêm 1.000.000 sẽ sai lệch cả triệu lần). Đơn vị KHÔNG đoán được đáng tin từ chữ trên
+            # trang — chỉ đáng tin từ ĐỘ LỚN của số liệu trích được (xem _RAW_VND_MAGNITUDE_THRESHOLD),
+            # tính SAU khi đã trích được `liab_vals` phía dưới, không tính trước ở đây.
+            numfmt = _detect_numfmt(text)
             wwords = None
             vals = None
             if lang == "vi":
@@ -623,6 +625,18 @@ def _extract_gaps_from_pdf(pdf_path):
                     print(f"  [DIAG] no_phai_tra trang {p+1}: bo qua vi trung khop tuyet doi voi dong "
                           f"gap (nghi ngo gom nham hang)")
                     liab_vals = None
+            # Doan don vi tien (VND thuc hay Trieu dong) qua DO LON so lieu trich duoc, KHONG qua chu
+            # tren trang (da chung minh khong dang tin - xem ghi chu VAB o tren). Ngan hang that KHONG
+            # BAO GIO co tong no phai tra vuot _RAW_VND_MAGNITUDE_THRESHOLD neu da la "trieu dong" -
+            # vuot qua chac chan la VND thuc, can chia 1.000.000. Uu tien liab_vals (luon co san, tinh
+            # truoc ca vals qua lop du phong thu 4); dung tam vals neu vi ly do nao do liab_vals chua
+            # co (hiem). Neu ca 2 deu chua co, mac dinh AN TOAN la khong chia (giu nguyen hanh vi cu).
+            if liab_vals:
+                unit_divisor = 1_000_000 if sum(abs(v) for v in liab_vals) > _RAW_VND_MAGNITUDE_THRESHOLD else 1
+            elif vals:
+                unit_divisor = 1_000_000 if sum(abs(v) for v in vals) > _RAW_VND_MAGNITUDE_THRESHOLD else 1
+            else:
+                unit_divisor = 1
             if not vals and liab_vals:
                 # Lớp dự phòng THỨ 4 (user 2026-09-17 đề xuất, sau khi thấy dòng "Mức chênh..." của
                 # BID/STB thất bại dù dòng nằm rõ ràng trên trang, VÀ là đường DUY NHẤT cho bản tiếng
