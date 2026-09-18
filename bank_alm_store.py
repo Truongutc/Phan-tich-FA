@@ -186,3 +186,22 @@ def get_period_entry(ticker, period_key):
     load cả store."""
     store = load_bank_store(ticker)
     return store["gap_periods"].get(period_key)
+
+
+def upsert_fx_position(ticker, period_key, fx_position, source=None):
+    """Ghi/cập nhật trường fx_position (trạng thái ngoại tệ theo từng đồng tiền — xem
+    "Danh gia rui ro tien te.docx", user 2026-09-18) cho 1 entry gap_periods ĐÃ CÓ SẴN — KHÔNG tạo
+    entry mới nếu chưa có (dữ liệu FX luôn đi kèm cùng 1 báo cáo với bảng lãi suất/thanh khoản, nên kỳ
+    đó phải đã tồn tại trước). fx_position là dict {ma_tien: {"assets", "liabilities", "onbalance",
+    "offbalance", "net"}} theo đơn vị TRIỆU đồng (giữ nguyên đơn vị gốc, giống quy ước liquidity_gap/
+    interest_rate_gap — nơi dùng tự quy đổi tỷ đồng khi cần). Trả về False nếu entry chưa tồn tại
+    (gọi nơi dùng nên backfill/nhập bảng lãi suất-thanh khoản trước)."""
+    store = load_bank_store(ticker)
+    entry = store["gap_periods"].get(period_key)
+    if not entry:
+        return False
+    entry["fx_position"] = fx_position
+    if source:
+        entry["fx_source"] = source
+    save_bank_store(ticker, store)
+    return True

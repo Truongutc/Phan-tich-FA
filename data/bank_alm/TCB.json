@@ -199,7 +199,34 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260421_-_TCB_-_bao_cao_tai_chinh_hop_nhat_1Q26_VAS_VN__1776825559.pdf",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-08-31T23:55:42+07:00"
+      "fetched_at": "2026-08-31T23:55:42+07:00",
+      "fx_position": {
+        "USD": {
+          "assets": 64596439,
+          "liabilities": 64373228,
+          "onbalance": 223211,
+          "offbalance": 125557,
+          "net": 348768
+        },
+        "EUR": {
+          "assets": 816769,
+          "liabilities": 828664,
+          "onbalance": -11895,
+          "offbalance": 0,
+          "net": -11895
+        },
+        "OTHER": {
+          "assets": 1371108,
+          "liabilities": 1347948,
+          "onbalance": 23160,
+          "offbalance": -18898,
+          "net": 4262
+        }
+      },
+      "fx_source": {
+        "title": "Nhap thu cong tu anh chup BCTC that (TCB thuyet minh 42.2 Rui ro tien te, Quy 1 2026)",
+        "url": null
+      }
     },
     "2026-Q2": {
       "status": "reported",

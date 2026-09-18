@@ -500,6 +500,45 @@ def _bank_period_metrics(entry, bs_snap):
     loans = bs_snap.get("loans")
     ldr = (loans / cust_dep) if (loans and cust_dep) else None
 
+    # ── Rui ro tien te (FX Position) — theo "Danh gia rui ro tien te.docx" (user 2026-09-18, dung
+    # chinh TCB Quy 1/2026 lam vi du minh hoa, da doi chieu CHINH XAC 7/7 con so trong file truoc khi
+    # them vao day). Bang "Rui ro tien te" khac han 2 bang tren: COT la DONG TIEN (USD/EUR/Khac...) —
+    # SO LUONG dong tien KHAC NHAU tuy ngan hang, khong co so luong bucket co dinh nhu bang ky han —
+    # nen luu duoi dang dict {ma_tien: {...}} thay vi list theo thu tu co dinh.
+    fx_raw = entry.get("fx_position") or {}
+    if fx_raw:
+        fx_assets_total = sum((v.get("assets") or 0) for v in fx_raw.values()) / 1000
+        fx_liab_total = sum((v.get("liabilities") or 0) for v in fx_raw.values()) / 1000
+        fx_onbalance = sum((v.get("onbalance") or 0) for v in fx_raw.values()) / 1000
+        fx_offbalance = sum((v.get("offbalance") or 0) for v in fx_raw.values()) / 1000
+        fx_net = sum((v.get("net") or 0) for v in fx_raw.values()) / 1000
+        # QUAN TRONG (muc 6-8 file huong dan): KHONG duoc net tat ca dong tien voi nhau khi xet gioi
+        # han quy dinh — phai tach TRANG THAI DUONG va TRANG THAI AM rieng, moi ben so voi von tu co
+        # (gioi han 20%/ben). Dung "equity" (VCSH tren BCTC) de XAP XI "von tu co" — file huong dan
+        # canh bao RO day KHONG phai dinh nghia phap ly chinh xac (von tu co dung theo Thong tu
+        # 07/2012 la cua THANG LIEN TRUOC ky bao cao, khac VCSH tren BCTC quy) — chi dung de THAM
+        # KHAO xu huong, KHONG dung de ket luan tuan thu quy dinh.
+        fx_positive = sum((v.get("net") or 0) for v in fx_raw.values() if (v.get("net") or 0) > 0) / 1000
+        fx_negative = -sum((v.get("net") or 0) for v in fx_raw.values() if (v.get("net") or 0) < 0) / 1000
+        fx_by_currency_net_ty = {k: (v.get("net") or 0) / 1000 for k, v in fx_raw.items()}
+        # Dong tien co trang thai (tuyet doi) LON NHAT — thuong la dong quyet dinh chieu rui ro ty
+        # gia chinh (vd USD voi TCB, xem muc 20 file huong dan).
+        dominant_ccy = max(fx_by_currency_net_ty, key=lambda k: abs(fx_by_currency_net_ty[k])) if fx_by_currency_net_ty else None
+        dominant_ccy_net = fx_by_currency_net_ty.get(dominant_ccy) if dominant_ccy else None
+        # Stress ty gia don gian (muc 13-16 file huong dan): tac dong dinh gia THO = trang thai rong x
+        # % thay doi ty gia — CHI la uoc luong so bo (khong tinh derivative/hedge/ke toan), ap dung
+        # CHO TUNG DONG TIEN roi cong lai cho kich ban "tat ca dong tien cung thay doi X%" (muc 16).
+        fx_shock_ty = {}
+        for shock_pct in (1, 5, 10, 20):
+            fx_shock_ty[f"+{shock_pct}%"] = round(fx_net * shock_pct / 100, 3)
+            fx_shock_ty[f"-{shock_pct}%"] = round(-fx_net * shock_pct / 100, 3)
+    else:
+        fx_assets_total = fx_liab_total = fx_onbalance = fx_offbalance = fx_net = None
+        fx_positive = fx_negative = None
+        fx_by_currency_net_ty = {}
+        dominant_ccy = dominant_ccy_net = None
+        fx_shock_ty = {}
+
     return {
         "total_assets": ta, "equity": bs_snap.get("equity"), "nii": bs_snap.get("nii"),
         "customer_deposits": cust_dep, "liquid_assets": liquid_assets, "loans": loans, "ldr": ldr,
@@ -538,6 +577,17 @@ def _bank_period_metrics(entry, bs_snap):
         "liq_cum_gap_1y_conservative": liq_cum_1y_cons, "liq_cum_gap_1y_conservative_ratio": liq_cum_1y_cons_ratio,
         "liq_al_ratio_1m": liq_al_ratio_1m, "liq_al_ratio_3m": liq_al_ratio_3m, "liq_al_ratio_12m": liq_al_ratio_12m,
         "liquidity_buffer_coverage_1m": liquidity_buffer_coverage_1m,
+        # ── Rui ro tien te (FX Position) — xem ghi chu chi tiet cong thuc o khoi tinh toan phia tren.
+        "fx_assets_total": fx_assets_total, "fx_liabilities_total": fx_liab_total,
+        "fx_onbalance_gap": fx_onbalance, "fx_offbalance_position": fx_offbalance, "fx_net_position": fx_net,
+        "fx_positive_position": fx_positive, "fx_negative_position": fx_negative,
+        "fx_net_to_fx_assets_ratio": (fx_net / fx_assets_total) if fx_assets_total else None,
+        "fx_net_to_total_assets_ratio": (fx_net / ta) if (fx_net is not None and ta) else None,
+        "fx_positive_to_equity_ratio": (fx_positive / equity) if (fx_positive is not None and equity) else None,
+        "fx_negative_to_equity_ratio": (fx_negative / equity) if (fx_negative is not None and equity) else None,
+        "fx_by_currency_net": fx_by_currency_net_ty,
+        "fx_dominant_currency": dominant_ccy, "fx_dominant_currency_net": dominant_ccy_net,
+        "fx_shock_impact": fx_shock_ty,
     }
 
 
@@ -785,6 +835,11 @@ _ALM_SHEET_HEADERS = [
     "RSA (ty)", "RSL (ty)", "RSA/RSL (%)",
     "Stress NII +100bp (ty)", "Stress NII +100bp/NII (%)", "Stress NII +100bp/VCSH (%)",
     "Stress NII +200bp (ty)", "Stress NII +200bp/NII (%)",
+    # -- Rui ro tien te (FX) --
+    "FX Assets (ty)", "FX Liabilities (ty)", "FX Gap noi bang (ty)", "FX Trang thai ngoai bang (ty)",
+    "FX Net Position (ty)", "FX Positive Position (ty)", "FX Negative Position (ty)",
+    "FX Net/FX Assets (%)", "FX Net/TTS (%)", "FX Positive/VCSH (%)", "FX Negative/VCSH (%)",
+    "FX Dong tien chinh", "FX Shock +-10% (ty)",
     "Nguon (tieu de)", "Nguon (url)", "Cap nhat luc",
 ]
 
@@ -856,6 +911,14 @@ def update_bank_alm_excel_sheet(out_dir):
                 _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
                 m.get("stress_nii_100bp"), _pct("stress_nii_ratio_100bp"), _pct("stress_nii_ratio_equity_100bp"),
                 m.get("stress_nii_200bp"), _pct("stress_nii_ratio_200bp"),
+                # -- Rui ro tien te (FX) --
+                _rnd("fx_assets_total"), _rnd("fx_liabilities_total"), _rnd("fx_onbalance_gap"),
+                _rnd("fx_offbalance_position"), _rnd("fx_net_position"),
+                _rnd("fx_positive_position"), _rnd("fx_negative_position"),
+                _pct("fx_net_to_fx_assets_ratio"), _pct("fx_net_to_total_assets_ratio"),
+                _pct("fx_positive_to_equity_ratio"), _pct("fx_negative_to_equity_ratio"),
+                m.get("fx_dominant_currency"),
+                m["fx_shock_impact"].get("+10%") if m.get("fx_shock_impact") else None,
                 source.get("title"), source.get("url"), entry.get("fetched_at"),
             ]
             for c, val in enumerate(row, start=1):
