@@ -232,14 +232,21 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
 
 _ROW_LABEL_FLAT = {
     "lai_suat": "muc chenh nhay cam",
-    "thanh_khoan": "muc chenh thanh khoan rong",
+    # SỬA (user 2026-09-18, phát hiện qua ảnh chụp thật VIB Quý 1/2024): bỏ chữ "ròng" khỏi cụm nhãn
+    # — VIB dùng "Mức chênh thanh khoản THUẦN" (đồng nghĩa "ròng" nhưng khác chữ), khiến khớp CHÍNH
+    # XÁC "...rong" thất bại hoàn toàn dù dòng thật sự có mặt rõ ràng. "Mức chênh thanh khoản" (không
+    # kèm tính từ) vẫn đủ riêng biệt để không khớp nhầm chỗ khác trên trang.
+    "thanh_khoan": "muc chenh thanh khoan",
 }
 # Cặp từ neo (đã strip dấu) để định vị dòng gap theo TỌA ĐỘ — xem _extract_number_row_by_position().
 # Chọn 2 từ khá riêng biệt trong cụm nhãn (không dùng "muc"/"chenh" vì quá phổ biến, dễ trùng chỗ
-# khác trên trang) để giảm khớp nhầm: "nhạy"+"cảm" (rủi ro lãi suất), "khoản"+"ròng" (rủi ro thanh khoản).
+# khác trên trang) để giảm khớp nhầm: "nhạy"+"cảm" (rủi ro lãi suất). Rủi ro thanh khoản ĐỔI sang
+# "thanh"+"khoản" (user 2026-09-18, cùng lý do đổi _ROW_LABEL_FLAT ở trên — "khoản"+"ròng" thất bại
+# với VIB dùng "thuần") — hàm chọn khớp CUỐI CÙNG trên trang nên không lo trùng với chính tiêu đề mục
+# ("Rủi ro thanh khoản" ở đầu trang, luôn đứng TRƯỚC dòng số liệu).
 _ROW_ANCHOR_WORDS = {
     "lai_suat": ("nhay", "cam"),
-    "thanh_khoan": ("khoan", "rong"),
+    "thanh_khoan": ("thanh", "khoan"),
 }
 # Dòng "Tổng nợ phải trả" nằm NGAY TRÊN dòng "Mức chênh thanh khoản ròng" trong CÙNG bảng thanh khoản
 # (đã verify ảnh chụp thật TCB) — trích thêm dòng này (tận dụng lại đúng text/tọa độ trang ĐÃ OCR cho

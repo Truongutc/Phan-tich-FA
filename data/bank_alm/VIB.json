@@ -200,8 +200,24 @@
         "tu_1_5_nam": -6443581.0,
         "tren_5_nam": 2765203.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2679251,
+        "qua_han_den_3t": 2451112,
+        "den_1_thang": -65577766,
+        "tu_1_3_thang": -22167444,
+        "tu_3_12_thang": 37091246,
+        "tu_1_5_nam": 3760642,
+        "tren_5_nam": 85006457
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 168522638,
+        "tu_1_3_thang": 58616734,
+        "tu_3_12_thang": 88808410,
+        "tu_1_5_nam": 53665848,
+        "tren_5_nam": 5858460
+      },
       "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
