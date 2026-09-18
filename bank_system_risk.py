@@ -84,6 +84,14 @@ _LIQ_CUMULATIVE_ORDER = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu
 _LIQ_ST_1Y_KEYS = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu_1_3_thang", "tu_3_12_thang"]
 _LIQ_LT_KEYS = ["tu_1_5_nam", "tren_5_nam"]
 _IR_CUMULATIVE_ORDER = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_thang", "tu_1_5_nam", "tren_5_nam"]
+# Ban SONG SONG bao gom ca bucket "qua han" trong duong cong luy ke (theo file huong dan "Danh gia
+# rui ro lai suat.docx", user 2026-09-18: "Sau khi bo dong 'khong chiu lai', ta co [duong cong luy
+# ke]" — CHI loai "khong chiu lai", GIU LAI "qua han", khac voi _IR_CUMULATIVE_ORDER hien co (da loai
+# ca 2 tu truoc, dung lam co so cho stress_nii_100bp — mot chi so DA SHIP, KHONG doi de tranh anh
+# huong nguoc). Verify khop CHINH XAC voi vi du that trong file (VAB Quy 1/2026: cumulative ≤1 thang
+# = -2.462 ty, ≤3 thang = +12.489 ty, ≤6 thang = +17.258 ty, ≤12 thang = +5.148 ty, ≤5 nam = -13.143
+# ty, >5 nam = +3.313 ty — dung 100% so trong file).
+_IR_CUMULATIVE_ORDER_INCL_OVERDUE = ["qua_han"] + _IR_CUMULATIVE_ORDER
 # 2 bucket "qua han" cua bang thanh khoan (tai san da qua han hop dong) — theo huong dan phan tich
 # rui ro thanh khoan (user 2026-09-18, file "Danh gia rui ro thanh khoan.docx"): tai san DA QUA HAN
 # KHONG NEN mac nhien coi la nguon thanh khoan kha dung (mot khoan vay qua han 500 ty khong co nghia
@@ -389,6 +397,16 @@ def _bank_period_metrics(entry, bs_snap):
     liq_cum_1y, liq_cum_1y_ratio = liq_curve_abs["tu_3_12_thang"], liq_curve_ratio["tu_3_12_thang"]
     ir_cum_1m, ir_cum_1m_ratio = ir_curve_abs["den_1_thang"], ir_curve_ratio["den_1_thang"]
     ir_cum_3m, ir_cum_3m_ratio = ir_curve_abs["tu_1_3_thang"], ir_curve_ratio["tu_1_3_thang"]
+    # ── Them moc ≤6 thang/≤5 nam (theo "Danh gia rui ro lai suat.docx", user 2026-09-18: khuyen dung
+    # ca day du 1M/3M/6M/12M/5Y/>5Y, khong chi dung lai o 3M nhu truoc) — dung LAI duong cong da tinh
+    # o tren (khong tao them phep tinh moi), quy uoc LOAI "qua han" giu nguyen (xem ir_curve_abs).
+    ir_cum_6m, ir_cum_6m_ratio = ir_curve_abs["tu_3_6_thang"], ir_curve_ratio["tu_3_6_thang"]
+    ir_cum_5y, ir_cum_5y_ratio = ir_curve_abs["tu_1_5_nam"], ir_curve_ratio["tu_1_5_nam"]
+
+    # ── Duong cong luy ke BAO GOM "qua han" (ban song song theo dung quy uoc file huong dan, xem
+    # _IR_CUMULATIVE_ORDER_INCL_OVERDUE) — KHONG thay the ban tren (van la co so cho stress_nii_100bp,
+    # 1 chi so DA SHIP), chi la GOC NHIN THAY THE de doi chieu voi cach doc phan tich trong file.
+    ir_curve_incl_abs, ir_curve_incl_ratio = _cumulative_curve(ir_gap_ty, _IR_CUMULATIVE_ORDER_INCL_OVERDUE, ta)
 
     # ── Tai dung TAI SAN theo bucket = gap + no phai tra cung bucket (gap = TS - No), cho CA 2
     # bang, de tinh Short-term Funding/LT Assets, NSFR proxy, LMI, RSA/RSL — CHI tinh khi da trich
@@ -465,8 +483,19 @@ def _bank_period_metrics(entry, bs_snap):
         rsa = sum(assets_ir_ty.get(k, 0.0) for k in _IR_CUMULATIVE_ORDER)
         rsl = sum(liab_ir_ty.get(k, 0.0) for k in _IR_CUMULATIVE_ORDER)
         rsa_rsl_ratio = (rsa / rsl) if rsl else None
+
+        # ── RSA/RSL THEO TUNG BUCKET RIENG LE (xem "Danh gia rui ro lai suat.docx" muc 17) — file
+        # CANH BAO RO: mau so nho co the lam ty le bi phong dai (vd 3-6 thang co the len toi >1000%
+        # neu RSL bucket do rat nho) — nen KHONG dua vao rieng ty le nay, luon xem cung GAP tuyet doi +
+        # GAP/Tai san + Cumulative GAP (da co san o cac field khac). Chi tinh cho 6 bucket nhay cam lai
+        # suat that su (loai "qua han" va "khong chiu lai", giong _IR_CUMULATIVE_ORDER).
+        ir_al_ratio_by_bucket = {
+            k: (assets_ir_ty.get(k, 0.0) / liab_ir_ty[k]) if liab_ir_ty.get(k) else None
+            for k in _IR_CUMULATIVE_ORDER
+        }
     else:
         rsa = rsl = rsa_rsl_ratio = None
+        ir_al_ratio_by_bucket = {}
 
     loans = bs_snap.get("loans")
     ldr = (loans / cust_dep) if (loans and cust_dep) else None
@@ -481,15 +510,23 @@ def _bank_period_metrics(entry, bs_snap):
         "liq_cum_gap_curve_ratio": liq_curve_ratio,
         "ir_cum_gap_1m": ir_cum_1m, "ir_cum_gap_1m_ratio": ir_cum_1m_ratio,
         "ir_cum_gap_3m": ir_cum_3m, "ir_cum_gap_3m_ratio": ir_cum_3m_ratio,
+        "ir_cum_gap_6m": ir_cum_6m, "ir_cum_gap_6m_ratio": ir_cum_6m_ratio,
+        "ir_cum_gap_5y": ir_cum_5y, "ir_cum_gap_5y_ratio": ir_cum_5y_ratio,
         "ir_cum_gap_curve_ratio": ir_curve_ratio,
+        # ── Ban song song BAO GOM "qua han" (xem ghi chu _IR_CUMULATIVE_ORDER_INCL_OVERDUE) — theo
+        # dung quy uoc "Danh gia rui ro lai suat.docx", KHONG thay the cac field tren.
+        "ir_cum_gap_curve_incl_overdue_ratio": ir_curve_incl_ratio,
         "short_term_funding": short_term_funding, "long_term_assets": long_term_assets_liq,
         "st_funding_lt_assets_ratio": st_funding_lt_assets_ratio,
         "stable_funding": stable_funding, "nsfr_proxy": nsfr_proxy, "lmi": lmi,
         "rsa": rsa, "rsl": rsl, "rsa_rsl_ratio": rsa_rsl_ratio,
+        "ir_al_ratio_by_bucket": ir_al_ratio_by_bucket,
         "weighted_gap_raw": weighted,
         "stress_nii_100bp": stress_nii_100,
         "stress_nii_ratio_100bp": (stress_nii_100 / nii) if nii else None,
         "stress_nii_ratio_equity_100bp": (stress_nii_100 / equity) if equity else None,
+        "stress_nii_200bp": stress_nii_100 * 2,
+        "stress_nii_ratio_200bp": (stress_nii_100 * 2 / nii) if nii else None,
         "deposit_run_coverage_5pct": (liquid_assets / (cust_dep * 0.05)) if cust_dep else None,
         "deposit_run_coverage_10pct": (liquid_assets / (cust_dep * 0.10)) if cust_dep else None,
         "deposit_run_coverage_20pct": (liquid_assets / (cust_dep * 0.20)) if cust_dep else None,
@@ -744,8 +781,10 @@ _ALM_SHEET_HEADERS = [
     "Che phu rut -5% tien gui (lan)", "Che phu rut -10% tien gui (lan)", "Che phu rut -20% tien gui (lan)",
     # -- Rui ro lai suat --
     "Gap lai suat rong <=1nam (ty)", "Gap lai suat/TTS <=1thang (%)", "Gap lai suat/TTS <=3thang (%)",
-    "Gap lai suat/TTS <=1nam (%)", "RSA (ty)", "RSL (ty)", "RSA/RSL (%)",
+    "Gap lai suat/TTS <=6thang (%)", "Gap lai suat/TTS <=1nam (%)", "Gap lai suat/TTS <=5nam (%)",
+    "RSA (ty)", "RSL (ty)", "RSA/RSL (%)",
     "Stress NII +100bp (ty)", "Stress NII +100bp/NII (%)", "Stress NII +100bp/VCSH (%)",
+    "Stress NII +200bp (ty)", "Stress NII +200bp/NII (%)",
     "Nguon (tieu de)", "Nguon (url)", "Cap nhat luc",
 ]
 
@@ -813,8 +852,10 @@ def update_bank_alm_excel_sheet(out_dir):
                 _rnd("deposit_run_coverage_5pct"), _rnd("deposit_run_coverage_10pct"), _rnd("deposit_run_coverage_20pct"),
                 # -- Rui ro lai suat --
                 m.get("cum_gap_1y"), _pct("ir_cum_gap_1m_ratio"), _pct("ir_cum_gap_3m_ratio"),
-                _pct("cum_gap_1y_ratio"), _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
+                _pct("ir_cum_gap_6m_ratio"), _pct("cum_gap_1y_ratio"), _pct("ir_cum_gap_5y_ratio"),
+                _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
                 m.get("stress_nii_100bp"), _pct("stress_nii_ratio_100bp"), _pct("stress_nii_ratio_equity_100bp"),
+                m.get("stress_nii_200bp"), _pct("stress_nii_ratio_200bp"),
                 source.get("title"), source.get("url"), entry.get("fetched_at"),
             ]
             for c, val in enumerate(row, start=1):
