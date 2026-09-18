@@ -286,7 +286,39 @@ _PERIOD_NUM_RE = re.compile(r"\d{1,3}(?:\.\d{3})+")
 # — cách ngưỡng này hơn 100 lần. Ngược lại, CÙNG 1 ngân hàng biểu diễn bằng VND THỰC (không rút gọn)
 # sẽ vượt ngưỡng này ít nhất 1.000.000 lần. Khoảng cách 2 tình huống rất xa (không có vùng xám), nên
 # 1 ngưỡng đơn giản dựa vào ĐỘ LỚN SỐ THẬT đáng tin cậy hơn NHIỀU so với đoán qua chữ trên trang.
+# CHỈ dùng làm PHƯƠNG ÁN DỰ PHÒNG khi không có bs_total_assets_ty (xem _detect_unit_divisor) — chỉ
+# phân biệt được 2/4 trường hợp (VND thực vs còn lại), không phát hiện được "tỷ đồng"/"nghìn đồng".
 _RAW_VND_MAGNITUDE_THRESHOLD = 1_000_000_000_000  # 1.000 tỷ (10^12) nếu hiểu lầm là "triệu đồng"
+
+
+def _detect_unit_divisor(raw_sum, bs_total_assets_ty):
+    """Xác định hệ số quy đổi về "triệu đồng" (quy ước lưu trữ chuẩn của hệ thống) — user (2026-09-18)
+    lo ngại: nếu ngân hàng lớn báo cáo bằng triệu đồng còn ngân hàng nhỏ báo cáo bằng VND thực/nghìn
+    đồng/tỷ đồng mà không quy đổi đồng bộ, TỔNG HỢP toàn hệ thống (cộng số tuyệt đối của nhiều ngân
+    hàng) sẽ sai nghiêm trọng — 1 ngân hàng lệch đơn vị đủ làm méo cả tổng hệ thống.
+
+    Có 4 khả năng, mỗi khả năng cách nhau ĐÚNG 1.000 lần so với quy ước "triệu đồng" đang dùng: tỷ
+    đồng (raw NHỎ hơn 1.000 lần — cần NHÂN 1.000), triệu đồng (raw khớp — quy ước chuẩn, không đổi),
+    nghìn đồng (raw LỚN hơn 1.000 lần — cần CHIA 1.000), VND thực (raw LỚN hơn 1.000.000 lần — cần
+    CHIA 1.000.000). Ưu tiên so sánh trực tiếp với `bs_total_assets_ty` (tổng tài sản THẬT từ Vietcap,
+    ĐỘC LẬP với OCR, luôn đáng tin) — phân biệt được CẢ 4 trường hợp vì khoảng cách quá xa nhau (không
+    có vùng xám, sai lệch tự nhiên giữa "tổng nợ phải trả" trích được và "tổng tài sản" tham chiếu chỉ
+    ~5-15%, không bao giờ nhầm sang bucket kề bên cách 1.000 lần). CHỈ rơi về ngưỡng cố định CŨ (chỉ
+    phát hiện được VND thực) khi chưa có snapshot bảng cân đối (vd ngân hàng mới niêm yết)."""
+    if raw_sum and bs_total_assets_ty:
+        bs_reference_trieu = bs_total_assets_ty * 1000
+        if bs_reference_trieu:
+            ratio = raw_sum / bs_reference_trieu
+            if ratio >= 31_623:
+                return 1_000_000  # VND thuc
+            if ratio >= 31.6:
+                return 1_000  # nghin dong
+            if ratio < 0.0316:
+                return 0.001  # ty dong (chia 0.001 tuong duong nhan 1.000)
+            return 1  # trieu dong - dung quy uoc, khong doi
+    if raw_sum and raw_sum > _RAW_VND_MAGNITUDE_THRESHOLD:
+        return 1_000_000
+    return 1
 
 
 def _detect_numfmt(text):
@@ -545,14 +577,18 @@ def _is_half_year(name):
 _QUARTER_END_MONTH = {1: 3, 2: 6, 3: 9, 4: 12, 5: 12, 6: 6}
 
 
-def _extract_gaps_from_pdf(pdf_path):
+def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
     """Định vị + trích 2 bảng gap từ 1 file PDF cụ thể đã tải sẵn. Trả về ("missing_tool", None) nếu
     thiếu pytesseract/tesseract-ocr binary (dừng hẳn, thử file khác cũng vô ích), ("no_note", None)
     nếu tài liệu này THẬT SỰ không có 1 trong 2 tiêu đề/không đọc đủ số (vd BCTC quý không soát xét,
     rút gọn thuyết minh — không phải lỗi, bên gọi nên thử bản BCTC khác), hoặc ("ok", partial_dict)
     với partial_dict chứa các key đã trích được trong {"interest_rate_gap", "liquidity_gap",
     "interest_rate_sensitivity_disclosed", "liabilities_by_bucket"} (key cuối — tổng nợ phải trả theo
-    kỳ hạn từ bảng thanh khoản — chỉ có nếu trích được, dùng tính Liquid Assets/Nợ phải trả ngắn hạn)."""
+    kỳ hạn từ bảng thanh khoản — chỉ có nếu trích được, dùng tính Liquid Assets/Nợ phải trả ngắn hạn).
+
+    `bs_total_assets_ty`: tổng tài sản THẬT (tỷ đồng, từ Vietcap, ĐỘC LẬP với OCR) của đúng ngân hàng/
+    kỳ này nếu bên gọi có sẵn — dùng làm mốc để _detect_unit_divisor() nhận diện CHÍNH XÁC đơn vị tiền
+    thật sự (tỷ/triệu/nghìn đồng/VND thực), thay vì chỉ đoán qua 1 ngưỡng cố định (user 2026-09-18)."""
     pages = _find_note_pages(pdf_path)
     if pages is None:
         return "missing_tool", None
@@ -653,18 +689,14 @@ def _extract_gaps_from_pdf(pdf_path):
                     print(f"  [DIAG] no_phai_tra trang {p+1}: bo qua vi trung khop tuyet doi voi dong "
                           f"gap (nghi ngo gom nham hang)")
                     liab_vals = None
-            # Doan don vi tien (VND thuc hay Trieu dong) qua DO LON so lieu trich duoc, KHONG qua chu
-            # tren trang (da chung minh khong dang tin - xem ghi chu VAB o tren). Ngan hang that KHONG
-            # BAO GIO co tong no phai tra vuot _RAW_VND_MAGNITUDE_THRESHOLD neu da la "trieu dong" -
-            # vuot qua chac chan la VND thuc, can chia 1.000.000. Uu tien liab_vals (luon co san, tinh
-            # truoc ca vals qua lop du phong thu 4); dung tam vals neu vi ly do nao do liab_vals chua
-            # co (hiem). Neu ca 2 deu chua co, mac dinh AN TOAN la khong chia (giu nguyen hanh vi cu).
-            if liab_vals:
-                unit_divisor = 1_000_000 if sum(abs(v) for v in liab_vals) > _RAW_VND_MAGNITUDE_THRESHOLD else 1
-            elif vals:
-                unit_divisor = 1_000_000 if sum(abs(v) for v in vals) > _RAW_VND_MAGNITUDE_THRESHOLD else 1
-            else:
-                unit_divisor = 1
+            # Doan don vi tien (ty/trieu/nghin dong/VND thuc) qua DO LON so lieu trich duoc DOI CHIEU
+            # voi tong tai san THAT tu Vietcap (neu co) - xem _detect_unit_divisor(), KHONG qua chu
+            # tren trang (da chung minh khong dang tin - xem ghi chu VAB o tren). Uu tien liab_vals
+            # (luon co san, tinh truoc ca vals qua lop du phong thu 4); dung tam vals neu vi ly do nao
+            # do liab_vals chua co (hiem).
+            reference_sum = sum(abs(v) for v in liab_vals) if liab_vals else \
+                (sum(abs(v) for v in vals) if vals else None)
+            unit_divisor = _detect_unit_divisor(reference_sum, bs_total_assets_ty)
             if not vals and liab_vals:
                 # Lớp dự phòng THỨ 4 (user 2026-09-17 đề xuất, sau khi thấy dòng "Mức chênh..." của
                 # BID/STB thất bại dù dòng nằm rõ ràng trên trang, VÀ là đường DUY NHẤT cho bản tiếng
@@ -864,6 +896,25 @@ def latest_reviewed_period(ticker):
     return newest_reviewed.get("period_key") if newest_reviewed else None
 
 
+def _lookup_bs_total_assets_ty(ticker, period_key):
+    """Tra tổng tài sản THẬT (tỷ đồng, từ Vietcap qua bank_alm_store.quarterly_balance_sheet — ĐỘC
+    LẬP với OCR, luôn cập nhật sẵn hàng tuần bất kể pipeline gap) của đúng (ticker, period_key) —
+    dùng làm mốc nhận diện đơn vị tiền cho _detect_unit_divisor() (user 2026-09-18). Trả về None nếu
+    chưa có snapshot (vd ngân hàng mới niêm yết, hoặc period_key không map được sang kỳ quý) — bên
+    gọi tự rơi về ngưỡng cố định cũ khi đó, KHÔNG BAO GIỜ raise (giống mọi hàm fetch khác trong file
+    này — lỗi tra cứu phụ không được làm hỏng luồng OCR chính)."""
+    try:
+        import bank_alm_store
+        qkey = bank_alm_store.gap_period_to_quarter(period_key)
+        if not qkey:
+            return None
+        store = bank_alm_store.load_bank_store(ticker)
+        snap = store.get("quarterly_balance_sheet", {}).get(qkey)
+        return snap.get("total_assets") if snap else None
+    except Exception:
+        return None
+
+
 def fetch_bank_risk_gaps(ticker):
     """Trả về dict {"interest_rate_gap": {bucket: value}, "liquidity_gap": {bucket: value},
     "source_title":, "source_url":, "fetched_year":} hoặc None nếu bất kỳ bước nào thất bại (thiếu
@@ -903,7 +954,9 @@ def fetch_bank_risk_gaps(ticker):
         except Exception as e:
             print(f"  [WARN] Rui ro lai suat/thanh khoan: tai '{cand['Name']}' that bai ({e})")
             continue
-        status, partial = _extract_gaps_from_pdf(pdf_path)
+        cand_period_key = cand.get("period_key") or _period_key_for_candidate(cand)
+        bs_total_assets_ty = _lookup_bs_total_assets_ty(ticker, cand_period_key) if cand_period_key else None
+        status, partial = _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=bs_total_assets_ty)
         if status == "missing_tool":
             print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
                   "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
@@ -939,7 +992,12 @@ def fetch_bank_risk_gaps_for_period(ticker, period_key):
     ưu tiên giảm dần) thay vì chỉ 1 — THỬ LẦN LƯỢT từng ứng viên (tải + đọc), dùng bản ĐẦU TIÊN
     thành công, chỉ bỏ cuộc khi TẤT CẢ đều thất bại. Lỗi tải (link hỏng/404) hay "no_note" (tài liệu
     này thật sự không đọc đủ 2 bảng) đều đáng thử bản khác; "missing_tool" (thiếu tesseract) là lỗi
-    MÔI TRƯỜNG — thử bản khác cũng vô ích, dừng ngay."""
+    MÔI TRƯỜNG — thử bản khác cũng vô ích, dừng ngay.
+
+    SỬA (user 2026-09-18): tra sẵn tổng tài sản THẬT (Vietcap, độc lập OCR) của đúng kỳ này, truyền
+    xuống _extract_gaps_from_pdf() để nhận diện đơn vị tiền chính xác hơn (xem _detect_unit_divisor)
+    — tránh ngân hàng nhỏ báo cáo bằng VND thực/tỷ/nghìn đồng làm SAI LỆCH khi tổng hợp toàn hệ thống
+    cùng các ngân hàng khác đang đúng đơn vị triệu đồng."""
     ticker = ticker.upper()
     _, _, reviewed_reports = _select_candidate_reports(ticker)
     candidates = [c for c in reviewed_reports if c.get("period_key") == period_key]
@@ -947,6 +1005,7 @@ def fetch_bank_risk_gaps_for_period(ticker, period_key):
         print(f"  [SKIP] Rui ro lai suat/thanh khoan ({period_key}): khong tim thay BCTC dung ky nay cho {ticker}")
         return None
 
+    bs_total_assets_ty = _lookup_bs_total_assets_ty(ticker, period_key)
     os.makedirs(CACHE_DIR, exist_ok=True)
     for i, cand in enumerate(candidates):
         n_left = len(candidates) - i - 1
@@ -956,7 +1015,7 @@ def fetch_bank_risk_gaps_for_period(ticker, period_key):
             print(f"  [WARN] Rui ro lai suat/thanh khoan ({period_key}): tai '{cand['Name']}' that bai ({e})"
                   + (f" - thu ban thay the ({n_left} con lai)" if n_left else ""))
             continue
-        status, partial = _extract_gaps_from_pdf(pdf_path)
+        status, partial = _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=bs_total_assets_ty)
         if status == "missing_tool":
             print("  [SKIP] Rui ro lai suat/thanh khoan: thieu pytesseract/tesseract-ocr binary "
                   "(cai qua 'winget install UB-Mannheim.TesseractOCR' hoac 'apt install tesseract-ocr')")
