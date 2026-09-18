@@ -186,6 +186,68 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T09:31:33+07:00"
+    },
+    "2024-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 4841570.0,
+        "khong_anh_huong_lai_suat": 5385539.0,
+        "den_1_thang": -9906001.0,
+        "tu_1_3_thang": 49966951.0,
+        "tu_3_6_thang": -28226548.0,
+        "tu_6_12_thang": -6691620.0,
+        "tu_1_5_nam": -8222706.0,
+        "tren_5_nam": 8394308.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3522934.0,
+        "qua_han_den_3t": 1589943.0,
+        "den_1_thang": -7676617.0,
+        "tu_1_3_thang": -11348738.0,
+        "tu_3_12_thang": -10691345.0,
+        "tu_1_5_nam": 14524483.0,
+        "tren_5_nam": 25620829.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 3522934.0,
+        "qua_han_den_3t": 1589943.0,
+        "den_1_thang": -7676617.0,
+        "tu_1_3_thang": 54159827.0,
+        "tu_3_12_thang": 3189770.0,
+        "tu_1_5_nam": -11348738.0,
+        "tren_5_nam": 28329628.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 3776964.0,
+        "khong_anh_huong_lai_suat": 49240827.0,
+        "den_1_thang": 29943433.0,
+        "tu_1_3_thang": 28301548.0,
+        "tu_3_6_thang": 7428315.0,
+        "tu_6_12_thang": 12440848.0,
+        "tu_1_5_nam": 12215.0,
+        "tren_5_nam": 131144150.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 25209353.0,
+        "qua_han_den_3t": 22175962.0,
+        "den_1_thang": 1804.0,
+        "tu_1_3_thang": 2125139.0,
+        "tu_3_12_thang": 12215.0,
+        "tu_1_5_nam": 83524473.0,
+        "tren_5_nam": 10980.0
+      },
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ABB_24Q1_BCTC_HN_17072024094354.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T11:41:25+07:00"
     }
   },
   "quarterly_balance_sheet": {

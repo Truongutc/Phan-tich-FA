@@ -209,6 +209,60 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T09:34:31+07:00"
+    },
+    "2024-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 1666131.0,
+        "khong_anh_huong_lai_suat": 2780273.0,
+        "den_1_thang": 9853.0,
+        "tu_1_3_thang": 32551217.0,
+        "tu_3_6_thang": -37564711.0,
+        "tu_6_12_thang": -10070227.0,
+        "tu_1_5_nam": 8337466.0,
+        "tren_5_nam": 4802587.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 8803620.0,
+        "qua_han_den_3t": 166203.0,
+        "den_1_thang": 1551992.0,
+        "tu_1_3_thang": -16296307.0,
+        "tu_3_12_thang": -2162404.0,
+        "tu_1_5_nam": -24820177.0,
+        "tren_5_nam": -370186.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 492926.0,
+        "qua_han_den_3t": 301385.0,
+        "den_1_thang": 318360.0,
+        "tu_1_3_thang": 18634248.0,
+        "tu_3_12_thang": 2168079.0,
+        "tu_1_5_nam": 25311652.0,
+        "tren_5_nam": 383583.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 3821027.0,
+        "khong_anh_huong_lai_suat": 32562166.0,
+        "den_1_thang": 27192649.0,
+        "tu_1_3_thang": 44357538.0,
+        "tu_3_6_thang": 18775208.0,
+        "tu_6_12_thang": 9430368.0,
+        "tu_1_5_nam": 2074.0,
+        "tren_5_nam": 138213435.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000012351778656126481ngn-hng-tmcp-bc-17042024-000000bo-co-ti-chnh-qu-1-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T11:44:23+07:00"
     }
   },
   "quarterly_balance_sheet": {

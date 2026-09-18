@@ -198,6 +198,60 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T09:46:18+07:00"
+    },
+    "2024-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 2038515.0,
+        "khong_anh_huong_lai_suat": 5549914.0,
+        "den_1_thang": -10845913.0,
+        "tu_1_3_thang": -10127879.0,
+        "tu_3_6_thang": -9196221.0,
+        "tu_6_12_thang": 13504451.0,
+        "tu_1_5_nam": 11694476.0,
+        "tren_5_nam": 4008915.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 35712098.0,
+        "qua_han_den_3t": 13543250.0,
+        "den_1_thang": -5457507.0,
+        "tu_1_3_thang": 28073122.0,
+        "tu_3_12_thang": 4311684.0,
+        "tu_1_5_nam": 11756817.0,
+        "tren_5_nam": 3012118.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 2704251.0,
+        "khong_anh_huong_lai_suat": 33007847.0,
+        "den_1_thang": 13543250.0,
+        "tu_1_3_thang": 16784490.0,
+        "tu_3_6_thang": 11288632.0,
+        "tu_6_12_thang": 3012118.0,
+        "tu_1_5_nam": 1301613.0,
+        "tren_5_nam": 81642201.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 629119.0,
+        "qua_han_den_3t": 629119.0,
+        "den_1_thang": 1533292.0,
+        "tu_1_3_thang": 19266067.0,
+        "tu_3_12_thang": 718353.0,
+        "tu_1_5_nam": 2543125.0,
+        "tren_5_nam": 13909374.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-kin-long22042024-000000bo-co-ti-chnh-qu-1-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T11:53:39+07:00"
     }
   },
   "quarterly_balance_sheet": {

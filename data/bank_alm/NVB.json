@@ -194,6 +194,17 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T09:54:37+07:00"
+    },
+    "2024-Q1": {
+      "status": "missing",
+      "patched_from": null,
+      "interest_rate_gap": null,
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_sensitivity_disclosed": null,
+      "balance_sheet_snapshot": null,
+      "source": null,
+      "fetched_at": "2026-09-18T12:00:15+07:00"
     }
   },
   "quarterly_balance_sheet": {

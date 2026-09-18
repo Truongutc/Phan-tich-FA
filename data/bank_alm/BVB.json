@@ -193,6 +193,60 @@
         "fetched_year": 2026
       },
       "fetched_at": "2026-09-01T09:38:24+07:00"
+    },
+    "2024-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 3408316.0,
+        "khong_anh_huong_lai_suat": 5487296.0,
+        "den_1_thang": -2782018.0,
+        "tu_1_3_thang": 2037912.0,
+        "tu_3_6_thang": -8397153.0,
+        "tu_6_12_thang": -3019589.0,
+        "tu_1_5_nam": -291868.0,
+        "tren_5_nam": 10422820.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2230811.0,
+        "qua_han_den_3t": 1177614.0,
+        "den_1_thang": -11327868.0,
+        "tu_1_3_thang": -6002788.0,
+        "tu_3_12_thang": -6737437.0,
+        "tu_1_5_nam": 5228296.0,
+        "tren_5_nam": 22297088.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 2230811.0,
+        "qua_han_den_3t": 1177614.0,
+        "den_1_thang": -11327868.0,
+        "tu_1_3_thang": 25044279.0,
+        "tu_3_12_thang": 529318.0,
+        "tu_1_5_nam": -6002788.0,
+        "tren_5_nam": 19734358.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 1729141.0,
+        "khong_anh_huong_lai_suat": 23175444.0,
+        "den_1_thang": 20422901.0,
+        "tu_1_3_thang": 20970.0,
+        "tu_3_6_thang": 9332694.0,
+        "tu_6_12_thang": 1883165.0,
+        "tu_1_5_nam": 484440.0,
+        "tren_5_nam": 77998253.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-bn-vit25042024-000000bo-co-ti-chnh-qu-1-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T11:47:39+07:00"
     }
   },
   "quarterly_balance_sheet": {

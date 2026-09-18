@@ -295,6 +295,60 @@
         "fetched_year": 2025
       },
       "fetched_at": "2026-09-18T08:55:46+07:00"
+    },
+    "2024-Q1": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": -2449055.782864,
+        "khong_anh_huong_lai_suat": 15375791.886995,
+        "den_1_thang": 32113747.543264,
+        "tu_1_3_thang": 16435495.244183,
+        "tu_3_6_thang": 46017995.078385,
+        "tu_6_12_thang": -20686842.95074,
+        "tu_1_5_nam": 5096015.414191,
+        "tren_5_nam": -194445541.154429
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": -2449055.782864,
+        "qua_han_den_3t": 15375791.886995,
+        "den_1_thang": 32113747.543264,
+        "tu_1_3_thang": 16435495.244183,
+        "tu_3_12_thang": 46017995.078385,
+        "tu_1_5_nam": -20686842.95074,
+        "tren_5_nam": 5096015.414191
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 8552537.409402,
+        "qua_han_den_3t": 3616186.972664,
+        "den_1_thang": 29069157.056784,
+        "tu_1_3_thang": 41926846.277972,
+        "tu_3_12_thang": 13838540.768485,
+        "tu_1_5_nam": 40480818.769364,
+        "tren_5_nam": 53.900058
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 8552537.409402,
+        "khong_anh_huong_lai_suat": 3616186.972664,
+        "den_1_thang": 29069157.056784,
+        "tu_1_3_thang": 41926846.277972,
+        "tu_3_6_thang": 13838540.768485,
+        "tu_6_12_thang": 40480818.769364,
+        "tu_1_5_nam": 53.900058,
+        "tren_5_nam": 207484141.154429
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00029644268774703555ngn-hng-tmcp-phng-ng24042024-145016.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T12:02:18+07:00"
     }
   },
   "quarterly_balance_sheet": {
