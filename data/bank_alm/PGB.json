@@ -317,6 +317,59 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T15:08:34+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 1667.0,
+        "khong_anh_huong_lai_suat": 6062.0,
+        "den_1_thang": 8986.0,
+        "tu_1_3_thang": 16716.0,
+        "tu_3_6_thang": -1667.0,
+        "tu_6_12_thang": -6063.0,
+        "tu_1_5_nam": -8986.0,
+        "tren_5_nam": -16716.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 28167.0,
+        "khong_anh_huong_lai_suat": 1160823.0,
+        "den_1_thang": 198431.0,
+        "tu_1_3_thang": 1387421.0,
+        "tu_3_6_thang": 1667.0,
+        "tu_6_12_thang": 6063.0,
+        "tu_1_5_nam": 8986.0,
+        "tren_5_nam": 16716.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "USD": {
+          "assets": 29834.0,
+          "liabilities": 28167.0,
+          "onbalance": 1667.0,
+          "offbalance": 0.0,
+          "net": 1667.0
+        },
+        "EUR": {
+          "assets": 1166885.0,
+          "liabilities": 1160823.0,
+          "onbalance": 6063.0,
+          "offbalance": 24615.0,
+          "net": 30678.0
+        }
+      },
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất Quý 3 năm 2024",
+        "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-16/no-name-1744742350.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:29:28+07:00"
     }
   },
   "quarterly_balance_sheet": {

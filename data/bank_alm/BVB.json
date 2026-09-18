@@ -301,6 +301,60 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T14:46:12+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 3629410.0,
+        "khong_anh_huong_lai_suat": 6145699.0,
+        "den_1_thang": -9430666.0,
+        "tu_1_3_thang": -11762864.0,
+        "tu_3_6_thang": 5154187.0,
+        "tu_6_12_thang": 1400773.0,
+        "tu_1_5_nam": 11187508.0,
+        "tren_5_nam": 7157128.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2986688.0,
+        "qua_han_den_3t": 642748.0,
+        "den_1_thang": -15656988.0,
+        "tu_1_3_thang": -10855570.0,
+        "tu_3_12_thang": -3119088.0,
+        "tu_1_5_nam": 6324866.0,
+        "tren_5_nam": 7157128.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 92222.0,
+        "qua_han_den_3t": 34176905.0,
+        "den_1_thang": 523958.0,
+        "tu_1_3_thang": 6035.0,
+        "tu_3_12_thang": 22623291.0,
+        "tu_1_5_nam": 376095.0,
+        "tren_5_nam": 33076115.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 1361107.0,
+        "den_1_thang": 32739792.0,
+        "tu_1_3_thang": 23096744.0,
+        "tu_3_6_thang": 20086988.0,
+        "tu_6_12_thang": 12729087.0,
+        "tu_1_5_nam": 1904073.0,
+        "tren_5_nam": 1468600.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000004940711462450593ngn-hng-tmcp-bn-vit25102024-000000bo-co-ti-chnh-qu-3-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:15:29+07:00"
     }
   },
   "quarterly_balance_sheet": {

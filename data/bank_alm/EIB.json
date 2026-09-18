@@ -284,6 +284,52 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T18:42:35+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 6295632.0,
+        "khong_anh_huong_lai_suat": 4944292.0,
+        "den_1_thang": 810473.0,
+        "tu_1_3_thang": 21628126.0,
+        "tu_3_6_thang": 14950929.0,
+        "tu_6_12_thang": 773431.0,
+        "tu_1_5_nam": 21825637.0,
+        "tren_5_nam": 0.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 4858.0,
+        "qua_han_den_3t": 1436829.0,
+        "den_1_thang": 374343549.0,
+        "tu_1_3_thang": 5085897.0,
+        "tu_3_12_thang": -22568808.0,
+        "tu_1_5_nam": 33784983.0,
+        "tren_5_nam": 264603303.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 6295632.0,
+        "den_1_thang": 4544.0,
+        "tu_1_3_thang": 4944292.0,
+        "tu_3_6_thang": 810473.0,
+        "tu_6_12_thang": 35703364.0,
+        "tu_1_5_nam": 21628126.0,
+        "tren_5_nam": 14950929.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000004940711462450593ngn-hng-thng-mi-c-phn-xut-nhp-khu-vit-nam25102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:18:20+07:00"
     }
   },
   "quarterly_balance_sheet": {

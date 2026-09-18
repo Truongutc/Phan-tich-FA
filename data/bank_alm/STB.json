@@ -334,6 +334,60 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T15:16:50+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 19053983.0,
+        "khong_anh_huong_lai_suat": 19053983.0,
+        "den_1_thang": 26161063.0,
+        "tu_1_3_thang": 26161063.0,
+        "tu_3_6_thang": 14852543.0,
+        "tu_6_12_thang": 14852543.0,
+        "tu_1_5_nam": 198655983.0,
+        "tren_5_nam": 198655983.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 127979.0,
+        "qua_han_den_3t": -181610199.0,
+        "den_1_thang": 105185528.0,
+        "tu_1_3_thang": 197294340.0,
+        "tu_3_12_thang": -115369993.0,
+        "tu_1_5_nam": -7078907.0,
+        "tren_5_nam": 35447872.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 18926004.0,
+        "qua_han_den_3t": 226697266.0,
+        "den_1_thang": 136364281.0,
+        "tu_1_3_thang": 137725924.0,
+        "tu_3_12_thang": 119210810.0,
+        "tu_1_5_nam": 12769699.0,
+        "tren_5_nam": 11112.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 18926004.0,
+        "khong_anh_huong_lai_suat": 226697266.0,
+        "den_1_thang": 136364281.0,
+        "tu_1_3_thang": 137725924.0,
+        "tu_3_6_thang": 119210810.0,
+        "tu_6_12_thang": 12769699.0,
+        "tu_1_5_nam": 11112.0,
+        "tren_5_nam": 651705096.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00012351778656126482ngn-hng-tmcp-si-gn-thng-tn29102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:34:43+07:00"
     }
   },
   "quarterly_balance_sheet": {

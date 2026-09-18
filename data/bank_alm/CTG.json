@@ -316,6 +316,68 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T14:48:03+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": -2260074.0,
+        "khong_anh_huong_lai_suat": 93768100.0,
+        "den_1_thang": 23331905.0,
+        "tu_1_3_thang": 106876.0,
+        "tu_3_6_thang": 23085196.0,
+        "tu_6_12_thang": -1019355124.0,
+        "tu_1_5_nam": 718328757.0,
+        "tren_5_nam": 1421022.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 23331905.0,
+        "qua_han_den_3t": 23085196.0,
+        "den_1_thang": 78060291.0,
+        "tu_1_3_thang": 97115525.0,
+        "tu_3_12_thang": 45045580.0,
+        "tu_1_5_nam": 142402308.0,
+        "tren_5_nam": 301915.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 586507144.0,
+        "den_1_thang": 354616014.0,
+        "tu_1_3_thang": 731623255.0,
+        "tu_3_12_thang": 363873752.0,
+        "tu_1_5_nam": 49670467.0,
+        "tren_5_nam": 2086290632.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 41375442.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 1019355124.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 342434.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 10239086.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0001432806324110672ngn-hng-tmcp-cng-thng-vit-nam30102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:16:56+07:00"
     }
   },
   "quarterly_balance_sheet": {

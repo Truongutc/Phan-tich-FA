@@ -367,6 +367,106 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T18:44:26+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 22597646.0,
+        "khong_anh_huong_lai_suat": 5124481.0,
+        "den_1_thang": 27009972.0,
+        "tu_1_3_thang": 54523370.0,
+        "tu_3_6_thang": -28738228.0,
+        "tu_6_12_thang": -37543386.0,
+        "tu_1_5_nam": -31932615.0,
+        "tren_5_nam": 16222559.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 22597646.0,
+        "qua_han_den_3t": 5124481.0,
+        "den_1_thang": 27009972.0,
+        "tu_1_3_thang": 54523370.0,
+        "tu_3_12_thang": -28738228.0,
+        "tu_1_5_nam": -37543386.0,
+        "tren_5_nam": -31932615.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 16840110.0,
+        "den_1_thang": 148895491.0,
+        "tu_1_3_thang": 15865942.0,
+        "tu_3_12_thang": 119801939.0,
+        "tu_1_5_nam": 125828430.0,
+        "tren_5_nam": 48483316.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 16840110.0,
+        "den_1_thang": 148895491.0,
+        "tu_1_3_thang": 15865942.0,
+        "tu_3_6_thang": 119801939.0,
+        "tu_6_12_thang": 125828430.0,
+        "tu_1_5_nam": 48483316.0,
+        "tren_5_nam": 269900.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 3127639.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 3127639.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 29410506.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 29410506.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 29410506.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 753058.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 264110.0,
+        "den_1_thang": 86593153.0,
+        "tu_1_3_thang": 89056014.0,
+        "tu_3_12_thang": 102566033.0,
+        "tu_1_5_nam": 99608791.0,
+        "tren_5_nam": 18930293.0
+      },
+      "fx_position": {
+        "EUR": {
+          "assets": 589979013.0,
+          "liabilities": 530138142.0,
+          "onbalance": 59840871.0,
+          "offbalance": 0.0,
+          "net": 59840871.0
+        },
+        "USD": {
+          "assets": 163866.0,
+          "liabilities": 156290.0,
+          "onbalance": 7576.0,
+          "offbalance": 0.0,
+          "net": 7576.0
+        },
+        "OTHER": {
+          "assets": 32484109.0,
+          "liabilities": 33718900.0,
+          "onbalance": -1234791.0,
+          "offbalance": -1741622.0,
+          "net": -2976413.0
+        }
+      },
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000004940711462450593ngn-hng-tmcp-pht-trin-tp-h-ch-minh-hdbank29102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:19:24+07:00"
     }
   },
   "quarterly_balance_sheet": {

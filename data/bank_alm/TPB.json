@@ -390,6 +390,76 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T15:20:43+07:00"
+    },
+    "2024-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 29269401.0,
+        "khong_anh_huong_lai_suat": -42991819.0,
+        "den_1_thang": 43256336.0,
+        "tu_1_3_thang": -14138654.0,
+        "tu_3_6_thang": -14540088.0,
+        "tu_6_12_thang": 6697339.0,
+        "tu_1_5_nam": 30887577.0,
+        "tren_5_nam": 39588011.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": -144807983.0,
+        "qua_han_den_3t": -55879622.0,
+        "den_1_thang": -4633636.0,
+        "tu_1_3_thang": -4253224.0,
+        "tu_3_12_thang": 77792445.0,
+        "tu_1_5_nam": -266855671.0,
+        "tren_5_nam": 88669845.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 145322683.0,
+        "qua_han_den_3t": 56512813.0,
+        "den_1_thang": 91496530.0,
+        "tu_1_3_thang": 47963204.0,
+        "tu_3_12_thang": 7745927.0,
+        "tu_1_5_nam": 349041157.0,
+        "tren_5_nam": 514700.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 5601702.0,
+        "khong_anh_huong_lai_suat": 153539236.0,
+        "den_1_thang": 67289750.0,
+        "tu_1_3_thang": 47500289.0,
+        "tu_3_6_thang": 49016446.0,
+        "tu_6_12_thang": 26096007.0,
+        "tu_1_5_nam": 349041157.0,
+        "tren_5_nam": 29269401.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 1692781.0,
+        "qua_han_den_3t": 1692781.0,
+        "den_1_thang": 13214550.0,
+        "tu_1_3_thang": 13214550.0,
+        "tu_3_12_thang": 45073413.0,
+        "tu_1_5_nam": 1430037.0,
+        "tren_5_nam": 8012318.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 71632652.0,
+        "qua_han_den_3t": 52115539.0,
+        "den_1_thang": 76650099.0,
+        "tu_1_3_thang": 24422720.0,
+        "tu_3_12_thang": 224821010.0,
+        "tu_1_5_nam": 186933.0,
+        "tren_5_nam": 88930.0
+      },
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0001432806324110672ngn-hng-tmcp-tin-phong30102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T19:37:31+07:00"
     }
   },
   "quarterly_balance_sheet": {
