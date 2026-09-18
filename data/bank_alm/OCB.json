@@ -349,6 +349,60 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T12:02:18+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": -1446005.770367,
+        "den_1_thang": -57638768.248568,
+        "tu_1_3_thang": 30013307.57458,
+        "tu_3_6_thang": 21568365.00814,
+        "tu_6_12_thang": 38338289.196846,
+        "tu_1_5_nam": -16248496.814726,
+        "tren_5_nam": 4382808.301592
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": -1446005.770367,
+        "den_1_thang": -57638768.248568,
+        "tu_1_3_thang": 30013307.57458,
+        "tu_3_12_thang": 21568365.00814,
+        "tu_1_5_nam": 38338289.196846,
+        "tren_5_nam": -16248496.814726
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 7601035.730262,
+        "den_1_thang": 75337955.000647,
+        "tu_1_3_thang": 33384058.180461,
+        "tu_3_12_thang": 36714813.442056,
+        "tu_1_5_nam": 16408781.363178,
+        "tren_5_nam": 39294324.457064
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 7601035.730262,
+        "den_1_thang": 75337955.000647,
+        "tu_1_3_thang": 33384058.180461,
+        "tu_3_6_thang": 36714813.442056,
+        "tu_6_12_thang": 16408781.363178,
+        "tu_1_5_nam": 39294324.457064,
+        "tren_5_nam": 422.295237
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-phng-ng14082024-160236bo-co-ti-chnh-hp-nht-bn-nin-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T15:07:13+07:00"
     }
   },
   "quarterly_balance_sheet": {

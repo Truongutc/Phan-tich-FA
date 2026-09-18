@@ -263,6 +263,76 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T11:44:23+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 5900.0,
+        "khong_anh_huong_lai_suat": -5900.0,
+        "den_1_thang": 3657483.0,
+        "tu_1_3_thang": -3657483.0,
+        "tu_3_6_thang": -1065453.0,
+        "tu_6_12_thang": 1112341.0,
+        "tu_1_5_nam": -4689.0,
+        "tren_5_nam": 6010849.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1513665.0,
+        "qua_han_den_3t": 520612.0,
+        "den_1_thang": -16013657.0,
+        "tu_1_3_thang": -9397927.0,
+        "tu_3_12_thang": -6589443.0,
+        "tu_1_5_nam": 17215649.0,
+        "tren_5_nam": 25340785.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 37744335.0,
+        "den_1_thang": 29339084.0,
+        "tu_1_3_thang": 58426164.0,
+        "tu_3_12_thang": 13912700.0,
+        "tu_1_5_nam": 3855306.0,
+        "tren_5_nam": 143277589.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 6729.0,
+        "khong_anh_huong_lai_suat": 5900.0,
+        "den_1_thang": -3657483.0,
+        "tu_1_3_thang": 4892608.0,
+        "tu_3_6_thang": 1112341.0,
+        "tu_6_12_thang": 489153.0,
+        "tu_1_5_nam": 6010.0,
+        "tren_5_nam": -3161601.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 635520.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 635520.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 459653.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 27583890.0,
+        "tu_1_3_thang": 29098217.0,
+        "tu_3_12_thang": 57671424.0,
+        "tu_1_5_nam": 5390208.0,
+        "tren_5_nam": 0.0
+      },
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/BAB_24Q2_BCTC_HNSX_30082024102959.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T14:42:53+07:00"
     }
   },
   "quarterly_balance_sheet": {

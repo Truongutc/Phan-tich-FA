@@ -215,6 +215,44 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T12:21:32+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 5977170.0,
+        "khong_anh_huong_lai_suat": 1994.0,
+        "den_1_thang": 261.0,
+        "tu_1_3_thang": -63194192.0,
+        "tu_3_6_thang": 30449990.0,
+        "tu_6_12_thang": 7353513.0,
+        "tu_1_5_nam": 54195969.0,
+        "tren_5_nam": 5862939.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 5977170.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 1994.0,
+        "tu_1_3_thang": 261.0,
+        "tu_3_6_thang": -63194192.0,
+        "tu_6_12_thang": -230566.0,
+        "tu_1_5_nam": 30449990.0,
+        "tren_5_nam": -333328.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20240806__VIB__BCTC_hop_nhat_soat_xet_ban_nien_2024_06082024163739.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T15:32:54+07:00"
     }
   },
   "quarterly_balance_sheet": {

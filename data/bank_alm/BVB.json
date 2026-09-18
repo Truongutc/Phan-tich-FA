@@ -247,6 +247,60 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T11:47:39+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 3168060.0,
+        "khong_anh_huong_lai_suat": 6189554.0,
+        "den_1_thang": -9484142.0,
+        "tu_1_3_thang": 5224.0,
+        "tu_3_6_thang": -9994266.0,
+        "tu_6_12_thang": 1441120.0,
+        "tu_1_5_nam": 119809.0,
+        "tren_5_nam": 10334619.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2248996.0,
+        "qua_han_den_3t": 919112.0,
+        "den_1_thang": -15044112.0,
+        "tu_1_3_thang": -5678668.0,
+        "tu_3_12_thang": -4634443.0,
+        "tu_1_5_nam": 5460896.0,
+        "tren_5_nam": 23727830.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 2248996.0,
+        "qua_han_den_3t": 919112.0,
+        "den_1_thang": -15044112.0,
+        "tu_1_3_thang": 28365225.0,
+        "tu_3_12_thang": 547289.0,
+        "tu_1_5_nam": -5678668.0,
+        "tren_5_nam": 24278477.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 1421.0,
+        "den_1_thang": 5474.0,
+        "tu_1_3_thang": 27710762.0,
+        "tu_3_6_thang": 23885.0,
+        "tu_6_12_thang": 19763024.0,
+        "tu_1_5_nam": 9100573.0,
+        "tren_5_nam": 2207575.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000000013990500_BCTC_HN_Q2_29102024090414.2024_0001",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T14:46:12+07:00"
     }
   },
   "quarterly_balance_sheet": {

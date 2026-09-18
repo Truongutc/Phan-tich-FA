@@ -299,6 +299,84 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T11:55:09+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 3028599.0,
+        "khong_anh_huong_lai_suat": 3028599.0,
+        "den_1_thang": -10127690.0,
+        "tu_1_3_thang": -10127690.0,
+        "tu_3_6_thang": 124719026.0,
+        "tu_6_12_thang": 124719026.0,
+        "tu_1_5_nam": 42630335.0,
+        "tren_5_nam": 42630335.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2140119.0,
+        "qua_han_den_3t": 888480.0,
+        "den_1_thang": -37747729.0,
+        "tu_1_3_thang": 827107.0,
+        "tu_3_12_thang": -46884355.0,
+        "tu_1_5_nam": 46612445.0,
+        "tren_5_nam": 42630335.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 121479397.0,
+        "tu_1_3_thang": 61865510.0,
+        "tu_3_12_thang": 183739717.0,
+        "tu_1_5_nam": 7800594.0,
+        "tren_5_nam": 404245239.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 3028599.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 10269487.0,
+        "tu_1_3_thang": -10127690.0,
+        "tu_3_6_thang": 108474838.0,
+        "tu_6_12_thang": 124719026.0,
+        "tu_1_5_nam": 65462122.0,
+        "tren_5_nam": 404245239.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 2199.0,
+        "qua_han_den_3t": 8647999.0,
+        "den_1_thang": 56977.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 46243830.0,
+        "tu_1_5_nam": 275572.0,
+        "tren_5_nam": 2075662.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 8647999.0,
+        "qua_han_den_3t": 56977.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 46243830.0,
+        "tu_3_12_thang": 275572.0,
+        "tu_1_5_nam": 2075662.0,
+        "tren_5_nam": 888480.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 64528919.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 1272649.0,
+        "tren_5_nam": 0.0
+      },
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-bu-in-lin-vit14082024-175145bo-co-ti-chnh-ring-bn-nin-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T14:56:37+07:00"
     }
   },
   "quarterly_balance_sheet": {

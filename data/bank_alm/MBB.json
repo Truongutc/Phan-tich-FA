@@ -256,6 +256,44 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T11:56:52+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 19373842.0,
+        "khong_anh_huong_lai_suat": 4831135.0,
+        "den_1_thang": -105004582.0,
+        "tu_1_3_thang": 132754625.0,
+        "tu_3_6_thang": -4039363.0,
+        "tu_6_12_thang": -3307269.0,
+        "tu_1_5_nam": 27403623.0,
+        "tren_5_nam": 44354029.0
+      },
+      "liquidity_gap": null,
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 50418780.0,
+        "khong_anh_huong_lai_suat": 441361415.0,
+        "den_1_thang": 102224274.0,
+        "tu_1_3_thang": 113691293.0,
+        "tu_3_6_thang": 123794147.0,
+        "tu_6_12_thang": 44458435.0,
+        "tu_1_5_nam": 8441574.0,
+        "tren_5_nam": 884389918.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-qun-i29072024-165856bo-co-ti-chnh-hp-nht-bn-nin-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T14:58:58+07:00"
     }
   },
   "quarterly_balance_sheet": {

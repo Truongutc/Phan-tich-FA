@@ -262,6 +262,60 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T11:49:28+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": -12979672.0,
+        "khong_anh_huong_lai_suat": -895255353.0,
+        "den_1_thang": 24752735.0,
+        "tu_1_3_thang": -201924.0,
+        "tu_3_6_thang": 22628828.0,
+        "tu_6_12_thang": 751274490.0,
+        "tu_1_5_nam": 3854514.0,
+        "tren_5_nam": 411033822.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 24752735.0,
+        "qua_han_den_3t": 22628828.0,
+        "den_1_thang": 53154263.0,
+        "tu_1_3_thang": 71999431.0,
+        "tu_3_12_thang": -59215442.0,
+        "tu_1_5_nam": 131955.0,
+        "tren_5_nam": 291234075.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 5704562581.0,
+        "tu_1_5_nam": 307998453.0,
+        "tren_5_nam": 759136057.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 43914983.0,
+        "khong_anh_huong_lai_suat": 982644118.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 308914.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 319949.0,
+        "tu_1_5_nam": 4311.0,
+        "tren_5_nam": 0.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00014116318464144552ngn-hng-tmcp-cng-thng-vit-nam30072024-215433bo-co-ti-chnh-hp-nht-qu-2-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T14:48:03+07:00"
     }
   },
   "quarterly_balance_sheet": {

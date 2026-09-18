@@ -215,6 +215,60 @@
         "fetched_year": 2024
       },
       "fetched_at": "2026-09-18T12:17:37+07:00"
+    },
+    "2024-Q2": {
+      "status": "reported",
+      "patched_from": null,
+      "interest_rate_gap": {
+        "qua_han": 4238573.0,
+        "khong_anh_huong_lai_suat": 2493700.0,
+        "den_1_thang": 17878280.0,
+        "tu_1_3_thang": -3322476.0,
+        "tu_3_6_thang": -6873973.0,
+        "tu_6_12_thang": 2653254.0,
+        "tu_1_5_nam": -4879196.0,
+        "tren_5_nam": -3040295.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1863900.0,
+        "qua_han_den_3t": 2374673.0,
+        "den_1_thang": 3161036.0,
+        "tu_1_3_thang": -10598956.0,
+        "tu_3_12_thang": 7658335.0,
+        "tu_1_5_nam": -8018233.0,
+        "tren_5_nam": 12707112.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 1863900.0,
+        "qua_han_den_3t": 2374673.0,
+        "den_1_thang": 2313866.0,
+        "tu_1_3_thang": 3161036.0,
+        "tu_3_12_thang": -10598956.0,
+        "tu_1_5_nam": 7658335.0,
+        "tren_5_nam": -8018233.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 2600022.0,
+        "den_1_thang": 43706948.0,
+        "tu_1_3_thang": 29703330.0,
+        "tu_3_6_thang": 24118096.0,
+        "tu_6_12_thang": 25143804.0,
+        "tu_1_5_nam": 4238573.0,
+        "tren_5_nam": 2493700.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-vit-nam-thng-tn15082024-000000bo-co-ti-chnh-bn-nin-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-18T15:29:08+07:00"
     }
   },
   "quarterly_balance_sheet": {
