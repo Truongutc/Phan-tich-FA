@@ -892,7 +892,7 @@ function renderInterbank6mHistoryChart(grid, indicators) {
     card.style.gridColumn = '1 / -1';
     card.innerHTML = `
         <div class="ind-header"><span class="ind-name">📈 Lãi suất liên ngân hàng O/N, 1 tuần, 2 tuần, 1 tháng, 6 tháng theo thời gian</span></div>
-        <div class="ind-chart" style="height:320px"><canvas id="chart-interbank-6m-history"></canvas></div>
+        <div class="ind-chart" style="height:460px"><canvas id="chart-interbank-6m-history"></canvas></div>
         <div class="ind-note">Nguồn: O/N, 1 tuần, 2 tuần, 1 tháng — vira.org.vn (bản tin ngày, tự động, chuỗi theo NGÀY thật). 6 tháng — sbv.gov.vn (bảng lãi suất BQ liên ngân hàng, tự động, tích lũy theo tuần).</div>
     `;
     grid.appendChild(card);
