@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1xTmCb3su5DFwU6LANgOF6Nt0G79GY6bu/view?usp=drivesdk",
-  "lastUpdated": "2026-09-18 13:24",
+  "gdrivePdfUrl": "https://drive.google.com/file/d/14W4_HQ2dFQqPq8QAsEKhDMe79MW7oAlV/view?usp=drivesdk",
+  "lastUpdated": "2026-09-19 05:09",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -172,17 +172,8 @@
       },
       "Tỷ giá & Dòng vốn ngoại": {
         "score": 1,
-        "nVotes": 4,
+        "nVotes": 3,
         "detail": [
-          {
-            "indicator": "usdvnd",
-            "label": "Tỷ giá USD/VND",
-            "vote": 1.0,
-            "arrow": "▲",
-            "judgment_label": "Tốt lên",
-            "kind": "trend",
-            "state": null
-          },
           {
             "indicator": "fdi_disbursed",
             "label": "FDI giải ngân (lũy kế)",
@@ -211,7 +202,7 @@
             "state": "tốt"
           }
         ],
-        "reason": "Tỷ giá tốt lên; FDI giải ngân tốt lên; FDI đăng ký tốt lên; Khối ngoại HOSE vẫn ở mức tốt so với cùng kỳ 5 năm qua nhưng đang yếu đi."
+        "reason": "FDI giải ngân tốt lên; FDI đăng ký tốt lên; Khối ngoại HOSE vẫn ở mức tốt so với cùng kỳ 5 năm qua nhưng đang yếu đi."
       },
       "Thương mại & Hàng hóa": {
         "score": -1,
@@ -291,31 +282,31 @@
     "text": "Định giá đã đủ rẻ để bù đắp rủi ro, NHƯNG vĩ mô còn nhiều điểm xấu (xem Scorecard) — nên mua vào từng phần, CHƯA tăng tỷ trọng lớn cho tới khi các yếu tố bất lợi về vĩ mô qua đi."
   },
   "marketValuationHeadline": {
-    "pe": 12.44,
+    "pe": 12.39,
     "pb": 2.04,
     "rf": 0.045,
-    "erp": 0.03538585209003216,
+    "erp": 0.03571025020177562,
     "valuation_label": "Hợp lý",
     "pe_source": "https://24hmoney.vn/indices/vn-index",
     "pb_source": "https://24hmoney.vn/indices/vn-index",
     "risk_compensation": {
-      "earnings_yield": 0.08038585209003216,
+      "earnings_yield": 0.08071025020177562,
       "deposit_rf": 0.061500000000000006,
       "hurdle_1_5x_bond": 0.0675,
       "hurdle_2x_bond": 0.09,
       "hurdle_1_5x_deposit": 0.09225000000000001,
       "label": "Bù đắp tối thiểu, chưa có biên an toàn",
       "color": "warn",
-      "text": "Earnings Yield (1/P·E) hiện 8.04%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.15%): CHƯA đạt mức 1,5 lần (9.23%). => Bù đắp tối thiểu, chưa có biên an toàn."
+      "text": "Earnings Yield (1/P·E) hiện 8.07%. So với lãi suất TPCP 10 năm (4.50%): ĐẠT mức 1,5 lần (6.75%), CHƯA đạt mức 2 lần (9.00%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.15%): CHƯA đạt mức 1,5 lần (9.23%). => Bù đắp tối thiểu, chưa có biên an toàn."
     },
     "capm_valuation": {
-      "roe": 0.1639871382636656,
+      "roe": 0.16464891041162227,
       "coe": 0.115,
-      "justified_pb": 1.7536482809794707,
-      "premium_pct": 0.16328913963328628,
+      "justified_pb": 1.763829390948035,
+      "premium_pct": 0.15657444561774025,
       "label": "Đắt hơn nhiều so với P/B hợp lý (CAPM)",
       "color": "bad",
-      "text": "ROE VN-Index (P/B÷P/E) = 16.40%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.75x, so với P/B thực tế 2.04x => cao hơn 16.3%. => Đắt hơn nhiều so với P/B hợp lý (CAPM)."
+      "text": "ROE VN-Index (P/B÷P/E) = 16.46%. Chi phí vốn chủ sở hữu CAPM (Rf 4.50% + β1.0×ERP Việt Nam 7.0%) = 11.50%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.76x, so với P/B thực tế 2.04x => cao hơn 15.7%. => Đắt hơn nhiều so với P/B hợp lý (CAPM)."
     }
   },
   "decisionHeadline": {
@@ -326,7 +317,7 @@
     "verdict": {
       "trend_label": "Đang xấu đi",
       "trend_arrow": "▼",
-      "trend_detail": "So với tuần trước (2026-09-11): +0/6 → -2/6 ▼. So với tháng trước (2026-08-19): +0/6 → -2/6 ▼. So với quý trước (2026-06-24): -1/6 → -2/6 ▼.",
+      "trend_detail": "So với tuần trước (2026-09-11): +0/6 → -2/6 ▼. So với tháng trước (2026-08-21): +1/6 → -2/6 ▼. So với quý trước (2026-06-24): -1/6 → -2/6 ▼.",
       "trend_week": {
         "label": "Đang xấu đi",
         "arrow": "▼",
@@ -336,14 +327,14 @@
       "trend_month": {
         "label": "Đang xấu đi",
         "arrow": "▼",
-        "detail": "(2026-08-19): +0/6 → -2/6 ▼",
+        "detail": "(2026-08-21): +1/6 → -2/6 ▼",
         "available": true
       },
       "clarity_label": "Xám — tín hiệu trái chiều/hỗn hợp",
-      "clarity_pct": 59.0,
-      "clarity_detail": "85/144 chỉ báo có xu hướng rõ đang tốt lên (59%), 59/144 đang xấu đi."
+      "clarity_pct": 62.3,
+      "clarity_detail": "91/146 chỉ báo có xu hướng rõ đang tốt lên (62%), 55/146 đang xấu đi."
     },
-    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang xấu đi ▼ — So với tuần trước (2026-09-11): +0/6 → -2/6 ▼. So với tháng trước (2026-08-19): +0/6 → -2/6 ▼. So với quý trước (2026-06-24): -1/6 → -2/6 ▼. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 85/144 chỉ báo có xu hướng rõ đang tốt lên (59%), 59/144 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Nên mua vào\".\n\nScorecard Vĩ Mô tổng hợp đạt -2/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tiêu cực. Động lực tích cực đến từ nhóm Tăng trưởng và Tỷ giá & Dòng vốn ngoại. Ngược lại, nhóm Lạm phát, Lãi suất, Thanh khoản và Thương mại & Hàng hóa đang là điểm nghẽn, kéo lùi điểm tổng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026); (2) PMI sản xuất (S&P Global) đạt 53.30 điểm (kỳ T8/2026); (3) Doanh số bán lẻ (YoY) đạt 14.95 % (kỳ T8/2026); (4) Lạm phát cơ bản (YoY) đạt 4.55 % (kỳ T8/2026); (5) Lãi suất liên ngân hàng qua đêm (O/N) đạt 3.20 % (kỳ 2026-09-17); (6) Lãi suất liên ngân hàng 1 tuần đạt 3.90 % (kỳ 2026-09-17); (7) Lãi suất liên ngân hàng 6 tháng đạt 7.47 % (kỳ Tuần 38/2026); (8) Tăng trưởng tín dụng (YoY) đạt 8.97 % (kỳ T7/2026); (9) Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết) đạt 6.00 % (kỳ T8/2026); (10) Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP đạt 15.20 % (kỳ 6T đầu 2026); (11) Tỷ giá USD/VND đạt 25964.16 VND/USD (kỳ T9/2026); (12) Xuất khẩu (YoY) đạt 26.01 % (kỳ T8/2026); (13) FDI giải ngân (lũy kế) đạt 17.25 tỷ USD (kỳ T8/2026); (14) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025); (15) Nợ công / GDP đạt 32.86 % (kỳ 2024); (16) Thu ngân sách (YoY) đạt 20.91 % (kỳ Q2/2026); (17) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 33.62 % (kỳ T8/2026); (18) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026); (19) VN-Index P/E (ex-VIN) đạt 10.72 x (kỳ T9/2026); (20) VN-Index P/B (ex-VIN) đạt 1.68 x (kỳ T9/2026); (21) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026); (22) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026); (23) FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế) đạt 40.60 tỷ USD (kỳ T8/2026); (24) Tổng dư nợ tín dụng toàn nền kinh tế đạt 20150411.00 tỷ VND (kỳ T6/2026); (25) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025); (26) Đóng góp vào lạm phát — nhóm Nhà, điện, nước đạt 1.24 điểm % (kỳ T8/2026); (27) VN-Index P/B (headline, có VIN) đạt 2.04 x (kỳ T9/2026); (28) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt -11853.57 tỷ đồng (kỳ 2026-09-17); (29) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 50.50 % (kỳ T8/2026); (30) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026); (31) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026); (32) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026); (33) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 546.80 nghìn tỷ đồng (kỳ T8/2026); (34) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026); (35) Số dư OMO đang lưu hành (kênh cầm cố) đạt 151198.26 tỷ đồng (kỳ 2026-09-17); (36) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt 162.00 nghìn người (kỳ 2026-08-01); (37) CPI lõi Mỹ (YoY) đạt 2.45 % (kỳ 2026-08-01); (38) PCE Mỹ (YoY) đạt 3.70 % (kỳ 2026-07-01); (39) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.42 % (kỳ 2026-08-01); (40) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01); (41) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01); (42) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025); (43) Tổng huy động vốn toàn nền kinh tế đạt 17440361.00 tỷ VND (kỳ T6/2026); (44) Tong cung tien M2 đạt 20414616.00 ty VND (kỳ T6/2026); (45) Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng đạt 669.10 nghìn tỷ đồng (kỳ T7/2026); (46) Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng) đạt 7.31 % (kỳ 2025); (47) Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng) đạt 11.89 % (kỳ 2025); (48) Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 7.09 % (kỳ T6/2026); (49) Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 5.60 % (kỳ T6/2026); (50) Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng) đạt 4.99 % (kỳ T6/2026); (51) Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %) đạt 2.89 điểm % (kỳ 2025); (52) Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %) đạt 3.99 điểm % (kỳ 2025); (53) Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %) đạt 1.06 điểm % (kỳ 2025); (54) Chênh lệch lợi suất TPCP 2Y-1Y (VN) đạt 11.90 điểm % (kỳ T9/2026); (55) Dự trữ ngoại hối — ngoại tệ (theo tháng) đạt 86318.00 tỷ USD (kỳ T6/2026); (56) Tỷ giá USD/VND (bình quân tháng) đạt 26070.00 VND (kỳ T9/2026); (57) P/E thị trường (theo tháng, từ 2016) đạt 14.26 lần (kỳ T9/2026); (58) Chỉ số giá cổ phiếu (theo tháng) đạt 1827.72 điểm (kỳ T9/2026); (59) Cán cân vãng lai — Dịch vụ đạt -1.67 tỷ USD (kỳ Q1/2026); (60) Cán cân vãng lai — Thu nhập sơ cấp đạt -1.23 tỷ USD (kỳ Q1/2026); (61) Cán cân tài chính — FDI (nợ) đạt -4.34 tỷ USD (kỳ Q1/2026); (62) Cán cân tài chính — Đầu tư gián tiếp (nợ) đạt 1.41 tỷ USD (kỳ Q1/2026); (63) Cán cân tài chính — Khác (nợ) đạt -0.68 tỷ USD (kỳ Q1/2026); (64) FDI — Vốn cổ phần đạt -3.13 tỷ USD (kỳ Q1/2026); (65) Đầu tư khác — Tiền & tiền gửi đạt 2.75 tỷ USD (kỳ Q1/2026); (66) Tiền gửi (cán cân tài chính) — Khu vực ngân hàng đạt 0.41 tỷ USD (kỳ Q1/2026); (67) Dư nợ TPDN / GDP (ADB) đạt 7.92 % GDP (kỳ Q1/2026); (68) Dư nợ tín phiếu NHTW / GDP (ADB) đạt 2.19 % GDP (kỳ Q1/2026); (69) Cơ cấu kỳ hạn TPCP — 1-3 năm đạt 8.85 % dư nợ (kỳ Q2/2026); (70) Cơ cấu kỳ hạn TPCP — 3-5 năm đạt 15.62 % dư nợ (kỳ Q2/2026); (71) Cơ cấu kỳ hạn TPDN — 3-5 năm đạt 14.35 % dư nợ (kỳ Q2/2026); (72) Cơ cấu kỳ hạn TPDN — 5-10 năm đạt 26.25 % dư nợ (kỳ Q2/2026); (73) Cơ cấu kỳ hạn TPDN — Trên 10 năm đạt 1.49 % dư nợ (kỳ Q2/2026); (74) Cơ cấu nhà đầu tư nắm giữ TPCP — Khác đạt 2.30 % (kỳ Q1/2026); (75) Vốn hóa thị trường chứng khoán / GDP đạt 61.40 % GDP (kỳ 2025); (76) Nợ công / GDP (có dự báo tới 2031) đạt 26.60 % GDP (kỳ 2031); (77) Tỷ lệ đô thị hóa đạt 38.80 % dân số (kỳ 2025); (78) Dân số 65+ tuổi đạt 22.00 triệu người (kỳ 2050); (79) GDP theo sử dụng — Tiêu dùng Chính phủ đạt 9.40 % GDP (kỳ 2025); (80) GDP theo sử dụng — Đầu tư (GFCF) đạt 34.60 % GDP (kỳ 2031); (81) Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986) đạt 42.70 % GDP (kỳ 2025); (82) Tổng đầu tư / GDP đạt 34.60 % GDP (kỳ 2031); (83) GDP bình quân đầu người (danh nghĩa) đạt 6652.00 USD (kỳ 2031); (84) GDP bình quân đầu người (PPP) đạt 27821.00 Int$ (kỳ 2031); (85) GNI bình quân đầu người (Atlas) đạt 4970.00 USD (kỳ 2025); (86) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 101.30 nghìn tỷ đồng (kỳ T8/2026); (87) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026); (88) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026). Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.40 % (kỳ T8/2026); (2) CPI (YoY) đạt 4.89 % (kỳ T8/2026); (3) Lãi suất liên ngân hàng 3 tháng đạt 6.89 % (kỳ Tuần 38/2026); (4) Lãi suất liên ngân hàng 2 tuần đạt 5.50 % (kỳ 2026-09-17); (5) Tăng trưởng cung tiền M2 (YoY) đạt 4.24 % (kỳ T6/2026); (6) Tăng trưởng huy động vốn (YoY) đạt 10.39 % (kỳ T6/2026); (7) Nhập khẩu (YoY) đạt 37.90 % (kỳ T8/2026); (8) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026); (9) Chi ngân sách (YoY) đạt -8.16 % (kỳ Q2/2026); (10) Giá dầu Brent đạt 130.80 USD/thùng (kỳ 2026-09-15); (11) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026); (12) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026); (13) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026); (14) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt -358.85 tỷ VND (kỳ 2026-09-17); (15) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 323.00 ngày (kỳ Tuần 38/2026); (16) Đóng góp vào lạm phát — nhóm Thực phẩm đạt 1.57 điểm % (kỳ T8/2026); (17) Đóng góp vào lạm phát — nhóm Vận tải đạt 0.78 điểm % (kỳ T8/2026); (18) Đóng góp vào lạm phát — nhóm Khác đạt 1.24 điểm % (kỳ T8/2026); (19) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 3.18 % (kỳ 2026-08-01); (20) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.94 % (kỳ 2026-08-01); (21) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.99 % (kỳ 2026-08-01); (22) CPI Mỹ (YoY) đạt 3.35 % (kỳ 2026-08-01); (23) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01); (24) Lợi suất TPCP Mỹ kỳ hạn 3 tháng đạt 4.14 % (kỳ 2026-09-16); (25) Lợi suất TPCP Mỹ kỳ hạn 1 năm đạt 4.45 % (kỳ 2026-09-16); (26) Lợi suất TPCP Mỹ kỳ hạn 2 năm đạt 4.74 % (kỳ 2026-09-16); (27) Lợi suất TPCP Mỹ kỳ hạn 5 năm đạt 4.86 % (kỳ 2026-09-16); (28) CPI (HICP) Eurozone (YoY) đạt 3.23 % (kỳ 2026-08-01); (29) Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng) đạt 17.41 % (kỳ T6/2026); (30) Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng) đạt 10.39 % (kỳ T6/2026); (31) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 156.84 % (kỳ T6/2026); (32) Lợi suất TPCP thứ cấp 2 năm (40yo) đạt 3.79 % (kỳ T9/2026); (33) Chênh lệch lợi suất TPCP 10Y-2Y (VN) đạt 75.90 điểm % (kỳ T8/2026); (34) Chênh lệch lợi suất TPCP 10Y VN so với Mỹ đạt -0.21 điểm % (kỳ T9/2026); (35) Chênh lệch lợi suất TPCP 2Y VN so với Mỹ đạt -0.58 điểm % (kỳ T9/2026); (36) Cán cân vãng lai — Hàng hóa đạt 2.43 tỷ USD (kỳ Q1/2026); (37) Cán cân vãng lai — Thu nhập thứ cấp đạt 3.19 tỷ USD (kỳ Q1/2026); (38) Cán cân tài chính — FDI (tài sản) đạt 0.16 tỷ USD (kỳ Q1/2026); (39) Cán cân tài chính — Đầu tư gián tiếp (tài sản) đạt -0.01 tỷ USD (kỳ Q1/2026); (40) Cán cân tài chính — Khác (tài sản) đạt 2.57 tỷ USD (kỳ Q1/2026); (41) FDI — Công cụ nợ đạt -1.21 tỷ USD (kỳ Q1/2026); (42) Đầu tư khác — Cho vay đạt -0.53 tỷ USD (kỳ Q1/2026); (43) Tiền gửi (cán cân tài chính) — Khu vực khác đạt 2.34 tỷ USD (kỳ Q1/2026); (44) Vay nợ (cán cân tài chính) — Chính phủ đạt 0.54 tỷ USD (kỳ Q1/2026); (45) Vay nợ (cán cân tài chính) — Khu vực khác đạt -1.07 tỷ USD (kỳ Q1/2026); (46) Cơ cấu kỳ hạn TPCP — 5-10 năm đạt 51.39 % dư nợ (kỳ Q2/2026); (47) Cơ cấu kỳ hạn TPCP — Trên 10 năm đạt 24.14 % dư nợ (kỳ Q2/2026); (48) Cơ cấu kỳ hạn TPDN — 1-3 năm đạt 57.91 % dư nợ (kỳ Q2/2026); (49) Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng đạt 36.56 % (kỳ Q1/2026); (50) Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm đạt 60.44 % (kỳ Q1/2026); (51) Dân số 0-14 tuổi đạt 18.70 triệu người (kỳ 2050); (52) Dân số 15-64 tuổi (lao động) đạt 69.30 triệu người (kỳ 2050); (53) Tỷ lệ phụ thuộc chung đạt 58.60 % (kỳ 2050); (54) Tỷ lệ phụ thuộc — Người già đạt 31.70 % (kỳ 2050); (55) GDP theo sử dụng — Tiêu dùng hộ gia đình đạt 53.20 % GDP (kỳ 2025); (56) GDP theo sử dụng — Xuất khẩu đạt 79.36 % GDP (kỳ 2026); (57) GDP theo sử dụng — Nhập khẩu đạt 75.19 % GDP (kỳ 2026); (58) Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986) đạt 11.60 % GDP (kỳ 2025); (59) Tiết kiệm quốc gia / GDP đạt 35.20 % GDP (kỳ 2031); (60) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026); (61) FDI đăng ký theo tháng (rời rạc) đạt 2.50 tỷ USD (kỳ T8/2026); (62) Spread lợi suất TPCP Mỹ 10 năm - 2 năm đạt 0.27 điểm % (kỳ 2026-09-16); (63) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.87 điểm % (kỳ 2026-09-16); (64) Rủi ro lãi suất hệ thống NH niêm yết (ΔNII/NII khi LS +100bp) đạt 365933.17 % (kỳ Q2/2026); (65) Rủi ro thanh khoản hệ thống NH niêm yết (che phủ rút -10% tiền gửi) đạt 319.70 % (kỳ Q2/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 10.72x, P/B 1.68x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.83% — mức định giá được xếp loại \"Rẻ/Hấp dẫn\". Kết hợp Scorecard vĩ mô (-2/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Nên mua vào\": Định giá đã đủ rẻ để bù đắp rủi ro, NHƯNG vĩ mô còn nhiều điểm xấu (xem Scorecard) — nên mua vào từng phần, CHƯA tăng tỷ trọng lớn cho tới khi các yếu tố bất lợi về vĩ mô qua đi.",
+    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang xấu đi ▼ — So với tuần trước (2026-09-11): +0/6 → -2/6 ▼. So với tháng trước (2026-08-21): +1/6 → -2/6 ▼. So với quý trước (2026-06-24): -1/6 → -2/6 ▼. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 91/146 chỉ báo có xu hướng rõ đang tốt lên (62%), 55/146 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Nên mua vào\".\n\nScorecard Vĩ Mô tổng hợp đạt -2/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tiêu cực. Động lực tích cực đến từ nhóm Tăng trưởng và Tỷ giá & Dòng vốn ngoại. Ngược lại, nhóm Lạm phát, Lãi suất, Thanh khoản và Thương mại & Hàng hóa đang là điểm nghẽn, kéo lùi điểm tổng.\n\nCác điểm sáng cụ thể: (1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026); (2) PMI sản xuất (S&P Global) đạt 53.30 điểm (kỳ T8/2026); (3) Doanh số bán lẻ (YoY) đạt 14.95 % (kỳ T8/2026); (4) Lạm phát cơ bản (YoY) đạt 4.55 % (kỳ T8/2026); (5) Lãi suất liên ngân hàng qua đêm (O/N) đạt 3.20 % (kỳ 2026-09-17); (6) Lãi suất liên ngân hàng 1 tuần đạt 3.90 % (kỳ 2026-09-17); (7) Lãi suất liên ngân hàng 6 tháng đạt 7.47 % (kỳ Tuần 38/2026); (8) Tăng trưởng tín dụng (YoY) đạt 8.97 % (kỳ T7/2026); (9) Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết) đạt 6.00 % (kỳ T8/2026); (10) Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP đạt 15.20 % (kỳ 6T đầu 2026); (11) Xuất khẩu (YoY) đạt 26.01 % (kỳ T8/2026); (12) FDI giải ngân (lũy kế) đạt 17.25 tỷ USD (kỳ T8/2026); (13) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025); (14) Nợ công / GDP đạt 32.86 % (kỳ 2024); (15) Thu ngân sách (YoY) đạt 20.91 % (kỳ Q2/2026); (16) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 33.62 % (kỳ T8/2026); (17) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026); (18) VN-Index P/E (ex-VIN) đạt 10.72 x (kỳ T9/2026); (19) VN-Index P/B (ex-VIN) đạt 1.68 x (kỳ T9/2026); (20) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026); (21) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026); (22) FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế) đạt 40.60 tỷ USD (kỳ T8/2026); (23) Tổng dư nợ tín dụng toàn nền kinh tế đạt 20150411.00 tỷ VND (kỳ T6/2026); (24) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025); (25) Đóng góp vào lạm phát — nhóm Nhà, điện, nước đạt 1.24 điểm % (kỳ T8/2026); (26) VN-Index P/E (headline, có VIN) đạt 12.39 x (kỳ T9/2026); (27) VN-Index P/B (headline, có VIN) đạt 2.04 x (kỳ T9/2026); (28) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt -11853.57 tỷ đồng (kỳ 2026-09-17); (29) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 50.50 % (kỳ T8/2026); (30) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026); (31) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026); (32) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026); (33) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 546.80 nghìn tỷ đồng (kỳ T8/2026); (34) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026); (35) Số dư OMO đang lưu hành (kênh cầm cố) đạt 151198.26 tỷ đồng (kỳ 2026-09-17); (36) Lợi suất TPCP Mỹ kỳ hạn 10 năm đạt 4.94 % (kỳ 2026-09-17); (37) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt 162.00 nghìn người (kỳ 2026-08-01); (38) CPI lõi Mỹ (YoY) đạt 2.45 % (kỳ 2026-08-01); (39) PCE Mỹ (YoY) đạt 3.70 % (kỳ 2026-07-01); (40) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.42 % (kỳ 2026-08-01); (41) Lợi suất TPCP Mỹ kỳ hạn 3 tháng đạt 4.12 % (kỳ 2026-09-17); (42) Lợi suất TPCP Mỹ kỳ hạn 1 năm đạt 4.40 % (kỳ 2026-09-17); (43) Lợi suất TPCP Mỹ kỳ hạn 2 năm đạt 4.67 % (kỳ 2026-09-17); (44) Lợi suất TPCP Mỹ kỳ hạn 5 năm đạt 4.78 % (kỳ 2026-09-17); (45) Lợi suất TPCP Mỹ kỳ hạn 30 năm đạt 5.29 % (kỳ 2026-09-17); (46) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01); (47) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01); (48) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025); (49) Tổng huy động vốn toàn nền kinh tế đạt 17440361.00 tỷ VND (kỳ T6/2026); (50) Tong cung tien M2 đạt 20414616.00 ty VND (kỳ T6/2026); (51) Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng đạt 669.10 nghìn tỷ đồng (kỳ T7/2026); (52) Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng) đạt 7.31 % (kỳ 2025); (53) Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng) đạt 11.89 % (kỳ 2025); (54) Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 7.09 % (kỳ T6/2026); (55) Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 5.60 % (kỳ T6/2026); (56) Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng) đạt 4.99 % (kỳ T6/2026); (57) Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %) đạt 2.89 điểm % (kỳ 2025); (58) Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %) đạt 3.99 điểm % (kỳ 2025); (59) Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %) đạt 1.06 điểm % (kỳ 2025); (60) Chênh lệch lợi suất TPCP 2Y-1Y (VN) đạt 11.90 điểm % (kỳ T9/2026); (61) Dự trữ ngoại hối — ngoại tệ (theo tháng) đạt 86318.00 tỷ USD (kỳ T6/2026); (62) Tỷ giá USD/VND (bình quân tháng) đạt 26070.00 VND (kỳ T9/2026); (63) P/E thị trường (theo tháng, từ 2016) đạt 14.26 lần (kỳ T9/2026); (64) Chỉ số giá cổ phiếu (theo tháng) đạt 1827.72 điểm (kỳ T9/2026); (65) Cán cân vãng lai — Dịch vụ đạt -1.67 tỷ USD (kỳ Q1/2026); (66) Cán cân vãng lai — Thu nhập sơ cấp đạt -1.23 tỷ USD (kỳ Q1/2026); (67) Cán cân tài chính — FDI (nợ) đạt -4.34 tỷ USD (kỳ Q1/2026); (68) Cán cân tài chính — Đầu tư gián tiếp (nợ) đạt 1.41 tỷ USD (kỳ Q1/2026); (69) Cán cân tài chính — Khác (nợ) đạt -0.68 tỷ USD (kỳ Q1/2026); (70) FDI — Vốn cổ phần đạt -3.13 tỷ USD (kỳ Q1/2026); (71) Đầu tư khác — Tiền & tiền gửi đạt 2.75 tỷ USD (kỳ Q1/2026); (72) Tiền gửi (cán cân tài chính) — Khu vực ngân hàng đạt 0.41 tỷ USD (kỳ Q1/2026); (73) Dư nợ TPDN / GDP (ADB) đạt 7.92 % GDP (kỳ Q1/2026); (74) Dư nợ tín phiếu NHTW / GDP (ADB) đạt 2.19 % GDP (kỳ Q1/2026); (75) Cơ cấu kỳ hạn TPCP — 1-3 năm đạt 8.85 % dư nợ (kỳ Q2/2026); (76) Cơ cấu kỳ hạn TPCP — 3-5 năm đạt 15.62 % dư nợ (kỳ Q2/2026); (77) Cơ cấu kỳ hạn TPDN — 3-5 năm đạt 14.35 % dư nợ (kỳ Q2/2026); (78) Cơ cấu kỳ hạn TPDN — 5-10 năm đạt 26.25 % dư nợ (kỳ Q2/2026); (79) Cơ cấu kỳ hạn TPDN — Trên 10 năm đạt 1.49 % dư nợ (kỳ Q2/2026); (80) Cơ cấu nhà đầu tư nắm giữ TPCP — Khác đạt 2.30 % (kỳ Q1/2026); (81) Vốn hóa thị trường chứng khoán / GDP đạt 61.40 % GDP (kỳ 2025); (82) Nợ công / GDP (có dự báo tới 2031) đạt 26.60 % GDP (kỳ 2031); (83) Tỷ lệ đô thị hóa đạt 38.80 % dân số (kỳ 2025); (84) Dân số 65+ tuổi đạt 22.00 triệu người (kỳ 2050); (85) GDP theo sử dụng — Tiêu dùng Chính phủ đạt 9.40 % GDP (kỳ 2025); (86) GDP theo sử dụng — Đầu tư (GFCF) đạt 34.60 % GDP (kỳ 2031); (87) Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986) đạt 42.70 % GDP (kỳ 2025); (88) Tổng đầu tư / GDP đạt 34.60 % GDP (kỳ 2031); (89) GDP bình quân đầu người (danh nghĩa) đạt 6652.00 USD (kỳ 2031); (90) GDP bình quân đầu người (PPP) đạt 27821.00 Int$ (kỳ 2031); (91) GNI bình quân đầu người (Atlas) đạt 4970.00 USD (kỳ 2025); (92) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 101.30 nghìn tỷ đồng (kỳ T8/2026); (93) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026); (94) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026). Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: (1) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.40 % (kỳ T8/2026); (2) CPI (YoY) đạt 4.89 % (kỳ T8/2026); (3) Lãi suất liên ngân hàng 3 tháng đạt 6.89 % (kỳ Tuần 38/2026); (4) Lãi suất liên ngân hàng 2 tuần đạt 5.50 % (kỳ 2026-09-17); (5) Tăng trưởng cung tiền M2 (YoY) đạt 4.24 % (kỳ T6/2026); (6) Tăng trưởng huy động vốn (YoY) đạt 10.39 % (kỳ T6/2026); (7) Nhập khẩu (YoY) đạt 37.90 % (kỳ T8/2026); (8) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026); (9) Chi ngân sách (YoY) đạt -8.16 % (kỳ Q2/2026); (10) Giá dầu Brent đạt 130.80 USD/thùng (kỳ 2026-09-15); (11) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026); (12) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026); (13) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026); (14) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt -358.85 tỷ VND (kỳ 2026-09-17); (15) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 324.00 ngày (kỳ Tuần 38/2026); (16) Đóng góp vào lạm phát — nhóm Thực phẩm đạt 1.57 điểm % (kỳ T8/2026); (17) Đóng góp vào lạm phát — nhóm Vận tải đạt 0.78 điểm % (kỳ T8/2026); (18) Đóng góp vào lạm phát — nhóm Khác đạt 1.24 điểm % (kỳ T8/2026); (19) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 3.18 % (kỳ 2026-08-01); (20) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.94 % (kỳ 2026-08-01); (21) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.99 % (kỳ 2026-08-01); (22) CPI Mỹ (YoY) đạt 3.35 % (kỳ 2026-08-01); (23) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01); (24) CPI (HICP) Eurozone (YoY) đạt 3.23 % (kỳ 2026-08-01); (25) Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng) đạt 17.41 % (kỳ T6/2026); (26) Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng) đạt 10.39 % (kỳ T6/2026); (27) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 156.84 % (kỳ T6/2026); (28) Lợi suất TPCP thứ cấp 2 năm (40yo) đạt 3.79 % (kỳ T9/2026); (29) Chênh lệch lợi suất TPCP 10Y-2Y (VN) đạt 75.90 điểm % (kỳ T8/2026); (30) Chênh lệch lợi suất TPCP 10Y VN so với Mỹ đạt -0.21 điểm % (kỳ T9/2026); (31) Chênh lệch lợi suất TPCP 2Y VN so với Mỹ đạt -0.58 điểm % (kỳ T9/2026); (32) Cán cân vãng lai — Hàng hóa đạt 2.43 tỷ USD (kỳ Q1/2026); (33) Cán cân vãng lai — Thu nhập thứ cấp đạt 3.19 tỷ USD (kỳ Q1/2026); (34) Cán cân tài chính — FDI (tài sản) đạt 0.16 tỷ USD (kỳ Q1/2026); (35) Cán cân tài chính — Đầu tư gián tiếp (tài sản) đạt -0.01 tỷ USD (kỳ Q1/2026); (36) Cán cân tài chính — Khác (tài sản) đạt 2.57 tỷ USD (kỳ Q1/2026); (37) FDI — Công cụ nợ đạt -1.21 tỷ USD (kỳ Q1/2026); (38) Đầu tư khác — Cho vay đạt -0.53 tỷ USD (kỳ Q1/2026); (39) Tiền gửi (cán cân tài chính) — Khu vực khác đạt 2.34 tỷ USD (kỳ Q1/2026); (40) Vay nợ (cán cân tài chính) — Chính phủ đạt 0.54 tỷ USD (kỳ Q1/2026); (41) Vay nợ (cán cân tài chính) — Khu vực khác đạt -1.07 tỷ USD (kỳ Q1/2026); (42) Cơ cấu kỳ hạn TPCP — 5-10 năm đạt 51.39 % dư nợ (kỳ Q2/2026); (43) Cơ cấu kỳ hạn TPCP — Trên 10 năm đạt 24.14 % dư nợ (kỳ Q2/2026); (44) Cơ cấu kỳ hạn TPDN — 1-3 năm đạt 57.91 % dư nợ (kỳ Q2/2026); (45) Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng đạt 36.56 % (kỳ Q1/2026); (46) Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm đạt 60.44 % (kỳ Q1/2026); (47) Dân số 0-14 tuổi đạt 18.70 triệu người (kỳ 2050); (48) Dân số 15-64 tuổi (lao động) đạt 69.30 triệu người (kỳ 2050); (49) Tỷ lệ phụ thuộc chung đạt 58.60 % (kỳ 2050); (50) Tỷ lệ phụ thuộc — Người già đạt 31.70 % (kỳ 2050); (51) GDP theo sử dụng — Tiêu dùng hộ gia đình đạt 53.20 % GDP (kỳ 2025); (52) GDP theo sử dụng — Xuất khẩu đạt 79.36 % GDP (kỳ 2026); (53) GDP theo sử dụng — Nhập khẩu đạt 75.19 % GDP (kỳ 2026); (54) Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986) đạt 11.60 % GDP (kỳ 2025); (55) Tiết kiệm quốc gia / GDP đạt 35.20 % GDP (kỳ 2031); (56) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026); (57) FDI đăng ký theo tháng (rời rạc) đạt 2.50 tỷ USD (kỳ T8/2026); (58) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.82 điểm % (kỳ 2026-09-17); (59) Rủi ro lãi suất hệ thống NH niêm yết (ΔNII/NII khi LS +100bp) đạt 10.82 % (kỳ Q2/2026); (60) Rủi ro thanh khoản hệ thống NH niêm yết (che phủ rút -10% tiền gửi) đạt 319.70 % (kỳ Q2/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 10.72x, P/B 1.68x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.83% — mức định giá được xếp loại \"Rẻ/Hấp dẫn\". Kết hợp Scorecard vĩ mô (-2/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Nên mua vào\": Định giá đã đủ rẻ để bù đắp rủi ro, NHƯNG vĩ mô còn nhiều điểm xấu (xem Scorecard) — nên mua vào từng phần, CHƯA tăng tỷ trọng lớn cho tới khi các yếu tố bất lợi về vĩ mô qua đi.",
     "economy_impact": [
       {
         "heading": "Tăng trưởng & Lạm phát",
@@ -351,7 +342,7 @@
       },
       {
         "heading": "Thanh khoản hệ thống & Lãi suất chính thức (OMO/VNIBOR/niêm yết Big4)",
-        "text": "Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 % (kỳ 2026-08-19). Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 3.20% so với 9 tháng 8.12%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong 323 ngày gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra). Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 % (kỳ Tuần 38/2026), ổn định; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 % (kỳ Tuần 32/2026), ổn định; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 % (kỳ Tuần 38/2026), ổn định."
+        "text": "Lãi suất OMO kỳ hạn 7 ngày là công cụ NHNN dùng để bơm/hút thanh khoản NGẮN HẠN tại thị trường liên ngân hàng (thị trường 2), KHÔNG phải thay đổi cung tiền M2 dài hạn — hiện ở mức 4.50 % (kỳ 2026-08-19). Đường cong lãi suất liên ngân hàng VNIBOR hiện dốc lên (O/N 3.20% so với 9 tháng 8.12%), phản ánh kỳ vọng thị trường về mức độ căng thẳng thanh khoản ở các kỳ hạn dài hơn. Tác động từ OMO lan tỏa GIÁN TIẾP sang lãi suất huy động/cho vay tại thị trường 1 (doanh nghiệp và dân cư) thông qua kênh truyền dẫn lãi suất liên ngân hàng — không tức thời và không 1-1, thường có độ trễ vài tuần đến vài tháng tùy thanh khoản từng ngân hàng. Ở CHIỀU NGƯỢC LẠI (hút thanh khoản), NHNN đã KHÔNG chào bán tín phiếu trong 324 ngày gần nhất — nghĩa là suốt giai đoạn này chỉ có hoạt động BƠM (OMO), không có hoạt động HÚT nào diễn ra, nhất quán với bức tranh thanh khoản đang căng thẳng/thiếu vốn (nếu hệ thống dư thừa vốn, NHNN sẽ cần hút bớt qua tín phiếu để tránh áp lực mất giá VND, nhưng thực tế không xảy ra). Biểu niêm yết CHÍNH THỨC kỳ hạn 12 tháng của nhóm ngân hàng lớn: Lãi suất huy động 12T — Vietcombank (nhóm lớn) đạt 5.90 % (kỳ Tuần 38/2026), ổn định; Lãi suất huy động 12T — VietinBank (nhóm lớn) đạt 5.90 % (kỳ Tuần 32/2026), ổn định; Lãi suất huy động 12T — NamABank (nhóm nhỏ) đạt 6.20 % (kỳ Tuần 38/2026), ổn định."
       },
       {
         "heading": "⚠️ Lãi suất THỰC TẾ thị trường (khác biểu niêm yết)",
@@ -367,7 +358,7 @@
       }
     ],
     "market_impact": "Với Scorecard vĩ mô -2/6 điểm (bất lợi cho kênh cổ phiếu) và định giá VN-Index được xếp loại \"Rẻ/Hấp dẫn\", khuyến nghị phân bổ vốn hiện tại là \"Nên mua vào\": Định giá đã đủ rẻ để bù đắp rủi ro, NHƯNG vĩ mô còn nhiều điểm xấu (xem Scorecard) — nên mua vào từng phần, CHƯA tăng tỷ trọng lớn cho tới khi các yếu tố bất lợi về vĩ mô qua đi.\n\nChênh lệch lợi suất thu nhập cổ phiếu so với lãi suất phi rủi ro (ERP) hiện ở mức 4.83%, trên nền lãi suất phi rủi ro tham chiếu 4.50%. Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái phiếu ở mức lãi suất hiện tại. LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ cao nhất đang ghi nhận trên thị trường (6.0%/năm, xem chi tiết ở mục tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.\n\nỞ cấp độ ngành: Giá dầu Brent tăng có lợi cho nhóm dầu khí thượng nguồn nhưng bào mòn biên lợi nhuận nhóm vận tải, nhựa, phân bón do chi phí đầu vào tăng. Lãi suất liên ngân hàng tăng phản ánh thanh khoản hệ thống thắt chặt hơn — thường bất lợi cho nhóm cổ phiếu dùng đòn bẩy cao (bất động sản, xây dựng) do chi phí vốn tăng.",
-    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: Chỉ số sản xuất công nghiệp IIP (YoY), CPI (YoY), Lãi suất liên ngân hàng 3 tháng, Tăng trưởng cung tiền M2 (YoY), Khối ngoại mua/bán ròng HOSE (theo phiên), Cán cân thương mại (lũy kế) và Giá dầu Brent.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo.\n- Rủi ro ALM hệ thống ngân hàng (kỳ 2026-Q2, 26/26 ngân hàng, che phủ 100% tổng tài sản hệ thống nếu có): Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +309478.63% tổng tài sản (mức phân tán 309479.31% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 731866.3%). Ngân hàng lệch nhiều nhất: OCB (+18585446.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống."
+    "watch_points": "- Các chỉ báo đang xấu đi cần theo dõi sát: Chỉ số sản xuất công nghiệp IIP (YoY), CPI (YoY), Lãi suất liên ngân hàng 3 tháng, Tăng trưởng cung tiền M2 (YoY), Khối ngoại mua/bán ròng HOSE (theo phiên), Cán cân thương mại (lũy kế) và Giá dầu Brent.\n- Diễn biến đường cong lãi suất liên ngân hàng VNIBOR (đặc biệt chênh lệch O/N so với các kỳ hạn dài) — dấu hiệu sớm về căng thẳng thanh khoản hệ thống.\n- Tỷ giá USD/VND và động thái lãi suất Fed — ảnh hưởng trực tiếp tới dòng vốn ngoại và áp lực lạm phát nhập khẩu.\n- Xu hướng cán cân thương mại (xuất khẩu so với nhập khẩu) trong các kỳ báo cáo tiếp theo.\n- Rủi ro ALM hệ thống ngân hàng (kỳ 2026-Q2, 26/26 ngân hàng, che phủ 100% tổng tài sản hệ thống nếu có): Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +9.66% tổng tài sản (mức phân tán 10.33% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.6%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống."
   },
   "monitoringTable": {
     "periods": [
@@ -949,29 +940,29 @@
   },
   "bankingSystemRisk": {
     "asOf": "2026-Q2",
-    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +309478.63% tổng tài sản (mức phân tán 309479.31% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 731866.3%). Ngân hàng lệch nhiều nhất: OCB (+18585446.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
+    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +9.66% tổng tài sản (mức phân tán 10.33% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.6%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "interestRateRisk": {
-      "netGapRatio": 3094.7862963246353,
-      "dispersionGapRatio": 3094.793051652432,
+      "netGapRatio": 0.09657073380161428,
+      "dispersionGapRatio": 0.10332606159845938,
       "stressNiiByShock": {
-        "+100bp": 538975581,
-        "-100bp": -538975581,
-        "+200bp": 1077951161,
-        "-200bp": -1077951161
+        "+100bp": 15943,
+        "-100bp": -15943,
+        "+200bp": 31886,
+        "-200bp": -31886
       },
       "stressNiiRatioByShock": {
-        "+100bp": 3659.3316674339694,
-        "-100bp": -3659.3316674339694,
-        "+200bp": 7318.663328078518,
-        "-200bp": -7318.663328078518
+        "+100bp": 0.10824372537556534,
+        "-100bp": -0.10824372537556534,
+        "+200bp": 0.21648745075113068,
+        "-200bp": -0.21648745075113068
       },
       "worstBank": {
-        "ticker": "OCB",
-        "ratio": 185854.46400779096
+        "ticker": "NAB",
+        "ratio": 0.464302638492246
       }
     },
     "liquidityRisk": {
-      "netGapRatio": -2129.8491643044804,
+      "netGapRatio": -0.006714526539121545,
       "liquidAssetsRatio": 0.19328435996013787,
       "depositRunCoverageByStress": {
         "-5%": 6.394845865091842,
@@ -1102,14 +1093,16 @@
       "NVB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 2.0525239935767887,
-        "deposit_run_coverage_10pct": 2.553905946762913
+        "cum_gap_1y_ratio": null,
+        "deposit_run_coverage_10pct": 2.553905946762913,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "OCB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 185854.46400779096,
-        "deposit_run_coverage_10pct": 3.9622249884884493
+        "cum_gap_1y_ratio": null,
+        "deposit_run_coverage_10pct": 3.9622249884884493,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "PGB": {
         "status": "reported",
@@ -6833,25 +6826,25 @@
         },
         {
           "period": "2026-09",
-          "value": 25964.16,
+          "value": 26002.27,
           "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
         }
       ],
       "trend": {
-        "latest": 25964.16,
+        "latest": 26002.27,
         "latest_period": "2026-09",
         "latest_source": "https://api.exchangerate-api.com/v4/latest/USD",
         "n_points": 4,
         "prior": 26044.82,
         "prior_period": "2026-08",
-        "delta": -80.66,
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
+        "delta": -42.55,
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "'lower=better' theo nghĩa VND ít mất giá hơn (áp lực tỷ giá giảm). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới sẽ tự APPEND mỗi lần Action chạy qua fetch_macro_data.py.",
       "impact": "VND mất giá (tỷ giá tăng) làm tăng chi phí nhập khẩu nguyên liệu/trả nợ nước ngoài (áp lực lạm phát chi phí đẩy) nhưng có lợi tương đối cho nhóm xuất khẩu (dệt may, thủy sản, gỗ) nhờ tăng sức cạnh tranh giá."
@@ -8758,13 +8751,13 @@
         {
           "period": "2026-09-17",
           "value": -358.85,
-          "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=18/09/2026"
+          "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=19/09/2026"
         }
       ],
       "trend": {
         "latest": -358.85,
         "latest_period": "2026-09-17",
-        "latest_source": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=18/09/2026",
+        "latest_source": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=19/09/2026",
         "n_points": 24,
         "prior": 367.01,
         "prior_period": "2026-09-10",
@@ -8836,19 +8829,19 @@
         },
         {
           "period": "2026-W38",
-          "value": 323,
+          "value": 324,
           "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
         }
       ],
       "trend": {
-        "latest": 323,
+        "latest": 324,
         "latest_period": "2026-W38",
         "latest_source": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn",
         "n_points": 10,
         "prior": 316,
         "prior_period": "2026-W37",
-        "delta": 7,
-        "delta_vs_4back": 28,
+        "delta": 8,
+        "delta_vs_4back": 29,
         "far_period": "2026-W34",
         "direction": "up",
         "value_arrow": "↑",
@@ -11633,25 +11626,25 @@
         },
         {
           "period": "2026-09",
-          "value": 12.44,
+          "value": 12.39,
           "source_url": "https://24hmoney.vn/indices/vn-index"
         }
       ],
       "trend": {
-        "latest": 12.44,
+        "latest": 12.39,
         "latest_period": "2026-09",
         "latest_source": "https://24hmoney.vn/indices/vn-index",
         "n_points": 3,
         "prior": 12.46,
         "prior_period": "2026-08",
-        "delta": -0.02,
-        "direction": "flat",
-        "value_arrow": "→",
-        "is_improving": null,
-        "label": "flat",
-        "arrow": "→",
-        "judgment_label": "Ổn định",
-        "judgment_color": "#f59e0b"
+        "delta": -0.07,
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "Chỉ báo mới 2026-07-25 — P/E VN-Index THẬT (bao gồm cả họ VIN: VIC/VHM/VRE/VPL), fetch SONG SONG với vnindex_pe (ex-VIN) để có 2 quyết định phân bổ vốn độc lập đối chiếu nhau (user 2026-07-25). Nguồn: 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} trong window.__NUXT__).",
       "impact": "So sánh với vnindex_pe (ex-VIN): chênh lệch lớn giữa 2 số cho biết mức độ VIN đang kéo méo định giá chung của thị trường lên/xuống."
@@ -16255,11 +16248,6 @@
       "autoSource": "fred",
       "series": [
         {
-          "period": "2026-08-14",
-          "value": 4.68,
-          "source_url": "https://fred.stlouisfed.org/series/DGS10"
-        },
-        {
           "period": "2026-08-17",
           "value": 4.72,
           "source_url": "https://fred.stlouisfed.org/series/DGS10"
@@ -16368,25 +16356,30 @@
           "period": "2026-09-16",
           "value": 5.01,
           "source_url": "https://fred.stlouisfed.org/series/DGS10"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 4.94,
+          "source_url": "https://fred.stlouisfed.org/series/DGS10"
         }
       ],
       "trend": {
-        "latest": 5.01,
-        "latest_period": "2026-09-16",
+        "latest": 4.94,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/DGS10",
         "n_points": 23,
-        "prior": 5.0,
-        "prior_period": "2026-09-15",
-        "delta": 0.01,
-        "delta_vs_4back": 0.06,
-        "far_period": "2026-09-10",
-        "direction": "flat",
-        "value_arrow": "→",
-        "is_improving": null,
-        "label": "flat",
-        "arrow": "→",
-        "judgment_label": "Ổn định",
-        "judgment_color": "#f59e0b"
+        "prior": 5.01,
+        "prior_period": "2026-09-16",
+        "delta": -0.07,
+        "delta_vs_4back": -0.02,
+        "far_period": "2026-09-11",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "10-Year Treasury Constant Maturity Rate (FRED series DGS10) — lãi suất phi rủi ro tham chiếu toàn cầu, ảnh hưởng định giá mọi tài sản rủi ro (kể cả VN-Index) qua kênh chi phí vốn.",
       "impact": "Lợi suất Mỹ tăng thường kéo dòng vốn về Mỹ (USD mạnh lên), gây áp lực lên tỷ giá và định giá cổ phiếu các thị trường mới nổi trong đó có Việt Nam."
@@ -18023,11 +18016,6 @@
       "autoSource": "fred",
       "series": [
         {
-          "period": "2026-08-14",
-          "value": 3.86,
-          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-        },
-        {
           "period": "2026-08-17",
           "value": 3.87,
           "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
@@ -18136,25 +18124,30 @@
           "period": "2026-09-16",
           "value": 4.14,
           "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 4.12,
+          "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
         }
       ],
       "trend": {
-        "latest": 4.14,
-        "latest_period": "2026-09-16",
+        "latest": 4.12,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/DGS3MO",
         "n_points": 23,
-        "prior": 4.11,
-        "prior_period": "2026-09-15",
-        "delta": 0.03,
-        "delta_vs_4back": 0.14,
-        "far_period": "2026-09-10",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 4.14,
+        "prior_period": "2026-09-16",
+        "delta": -0.02,
+        "delta_vs_4back": 0.05,
+        "far_period": "2026-09-11",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "3-Month Treasury Constant Maturity Rate (FRED series DGS3MO) — đầu ngắn đường cong lợi suất, dùng tính spread 10Y-3M (1 trong 2 chỉ báo đảo ngược đường cong kinh điển).",
       "impact": "Kết hợp với lợi suất 10 năm để tính spread 10Y-3M — spread âm (đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy."
@@ -18166,11 +18159,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-08-14",
-          "value": 3.98,
-          "source_url": "https://fred.stlouisfed.org/series/DGS1"
-        },
         {
           "period": "2026-08-17",
           "value": 4.0,
@@ -18280,25 +18268,30 @@
           "period": "2026-09-16",
           "value": 4.45,
           "source_url": "https://fred.stlouisfed.org/series/DGS1"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 4.4,
+          "source_url": "https://fred.stlouisfed.org/series/DGS1"
         }
       ],
       "trend": {
-        "latest": 4.45,
-        "latest_period": "2026-09-16",
+        "latest": 4.4,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/DGS1",
         "n_points": 23,
-        "prior": 4.39,
-        "prior_period": "2026-09-15",
-        "delta": 0.06,
-        "delta_vs_4back": 0.17,
-        "far_period": "2026-09-10",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 4.45,
+        "prior_period": "2026-09-16",
+        "delta": -0.05,
+        "delta_vs_4back": 0.05,
+        "far_period": "2026-09-11",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "1-Year Treasury Constant Maturity Rate (FRED series DGS1) — điểm giữa đường cong, tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
       "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
@@ -18310,11 +18303,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-08-14",
-          "value": 4.17,
-          "source_url": "https://fred.stlouisfed.org/series/DGS2"
-        },
         {
           "period": "2026-08-17",
           "value": 4.19,
@@ -18424,25 +18412,30 @@
           "period": "2026-09-16",
           "value": 4.74,
           "source_url": "https://fred.stlouisfed.org/series/DGS2"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 4.67,
+          "source_url": "https://fred.stlouisfed.org/series/DGS2"
         }
       ],
       "trend": {
-        "latest": 4.74,
-        "latest_period": "2026-09-16",
+        "latest": 4.67,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/DGS2",
         "n_points": 23,
-        "prior": 4.67,
-        "prior_period": "2026-09-15",
-        "delta": 0.07,
-        "delta_vs_4back": 0.18,
-        "far_period": "2026-09-10",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 4.74,
+        "prior_period": "2026-09-16",
+        "delta": -0.07,
+        "delta_vs_4back": 0.04,
+        "far_period": "2026-09-11",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "2-Year Treasury Constant Maturity Rate (FRED series DGS2) — dùng tính spread 10Y-2Y, chỉ báo đảo ngược đường cong ĐƯỢC THEO DÕI NHIỀU NHẤT bởi thị trường tài chính toàn cầu.",
       "impact": "Spread 10Y-2Y âm (đảo ngược) là tín hiệu cảnh báo suy thoái kinh điển nhất — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm."
@@ -18454,11 +18447,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-08-14",
-          "value": 4.36,
-          "source_url": "https://fred.stlouisfed.org/series/DGS5"
-        },
         {
           "period": "2026-08-17",
           "value": 4.38,
@@ -18568,25 +18556,30 @@
           "period": "2026-09-16",
           "value": 4.86,
           "source_url": "https://fred.stlouisfed.org/series/DGS5"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 4.78,
+          "source_url": "https://fred.stlouisfed.org/series/DGS5"
         }
       ],
       "trend": {
-        "latest": 4.86,
-        "latest_period": "2026-09-16",
+        "latest": 4.78,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/DGS5",
         "n_points": 23,
-        "prior": 4.83,
-        "prior_period": "2026-09-15",
-        "delta": 0.03,
-        "delta_vs_4back": 0.11,
-        "far_period": "2026-09-10",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 4.86,
+        "prior_period": "2026-09-16",
+        "delta": -0.08,
+        "delta_vs_4back": 0.0,
+        "far_period": "2026-09-11",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
       "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ."
@@ -18598,11 +18591,6 @@
       "goodDirection": "lower",
       "autoSource": "fred",
       "series": [
-        {
-          "period": "2026-08-14",
-          "value": 5.25,
-          "source_url": "https://fred.stlouisfed.org/series/DGS30"
-        },
         {
           "period": "2026-08-17",
           "value": 5.31,
@@ -18712,25 +18700,30 @@
           "period": "2026-09-16",
           "value": 5.35,
           "source_url": "https://fred.stlouisfed.org/series/DGS30"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 5.29,
+          "source_url": "https://fred.stlouisfed.org/series/DGS30"
         }
       ],
       "trend": {
-        "latest": 5.35,
-        "latest_period": "2026-09-16",
+        "latest": 5.29,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/DGS30",
         "n_points": 23,
-        "prior": 5.36,
-        "prior_period": "2026-09-15",
-        "delta": -0.01,
-        "delta_vs_4back": -0.02,
-        "far_period": "2026-09-10",
-        "direction": "flat",
-        "value_arrow": "→",
-        "is_improving": null,
-        "label": "flat",
-        "arrow": "→",
-        "judgment_label": "Ổn định",
-        "judgment_color": "#f59e0b"
+        "prior": 5.35,
+        "prior_period": "2026-09-16",
+        "delta": -0.06,
+        "delta_vs_4back": -0.06,
+        "far_period": "2026-09-11",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
       },
       "note": "30-Year Treasury Constant Maturity Rate (FRED series DGS30) — đầu dài nhất đường cong lợi suất.",
       "impact": "Tham chiếu hiển thị đường cong lợi suất Mỹ, phản ánh kỳ vọng lạm phát/tăng trưởng dài hạn."
@@ -45970,11 +45963,6 @@
       "autoSource": "derived",
       "series": [
         {
-          "period": "2026-08-14",
-          "value": 0.51,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
-        },
-        {
           "period": "2026-08-17",
           "value": 0.53,
           "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
@@ -46083,25 +46071,30 @@
           "period": "2026-09-16",
           "value": 0.27,
           "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 0.27,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
         }
       ],
       "trend": {
         "latest": 0.27,
-        "latest_period": "2026-09-16",
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/T10Y2Y",
         "n_points": 23,
-        "prior": 0.33,
-        "prior_period": "2026-09-15",
-        "delta": -0.06,
-        "delta_vs_4back": -0.12,
-        "far_period": "2026-09-10",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
+        "prior": 0.27,
+        "prior_period": "2026-09-16",
+        "delta": 0.0,
+        "delta_vs_4back": -0.06,
+        "far_period": "2026-09-11",
+        "direction": "flat",
+        "value_arrow": "→",
+        "is_improving": null,
+        "label": "flat",
+        "arrow": "→",
+        "judgment_label": "Ổn định",
+        "judgment_color": "#f59e0b"
       },
       "note": "= us_10y_yield − us_yield_2y (khớp theo period NGÀY, cả 2 đều từ FRED). Spread ÂM (đường cong đảo ngược) lịch sử là tín hiệu cảnh báo suy thoái Mỹ đáng tin cậy — mọi lần suy thoái Mỹ từ 1955 đều có đảo ngược 10Y-2Y trước đó vài quý-vài năm. good_direction=higher vì spread dương (đường cong bình thường, dốc lên) là trạng thái lành mạnh. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
       "impact": "Đường cong lợi suất Mỹ đảo ngược kéo dài là tín hiệu cảnh báo suy thoái Mỹ sớm nhất được thị trường toàn cầu theo dõi — ảnh hưởng khẩu vị rủi ro chung, gián tiếp tác động dòng vốn ngoại vào TTCK Việt Nam."
@@ -46113,11 +46106,6 @@
       "goodDirection": "higher",
       "autoSource": "derived",
       "series": [
-        {
-          "period": "2026-08-14",
-          "value": 0.82,
-          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
-        },
         {
           "period": "2026-08-17",
           "value": 0.85,
@@ -46227,18 +46215,23 @@
           "period": "2026-09-16",
           "value": 0.87,
           "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 0.82,
+          "source_url": "https://fred.stlouisfed.org/series/T10Y3M"
         }
       ],
       "trend": {
-        "latest": 0.87,
-        "latest_period": "2026-09-16",
+        "latest": 0.82,
+        "latest_period": "2026-09-17",
         "latest_source": "https://fred.stlouisfed.org/series/T10Y3M",
         "n_points": 23,
-        "prior": 0.89,
-        "prior_period": "2026-09-15",
-        "delta": -0.02,
-        "delta_vs_4back": -0.08,
-        "far_period": "2026-09-10",
+        "prior": 0.87,
+        "prior_period": "2026-09-16",
+        "delta": -0.05,
+        "delta_vs_4back": -0.07,
+        "far_period": "2026-09-11",
         "direction": "down",
         "value_arrow": "↓",
         "is_improving": false,
@@ -47908,27 +47901,32 @@
         },
         {
           "period": "2024-Q3",
-          "value": 140.556,
+          "value": 4.031,
+          "source_url": null
+        },
+        {
+          "period": "2024-Q4",
+          "value": 1.267,
           "source_url": null
         },
         {
           "period": "2025-Q1",
-          "value": 1.403,
+          "value": 0.582,
           "source_url": null
         },
         {
           "period": "2025-Q2",
-          "value": -0.738,
+          "value": 6.977,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 2.624,
+          "value": 2.542,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 4.297,
+          "value": 4.668,
           "source_url": null
         },
         {
@@ -47938,19 +47936,19 @@
         },
         {
           "period": "2026-Q2",
-          "value": 365933.167,
+          "value": 10.824,
           "source_url": null
         }
       ],
       "trend": {
-        "latest": 365933.167,
+        "latest": 10.824,
         "latest_period": "2026-Q2",
         "latest_source": null,
-        "n_points": 9,
+        "n_points": 10,
         "prior": 1.022,
         "prior_period": "2026-Q1",
-        "delta": 365932.145,
-        "delta_vs_4back": 365932.429,
+        "delta": 9.802,
+        "delta_vs_4back": 3.847,
         "far_period": "2025-Q2",
         "direction": "up",
         "value_arrow": "↑",
@@ -47983,6 +47981,11 @@
         {
           "period": "2024-Q3",
           "value": 237.0,
+          "source_url": null
+        },
+        {
+          "period": "2024-Q4",
+          "value": 269.9,
           "source_url": null
         },
         {
@@ -48020,7 +48023,7 @@
         "latest": 319.7,
         "latest_period": "2026-Q2",
         "latest_source": null,
-        "n_points": 9,
+        "n_points": 10,
         "prior": 332.7,
         "prior_period": "2026-Q1",
         "delta": -13.0,
