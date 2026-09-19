@@ -322,23 +322,13 @@ def _backfill_ticker_period(ticker, period_key, candidates, force=False):
                 # thay vi mai mai bi coi la "da xong". upsert_reported_period() gio da MERGE (uu tien
                 # gia tri moi, giu gia tri cu neu lan nay khong trich lai duoc) nen thu lai an toan,
                 # khong lam mat field da co truoc do.
-                # SUA THEM (user 2026-09-19, phat hien qua anh chup thuc ABB/ACB/TCB/BID): chi xet
-                # is_fully_reported() (lai suat+thanh khoan) la chua du - tinh nang OCR FX moi them
-                # SAU KHI rat nhieu ky da "day du" tu truoc, se bi bo qua NGAY o day, khong bao gio
-                # duoc thu du bang FX thuc su co trong BCTC. needs_fx_check() dam bao MOI ky day du
-                # duoc OCR lai DUNG 1 LAN de cho FX 1 co hoi - sau lan do fx_checked=True mai mai,
-                # khong OCR lai vo ich nhung lan sau (xem bank_alm_store.needs_fx_check()).
-                if bank_alm_store.is_fully_reported(existing) and not bank_alm_store.needs_fx_check(existing):
+                if bank_alm_store.is_fully_reported(existing):
                     print(f"  [SKIP] {ticker} {try_period}: da co du lieu that DAY DU (ca lai suat + "
-                          f"thanh khoan + da thu FX), bo qua")
+                          f"thanh khoan), bo qua")
                     return f"da_co ({try_period})"
                 if existing and existing.get("status") == "reported":
-                    if bank_alm_store.is_fully_reported(existing):
-                        print(f"  [INFO] {ticker} {try_period}: da du lai suat+thanh khoan nhung chua "
-                              f"tung thu FX - OCR lai 1 lan de cho FX co hoi")
-                    else:
-                        print(f"  [INFO] {ticker} {try_period}: da 'reported' nhung con thieu 1 trong 2 "
-                              f"bang gap - thu lai de lay not phan thieu")
+                    print(f"  [INFO] {ticker} {try_period}: da 'reported' nhung con thieu 1 trong 2 "
+                          f"bang gap - thu lai de lay not phan thieu")
             gaps = fetch_bank_risk_gaps_for_period(ticker, try_period)
             if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
                 source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),
@@ -579,45 +569,6 @@ def _bank_period_metrics(entry, bs_snap):
     loans = bs_snap.get("loans")
     ldr = (loans / cust_dep) if (loans and cust_dep) else None
 
-    # ── Rui ro tien te (FX Position) — theo "Danh gia rui ro tien te.docx" (user 2026-09-18, dung
-    # chinh TCB Quy 1/2026 lam vi du minh hoa, da doi chieu CHINH XAC 7/7 con so trong file truoc khi
-    # them vao day). Bang "Rui ro tien te" khac han 2 bang tren: COT la DONG TIEN (USD/EUR/Khac...) —
-    # SO LUONG dong tien KHAC NHAU tuy ngan hang, khong co so luong bucket co dinh nhu bang ky han —
-    # nen luu duoi dang dict {ma_tien: {...}} thay vi list theo thu tu co dinh.
-    fx_raw = entry.get("fx_position") or {}
-    if fx_raw:
-        fx_assets_total = sum((v.get("assets") or 0) for v in fx_raw.values()) / 1000
-        fx_liab_total = sum((v.get("liabilities") or 0) for v in fx_raw.values()) / 1000
-        fx_onbalance = sum((v.get("onbalance") or 0) for v in fx_raw.values()) / 1000
-        fx_offbalance = sum((v.get("offbalance") or 0) for v in fx_raw.values()) / 1000
-        fx_net = sum((v.get("net") or 0) for v in fx_raw.values()) / 1000
-        # QUAN TRONG (muc 6-8 file huong dan): KHONG duoc net tat ca dong tien voi nhau khi xet gioi
-        # han quy dinh — phai tach TRANG THAI DUONG va TRANG THAI AM rieng, moi ben so voi von tu co
-        # (gioi han 20%/ben). Dung "equity" (VCSH tren BCTC) de XAP XI "von tu co" — file huong dan
-        # canh bao RO day KHONG phai dinh nghia phap ly chinh xac (von tu co dung theo Thong tu
-        # 07/2012 la cua THANG LIEN TRUOC ky bao cao, khac VCSH tren BCTC quy) — chi dung de THAM
-        # KHAO xu huong, KHONG dung de ket luan tuan thu quy dinh.
-        fx_positive = sum((v.get("net") or 0) for v in fx_raw.values() if (v.get("net") or 0) > 0) / 1000
-        fx_negative = -sum((v.get("net") or 0) for v in fx_raw.values() if (v.get("net") or 0) < 0) / 1000
-        fx_by_currency_net_ty = {k: (v.get("net") or 0) / 1000 for k, v in fx_raw.items()}
-        # Dong tien co trang thai (tuyet doi) LON NHAT — thuong la dong quyet dinh chieu rui ro ty
-        # gia chinh (vd USD voi TCB, xem muc 20 file huong dan).
-        dominant_ccy = max(fx_by_currency_net_ty, key=lambda k: abs(fx_by_currency_net_ty[k])) if fx_by_currency_net_ty else None
-        dominant_ccy_net = fx_by_currency_net_ty.get(dominant_ccy) if dominant_ccy else None
-        # Stress ty gia don gian (muc 13-16 file huong dan): tac dong dinh gia THO = trang thai rong x
-        # % thay doi ty gia — CHI la uoc luong so bo (khong tinh derivative/hedge/ke toan), ap dung
-        # CHO TUNG DONG TIEN roi cong lai cho kich ban "tat ca dong tien cung thay doi X%" (muc 16).
-        fx_shock_ty = {}
-        for shock_pct in (1, 5, 10, 20):
-            fx_shock_ty[f"+{shock_pct}%"] = round(fx_net * shock_pct / 100, 3)
-            fx_shock_ty[f"-{shock_pct}%"] = round(-fx_net * shock_pct / 100, 3)
-    else:
-        fx_assets_total = fx_liab_total = fx_onbalance = fx_offbalance = fx_net = None
-        fx_positive = fx_negative = None
-        fx_by_currency_net_ty = {}
-        dominant_ccy = dominant_ccy_net = None
-        fx_shock_ty = {}
-
     return {
         "total_assets": ta, "equity": bs_snap.get("equity"), "nii": bs_snap.get("nii"),
         "customer_deposits": cust_dep, "liquid_assets": liquid_assets, "loans": loans, "ldr": ldr,
@@ -658,17 +609,6 @@ def _bank_period_metrics(entry, bs_snap):
         "liquidity_buffer_coverage_1m": liquidity_buffer_coverage_1m,
         "near_cash_1m": near_cash_1m, "near_cash_coverage_1m_precise": near_cash_coverage_1m_precise,
         "customer_deposits_pct_1m": cust_dep_pct_1m, "customer_deposits_pct_1y": cust_dep_pct_1y,
-        # ── Rui ro tien te (FX Position) — xem ghi chu chi tiet cong thuc o khoi tinh toan phia tren.
-        "fx_assets_total": fx_assets_total, "fx_liabilities_total": fx_liab_total,
-        "fx_onbalance_gap": fx_onbalance, "fx_offbalance_position": fx_offbalance, "fx_net_position": fx_net,
-        "fx_positive_position": fx_positive, "fx_negative_position": fx_negative,
-        "fx_net_to_fx_assets_ratio": (fx_net / fx_assets_total) if fx_assets_total else None,
-        "fx_net_to_total_assets_ratio": (fx_net / ta) if (fx_net is not None and ta) else None,
-        "fx_positive_to_equity_ratio": (fx_positive / equity) if (fx_positive is not None and equity) else None,
-        "fx_negative_to_equity_ratio": (fx_negative / equity) if (fx_negative is not None and equity) else None,
-        "fx_by_currency_net": fx_by_currency_net_ty,
-        "fx_dominant_currency": dominant_ccy, "fx_dominant_currency_net": dominant_ccy_net,
-        "fx_shock_impact": fx_shock_ty,
     }
 
 
@@ -900,12 +840,12 @@ def build_banking_system_risk_section(agg):
 _ALM_SHEET_NAME = "ALM_NganHang_Raw"
 # SUA (user 2026-09-18): cot "Trang thai" chung TRUOC DAY co the gay hieu lam — status="reported"
 # chi can 1 TRONG 2 bang (lai suat/thanh khoan) thanh cong la du (xem is_fully_reported()), khien
-# nguoi dung tuong da co du du lieu du that ra chi co 1 nua (bug that phat hien qua VIB/VAB). Them 3
-# cot trang thai RIENG BIET theo tung loai du lieu (lai suat/thanh khoan/tien te), tinh TRUC TIEP tu
-# viec co du lieu hay khong (khong phu thuoc status tong the) - nguoi dung nhin thang vao sheet la
-# biet CHINH XAC dang thieu gi, khong can doan qua status chung.
+# nguoi dung tuong da co du du lieu du that ra chi co 1 nua (bug that phat hien qua VIB/VAB). Them 2
+# cot trang thai RIENG BIET theo tung loai du lieu (lai suat/thanh khoan), tinh TRUC TIEP tu viec co
+# du lieu hay khong (khong phu thuoc status tong the) - nguoi dung nhin thang vao sheet la biet
+# CHINH XAC dang thieu gi, khong can doan qua status chung.
 _ALM_SHEET_HEADERS = [
-    "Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Trang thai Tien te",
+    "Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan",
     "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
     "Tien gui KH (ty)", "Cho vay KH (ty)", "LDR (%)", "Liquid Assets (ty)",
     # -- Rui ro thanh khoan --
@@ -924,11 +864,6 @@ _ALM_SHEET_HEADERS = [
     "RSA (ty)", "RSL (ty)", "RSA/RSL (%)",
     "Stress NII +100bp (ty)", "Stress NII +100bp/NII (%)", "Stress NII +100bp/VCSH (%)",
     "Stress NII +200bp (ty)", "Stress NII +200bp/NII (%)",
-    # -- Rui ro tien te (FX) --
-    "FX Assets (ty)", "FX Liabilities (ty)", "FX Gap noi bang (ty)", "FX Trang thai ngoai bang (ty)",
-    "FX Net Position (ty)", "FX Positive Position (ty)", "FX Negative Position (ty)",
-    "FX Net/FX Assets (%)", "FX Net/TTS (%)", "FX Positive/VCSH (%)", "FX Negative/VCSH (%)",
-    "FX Dong tien chinh", "FX Shock +-10% (ty)",
     "Nguon (tieu de)", "Nguon (url)", "Cap nhat luc",
 ]
 
@@ -984,21 +919,17 @@ def update_bank_alm_excel_sheet(out_dir):
 
             status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
             status_tk = "reported" if entry.get("liquidity_gap") else "missing"
-            status_fx = "reported" if entry.get("fx_position") else "missing"
-            # Cot C tong hop: user (2026-09-19) muon xet CA 3 (Lai suat + Thanh khoan + Tien te) -
-            # giờ da co OCR tu dong cho ca FX (xem bank_risk_notes.py _extract_fx_position) nen doi
-            # hoi ca 3 la hop ly, khong con canh bao "se bao missing gan het" nhu truoc khi co OCR FX
-            # tu dong. "patched" giu nguyen rieng (du lieu ke thua tu ky truoc, khong phai dang
-            # thieu can OCR lai).
+            # Cot C tong hop: chi xet Lai suat + Thanh khoan. "patched" giu nguyen rieng (du lieu ke
+            # thua tu ky truoc, khong phai dang thieu can OCR lai).
             if status == "patched":
                 status_overall = "patched"
-            elif status_ls == "reported" and status_tk == "reported" and status_fx == "reported":
+            elif status_ls == "reported" and status_tk == "reported":
                 status_overall = "reported"
             else:
                 status_overall = "missing"
 
             row = [
-                ticker, period_key, status_overall, status_ls, status_tk, status_fx, entry.get("patched_from"),
+                ticker, period_key, status_overall, status_ls, status_tk, entry.get("patched_from"),
                 m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
                 m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
                 # -- Rui ro thanh khoan --
@@ -1016,14 +947,6 @@ def update_bank_alm_excel_sheet(out_dir):
                 _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
                 m.get("stress_nii_100bp"), _pct("stress_nii_ratio_100bp"), _pct("stress_nii_ratio_equity_100bp"),
                 m.get("stress_nii_200bp"), _pct("stress_nii_ratio_200bp"),
-                # -- Rui ro tien te (FX) --
-                _rnd("fx_assets_total"), _rnd("fx_liabilities_total"), _rnd("fx_onbalance_gap"),
-                _rnd("fx_offbalance_position"), _rnd("fx_net_position"),
-                _rnd("fx_positive_position"), _rnd("fx_negative_position"),
-                _pct("fx_net_to_fx_assets_ratio"), _pct("fx_net_to_total_assets_ratio"),
-                _pct("fx_positive_to_equity_ratio"), _pct("fx_negative_to_equity_ratio"),
-                m.get("fx_dominant_currency"),
-                m["fx_shock_impact"].get("+10%") if m.get("fx_shock_impact") else None,
                 source.get("title"), source.get("url"), entry.get("fetched_at"),
             ]
             for c, val in enumerate(row, start=1):
@@ -1052,11 +975,6 @@ _LIQ_BUCKETS_ALL = ["qua_han_tren_3t", "qua_han_den_3t", "den_1_thang", "tu_1_3_
                     "tu_3_12_thang", "tu_1_5_nam", "tren_5_nam"]
 _IR_BUCKETS_ALL = ["qua_han", "khong_anh_huong_lai_suat", "den_1_thang", "tu_1_3_thang",
                    "tu_3_6_thang", "tu_6_12_thang", "tu_1_5_nam", "tren_5_nam"]
-# Bo dong tien PHO BIEN NHAT (xac nhan qua TCB Quy 1/2026) — bang FX co so luong dong tien KHAC NHAU
-# tuy ngan hang (khong co bucket co dinh nhu 2 bang tren), nen chi danh rieng cot cho 3 dong tien hay
-# gap nhat; dong tien khac (hiem) se KHONG hien rieng o day (van tinh dung trong _bank_period_metrics,
-# chi khong co cot rieng trong sheet nay).
-_FX_CCY_COLS = ["USD", "EUR", "OTHER"]
 
 
 def _update_bank_alm_raw_buckets_sheet(xlsx_path):
@@ -1072,14 +990,12 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
         wb.remove(wb[_ALM_RAW_BUCKETS_SHEET_NAME])
     ws = wb.create_sheet(title=_ALM_RAW_BUCKETS_SHEET_NAME)
 
-    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Trang thai Tien te"]
+    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan"]
     for prefix, buckets in (("Gap TK", _LIQ_BUCKETS_ALL), ("No TK", _LIQ_BUCKETS_ALL), ("TS TK", _LIQ_BUCKETS_ALL),
                             ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL),
                             ("Tien mat", _LIQ_BUCKETS_ALL), ("Tien gui NHNN", _LIQ_BUCKETS_ALL),
                             ("Tien gui KH", _LIQ_BUCKETS_ALL)):
         headers += [f"{prefix} {b}" for b in buckets]
-    for ccy in _FX_CCY_COLS:
-        headers += [f"FX TS {ccy}", f"FX No {ccy}", f"FX Net {ccy}"]
     headers += ["Nguon (tieu de)", "Cap nhat luc"]
     for c, h in enumerate(headers, start=1):
         ws.cell(row=1, column=c, value=h)
@@ -1100,7 +1016,6 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
             cash_b = entry.get("cash_by_bucket") or {}
             sbv_b = entry.get("sbv_dep_by_bucket") or {}
             cust_dep_b = entry.get("customer_deposits_by_bucket") or {}
-            fx = entry.get("fx_position") or {}
             source = entry.get("source") or {}
 
             def _ty(d, k):
@@ -1113,17 +1028,16 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
 
             status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
             status_tk = "reported" if entry.get("liquidity_gap") else "missing"
-            status_fx = "reported" if entry.get("fx_position") else "missing"
-            # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - xet CA 3
-            # (Lai suat + Thanh khoan + Tien te), theo yeu cau user 2026-09-19.
+            # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - chi xet Lai
+            # suat + Thanh khoan.
             raw_status = entry.get("status")
             if raw_status == "patched":
                 status_overall = "patched"
-            elif status_ls == "reported" and status_tk == "reported" and status_fx == "reported":
+            elif status_ls == "reported" and status_tk == "reported":
                 status_overall = "reported"
             else:
                 status_overall = "missing"
-            row = [ticker, period_key, status_overall, status_ls, status_tk, status_fx]
+            row = [ticker, period_key, status_overall, status_ls, status_tk]
             row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
             row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
             row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
@@ -1133,11 +1047,6 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
             row += [_ty(cash_b, k) for k in _LIQ_BUCKETS_ALL]
             row += [_ty(sbv_b, k) for k in _LIQ_BUCKETS_ALL]
             row += [_ty(cust_dep_b, k) for k in _LIQ_BUCKETS_ALL]
-            for ccy in _FX_CCY_COLS:
-                c = fx.get(ccy) or {}
-                row += [round(c["assets"] / 1000, 3) if c.get("assets") is not None else None,
-                        round(c["liabilities"] / 1000, 3) if c.get("liabilities") is not None else None,
-                        round(c["net"] / 1000, 3) if c.get("net") is not None else None]
             row += [source.get("title"), entry.get("fetched_at")]
 
             for c, val in enumerate(row, start=1):

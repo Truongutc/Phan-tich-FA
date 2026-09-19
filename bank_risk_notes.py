@@ -91,15 +91,9 @@ def _autorotate(img, pytesseract):
     return img
 
 
-def _ocr_page_text(pdf_path, page_index, dpi=300, psm=None):
+def _ocr_page_text(pdf_path, page_index, dpi=300):
     """OCR 1 trang (0-based index) bằng pytesseract. Trả về "" nếu thiếu pytesseract/tesseract binary
-    hoặc lỗi bất kỳ bước nào — KHÔNG BAO GIỜ raise.
-
-    `psm`: ghi đè Page Segmentation Mode của tesseract (mặc định None = dùng PSM tự động chuẩn của
-    tesseract, giữ NGUYÊN hành vi cũ cho mọi nơi gọi hiện tại). Thêm (user 2026-09-19, log thật ABB
-    Quý 1/2024) để bảng "Rủi ro tiền tệ" có thêm 1 lượt thử KHÁC khi PSM tự động đọc phần dữ liệu số
-    dày đặc ra rác hoàn toàn (nghi do tự động nhận nhầm bố cục bảng nhiều cột hẹp) — CHỈ dùng làm lớp
-    dự phòng, không đổi hành vi mặc định của 2 bảng gap đang chạy tốt."""
+    hoặc lỗi bất kỳ bước nào — KHÔNG BAO GIỜ raise."""
     try:
         import pytesseract
         import pypdfium2 as pdfium
@@ -111,8 +105,7 @@ def _ocr_page_text(pdf_path, page_index, dpi=300, psm=None):
             return ""
         img = doc[page_index].render(scale=dpi / 72).to_pil()
         img = _autorotate(img, pytesseract)
-        config = f"--psm {psm}" if psm else ""
-        return pytesseract.image_to_string(img, lang="vie", config=config)
+        return pytesseract.image_to_string(img, lang="vie")
     except Exception as e:
         print(f"  [WARN] OCR trang {page_index+1} loi: {e}")
         return ""
@@ -149,8 +142,7 @@ def _ocr_page_words(pdf_path, page_index, dpi=300):
         return []
 
 
-_HEADING_PHRASE_EN = {"lai_suat": "interest rate risk", "thanh_khoan": "liquidity risk",
-                      "tien_te": "currency risk"}
+_HEADING_PHRASE_EN = {"lai_suat": "interest rate risk", "thanh_khoan": "liquidity risk"}
 
 
 def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
@@ -232,8 +224,7 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
         text = _ocr_page_text(pdf_path, idx)
         if text is None:
             return None  # thiếu pytesseract - dừng hẳn, không quét tiếp vô ích
-        for key, phrase_vi in (("lai_suat", "rui ro lai suat"), ("thanh_khoan", "rui ro thanh khoan"),
-                                ("tien_te", "rui ro tien te")):
+        for key, phrase_vi in (("lai_suat", "rui ro lai suat"), ("thanh_khoan", "rui ro thanh khoan")):
             if key in found:
                 continue
             if _has_heading_line(text, phrase_vi):
@@ -242,26 +233,6 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
                 found[key] = (idx, "en")
         if "lai_suat" in found and "thanh_khoan" in found:
             break
-
-    # "Rủi ro tiền tệ" (FX) là mục BỔ SUNG, không bắt buộc để coi tài liệu là "ok" (xem
-    # _extract_gaps_from_pdf) — KHÔNG bắt vòng lặp chính ở trên phải quét hết cả tài liệu chỉ để tìm
-    # riêng mục này (sẽ làm chậm toàn bộ pipeline cho đa số ngân hàng KHÔNG công bố mục này). Mục này
-    # đã được kiểm tra MIỄN PHÍ (dùng lại text đã OCR) trên mọi trang vòng lặp trên vừa quét qua — chỉ
-    # quét THÊM khi chưa thấy, và CHỈ khi đã xác định được ít nhất lãi suất/thanh khoản (FX luôn nằm
-    # GẦN 1 trong 2 mục đó, xác nhận qua nhiều ảnh chụp thật BIDV/ACB/TCB, user 2026-09-18) — giới hạn
-    # phạm vi quét thêm (+15 trang từ điểm vòng lặp chính vừa dừng) để chặn chi phí OCR phát sinh.
-    if "tien_te" not in found and (found.get("lai_suat") or found.get("thanh_khoan")):
-        extra_start = idx + 1
-        for eidx in range(extra_start, min(extra_start + 15, total)):
-            text = _ocr_page_text(pdf_path, eidx)
-            if text is None:
-                return None
-            if _has_heading_line(text, "rui ro tien te"):
-                found["tien_te"] = (eidx, "vi")
-                break
-            if _has_heading_line(text, _HEADING_PHRASE_EN["tien_te"]):
-                found["tien_te"] = (eidx, "en")
-                break
     return found
 
 
@@ -619,202 +590,14 @@ def _is_half_year(name):
 _QUARTER_END_MONTH = {1: 3, 2: 6, 3: 9, 4: 12, 5: 12, 6: 6}
 
 
-# ── Rủi ro tiền tệ (FX Position) — user 2026-09-18 cung cấp 4 ảnh chụp thật (bảng chưa rõ tên NH,
-# BIDV, ACB, TCB) làm mẫu. Bảng này KHÁC HẲN cấu trúc 2 bảng lãi suất/thanh khoản: CỘT là ĐỒNG TIỀN
-# (USD/EUR/Vàng/...) thay vì kỳ hạn cố định — số lượng VÀ thứ tự cột khác nhau tùy ngân hàng (vd
-# BIDV xếp EUR TRƯỚC USD, ACB có tới 7 đồng tiền kể cả Vàng/JPY/AUD/CAD) nên không thể dùng bucket
-# cố định như INTEREST_RATE_BUCKETS/LIQUIDITY_BUCKETS — phải ĐỌC dòng tiêu đề cột để biết chính xác
-# số lượng + thứ tự đồng tiền trước khi trích số.
-#
-# Mỗi mục (ma_chuan, [biến thể nhãn đã strip dấu]) — biến thể DÀI xếp trước biến thể NGẮN để tránh
-# khớp nhầm khi 1 biến thể ngắn là tập con của 1 tên khác (vd "eur" là tập con của "euro duoc quy
-# doi"). "OTHER"/"khac" LUÔN là cột "Ngoại tệ khác"/"Các loại ngoại tệ khác" gộp nhiều đồng tiền nhỏ
-# ngân hàng không tách riêng, KHÔNG phải 1 đồng tiền cụ thể.
-_FX_CCY_PATTERNS = [
-    ("USD", ["do la my duoc quy doi", "do la my", "usd duoc quy doi", "usd"]),
-    ("EUR", ["euro duoc quy doi", "euro", "eur duoc quy doi", "eur"]),
-    ("GOLD", ["vang"]),
-    ("JPY", ["yen nhat", "jpy"]),
-    ("GBP", ["bang anh", "gbp"]),
-    ("AUD", ["aud"]),
-    ("CAD", ["cad"]),
-    ("OTHER", ["cac loai ngoai te khac da qd", "cac loai ngoai te khac", "cac ngoai te khac duoc quy doi",
-               "ngoai te khac", "khac"]),
-]
-_ROW_LABEL_FLAT_FX_ONBALANCE = "trang thai tien te noi bang"
-_ROW_LABEL_FLAT_FX_OFFBALANCE = "trang thai tien te ngoai bang"
-# ABB (anh chup thuc, user 2026-09-19) viet "noi ngoai bang" KHONG co dau phay - khac BIDV/TCB dung
-# "noi, ngoai bang" co phay - thu ca 2 bien the (giong nhieu cach viet khac nhau da gap o cac nhan
-# dong khac trong file nay, vd VIB "thuan"/"rong").
-_ROW_LABEL_FLAT_FX_NET_CANDIDATES = ["trang thai tien te noi, ngoai bang", "trang thai tien te noi ngoai bang"]
-
-
-def _find_fx_currency_header(text):
-    """Dò dòng tiêu đề cột của bảng "Rủi ro tiền tệ" (vd "Đô la Mỹ | Euro | Vàng | Ngoại tệ khác |
-    Tổng cộng") để xác định DANH SÁCH + THỨ TỰ đồng tiền THẬT SỰ xuất hiện trên trang này — số lượng
-    và thứ tự khác nhau tùy ngân hàng nên không đoán trước được. Trả về list mã tiền theo đúng thứ
-    tự trái->phải (KHÔNG gồm cột "Tổng cộng" — không cần, đã có tổng theo dòng ở nơi khác), hoặc None
-    nếu không tìm được cửa sổ nào có >=2 tên đồng tiền khác nhau (ngưỡng >=2 để loại các dòng văn
-    xuôi tình cờ chỉ nhắc 1 đồng tiền, vd "...quy đổi ra VNĐ theo tỷ giá USD...").
-
-    BUG THẬT phát hiện 2026-09-19 (user cung cấp ảnh chụp thật ABB Quý 1/2026 — hệ thống vẫn báo
-    "missing" dù bảng rõ ràng có mặt): tên cột "EUR được quy đổi"/"Các ngoại tệ khác được quy đổi"
-    thường quá dài, bị NGẮT XUỐNG DÒNG trong chính ô tiêu đề (vd "EUR được" / "quy đổi" 2 dòng hiển
-    thị) — OCR theo dải ngang (image_to_string đọc theo Y-coordinate) trả về ĐÚNG 2 dòng text tách
-    biệt cho 2 "dải" đó (dòng 1 gộp phần đầu MỌI cột, dòng 2 gộp phần "quy đổi"/"khác được..." còn
-    lại), khiến tìm trên TỪNG DÒNG RIÊNG LẺ chỉ khớp được các đồng tiền có tên KHÔNG bị ngắt (vd chỉ
-    thấy "EUR"/"USD" ở dòng 1, bỏ sót hẳn "Ngoại tệ khác" vì chữ "khác" nằm ở dòng 2) — trích thiếu
-    cột, làm SAI toàn bộ ánh xạ đồng tiền->giá trị.
-
-    BUG THẬT #2 phát hiện 2026-09-19 (log thật ABB Quý 1/2024, sau khi #1 đã fix): cửa sổ 3 dòng vẫn
-    KHÔNG đủ rộng — OCR thật đọc "Các ngoại tệ" (đầu ô tiêu đề) thành CHUỖI RÁC hoàn toàn không nhận
-    diện được (vd ",CÓC \"80gÍ"), còn phần ngắt xuống "khác được quy" + "đôi" lại đọc ĐÚNG nhưng bị
-    tách xa tới 4 dòng (xen giữa 1-2 dòng rác/trống khác) so với dòng chứa "EUR"/"USD" — vượt khỏi
-    cửa sổ 3 dòng. Giờ BỎ QUA dòng trống trước khi trượt cửa sổ (dòng trống chỉ là nhiễu OCR, không
-    mang thông tin), và cửa sổ DỪNG LẠI ngay khi gặp 1 dòng "giống dòng số liệu thật" (>=2 ô số —
-    xem _CELL_RE) — vùng tiêu đề cột (mọi dòng mô tả/ngắt dòng của tên cột) LUÔN là văn bản thuần,
-    không có số, đứng NGAY TRƯỚC dòng số liệu đầu tiên của bảng, nên đây là ranh giới tự nhiên đáng
-    tin hơn nhiều so với đếm cố định N dòng.
-
-    BUG THẬT #3 phát hiện 2026-09-19 (test lại ABB Quý 1/2026 sau khi nới cửa sổ cố định 3->8 dòng
-    để fix bug #2): cửa sổ 8 dòng CỐ ĐỊNH (không dừng ở ranh giới số liệu) vô tình NUỐT LUÔN dòng dữ
-    liệu thật "Tiền mặt, VÀNG bạc, đá quý..." nằm ngay sau phần tiêu đề — chữ "vàng" trong TÊN KHOẢN
-    MỤC tài sản (không phải tên cột) bị hiểu lầm thành 1 đồng tiền "GOLD" có thật, tạo ra 1 cột ma
-    (ăn nhầm số của cột "Tổng"). Dừng cửa sổ đúng ranh giới số liệu vừa fix bug này vừa giữ được fix
-    bug #2 (cửa sổ vẫn đủ dài để nối "EUR/USD" với "khác được quy đổi" bị ngắt xa, vì toàn bộ vùng
-    ngắt dòng của tiêu đề cột đều là text thuần, không chứa số).
-
-    Chọn cửa sổ khớp NHIỀU đồng tiền nhất nếu có nhiều cửa sổ ứng viên (cửa sổ tiêu đề cột thật luôn
-    liệt kê ĐẦY ĐỦ mọi đồng tiền của bảng, nhiều hơn hẳn bất kỳ câu văn xuôi nào tình cờ nhắc vài
-    đồng tiền)."""
-    def _looks_numeric(line_flat):
-        return len(_CELL_RE.findall(line_flat)) >= 2 or len(_CELL_RE_EN.findall(line_flat)) >= 2
-
-    lines = text.split("\n")
-    flat_lines = [_strip_accents(l).strip() for l in lines if l.strip()]
-    best = None
-    for i in range(len(flat_lines)):
-        window_parts = []
-        for j in range(i, min(i + 8, len(flat_lines))):
-            if window_parts and _looks_numeric(flat_lines[j]):
-                break  # gap dong so lieu thuc - dung cua so tai day, khong nuot nham
-            window_parts.append(flat_lines[j])
-        flat = " ".join(window_parts)
-        if not flat:
-            continue
-        hits = []
-        for ccy, variants in _FX_CCY_PATTERNS:
-            pos = None
-            for v in variants:
-                p = flat.find(v)
-                if p != -1 and (pos is None or p < pos):
-                    pos = p
-            if pos is not None:
-                hits.append((pos, ccy))
-        if len(hits) >= 2:
-            hits.sort()
-            ccys = [c for _, c in hits]
-            if best is None or len(ccys) > len(best):
-                best = ccys
-    return best
-
-
-def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
-    """Trích bảng "Rủi ro tiền tệ" bắt đầu từ `page_idx` (trang tiêu đề, từ _find_note_pages) — quét
-    tối đa 6 trang kế tiếp (thường bảng số nằm ngay dưới tiêu đề, không xa như 2 bảng lãi suất/thanh
-    khoản). Trả về dict {ma_tien: {"assets","liabilities","onbalance","offbalance","net"}} (đơn vị
-    TRIỆU đồng, đã áp dụng `unit_divisor` — xem _detect_unit_divisor, nên truyền từ đơn vị ĐÃ xác
-    định được của 2 bảng lãi suất/thanh khoản trong CÙNG tài liệu thay vì tự đoán lại — bảng FX chỉ
-    là 1 tập con nhỏ của tổng tài sản nên so sánh độ lớn trực tiếp với tổng tài sản thật (cách
-    _detect_unit_divisor dùng cho 2 bảng kia) KHÔNG đáng tin ở đây) hoặc None nếu không đọc đủ.
-
-    Bắt buộc đọc được CẢ "Tổng tài sản" và "Tổng nợ phải trả" theo từng đồng tiền (2 dòng luôn có
-    mặt, tách biệt rõ khỏi các dòng chi tiết xung quanh bằng viền kẻ — giống 2 dòng TỔNG dùng làm
-    lớp dự phòng cho bảng thanh khoản/lãi suất). 3 dòng "Trạng thái tiền tệ nội bảng/ngoại bảng/nội,
-    ngoại bảng" cố đọc trực tiếp trước, tự tính bù nếu thiếu 1 trong 3 (nội bảng = tài sản - nợ; nội,
-    ngoại bảng = nội bảng + ngoại bảng nếu có, ngược lại lấy tạm bằng nội bảng).
-
-    SỬA (user 2026-09-19, log thật ABB Quý 1/2024): PSM tự động của tesseract (mặc định) đôi khi đọc
-    phần dữ liệu SỐ dày đặc của bảng này ra rác hoàn toàn (nghi nhận nhầm bố cục nhiều cột hẹp),
-    trong khi tiêu đề/nhãn dòng vẫn đọc tốt — KHÔNG phải lỗi khớp chữ (đã verify: dựng lại đúng y
-    text OCR thật vẫn trích đúng số) mà là chất lượng OCR đầu vào. Mỗi trang giờ thử PSM tự động
-    TRƯỚC (rẻ, đủ dùng cho đa số trường hợp), CHỈ OCR LẠI với PSM 6 ("1 khối văn bản đồng nhất" —
-    khuyến nghị chuẩn cho bảng khi PSM tự động thất bại) làm lớp dự phòng khi lượt đầu không đủ số
-    liệu — không tốn thêm OCR cho các trang đã đọc tốt ngay từ lượt đầu."""
-    def _try(text, p):
-        ccys = _find_fx_currency_header(text)
-        if not ccys:
-            print(f"  [DIAG] fx trang {p+1}: khong do duoc dong tieu de cot dong tien. Toan bo text "
-                  f"OCR trang nay:\n{text}")
-            return None
-        n = len(ccys)
-        numfmt = _detect_numfmt(text)
-        assets_vals = _extract_number_row(text, _ROW_LABEL_FLAT_ASSETS, n,
-                                           debug_tag=f"fx_tong_tai_san trang {p+1}", lang=numfmt)
-        liab_vals = _extract_number_row(text, _ROW_LABEL_FLAT_LIAB, n,
-                                         debug_tag=f"fx_tong_no trang {p+1}", lang=numfmt)
-        if not (assets_vals and liab_vals):
-            # SUA (user 2026-09-19, phat hien qua log ABB Quy 1/2024 chay thuc): preview fallback
-            # cua _extract_number_row tim dong co "chenh" - tu khoa chi dung cho 2 bang gap (lai
-            # suat/thanh khoan), KHONG XUAT HIEN trong bang FX nen preview luon roi ve doan van xuoi
-            # dau trang, khong giup gi de biet OCR thuc su doc duoc gi. In them TOAN BO text trang +
-            # danh sach dong tien da do duoc de co du du lieu chan doan lan chay sau.
-            print(f"  [DIAG] fx trang {p+1}: header do duoc {ccys} (n={n}) nhung khong du so lieu "
-                  f"Tong tai san/Tong no phai tra. Toan bo text OCR trang nay:\n{text}")
-            return None
-        onbalance_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_ONBALANCE, n,
-                                              debug_tag=f"fx_noi_bang trang {p+1}", lang=numfmt)
-        offbalance_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_OFFBALANCE, n,
-                                               debug_tag=f"fx_ngoai_bang trang {p+1}", lang=numfmt)
-        net_vals = _extract_number_row_multi_label(text, _ROW_LABEL_FLAT_FX_NET_CANDIDATES, n,
-                                                    lang=numfmt, debug_tag=f"fx_noi_ngoai_bang trang {p+1}")
-        if not onbalance_vals:
-            onbalance_vals = [a - l for a, l in zip(assets_vals, liab_vals)]
-        if not net_vals:
-            net_vals = [o + b for o, b in zip(onbalance_vals, offbalance_vals)] if offbalance_vals \
-                else list(onbalance_vals)
-        if not offbalance_vals:
-            offbalance_vals = [nv - ob for nv, ob in zip(net_vals, onbalance_vals)]
-        for vals in (assets_vals, liab_vals, onbalance_vals, offbalance_vals, net_vals):
-            if unit_divisor != 1:
-                vals[:] = [v / unit_divisor for v in vals]
-        result = {}
-        for i, ccy in enumerate(ccys):
-            result[ccy] = {
-                "assets": assets_vals[i], "liabilities": liab_vals[i],
-                "onbalance": onbalance_vals[i], "offbalance": offbalance_vals[i],
-                "net": net_vals[i],
-            }
-        return result
-
-    for p in range(page_idx, page_idx + 6):
-        text = _ocr_page_text(pdf_path, p)
-        if not text:
-            continue
-        result = _try(text, p)
-        if result:
-            return result
-        text_psm6 = _ocr_page_text(pdf_path, p, psm=6)
-        if text_psm6 and text_psm6 != text:
-            print(f"  [DIAG] fx trang {p+1}: thu lai voi PSM 6 (lop du phong khi PSM tu dong khong "
-                  f"du so lieu)")
-            result = _try(text_psm6, p)
-            if result:
-                return result
-    return None
-
-
 def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
     """Định vị + trích 2 bảng gap từ 1 file PDF cụ thể đã tải sẵn. Trả về ("missing_tool", None) nếu
     thiếu pytesseract/tesseract-ocr binary (dừng hẳn, thử file khác cũng vô ích), ("no_note", None)
     nếu tài liệu này THẬT SỰ không có 1 trong 2 tiêu đề/không đọc đủ số (vd BCTC quý không soát xét,
     rút gọn thuyết minh — không phải lỗi, bên gọi nên thử bản BCTC khác), hoặc ("ok", partial_dict)
     với partial_dict chứa các key đã trích được trong {"interest_rate_gap", "liquidity_gap",
-    "interest_rate_sensitivity_disclosed", "liabilities_by_bucket", "fx_position"} (key áp chót — tổng
-    nợ phải trả theo kỳ hạn từ bảng thanh khoản — chỉ có nếu trích được, dùng tính Liquid Assets/Nợ
-    phải trả ngắn hạn; "fx_position" — trạng thái ngoại tệ theo đồng tiền, xem _extract_fx_position —
-    BỔ SUNG, không bắt buộc để tài liệu được coi là "ok", chỉ "interest_rate_gap"/"liquidity_gap" mới
-    quyết định "ok" hay "no_note").
+    "interest_rate_sensitivity_disclosed", "liabilities_by_bucket"} (key cuối — tổng nợ phải trả theo
+    kỳ hạn từ bảng thanh khoản — chỉ có nếu trích được, dùng tính Liquid Assets/Nợ phải trả ngắn hạn).
 
     `bs_total_assets_ty`: tổng tài sản THẬT (tỷ đồng, từ Vietcap, ĐỘC LẬP với OCR) của đúng ngân hàng/
     kỳ này nếu bên gọi có sẵn — dùng làm mốc để _detect_unit_divisor() nhận diện CHÍNH XÁC đơn vị tiền
@@ -824,9 +607,6 @@ def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
         return "missing_tool", None
 
     result = {}
-    doc_unit_divisor = None  # dung chung cho bang FX phia duoi (xem _extract_fx_position) - bang FX
-    # chi la 1 tap con nho cua tong tai san nen KHONG doi chieu duoc voi bs_total_assets_ty nhu 2
-    # bang gap; dung lai don vi da xac dinh duoc tu 2 bang gap TRONG CUNG tai lieu dang tin hon.
     for key, bucket_list, n in (("lai_suat", INTEREST_RATE_BUCKETS, len(INTEREST_RATE_BUCKETS)),
                                  ("thanh_khoan", LIQUIDITY_BUCKETS, len(LIQUIDITY_BUCKETS))):
         found_key = pages.get(key)
@@ -930,8 +710,6 @@ def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
             reference_sum = sum(abs(v) for v in liab_vals) if liab_vals else \
                 (sum(abs(v) for v in vals) if vals else None)
             unit_divisor = _detect_unit_divisor(reference_sum, bs_total_assets_ty)
-            if reference_sum:
-                doc_unit_divisor = unit_divisor
             if not vals and liab_vals:
                 # Lớp dự phòng THỨ 4 (user 2026-09-17 đề xuất, sau khi thấy dòng "Mức chênh..." của
                 # BID/STB thất bại dù dòng nằm rõ ràng trên trang, VÀ là đường DUY NHẤT cho bản tiếng
@@ -982,28 +760,8 @@ def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
             gap_key = "interest_rate_gap" if key == "lai_suat" else "liquidity_gap"
             result[gap_key] = dict(zip(bucket_list, vals))
 
-    # Rui ro tien te (FX) - BO SUNG, khong bat buoc de tai lieu duoc coi la "ok" (rat nhieu ngan
-    # hang khong cong bo muc nay) - chi thu khi da tim thay trang tieu de (xem _find_note_pages).
-    # Dung lai doc_unit_divisor da xac dinh tu 2 bang gap TRONG CUNG tai lieu (mac dinh 1 neu ca 2
-    # bang gap kia deu khong thanh cong - hiem khi FX thanh cong ma ca 2 bang kia deu that bai).
-    fx_page = pages.get("tien_te")
-    if fx_page is not None:
-        fx_page_idx, _fx_lang = fx_page
-        fx_result = _extract_fx_position(pdf_path, fx_page_idx, unit_divisor=doc_unit_divisor or 1)
-        if fx_result:
-            result["fx_position"] = fx_result
-
     if "interest_rate_gap" not in result and "liquidity_gap" not in result:
         return "no_note", None
-    # Danh dau tai lieu nay DA duoc thu voi bo dot OCR co nhan dien FX (bat ke co tim thay bang FX
-    # thuc su hay khong - "khong tim thay" cung la 1 ket qua co gia tri, vd ngan hang khong cong bo
-    # muc nay) - user 2026-09-19 phat hien qua ABB/ACB: nhieu ky da "reported" (du ca lai suat +
-    # thanh khoan) TU TRUOC KHI co tinh nang FX nay, is_fully_reported() (chi xet lai suat+thanh
-    # khoan) khien backfill_period() BO QUA NGAY nhung ky nay vi da coi la "xong", FX se KHONG BAO
-    # GIO duoc thu du co bang thuc su ton tai trong BCTC. Co field rieng nay de bank_system_risk.py
-    # phan biet duoc "chua tung thu FX" (can thu lai 1 lan) voi "da thu roi nhung xac nhan khong co"
-    # (khong can thu lai vo ich moi lan backfill).
-    result["fx_checked"] = True
     return "ok", result
 
 
