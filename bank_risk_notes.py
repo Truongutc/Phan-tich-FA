@@ -709,6 +709,8 @@ def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
             continue
         ccys = _find_fx_currency_header(text)
         if not ccys:
+            print(f"  [DIAG] fx trang {p+1}: khong do duoc dong tieu de cot dong tien. Toan bo text "
+                  f"OCR trang nay:\n{text}")
             continue
         n = len(ccys)
         numfmt = _detect_numfmt(text)
@@ -717,6 +719,13 @@ def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
         liab_vals = _extract_number_row(text, _ROW_LABEL_FLAT_LIAB, n,
                                          debug_tag=f"fx_tong_no trang {p+1}", lang=numfmt)
         if not (assets_vals and liab_vals):
+            # SUA (user 2026-09-19, phat hien qua log ABB Quy 1/2024 chay thuc): preview fallback
+            # cua _extract_number_row tim dong co "chenh" - tu khoa chi dung cho 2 bang gap (lai
+            # suat/thanh khoan), KHONG XUAT HIEN trong bang FX nen preview luon roi ve doan van xuoi
+            # dau trang, khong giup gi de biet OCR thuc su doc duoc gi. In them TOAN BO text trang +
+            # danh sach dong tien da do duoc de co du du lieu chan doan lan chay sau.
+            print(f"  [DIAG] fx trang {p+1}: header do duoc {ccys} (n={n}) nhung khong du so lieu "
+                  f"Tong tai san/Tong no phai tra. Toan bo text OCR trang nay:\n{text}")
             continue  # co the day chua dung dong/du so - thu trang ke tiep
         onbalance_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_ONBALANCE, n,
                                               debug_tag=f"fx_noi_bang trang {p+1}", lang=numfmt)
