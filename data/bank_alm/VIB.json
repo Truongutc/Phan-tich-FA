@@ -333,12 +333,13 @@
       "customer_deposits_by_bucket": null,
       "fx_position": null,
       "fx_source": null,
+      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002099802371541502ngn-hng-tmcp-quc-t-vit-nam26042024-121603bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T12:21:32+07:00"
+      "fetched_at": "2026-09-19T09:53:01+07:00"
     },
     "2024-Q2": {
       "status": "reported",

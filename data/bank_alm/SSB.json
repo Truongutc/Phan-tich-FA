@@ -332,14 +332,30 @@
         "tu_1_5_nam": 0.0,
         "tren_5_nam": 0.0
       },
-      "fx_position": null,
+      "fx_position": {
+        "EUR": {
+          "assets": 59726.0,
+          "liabilities": 55058.0,
+          "onbalance": 4060.0,
+          "offbalance": 0.0,
+          "net": 4068.0
+        },
+        "USD": {
+          "assets": 20112716.0,
+          "liabilities": 23477083.0,
+          "onbalance": -3364367.0,
+          "offbalance": -774794.0,
+          "net": -4139161.0
+        }
+      },
       "fx_source": null,
+      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002099802371541502ngn-hng-tmcp-ng-nam-26042024-153043bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T12:07:26+07:00"
+      "fetched_at": "2026-09-19T09:42:36+07:00"
     },
     "2024-Q2": {
       "status": "reported",

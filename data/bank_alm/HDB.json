@@ -313,14 +313,30 @@
         "tren_5_nam": 0.0
       },
       "customer_deposits_by_bucket": null,
-      "fx_position": null,
+      "fx_position": {
+        "EUR": {
+          "assets": 559830441.0,
+          "liabilities": 509828856.0,
+          "onbalance": 50001585.0,
+          "offbalance": 2460.0,
+          "net": 50001585.0
+        },
+        "USD": {
+          "assets": 898019.0,
+          "liabilities": 884033.0,
+          "onbalance": 14886.0,
+          "offbalance": -4780694.0,
+          "net": 17346.0
+        }
+      },
       "fx_source": null,
+      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002099802371541502ngn-hng-tmcp-pht-trin-tp-h-ch-minh-hdbank26042024-162042bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T11:52:44+07:00"
+      "fetched_at": "2026-09-19T09:32:19+07:00"
     },
     "2024-Q2": {
       "status": "reported",
