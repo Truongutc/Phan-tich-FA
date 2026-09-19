@@ -91,9 +91,15 @@ def _autorotate(img, pytesseract):
     return img
 
 
-def _ocr_page_text(pdf_path, page_index, dpi=300):
+def _ocr_page_text(pdf_path, page_index, dpi=300, psm=None):
     """OCR 1 trang (0-based index) bằng pytesseract. Trả về "" nếu thiếu pytesseract/tesseract binary
-    hoặc lỗi bất kỳ bước nào — KHÔNG BAO GIỜ raise."""
+    hoặc lỗi bất kỳ bước nào — KHÔNG BAO GIỜ raise.
+
+    `psm`: ghi đè Page Segmentation Mode của tesseract (mặc định None = dùng PSM tự động chuẩn của
+    tesseract, giữ NGUYÊN hành vi cũ cho mọi nơi gọi hiện tại). Thêm (user 2026-09-19, log thật ABB
+    Quý 1/2024) để bảng "Rủi ro tiền tệ" có thêm 1 lượt thử KHÁC khi PSM tự động đọc phần dữ liệu số
+    dày đặc ra rác hoàn toàn (nghi do tự động nhận nhầm bố cục bảng nhiều cột hẹp) — CHỈ dùng làm lớp
+    dự phòng, không đổi hành vi mặc định của 2 bảng gap đang chạy tốt."""
     try:
         import pytesseract
         import pypdfium2 as pdfium
@@ -105,7 +111,8 @@ def _ocr_page_text(pdf_path, page_index, dpi=300):
             return ""
         img = doc[page_index].render(scale=dpi / 72).to_pil()
         img = _autorotate(img, pytesseract)
-        return pytesseract.image_to_string(img, lang="vie")
+        config = f"--psm {psm}" if psm else ""
+        return pytesseract.image_to_string(img, lang="vie", config=config)
     except Exception as e:
         print(f"  [WARN] OCR trang {page_index+1} loi: {e}")
         return ""
@@ -725,16 +732,21 @@ def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
     mặt, tách biệt rõ khỏi các dòng chi tiết xung quanh bằng viền kẻ — giống 2 dòng TỔNG dùng làm
     lớp dự phòng cho bảng thanh khoản/lãi suất). 3 dòng "Trạng thái tiền tệ nội bảng/ngoại bảng/nội,
     ngoại bảng" cố đọc trực tiếp trước, tự tính bù nếu thiếu 1 trong 3 (nội bảng = tài sản - nợ; nội,
-    ngoại bảng = nội bảng + ngoại bảng nếu có, ngược lại lấy tạm bằng nội bảng)."""
-    for p in range(page_idx, page_idx + 6):
-        text = _ocr_page_text(pdf_path, p)
-        if not text:
-            continue
+    ngoại bảng = nội bảng + ngoại bảng nếu có, ngược lại lấy tạm bằng nội bảng).
+
+    SỬA (user 2026-09-19, log thật ABB Quý 1/2024): PSM tự động của tesseract (mặc định) đôi khi đọc
+    phần dữ liệu SỐ dày đặc của bảng này ra rác hoàn toàn (nghi nhận nhầm bố cục nhiều cột hẹp),
+    trong khi tiêu đề/nhãn dòng vẫn đọc tốt — KHÔNG phải lỗi khớp chữ (đã verify: dựng lại đúng y
+    text OCR thật vẫn trích đúng số) mà là chất lượng OCR đầu vào. Mỗi trang giờ thử PSM tự động
+    TRƯỚC (rẻ, đủ dùng cho đa số trường hợp), CHỈ OCR LẠI với PSM 6 ("1 khối văn bản đồng nhất" —
+    khuyến nghị chuẩn cho bảng khi PSM tự động thất bại) làm lớp dự phòng khi lượt đầu không đủ số
+    liệu — không tốn thêm OCR cho các trang đã đọc tốt ngay từ lượt đầu."""
+    def _try(text, p):
         ccys = _find_fx_currency_header(text)
         if not ccys:
             print(f"  [DIAG] fx trang {p+1}: khong do duoc dong tieu de cot dong tien. Toan bo text "
                   f"OCR trang nay:\n{text}")
-            continue
+            return None
         n = len(ccys)
         numfmt = _detect_numfmt(text)
         assets_vals = _extract_number_row(text, _ROW_LABEL_FLAT_ASSETS, n,
@@ -749,7 +761,7 @@ def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
             # danh sach dong tien da do duoc de co du du lieu chan doan lan chay sau.
             print(f"  [DIAG] fx trang {p+1}: header do duoc {ccys} (n={n}) nhung khong du so lieu "
                   f"Tong tai san/Tong no phai tra. Toan bo text OCR trang nay:\n{text}")
-            continue  # co the day chua dung dong/du so - thu trang ke tiep
+            return None
         onbalance_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_ONBALANCE, n,
                                               debug_tag=f"fx_noi_bang trang {p+1}", lang=numfmt)
         offbalance_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_OFFBALANCE, n,
@@ -774,6 +786,21 @@ def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
                 "net": net_vals[i],
             }
         return result
+
+    for p in range(page_idx, page_idx + 6):
+        text = _ocr_page_text(pdf_path, p)
+        if not text:
+            continue
+        result = _try(text, p)
+        if result:
+            return result
+        text_psm6 = _ocr_page_text(pdf_path, p, psm=6)
+        if text_psm6 and text_psm6 != text:
+            print(f"  [DIAG] fx trang {p+1}: thu lai voi PSM 6 (lop du phong khi PSM tu dong khong "
+                  f"du so lieu)")
+            result = _try(text_psm6, p)
+            if result:
+                return result
     return None
 
 
