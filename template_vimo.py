@@ -1906,6 +1906,19 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
         story.append(t_alm)
         if cov.get("missingTickers"):
             story.append(Paragraph(f"<i>Chưa có dữ liệu: {', '.join(cov['missingTickers'])}</i>", italic_st))
+        # Chart hóa 2 chỉ số rủi ro hệ thống THEO QUÝ (user 2026-09-19) — dùng LẠI đúng 2 chart đã
+        # dựng sẵn bởi build_charts_vimo() cho 2 indicator "bank_alm_system_ir_risk_ratio"/
+        # "bank_alm_system_liquidity_risk_ratio" (xem _add_bank_alm_derived_indicators trong file
+        # này) — đặt NGAY TẠI ĐÂY (mục 1.5, trong "Bức tranh Tổng thể") để đọc liền với bảng số ở
+        # trên, KHÔNG chỉ xuất hiện rời rạc ở mục 3 (nhóm chỉ báo "bank_alm") như trước.
+        if "bank_alm_system_ir_risk_ratio" in charts:
+            story.append(Spacer(1, 6))
+            story.append(Paragraph("Rủi ro lãi suất hệ thống theo quý (ΔNII/NII khi lãi suất +100bp):", small_st))
+            story.append(Image(charts["bank_alm_system_ir_risk_ratio"], width=140 * mm, height=63 * mm))
+        if "bank_alm_system_liquidity_risk_ratio" in charts:
+            story.append(Spacer(1, 6))
+            story.append(Paragraph("Rủi ro thanh khoản hệ thống theo quý (che phủ nếu rút -10% tiền gửi):", small_st))
+            story.append(Image(charts["bank_alm_system_liquidity_risk_ratio"], width=140 * mm, height=63 * mm))
     story.append(Spacer(1, 10))
 
     # ── Scorecard chi tiết ──

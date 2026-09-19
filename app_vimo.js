@@ -85,6 +85,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // nào (Chart.js destroy() im lặng) — đã xác nhận qua Playwright (canvas kẹt ở 300x150 mặc
     // định, Chart.getChart() trả null) trước khi đổi thứ tự gọi.
     renderMacroOverview(data.macroOverview);
+    // Cùng lý do thứ tự gọi như renderMacroOverview() ở trên (SAU renderIndicatorGroups()) — 2
+    // chart trong mục này dùng _renderGenericIndicatorCard(), cùng cơ chế chartInstances.
+    renderBankingSystemRiskSection(data.bankingSystemRisk, data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -109,6 +112,62 @@ function renderSynthesis(synthesis) {
         econEl.innerHTML = Array.isArray(sections)
             ? sections.map(s => `<div class="impact-block"><h5>${s.heading}</h5><p>${s.text}</p></div>`).join('')
             : (sections || '-');
+    }
+}
+
+// Mục RIÊNG trong "🧭 Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể" (user 2026-09-19): đánh
+// giá rủi ro lãi suất + thanh khoản của TOÀN NGÀNH ngân hàng (tổng hợp có trọng số theo quy mô từ
+// 26 ngân hàng niêm yết/UPCoM, xem bank_system_risk.py) — số liệu risk (bankingSystemRisk, kỳ MỚI
+// NHẤT) + 2 chart LỊCH SỬ THEO QUÝ ngay dưới, dùng LẠI đúng series đã có sẵn ở
+// indicators.bank_alm_system_ir_risk_ratio/_liquidity_risk_ratio (KHÔNG tính lại ở JS, tránh lệch
+// với PDF/Excel). PHẢI gọi SAU renderIndicatorGroups() — hàm đó destroy() toàn bộ chartInstances
+// hiện có ở đầu, xem ghi chú tại nơi gọi trong DOMContentLoaded.
+function renderBankingSystemRiskSection(risk, indicators) {
+    const section = document.getElementById('synthesis-banking-risk-section');
+    if (!section) return;
+    if (!risk) { section.style.display = 'none'; return; }
+    section.style.display = '';
+
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text || '-'; };
+    set('synthesis-banking-risk-summary', risk.summaryText);
+
+    const cov = risk.coverage || {};
+    const ir = risk.interestRateRisk || {};
+    const liq = risk.liquidityRisk || {};
+    const pct = (v, d = 2) => (v === null || v === undefined) ? 'N/A' : `${(v * 100).toFixed(d)}%`;
+    const coverageDetail = `${cov.nBanksReported ?? 0}/${cov.nBanksTotal ?? 0} đã công bố, `
+        + `${cov.nBanksPatched ?? 0} vá từ kỳ trước, ${cov.nBanksMissing ?? 0} chưa có`
+        + (cov.assetsCoveragePct != null ? ` (${cov.assetsCoveragePct.toFixed(0)}% tổng tài sản)` : '');
+    const stats = [
+        ['Kỳ tổng hợp', risk.asOf],
+        ['Độ phủ dữ liệu', coverageDetail],
+        ['Gap ròng lãi suất ≤1 năm / Tổng TS', pct(ir.netGapRatio)],
+        ['Mức phân tán lãi suất (không bù trừ giữa các NH)', pct(ir.dispersionGapRatio)],
+        ['NH lệch lãi suất nhiều nhất', ir.worstBank ? `${ir.worstBank.ticker} (${(ir.worstBank.ratio * 100).toFixed(1)}%)` : 'N/A'],
+        ['Liquid Assets / Tổng TS', pct(liq.liquidAssetsRatio, 1)],
+        ['Che phủ nếu rút -10% tiền gửi', (liq.depositRunCoverageByStress || {})['-10%'] != null
+            ? `${((liq.depositRunCoverageByStress['-10%']) * 100).toFixed(0)}%` : 'N/A'],
+        ['NH thanh khoản yếu nhất', liq.weakestBank ? `${liq.weakestBank.ticker} (che phủ ${(liq.weakestBank.coverage * 100).toFixed(0)}%)` : 'N/A'],
+    ];
+    const statsGrid = document.getElementById('banking-risk-stats-grid');
+    if (statsGrid) {
+        statsGrid.innerHTML = stats.map(([lbl, val]) => `
+            <div class="vimo-indicator-card">
+                <div class="ind-header"><span class="ind-name">${lbl}</span></div>
+                <div class="ind-value" style="font-size:1em">${val}</div>
+            </div>
+        `).join('');
+    }
+    set('synthesis-banking-risk-missing', cov.missingTickers && cov.missingTickers.length
+        ? `Chưa có dữ liệu: ${cov.missingTickers.join(', ')}` : '');
+
+    const chartsGrid = document.getElementById('banking-risk-charts-grid');
+    if (chartsGrid) {
+        chartsGrid.innerHTML = '';
+        ['bank_alm_system_ir_risk_ratio', 'bank_alm_system_liquidity_risk_ratio'].forEach((key) => {
+            const ind = indicators && indicators[key];
+            if (ind) _renderGenericIndicatorCard(chartsGrid, key, ind);
+        });
     }
 }
 

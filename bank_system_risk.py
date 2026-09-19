@@ -661,16 +661,46 @@ def _aggregate_for_period(period_key):
         else:
             patched.append(ticker)
 
+        # KIEM TRA DU LIEU HONG truoc khi cong vao tong he thong (bug that phat hien 2026-09-19 qua
+        # OCB 2026-Q2: interest_rate_gap luu SAI DON VI - VND thuc thay vi trieu dong, vd bucket
+        # "tu_1_3_thang"=62.558 TY trieu dong, khien cum_gap_1y_ratio rieng OCB = +18.585.446% (185854
+        # LAN tong tai san) - 1 ngan hang duy nhat lam sai lech HOAN TOAN ty le toan he thong (+3.095%
+        # thay vi vai % nhu binh thuong).
+        #
+        # Chan tren MANG TINH TOAN HOC (khong phai nguong tuy y): gap 1 bucket = tai san bucket - no
+        # bucket, ma tai san bucket luon <= TONG tai san (moi bucket la 1 TAP CON cua bang can doi) -
+        # nen |gap 1 bucket| KHONG THE VUOT QUA tong tai san trong du lieu dung. Ho so 1.5x de tru
+        # sai so lam tron/OCR nho, van du hep de bat ca truong hop nhe hon OCB - phat hien THEM qua
+        # NVB 2026-Q2: bucket "tu_3_6_thang" = 304.699 ty, VUOT tong tai san 198.896 ty (1.53x) - ratio
+        # tong +205% tuy khong do bang OCB nhung van la 1 con so KHONG THE THAT, cung bi loai o day.
+        def _has_bucket_over_assets(gap_key, ta_ty):
+            gap = entry.get(gap_key) or {}
+            return any(abs((v or 0) / 1000) > ta_ty * 1.5 for v in gap.values())
+
+        ta_ty = m["total_assets"]
+        ir_ratio_valid = not _has_bucket_over_assets("interest_rate_gap", ta_ty)
+        liq_ratio_valid = not _has_bucket_over_assets("liquidity_gap", ta_ty)
+        if not ir_ratio_valid:
+            print(f"  [WARN] {ticker} {period_key}: co bucket interest_rate_gap vuot qua tong tai san "
+                  f"(ratio he thong tinh duoc: {(m.get('cum_gap_1y_ratio') or 0)*100:+.0f}%) - nghi ngo "
+                  f"sai don vi, LOAI khoi tong hop lai suat he thong (van tinh thanh khoan binh thuong)")
+        if not liq_ratio_valid:
+            print(f"  [WARN] {ticker} {period_key}: co bucket liquidity_gap vuot qua tong tai san "
+                  f"(ratio he thong tinh duoc: {(m.get('cum_gap_1m_ratio') or 0)*100:+.0f}%) - nghi ngo "
+                  f"sai don vi, LOAI khoi tong hop thanh khoan he thong (van tinh lai suat binh thuong)")
+
         sum_ta += m["total_assets"]
-        sum_ir_net += m["cum_gap_1y"]
-        sum_ir_abs += abs(m["cum_gap_1y"])
-        sum_weighted += m["weighted_gap_raw"]
+        if ir_ratio_valid:
+            sum_ir_net += m["cum_gap_1y"]
+            sum_ir_abs += abs(m["cum_gap_1y"])
+            sum_weighted += m["weighted_gap_raw"]
         sum_nii += m["nii"] or 0.0
-        sum_liq_1m += m["cum_gap_1m"]
+        if liq_ratio_valid:
+            sum_liq_1m += m["cum_gap_1m"]
         sum_liquid_assets += m["liquid_assets"]
         sum_cust_dep += m["customer_deposits"]
 
-        bank_ir_ratio = m["cum_gap_1y_ratio"]
+        bank_ir_ratio = m["cum_gap_1y_ratio"] if ir_ratio_valid else None
         bank_cov10 = m["deposit_run_coverage_10pct"]
         if bank_ir_ratio is not None and (worst_ir is None or abs(bank_ir_ratio) > abs(worst_ir[1])):
             worst_ir = (ticker, bank_ir_ratio)
@@ -683,6 +713,8 @@ def _aggregate_for_period(period_key):
             "cum_gap_1y_ratio": bank_ir_ratio,
             "deposit_run_coverage_10pct": bank_cov10,
         }
+        if not ir_ratio_valid:
+            by_bank[ticker]["ir_data_quality_note"] = "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
 
     net_gap_ratio = (sum_ir_net / sum_ta) if sum_ta else None
     dispersion_ratio = (sum_ir_abs / sum_ta) if sum_ta else None
