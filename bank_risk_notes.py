@@ -636,7 +636,10 @@ _FX_CCY_PATTERNS = [
 ]
 _ROW_LABEL_FLAT_FX_ONBALANCE = "trang thai tien te noi bang"
 _ROW_LABEL_FLAT_FX_OFFBALANCE = "trang thai tien te ngoai bang"
-_ROW_LABEL_FLAT_FX_NET = "trang thai tien te noi, ngoai bang"
+# ABB (anh chup thuc, user 2026-09-19) viet "noi ngoai bang" KHONG co dau phay - khac BIDV/TCB dung
+# "noi, ngoai bang" co phay - thu ca 2 bien the (giong nhieu cach viet khac nhau da gap o cac nhan
+# dong khac trong file nay, vd VIB "thuan"/"rong").
+_ROW_LABEL_FLAT_FX_NET_CANDIDATES = ["trang thai tien te noi, ngoai bang", "trang thai tien te noi ngoai bang"]
 
 
 def _find_fx_currency_header(text):
@@ -644,17 +647,30 @@ def _find_fx_currency_header(text):
     Tổng cộng") để xác định DANH SÁCH + THỨ TỰ đồng tiền THẬT SỰ xuất hiện trên trang này — số lượng
     và thứ tự khác nhau tùy ngân hàng nên không đoán trước được. Trả về list mã tiền theo đúng thứ
     tự trái->phải (KHÔNG gồm cột "Tổng cộng" — không cần, đã có tổng theo dòng ở nơi khác), hoặc None
-    nếu không tìm được dòng nào có >=2 tên đồng tiền khác nhau trên cùng 1 dòng (ngưỡng >=2 để loại
-    các dòng văn xuôi tình cờ chỉ nhắc 1 đồng tiền, vd "...quy đổi ra VNĐ theo tỷ giá USD...").
+    nếu không tìm được cửa sổ nào có >=2 tên đồng tiền khác nhau (ngưỡng >=2 để loại các dòng văn
+    xuôi tình cờ chỉ nhắc 1 đồng tiền, vd "...quy đổi ra VNĐ theo tỷ giá USD...").
 
-    Chọn dòng khớp NHIỀU đồng tiền nhất nếu có nhiều dòng ứng viên (dòng tiêu đề cột thật luôn liệt
-    kê ĐẦY ĐỦ mọi đồng tiền của bảng, nhiều hơn hẳn bất kỳ câu văn xuôi nào tình cờ nhắc vài đồng
-    tiền)."""
+    BUG THẬT phát hiện 2026-09-19 (user cung cấp ảnh chụp thật ABB Quý 1/2026 — hệ thống vẫn báo
+    "missing" dù bảng rõ ràng có mặt): tên cột "EUR được quy đổi"/"Các ngoại tệ khác được quy đổi"
+    thường quá dài, bị NGẮT XUỐNG DÒNG trong chính ô tiêu đề (vd "EUR được" / "quy đổi" 2 dòng hiển
+    thị) — OCR theo dải ngang (image_to_string đọc theo Y-coordinate) trả về ĐÚNG 2 dòng text tách
+    biệt cho 2 "dải" đó (dòng 1 gộp phần đầu MỌI cột, dòng 2 gộp phần "quy đổi"/"khác được..." còn
+    lại), khiến tìm trên TỪNG DÒNG RIÊNG LẺ chỉ khớp được các đồng tiền có tên KHÔNG bị ngắt (vd chỉ
+    thấy "EUR"/"USD" ở dòng 1, bỏ sót hẳn "Ngoại tệ khác" vì chữ "khác" nằm ở dòng 2) — trích thiếu
+    cột, làm SAI toàn bộ ánh xạ đồng tiền->giá trị. Giờ dùng CỬA SỔ TRƯỢT 3 dòng liên tiếp (giống
+    kỹ thuật _extract_number_row dùng cho nhãn dòng bị ngắt) thay vì chỉ xét 1 dòng — thứ tự trái-
+    phải vẫn đúng vì mỗi dòng thành phần đều giữ ĐÚNG thứ tự cột của chính nó, ghép nối tuần tự
+    không làm xáo trộn.
+
+    Chọn cửa sổ khớp NHIỀU đồng tiền nhất nếu có nhiều cửa sổ ứng viên (cửa sổ tiêu đề cột thật luôn
+    liệt kê ĐẦY ĐỦ mọi đồng tiền của bảng, nhiều hơn hẳn bất kỳ câu văn xuôi nào tình cờ nhắc vài
+    đồng tiền)."""
     lines = text.split("\n")
+    flat_lines = [_strip_accents(l).strip() for l in lines]
     best = None
-    for line in lines:
-        flat = _strip_accents(line).strip()
-        if not flat or len(flat) > 150:
+    for i in range(len(lines)):
+        flat = " ".join(flat_lines[i:i + 3])
+        if not flat or len(flat) > 250:
             continue
         hits = []
         for ccy, variants in _FX_CCY_PATTERNS:
@@ -706,8 +722,8 @@ def _extract_fx_position(pdf_path, page_idx, unit_divisor=1):
                                               debug_tag=f"fx_noi_bang trang {p+1}", lang=numfmt)
         offbalance_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_OFFBALANCE, n,
                                                debug_tag=f"fx_ngoai_bang trang {p+1}", lang=numfmt)
-        net_vals = _extract_number_row(text, _ROW_LABEL_FLAT_FX_NET, n,
-                                        debug_tag=f"fx_noi_ngoai_bang trang {p+1}", lang=numfmt)
+        net_vals = _extract_number_row_multi_label(text, _ROW_LABEL_FLAT_FX_NET_CANDIDATES, n,
+                                                    lang=numfmt, debug_tag=f"fx_noi_ngoai_bang trang {p+1}")
         if not onbalance_vals:
             onbalance_vals = [a - l for a, l in zip(assets_vals, liab_vals)]
         if not net_vals:
