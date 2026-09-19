@@ -154,12 +154,41 @@
       "liabilities_by_bucket": null,
       "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 34751042.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 34751042.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 34751052.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 1142.0,
+        "qua_han_den_3t": 40221314.0,
+        "den_1_thang": 1013.0,
+        "tu_1_3_thang": 841924.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 22628560.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251030_-_HDB_-_BCTC_hop_nhat_Quy_3_nam_2025_1761869961.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-17T17:31:12+07:00"
+      "fetched_at": "2026-09-19T08:08:22+07:00"
     },
     "2026-Q1": {
       "status": "reported",

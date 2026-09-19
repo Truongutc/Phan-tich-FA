@@ -190,24 +190,72 @@
     "2025-Q3": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": {
-        "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 0.0,
-        "den_1_thang": 4123.0,
-        "tu_1_3_thang": 19259944.0,
-        "tu_3_12_thang": 6002905.0,
-        "tu_1_5_nam": 2601.0,
-        "tren_5_nam": 2215.0
+      "interest_rate_gap": {
+        "qua_han": 28852465.0,
+        "khong_anh_huong_lai_suat": 17418094.0,
+        "den_1_thang": 49232.0,
+        "tu_1_3_thang": 242273222.0,
+        "tu_3_6_thang": -153649788.0,
+        "tu_6_12_thang": -160989159.0,
+        "tu_1_5_nam": 28162900.0,
+        "tren_5_nam": 38678486.0
       },
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 28852465.0,
+        "qua_han_den_3t": 17418094.0,
+        "den_1_thang": 49232.0,
+        "tu_1_3_thang": 242273222.0,
+        "tu_3_12_thang": -153649788.0,
+        "tu_1_5_nam": -160989159.0,
+        "tren_5_nam": 28162900.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 23044687.0,
+        "qua_han_den_3t": 275916856.0,
+        "den_1_thang": 141024208.0,
+        "tu_1_3_thang": 1868.0,
+        "tu_3_12_thang": 832612.0,
+        "tu_1_5_nam": 173041619.0,
+        "tren_5_nam": 12187.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 23044687.0,
+        "khong_anh_huong_lai_suat": 275916856.0,
+        "den_1_thang": 141024208.0,
+        "tu_1_3_thang": 1868.0,
+        "tu_3_6_thang": 832612.0,
+        "tu_6_12_thang": 173041619.0,
+        "tu_1_5_nam": 12187.0,
+        "tren_5_nam": 364804.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 9149135.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 9149135.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 17820516.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 17820516.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 17820.0,
+        "tren_5_nam": 721617.0
+      },
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251029_-_STB_-_BCTC_Hop_nhat_Q3.2025_1761804289.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T15:46:18+07:00"
+      "fetched_at": "2026-09-19T08:18:02+07:00"
     },
     "2026-Q1": {
       "status": "reported",

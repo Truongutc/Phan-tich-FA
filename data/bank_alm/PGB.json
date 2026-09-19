@@ -192,15 +192,70 @@
         "tu_1_5_nam": 8011588.0,
         "tren_5_nam": 14131.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1859.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 67887.0,
+        "tu_1_3_thang": 1113063.0,
+        "tu_3_12_thang": 551155.0,
+        "tu_1_5_nam": 17101.0,
+        "tren_5_nam": 1391301.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 1859.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 67887.0,
+        "tu_1_3_thang": 5303713.0,
+        "tu_3_12_thang": 1113063.0,
+        "tu_1_5_nam": 551155.0,
+        "tren_5_nam": 17101.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 11565.0,
+        "den_1_thang": 1081168.0,
+        "tu_1_3_thang": 8011588.0,
+        "tu_3_6_thang": 14131.0,
+        "tu_6_12_thang": 41200.0,
+        "tu_1_5_nam": 510.0,
+        "tren_5_nam": 412119.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 10082.0,
+        "qua_han_den_3t": 309181.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 22186819.0,
+        "tu_1_5_nam": 2320200.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 22186819.0,
+        "tu_1_3_thang": 2320200.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 1431100.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 403345.0,
+        "tu_1_3_thang": 8401302.0,
+        "tu_3_12_thang": 20185309.0,
+        "tu_1_5_nam": 1711.0,
+        "tren_5_nam": 0.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 3 năm 2025",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-4/2025-10-24/no-name-1761245640.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T15:38:58+07:00"
+      "fetched_at": "2026-09-19T08:14:02+07:00"
     },
     "2026-Q1": {
       "status": "reported",

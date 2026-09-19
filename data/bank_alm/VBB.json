@@ -183,15 +183,54 @@
         "tu_1_5_nam": 10188676.0,
         "tren_5_nam": 8825.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2833441.0,
+        "qua_han_den_3t": -7909456.0,
+        "den_1_thang": -12921990.0,
+        "tu_1_3_thang": -7505163.0,
+        "tu_3_12_thang": 10998312.0,
+        "tu_1_5_nam": 23978711.0,
+        "tren_5_nam": 10806642.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 2833441.0,
+        "qua_han_den_3t": -7909456.0,
+        "den_1_thang": -12921990.0,
+        "tu_1_3_thang": -7505163.0,
+        "tu_3_12_thang": 10998312.0,
+        "tu_1_5_nam": 23978711.0,
+        "tren_5_nam": 178779930.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 23757784.0,
+        "khong_anh_huong_lai_suat": 3923944.0,
+        "den_1_thang": 8825.0,
+        "tu_1_3_thang": 178779330.0,
+        "tu_3_6_thang": 6257.0,
+        "tu_6_12_thang": 16085501.0,
+        "tu_1_5_nam": 8107572.0,
+        "tren_5_nam": 5299.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 1349239.0,
+        "tu_1_5_nam": 2833441.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 3 năm 2025",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-4/2025-11-05/no-name-1762283224.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T15:58:42+07:00"
+      "fetched_at": "2026-09-19T08:19:44+07:00"
     },
     "2026-Q1": {
       "status": "reported",
