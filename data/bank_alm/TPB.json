@@ -14,15 +14,70 @@
         "tu_1_5_nam": 0.0,
         "tren_5_nam": 1704.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": -39799277.0,
+        "qua_han_den_3t": 3732296.0,
+        "den_1_thang": -35072766.0,
+        "tu_1_3_thang": 22871793.0,
+        "tu_3_12_thang": 95815100.0,
+        "tu_1_5_nam": 50143313.0,
+        "tren_5_nam": 41275898.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 179898895.0,
+        "qua_han_den_3t": 47147087.0,
+        "den_1_thang": 137451969.0,
+        "tu_1_3_thang": 82751569.0,
+        "tu_3_12_thang": 12603289.0,
+        "tu_1_5_nam": 459852809.0,
+        "tren_5_nam": -39799277.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 191547.0,
+        "den_1_thang": 5372.0,
+        "tu_1_3_thang": 60073191.0,
+        "tu_3_6_thang": 93119.0,
+        "tu_6_12_thang": 84375403.0,
+        "tu_1_5_nam": 568986.0,
+        "tren_5_nam": 0.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 1704704.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 1704704.0,
+        "tu_1_5_nam": 20459657.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 20459657.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 20459657.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 34340773.0,
+        "qua_han_den_3t": 89716283.0,
+        "den_1_thang": 59383.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 279050251.0,
+        "tu_1_5_nam": 3600.0,
+        "tren_5_nam": 3355.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260331_-_TPB_-_BCTC_hop_nhat_2025_da_kiem_toan_kem_giai_trinh_chenh_lech_LNST_signed_1774952109.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T01:43:30+07:00"
+      "fetched_at": "2026-09-19T08:44:12+07:00"
     },
     "2025-Q1": {
       "status": "reported",

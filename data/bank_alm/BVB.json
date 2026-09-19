@@ -4,7 +4,16 @@
     "2025-FY": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 1221650.0,
+        "khong_anh_huong_lai_suat": -30792724.0,
+        "den_1_thang": 4911645.0,
+        "tu_1_3_thang": 8336131.0,
+        "tu_3_6_thang": -11829620.0,
+        "tu_6_12_thang": 24306862.0,
+        "tu_1_5_nam": -2493673.0,
+        "tren_5_nam": -4856025.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 2416659.0,
         "qua_han_den_3t": 1225594.0,
@@ -23,13 +32,50 @@
         "tu_1_5_nam": 3736.0,
         "tren_5_nam": 1254457.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 2414422.0,
+        "khong_anh_huong_lai_suat": 38063171.0,
+        "den_1_thang": 27098451.0,
+        "tu_1_3_thang": 27672417.0,
+        "tu_3_6_thang": 25457105.0,
+        "tu_6_12_thang": 3627219.0,
+        "tu_1_5_nam": 3636072.0,
+        "tren_5_nam": 4856025.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "USD": {
+          "assets": 355347.0,
+          "liabilities": 1470500.0,
+          "onbalance": -1115153.0,
+          "offbalance": 308631.0,
+          "net": -808522.0
+        },
+        "EUR": {
+          "assets": 4092.0,
+          "liabilities": 1721.0,
+          "onbalance": 4306.0,
+          "offbalance": -4439.0,
+          "net": -3573.0
+        },
+        "OTHER": {
+          "assets": 6027.0,
+          "liabilities": 1472447.0,
+          "onbalance": -1109981.0,
+          "offbalance": 0.0,
+          "net": 4308.0
+        }
+      },
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_603502_Bao_cao_tai_chinh_nam_2025_1776046380.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T01:11:30+07:00"
+      "fetched_at": "2026-09-19T08:33:01+07:00"
     },
     "2025-Q1": {
       "status": "reported",

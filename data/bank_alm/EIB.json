@@ -4,7 +4,16 @@
     "2025-FY": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": -4129184.0,
+        "khong_anh_huong_lai_suat": 2052166.0,
+        "den_1_thang": -2782194.0,
+        "tu_1_3_thang": -10487132.0,
+        "tu_3_6_thang": 29063909.0,
+        "tu_6_12_thang": -244182361.0,
+        "tu_1_5_nam": -19067606.0,
+        "tren_5_nam": -28408885.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 5738766.0,
         "qua_han_den_3t": 2191606.0,
@@ -23,13 +32,28 @@
         "tu_1_5_nam": 247264064.0,
         "tren_5_nam": 29037514.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 4595197.0,
+        "khong_anh_huong_lai_suat": 1800000.0,
+        "den_1_thang": 6000000.0,
+        "tu_1_3_thang": 10700000.0,
+        "tu_3_6_thang": 1567657.0,
+        "tu_6_12_thang": 247264064.0,
+        "tu_1_5_nam": 20067657.0,
+        "tren_5_nam": 29037514.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260330_-_EIB_-_BCTC_hop_nhat_nam_2025_da_kiem_toan_1774925122.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T01:16:37+07:00"
+      "fetched_at": "2026-09-19T08:34:57+07:00"
     },
     "2025-Q1": {
       "status": "reported",

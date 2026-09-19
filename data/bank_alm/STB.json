@@ -4,7 +4,16 @@
     "2025-FY": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 47060389.0,
+        "khong_anh_huong_lai_suat": 18231019.0,
+        "den_1_thang": 7881472.0,
+        "tu_1_3_thang": 244806511.0,
+        "tu_3_6_thang": -159134313.0,
+        "tu_6_12_thang": -134115675.0,
+        "tu_1_5_nam": 30574322.0,
+        "tren_5_nam": 36322094.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 42401515.0,
         "qua_han_den_3t": 4658874.0,
@@ -23,13 +32,57 @@
         "tu_1_5_nam": 2962743.0,
         "tren_5_nam": 857253059.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 20874040.0,
+        "den_1_thang": 362010.0,
+        "tu_1_3_thang": 147351196.0,
+        "tu_3_6_thang": 168926563.0,
+        "tu_6_12_thang": 143521324.0,
+        "tu_1_5_nam": 14147468.0,
+        "tren_5_nam": 421827.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": {
+        "EUR": {
+          "assets": 334855.0,
+          "liabilities": 351602.0,
+          "onbalance": 0.0,
+          "offbalance": 16835.0,
+          "net": 2417045.0
+        },
+        "USD": {
+          "assets": 28647090.0,
+          "liabilities": 26567594.0,
+          "onbalance": -16747.0,
+          "offbalance": 337549.0,
+          "net": 20155.0
+        },
+        "GOLD": {
+          "assets": 20155.0,
+          "liabilities": 0.0,
+          "onbalance": 2079496.0,
+          "offbalance": 0.0,
+          "net": 1071546.0
+        },
+        "OTHER": {
+          "assets": 4097251.0,
+          "liabilities": 2801958.0,
+          "onbalance": 20155.0,
+          "offbalance": -223747.0,
+          "net": 3508834.0
+        }
+      },
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260327_-_STB_-_BCTC_Hop_nhat_nam_2025_da_kiem_toan__1774863040.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T01:38:47+07:00"
+      "fetched_at": "2026-09-19T08:42:20+07:00"
     },
     "2025-Q1": {
       "status": "reported",
