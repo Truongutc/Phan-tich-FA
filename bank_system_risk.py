@@ -322,13 +322,23 @@ def _backfill_ticker_period(ticker, period_key, candidates, force=False):
                 # thay vi mai mai bi coi la "da xong". upsert_reported_period() gio da MERGE (uu tien
                 # gia tri moi, giu gia tri cu neu lan nay khong trich lai duoc) nen thu lai an toan,
                 # khong lam mat field da co truoc do.
-                if bank_alm_store.is_fully_reported(existing):
+                # SUA THEM (user 2026-09-19, phat hien qua anh chup thuc ABB/ACB/TCB/BID): chi xet
+                # is_fully_reported() (lai suat+thanh khoan) la chua du - tinh nang OCR FX moi them
+                # SAU KHI rat nhieu ky da "day du" tu truoc, se bi bo qua NGAY o day, khong bao gio
+                # duoc thu du bang FX thuc su co trong BCTC. needs_fx_check() dam bao MOI ky day du
+                # duoc OCR lai DUNG 1 LAN de cho FX 1 co hoi - sau lan do fx_checked=True mai mai,
+                # khong OCR lai vo ich nhung lan sau (xem bank_alm_store.needs_fx_check()).
+                if bank_alm_store.is_fully_reported(existing) and not bank_alm_store.needs_fx_check(existing):
                     print(f"  [SKIP] {ticker} {try_period}: da co du lieu that DAY DU (ca lai suat + "
-                          f"thanh khoan), bo qua")
+                          f"thanh khoan + da thu FX), bo qua")
                     return f"da_co ({try_period})"
                 if existing and existing.get("status") == "reported":
-                    print(f"  [INFO] {ticker} {try_period}: da 'reported' nhung con thieu 1 trong 2 "
-                          f"bang gap - thu lai de lay not phan thieu")
+                    if bank_alm_store.is_fully_reported(existing):
+                        print(f"  [INFO] {ticker} {try_period}: da du lai suat+thanh khoan nhung chua "
+                              f"tung thu FX - OCR lai 1 lan de cho FX co hoi")
+                    else:
+                        print(f"  [INFO] {ticker} {try_period}: da 'reported' nhung con thieu 1 trong 2 "
+                              f"bang gap - thu lai de lay not phan thieu")
             gaps = fetch_bank_risk_gaps_for_period(ticker, try_period)
             if gaps and (gaps.get("interest_rate_gap") or gaps.get("liquidity_gap")):
                 source = {"title": gaps.get("source_title"), "url": gaps.get("source_url"),

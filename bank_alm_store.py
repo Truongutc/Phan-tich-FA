@@ -113,6 +113,10 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
         "customer_deposits_by_bucket": _merge("customer_deposits_by_bucket"),
         "fx_position": _merge("fx_position"),
         "fx_source": _merge("fx_source"),
+        # Da tung thu OCR voi bo dot nhan dien FX chua (xem bank_risk_notes.py _extract_gaps_from_pdf)
+        # - _merge giu nguyen True cu neu lan nay khong co gia tri moi (vd lop du phong khac ghi entry
+        # ma khong qua _extract_gaps_from_pdf), KHONG BAO GIO tu dong lui ve False.
+        "fx_checked": _merge("fx_checked") or False,
         "source": source,
         "fetched_at": _now_iso(),
     }
@@ -131,6 +135,26 @@ def is_fully_reported(entry):
     if not entry or entry.get("status") != "reported":
         return False
     return bool(entry.get("interest_rate_gap")) and bool(entry.get("liquidity_gap"))
+
+
+def needs_fx_check(entry):
+    """True nếu entry đã có dữ liệu thật (status="reported", ít nhất 1 trong 2 bảng gap) nhưng CHƯA
+    TỪNG được thử OCR với bộ dò "Rủi ro tiền tệ" (fx_checked chưa set — xem bank_risk_notes.py
+    _extract_gaps_from_pdf) — dùng để quyết định có nên OCR LẠI 1 kỳ đã "đầy đủ" (is_fully_reported()
+    đã True) hay không.
+
+    Bug thật phát hiện 2026-09-19 (user cung cấp ảnh chụp thật ABB/ACB/TCB/BID — đều bị báo "thiếu"
+    dù rõ ràng có công bố mục Rủi ro tiền tệ): tính năng FX được thêm SAU KHI rất nhiều kỳ đã
+    "reported" (đủ cả lãi suất + thanh khoản) từ các lần backfill trước — is_fully_reported() chỉ xét
+    2 bảng đó nên coi các kỳ này là "đã xong", khiến backfill_period() BỎ QUA NGAY, không bao giờ cho
+    bộ OCR FX mới 1 cơ hội chạy thử, dù bảng FX thực sự tồn tại trong BCTC. Cần hàm riêng này để
+    backfill vẫn OCR LẠI ĐÚNG 1 LẦN cho mọi kỳ "đầy đủ" nhưng fx_checked chưa True — sau lần đó
+    (thành công hay không) fx_checked=True mãi mãi, không OCR lại vô ích những lần sau nữa."""
+    if not entry or entry.get("status") != "reported":
+        return False
+    if not (entry.get("interest_rate_gap") or entry.get("liquidity_gap")):
+        return False
+    return not entry.get("fx_checked")
 
 
 def gap_period_to_quarter(period_key):

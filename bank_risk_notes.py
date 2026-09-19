@@ -920,6 +920,15 @@ def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
 
     if "interest_rate_gap" not in result and "liquidity_gap" not in result:
         return "no_note", None
+    # Danh dau tai lieu nay DA duoc thu voi bo dot OCR co nhan dien FX (bat ke co tim thay bang FX
+    # thuc su hay khong - "khong tim thay" cung la 1 ket qua co gia tri, vd ngan hang khong cong bo
+    # muc nay) - user 2026-09-19 phat hien qua ABB/ACB: nhieu ky da "reported" (du ca lai suat +
+    # thanh khoan) TU TRUOC KHI co tinh nang FX nay, is_fully_reported() (chi xet lai suat+thanh
+    # khoan) khien backfill_period() BO QUA NGAY nhung ky nay vi da coi la "xong", FX se KHONG BAO
+    # GIO duoc thu du co bang thuc su ton tai trong BCTC. Co field rieng nay de bank_system_risk.py
+    # phan biet duoc "chua tung thu FX" (can thu lai 1 lan) voi "da thu roi nhung xac nhan khong co"
+    # (khong can thu lai vo ich moi lan backfill).
+    result["fx_checked"] = True
     return "ok", result
 
 
