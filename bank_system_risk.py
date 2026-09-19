@@ -985,14 +985,14 @@ def update_bank_alm_excel_sheet(out_dir):
             status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
             status_tk = "reported" if entry.get("liquidity_gap") else "missing"
             status_fx = "reported" if entry.get("fx_position") else "missing"
-            # Cot C tong hop: chi xet Lai suat + Thanh khoan (2 bang co OCR tu dong, backfill sua
-            # duoc) - KHONG xet Tien te vao day vi FX chua co OCR tu dong (chi nhap tay cho vai ma
-            # nhu TCB/VIB), neu bat buoc ca FX thi cot C se bao "missing" gan het moi dong, mat tac
-            # dung loc "co can chay lai backfill khong". "patched" giu nguyen rieng (du lieu ke thua
-            # tu ky truoc, khong phai dang thieu can OCR lai).
+            # Cot C tong hop: user (2026-09-19) muon xet CA 3 (Lai suat + Thanh khoan + Tien te) -
+            # giờ da co OCR tu dong cho ca FX (xem bank_risk_notes.py _extract_fx_position) nen doi
+            # hoi ca 3 la hop ly, khong con canh bao "se bao missing gan het" nhu truoc khi co OCR FX
+            # tu dong. "patched" giu nguyen rieng (du lieu ke thua tu ky truoc, khong phai dang
+            # thieu can OCR lai).
             if status == "patched":
                 status_overall = "patched"
-            elif status_ls == "reported" and status_tk == "reported":
+            elif status_ls == "reported" and status_tk == "reported" and status_fx == "reported":
                 status_overall = "reported"
             else:
                 status_overall = "missing"
@@ -1114,13 +1114,12 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
             status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
             status_tk = "reported" if entry.get("liquidity_gap") else "missing"
             status_fx = "reported" if entry.get("fx_position") else "missing"
-            # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - chi xet Lai
-            # suat + Thanh khoan (2 bang co OCR tu dong), KHONG xet Tien te (chua co OCR tu dong cho
-            # da so ma, se lam cot C bao "missing" gan het).
+            # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - xet CA 3
+            # (Lai suat + Thanh khoan + Tien te), theo yeu cau user 2026-09-19.
             raw_status = entry.get("status")
             if raw_status == "patched":
                 status_overall = "patched"
-            elif status_ls == "reported" and status_tk == "reported":
+            elif status_ls == "reported" and status_tk == "reported" and status_fx == "reported":
                 status_overall = "reported"
             else:
                 status_overall = "missing"
