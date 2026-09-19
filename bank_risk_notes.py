@@ -657,20 +657,43 @@ def _find_fx_currency_header(text):
     biệt cho 2 "dải" đó (dòng 1 gộp phần đầu MỌI cột, dòng 2 gộp phần "quy đổi"/"khác được..." còn
     lại), khiến tìm trên TỪNG DÒNG RIÊNG LẺ chỉ khớp được các đồng tiền có tên KHÔNG bị ngắt (vd chỉ
     thấy "EUR"/"USD" ở dòng 1, bỏ sót hẳn "Ngoại tệ khác" vì chữ "khác" nằm ở dòng 2) — trích thiếu
-    cột, làm SAI toàn bộ ánh xạ đồng tiền->giá trị. Giờ dùng CỬA SỔ TRƯỢT 3 dòng liên tiếp (giống
-    kỹ thuật _extract_number_row dùng cho nhãn dòng bị ngắt) thay vì chỉ xét 1 dòng — thứ tự trái-
-    phải vẫn đúng vì mỗi dòng thành phần đều giữ ĐÚNG thứ tự cột của chính nó, ghép nối tuần tự
-    không làm xáo trộn.
+    cột, làm SAI toàn bộ ánh xạ đồng tiền->giá trị.
+
+    BUG THẬT #2 phát hiện 2026-09-19 (log thật ABB Quý 1/2024, sau khi #1 đã fix): cửa sổ 3 dòng vẫn
+    KHÔNG đủ rộng — OCR thật đọc "Các ngoại tệ" (đầu ô tiêu đề) thành CHUỖI RÁC hoàn toàn không nhận
+    diện được (vd ",CÓC \"80gÍ"), còn phần ngắt xuống "khác được quy" + "đôi" lại đọc ĐÚNG nhưng bị
+    tách xa tới 4 dòng (xen giữa 1-2 dòng rác/trống khác) so với dòng chứa "EUR"/"USD" — vượt khỏi
+    cửa sổ 3 dòng. Giờ BỎ QUA dòng trống trước khi trượt cửa sổ (dòng trống chỉ là nhiễu OCR, không
+    mang thông tin), và cửa sổ DỪNG LẠI ngay khi gặp 1 dòng "giống dòng số liệu thật" (>=2 ô số —
+    xem _CELL_RE) — vùng tiêu đề cột (mọi dòng mô tả/ngắt dòng của tên cột) LUÔN là văn bản thuần,
+    không có số, đứng NGAY TRƯỚC dòng số liệu đầu tiên của bảng, nên đây là ranh giới tự nhiên đáng
+    tin hơn nhiều so với đếm cố định N dòng.
+
+    BUG THẬT #3 phát hiện 2026-09-19 (test lại ABB Quý 1/2026 sau khi nới cửa sổ cố định 3->8 dòng
+    để fix bug #2): cửa sổ 8 dòng CỐ ĐỊNH (không dừng ở ranh giới số liệu) vô tình NUỐT LUÔN dòng dữ
+    liệu thật "Tiền mặt, VÀNG bạc, đá quý..." nằm ngay sau phần tiêu đề — chữ "vàng" trong TÊN KHOẢN
+    MỤC tài sản (không phải tên cột) bị hiểu lầm thành 1 đồng tiền "GOLD" có thật, tạo ra 1 cột ma
+    (ăn nhầm số của cột "Tổng"). Dừng cửa sổ đúng ranh giới số liệu vừa fix bug này vừa giữ được fix
+    bug #2 (cửa sổ vẫn đủ dài để nối "EUR/USD" với "khác được quy đổi" bị ngắt xa, vì toàn bộ vùng
+    ngắt dòng của tiêu đề cột đều là text thuần, không chứa số).
 
     Chọn cửa sổ khớp NHIỀU đồng tiền nhất nếu có nhiều cửa sổ ứng viên (cửa sổ tiêu đề cột thật luôn
     liệt kê ĐẦY ĐỦ mọi đồng tiền của bảng, nhiều hơn hẳn bất kỳ câu văn xuôi nào tình cờ nhắc vài
     đồng tiền)."""
+    def _looks_numeric(line_flat):
+        return len(_CELL_RE.findall(line_flat)) >= 2 or len(_CELL_RE_EN.findall(line_flat)) >= 2
+
     lines = text.split("\n")
-    flat_lines = [_strip_accents(l).strip() for l in lines]
+    flat_lines = [_strip_accents(l).strip() for l in lines if l.strip()]
     best = None
-    for i in range(len(lines)):
-        flat = " ".join(flat_lines[i:i + 3])
-        if not flat or len(flat) > 250:
+    for i in range(len(flat_lines)):
+        window_parts = []
+        for j in range(i, min(i + 8, len(flat_lines))):
+            if window_parts and _looks_numeric(flat_lines[j]):
+                break  # gap dong so lieu thuc - dung cua so tai day, khong nuot nham
+            window_parts.append(flat_lines[j])
+        flat = " ".join(window_parts)
+        if not flat:
             continue
         hits = []
         for ccy, variants in _FX_CCY_PATTERNS:
