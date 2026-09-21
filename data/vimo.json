@@ -940,7 +940,7 @@
   },
   "bankingSystemRisk": {
     "asOf": "2026-Q2",
-    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +9.66% tổng tài sản (mức phân tán 10.33% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.6%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 1.4% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 118.6%. NH phụ thuộc rollover nhiều nhất: BVB (174%). Pha 3 — Áp lực cấu trúc ĐANG GIẢM (chuẩn hóa): Rollover dependency 12M giảm từ 32.3% xuống 1.4%, Long-term Funding Coverage tăng — hệ thống không còn cần rollover ngắn hạn nhiều như trước, có điều kiện để giảm mức độ cạnh tranh huy động kỳ hạn dài. Đây là tín hiệu có thể dùng để nhận diện đỉnh lãi suất huy động đã đi qua. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
+    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +9.66% tổng tài sản (mức phân tán 10.33% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.6%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 1.4% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 118.6%. NH phụ thuộc rollover nhiều nhất: BVB (174%). (LƯU Ý: chỉ 44% tổng tài sản hệ thống có đủ dữ liệu bảng Nợ phải trả theo kỳ hạn cho kỳ này — số liệu 2 chỉ số này CHƯA đại diện đầy đủ toàn hệ thống.) Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 30.3% → 27.6%; Long-term Funding Coverage: 80.0% → 69.4% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "interestRateRisk": {
       "netGapRatio": 0.09657073380161428,
       "dispersionGapRatio": 0.10332606159845938,
@@ -984,14 +984,21 @@
         "ticker": "BVB",
         "rollover_dependency_12m": 1.7426617985714004
       },
+      "coveragePct": 43.807850325036554,
+      "nBanksIncluded": 13,
       "phase": {
-        "phase": "normalization",
-        "phaseLabel": "Pha 3 — Áp lực cấu trúc ĐANG GIẢM (chuẩn hóa)",
-        "narrative": "Rollover dependency 12M giảm từ 32.3% xuống 1.4%, Long-term Funding Coverage tăng — hệ thống không còn cần rollover ngắn hạn nhiều như trước, có điều kiện để giảm mức độ cạnh tranh huy động kỳ hạn dài. Đây là tín hiệu có thể dùng để nhận diện đỉnh lãi suất huy động đã đi qua.",
+        "phase": "mixed",
+        "phaseLabel": "Chưa rõ xu hướng (tín hiệu hỗn hợp)",
+        "narrative": "Rollover dependency 12M: 30.3% → 27.6%; Long-term Funding Coverage: 80.0% → 69.4% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
         "periodsUsed": [
+          "2025-Q3",
           "2025-Q4",
-          "2026-Q1",
-          "2026-Q2"
+          "2026-Q1"
+        ],
+        "coveragePctByPeriod": [
+          63.1439251731783,
+          75.67707449435808,
+          77.94620777052076
         ]
       }
     },
@@ -48189,7 +48196,7 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "Tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover/vay liên ngân hàng — tổng hợp có trọng số theo quy mô (Σ Forward Cumulative Gap / Σ Nợ đến hạn cùng kỳ, KHÔNG phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py.",
+      "note": "Tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover/vay liên ngân hàng — tổng hợp có trọng số theo quy mô (Σ Forward Cumulative Gap / Σ Nợ đến hạn cùng kỳ, KHÔNG phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py. LƯU Ý: cần bảng \"Nợ phải trả\" theo kỳ hạn (chậm có hơn bảng gap) nên độ phủ dữ liệu MỖI QUÝ khác nhau (có kỳ chỉ ~13/26 ngân hàng) — so sánh 2 kỳ coverage lệch nhiều KHÔNG phản ánh đúng xu hướng thật, xem mục \"Rủi ro hệ thống ngân hàng\" để biết coverage/pha của kỳ mới nhất.",
       "impact": "Tỷ lệ càng cao, hệ thống càng phải cạnh tranh huy động/rollover nguồn vốn ngắn hạn — 1 trong những cơ chế trực tiếp đẩy lãi suất huy động kỳ hạn dài lên."
     },
     "bank_alm_system_rollover_dependency_1m": {
@@ -48347,7 +48354,7 @@
         "judgment_label": "Tốt lên",
         "judgment_color": "#10b981"
       },
-      "note": "(Nợ >1 năm + Vốn chủ sở hữu) / Tài sản >1 năm — tổng hợp có trọng số theo quy mô từ 26 ngân hàng niêm yết/UPCoM. KHÔNG phải NSFR chính thức Basel (không phân loại trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng.",
+      "note": "(Nợ >1 năm + Vốn chủ sở hữu) / Tài sản >1 năm — tổng hợp có trọng số theo quy mô từ 26 ngân hàng niêm yết/UPCoM. KHÔNG phải NSFR chính thức Basel (không phân loại trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng. LƯU Ý: độ phủ dữ liệu khác nhau mỗi quý (xem ghi chú ở Rollover Dependency 12 tháng) — so sánh kỳ coverage lệch nhiều không phản ánh đúng xu hướng thật.",
       "impact": "Tỷ lệ càng thấp (xa 100%), tài sản dài hạn càng phụ thuộc vào nguồn vốn ngắn hạn phải liên tục rollover — cùng cơ chế đẩy lãi suất huy động kỳ hạn dài lên."
     }
   }

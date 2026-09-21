@@ -667,6 +667,8 @@ def _aggregate_for_period(period_key):
     sum_cons_gap_1m = sum_cons_gap_3m = sum_cons_gap_12m = 0.0
     sum_liab_due_1m = sum_liab_due_3m = sum_liab_due_12m = 0.0
     sum_long_term_assets = sum_stable_funding = 0.0
+    sum_ta_structural = 0.0  # tong tai san CHI cua cac NH co du lieu hop le cho cau truc ky han
+    n_banks_structural = 0
     all_ta_known = 0.0
     worst_ir = None
     worst_liq = None
@@ -754,6 +756,9 @@ def _aggregate_for_period(period_key):
         sum_nii += m["nii"] or 0.0
         if liq_ratio_valid:
             sum_liq_1m += m["cum_gap_1m"]
+        if structural_funding_valid and m.get("liab_due_12m") is not None:
+            sum_ta_structural += m["total_assets"]
+            n_banks_structural += 1
         if structural_funding_valid:
             if m.get("liq_cum_gap_1m_conservative") is not None:
                 sum_cons_gap_1m += m["liq_cum_gap_1m_conservative"]
@@ -822,6 +827,14 @@ def _aggregate_for_period(period_key):
     rollover_dep_3m_sys = (abs(sum_cons_gap_3m) / sum_liab_due_3m) if sum_liab_due_3m else None
     rollover_dep_12m_sys = (abs(sum_cons_gap_12m) / sum_liab_due_12m) if sum_liab_due_12m else None
     long_term_funding_coverage_sys = (sum_stable_funding / sum_long_term_assets) if sum_long_term_assets else None
+    # Do phu RIENG cho cau truc ky han (khac han assets_coverage_pct chung o tren) — bug that phat
+    # hien 2026-09-21 (user nghi ngo dung, xem thao luan): "liabilities_by_bucket" thuong cham co du
+    # lieu hon "liquidity_gap" (nhieu ngan hang moi co gap nhung chua co bang no theo bucket ky moi
+    # nhat) - ky moi nhat co the tut xuong CHI 12/26 ngan hang (thieu han MBB/VCB/CTG...) trong khi
+    # ky truoc co 20/26, khien ty le "tut manh" chi vi MAU SO khac nhau giua 2 ky, KHONG phai tin
+    # hieu cau truc thuc su cai thien. Dung de CANH BAO/CHAN ket luan xu huong khi do phu qua thap
+    # hoac lech qua nhieu so ky truoc (xem classify_structural_funding_phase).
+    structural_funding_coverage_pct = (sum_ta_structural / sum_ta * 100) if sum_ta else None
 
     return {
         "period": period_key,
@@ -852,6 +865,7 @@ def _aggregate_for_period(period_key):
                                          if long_term_funding_coverage_sys is not None else None,
             "most_dependent_bank": {"ticker": worst_rollover[0], "rollover_dependency_12m": worst_rollover[1]}
                                     if worst_rollover else None,
+            "coverage_pct": structural_funding_coverage_pct, "n_banks_included": n_banks_structural,
         },
         "by_bank": by_bank,
     }
@@ -906,21 +920,50 @@ def classify_structural_funding_phase(history):
     tiền gửi → áp lực đẩy lãi suất huy động kỳ hạn dài tăng; ngược lại khi mismatch thu hẹp thì áp
     lực đó giảm (mục XI, XVII).
 
-    `history`: list [{"period", "rollover_dependency_12m", "long_term_funding_coverage"}, ...] ĐÃ
-    SẮP XẾP tăng dần theo thời gian (period cũ nhất trước) — dùng TỐI ĐA 3 điểm CUỐI (mục XII file
-    hướng dẫn: "ông phải lấy ít nhất Q4/2025 -> Q1/2026 -> Q2/2026"). Trả về None nếu < 2 điểm hợp lệ
-    (chưa đủ để biết hướng đi)."""
-    pts = [h for h in history if h.get("rollover_dependency_12m") is not None
-           and h.get("long_term_funding_coverage") is not None][-3:]
+    `history`: list [{"period", "rollover_dependency_12m", "long_term_funding_coverage",
+    "coverage_pct"}, ...] ĐÃ SẮP XẾP tăng dần theo thời gian (period cũ nhất trước) — dùng TỐI ĐA 3
+    điểm CUỐI (mục XII file hướng dẫn: "ông phải lấy ít nhất Q4/2025 -> Q1/2026 -> Q2/2026"). Trả về
+    None nếu < 2 điểm hợp lệ (chưa đủ để biết hướng đi).
+
+    BUG THẬT phát hiện 2026-09-21 (user nghi ngờ đúng khi thấy rollover 12M "rớt" 28% -> 1,4% chỉ
+    trong 1 quý — LS huy động thực tế vẫn cao, không khớp câu chuyện "đã qua đỉnh"): kỳ MỚI NHẤT
+    (2026-Q2) chỉ có 12/26 ngân hàng có đủ "liabilities_by_bucket" (thiếu hẳn MBB/VCB/CTG/HDB/VIB...
+    — các NH lớn CHƯA backfill kịp bảng thanh khoản cho kỳ mới nhất), so với 20/26 của kỳ trước —
+    tỷ lệ "giảm mạnh" đó là do SO SÁNH 2 MẪU NGÂN HÀNG KHÁC NHAU (coverage_pct sụt), KHÔNG PHẢI cấu
+    trúc hệ thống thực sự cải thiện. Giờ LOẠI các điểm coverage quá thấp (< 60% tổng tài sản đã biết
+    — mẫu quá nhỏ để đại diện hệ thống) VÀ cảnh báo RÕ khi coverage lệch quá nhiều (>15 điểm %) giữa
+    điểm đầu/cuối chuỗi dùng để so sánh — 2 mẫu khác nhau không thể dùng để kết luận HƯỚNG ĐI."""
+    MIN_COVERAGE_PCT = 60.0
+    usable = [h for h in history if h.get("rollover_dependency_12m") is not None
+              and h.get("long_term_funding_coverage") is not None
+              and (h.get("coverage_pct") or 0) >= MIN_COVERAGE_PCT]
+    pts = usable[-3:]
     if len(pts) < 2:
+        latest = history[-1] if history else None
+        if latest and latest.get("coverage_pct") is not None and latest["coverage_pct"] < MIN_COVERAGE_PCT:
+            return {"phase": "low_coverage", "phaseLabel": "Chưa đủ dữ liệu để xác định pha",
+                    "narrative": (f"Kỳ {latest['period']} mới có {latest['coverage_pct']:.0f}% tổng tài sản hệ "
+                                  f"thống có đủ dữ liệu bảng Nợ phải trả theo kỳ hạn (nhiều ngân hàng lớn chưa "
+                                  f"backfill kịp) — CHƯA ĐỦ đại diện để so sánh xu hướng, cần đợi backfill đầy đủ "
+                                  f"hơn thay vì kết luận từ 1 mẫu nhỏ/khác kỳ trước."),
+                    "periodsUsed": [latest["period"]]}
         return None
     roll_seq = [p["rollover_dependency_12m"] for p in pts]
     ltfc_seq = [p["long_term_funding_coverage"] for p in pts]
+    cov_seq = [p.get("coverage_pct") for p in pts]
     roll_delta = roll_seq[-1] - roll_seq[0]
     ltfc_delta = ltfc_seq[-1] - ltfc_seq[0]
     # Xu huong tung buoc gan nhat (kỳ cuối so kỳ ngay truoc) — dung phan biet Pha 2 (dinh, moi bat
     # dau dao chieu) voi Pha 1 (van con xau di) khi so 3 diem chi cho xu huong tong the.
     roll_last_step = roll_seq[-1] - roll_seq[-2]
+    # Canh bao lech coverage giua diem dau/cuoi dung de so sanh (2 mau ngan hang khac nhau -> huong
+    # di tinh duoc KHONG dang tin, du tung diem rieng le da qua MIN_COVERAGE_PCT).
+    cov_known = [c for c in cov_seq if c is not None]
+    coverage_mismatch_note = ""
+    if len(cov_known) >= 2 and abs(cov_known[-1] - cov_known[0]) > 15.0:
+        coverage_mismatch_note = (f" (Lưu ý: độ phủ dữ liệu lệch khá nhiều giữa các kỳ so sánh — "
+                                   f"{cov_known[0]:.0f}% -> {cov_known[-1]:.0f}% tổng tài sản — nên đọc "
+                                   f"hướng đi này với mức độ tin cậy VỪA PHẢI, không phải chắc chắn.)")
 
     if roll_delta > 0.02 and ltfc_delta < -0.02:
         phase, label = "deterioration", "Pha 1 — Áp lực cấu trúc ĐANG TĂNG"
@@ -945,8 +988,8 @@ def classify_structural_funding_phase(history):
         narrative = (f"Rollover dependency 12M: {roll_seq[0]*100:.1f}% → {roll_seq[-1]*100:.1f}%; "
                      f"Long-term Funding Coverage: {ltfc_seq[0]*100:.1f}% → {ltfc_seq[-1]*100:.1f}% — chưa đủ "
                      f"rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.")
-    return {"phase": phase, "phaseLabel": label, "narrative": narrative,
-            "periodsUsed": [p["period"] for p in pts]}
+    return {"phase": phase, "phaseLabel": label, "narrative": narrative + coverage_mismatch_note,
+            "periodsUsed": [p["period"] for p in pts], "coveragePctByPeriod": cov_seq}
 
 
 def build_system_risk_summary_text(agg, phase_info=None):
@@ -988,11 +1031,19 @@ def build_system_risk_summary_text(agg, phase_info=None):
         mdb = sf.get("most_dependent_bank")
         mdb_s = (f" NH phụ thuộc rollover nhiều nhất: {mdb['ticker']} "
                  f"({mdb['rollover_dependency_12m']*100:.0f}%).") if mdb else ""
+        # Canh bao RO khi do phu rieng cho cau truc ky han qua thap (bug that phat hien 2026-09-21) —
+        # so nay du tinh dung TOAN HOC nhung dua tren 1 mau ngan hang chua day du (nhieu NH lon chua
+        # backfill kip bang "No phai tra" theo bucket cho ky moi nhat), KHONG nen doc nhu so lieu
+        # dai dien toan he thong.
+        cov_pct = sf.get("coverage_pct")
+        cov_s = (f" (LƯU Ý: chỉ {cov_pct:.0f}% tổng tài sản hệ thống có đủ dữ liệu bảng Nợ phải trả "
+                 f"theo kỳ hạn cho kỳ này — số liệu 2 chỉ số này CHƯA đại diện đầy đủ toàn hệ thống.)"
+                 ) if cov_pct is not None and cov_pct < 60 else ""
         parts.append(
             f"Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = {sf['rollover_dependency_12m']*100:.1f}% "
             f"(tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy "
             f"động mới/rollover), Long-term Funding Coverage = {sf['long_term_funding_coverage']*100:.1f}%."
-            f"{mdb_s}"
+            f"{mdb_s}{cov_s}"
         )
     if phase_info:
         parts.append(f"{phase_info['phaseLabel']}: {phase_info['narrative']}")
@@ -1040,6 +1091,7 @@ def build_banking_system_risk_section(agg, history=None):
             "longTermFundingCoverage": sf.get("long_term_funding_coverage"),
             "longTermStructuralGap": sf.get("long_term_structural_gap"),
             "mostDependentBank": sf.get("most_dependent_bank"),
+            "coveragePct": sf.get("coverage_pct"), "nBanksIncluded": sf.get("n_banks_included"),
             "phase": phase_info,
         },
         "coverage": {

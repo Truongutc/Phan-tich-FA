@@ -2494,7 +2494,11 @@ def _add_bank_alm_derived_indicators(raw, trends):
             "note": ("Tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc "
                      "phải huy động mới/rollover/vay liên ngân hàng — tổng hợp có trọng số theo quy mô "
                      "(Σ Forward Cumulative Gap / Σ Nợ đến hạn cùng kỳ, KHÔNG phải trung bình cộng % "
-                     "từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py."),
+                     "từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py. "
+                     "LƯU Ý: cần bảng \"Nợ phải trả\" theo kỳ hạn (chậm có hơn bảng gap) nên độ phủ dữ "
+                     "liệu MỖI QUÝ khác nhau (có kỳ chỉ ~13/26 ngân hàng) — so sánh 2 kỳ coverage lệch "
+                     "nhiều KHÔNG phản ánh đúng xu hướng thật, xem mục \"Rủi ro hệ thống ngân hàng\" để "
+                     "biết coverage/pha của kỳ mới nhất."),
             "impact": ("Tỷ lệ càng cao, hệ thống càng phải cạnh tranh huy động/rollover nguồn vốn ngắn "
                        "hạn — 1 trong những cơ chế trực tiếp đẩy lãi suất huy động kỳ hạn dài lên."),
         }
@@ -2519,7 +2523,9 @@ def _add_bank_alm_derived_indicators(raw, trends):
             "series": ltfc_points,
             "note": ("(Nợ >1 năm + Vốn chủ sở hữu) / Tài sản >1 năm — tổng hợp có trọng số theo quy mô "
                      "từ 26 ngân hàng niêm yết/UPCoM. KHÔNG phải NSFR chính thức Basel (không phân loại "
-                     "trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng."),
+                     "trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng. LƯU Ý: độ phủ dữ liệu khác "
+                     "nhau mỗi quý (xem ghi chú ở Rollover Dependency 12 tháng) — so sánh kỳ coverage "
+                     "lệch nhiều không phản ánh đúng xu hướng thật."),
             "impact": ("Tỷ lệ càng thấp (xa 100%), tài sản dài hạn càng phụ thuộc vào nguồn vốn ngắn "
                        "hạn phải liên tục rollover — cùng cơ chế đẩy lãi suất huy động kỳ hạn dài lên."),
         }
