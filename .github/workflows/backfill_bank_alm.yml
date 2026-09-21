@@ -99,6 +99,18 @@ jobs:
             # Chi commit/push data/bank_alm/ (moi file rieng biet theo ticker, khong phai kieu "ghi
             # de toan bo 1 file" nhu vimo.json) — rebase len remote an toan, giong pattern da dung o
             # analyze_stock.yml, khac han pattern "reset --hard + restore" cua update_vimo.yml.
+            #
+            # SUA (2026-09-21, phat hien qua log thuc bi loi sau 5 lan thu): xung dot rebase HAU HET
+            # chi xay ra o file Excel VIMO_Lich_Su_Chi_So.xlsx (file duoc TU DONG SINH RA lai tu
+            # data/bank_alm/*.json moi lan chay - KHONG PHAI file sua tay - git khong the tu merge
+            # noi dung binary nen luon bao conflict neu origin cung vua ghi de file nay). Truoc day
+            # gap loi la git rebase --abort roi lap lai NGUYEN VEN cung 1 lenh rebase - xung dot
+            # KHONG BAO GIO tu het vi luon la file nay, dan den luon thua sau 5 lan thu du du lieu
+            # JSON (phan THAT can luu) khong co gi mau thuan. Gio: neu xung dot CHI o dung file Excel
+            # nay, lay ban tren origin lam diem xuat phat, tiep tuc rebase, roi REGENERATE lai Excel
+            # tu du lieu JSON DA MERGE DAY DU (goi lai chinh ham dung de tao file nay) truoc khi
+            # amend vao commit va push tiep - dam bao khong mat ca thay doi cua minh lan thay doi cua
+            # lan chay khac tren origin.
             PUSHED=0
             for i in 1 2 3 4 5; do
               git fetch origin master
@@ -108,7 +120,23 @@ jobs:
                   break
                 fi
               else
-                git rebase --abort
+                CONFLICTS="$(git diff --name-only --diff-filter=U)"
+                if [ "$CONFLICTS" = "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx" ]; then
+                  echo "Xung dot CHI o file Excel tu sinh - lay ban tren origin, regenerate lai roi tiep tuc rebase."
+                  git show origin/master:"Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx" > "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx"
+                  git add "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx"
+                  if git rebase --continue; then
+                    python -c "from bank_system_risk import update_bank_alm_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO')"
+                    git add "Bao cao/VIMO/"
+                    if ! git diff --staged --quiet; then
+                      git commit --amend --no-edit
+                    fi
+                  else
+                    git rebase --abort
+                  fi
+                else
+                  git rebase --abort
+                fi
               fi
               echo "Push attempt $i failed, retrying..."
               sleep 10
