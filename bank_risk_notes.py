@@ -620,8 +620,17 @@ def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
         # Mục thanh khoản TCB 2025 KHÔNG tìm thấy nhãn/từ neo trong +5 trang đầu (verify qua log CI
         # thật) — có thể còn nhiều trang phụ hơn xen giữa so với mục lãi suất; nới lên +7 trang, vẫn
         # DỪNG NGAY khi đọc đủ số, không OCR speculative quá xa.
+        #
+        # SỬA (user 2026-09-21, log thật VCB Quý 2/2026): +8 trang KHÔNG ĐỦ — VCB đánh số các mục rủi
+        # ro theo LA MÃ (i) Rủi ro tín dụng, (ii) Rủi ro lãi suất, (iii) Rủi ro tiền tệ, (iv) Rủi ro
+        # thanh khoản (thứ tự khác hẳn đa số ngân hàng khác, thanh khoản đứng CUỐI) — nghi ngờ
+        # _find_note_pages() khớp NHẦM 1 câu văn xuôi/OCR nhiễu SỚM HƠN nhiều làm mốc trang "thanh
+        # khoản" (verify: heading trang ~51 không có nội dung thanh khoản nào khi soi ảnh trực tiếp,
+        # trong khi bảng THẬT nằm ở trang 66, cách xa >10 trang). Nới lên +20 trang - đủ bắt được
+        # trường hợp lệch xa như VCB, đồng thời vẫn DỪNG NGAY khi đọc đủ số nên không tốn thêm OCR cho
+        # các ngân hàng bình thường (heading đúng, bảng nằm gần).
         vals = None
-        for p in range(page_idx, page_idx + 8):
+        for p in range(page_idx, page_idx + 20):
             text = _ocr_page_text(pdf_path, p)
             if not text:
                 continue
