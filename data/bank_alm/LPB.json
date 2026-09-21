@@ -148,8 +148,24 @@
         "tu_1_5_nam": 0.0,
         "tren_5_nam": 48785789.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 3498388.0,
+        "qua_han_den_3t": 29763909.0,
+        "den_1_thang": -56765026.0,
+        "tu_1_3_thang": 55345722.0,
+        "tu_3_12_thang": 27520044.0,
+        "tu_1_5_nam": -55315094.0,
+        "tren_5_nam": 10479515.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 9740948.0,
+        "den_1_thang": 148597228.0,
+        "tu_1_3_thang": 110531508.0,
+        "tu_3_12_thang": 84743100.0,
+        "tu_1_5_nam": 90714112.0,
+        "tren_5_nam": 20534238.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
         "khong_anh_huong_lai_suat": 0.0,
@@ -161,9 +177,33 @@
         "tren_5_nam": 495687409.0
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
-      "sbv_dep_by_bucket": null,
-      "customer_deposits_by_bucket": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 1162384.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 14369534.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 634338797.0,
+        "den_1_thang": 70413772.0,
+        "tu_1_3_thang": 74225137.0,
+        "tu_3_12_thang": 66848854.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 344359.0
+      },
       "fx_position": null,
       "fx_source": null,
       "source": {
@@ -171,7 +211,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251020_-_LPB_-_VI_BaoCaoTaiChinh_Q3_2025_1761124735.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-19T08:12:25+07:00"
+      "fetched_at": "2026-09-21T23:09:14+07:00"
     },
     "2026-Q1": {
       "status": "reported",
