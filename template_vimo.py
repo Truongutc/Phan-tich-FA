@@ -1912,12 +1912,20 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                 ["NH phụ thuộc rollover nhiều nhất",
                  f"{mdb['ticker']} ({mdb['rollover_dependency_12m']*100:.0f}%)" if mdb else "N/A"],
             ]
+            if sf.get("nBanksIncluded") is not None:
+                alm_rows.append(
+                    ["Dữ liệu cấu trúc kỳ hạn (quý gần nhất)",
+                     f"{banking_system_risk['asOf']} — {sf['nBanksIncluded']}/26 NH "
+                     f"({(sf.get('coveragePct') or 0):.0f}% tổng tài sản)"])
         t_alm = Table(alm_rows, colWidths=[75 * mm, 96 * mm])
         t_alm.setStyle(tbl_style())
         story.append(Spacer(1, 4))
         story.append(t_alm)
         if cov.get("missingTickers"):
-            story.append(Paragraph(f"<i>Chưa có dữ liệu: {', '.join(cov['missingTickers'])}</i>", italic_st))
+            story.append(Paragraph(f"<i>Chưa có dữ liệu ALM: {', '.join(cov['missingTickers'])}</i>", italic_st))
+        if sf.get("missingTickers"):
+            story.append(Paragraph(f"<i>Chưa có dữ liệu cấu trúc kỳ hạn (cần backfill No phải trả theo bucket): "
+                                    f"{', '.join(sf['missingTickers'])}</i>", italic_st))
         if sf.get("phase"):
             story.append(Spacer(1, 4))
             story.append(Paragraph(f"<b>{sf['phase']['phaseLabel']}</b> (dựa trên {', '.join(sf['phase']['periodsUsed'])})", small_st))

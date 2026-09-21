@@ -986,6 +986,21 @@
       },
       "coveragePct": 43.807850325036554,
       "nBanksIncluded": 13,
+      "missingTickers": [
+        "ABB",
+        "BAB",
+        "CTG",
+        "HDB",
+        "MBB",
+        "MSB",
+        "NAB",
+        "NVB",
+        "OCB",
+        "SSB",
+        "TPB",
+        "VCB",
+        "VIB"
+      ],
       "phase": {
         "phase": "mixed",
         "phaseLabel": "Chưa rõ xu hướng (tín hiệu hỗn hợp)",

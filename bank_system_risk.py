@@ -669,6 +669,9 @@ def _aggregate_for_period(period_key):
     sum_long_term_assets = sum_stable_funding = 0.0
     sum_ta_structural = 0.0  # tong tai san CHI cua cac NH co du lieu hop le cho cau truc ky han
     n_banks_structural = 0
+    missing_structural = []  # ma NH da "reported"/"patched" (co du lieu gap) nhung THIEU rieng
+    # phan "No phai tra theo bucket" can cho Rollover Dependency - de nguoi dung biet CAN backfill
+    # gi (user 2026-09-21, xem "Do phu du lieu" trong muc Rui ro he thong ngan hang tren web).
     all_ta_known = 0.0
     worst_ir = None
     worst_liq = None
@@ -747,6 +750,8 @@ def _aggregate_for_period(period_key):
                   f"(1M={m.get('rollover_dependency_1m')}, 3M={m.get('rollover_dependency_3m')}, "
                   f"12M={m.get('rollover_dependency_12m')}) - nghi ngo No phai tra theo bucket bi lech "
                   f"tap trung sai, LOAI khoi tong hop cau truc ky han he thong")
+        if not structural_funding_valid or m.get("liab_due_12m") is None:
+            missing_structural.append(ticker)
 
         sum_ta += m["total_assets"]
         if ir_ratio_valid:
@@ -866,6 +871,7 @@ def _aggregate_for_period(period_key):
             "most_dependent_bank": {"ticker": worst_rollover[0], "rollover_dependency_12m": worst_rollover[1]}
                                     if worst_rollover else None,
             "coverage_pct": structural_funding_coverage_pct, "n_banks_included": n_banks_structural,
+            "missing_tickers": sorted(missing_structural),
         },
         "by_bank": by_bank,
     }
@@ -1092,6 +1098,7 @@ def build_banking_system_risk_section(agg, history=None):
             "longTermStructuralGap": sf.get("long_term_structural_gap"),
             "mostDependentBank": sf.get("most_dependent_bank"),
             "coveragePct": sf.get("coverage_pct"), "nBanksIncluded": sf.get("n_banks_included"),
+            "missingTickers": sf.get("missing_tickers"),
             "phase": phase_info,
         },
         "coverage": {

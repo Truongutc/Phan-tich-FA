@@ -160,14 +160,26 @@ function renderBankingSystemRiskSection(risk, indicators) {
                 ? `${sf.mostDependentBank.ticker} (${(sf.mostDependentBank.rollover_dependency_12m * 100).toFixed(0)}%)` : 'N/A'],
         );
     }
+    // Do phu du lieu RIENG cho cau truc ky han (user 2026-09-21, sau khi phat hien Rollover
+    // Dependency he thong bi sai lech chi vi thieu du lieu — xem classify_structural_funding_phase()
+    // trong bank_system_risk.py) — hien ro "kỳ nào, bao nhieu/26 ngan hang" de biet CAN backfill
+    // them ngan hang nao moi du dai dien toan he thong, khong chi tin vao 1 con so % dep.
+    if (sf.nBanksIncluded != null) {
+        const missingList = (sf.missingTickers && sf.missingTickers.length) ? sf.missingTickers.join(', ') : 'không có';
+        stats.push(['Dữ liệu quý gần nhất (cấu trúc kỳ hạn)',
+            `Quý ${risk.asOf} — ${sf.nBanksIncluded}/26 ngân hàng (${(sf.coveragePct ?? 0).toFixed(0)}% tổng tài sản). `
+            + `Còn thiếu: ${missingList}`]);
+    }
     const statsGrid = document.getElementById('banking-risk-stats-grid');
     if (statsGrid) {
-        statsGrid.innerHTML = stats.map(([lbl, val]) => `
-            <div class="vimo-indicator-card">
+        statsGrid.innerHTML = stats.map(([lbl, val]) => {
+            const isWide = lbl.startsWith('Dữ liệu quý gần nhất');
+            return `
+            <div class="vimo-indicator-card" ${isWide ? 'style="grid-column:1/-1"' : ''}>
                 <div class="ind-header"><span class="ind-name">${lbl}</span></div>
-                <div class="ind-value" style="font-size:1em">${val}</div>
-            </div>
-        `).join('');
+                <div class="ind-value" style="font-size:${isWide ? '0.85em' : '1em'};line-height:1.4">${val}</div>
+            </div>`;
+        }).join('');
     }
     set('synthesis-banking-risk-missing', cov.missingTickers && cov.missingTickers.length
         ? `Chưa có dữ liệu: ${cov.missingTickers.join(', ')}` : '');
