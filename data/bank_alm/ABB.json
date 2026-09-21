@@ -14,8 +14,24 @@
         "tu_1_5_nam": -4067920.0,
         "tren_5_nam": 7574025.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1866542.0,
+        "qua_han_den_3t": 15778072.0,
+        "den_1_thang": -14260071.0,
+        "tu_1_3_thang": 70916266.0,
+        "tu_3_12_thang": -49047904.0,
+        "tu_1_5_nam": -9680373.0,
+        "tren_5_nam": -4067920.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 4619783.0,
+        "qua_han_den_3t": 61561061.0,
+        "den_1_thang": 34096420.0,
+        "tu_1_3_thang": 52987661.0,
+        "tu_3_12_thang": 33846271.0,
+        "tu_1_5_nam": 12569210.0,
+        "tren_5_nam": 4013630.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 4619783.0,
         "khong_anh_huong_lai_suat": 61561061.0,
@@ -27,9 +43,33 @@
         "tren_5_nam": 203694036.0
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
-      "sbv_dep_by_bucket": null,
-      "customer_deposits_by_bucket": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 493695.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 13021715.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 33606505.0,
+        "den_1_thang": 23755848.0,
+        "tu_1_3_thang": 50116360.0,
+        "tu_3_12_thang": 23237115.0,
+        "tu_1_5_nam": 2681914.0,
+        "tren_5_nam": 13630.0
+      },
       "fx_position": null,
       "fx_source": null,
       "source": {
@@ -37,7 +77,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_604250_Bao_cao_tai_chinh_nam_2025_1775705238.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-19T08:28:51+07:00"
+      "fetched_at": "2026-09-21T22:52:08+07:00"
     },
     "2025-Q1": {
       "status": "reported",
