@@ -487,6 +487,25 @@ def _bank_period_metrics(entry, bs_snap):
         liq_cum_3m_cons, liq_cum_3m_cons_ratio = cons_curve_abs["tu_1_3_thang"], cons_curve_ratio["tu_1_3_thang"]
         liq_cum_1y_cons, liq_cum_1y_cons_ratio = cons_curve_abs["tu_3_12_thang"], cons_curve_ratio["tu_3_12_thang"]
 
+        # ── Rollover Dependency (xem "Danh gia rui ro thanh khoan cau truc he thong.docx", user
+        # 2026-09-21, dung vi du that MBB Quy 2/2026 lam mau) — KHAC HAN cac ty le luy ke o tren (chia
+        # cho TONG TAI SAN): o day chia Conservative Gap (Forward Cumulative Gap, da tinh o tren) cho
+        # TONG NO PHAI TRA DEN HAN trong dung khung thoi gian do — tra loi dung cau hoi file huong dan
+        # dat ra: "bao nhieu % nghia vu den han KHONG duoc tai san cung ky han tu tai tro, buoc phai
+        # rollover (huy dong moi/vay lien ngan hang/phat hanh GTCG...)". Ty le nay CANG CAO nghia la
+        # ngan hang CANG PHAI CANH TRANH huy dong/rollover nguon von ky han do — day chinh la co che
+        # noi gap thanh khoan cau truc VOI ap luc day lai suat huy dong ky han dai len (file huong dan
+        # muc VIII/XI: "1M cao + 3M cao + 12M cao -> phu thuoc manh vao rollover"). Verify khop CHINH
+        # XAC vi du that trong file (Nợ đến hạn ≤1th=437,97 ty -> rollover 1M=23,0%; ≤3th=659,96 ty ->
+        # 20,1%; ≤12th=1.154,19 ty -> 7,1% — dung 100% 3/3 con so).
+        liab_cum_abs, _ = _cumulative_curve(liab_liq_ty, _LIQ_CUMULATIVE_ORDER, ta)
+        liab_due_1m = liab_cum_abs.get("den_1_thang")
+        liab_due_3m = liab_cum_abs.get("tu_1_3_thang")
+        liab_due_12m = liab_cum_abs.get("tu_3_12_thang")
+        rollover_dep_1m = (abs(liq_cum_1m_cons) / liab_due_1m) if liab_due_1m else None
+        rollover_dep_3m = (abs(liq_cum_3m_cons) / liab_due_3m) if liab_due_3m else None
+        rollover_dep_12m = (abs(liq_cum_1y_cons) / liab_due_12m) if liab_due_12m else None
+
         # ── Ty le Tai san/No phai tra THEO TUNG BUCKET RIENG LE (khac han cac ty le luy ke o tren) —
         # xem muc 7 file huong dan: "<1 thang = 154,9%"/"1-3 thang = 60,6%"/"3-12 thang = 61,6%" — chỉ
         # 3 bucket nay duoc chon vi la 3 moc quan trong nhat de danh gia (< 1 thang = an toan tuc thoi,
@@ -540,6 +559,8 @@ def _bank_period_metrics(entry, bs_snap):
         liq_cum_1m_cons = liq_cum_1m_cons_ratio = None
         liq_cum_3m_cons = liq_cum_3m_cons_ratio = None
         liq_cum_1y_cons = liq_cum_1y_cons_ratio = None
+        rollover_dep_1m = rollover_dep_3m = rollover_dep_12m = None
+        liab_due_1m = liab_due_3m = liab_due_12m = None
         liq_al_ratio_1m = liq_al_ratio_3m = liq_al_ratio_12m = None
         liquidity_buffer_coverage_1m = None
         near_cash_1m = near_cash_coverage_1m_precise = None
@@ -588,6 +609,17 @@ def _bank_period_metrics(entry, bs_snap):
         "short_term_funding": short_term_funding, "long_term_assets": long_term_assets_liq,
         "st_funding_lt_assets_ratio": st_funding_lt_assets_ratio,
         "stable_funding": stable_funding, "nsfr_proxy": nsfr_proxy, "lmi": lmi,
+        # ── Rollover Dependency + Long-term Structural Funding Gap (xem ghi chu chi tiet cong thuc
+        # o khoi tinh toan phia tren) — "long_term_structural_gap" = 1 - nsfr_proxy (nsfr_proxy da la
+        # "Long-term Funding Coverage" dung y file huong dan, khong can tinh lai tu dau). Cac field
+        # liq_cum_gap_*_conservative da co san (xem duoi), KHONG lap lai o day.
+        "rollover_dependency_1m": rollover_dep_1m, "rollover_dependency_3m": rollover_dep_3m,
+        "rollover_dependency_12m": rollover_dep_12m,
+        # Mau so (No den han luy ke, ty dong) cua 3 ty le rollover_dependency tren - de _aggregate_
+        # for_period() cong dong TU/MAU rieng (tong hop CO TRONG SO, khong lay trung binh % tung NH).
+        "liab_due_1m": liab_due_1m, "liab_due_3m": liab_due_3m, "liab_due_12m": liab_due_12m,
+        "long_term_funding_coverage": nsfr_proxy,
+        "long_term_structural_gap": (1 - nsfr_proxy) if nsfr_proxy is not None else None,
         "rsa": rsa, "rsl": rsl, "rsa_rsl_ratio": rsa_rsl_ratio,
         "ir_al_ratio_by_bucket": ir_al_ratio_by_bucket,
         "weighted_gap_raw": weighted,
@@ -629,9 +661,16 @@ def _aggregate_for_period(period_key):
     reported, patched, missing = [], [], []
     sum_ta = sum_ir_net = sum_ir_abs = sum_weighted = sum_nii = 0.0
     sum_liq_1m = sum_liquid_assets = sum_cust_dep = 0.0
+    # Cong dong TU/MAU rieng cho Rollover Dependency + Long-term Funding Coverage he thong (xem
+    # "Danh gia rui ro thanh khoan cau truc he thong.docx", user 2026-09-21) - GIONG nguyen tac cac
+    # ty le khac trong ham nay: cong tong tuyet doi truoc, chia ty le SAU, khong lay trung binh %.
+    sum_cons_gap_1m = sum_cons_gap_3m = sum_cons_gap_12m = 0.0
+    sum_liab_due_1m = sum_liab_due_3m = sum_liab_due_12m = 0.0
+    sum_long_term_assets = sum_stable_funding = 0.0
     all_ta_known = 0.0
     worst_ir = None
     worst_liq = None
+    worst_rollover = None
     by_bank = {}
 
     for ticker in sorted(BANKING_TICKERS):
@@ -689,6 +728,24 @@ def _aggregate_for_period(period_key):
                   f"(ratio he thong tinh duoc: {(m.get('cum_gap_1m_ratio') or 0)*100:+.0f}%) - nghi ngo "
                   f"sai don vi, LOAI khoi tong hop thanh khoan he thong (van tinh lai suat binh thuong)")
 
+        # KIEM TRA DU LIEU HONG rieng cho Rollover Dependency (bug that phat hien 2026-09-21 qua BAB
+        # 2026-Q2): khong bucket nao vuot qua tong tai san (qua duoc guard tren) nhung "Tong no phai
+        # tra" theo bucket bi LECH TAP TRUNG bat thuong (~93% dat vao 1 bucket "tu_1-5_nam" duy nhat,
+        # gan nhu khong co gi o cac bucket ngan han - khong hop ly cho co cau huy dong ngan hang thuc
+        # te), khien mau so (No den han luy ke) qua nho so voi tu so (Forward Gap), ra rollover
+        # dependency 12M = 838% (khong the that). Rollover dependency KHONG co chan tren "mang tinh
+        # toan hoc" don gian nhu bucket-vs-tong-tai-san (ve ly thuyet co the vuot 100% neu tai san
+        # dao han qua it), nhung mot ngan hang thuc te KHONG THE can 8 LAN nghia vu den han moi du bu
+        # dap - nguong 300% du rong de khong loai nham truong hop cang thang thuc su (vd du lieu that
+        # trong file huong dan chi 7-23%), nhung du hep de bat duoc BAB.
+        rollover_vals = [m.get("rollover_dependency_1m"), m.get("rollover_dependency_3m"), m.get("rollover_dependency_12m")]
+        structural_funding_valid = liq_ratio_valid and not any(v is not None and abs(v) > 3.0 for v in rollover_vals)
+        if liq_ratio_valid and not structural_funding_valid:
+            print(f"  [WARN] {ticker} {period_key}: rollover dependency bat thuong "
+                  f"(1M={m.get('rollover_dependency_1m')}, 3M={m.get('rollover_dependency_3m')}, "
+                  f"12M={m.get('rollover_dependency_12m')}) - nghi ngo No phai tra theo bucket bi lech "
+                  f"tap trung sai, LOAI khoi tong hop cau truc ky han he thong")
+
         sum_ta += m["total_assets"]
         if ir_ratio_valid:
             sum_ir_net += m["cum_gap_1y"]
@@ -697,21 +754,43 @@ def _aggregate_for_period(period_key):
         sum_nii += m["nii"] or 0.0
         if liq_ratio_valid:
             sum_liq_1m += m["cum_gap_1m"]
+        if structural_funding_valid:
+            if m.get("liq_cum_gap_1m_conservative") is not None:
+                sum_cons_gap_1m += m["liq_cum_gap_1m_conservative"]
+            if m.get("liq_cum_gap_3m_conservative") is not None:
+                sum_cons_gap_3m += m["liq_cum_gap_3m_conservative"]
+            if m.get("liq_cum_gap_1y_conservative") is not None:
+                sum_cons_gap_12m += m["liq_cum_gap_1y_conservative"]
+            if m.get("liab_due_1m") is not None:
+                sum_liab_due_1m += m["liab_due_1m"]
+            if m.get("liab_due_3m") is not None:
+                sum_liab_due_3m += m["liab_due_3m"]
+            if m.get("liab_due_12m") is not None:
+                sum_liab_due_12m += m["liab_due_12m"]
+            if m.get("long_term_assets") is not None:
+                sum_long_term_assets += m["long_term_assets"]
+            if m.get("stable_funding") is not None:
+                sum_stable_funding += m["stable_funding"]
         sum_liquid_assets += m["liquid_assets"]
         sum_cust_dep += m["customer_deposits"]
 
         bank_ir_ratio = m["cum_gap_1y_ratio"] if ir_ratio_valid else None
         bank_cov10 = m["deposit_run_coverage_10pct"]
+        bank_rollover_12m = m.get("rollover_dependency_12m") if structural_funding_valid else None
         if bank_ir_ratio is not None and (worst_ir is None or abs(bank_ir_ratio) > abs(worst_ir[1])):
             worst_ir = (ticker, bank_ir_ratio)
         if bank_cov10 is not None and (worst_liq is None or bank_cov10 < worst_liq[1]):
             worst_liq = (ticker, bank_cov10)
+        if bank_rollover_12m is not None and (worst_rollover is None or bank_rollover_12m > worst_rollover[1]):
+            worst_rollover = (ticker, bank_rollover_12m)
 
         by_bank[ticker] = {
             "status": status,
             "period_used": actual_pk if status == "reported" else entry.get("patched_from"),
             "cum_gap_1y_ratio": bank_ir_ratio,
             "deposit_run_coverage_10pct": bank_cov10,
+            "rollover_dependency_12m": bank_rollover_12m,
+            "long_term_funding_coverage": m.get("long_term_funding_coverage") if structural_funding_valid else None,
         }
         if not ir_ratio_valid:
             by_bank[ticker]["ir_data_quality_note"] = "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
@@ -735,6 +814,15 @@ def _aggregate_for_period(period_key):
 
     assets_coverage_pct = (sum_ta / all_ta_known * 100) if all_ta_known else None
 
+    # ── Rollover Dependency + Long-term Funding Coverage HE THONG (xem "Danh gia rui ro thanh khoan
+    # cau truc he thong.docx", user 2026-09-21) - cong TU/MAU rieng qua tung ngan hang (da lam o
+    # vong lap tren) roi moi chia, GIONG nguyen tac cac ty le khac trong ham nay (KHONG lay trung
+    # binh % tung ngan hang, tranh 1 ngan hang nho lam sai lech nhu ca ngan hang lon).
+    rollover_dep_1m_sys = (abs(sum_cons_gap_1m) / sum_liab_due_1m) if sum_liab_due_1m else None
+    rollover_dep_3m_sys = (abs(sum_cons_gap_3m) / sum_liab_due_3m) if sum_liab_due_3m else None
+    rollover_dep_12m_sys = (abs(sum_cons_gap_12m) / sum_liab_due_12m) if sum_liab_due_12m else None
+    long_term_funding_coverage_sys = (sum_stable_funding / sum_long_term_assets) if sum_long_term_assets else None
+
     return {
         "period": period_key,
         "n_banks_total": len(BANKING_TICKERS),
@@ -751,6 +839,19 @@ def _aggregate_for_period(period_key):
             "net_gap_1m_ratio": liq_net_ratio, "liquid_assets_ratio": liquid_assets_ratio,
             "deposit_run_coverage": deposit_coverage,
             "weakest_bank": {"ticker": worst_liq[0], "coverage": worst_liq[1]} if worst_liq else None,
+        },
+        # ── Cau truc ky han nguon von he thong (xem "Danh gia rui ro thanh khoan cau truc he
+        # thong.docx") - tra loi cau hoi "he thong dang can bao nhieu % nghia vu den han phai
+        # rollover" (ap luc canh tranh huy dong/day lai suat ky han dai len) VA "tai san dai han da
+        # duoc nguon von on dinh tai tro bao nhieu %".
+        "structural_funding": {
+            "rollover_dependency_1m": rollover_dep_1m_sys, "rollover_dependency_3m": rollover_dep_3m_sys,
+            "rollover_dependency_12m": rollover_dep_12m_sys,
+            "long_term_funding_coverage": long_term_funding_coverage_sys,
+            "long_term_structural_gap": (1 - long_term_funding_coverage_sys)
+                                         if long_term_funding_coverage_sys is not None else None,
+            "most_dependent_bank": {"ticker": worst_rollover[0], "rollover_dependency_12m": worst_rollover[1]}
+                                    if worst_rollover else None,
         },
         "by_bank": by_bank,
     }
@@ -796,14 +897,70 @@ def _classify_resilience_coverage(coverage):
     return "CẦN LƯU Ý"
 
 
-def build_system_risk_summary_text(agg):
+def classify_structural_funding_phase(history):
+    """Đọc "pha" áp lực cấu trúc kỳ hạn nguồn vốn theo "Danh gia rui ro thanh khoan cau truc he
+    thong.docx" (user 2026-09-21) — KHÔNG nhìn mức tuyệt đối 1 kỳ (1 kỳ chỉ cho biết trạng thái TẠI
+    thời điểm đó, không cho biết HƯỚNG ĐI, xem mục XII file hướng dẫn), mà nhìn HƯỚNG THAY ĐỔI của 2
+    biến rollover_dependency_12m và long_term_funding_coverage qua các kỳ liên tiếp gần nhất — ý
+    tưởng cốt lõi: ngân hàng/hệ thống đang thiếu nguồn vốn dài hạn → phải cạnh tranh kéo dài kỳ hạn
+    tiền gửi → áp lực đẩy lãi suất huy động kỳ hạn dài tăng; ngược lại khi mismatch thu hẹp thì áp
+    lực đó giảm (mục XI, XVII).
+
+    `history`: list [{"period", "rollover_dependency_12m", "long_term_funding_coverage"}, ...] ĐÃ
+    SẮP XẾP tăng dần theo thời gian (period cũ nhất trước) — dùng TỐI ĐA 3 điểm CUỐI (mục XII file
+    hướng dẫn: "ông phải lấy ít nhất Q4/2025 -> Q1/2026 -> Q2/2026"). Trả về None nếu < 2 điểm hợp lệ
+    (chưa đủ để biết hướng đi)."""
+    pts = [h for h in history if h.get("rollover_dependency_12m") is not None
+           and h.get("long_term_funding_coverage") is not None][-3:]
+    if len(pts) < 2:
+        return None
+    roll_seq = [p["rollover_dependency_12m"] for p in pts]
+    ltfc_seq = [p["long_term_funding_coverage"] for p in pts]
+    roll_delta = roll_seq[-1] - roll_seq[0]
+    ltfc_delta = ltfc_seq[-1] - ltfc_seq[0]
+    # Xu huong tung buoc gan nhat (kỳ cuối so kỳ ngay truoc) — dung phan biet Pha 2 (dinh, moi bat
+    # dau dao chieu) voi Pha 1 (van con xau di) khi so 3 diem chi cho xu huong tong the.
+    roll_last_step = roll_seq[-1] - roll_seq[-2]
+
+    if roll_delta > 0.02 and ltfc_delta < -0.02:
+        phase, label = "deterioration", "Pha 1 — Áp lực cấu trúc ĐANG TĂNG"
+        narrative = (f"Rollover dependency 12M tăng từ {roll_seq[0]*100:.1f}% lên {roll_seq[-1]*100:.1f}%, "
+                     f"Long-term Funding Coverage giảm từ {ltfc_seq[0]*100:.1f}% xuống {ltfc_seq[-1]*100:.1f}% "
+                     f"— hệ thống ngày càng cần rollover/huy động thêm nguồn vốn dài hạn, áp lực cạnh tranh "
+                     f"lãi suất huy động kỳ hạn dài có xu hướng TĂNG.")
+    elif roll_delta > 0 and roll_last_step < 0:
+        phase, label = "peak", "Pha 2 — Có dấu hiệu ĐÃ QUA ĐỈNH căng thẳng"
+        narrative = (f"Rollover dependency 12M vẫn ở mức {roll_seq[-1]*100:.1f}% (cao hơn {roll_seq[0]*100:.1f}% "
+                     f"của kỳ đầu chuỗi) nhưng đã GIẢM so với kỳ ngay trước — dấu hiệu SỚM cho thấy hệ thống "
+                     f"đang đi qua đỉnh căng thẳng cấu trúc và bắt đầu tái cân bằng. Chưa thể khẳng định lãi "
+                     f"suất huy động kỳ hạn dài sẽ giảm ngay, nhưng động lượng tăng thêm đã chững lại.")
+    elif roll_delta < -0.02 and ltfc_delta > -0.02:
+        phase, label = "normalization", "Pha 3 — Áp lực cấu trúc ĐANG GIẢM (chuẩn hóa)"
+        narrative = (f"Rollover dependency 12M giảm từ {roll_seq[0]*100:.1f}% xuống {roll_seq[-1]*100:.1f}%, "
+                     f"Long-term Funding Coverage {'tăng' if ltfc_delta >= 0 else 'ổn định'} — hệ thống không "
+                     f"còn cần rollover ngắn hạn nhiều như trước, có điều kiện để giảm mức độ cạnh tranh huy "
+                     f"động kỳ hạn dài. Đây là tín hiệu có thể dùng để nhận diện đỉnh lãi suất huy động đã đi qua.")
+    else:
+        phase, label = "mixed", "Chưa rõ xu hướng (tín hiệu hỗn hợp)"
+        narrative = (f"Rollover dependency 12M: {roll_seq[0]*100:.1f}% → {roll_seq[-1]*100:.1f}%; "
+                     f"Long-term Funding Coverage: {ltfc_seq[0]*100:.1f}% → {ltfc_seq[-1]*100:.1f}% — chưa đủ "
+                     f"rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.")
+    return {"phase": phase, "phaseLabel": label, "narrative": narrative,
+            "periodsUsed": [p["period"] for p in pts]}
+
+
+def build_system_risk_summary_text(agg, phase_info=None):
     """Bản tóm tắt 2-3 câu cho 1 kỳ đã tổng hợp (agg = kết quả _aggregate_for_period) — cùng văn
     phong build_risk_summary() của bank_risk_notes.py (đánh giá theo KẾT QUẢ STRESS TEST thực tế,
     không chỉ nhìn gap ròng thô), dùng cho cả mục riêng "Rủi ro hệ thống ngân hàng" lẫn câu tóm tắt
-    lồng trong watch_points của phần tổng hợp vĩ mô."""
+    lồng trong watch_points của phần tổng hợp vĩ mô.
+
+    `phase_info`: dict trả về từ classify_structural_funding_phase() (có thể None nếu chưa đủ ≥2 kỳ
+    lịch sử) — thêm 1 câu về PHA áp lực cấu trúc kỳ hạn nguồn vốn/lãi suất huy động nếu có."""
     if not agg:
         return None
     ir, liq = agg["interest_rate_risk"], agg["liquidity_risk"]
+    sf = agg.get("structural_funding") or {}
     parts = []
     if ir.get("net_gap_ratio") is not None:
         worst_ratio = ir["stress_nii_ratio"].get("+200bp")
@@ -827,6 +984,18 @@ def build_system_risk_summary_text(agg):
             f"Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = {liq['liquid_assets_ratio']*100:.1f}%, "
             f"khả năng chống chịu {resil}{extra}.{wb_s}"
         )
+    if sf.get("rollover_dependency_12m") is not None:
+        mdb = sf.get("most_dependent_bank")
+        mdb_s = (f" NH phụ thuộc rollover nhiều nhất: {mdb['ticker']} "
+                 f"({mdb['rollover_dependency_12m']*100:.0f}%).") if mdb else ""
+        parts.append(
+            f"Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = {sf['rollover_dependency_12m']*100:.1f}% "
+            f"(tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy "
+            f"động mới/rollover), Long-term Funding Coverage = {sf['long_term_funding_coverage']*100:.1f}%."
+            f"{mdb_s}"
+        )
+    if phase_info:
+        parts.append(f"{phase_info['phaseLabel']}: {phase_info['narrative']}")
     coverage_bits = [f"{agg['n_banks_reported']}/{agg['n_banks_total']} ngân hàng đã công bố kỳ {agg['period']}"]
     if agg["n_banks_patched"]:
         coverage_bits.append(f"{agg['n_banks_patched']} đang dùng số liệu kỳ trước (chưa công bố)")
@@ -838,15 +1007,23 @@ def build_system_risk_summary_text(agg):
     return " ".join(parts)
 
 
-def build_banking_system_risk_section(agg):
+def build_banking_system_risk_section(agg, history=None):
     """Xây dict cho field JSON top-level "bankingSystemRisk" (mục RIÊNG trong data/vimo.json) từ 1
-    kỳ đã tổng hợp. Trả về None nếu agg rỗng/không có ngân hàng nào có dữ liệu."""
+    kỳ đã tổng hợp. Trả về None nếu agg rỗng/không có ngân hàng nào có dữ liệu.
+
+    `history`: list các agg CŨ HƠN (kể cả agg hiện tại ở cuối, xem classify_structural_funding_phase)
+    — tuỳ chọn, dùng để tính PHA áp lực cấu trúc kỳ hạn nguồn vốn/lãi suất huy động (xem "Danh gia
+    rui ro thanh khoan cau truc he thong.docx", user 2026-09-21)."""
     if not agg or (agg["n_banks_reported"] + agg["n_banks_patched"]) == 0:
         return None
-    ir, liq = agg["interest_rate_risk"], agg["liquidity_risk"]
+    ir, liq, sf = agg["interest_rate_risk"], agg["liquidity_risk"], agg.get("structural_funding") or {}
+    phase_info = None
+    if history:
+        hist_points = [{"period": h["period"], **(h.get("structural_funding") or {})} for h in history]
+        phase_info = classify_structural_funding_phase(hist_points)
     return {
         "asOf": agg["period"],
-        "summaryText": build_system_risk_summary_text(agg),
+        "summaryText": build_system_risk_summary_text(agg, phase_info=phase_info),
         "interestRateRisk": {
             "netGapRatio": ir["net_gap_ratio"], "dispersionGapRatio": ir["dispersion_gap_ratio"],
             "stressNiiByShock": ir["stress_nii"], "stressNiiRatioByShock": ir["stress_nii_ratio"],
@@ -855,6 +1032,15 @@ def build_banking_system_risk_section(agg):
         "liquidityRisk": {
             "netGapRatio": liq["net_gap_1m_ratio"], "liquidAssetsRatio": liq["liquid_assets_ratio"],
             "depositRunCoverageByStress": liq["deposit_run_coverage"], "weakestBank": liq["weakest_bank"],
+        },
+        "structuralFunding": {
+            "rolloverDependency1m": sf.get("rollover_dependency_1m"),
+            "rolloverDependency3m": sf.get("rollover_dependency_3m"),
+            "rolloverDependency12m": sf.get("rollover_dependency_12m"),
+            "longTermFundingCoverage": sf.get("long_term_funding_coverage"),
+            "longTermStructuralGap": sf.get("long_term_structural_gap"),
+            "mostDependentBank": sf.get("most_dependent_bank"),
+            "phase": phase_info,
         },
         "coverage": {
             "nBanksTotal": agg["n_banks_total"], "nBanksReported": agg["n_banks_reported"],
@@ -886,6 +1072,10 @@ _ALM_SHEET_HEADERS = [
     "Gap thanh khoan/TTS <=1nam THAN TRONG (%)",
     "Short-term Funding (ty)", "Long-term Assets (ty)", "ST Funding/LT Assets (%)",
     "NSFR proxy (%)", "LMI (%)",
+    # -- Cau truc ky han nguon von (Rollover Dependency, xem "Danh gia rui ro thanh khoan cau truc
+    # he thong.docx") - NSFR proxy o tren da chinh la Long-term Funding Coverage cua file huong dan,
+    # KHONG them cot trung lap, chi them 3 cot Rollover Dependency thuc su MOI.
+    "Rollover Dependency 1thang (%)", "Rollover Dependency 3thang (%)", "Rollover Dependency 12thang (%)",
     "A/L <=1thang (%)", "A/L 1-3thang (%)", "A/L 3-12thang (%)",
     "Buffer thanh khoan/No <=1thang (lan)", "Tai san gan tien (Tien mat+NHNN)/No <=1thang (lan)",
     "Tien gui KH <=1thang/Tong tien gui (%)", "Tien gui KH <=1nam/Tong tien gui (%)",
@@ -969,6 +1159,7 @@ def update_bank_alm_excel_sheet(out_dir):
                 _pct("liq_cum_gap_1y_ratio"), _pct("liq_cum_gap_1y_conservative_ratio"),
                 _rnd("short_term_funding"), _rnd("long_term_assets"),
                 _pct("st_funding_lt_assets_ratio"), _pct("nsfr_proxy"), _pct("lmi"),
+                _pct("rollover_dependency_1m"), _pct("rollover_dependency_3m"), _pct("rollover_dependency_12m"),
                 _pct("liq_al_ratio_1m"), _pct("liq_al_ratio_3m"), _pct("liq_al_ratio_12m"),
                 _rnd("liquidity_buffer_coverage_1m"), _rnd("near_cash_coverage_1m_precise"),
                 _pct("customer_deposits_pct_1m"), _pct("customer_deposits_pct_1y"),

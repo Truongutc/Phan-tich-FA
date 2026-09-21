@@ -1900,25 +1900,42 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
             ["Che phủ nếu rút -10% tiền gửi", f"{liq['depositRunCoverageByStress'].get('-10%')*100:.0f}%" if liq.get('depositRunCoverageByStress', {}).get('-10%') is not None else "N/A"],
             ["Ngân hàng thanh khoản yếu nhất", f"{liq['weakestBank']['ticker']} (che phủ {liq['weakestBank']['coverage']*100:.0f}%)" if liq.get('weakestBank') else "N/A"],
         ]
+        # ── Cau truc ky han nguon von he thong (xem "Danh gia rui ro thanh khoan cau truc he
+        # thong.docx", user 2026-09-21) — them vao CUNG bang tren, khong tach bang rieng.
+        sf = banking_system_risk.get("structuralFunding") or {}
+        if sf.get("rolloverDependency12m") is not None:
+            mdb = sf.get("mostDependentBank")
+            alm_rows += [
+                ["Rollover Dependency 12 tháng", f"{sf['rolloverDependency12m']*100:.1f}%"],
+                ["Long-term Funding Coverage", f"{sf['longTermFundingCoverage']*100:.1f}%"
+                    if sf.get('longTermFundingCoverage') is not None else "N/A"],
+                ["NH phụ thuộc rollover nhiều nhất",
+                 f"{mdb['ticker']} ({mdb['rollover_dependency_12m']*100:.0f}%)" if mdb else "N/A"],
+            ]
         t_alm = Table(alm_rows, colWidths=[75 * mm, 96 * mm])
         t_alm.setStyle(tbl_style())
         story.append(Spacer(1, 4))
         story.append(t_alm)
         if cov.get("missingTickers"):
             story.append(Paragraph(f"<i>Chưa có dữ liệu: {', '.join(cov['missingTickers'])}</i>", italic_st))
-        # Chart hóa 2 chỉ số rủi ro hệ thống THEO QUÝ (user 2026-09-19) — dùng LẠI đúng 2 chart đã
-        # dựng sẵn bởi build_charts_vimo() cho 2 indicator "bank_alm_system_ir_risk_ratio"/
-        # "bank_alm_system_liquidity_risk_ratio" (xem _add_bank_alm_derived_indicators trong file
-        # này) — đặt NGAY TẠI ĐÂY (mục 1.5, trong "Bức tranh Tổng thể") để đọc liền với bảng số ở
-        # trên, KHÔNG chỉ xuất hiện rời rạc ở mục 3 (nhóm chỉ báo "bank_alm") như trước.
-        if "bank_alm_system_ir_risk_ratio" in charts:
-            story.append(Spacer(1, 6))
-            story.append(Paragraph("Rủi ro lãi suất hệ thống theo quý (ΔNII/NII khi lãi suất +100bp):", small_st))
-            story.append(Image(charts["bank_alm_system_ir_risk_ratio"], width=140 * mm, height=63 * mm))
-        if "bank_alm_system_liquidity_risk_ratio" in charts:
-            story.append(Spacer(1, 6))
-            story.append(Paragraph("Rủi ro thanh khoản hệ thống theo quý (che phủ nếu rút -10% tiền gửi):", small_st))
-            story.append(Image(charts["bank_alm_system_liquidity_risk_ratio"], width=140 * mm, height=63 * mm))
+        if sf.get("phase"):
+            story.append(Spacer(1, 4))
+            story.append(Paragraph(f"<b>{sf['phase']['phaseLabel']}</b> (dựa trên {', '.join(sf['phase']['periodsUsed'])})", small_st))
+        # Chart hóa cac chi so rui ro he thong THEO QUY (user 2026-09-19/21) — dung LAI dung cac
+        # chart da dung san boi build_charts_vimo() cho cac indicator "bank_alm_system_*" (xem
+        # _add_bank_alm_derived_indicators trong file nay) — dat NGAY TAI DAY (muc 1.5, trong "Buc
+        # tranh Tong the") de doc lien voi bang so o tren, KHONG chi xuat hien roi rac o muc 3 (nhom
+        # chi bao "bank_alm") nhu truoc.
+        for chart_key, caption in (
+            ("bank_alm_system_ir_risk_ratio", "Rủi ro lãi suất hệ thống theo quý (ΔNII/NII khi lãi suất +100bp):"),
+            ("bank_alm_system_liquidity_risk_ratio", "Rủi ro thanh khoản hệ thống theo quý (che phủ nếu rút -10% tiền gửi):"),
+            ("bank_alm_system_rollover_dependency_12m", "Rollover Dependency 12 tháng hệ thống theo quý (áp lực cấu trúc kỳ hạn nguồn vốn):"),
+            ("bank_alm_system_long_term_funding_coverage", "Long-term Funding Coverage hệ thống theo quý:"),
+        ):
+            if chart_key in charts:
+                story.append(Spacer(1, 6))
+                story.append(Paragraph(caption, small_st))
+                story.append(Image(charts[chart_key], width=140 * mm, height=63 * mm))
     story.append(Spacer(1, 10))
 
     # ── Scorecard chi tiết ──
@@ -2417,6 +2434,7 @@ def _add_bank_alm_derived_indicators(raw, trends):
 
     all_agg = recompute_system_aggregate_all_periods()
     ir_points, liq_points = [], []
+    rollover_1m_points, rollover_12m_points, ltfc_points = [], [], []
     for period_key, agg in all_agg.items():
         if (agg["n_banks_reported"] + agg["n_banks_patched"]) == 0:
             continue
@@ -2426,6 +2444,13 @@ def _add_bank_alm_derived_indicators(raw, trends):
         cov10 = agg["liquidity_risk"]["deposit_run_coverage"].get("-10%")
         if cov10 is not None:
             liq_points.append({"period": period_key, "value": round(cov10 * 100, 1), "source_url": None})
+        sf = agg.get("structural_funding") or {}
+        if sf.get("rollover_dependency_1m") is not None:
+            rollover_1m_points.append({"period": period_key, "value": round(sf["rollover_dependency_1m"] * 100, 2), "source_url": None})
+        if sf.get("rollover_dependency_12m") is not None:
+            rollover_12m_points.append({"period": period_key, "value": round(sf["rollover_dependency_12m"] * 100, 2), "source_url": None})
+        if sf.get("long_term_funding_coverage") is not None:
+            ltfc_points.append({"period": period_key, "value": round(sf["long_term_funding_coverage"] * 100, 2), "source_url": None})
 
     if ir_points:
         raw["bank_alm_system_ir_risk_ratio"] = {
@@ -2457,12 +2482,57 @@ def _add_bank_alm_derived_indicators(raw, trends):
         trends["bank_alm_system_liquidity_risk_ratio"] = calc_trend(liq_points, "higher")
         print(f"  -> Rui ro thanh khoan he thong NH: {len(liq_points)} diem")
 
+    # ── Cau truc ky han nguon von he thong (xem "Danh gia rui ro thanh khoan cau truc he thong.docx",
+    # user 2026-09-21) — 2 chi bao THEO QUY THAT, dung chung co che chart hoa/trend nhu 2 chi bao
+    # rui ro lai suat/thanh khoan o tren (khong can code rieng).
+    if rollover_12m_points:
+        raw["bank_alm_system_rollover_dependency_12m"] = {
+            "group": "bank_alm", "auto_source": "derived",
+            "label": "Rollover Dependency 12 tháng hệ thống NH niêm yết", "unit": "%",
+            "good_direction": "lower",
+            "series": rollover_12m_points,
+            "note": ("Tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc "
+                     "phải huy động mới/rollover/vay liên ngân hàng — tổng hợp có trọng số theo quy mô "
+                     "(Σ Forward Cumulative Gap / Σ Nợ đến hạn cùng kỳ, KHÔNG phải trung bình cộng % "
+                     "từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py."),
+            "impact": ("Tỷ lệ càng cao, hệ thống càng phải cạnh tranh huy động/rollover nguồn vốn ngắn "
+                       "hạn — 1 trong những cơ chế trực tiếp đẩy lãi suất huy động kỳ hạn dài lên."),
+        }
+        trends["bank_alm_system_rollover_dependency_12m"] = calc_trend(rollover_12m_points, "lower")
+        print(f"  -> Rollover Dependency 12m he thong NH: {len(rollover_12m_points)} diem")
+    if rollover_1m_points:
+        raw["bank_alm_system_rollover_dependency_1m"] = {
+            "group": "bank_alm", "auto_source": "derived",
+            "label": "Rollover Dependency 1 tháng hệ thống NH niêm yết", "unit": "%",
+            "good_direction": "lower",
+            "series": rollover_1m_points,
+            "note": "Cùng công thức Rollover Dependency 12 tháng ở trên, tính riêng cho horizon ≤1 tháng.",
+            "impact": "Horizon ngắn nhất — phản ánh áp lực rollover/huy động TỨC THỜI của hệ thống.",
+        }
+        trends["bank_alm_system_rollover_dependency_1m"] = calc_trend(rollover_1m_points, "lower")
+        print(f"  -> Rollover Dependency 1m he thong NH: {len(rollover_1m_points)} diem")
+    if ltfc_points:
+        raw["bank_alm_system_long_term_funding_coverage"] = {
+            "group": "bank_alm", "auto_source": "derived",
+            "label": "Long-term Funding Coverage hệ thống NH niêm yết", "unit": "%",
+            "good_direction": "higher",
+            "series": ltfc_points,
+            "note": ("(Nợ >1 năm + Vốn chủ sở hữu) / Tài sản >1 năm — tổng hợp có trọng số theo quy mô "
+                     "từ 26 ngân hàng niêm yết/UPCoM. KHÔNG phải NSFR chính thức Basel (không phân loại "
+                     "trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng."),
+            "impact": ("Tỷ lệ càng thấp (xa 100%), tài sản dài hạn càng phụ thuộc vào nguồn vốn ngắn "
+                       "hạn phải liên tục rollover — cùng cơ chế đẩy lãi suất huy động kỳ hạn dài lên."),
+        }
+        trends["bank_alm_system_long_term_funding_coverage"] = calc_trend(ltfc_points, "higher")
+        print(f"  -> Long-term Funding Coverage he thong NH: {len(ltfc_points)} diem")
+
     if not all_agg:
         return None
     # recompute_system_aggregate_all_periods() trả về dict ĐÃ SẮP XẾP theo kỳ tăng dần (dict Python
     # giữ nguyên thứ tự chèn) — lấy key CUỐI CÙNG là kỳ mới nhất, không cần sắp xếp lại.
+    all_agg_list = list(all_agg.values())
     latest_period = list(all_agg.keys())[-1]
-    return build_banking_system_risk_section(all_agg[latest_period])
+    return build_banking_system_risk_section(all_agg[latest_period], history=all_agg_list)
 
 
 def _yoy_from_level_series(level_by_period, source_url):

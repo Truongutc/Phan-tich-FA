@@ -149,6 +149,17 @@ function renderBankingSystemRiskSection(risk, indicators) {
             ? `${((liq.depositRunCoverageByStress['-10%']) * 100).toFixed(0)}%` : 'N/A'],
         ['NH thanh khoản yếu nhất', liq.weakestBank ? `${liq.weakestBank.ticker} (che phủ ${(liq.weakestBank.coverage * 100).toFixed(0)}%)` : 'N/A'],
     ];
+    // Cau truc ky han nguon von he thong (xem "Danh gia rui ro thanh khoan cau truc he thong.docx",
+    // user 2026-09-21) - them vao CUNG danh sach stats tren, khong tach khoi rieng.
+    const sf = risk.structuralFunding || {};
+    if (sf.rolloverDependency12m != null) {
+        stats.push(
+            ['Rollover Dependency 12 tháng', pct(sf.rolloverDependency12m, 1)],
+            ['Long-term Funding Coverage', pct(sf.longTermFundingCoverage, 1)],
+            ['NH phụ thuộc rollover nhiều nhất', sf.mostDependentBank
+                ? `${sf.mostDependentBank.ticker} (${(sf.mostDependentBank.rollover_dependency_12m * 100).toFixed(0)}%)` : 'N/A'],
+        );
+    }
     const statsGrid = document.getElementById('banking-risk-stats-grid');
     if (statsGrid) {
         statsGrid.innerHTML = stats.map(([lbl, val]) => `
@@ -160,11 +171,17 @@ function renderBankingSystemRiskSection(risk, indicators) {
     }
     set('synthesis-banking-risk-missing', cov.missingTickers && cov.missingTickers.length
         ? `Chưa có dữ liệu: ${cov.missingTickers.join(', ')}` : '');
+    const phaseEl = document.getElementById('synthesis-banking-risk-phase');
+    if (phaseEl) {
+        phaseEl.textContent = sf.phase
+            ? `${sf.phase.phaseLabel} (dựa trên ${sf.phase.periodsUsed.join(', ')})` : '';
+    }
 
     const chartsGrid = document.getElementById('banking-risk-charts-grid');
     if (chartsGrid) {
         chartsGrid.innerHTML = '';
-        ['bank_alm_system_ir_risk_ratio', 'bank_alm_system_liquidity_risk_ratio'].forEach((key) => {
+        ['bank_alm_system_ir_risk_ratio', 'bank_alm_system_liquidity_risk_ratio',
+         'bank_alm_system_rollover_dependency_12m', 'bank_alm_system_long_term_funding_coverage'].forEach((key) => {
             const ind = indicators && indicators[key];
             if (ind) _renderGenericIndicatorCard(chartsGrid, key, ind);
         });
