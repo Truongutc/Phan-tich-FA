@@ -197,12 +197,17 @@
       },
       "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2026",
         "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-04-22/no-name-1776797412.pdf",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-17T19:14:13+07:00"
+      "fetched_at": "2026-09-21T14:16:08+07:00"
     },
     "2026-Q2": {
       "status": "reported",
