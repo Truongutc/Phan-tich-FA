@@ -263,13 +263,19 @@
       },
       "liquidity_gap": null,
       "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": null,
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/SSB_202608142020SSB2020Bao20cao20tai20chinh20hop20nhat20soat20xet20ban20nien20202620va20Giai20trinh20bien20dong20LNST_signed_20082026090228.pdf?v=1787191350112",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T10:03:22+07:00"
+      "fetched_at": "2026-09-21T10:59:04+07:00"
     },
     "2024-Q1": {
       "status": "reported",

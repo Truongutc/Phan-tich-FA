@@ -175,15 +175,24 @@
     "2026-Q2": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 5408.0,
+        "khong_anh_huong_lai_suat": 1996935.0,
+        "den_1_thang": -1736260.0,
+        "tu_1_3_thang": -210984.0,
+        "tu_3_6_thang": 13.0,
+        "tu_6_12_thang": 2010235.0,
+        "tu_1_5_nam": -1747394.0,
+        "tren_5_nam": -216697.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 780710.0,
-        "qua_han_den_3t": -65902.0,
-        "den_1_thang": -3997902.0,
-        "tu_1_3_thang": 3862358.0,
-        "tu_3_12_thang": 5831668.0,
-        "tu_1_5_nam": 31436789.0,
-        "tren_5_nam": 4582059.0
+        "qua_han_den_3t": 5830018.0,
+        "den_1_thang": -65902.0,
+        "tu_1_3_thang": -3997902.0,
+        "tu_3_12_thang": 13412683.0,
+        "tu_1_5_nam": 3862358.0,
+        "tren_5_nam": 1023263.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 780710.0,
@@ -194,13 +203,28 @@
         "tu_1_5_nam": 5764116.0,
         "tren_5_nam": 0.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 1242.0,
+        "khong_anh_huong_lai_suat": 6650.0,
+        "den_1_thang": 2003585.0,
+        "tu_1_3_thang": 217786.0,
+        "tu_3_6_thang": 4471.0,
+        "tu_6_12_thang": 4484.0,
+        "tu_1_5_nam": 2014719.0,
+        "tren_5_nam": 223499.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/SGB_000000016770459_VI__Bao_Cao_Tai_Chinh_Hop_Nhat_Ban_Nien_Nam_2026_daky_20082026151909.pdf?v=1787213952177",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T10:00:42+07:00"
+      "fetched_at": "2026-09-21T10:57:09+07:00"
     },
     "2024-Q1": {
       "status": "missing",

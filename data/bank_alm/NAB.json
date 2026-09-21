@@ -209,15 +209,46 @@
         "tu_1_5_nam": 425624771.0,
         "tren_5_nam": 28236635.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": -388840.0,
+        "den_1_thang": 1030429.0,
+        "tu_1_3_thang": 10772532.0,
+        "tu_3_12_thang": 2057522.0,
+        "tu_1_5_nam": -23497710.0,
+        "tren_5_nam": 18869479.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 3503411.0,
+        "den_1_thang": 146090.0,
+        "tu_1_3_thang": 2436340.0,
+        "tu_3_12_thang": 1405971.0,
+        "tu_1_5_nam": 23840970.0,
+        "tren_5_nam": 2437236.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 7384969.0,
+        "den_1_thang": 194070044.0,
+        "tu_1_3_thang": 4404706.0,
+        "tu_3_6_thang": 37616512.0,
+        "tu_6_12_thang": -29430868.0,
+        "tu_1_5_nam": 19860061.0,
+        "tren_5_nam": 42039517.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/NAB_202608082020NAB2020BAN20NIEN20SOAT20XET202026_20HN_12082026154236.pdf?v=1786524157864",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T09:53:27+07:00"
+      "fetched_at": "2026-09-21T10:54:49+07:00"
     },
     "2024-Q1": {
       "status": "reported",

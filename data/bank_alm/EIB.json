@@ -213,7 +213,16 @@
     "2026-Q2": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 6267328.0,
+        "khong_anh_huong_lai_suat": 473505.0,
+        "den_1_thang": 3060705.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": -238880597.0,
+        "tren_5_nam": -28233957.0
+      },
       "liquidity_gap": {
         "qua_han_tren_3t": 6267328.0,
         "qua_han_den_3t": 0.0,
@@ -232,13 +241,28 @@
         "tu_1_5_nam": 0.0,
         "tren_5_nam": 239580135.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_6_thang": 0.0,
+        "tu_6_12_thang": 0.0,
+        "tu_1_5_nam": 239580135.0,
+        "tren_5_nam": 29054385.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/EIB_202608142020EIB2020BCTC20hop20nhat20ban20nien20202620da20soat20xet_20082026091803.pdf?v=1787192285257",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T09:42:10+07:00"
+      "fetched_at": "2026-09-21T10:48:28+07:00"
     },
     "2024-Q1": {
       "status": "reported",

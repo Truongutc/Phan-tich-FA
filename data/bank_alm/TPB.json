@@ -288,15 +288,70 @@
         "tu_1_5_nam": 34263955.0,
         "tren_5_nam": 4306.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1461698.0,
+        "qua_han_den_3t": -189318520.0,
+        "den_1_thang": 68653785.0,
+        "tu_1_3_thang": -154127369.0,
+        "tu_3_12_thang": -84012876.0,
+        "tu_1_5_nam": 119682704.0,
+        "tren_5_nam": 121110930.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 190875084.0,
+        "den_1_thang": 58604581.0,
+        "tu_1_3_thang": 154174903.0,
+        "tu_3_12_thang": 84057292.0,
+        "tu_1_5_nam": 10386659.0,
+        "tren_5_nam": 1461698.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_6_thang": 83999005.0,
+        "tu_6_12_thang": 4110.0,
+        "tu_1_5_nam": 771071.0,
+        "tren_5_nam": 0.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 1771148.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 13444607.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 13444607.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 82036992.0,
+        "tu_1_5_nam": 4067999.0,
+        "tren_5_nam": 11654101.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 87103609.0,
+        "qua_han_den_3t": 34034.0,
+        "den_1_thang": 97597576.0,
+        "tu_1_3_thang": 69742150.0,
+        "tu_3_12_thang": 1251.0,
+        "tu_1_5_nam": 17990.0,
+        "tren_5_nam": 129275.0
+      },
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/TPB_202608182020TPB2020Bao20cao20tai20chinh20hop20nhat20soat20xet20ban20nien20202620kem20giai20trinh20chenh20lech20LNST_signed_19082026095348.pdf?v=1787108030513",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T10:14:12+07:00"
+      "fetched_at": "2026-09-21T11:01:03+07:00"
     },
     "2024-Q1": {
       "status": "reported",
