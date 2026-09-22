@@ -92,8 +92,24 @@
         "tu_1_5_nam": 42388137.0,
         "tren_5_nam": 38105828.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1254131332.0,
+        "qua_han_den_3t": 3177879.0,
+        "den_1_thang": 23945029.0,
+        "tu_1_3_thang": -11616.0,
+        "tu_3_12_thang": -20392621.0,
+        "tu_1_5_nam": 2124761.0,
+        "tren_5_nam": -625663.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 16162303.0,
+        "qua_han_den_3t": 2082161.0,
+        "den_1_thang": 2247712.0,
+        "tu_1_3_thang": 13641.0,
+        "tu_3_12_thang": 20417642.0,
+        "tu_1_5_nam": 158107.0,
+        "tren_5_nam": 627104.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 24586932.0,
         "khong_anh_huong_lai_suat": 0.0,
@@ -130,7 +146,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/MBB_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_06102025091521.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-19T06:37:24+07:00"
+      "fetched_at": "2026-09-22T07:39:04+07:00"
     },
     "2025-Q3": {
       "status": "reported",

@@ -91,8 +91,24 @@
         "tu_1_5_nam": -13481228.0,
         "tren_5_nam": 9403819.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1654473.0,
+        "qua_han_den_3t": 7260627.0,
+        "den_1_thang": 252027.0,
+        "tu_1_3_thang": 20691694.0,
+        "tu_3_12_thang": 14454149.0,
+        "tu_1_5_nam": -29611413.0,
+        "tren_5_nam": -13481228.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 2082861.0,
+        "den_1_thang": 26125789.0,
+        "tu_1_3_thang": 979187.0,
+        "tu_3_12_thang": 1796417.0,
+        "tu_1_5_nam": 64365375.0,
+        "tren_5_nam": 27576869.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
         "khong_anh_huong_lai_suat": 2082861.0,
@@ -104,9 +120,33 @@
         "tren_5_nam": 6000.0
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
-      "sbv_dep_by_bucket": null,
-      "customer_deposits_by_bucket": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 310247.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 310247.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 1015522.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 6127729.0,
+        "tu_1_3_thang": 579187.0,
+        "tu_3_12_thang": 1535517.0,
+        "tu_1_5_nam": 59365375.0,
+        "tren_5_nam": 27576869.0
+      },
       "fx_position": null,
       "fx_source": null,
       "source": {
@@ -114,7 +154,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000007054673721340387ngn-hng-tmcp-vit-24072025-000000bo-co-ti-chnh-hp-nht-qu_1_0914.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-19T06:53:27+07:00"
+      "fetched_at": "2026-09-22T07:41:35+07:00"
     },
     "2025-Q3": {
       "status": "reported",
