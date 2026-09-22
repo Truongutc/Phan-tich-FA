@@ -443,8 +443,24 @@
         "tu_1_5_nam": 8844647.0,
         "tren_5_nam": 9924137.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1330576.0,
+        "qua_han_den_3t": 8052678.0,
+        "den_1_thang": -3380704.0,
+        "tu_1_3_thang": -6362658.0,
+        "tu_3_12_thang": -25381500.0,
+        "tu_1_5_nam": 10280161.0,
+        "tren_5_nam": 16540937.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 2137003.0,
+        "qua_han_den_3t": 27073177.0,
+        "den_1_thang": 25603994.0,
+        "tu_1_3_thang": 32273093.0,
+        "tu_3_12_thang": 18271369.0,
+        "tu_1_5_nam": 1700093.0,
+        "tren_5_nam": 730000.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 2137003.0,
         "khong_anh_huong_lai_suat": 27073177.0,
@@ -456,9 +472,33 @@
         "tren_5_nam": 107788729.0
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
-      "sbv_dep_by_bucket": null,
-      "customer_deposits_by_bucket": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 321542.0,
+        "qua_han_den_3t": 321542.0,
+        "den_1_thang": 1009122.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 0.0
+      },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 1009122.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 1009192.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 15760540.0,
+        "qua_han_den_3t": 24453994.0,
+        "den_1_thang": 18271369.0,
+        "tu_1_3_thang": 1700093.0,
+        "tu_3_12_thang": 92364089.0,
+        "tu_1_5_nam": 16805.0,
+        "tren_5_nam": 0.0
+      },
       "fx_position": {
         "USD": {
           "assets": 262822.0,
@@ -495,7 +535,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000004940711462450593ngn-hng-tmcp-vit-28102024-000000bo-co-ti-chnh-qu-3-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T21:08:45+07:00"
+      "fetched_at": "2026-09-22T17:00:49+07:00"
     },
     "2024-FY": {
       "status": "reported",
