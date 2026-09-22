@@ -385,8 +385,24 @@
         "tu_1_5_nam": 54195969.0,
         "tren_5_nam": 5862939.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 477760.0,
+        "qua_han_den_3t": -63531.0,
+        "den_1_thang": 667958.0,
+        "tu_1_3_thang": 1082187.0,
+        "tu_3_12_thang": 28908422.0,
+        "tu_1_5_nam": 63531.0,
+        "tren_5_nam": -667958.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 41304070.0,
+        "qua_han_den_3t": 431881.0,
+        "den_1_thang": 325049.0,
+        "tu_1_3_thang": 42061000.0,
+        "tu_3_12_thang": 4717.0,
+        "tu_1_5_nam": -63531.0,
+        "tren_5_nam": 667958.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 5977170.0,
         "khong_anh_huong_lai_suat": 0.0,
@@ -398,9 +414,25 @@
         "tren_5_nam": -333328.0
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 346154.0,
+        "qua_han_den_3t": 57532.0,
+        "den_1_thang": 17344.0,
+        "tu_1_3_thang": 421030.0,
+        "tu_3_12_thang": 392004.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 392042.0
+      },
       "sbv_dep_by_bucket": null,
-      "customer_deposits_by_bucket": null,
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 12123064.0,
+        "qua_han_den_3t": 430838.0,
+        "den_1_thang": 317115.0,
+        "tu_1_3_thang": 12871017.0,
+        "tu_3_12_thang": 267867.0,
+        "tu_1_5_nam": 1043.0,
+        "tren_5_nam": 7934.0
+      },
       "fx_position": {
         "USD": {
           "assets": 41781830.0,
@@ -423,7 +455,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20240806__VIB__BCTC_hop_nhat_soat_xet_ban_nien_2024_06082024163739.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T19:04:54+07:00"
+      "fetched_at": "2026-09-22T17:35:05+07:00"
     },
     "2024-Q3": {
       "status": "missing",
