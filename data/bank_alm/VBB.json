@@ -424,13 +424,12 @@
         }
       },
       "fx_source": null,
-      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-vit-nam-thng-tn03052024-000000bo-co-ti-chnh-qu-1-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-19T09:50:04+07:00"
+      "fetched_at": "2026-09-22T17:49:44+07:00"
     },
     "2024-Q2": {
       "status": "reported",

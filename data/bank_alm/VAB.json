@@ -351,8 +351,24 @@
         "tu_1_5_nam": 3172686.0,
         "tren_5_nam": 7030077.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 2300398.0,
+        "den_1_thang": 16694266.0,
+        "tu_1_3_thang": -2304182.0,
+        "tu_3_12_thang": 38026138.0,
+        "tu_1_5_nam": -25845437.0,
+        "tren_5_nam": -3481258.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 1702604.0,
+        "qua_han_den_3t": 9929909.0,
+        "den_1_thang": 2300398.0,
+        "tu_1_3_thang": 24617156.0,
+        "tu_3_12_thang": 5622492.0,
+        "tu_1_5_nam": 25846640.0,
+        "tren_5_nam": 3533666.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 1702604.0,
         "khong_anh_huong_lai_suat": 9929909.0,
@@ -384,13 +400,12 @@
         }
       },
       "fx_source": null,
-      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-vit-25042024-000000bo-co-ti-chnh-qu-1-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-19T09:48:54+07:00"
+      "fetched_at": "2026-09-22T17:48:20+07:00"
     },
     "2024-Q2": {
       "status": "reported",

@@ -411,13 +411,12 @@
         }
       },
       "fx_source": null,
-      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2024",
         "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-16/no-name-1744742254.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-19T09:40:10+07:00"
+      "fetched_at": "2026-09-22T17:43:26+07:00"
     },
     "2024-Q2": {
       "status": "reported",
