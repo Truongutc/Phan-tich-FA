@@ -506,8 +506,24 @@
         "tu_1_5_nam": -10495879.0,
         "tren_5_nam": -22772153.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 5668726.0,
+        "den_1_thang": -31346379.0,
+        "tu_1_3_thang": 2036548.0,
+        "tu_3_12_thang": 50844582.0,
+        "tu_1_5_nam": -48656239.0,
+        "tren_5_nam": -10495879.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 31346379.0,
+        "tu_1_3_thang": 53734645.0,
+        "tu_3_12_thang": 57154429.0,
+        "tu_1_5_nam": 48656239.0,
+        "tren_5_nam": 75126526.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
         "khong_anh_huong_lai_suat": 0.0,
@@ -544,7 +560,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-ng-nam-20032025-000000bo-co-ti-chnh-hp-nht-nm.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T23:17:47+07:00"
+      "fetched_at": "2026-09-22T13:32:19+07:00"
     }
   },
   "quarterly_balance_sheet": {

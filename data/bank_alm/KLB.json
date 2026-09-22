@@ -593,8 +593,24 @@
         "tu_1_5_nam": 15762371.0,
         "tren_5_nam": 3641318.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2135710.0,
+        "qua_han_den_3t": -1937062.0,
+        "den_1_thang": -6928723.0,
+        "tu_1_3_thang": -9189456.0,
+        "tu_3_12_thang": -9969885.0,
+        "tu_1_5_nam": 6036113.0,
+        "tren_5_nam": 15762371.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 2883342.0,
+        "qua_han_den_3t": 30532149.0,
+        "den_1_thang": 18454014.0,
+        "tu_1_3_thang": 19324417.0,
+        "tu_3_12_thang": 11850641.0,
+        "tu_1_5_nam": 477964.0,
+        "tren_5_nam": 2048789.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 2883342.0,
         "khong_anh_huong_lai_suat": 30532149.0,
@@ -616,7 +632,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000000014710660_VI_BaoCaoTaiChinh_2024_da_kiem_toan_HOP_NHAT_03042025152657.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T22:55:39+07:00"
+      "fetched_at": "2026-09-22T13:13:05+07:00"
     }
   },
   "quarterly_balance_sheet": {
