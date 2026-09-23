@@ -1006,7 +1006,7 @@
         ],
         "coveragePctByPeriod": [
           76.78625850106424,
-          80.52568528186679,
+          81.41879660475742,
           67.12362897435709
         ]
       }
@@ -48095,7 +48095,7 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 0.794,
+          "value": 0.816,
           "source_url": null
         },
         {
@@ -48105,7 +48105,7 @@
         },
         {
           "period": "2024-Q3",
-          "value": 3.394,
+          "value": 3.349,
           "source_url": null
         },
         {
@@ -48115,7 +48115,7 @@
         },
         {
           "period": "2025-Q1",
-          "value": 0.582,
+          "value": 1.383,
           "source_url": null
         },
         {
@@ -48125,7 +48125,7 @@
         },
         {
           "period": "2025-Q3",
-          "value": 2.267,
+          "value": 3.104,
           "source_url": null
         },
         {
@@ -48135,7 +48135,7 @@
         },
         {
           "period": "2026-Q1",
-          "value": 2.361,
+          "value": 4.644,
           "source_url": null
         },
         {
@@ -48156,7 +48156,7 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 239.5,
+          "value": 235.8,
           "source_url": null
         },
         {
@@ -48166,7 +48166,7 @@
         },
         {
           "period": "2024-Q3",
-          "value": 240.3,
+          "value": 243.0,
           "source_url": null
         },
         {
@@ -48176,7 +48176,7 @@
         },
         {
           "period": "2025-Q1",
-          "value": 258.9,
+          "value": 261.1,
           "source_url": null
         },
         {
@@ -48186,7 +48186,7 @@
         },
         {
           "period": "2025-Q3",
-          "value": 299.0,
+          "value": 297.3,
           "source_url": null
         },
         {
@@ -48196,7 +48196,7 @@
         },
         {
           "period": "2026-Q1",
-          "value": 332.7,
+          "value": 331.9,
           "source_url": null
         },
         {
@@ -48217,7 +48217,7 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 22.28,
+          "value": 20.17,
           "source_url": null
         },
         {
@@ -48227,7 +48227,7 @@
         },
         {
           "period": "2024-Q3",
-          "value": 20.65,
+          "value": 18.28,
           "source_url": null
         },
         {
@@ -48237,7 +48237,7 @@
         },
         {
           "period": "2025-Q1",
-          "value": 14.04,
+          "value": 12.09,
           "source_url": null
         },
         {
@@ -48257,7 +48257,7 @@
         },
         {
           "period": "2026-Q1",
-          "value": 28.98,
+          "value": 27.48,
           "source_url": null
         },
         {
@@ -48278,7 +48278,7 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 47.83,
+          "value": 53.49,
           "source_url": null
         },
         {
@@ -48288,7 +48288,7 @@
         },
         {
           "period": "2024-Q3",
-          "value": 53.63,
+          "value": 57.98,
           "source_url": null
         },
         {
@@ -48298,7 +48298,7 @@
         },
         {
           "period": "2025-Q1",
-          "value": 35.59,
+          "value": 41.9,
           "source_url": null
         },
         {
@@ -48318,7 +48318,7 @@
         },
         {
           "period": "2026-Q1",
-          "value": 42.52,
+          "value": 40.18,
           "source_url": null
         },
         {
@@ -48339,7 +48339,7 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 85.7,
+          "value": 85.69,
           "source_url": null
         },
         {
@@ -48349,7 +48349,7 @@
         },
         {
           "period": "2024-Q3",
-          "value": 85.91,
+          "value": 85.92,
           "source_url": null
         },
         {
@@ -48359,7 +48359,7 @@
         },
         {
           "period": "2025-Q1",
-          "value": 76.04,
+          "value": 82.96,
           "source_url": null
         },
         {
@@ -48379,7 +48379,7 @@
         },
         {
           "period": "2026-Q1",
-          "value": 70.5,
+          "value": 69.62,
           "source_url": null
         },
         {

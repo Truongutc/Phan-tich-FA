@@ -200,26 +200,44 @@
     "2026-Q1": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 14007914.0,
+        "khong_anh_huong_lai_suat": 25277214.0,
+        "den_1_thang": -139398892.0,
+        "tu_1_3_thang": 520172365.0,
+        "tu_3_6_thang": -192846541.0,
+        "tu_6_12_thang": -129070003.0,
+        "tu_1_5_nam": -40114514.0,
+        "tren_5_nam": 49063034.0
+      },
       "liquidity_gap": {
-        "qua_han_tren_3t": 2695316.0,
-        "qua_han_den_3t": -2356263.0,
-        "den_1_thang": -610314.0,
-        "tu_1_3_thang": 389882.0,
-        "tu_3_12_thang": 816078.0,
-        "tu_1_5_nam": 2482527.0,
-        "tren_5_nam": 48219750.0
+        "qua_han_tren_3t": 6037765.0,
+        "qua_han_den_3t": 7970149.0,
+        "den_1_thang": -195978103.0,
+        "tu_1_3_thang": 37907288.0,
+        "tu_3_12_thang": -49040976.0,
+        "tu_1_5_nam": 47327533.0,
+        "tren_5_nam": 252866921.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 46634618.0,
-        "qua_han_den_3t": 2695316.0,
-        "den_1_thang": 674577.0,
-        "tu_1_3_thang": 0.0,
-        "tu_3_12_thang": -80095.0,
-        "tu_1_5_nam": -2223934.0,
-        "tren_5_nam": 2738215.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 409933730.0,
+        "tu_1_3_thang": 166677723.0,
+        "tu_3_12_thang": 305062553.0,
+        "tu_1_5_nam": 50472478.0,
+        "tren_5_nam": 3205.0
       },
-      "interest_rate_liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 23166470.0,
+        "den_1_thang": 246399537.0,
+        "tu_1_3_thang": 168963345.0,
+        "tu_3_6_thang": 212349868.0,
+        "tu_6_12_thang": 194748809.0,
+        "tu_1_5_nam": 84090064.0,
+        "tren_5_nam": 2431596.0
+      },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": {
         "qua_han_tren_3t": 8348.0,
@@ -239,7 +257,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260422_-_ACB_-_BCTC_Hop_nhat_Quy_1_nam_2026_1776932823.pdf",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-21T14:11:45+07:00"
+      "fetched_at": "2026-09-23T09:46:33+07:00"
     },
     "2026-Q2": {
       "status": "reported",
