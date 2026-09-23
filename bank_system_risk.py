@@ -1379,7 +1379,9 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
         wb.remove(wb[_ALM_RAW_BUCKETS_SHEET_NAME])
     ws = wb.create_sheet(title=_ALM_RAW_BUCKETS_SHEET_NAME)
 
-    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan"]
+    # Cot "Kiem tra cheo LS/TK" GIONG HET sheet ALM_NganHang_Raw (xem giai thich chi tiet o do) -
+    # user (2026-09-23) chu yeu xem sheet NAY (RawBuckets) nen phai co CA 2 noi, khong chi 1.
+    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Kiem tra cheo LS/TK"]
     for prefix, buckets in (("Gap TK", _LIQ_BUCKETS_ALL), ("No TK", _LIQ_BUCKETS_ALL), ("TS TK", _LIQ_BUCKETS_ALL),
                             ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL),
                             ("Tien mat", _LIQ_BUCKETS_ALL), ("Tien gui NHNN", _LIQ_BUCKETS_ALL),
@@ -1446,7 +1448,17 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
                     status_overall = "reported"
                 else:
                     status_overall = "missing"
-                row = [ticker, period_key, status_overall, status_ls, status_tk]
+                ir_sum_ty = sum((v or 0) / 1000 for v in ir_gap.values())
+                liq_sum_ty = sum((v or 0) / 1000 for v in liq_gap.values())
+                if status_ls != "reported" or status_tk != "reported":
+                    cross_check = ""
+                elif not (ir_sum_ty or liq_sum_ty):
+                    cross_check = ""
+                else:
+                    _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
+                    _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
+                    cross_check = "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% - NGHI NGO SAI"
+                row = [ticker, period_key, status_overall, status_ls, status_tk, cross_check]
                 row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
                 row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
                 row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
