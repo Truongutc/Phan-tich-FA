@@ -940,29 +940,31 @@
   },
   "bankingSystemRisk": {
     "asOf": "2026-Q2",
-    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +8.71% tổng tài sản (mức phân tán 10.73% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.9%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 32.8% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 114.2%. NH phụ thuộc rollover nhiều nhất: BVB (174%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 32.4% → 32.8%; Long-term Funding Coverage: 87.7% → 114.2% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
+    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +0.21% tổng tài sản (mức phân tán 0.90% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu TỐT (sốc +200bp làm NII hệ thống đổi khoảng 1.6%). Ngân hàng lệch nhiều nhất: VBB (+18.5%). (LƯU Ý: sau khi loại các NH có dữ liệu bất thường, chỉ 13% tổng tài sản hệ thống còn được tính vào tỷ lệ này — CHƯA đại diện đầy đủ toàn hệ thống.) Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). (LƯU Ý: sau khi loại các NH có dữ liệu bất thường, chỉ 13% tổng tài sản hệ thống còn được tính vào tỷ lệ này — CHƯA đại diện đầy đủ toàn hệ thống.) Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 28.3% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 64.2%. NH phụ thuộc rollover nhiều nhất: BVB (174%). (LƯU Ý: chỉ 10% tổng tài sản hệ thống có đủ dữ liệu bảng Nợ phải trả theo kỳ hạn cho kỳ này — số liệu 2 chỉ số này CHƯA đại diện đầy đủ toàn hệ thống.) Chưa đủ dữ liệu để xác định pha: Kỳ 2026-Q2 mới có 10% tổng tài sản hệ thống có đủ dữ liệu bảng Nợ phải trả theo kỳ hạn (nhiều ngân hàng lớn chưa backfill kịp) — CHƯA ĐỦ đại diện để so sánh xu hướng, cần đợi backfill đầy đủ hơn thay vì kết luận từ 1 mẫu nhỏ/khác kỳ trước. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "interestRateRisk": {
-      "netGapRatio": 0.08709062031475644,
-      "dispersionGapRatio": 0.10729019868162676,
+      "netGapRatio": 0.002072524780886611,
+      "dispersionGapRatio": 0.008997195760030883,
       "stressNiiByShock": {
-        "+100bp": 16110,
-        "-100bp": -16110,
-        "+200bp": 32219,
-        "-200bp": -32219
+        "+100bp": 1215,
+        "-100bp": -1215,
+        "+200bp": 2430,
+        "-200bp": -2430
       },
       "stressNiiRatioByShock": {
-        "+100bp": 0.10937755853982047,
-        "-100bp": -0.10937755853982047,
-        "+200bp": 0.21874832765949567,
-        "-200bp": -0.21874832765949567
+        "+100bp": 0.008249145476466907,
+        "-100bp": -0.008249145476466907,
+        "+200bp": 0.016498290952933814,
+        "-200bp": -0.016498290952933814
       },
       "worstBank": {
-        "ticker": "NAB",
-        "ratio": 0.464302638492246
-      }
+        "ticker": "VBB",
+        "ratio": 0.18460249292920475
+      },
+      "coveragePct": 12.950773787466243,
+      "nBanksIncluded": 7
     },
     "liquidityRisk": {
-      "netGapRatio": -0.02263847221352236,
+      "netGapRatio": -0.005522493455667998,
       "liquidAssetsRatio": 0.19328435996013787,
       "depositRunCoverageByStress": {
         "-5%": 6.394845865091842,
@@ -972,41 +974,51 @@
       "weakestBank": {
         "ticker": "VAB",
         "coverage": 1.62485915138552
-      }
+      },
+      "coveragePct": 12.950773787466243,
+      "nBanksIncluded": 7
     },
     "structuralFunding": {
-      "rolloverDependency1m": 0.5416088854984684,
-      "rolloverDependency3m": 0.4430172060088606,
-      "rolloverDependency12m": 0.32842988646589644,
-      "longTermFundingCoverage": 1.1424817049523677,
-      "longTermStructuralGap": -0.14248170495236767,
+      "rolloverDependency1m": 0.44806375686030375,
+      "rolloverDependency3m": 0.34710082760012945,
+      "rolloverDependency12m": 0.28342705557726505,
+      "longTermFundingCoverage": 0.6419548181563002,
+      "longTermStructuralGap": 0.3580451818436998,
       "mostDependentBank": {
         "ticker": "BVB",
         "rollover_dependency_12m": 1.7426617985714004
       },
-      "coveragePct": 75.3275206528812,
-      "nBanksIncluded": 20,
+      "coveragePct": 9.848420356380021,
+      "nBanksIncluded": 5,
       "missingTickers": [
+        "ACB",
         "BAB",
+        "BID",
         "CTG",
+        "EIB",
         "HDB",
+        "KLB",
+        "LPB",
+        "MBB",
         "MSB",
+        "NAB",
         "NVB",
-        "OCB"
+        "OCB",
+        "PGB",
+        "SGB",
+        "SHB",
+        "SSB",
+        "TCB",
+        "TPB",
+        "VAB",
+        "VCB"
       ],
       "phase": {
-        "phase": "mixed",
-        "phaseLabel": "Chưa rõ xu hướng (tín hiệu hỗn hợp)",
-        "narrative": "Rollover dependency 12M: 32.4% → 32.8%; Long-term Funding Coverage: 87.7% → 114.2% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
+        "phase": "low_coverage",
+        "phaseLabel": "Chưa đủ dữ liệu để xác định pha",
+        "narrative": "Kỳ 2026-Q2 mới có 10% tổng tài sản hệ thống có đủ dữ liệu bảng Nợ phải trả theo kỳ hạn (nhiều ngân hàng lớn chưa backfill kịp) — CHƯA ĐỦ đại diện để so sánh xu hướng, cần đợi backfill đầy đủ hơn thay vì kết luận từ 1 mẫu nhỏ/khác kỳ trước.",
         "periodsUsed": [
-          "2025-Q4",
-          "2026-Q1",
           "2026-Q2"
-        ],
-        "coveragePctByPeriod": [
-          76.78625850106424,
-          81.41879660475742,
-          75.3275206528812
         ]
       }
     },
@@ -1059,10 +1071,11 @@
       "ACB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.04541868959783328,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 2.348581634424129,
-        "rollover_dependency_12m": 0.14665484391267242,
-        "long_term_funding_coverage": 1.2329881770455717
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "BAB": {
         "status": "reported",
@@ -1075,10 +1088,11 @@
       "BID": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.020134424967508235,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 2.600310557318487,
-        "rollover_dependency_12m": 0.21565111662925282,
-        "long_term_funding_coverage": 3.7499835925257785
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "BVB": {
         "status": "reported",
@@ -1091,55 +1105,61 @@
       "CTG": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.23370575735984825,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 3.0925428902780667,
         "rollover_dependency_12m": null,
-        "long_term_funding_coverage": null
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "EIB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.011503472194151381,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 2.3721306248420873,
         "rollover_dependency_12m": null,
-        "long_term_funding_coverage": 0.9904457885754965
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "HDB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": -0.13602945107602699,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 3.0112909706361024,
         "rollover_dependency_12m": null,
-        "long_term_funding_coverage": null
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "KLB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.05036509681529519,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 3.5370033206892595,
-        "rollover_dependency_12m": 0.5243703197231767,
-        "long_term_funding_coverage": 0.9066513072878452
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "LPB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": -0.04037320935648954,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 3.4116405018906866,
-        "rollover_dependency_12m": 0.02104717984625709,
-        "long_term_funding_coverage": 1.394095648623008
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "MBB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.11756374980253895,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 2.14993660865688,
-        "rollover_dependency_12m": 0.07132049301783454,
-        "long_term_funding_coverage": 0.8913988157625135
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "MSB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": -0.00012658543989073017,
+        "cum_gap_1y_ratio": -0.12658543989073018,
         "deposit_run_coverage_10pct": 4.105615095087206,
         "rollover_dependency_12m": null,
         "long_term_funding_coverage": null
@@ -1147,10 +1167,11 @@
       "NAB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.464302638492246,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 8.00621491790196,
-        "rollover_dependency_12m": 1.3824522024845258,
-        "long_term_funding_coverage": 2.4097348380309906
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "NVB": {
         "status": "reported",
@@ -1173,34 +1194,38 @@
       "PGB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.01533243730327497,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 5.21126048347212,
-        "rollover_dependency_12m": 0.46551813067538605,
-        "long_term_funding_coverage": 0.7986065746828012
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "SGB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.0017663093948657737,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 3.663715805095786,
-        "rollover_dependency_12m": 1.1629119566245656,
-        "long_term_funding_coverage": 0.9387257168885954
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "SHB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.12331457560364083,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 2.7728298877785456,
-        "rollover_dependency_12m": 0.5323961936377394,
-        "long_term_funding_coverage": 0.4676039616647943
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "SSB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": -0.03702870033823568,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 6.426538086320739,
-        "rollover_dependency_12m": 0.9920989109299307,
-        "long_term_funding_coverage": 262.37399332816597
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "STB": {
         "status": "reported",
@@ -1213,26 +1238,29 @@
       "TCB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.03897973021383563,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 2.784429799465084,
-        "rollover_dependency_12m": 0.08297574813866034,
-        "long_term_funding_coverage": 0.7298746738430502
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "TPB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.011364868642010318,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 3.9162421794686972,
-        "rollover_dependency_12m": 0.7388820604034522,
-        "long_term_funding_coverage": 0.24308801857091128
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "VAB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": -0.08928143352807597,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 1.62485915138552,
-        "rollover_dependency_12m": 0.09612352763659233,
-        "long_term_funding_coverage": 0.5887216731600349
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "VBB": {
         "status": "reported",
@@ -1245,10 +1273,11 @@
       "VCB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.1986472440300173,
+        "cum_gap_1y_ratio": null,
         "deposit_run_coverage_10pct": 4.09716950110763,
-        "rollover_dependency_12m": 0.8851286369618844,
-        "long_term_funding_coverage": 21.123373231088603
+        "rollover_dependency_12m": null,
+        "long_term_funding_coverage": null,
+        "ir_data_quality_note": "cum_gap_1y_ratio bat thuong, da loai khoi tong hop he thong"
       },
       "VIB": {
         "status": "reported",
@@ -48094,52 +48123,52 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 0.816,
+          "value": -0.487,
           "source_url": null
         },
         {
           "period": "2024-Q2",
-          "value": 7.361,
+          "value": -1.662,
           "source_url": null
         },
         {
           "period": "2024-Q3",
-          "value": 3.368,
+          "value": -0.793,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 1.267,
+          "value": -1.073,
           "source_url": null
         },
         {
           "period": "2025-Q1",
-          "value": 1.498,
+          "value": -0.857,
           "source_url": null
         },
         {
           "period": "2025-Q2",
-          "value": 9.618,
+          "value": 0.891,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 3.104,
+          "value": -0.281,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 4.071,
+          "value": -0.156,
           "source_url": null
         },
         {
           "period": "2026-Q1",
-          "value": 4.754,
+          "value": 1.593,
           "source_url": null
         },
         {
           "period": "2026-Q2",
-          "value": 10.938,
+          "value": 0.825,
           "source_url": null
         }
       ],
@@ -48216,52 +48245,52 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 20.17,
+          "value": 26.56,
           "source_url": null
         },
         {
           "period": "2024-Q2",
-          "value": 10.24,
+          "value": 23.14,
           "source_url": null
         },
         {
           "period": "2024-Q3",
-          "value": 18.43,
+          "value": 11.63,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 27.76,
+          "value": 20.98,
           "source_url": null
         },
         {
           "period": "2025-Q1",
-          "value": 11.36,
+          "value": 23.88,
           "source_url": null
         },
         {
           "period": "2025-Q2",
-          "value": 27.5,
+          "value": 20.38,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 28.07,
+          "value": 24.54,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 32.36,
+          "value": 48.3,
           "source_url": null
         },
         {
           "period": "2026-Q1",
-          "value": 25.02,
+          "value": 19.32,
           "source_url": null
         },
         {
           "period": "2026-Q2",
-          "value": 32.84,
+          "value": 28.34,
           "source_url": null
         }
       ],
@@ -48277,52 +48306,52 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 53.49,
+          "value": 35.17,
           "source_url": null
         },
         {
           "period": "2024-Q2",
-          "value": 59.61,
+          "value": 59.27,
           "source_url": null
         },
         {
           "period": "2024-Q3",
-          "value": 57.74,
+          "value": 23.62,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 59.18,
+          "value": 40.39,
           "source_url": null
         },
         {
           "period": "2025-Q1",
-          "value": 41.26,
+          "value": 41.25,
           "source_url": null
         },
         {
           "period": "2025-Q2",
-          "value": 50.08,
+          "value": 43.27,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 53.46,
+          "value": 54.14,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 53.83,
+          "value": 89.96,
           "source_url": null
         },
         {
           "period": "2026-Q1",
-          "value": 36.47,
+          "value": 29.67,
           "source_url": null
         },
         {
           "period": "2026-Q2",
-          "value": 54.16,
+          "value": 44.81,
           "source_url": null
         }
       ],
@@ -48338,52 +48367,52 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 85.69,
+          "value": 92.44,
           "source_url": null
         },
         {
           "period": "2024-Q2",
-          "value": 85.61,
+          "value": 73.03,
           "source_url": null
         },
         {
           "period": "2024-Q3",
-          "value": 84.79,
+          "value": 82.65,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 100.19,
+          "value": 49.29,
           "source_url": null
         },
         {
           "period": "2025-Q1",
-          "value": 81.67,
+          "value": 68.46,
           "source_url": null
         },
         {
           "period": "2025-Q2",
-          "value": 73.89,
+          "value": 58.16,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 81.03,
+          "value": 52.56,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 87.67,
+          "value": 90.38,
           "source_url": null
         },
         {
           "period": "2026-Q1",
-          "value": 73.93,
+          "value": 64.36,
           "source_url": null
         },
         {
           "period": "2026-Q2",
-          "value": 114.25,
+          "value": 64.2,
           "source_url": null
         }
       ],

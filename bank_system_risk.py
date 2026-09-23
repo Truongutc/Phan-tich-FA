@@ -669,6 +669,16 @@ def _aggregate_for_period(period_key):
     sum_long_term_assets = sum_stable_funding = 0.0
     sum_ta_structural = 0.0  # tong tai san CHI cua cac NH co du lieu hop le cho cau truc ky han
     n_banks_structural = 0
+    # Do phu RIENG cho ty le rui ro lai suat/thanh khoan chinh (user 2026-09-23, sau khi them guard
+    # kiem tra cheo tong lai suat vs tong thanh khoan o duoi - guard nay co the loai RAT NHIEU ngan
+    # hang cung 1 luc (vd 19/26 tai 1 ky thuc te), khien ty le "toan he thong" tinh ra tu mau rat nho
+    # ma cac o dem "n_banks_reported" cu KHONG phan anh dieu nay (chi dem "co entry", khong dem "co
+    # dong gop vao tong"). Theo dung nguyen tac da dung cho cau truc ky han (structural_funding_
+    # coverage_pct) - cong tong tai san CHI cua ngan hang thuc su dong gop vao sum_ir_abs/sum_liq_1m.
+    sum_ta_ir_valid = 0.0
+    n_banks_ir_valid = 0
+    sum_ta_liq_valid = 0.0
+    n_banks_liq_valid = 0
     missing_structural = []  # ma NH da "reported"/"patched" (co du lieu gap) nhung THIEU rieng
     # phan "No phai tra theo bucket" can cho Rollover Dependency - de nguoi dung biet CAN backfill
     # gi (user 2026-09-21, xem "Do phu du lieu" trong muc Rui ro he thong ngan hang tren web).
@@ -733,6 +743,31 @@ def _aggregate_for_period(period_key):
                   f"(ratio he thong tinh duoc: {(m.get('cum_gap_1m_ratio') or 0)*100:+.0f}%) - nghi ngo "
                   f"sai don vi, LOAI khoi tong hop thanh khoan he thong (van tinh lai suat binh thuong)")
 
+        # KIEM TRA CHEO lai suat vs thanh khoan (user 2026-09-23, sau khi lo ngai "sai vi tri, lay
+        # nham so o vi tri khac" khong bi bat boi guard bucket-vs-tong-tai-san tren): 2 bang gap lai
+        # suat + thanh khoan CUNG 1 ky, CUNG 1 ngan hang deu = Tong tai san - Tong no phai tra tai
+        # DUNG 1 thoi diem (chi chia theo 2 kieu ky han khac nhau) - nen TONG cua 2 bang PHAI xap xi
+        # bang nhau. Verify qua hang chuc anh chup thuc te (ABB/ACB/BID/HDB/MBB/MSB/NVB/PGB/SGB/STB/
+        # VBB/VIB...): tong 2 bang luon KHOP CHINH XAC hoac chi lech ~1-2% (nguyen nhan lam tron/phan
+        # loai khac nhau giua 2 thuyet minh cua 1 so bank). Lech > 20% (dac biet gan 100% hoac dau
+        # nguoc nhau) la dau hieu ro rang 1 trong 2 bang bi doc sai (lech cot, gop nham dong, doc
+        # nham trang khac) MA KHONG lo ra qua guard bucket-vs-tong-tai-san (vi moi bucket rieng le
+        # van "hop ly" ve do lon, chi SAI VI TRI/GOM NHAM). KHONG biet chac bang nao sai nen loai CA
+        # HAI khoi tong hop (an toan hon giu nham 1 ben).
+        ir_sum_ty = sum((v or 0) / 1000 for v in (entry.get("interest_rate_gap") or {}).values())
+        liq_sum_ty = sum((v or 0) / 1000 for v in (entry.get("liquidity_gap") or {}).values())
+        ir_liq_cross_valid = True
+        if (ir_sum_ty or liq_sum_ty):
+            denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
+            if abs(ir_sum_ty - liq_sum_ty) / denom > 0.20:
+                ir_liq_cross_valid = False
+        if not ir_liq_cross_valid:
+            print(f"  [WARN] {ticker} {period_key}: tong khe ho lai suat ({ir_sum_ty:+.0f} ty) lech qua "
+                  f"nhieu so tong khe ho thanh khoan ({liq_sum_ty:+.0f} ty) - nghi ngo 1 trong 2 bang bi "
+                  f"doc sai vi tri/gop nham dong, LOAI CA HAI khoi tong hop he thong ky nay")
+            ir_ratio_valid = False
+            liq_ratio_valid = False
+
         # KIEM TRA DU LIEU HONG rieng cho Rollover Dependency (bug that phat hien 2026-09-21 qua BAB
         # 2026-Q2): khong bucket nao vuot qua tong tai san (qua duoc guard tren) nhung "Tong no phai
         # tra" theo bucket bi LECH TAP TRUNG bat thuong (~93% dat vao 1 bucket "tu_1-5_nam" duy nhat,
@@ -758,9 +793,13 @@ def _aggregate_for_period(period_key):
             sum_ir_net += m["cum_gap_1y"]
             sum_ir_abs += abs(m["cum_gap_1y"])
             sum_weighted += m["weighted_gap_raw"]
+            sum_ta_ir_valid += m["total_assets"]
+            n_banks_ir_valid += 1
         sum_nii += m["nii"] or 0.0
         if liq_ratio_valid:
             sum_liq_1m += m["cum_gap_1m"]
+            sum_ta_liq_valid += m["total_assets"]
+            n_banks_liq_valid += 1
         if structural_funding_valid and m.get("liab_due_12m") is not None:
             sum_ta_structural += m["total_assets"]
             n_banks_structural += 1
@@ -823,6 +862,10 @@ def _aggregate_for_period(period_key):
         deposit_coverage[f"-{pct}%"] = (sum_liquid_assets / outflow) if outflow else None
 
     assets_coverage_pct = (sum_ta / all_ta_known * 100) if all_ta_known else None
+    # Do phu THUC SU (sau khi loai boi guard kiem tra cheo) cho tung ty le rieng - xem ghi chu o
+    # cho khai bao sum_ta_ir_valid/sum_ta_liq_valid o tren.
+    ir_coverage_pct = (sum_ta_ir_valid / sum_ta * 100) if sum_ta else None
+    liq_coverage_pct = (sum_ta_liq_valid / sum_ta * 100) if sum_ta else None
 
     # ── Rollover Dependency + Long-term Funding Coverage HE THONG (xem "Danh gia rui ro thanh khoan
     # cau truc he thong.docx", user 2026-09-21) - cong TU/MAU rieng qua tung ngan hang (da lam o
@@ -852,11 +895,13 @@ def _aggregate_for_period(period_key):
             "net_gap_ratio": net_gap_ratio, "dispersion_gap_ratio": dispersion_ratio,
             "stress_nii": stress_nii, "stress_nii_ratio": stress_nii_ratio,
             "worst_bank": {"ticker": worst_ir[0], "ratio": worst_ir[1]} if worst_ir else None,
+            "coverage_pct": ir_coverage_pct, "n_banks_included": n_banks_ir_valid,
         },
         "liquidity_risk": {
             "net_gap_1m_ratio": liq_net_ratio, "liquid_assets_ratio": liquid_assets_ratio,
             "deposit_run_coverage": deposit_coverage,
             "weakest_bank": {"ticker": worst_liq[0], "coverage": worst_liq[1]} if worst_liq else None,
+            "coverage_pct": liq_coverage_pct, "n_banks_included": n_banks_liq_valid,
         },
         # ── Cau truc ky han nguon von he thong (xem "Danh gia rui ro thanh khoan cau truc he
         # thong.docx") - tra loi cau hoi "he thong dang can bao nhieu % nghia vu den han phai
@@ -1017,11 +1062,17 @@ def build_system_risk_summary_text(agg, phase_info=None):
         extra = f" (sốc +200bp làm NII hệ thống đổi khoảng {abs(worst_ratio)*100:.1f}%)" if worst_ratio is not None else ""
         wb = ir.get("worst_bank")
         wb_s = f" Ngân hàng lệch nhiều nhất: {wb['ticker']} ({wb['ratio']*100:+.1f}%)." if wb else ""
+        # Canh bao khi do phu THUC SU (sau khi loai boi guard kiem tra cheo lai suat/thanh khoan)
+        # qua thap (user 2026-09-23) - cung nguyen tac cov_s cua structural_funding o duoi.
+        ir_cov = ir.get("coverage_pct")
+        ir_cov_s = (f" (LƯU Ý: sau khi loại các NH có dữ liệu bất thường, chỉ {ir_cov:.0f}% tổng tài "
+                    f"sản hệ thống còn được tính vào tỷ lệ này — CHƯA đại diện đầy đủ toàn hệ thống.)"
+                    ) if ir_cov is not None and ir_cov < 60 else ""
         parts.append(
             f"Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = {ir['net_gap_ratio']*100:+.2f}% tổng tài sản "
             f"(mức phân tán {ir['dispersion_gap_ratio']*100:.2f}% — phần bù trừ giữa các ngân hàng KHÔNG "
             f"thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu {resil}{extra}."
-            f"{wb_s}"
+            f"{wb_s}{ir_cov_s}"
         )
     if liq.get("net_gap_1m_ratio") is not None:
         cov20 = liq["deposit_run_coverage"].get("-20%")
@@ -1029,9 +1080,13 @@ def build_system_risk_summary_text(agg, phase_info=None):
         extra = f" (che phủ {cov20*100:.0f}% ở kịch bản rút -20% tiền gửi)" if cov20 is not None else ""
         wb = liq.get("weakest_bank")
         wb_s = f" Ngân hàng thanh khoản yếu nhất: {wb['ticker']} (che phủ -10%: {wb['coverage']*100:.0f}%)." if wb else ""
+        liq_cov = liq.get("coverage_pct")
+        liq_cov_s = (f" (LƯU Ý: sau khi loại các NH có dữ liệu bất thường, chỉ {liq_cov:.0f}% tổng tài "
+                     f"sản hệ thống còn được tính vào tỷ lệ này — CHƯA đại diện đầy đủ toàn hệ thống.)"
+                     ) if liq_cov is not None and liq_cov < 60 else ""
         parts.append(
             f"Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = {liq['liquid_assets_ratio']*100:.1f}%, "
-            f"khả năng chống chịu {resil}{extra}.{wb_s}"
+            f"khả năng chống chịu {resil}{extra}.{wb_s}{liq_cov_s}"
         )
     if sf.get("rollover_dependency_12m") is not None:
         mdb = sf.get("most_dependent_bank")
@@ -1085,10 +1140,12 @@ def build_banking_system_risk_section(agg, history=None):
             "netGapRatio": ir["net_gap_ratio"], "dispersionGapRatio": ir["dispersion_gap_ratio"],
             "stressNiiByShock": ir["stress_nii"], "stressNiiRatioByShock": ir["stress_nii_ratio"],
             "worstBank": ir["worst_bank"],
+            "coveragePct": ir.get("coverage_pct"), "nBanksIncluded": ir.get("n_banks_included"),
         },
         "liquidityRisk": {
             "netGapRatio": liq["net_gap_1m_ratio"], "liquidAssetsRatio": liq["liquid_assets_ratio"],
             "depositRunCoverageByStress": liq["deposit_run_coverage"], "weakestBank": liq["weakest_bank"],
+            "coveragePct": liq.get("coverage_pct"), "nBanksIncluded": liq.get("n_banks_included"),
         },
         "structuralFunding": {
             "rolloverDependency1m": sf.get("rollover_dependency_1m"),

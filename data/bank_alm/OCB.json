@@ -201,32 +201,32 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 8235971645583.0,
-        "khong_anh_huong_lai_suat": 11840.0,
-        "den_1_thang": 14391836320.0,
-        "tu_1_3_thang": 62558277600000.0,
-        "tu_3_6_thang": 2800000000000.0,
+        "qua_han": 8235971.645583,
+        "khong_anh_huong_lai_suat": 0.01184,
+        "den_1_thang": 14391.83632,
+        "tu_1_3_thang": 62558277.6,
+        "tu_3_6_thang": 2800000.0,
         "tu_6_12_thang": 0.0,
-        "tu_1_5_nam": 50842367376854.0,
-        "tren_5_nam": 32056181022638.0
+        "tu_1_5_nam": 50842367.376854,
+        "tren_5_nam": 32056181.022638
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 1034742757937.0,
-        "qua_han_den_3t": 1201228887646.0,
-        "den_1_thang": -47227349861760.0,
-        "tu_1_3_thang": -14962308804181.0,
-        "tu_3_12_thang": -23494685421487.0,
-        "tu_1_5_nam": 23552081696346.0,
-        "tren_5_nam": 94378664293384.0
+        "qua_han_tren_3t": 1034742.757937,
+        "qua_han_den_3t": 1201228.887646,
+        "den_1_thang": -47227349.86176,
+        "tu_1_3_thang": -14962308.804181,
+        "tu_3_12_thang": -23494685.421487,
+        "tu_1_5_nam": 23552081.696346,
+        "tren_5_nam": 94378664.293384
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
-        "den_1_thang": 122892742002.0,
-        "tu_1_3_thang": 40704267360566.0,
-        "tu_3_12_thang": 86842400740920.0,
-        "tu_1_5_nam": 65479782486244.0,
-        "tren_5_nam": 103659777.0
+        "den_1_thang": 122892.742002,
+        "tu_1_3_thang": 40704267.360566,
+        "tu_3_12_thang": 86842400.74092,
+        "tu_1_5_nam": 65479782.486244,
+        "tren_5_nam": 103.659777
       },
       "interest_rate_sensitivity_disclosed": null,
       "source": {

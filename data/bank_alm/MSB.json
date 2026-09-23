@@ -241,18 +241,18 @@
       "interest_rate_gap": {
         "qua_han": 0.0,
         "khong_anh_huong_lai_suat": 0.0,
-        "den_1_thang": -29254.0,
-        "tu_1_3_thang": -26570.0,
+        "den_1_thang": -29254000.0,
+        "tu_1_3_thang": -26570000.0,
         "tu_3_6_thang": 0.0,
         "tu_6_12_thang": 0.0,
         "tu_1_5_nam": 0.0,
-        "tren_5_nam": 4951.0
+        "tren_5_nam": 4951000.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
-        "den_1_thang": -29254.0,
-        "tu_1_3_thang": -26570.0,
+        "den_1_thang": -29254000.0,
+        "tu_1_3_thang": -26570000.0,
         "tu_3_12_thang": 0.0,
         "tu_1_5_nam": 0.0,
         "tren_5_nam": 0.0
