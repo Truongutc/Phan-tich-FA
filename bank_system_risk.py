@@ -1187,6 +1187,12 @@ _ALM_SHEET_NAME = "ALM_NganHang_Raw"
 # CHINH XAC dang thieu gi, khong can doan qua status chung.
 _ALM_SHEET_HEADERS = [
     "Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan",
+    # SUA (user 2026-09-23): "Trang thai" o tren CHI cho biet CO du lieu hay khong, KHONG cho biet
+    # du lieu do co KHOP NOI BO khong - nhieu hang "reported" van dang bi loai khoi tong hop he
+    # thong vi 1 trong 2 bang sai (xem guard kiem tra cheo trong _aggregate_for_period), nhung nhin
+    # vao sheet chi thay toan "reported" gay hieu nham. Them cot rieng hien TRUC TIEP ket qua kiem
+    # tra nay (tong lai suat vs tong thanh khoan cung ky PHAI xap xi bang nhau).
+    "Kiem tra cheo LS/TK",
     "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
     "Tien gui KH (ty)", "Cho vay KH (ty)", "LDR (%)", "Liquid Assets (ty)",
     # -- Rui ro thanh khoan --
@@ -1295,8 +1301,23 @@ def update_bank_alm_excel_sheet(out_dir):
                 else:
                     status_overall = "missing"
 
+                # Kiem tra cheo: tong lai suat vs tong thanh khoan CUNG ky PHAI xap xi bang nhau (ca
+                # 2 deu = Tong tai san - Tong no phai tra tai dung 1 thoi diem) - cung nguong 20% dung
+                # trong guard he thong (_aggregate_for_period). Hien TRUC TIEP o day de biet dong nao
+                # "reported" nhung THUC RA dang bi loai khoi tong hop he thong vi 1 trong 2 bang sai.
+                ir_sum_ty = sum((v or 0) / 1000 for v in (entry.get("interest_rate_gap") or {}).values())
+                liq_sum_ty = sum((v or 0) / 1000 for v in (entry.get("liquidity_gap") or {}).values())
+                if status_ls != "reported" or status_tk != "reported":
+                    cross_check = ""
+                elif not (ir_sum_ty or liq_sum_ty):
+                    cross_check = ""
+                else:
+                    _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
+                    _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
+                    cross_check = "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% - NGHI NGO SAI"
+
                 row = [
-                    ticker, period_key, status_overall, status_ls, status_tk, entry.get("patched_from"),
+                    ticker, period_key, status_overall, status_ls, status_tk, cross_check, entry.get("patched_from"),
                     m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
                     m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
                     # -- Rui ro thanh khoan --
