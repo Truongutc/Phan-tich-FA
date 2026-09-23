@@ -1193,6 +1193,10 @@ _ALM_SHEET_HEADERS = [
     # vao sheet chi thay toan "reported" gay hieu nham. Them cot rieng hien TRUC TIEP ket qua kiem
     # tra nay (tong lai suat vs tong thanh khoan cung ky PHAI xap xi bang nhau).
     "Kiem tra cheo LS/TK",
+    # 3 cot GIA TRI SO rieng (user 2026-09-23, muon so sanh truc quan khong can doc chuoi chu trong
+    # cot Kiem tra cheo o tren) - TS suy ra tu bang thanh khoan, TS suy ra tu bang lai suat, TTS
+    # THAT lay tu Vietcap (bang can doi) - ca 3 cung don vi TY DONG.
+    "TS TK (ty)", "TS LS (ty)", "TTS thuc - Vietcap (ty)",
     "Va tu ky", "Tong tai san (ty)", "VCSH (ty)", "NII (ty)",
     "Tien gui KH (ty)", "Cho vay KH (ty)", "LDR (%)", "Liquid Assets (ty)",
     # -- Rui ro thanh khoan --
@@ -1230,8 +1234,10 @@ def _alm_implied_total_assets(gap_d, liab_d):
     return gap_sum + liab_sum
 
 
-def _alm_cross_check_label(entry, status_ls, status_tk, ta_ty):
-    """1 chuoi cho cot "Kiem tra cheo LS/TK" - dung CHUNG cho ca 2 sheet Excel (Raw va RawBuckets).
+def _alm_cross_check(entry, status_ls, status_tk, ta_ty):
+    """Tra ve (label, ts_tk, ts_ls) cho cot "Kiem tra cheo LS/TK" + 2 cot gia tri so rieng "TS TK
+    (ty)"/"TS LS (ty)" - dung CHUNG cho ca 2 sheet Excel (Raw va RawBuckets). ts_tk/ts_ls la None neu
+    khong tinh duoc (thieu No phai tra theo bucket o ben do).
 
     SUA (user 2026-09-23, phan hoi qua vi du HDB Q2/2026): kiem tra CHINH phai la so TONG TAI SAN
     SUY RA tu bang Lai suat vs SUY RA tu bang Thanh khoan VOI NHAU (ca 2 deu tu CHINH 1 tai lieu BCTC,
@@ -1241,7 +1247,7 @@ def _alm_cross_check_label(entry, status_ls, status_tk, ta_ty):
     phong rui ro khac nhau giua Vietcap va thuyet minh - da xac nhan qua vi du ACB truoc do), tuyet
     doi KHONG tu bao "SAI" chi vi lech so voi Vietcap khi ca 2 bang LS/TK van khop nhau tot."""
     if status_ls != "reported" or status_tk != "reported":
-        return ""
+        return "", None, None
     ir_gap = entry.get("interest_rate_gap") or {}
     liq_gap = entry.get("liquidity_gap") or {}
     ta_ls = _alm_implied_total_assets(ir_gap, entry.get("interest_rate_liabilities_by_bucket"))
@@ -1251,24 +1257,27 @@ def _alm_cross_check_label(entry, status_ls, status_tk, ta_ty):
         denom = max(abs(ta_ls), abs(ta_tk), 0.01)
         diff_pct = abs(ta_ls - ta_tk) / denom * 100
         if diff_pct <= 10:
-            return f"OK (TS LS={ta_ls:,.0f} ~ TS TK={ta_tk:,.0f} ty)"
+            return f"OK (TS LS={ta_ls:,.0f} ~ TS TK={ta_tk:,.0f} ty)", ta_tk, ta_ls
         # Lech nhau - dung ta_ty (Vietcap) CHI de GOI Y ben nao gan thuc te hon, khong khang dinh
         hint = ""
         if ta_ty:
             d_ls = abs(ta_ls - ta_ty)
             d_tk = abs(ta_tk - ta_ty)
             hint = " -> nghi TK sai" if d_ls < d_tk else (" -> nghi LS sai" if d_tk < d_ls else "")
-        return f"LECH {diff_pct:.0f}%: TS LS={ta_ls:,.0f} vs TS TK={ta_tk:,.0f} ty (TS thuc~{ta_ty:,.0f} ty){hint}"
+        label = f"LECH {diff_pct:.0f}%: TS LS={ta_ls:,.0f} vs TS TK={ta_tk:,.0f} ty (TS thuc~{ta_ty:,.0f} ty){hint}"
+        return label, ta_tk, ta_ls
 
     # Thieu No phai tra theo bucket o >=1 ben - khong tinh duoc Tong tai san suy ra, fallback ve so
     # tong Gap don (kem canh bao ro la khong chac chan bang nao sai).
     ir_sum_ty = sum((v or 0) / 1000 for v in ir_gap.values())
     liq_sum_ty = sum((v or 0) / 1000 for v in liq_gap.values())
     if not (ir_sum_ty or liq_sum_ty):
-        return ""
+        return "", ta_tk, ta_ls
     _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
     _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
-    return "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% Gap LS/TK - thieu No phai tra theo bucket nen chua tinh duoc Tong tai san de xac dinh ben nao sai"
+    label = ("OK" if _diff_pct <= 20 else
+             f"LECH {_diff_pct:.0f}% Gap LS/TK - thieu No phai tra theo bucket nen chua tinh duoc Tong tai san de xac dinh ben nao sai")
+    return label, ta_tk, ta_ls
 
 
 def update_bank_alm_excel_sheet(out_dir):
@@ -1353,13 +1362,15 @@ def update_bank_alm_excel_sheet(out_dir):
                 else:
                     status_overall = "missing"
 
-                # Kiem tra cheo: uu tien chan doan RIENG TUNG BEN (LS/TK) qua Tong tai san suy ra vs
-                # Tong tai san THAT (Vietcap) - xem _alm_cross_check_label(). Hien TRUC TIEP o day de
-                # biet dong nao "reported" nhung THUC RA dang bi loai khoi tong hop he thong.
-                cross_check = _alm_cross_check_label(entry, status_ls, status_tk, m.get("total_assets"))
+                # Kiem tra cheo: so Tong tai san suy ra tu bang LS vs bang TK - xem _alm_cross_check().
+                # Hien TRUC TIEP o day de biet dong nao "reported" nhung THUC RA dang bi loai khoi
+                # tong hop he thong.
+                cross_check, ts_tk, ts_ls = _alm_cross_check(entry, status_ls, status_tk, m.get("total_assets"))
 
                 row = [
-                    ticker, period_key, status_overall, status_ls, status_tk, cross_check, entry.get("patched_from"),
+                    ticker, period_key, status_overall, status_ls, status_tk, cross_check,
+                    round(ts_tk, 3) if ts_tk is not None else None, round(ts_ls, 3) if ts_ls is not None else None,
+                    m.get("total_assets"), entry.get("patched_from"),
                     m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
                     m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
                     # -- Rui ro thanh khoan --
@@ -1421,9 +1432,12 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
         wb.remove(wb[_ALM_RAW_BUCKETS_SHEET_NAME])
     ws = wb.create_sheet(title=_ALM_RAW_BUCKETS_SHEET_NAME)
 
-    # Cot "Kiem tra cheo LS/TK" GIONG HET sheet ALM_NganHang_Raw (xem giai thich chi tiet o do) -
-    # user (2026-09-23) chu yeu xem sheet NAY (RawBuckets) nen phai co CA 2 noi, khong chi 1.
-    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Kiem tra cheo LS/TK"]
+    # Cot "Kiem tra cheo LS/TK" + 3 cot gia tri so GIONG HET sheet ALM_NganHang_Raw (xem giai thich
+    # chi tiet o _alm_cross_check()) - user (2026-09-23) chu yeu xem sheet NAY (RawBuckets) nen phai
+    # co CA 2 noi, khong chi 1. Dat ten "...Tong" de khong nham voi cac cot "TS TK <bucket>"/"TS LS
+    # <bucket>" rieng le da co san (Gap+No PER BUCKET, khac voi tong toan bang o day).
+    headers = ["Ma", "Ky", "Trang thai", "Trang thai Lai suat", "Trang thai Thanh khoan", "Kiem tra cheo LS/TK",
+               "TS TK Tong (ty)", "TS LS Tong (ty)", "TTS thuc - Vietcap (ty)"]
     for prefix, buckets in (("Gap TK", _LIQ_BUCKETS_ALL), ("No TK", _LIQ_BUCKETS_ALL), ("TS TK", _LIQ_BUCKETS_ALL),
                             ("Gap LS", _IR_BUCKETS_ALL), ("No LS", _IR_BUCKETS_ALL), ("TS LS", _IR_BUCKETS_ALL),
                             ("Tien mat", _LIQ_BUCKETS_ALL), ("Tien gui NHNN", _LIQ_BUCKETS_ALL),
@@ -1493,8 +1507,10 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
                     status_overall = "missing"
                 bs_snap = qbs.get(period_key)
                 ta_ty = bs_snap.get("total_assets") if bs_snap else None
-                cross_check = _alm_cross_check_label(entry, status_ls, status_tk, ta_ty)
-                row = [ticker, period_key, status_overall, status_ls, status_tk, cross_check]
+                cross_check, ts_tk, ts_ls = _alm_cross_check(entry, status_ls, status_tk, ta_ty)
+                row = [ticker, period_key, status_overall, status_ls, status_tk, cross_check,
+                       round(ts_tk, 3) if ts_tk is not None else None,
+                       round(ts_ls, 3) if ts_ls is not None else None, ta_ty]
                 row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
                 row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
                 row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
