@@ -369,26 +369,42 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 1035.0,
-        "khong_anh_huong_lai_suat": 10392.0,
-        "den_1_thang": -2521329.0,
-        "tu_1_3_thang": 2543389.0,
-        "tu_3_6_thang": -10392.0,
-        "tu_6_12_thang": -5407.0,
-        "tu_1_5_nam": -16834.0,
-        "tren_5_nam": 262472.0
+        "qua_han": 1482285.0,
+        "khong_anh_huong_lai_suat": 2116135.0,
+        "den_1_thang": 1658216.0,
+        "tu_1_3_thang": 2846869.0,
+        "tu_3_6_thang": -1983889.0,
+        "tu_6_12_thang": 1343228.0,
+        "tu_1_5_nam": -2471857.0,
+        "tren_5_nam": 615797.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1707338.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": -3912372.0,
+        "tu_1_3_thang": -2160310.0,
+        "tu_3_12_thang": -2324704.0,
+        "tu_1_5_nam": 5314219.0,
+        "tren_5_nam": 6982613.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 26346210.0,
+        "tu_1_3_thang": 7902564.0,
+        "tu_3_12_thang": 15747668.0,
+        "tu_1_5_nam": 3810703.0,
+        "tren_5_nam": 0.0
+      },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 11457.0,
-        "khong_anh_huong_lai_suat": 2515279.0,
-        "den_1_thang": 2527591.0,
-        "tu_1_3_thang": 1035.0,
-        "tu_3_6_thang": 10392.0,
-        "tu_6_12_thang": 5407.0,
-        "tu_1_5_nam": 16834.0,
-        "tren_5_nam": -14272.0
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 682556.0,
+        "den_1_thang": 26126805.0,
+        "tu_1_3_thang": 7743694.0,
+        "tu_3_6_thang": 9539893.0,
+        "tu_6_12_thang": 5989458.0,
+        "tu_1_5_nam": 3724738.0,
+        "tren_5_nam": 0.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -416,7 +432,7 @@
         "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-16/no-name-1744742254.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-22T18:18:41+07:00"
+      "fetched_at": "2026-09-23T09:22:10+07:00"
     },
     "2024-Q2": {
       "status": "reported",

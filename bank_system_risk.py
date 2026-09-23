@@ -1182,58 +1182,80 @@ def update_bank_alm_excel_sheet(out_dir):
         store = bank_alm_store.load_bank_store(ticker)
         gap_periods = store.get("gap_periods", {})
         qbs = store.get("quarterly_balance_sheet", {})
-        for period_key in sorted(gap_periods.keys(), key=bank_alm_store._period_sort_key):
-            entry = gap_periods[period_key]
-            status = entry.get("status")
-            qkey = bank_alm_store.gap_period_to_quarter(period_key)
-            bs_snap = qbs.get(qkey) if qkey else None
-            m = _bank_period_metrics(entry, bs_snap)
-            source = entry.get("source") or {}
+        # SUA (user 2026-09-23, phat hien qua sheet OCB: hang "2025-FY" hien rieng biet voi "2025-Q4"
+        # khien nhin nham thanh 2 ky khac nhau, 1 ben "missing" 1 ben co du lieu that): "-FY" (bao cao
+        # nam kiem toan) va "-Q4" (bao cao quy thuong) CUNG la 1 thoi diem cuoi nam, chi khac LAN
+        # CONG BO (da co _ticker_gap_entry() gop 2 cai nay lam 1 khi tong hop he thong - o day ap
+        # dung DUNG nguyen tac do cho tung hang chi tiet: chi hien DUY NHAT 1 hang "Q4" moi nam, uu
+        # tien ban FY neu da co (dang tin hon), roi moi den ban Q4 thuong, khong con hang "-FY" rieng
+        # nua). Quy Q1-Q3 giu nguyen, khong doi.
+        years = sorted({int(pk.split("-")[0]) for pk in gap_periods.keys()})
+        for year in years:
+            for q in (1, 2, 3, 4):
+                canonical_pk = f"{year}-Q{q}"
+                if q == 4:
+                    fy_entry = gap_periods.get(f"{year}-FY")
+                    q4_entry = gap_periods.get(canonical_pk)
+                    if fy_entry and fy_entry.get("status") != "missing":
+                        entry = fy_entry
+                    elif q4_entry is not None:
+                        entry = q4_entry
+                    else:
+                        entry = fy_entry  # co the None (khong co du lieu ky nay) hoac "missing"
+                else:
+                    entry = gap_periods.get(canonical_pk)
+                if entry is None:
+                    continue
+                period_key = canonical_pk
+                status = entry.get("status")
+                bs_snap = qbs.get(period_key)
+                m = _bank_period_metrics(entry, bs_snap)
+                source = entry.get("source") or {}
 
-            def _pct(key):
-                v = m.get(key)
-                return round(v * 100, 3) if v is not None else None
+                def _pct(key):
+                    v = m.get(key)
+                    return round(v * 100, 3) if v is not None else None
 
-            def _rnd(key, nd=3):
-                v = m.get(key)
-                return round(v, nd) if v is not None else None
+                def _rnd(key, nd=3):
+                    v = m.get(key)
+                    return round(v, nd) if v is not None else None
 
-            status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
-            status_tk = "reported" if entry.get("liquidity_gap") else "missing"
-            # Cot C tong hop: chi xet Lai suat + Thanh khoan. "patched" giu nguyen rieng (du lieu ke
-            # thua tu ky truoc, khong phai dang thieu can OCR lai).
-            if status == "patched":
-                status_overall = "patched"
-            elif status_ls == "reported" and status_tk == "reported":
-                status_overall = "reported"
-            else:
-                status_overall = "missing"
+                status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
+                status_tk = "reported" if entry.get("liquidity_gap") else "missing"
+                # Cot C tong hop: chi xet Lai suat + Thanh khoan. "patched" giu nguyen rieng (du lieu ke
+                # thua tu ky truoc, khong phai dang thieu can OCR lai).
+                if status == "patched":
+                    status_overall = "patched"
+                elif status_ls == "reported" and status_tk == "reported":
+                    status_overall = "reported"
+                else:
+                    status_overall = "missing"
 
-            row = [
-                ticker, period_key, status_overall, status_ls, status_tk, entry.get("patched_from"),
-                m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
-                m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
-                # -- Rui ro thanh khoan --
-                m.get("cum_gap_1m"), _pct("cum_gap_1m_ratio"), _pct("liq_cum_gap_3m_ratio"),
-                _pct("liq_cum_gap_1y_ratio"), _pct("liq_cum_gap_1y_conservative_ratio"),
-                _rnd("short_term_funding"), _rnd("long_term_assets"),
-                _pct("st_funding_lt_assets_ratio"), _pct("nsfr_proxy"), _pct("lmi"),
-                _pct("rollover_dependency_1m"), _pct("rollover_dependency_3m"), _pct("rollover_dependency_12m"),
-                _pct("liq_al_ratio_1m"), _pct("liq_al_ratio_3m"), _pct("liq_al_ratio_12m"),
-                _rnd("liquidity_buffer_coverage_1m"), _rnd("near_cash_coverage_1m_precise"),
-                _pct("customer_deposits_pct_1m"), _pct("customer_deposits_pct_1y"),
-                _rnd("deposit_run_coverage_5pct"), _rnd("deposit_run_coverage_10pct"), _rnd("deposit_run_coverage_20pct"),
-                # -- Rui ro lai suat --
-                m.get("cum_gap_1y"), _pct("ir_cum_gap_1m_ratio"), _pct("ir_cum_gap_3m_ratio"),
-                _pct("ir_cum_gap_6m_ratio"), _pct("cum_gap_1y_ratio"), _pct("ir_cum_gap_5y_ratio"),
-                _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
-                m.get("stress_nii_100bp"), _pct("stress_nii_ratio_100bp"), _pct("stress_nii_ratio_equity_100bp"),
-                m.get("stress_nii_200bp"), _pct("stress_nii_ratio_200bp"),
-                source.get("title"), source.get("url"), entry.get("fetched_at"),
-            ]
-            for c, val in enumerate(row, start=1):
-                ws.cell(row=row_idx, column=c, value=val)
-            row_idx += 1
+                row = [
+                    ticker, period_key, status_overall, status_ls, status_tk, entry.get("patched_from"),
+                    m.get("total_assets"), m.get("equity"), m.get("nii"), m.get("customer_deposits"),
+                    m.get("loans"), _pct("ldr"), m.get("liquid_assets"),
+                    # -- Rui ro thanh khoan --
+                    m.get("cum_gap_1m"), _pct("cum_gap_1m_ratio"), _pct("liq_cum_gap_3m_ratio"),
+                    _pct("liq_cum_gap_1y_ratio"), _pct("liq_cum_gap_1y_conservative_ratio"),
+                    _rnd("short_term_funding"), _rnd("long_term_assets"),
+                    _pct("st_funding_lt_assets_ratio"), _pct("nsfr_proxy"), _pct("lmi"),
+                    _pct("rollover_dependency_1m"), _pct("rollover_dependency_3m"), _pct("rollover_dependency_12m"),
+                    _pct("liq_al_ratio_1m"), _pct("liq_al_ratio_3m"), _pct("liq_al_ratio_12m"),
+                    _rnd("liquidity_buffer_coverage_1m"), _rnd("near_cash_coverage_1m_precise"),
+                    _pct("customer_deposits_pct_1m"), _pct("customer_deposits_pct_1y"),
+                    _rnd("deposit_run_coverage_5pct"), _rnd("deposit_run_coverage_10pct"), _rnd("deposit_run_coverage_20pct"),
+                    # -- Rui ro lai suat --
+                    m.get("cum_gap_1y"), _pct("ir_cum_gap_1m_ratio"), _pct("ir_cum_gap_3m_ratio"),
+                    _pct("ir_cum_gap_6m_ratio"), _pct("cum_gap_1y_ratio"), _pct("ir_cum_gap_5y_ratio"),
+                    _rnd("rsa"), _rnd("rsl"), _pct("rsa_rsl_ratio"),
+                    m.get("stress_nii_100bp"), _pct("stress_nii_ratio_100bp"), _pct("stress_nii_ratio_equity_100bp"),
+                    m.get("stress_nii_200bp"), _pct("stress_nii_ratio_200bp"),
+                    source.get("title"), source.get("url"), entry.get("fetched_at"),
+                ]
+                for c, val in enumerate(row, start=1):
+                    ws.cell(row=row_idx, column=c, value=val)
+                row_idx += 1
 
     for c in range(1, len(_ALM_SHEET_HEADERS) + 1):
         ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 16
@@ -1287,53 +1309,73 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
     for ticker in sorted(BANKING_TICKERS):
         store = bank_alm_store.load_bank_store(ticker)
         gap_periods = store.get("gap_periods", {})
-        for period_key in sorted(gap_periods.keys(), key=bank_alm_store._period_sort_key):
-            entry = gap_periods[period_key]
-            # KHONG bo qua status="missing" — chinh nhung hang nay moi la tin hieu ro nhat cho biet
-            # ngan hang/ky nao dang HOAN TOAN thieu du lieu tho, dung muc dich chinh cua sheet nay.
-            liq_gap = entry.get("liquidity_gap") or {}
-            liq_liab = entry.get("liabilities_by_bucket") or {}
-            ir_gap = entry.get("interest_rate_gap") or {}
-            ir_liab = entry.get("interest_rate_liabilities_by_bucket") or {}
-            cash_b = entry.get("cash_by_bucket") or {}
-            sbv_b = entry.get("sbv_dep_by_bucket") or {}
-            cust_dep_b = entry.get("customer_deposits_by_bucket") or {}
-            source = entry.get("source") or {}
+        # SUA (user 2026-09-23): gop "-FY"/"-Q4" thanh DUY NHAT 1 hang "Q4" moi nam - cung nguyen tac
+        # da ap dung o update_bank_alm_excel_sheet(), xem ghi chu chi tiet o do. Van GIU nguyen tac
+        # "khong bo qua status=missing" (dong ngay duoi day) - chi khong con tach rieng "-FY" thanh
+        # 1 hang nua thoi.
+        years = sorted({int(pk.split("-")[0]) for pk in gap_periods.keys()})
+        for year in years:
+            for q in (1, 2, 3, 4):
+                canonical_pk = f"{year}-Q{q}"
+                if q == 4:
+                    fy_entry = gap_periods.get(f"{year}-FY")
+                    q4_entry = gap_periods.get(canonical_pk)
+                    if fy_entry and fy_entry.get("status") != "missing":
+                        entry = fy_entry
+                    elif q4_entry is not None:
+                        entry = q4_entry
+                    else:
+                        entry = fy_entry
+                else:
+                    entry = gap_periods.get(canonical_pk)
+                if entry is None:
+                    continue
+                period_key = canonical_pk
+                # KHONG bo qua status="missing" — chinh nhung hang nay moi la tin hieu ro nhat cho biet
+                # ngan hang/ky nao dang HOAN TOAN thieu du lieu tho, dung muc dich chinh cua sheet nay.
+                liq_gap = entry.get("liquidity_gap") or {}
+                liq_liab = entry.get("liabilities_by_bucket") or {}
+                ir_gap = entry.get("interest_rate_gap") or {}
+                ir_liab = entry.get("interest_rate_liabilities_by_bucket") or {}
+                cash_b = entry.get("cash_by_bucket") or {}
+                sbv_b = entry.get("sbv_dep_by_bucket") or {}
+                cust_dep_b = entry.get("customer_deposits_by_bucket") or {}
+                source = entry.get("source") or {}
 
-            def _ty(d, k):
-                v = d.get(k)
-                return round(v / 1000, 3) if v is not None else None
+                def _ty(d, k):
+                    v = d.get(k)
+                    return round(v / 1000, 3) if v is not None else None
 
-            def _assets_ty(gap_d, liab_d, k):
-                g, l = gap_d.get(k), liab_d.get(k)
-                return round((g + l) / 1000, 3) if (g is not None and l is not None) else None
+                def _assets_ty(gap_d, liab_d, k):
+                    g, l = gap_d.get(k), liab_d.get(k)
+                    return round((g + l) / 1000, 3) if (g is not None and l is not None) else None
 
-            status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
-            status_tk = "reported" if entry.get("liquidity_gap") else "missing"
-            # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - chi xet Lai
-            # suat + Thanh khoan.
-            raw_status = entry.get("status")
-            if raw_status == "patched":
-                status_overall = "patched"
-            elif status_ls == "reported" and status_tk == "reported":
-                status_overall = "reported"
-            else:
-                status_overall = "missing"
-            row = [ticker, period_key, status_overall, status_ls, status_tk]
-            row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
-            row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
-            row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
-            row += [_ty(ir_gap, k) for k in _IR_BUCKETS_ALL]
-            row += [_ty(ir_liab, k) for k in _IR_BUCKETS_ALL]
-            row += [_assets_ty(ir_gap, ir_liab, k) for k in _IR_BUCKETS_ALL]
-            row += [_ty(cash_b, k) for k in _LIQ_BUCKETS_ALL]
-            row += [_ty(sbv_b, k) for k in _LIQ_BUCKETS_ALL]
-            row += [_ty(cust_dep_b, k) for k in _LIQ_BUCKETS_ALL]
-            row += [source.get("title"), entry.get("fetched_at")]
+                status_ls = "reported" if entry.get("interest_rate_gap") else "missing"
+                status_tk = "reported" if entry.get("liquidity_gap") else "missing"
+                # Cot C tong hop: xem giai thich chi tiet o update_bank_alm_excel_sheet() - chi xet Lai
+                # suat + Thanh khoan.
+                raw_status = entry.get("status")
+                if raw_status == "patched":
+                    status_overall = "patched"
+                elif status_ls == "reported" and status_tk == "reported":
+                    status_overall = "reported"
+                else:
+                    status_overall = "missing"
+                row = [ticker, period_key, status_overall, status_ls, status_tk]
+                row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
+                row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
+                row += [_assets_ty(liq_gap, liq_liab, k) for k in _LIQ_BUCKETS_ALL]
+                row += [_ty(ir_gap, k) for k in _IR_BUCKETS_ALL]
+                row += [_ty(ir_liab, k) for k in _IR_BUCKETS_ALL]
+                row += [_assets_ty(ir_gap, ir_liab, k) for k in _IR_BUCKETS_ALL]
+                row += [_ty(cash_b, k) for k in _LIQ_BUCKETS_ALL]
+                row += [_ty(sbv_b, k) for k in _LIQ_BUCKETS_ALL]
+                row += [_ty(cust_dep_b, k) for k in _LIQ_BUCKETS_ALL]
+                row += [source.get("title"), entry.get("fetched_at")]
 
-            for c, val in enumerate(row, start=1):
-                ws.cell(row=row_idx, column=c, value=val)
-            row_idx += 1
+                for c, val in enumerate(row, start=1):
+                    ws.cell(row=row_idx, column=c, value=val)
+                row_idx += 1
 
     for c in range(1, len(headers) + 1):
         ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 14
