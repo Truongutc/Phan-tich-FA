@@ -234,26 +234,44 @@
     "2026-Q1": {
       "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
+      "interest_rate_gap": {
+        "qua_han": 4847707.0,
+        "khong_anh_huong_lai_suat": 26979833.0,
+        "den_1_thang": -28153159.0,
+        "tu_1_3_thang": 22435423.0,
+        "tu_3_6_thang": 70167471.0,
+        "tu_6_12_thang": -83860067.0,
+        "tu_1_5_nam": 23370994.0,
+        "tren_5_nam": 18907351.0
+      },
       "liquidity_gap": {
-        "qua_han_tren_3t": -337053618.0,
-        "qua_han_den_3t": -9946382.0,
-        "den_1_thang": 15748121.0,
-        "tu_1_3_thang": 8401139.0,
-        "tu_3_12_thang": 60003.0,
-        "tu_1_5_nam": 562335005.0,
-        "tren_5_nam": -41391.0
+        "qua_han_tren_3t": 3584138.0,
+        "qua_han_den_3t": 1263569.0,
+        "den_1_thang": -47480390.0,
+        "tu_1_3_thang": -30056537.0,
+        "tu_3_12_thang": -22160065.0,
+        "tu_1_5_nam": 99603361.0,
+        "tren_5_nam": 49941477.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 337053618.0,
-        "qua_han_den_3t": 10518102.0,
-        "den_1_thang": 26719.0,
-        "tu_1_3_thang": 5441.0,
-        "tu_3_12_thang": 3342.0,
-        "tu_1_5_nam": 23748800.0,
-        "tren_5_nam": 42049.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 173751355.0,
+        "tu_1_3_thang": 102866611.0,
+        "tu_3_12_thang": 217416876.0,
+        "tu_1_5_nam": 26443885.0,
+        "tren_5_nam": 10909525.0
       },
-      "interest_rate_liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 10433221.0,
+        "den_1_thang": 160947646.0,
+        "tu_1_3_thang": 105226184.0,
+        "tu_3_6_thang": 96632868.0,
+        "tu_6_12_thang": 128573840.0,
+        "tu_1_5_nam": 29443885.0,
+        "tren_5_nam": 130608.0
+      },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
       "sbv_dep_by_bucket": null,
@@ -265,7 +283,7 @@
         "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-04-22/no-name-1776797412.pdf",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-21T14:16:08+07:00"
+      "fetched_at": "2026-09-23T10:07:30+07:00"
     },
     "2026-Q2": {
       "status": "reported",

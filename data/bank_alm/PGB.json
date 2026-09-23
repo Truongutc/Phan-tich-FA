@@ -513,57 +513,82 @@
       "fetched_at": "2026-09-18T15:08:34+07:00"
     },
     "2024-Q3": {
-      "status": "reported",
-      "patched_from": null,
+      "status": "patched",
+      "patched_from": "2024-Q2",
       "interest_rate_gap": {
-        "qua_han": 1667.0,
-        "khong_anh_huong_lai_suat": 6062.0,
-        "den_1_thang": 8986.0,
-        "tu_1_3_thang": 16716.0,
-        "tu_3_6_thang": -1667.0,
-        "tu_6_12_thang": -6063.0,
-        "tu_1_5_nam": -8986.0,
-        "tren_5_nam": -16716.0
+        "qua_han": 497189.0,
+        "khong_anh_huong_lai_suat": -24887788.0,
+        "den_1_thang": 18256665.0,
+        "tu_1_3_thang": 6323766.0,
+        "tu_3_6_thang": 944167.0,
+        "tu_6_12_thang": 2531659.0,
+        "tu_1_5_nam": 1460783.0,
+        "tren_5_nam": -54066849.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1158962.0,
+        "qua_han_den_3t": 382770.0,
+        "den_1_thang": -6050695.0,
+        "tu_1_3_thang": -274151.0,
+        "tu_3_12_thang": -2349324.0,
+        "tu_1_5_nam": 6163670.0,
+        "tren_5_nam": 6692068.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 8173.0,
+        "den_1_thang": 8951814.0,
+        "tu_1_3_thang": 14789276.0,
+        "tu_3_12_thang": 2749037.0,
+        "tu_1_5_nam": 54663708.0,
+        "tren_5_nam": 1158962.0
+      },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 28167.0,
-        "khong_anh_huong_lai_suat": 1160823.0,
-        "den_1_thang": 198431.0,
-        "tu_1_3_thang": 1387421.0,
-        "tu_3_6_thang": 1667.0,
-        "tu_6_12_thang": 6063.0,
-        "tu_1_5_nam": 8986.0,
-        "tren_5_nam": 16716.0
+        "qua_han": 819490.0,
+        "khong_anh_huong_lai_suat": 27798074.0,
+        "den_1_thang": 8832647.0,
+        "tu_1_3_thang": 7241855.0,
+        "tu_3_6_thang": 7300988.0,
+        "tu_6_12_thang": 2670654.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 54663708.0
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
-      "sbv_dep_by_bucket": null,
-      "customer_deposits_by_bucket": null,
-      "fx_position": {
-        "USD": {
-          "assets": 29834.0,
-          "liabilities": 28167.0,
-          "onbalance": 1667.0,
-          "offbalance": 0.0,
-          "net": 1667.0
-        },
-        "EUR": {
-          "assets": 1166885.0,
-          "liabilities": 1160823.0,
-          "onbalance": 6063.0,
-          "offbalance": 24615.0,
-          "net": 30678.0
-        }
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 233994.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 233994.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 610265.0
       },
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 610265.0,
+        "den_1_thang": 0.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 0.0,
+        "tu_1_5_nam": 0.0,
+        "tren_5_nam": 610265.0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 13745562.0,
+        "den_1_thang": 6932647.0,
+        "tu_1_3_thang": 14542843.0,
+        "tu_3_12_thang": 2170654.0,
+        "tu_1_5_nam": 37391706.0,
+        "tren_5_nam": 500000.0
+      },
+      "fx_position": null,
       "fx_source": null,
       "source": {
-        "title": "Báo cáo tài chính hợp nhất Quý 3 năm 2024",
-        "url": "https://cdn.24hmoney.vn/upload/file/2025-2/2025-04-16/no-name-1744742350.pdf",
+        "title": "Báo cáo tài chính quý 2 năm 2024 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-xng-du-petrolimex15082024-000000bo-co-ti-chnh-bn-nin-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-22T16:54:05+07:00"
+      "fetched_at": "2026-09-23T10:08:02+07:00"
     },
     "2024-FY": {
       "status": "reported",
