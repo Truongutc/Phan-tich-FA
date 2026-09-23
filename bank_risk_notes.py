@@ -146,13 +146,13 @@ _HEADING_PHRASE_EN = {"lai_suat": "interest rate risk", "thanh_khoan": "liquidit
 
 
 def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
-    """Quét từ start_frac*tổng_số_trang tới hết tài liệu, OCR TỪNG TRANG (dừng ngay khi đã tìm đủ cả
-    2 tiêu đề — không OCR speculative cả vùng). Trả về dict {"lai_suat": (page_idx, lang)|None,
-    "thanh_khoan": (page_idx, lang)|None} (0-based; lang="vi"|"en") — CÓ THỂ rỗng/thiếu 1 trong 2 key
-    nếu tài liệu này thật sự không có mục đó (vd BCTC quý không soát xét, rút gọn thuyết minh —
-    không phải lỗi, gọi nơi dùng cần thử BẢN KHÁC). Trả về None (khác {} rỗng — phân biệt RÕ 2 tình
-    huống) NẾU THIẾU pytesseract/tesseract-ocr binary — lúc đó dừng hẳn toàn bộ tính năng, thử bản
-    khác cũng vô ích.
+    """Quét TOÀN BỘ từ start_frac*tổng_số_trang tới hết tài liệu (tối đa max_pages trang), OCR TỪNG
+    TRANG — LẤY TRANG KHỚP CUỐI CÙNG cho mỗi tiêu đề (xem SỬA 2026-09-23 ở dưới, không dừng sớm nữa).
+    Trả về dict {"lai_suat": (page_idx, lang)|None, "thanh_khoan": (page_idx, lang)|None} (0-based;
+    lang="vi"|"en") — CÓ THỂ rỗng/thiếu 1 trong 2 key nếu tài liệu này thật sự không có mục đó (vd
+    BCTC quý không soát xét, rút gọn thuyết minh — không phải lỗi, gọi nơi dùng cần thử BẢN KHÁC). Trả
+    về None (khác {} rỗng — phân biệt RÕ 2 tình huống) NẾU THIẾU pytesseract/tesseract-ocr binary —
+    lúc đó dừng hẳn toàn bộ tính năng, thử bản khác cũng vô ích.
 
     SỬA (user 2026-09-17, sau khi xác nhận qua ảnh chụp trực tiếp OCB Quý 1+2/2025): một số ngân
     hàng (xác nhận OCB) công bố BCTC hoàn toàn bằng TIẾNG ANH tùy kỳ — không cố định 1 ngôn ngữ,
@@ -219,20 +219,31 @@ def _find_note_pages(pdf_path, start_frac=0.70, max_pages=40):
                 return True
         return False
 
+    # SỬA (user 2026-09-23, log thật đồng thời qua VAB/BID/ABB/EIB/HDB — cùng 1 mẫu lỗi): trước đây
+    # LẤY TRANG KHỚP ĐẦU TIÊN cho mỗi key rồi dừng ngay khi đủ cả 2 — sai vì nhiều BCTC có 1 đoạn văn
+    # TỔNG QUAN NGẮN (dạng "Ngân hàng quản lý rủi ro thị trường gồm: rủi ro lãi suất, rủi ro thanh
+    # khoản..." hoặc mục lục/heading định tính đứng riêng dòng) xuất hiện SỚM HƠN rất nhiều so với mục
+    # ĐỊNH LƯỢNG thật (có bảng số kèm dòng "Mức chênh..."), và đủ NGẮN để lọt qua bộ lọc
+    # `_HEADING_MAX_LEN` (chỉ chặn được câu văn xuôi DÀI, không chặn được đoạn tổng quan ngắn này).
+    # "rủi ro thanh khoản" luôn đứng SAU "rủi ro lãi suất" trong mọi thứ tự đánh số (X.1/X.2/X.3 hay
+    # (i)/(ii)/(iii)/(iv)) nên mục thanh khoản THẬT luôn xa mốc khớp nhầm này hơn mục lãi suất — giải
+    # thích đúng vì sao bug hầu như CHỈ lộ ra ở "thanh_khoan" (lãi suất vẫn kịp lọt trong ngưỡng quét
+    # +20 trang dù mốc bị lệch, thanh khoản thì không). Giờ LUÔN quét hết `pages_to_scan` (không dừng
+    # sớm — chi phí OCR vẫn giới hạn bởi max_pages=40 như cũ) và LẤY TRANG KHỚP CUỐI CÙNG cho mỗi key —
+    # cùng nguyên tắc "ưu tiên khớp cuối" đã áp dụng ở _extract_number_row/_extract_number_row_loose,
+    # vì mục ĐỊNH LƯỢNG thật luôn là lần xuất hiện heading GẦN NHẤT với bảng số (kể cả trang lặp lại
+    # heading dạng "(tiếp theo)" khi bảng trải nhiều trang) — không còn mục nào nhắc lại cụm từ này sau
+    # khi bảng số đã kết thúc.
     found = {}
     for idx in pages_to_scan:
         text = _ocr_page_text(pdf_path, idx)
         if text is None:
             return None  # thiếu pytesseract - dừng hẳn, không quét tiếp vô ích
         for key, phrase_vi in (("lai_suat", "rui ro lai suat"), ("thanh_khoan", "rui ro thanh khoan")):
-            if key in found:
-                continue
             if _has_heading_line(text, phrase_vi):
                 found[key] = (idx, "vi")
             elif _has_heading_line(text, _HEADING_PHRASE_EN[key]):
                 found[key] = (idx, "en")
-        if "lai_suat" in found and "thanh_khoan" in found:
-            break
     return found
 
 
