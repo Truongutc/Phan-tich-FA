@@ -397,22 +397,22 @@
         "tren_5_nam": 8240323.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 3674408.0,
+        "qua_han_tren_3t": 3658548.0,
         "qua_han_den_3t": 1063558.0,
-        "den_1_thang": -16610732.0,
-        "tu_1_3_thang": -5411771.0,
-        "tu_3_12_thang": -6019652.0,
-        "tu_1_5_nam": 12761346.0,
-        "tren_5_nam": 26207173.0
+        "den_1_thang": -17009784.0,
+        "tu_1_3_thang": -5474403.0,
+        "tu_3_12_thang": -6147473.0,
+        "tu_1_5_nam": 13422484.0,
+        "tren_5_nam": 26197543.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 71493489.0,
-        "den_1_thang": 22984415.0,
-        "tu_1_3_thang": 32626430.0,
-        "tu_3_12_thang": 11647083.0,
-        "tu_1_5_nam": 12873.0,
-        "tren_5_nam": 138764290.0
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 71417041.0,
+        "tu_1_3_thang": 22984415.0,
+        "tu_3_12_thang": 32626430.0,
+        "tu_1_5_nam": 11647083.0,
+        "tren_5_nam": 12873.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 3686417.0,
@@ -435,7 +435,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00012351778656126482ngn-hng-tmcp-an-bnh30082024-000000bo-co-ti-chnh-bn-nin-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T14:39:00+07:00"
+      "fetched_at": "2026-09-23T16:12:09+07:00"
     },
     "2024-Q3": {
       "status": "reported",
