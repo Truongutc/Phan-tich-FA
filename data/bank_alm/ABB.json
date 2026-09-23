@@ -271,25 +271,41 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 2503482.0,
-        "khong_anh_huong_lai_suat": 503482.0,
-        "den_1_thang": 11075.0,
-        "tu_1_3_thang": 432751.0,
-        "tu_3_6_thang": 55334181.0,
-        "tu_6_12_thang": 5334180.0,
-        "tu_1_5_nam": -52531023.0,
-        "tren_5_nam": 53581125.0
+        "khong_anh_huong_lai_suat": 11075613.0,
+        "den_1_thang": -28432751.0,
+        "tu_1_3_thang": 95994180.0,
+        "tu_3_6_thang": -52591029.0,
+        "tu_6_12_thang": -14145341.0,
+        "tu_1_5_nam": 1422807.0,
+        "tren_5_nam": 8547727.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1897993.0,
+        "qua_han_den_3t": 888226.0,
+        "den_1_thang": -25726412.0,
+        "tu_1_3_thang": 3790104.0,
+        "tu_3_12_thang": -4538218.0,
+        "tu_1_5_nam": 14401130.0,
+        "tren_5_nam": 33661865.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 97532113.0,
+        "tu_1_3_thang": 50026202.0,
+        "tu_3_12_thang": 80461020.0,
+        "tu_1_5_nam": 5931551.0,
+        "tren_5_nam": 4015190.0
+      },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 2503482.0,
-        "khong_anh_huong_lai_suat": 11075.0,
-        "den_1_thang": 8118887.0,
-        "tu_1_3_thang": 432751.0,
-        "tu_3_6_thang": 55334181.0,
-        "tu_6_12_thang": -52531023.0,
-        "tu_1_5_nam": 14145341.0,
-        "tren_5_nam": 113038.0
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 6115567.0,
+        "den_1_thang": 91075984.0,
+        "tu_1_3_thang": 50366764.0,
+        "tu_3_6_thang": 58346164.0,
+        "tu_6_12_thang": 22113038.0,
+        "tu_1_5_nam": 5931551.0,
+        "tren_5_nam": 4015190.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -302,7 +318,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ABB_000000016745964_BCTC_BAN_NIEN_2026_KTSXcompressed_25082026154210.pdf?v=1787647332246",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-22T18:44:56+07:00"
+      "fetched_at": "2026-09-23T09:12:25+07:00"
     },
     "2024-Q1": {
       "status": "reported",

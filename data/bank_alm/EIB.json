@@ -137,26 +137,42 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 8114.0,
+        "qua_han": 8114484.0,
         "khong_anh_huong_lai_suat": 5777484.0,
         "den_1_thang": -23360711.0,
         "tu_1_3_thang": 15626452.0,
-        "tu_3_6_thang": 882261.0,
-        "tu_6_12_thang": 8322.0,
+        "tu_3_6_thang": 1882260.0,
+        "tu_6_12_thang": -8322936.0,
         "tu_1_5_nam": 15154627.0,
         "tren_5_nam": 14173366.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 5875368.0,
+        "qua_han_den_3t": 2239116.0,
+        "den_1_thang": -32292534.0,
+        "tu_1_3_thang": 3161948.0,
+        "tu_3_12_thang": -22869566.0,
+        "tu_1_5_nam": 10931607.0,
+        "tren_5_nam": 61999087.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 92419557.0,
+        "tu_1_3_thang": 39020806.0,
+        "tu_3_12_thang": 79707807.0,
+        "tu_1_5_nam": 18017686.0,
+        "tren_5_nam": 0.0
+      },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 4848099.0,
-        "khong_anh_huong_lai_suat": 90240388.0,
-        "den_1_thang": 38034214.0,
-        "tu_1_3_thang": 46537530.0,
-        "tu_3_6_thang": 31732891.0,
-        "tu_6_12_thang": 17772734.0,
-        "tu_1_5_nam": 0.0,
-        "tren_5_nam": 229165856.0
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 4848099.0,
+        "den_1_thang": 90240388.0,
+        "tu_1_3_thang": 38034214.0,
+        "tu_3_6_thang": 46537530.0,
+        "tu_6_12_thang": 31732891.0,
+        "tu_1_5_nam": 17772734.0,
+        "tren_5_nam": 0.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -169,7 +185,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251030_-_EIB_-_BCTC_hop_nhat_Q3.2025_1761868313.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-21T23:05:47+07:00"
+      "fetched_at": "2026-09-23T09:12:25+07:00"
     },
     "2026-Q1": {
       "status": "reported",

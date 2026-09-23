@@ -940,21 +940,21 @@
   },
   "bankingSystemRisk": {
     "asOf": "2026-Q2",
-    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +8.99% tổng tài sản (mức phân tán 11.01% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 22.1%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 36.2% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 121.7%. NH phụ thuộc rollover nhiều nhất: BVB (174%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 32.3% → 36.2%; Long-term Funding Coverage: 88.0% → 121.7% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
+    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +8.71% tổng tài sản (mức phân tán 10.73% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.9%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 35.7% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 120.3%. NH phụ thuộc rollover nhiều nhất: BVB (174%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 32.4% → 35.7%; Long-term Funding Coverage: 87.7% → 120.3% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "interestRateRisk": {
-      "netGapRatio": 0.08994454676645662,
-      "dispersionGapRatio": 0.11014412513332694,
+      "netGapRatio": 0.08709062031475644,
+      "dispersionGapRatio": 0.10729019868162676,
       "stressNiiByShock": {
-        "+100bp": 16309,
-        "-100bp": -16309,
-        "+200bp": 32618,
-        "-200bp": -32618
+        "+100bp": 16110,
+        "-100bp": -16110,
+        "+200bp": 32219,
+        "-200bp": -32219
       },
       "stressNiiRatioByShock": {
-        "+100bp": 0.11072865314872327,
-        "-100bp": -0.11072865314872327,
-        "+200bp": 0.22145730629744653,
-        "-200bp": -0.22145730629744653
+        "+100bp": 0.10937755853982047,
+        "-100bp": -0.10937755853982047,
+        "+200bp": 0.21874832765949567,
+        "-200bp": -0.21874832765949567
       },
       "worstBank": {
         "ticker": "NAB",
@@ -962,7 +962,7 @@
       }
     },
     "liquidityRisk": {
-      "netGapRatio": -0.0181469786719042,
+      "netGapRatio": -0.019232942223025896,
       "liquidAssetsRatio": 0.19328435996013787,
       "depositRunCoverageByStress": {
         "-5%": 6.394845865091842,
@@ -975,19 +975,18 @@
       }
     },
     "structuralFunding": {
-      "rolloverDependency1m": 0.5668096023492419,
-      "rolloverDependency3m": 0.46801357245829917,
-      "rolloverDependency12m": 0.36180996009653643,
-      "longTermFundingCoverage": 1.2172989305122826,
-      "longTermStructuralGap": -0.21729893051228255,
+      "rolloverDependency1m": 0.5623193764607829,
+      "rolloverDependency3m": 0.462324842935243,
+      "rolloverDependency12m": 0.35650884708300534,
+      "longTermFundingCoverage": 1.203135408767339,
+      "longTermStructuralGap": -0.20313540876733893,
       "mostDependentBank": {
         "ticker": "BVB",
         "rollover_dependency_12m": 1.7426617985714004
       },
-      "coveragePct": 65.89015959127576,
-      "nBanksIncluded": 18,
+      "coveragePct": 67.12362897435709,
+      "nBanksIncluded": 19,
       "missingTickers": [
-        "ABB",
         "BAB",
         "CTG",
         "HDB",
@@ -999,7 +998,7 @@
       "phase": {
         "phase": "mixed",
         "phaseLabel": "Chưa rõ xu hướng (tín hiệu hỗn hợp)",
-        "narrative": "Rollover dependency 12M: 32.3% → 36.2%; Long-term Funding Coverage: 88.0% → 121.7% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
+        "narrative": "Rollover dependency 12M: 32.4% → 35.7%; Long-term Funding Coverage: 87.7% → 120.3% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
         "periodsUsed": [
           "2025-Q4",
           "2026-Q1",
@@ -1008,7 +1007,7 @@
         "coveragePctByPeriod": [
           76.78625850106424,
           80.52568528186679,
-          65.89015959127576
+          67.12362897435709
         ]
       }
     },
@@ -1053,10 +1052,10 @@
       "ABB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.23454038491984547,
+        "cum_gap_1y_ratio": 0.003166465887427339,
         "deposit_run_coverage_10pct": 5.014041304827823,
-        "rollover_dependency_12m": null,
-        "long_term_funding_coverage": null
+        "rollover_dependency_12m": 0.11610649596886158,
+        "long_term_funding_coverage": 0.5610084314122719
       },
       "ACB": {
         "status": "reported",
@@ -1085,7 +1084,7 @@
       "BVB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": -0.0713362796618983,
+        "cum_gap_1y_ratio": -0.07133627966189829,
         "deposit_run_coverage_10pct": 4.68359472471287,
         "rollover_dependency_12m": 1.7426617985714004,
         "long_term_funding_coverage": 0.3835983576938689
@@ -1133,7 +1132,7 @@
       "MBB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.11756374980253893,
+        "cum_gap_1y_ratio": 0.11756374980253895,
         "deposit_run_coverage_10pct": 2.14993660865688,
         "rollover_dependency_12m": null,
         "long_term_funding_coverage": null
@@ -1183,7 +1182,7 @@
       "SGB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.001766309394865774,
+        "cum_gap_1y_ratio": 0.0017663093948657737,
         "deposit_run_coverage_10pct": 3.663715805095786,
         "rollover_dependency_12m": 1.1629119566245656,
         "long_term_funding_coverage": 0.9387257168885954
@@ -1191,7 +1190,7 @@
       "SHB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.12331457560364086,
+        "cum_gap_1y_ratio": 0.12331457560364083,
         "deposit_run_coverage_10pct": 2.7728298877785456,
         "rollover_dependency_12m": 0.5323961936377394,
         "long_term_funding_coverage": 0.4676039616647943
@@ -1215,7 +1214,7 @@
       "TCB": {
         "status": "reported",
         "period_used": "2026-Q2",
-        "cum_gap_1y_ratio": 0.03897973021383564,
+        "cum_gap_1y_ratio": 0.03897973021383563,
         "deposit_run_coverage_10pct": 2.784429799465084,
         "rollover_dependency_12m": 0.08297574813866034,
         "long_term_funding_coverage": 0.7298746738430502
@@ -48089,14 +48088,14 @@
     },
     "bank_alm_system_ir_risk_ratio": {
       "group": "bank_alm",
+      "auto_source": "derived",
       "label": "Rủi ro lãi suất hệ thống NH niêm yết (ΔNII/NII khi LS +100bp)",
       "unit": "%",
-      "goodDirection": "lower",
-      "autoSource": "derived",
+      "good_direction": "lower",
       "series": [
         {
           "period": "2024-Q1",
-          "value": 1.087,
+          "value": 0.768,
           "source_url": null
         },
         {
@@ -48106,7 +48105,7 @@
         },
         {
           "period": "2024-Q3",
-          "value": 4.031,
+          "value": 3.935,
           "source_url": null
         },
         {
@@ -48121,17 +48120,17 @@
         },
         {
           "period": "2025-Q2",
-          "value": 6.977,
+          "value": 9.618,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 2.542,
+          "value": 2.267,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 4.668,
+          "value": 4.071,
           "source_url": null
         },
         {
@@ -48141,41 +48140,23 @@
         },
         {
           "period": "2026-Q2",
-          "value": 11.073,
+          "value": 10.938,
           "source_url": null
         }
       ],
-      "trend": {
-        "latest": 11.073,
-        "latest_period": "2026-Q2",
-        "latest_source": null,
-        "n_points": 10,
-        "prior": 2.361,
-        "prior_period": "2026-Q1",
-        "delta": 8.712,
-        "delta_vs_4back": 4.096,
-        "far_period": "2025-Q2",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
-      },
       "note": "Tổng hợp có trọng số theo quy mô (Σ stress NII / Σ NII toàn hệ thống, KHÔNG phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM — xem bank_system_risk.py. Dữ liệu theo quý thật (Q1-Q4); 1 số kỳ có thể vẫn đang \"vá\" (patched) từ kỳ liền trước với ngân hàng chưa công bố kịp — xem coverage trong mục \"Rủi ro hệ thống ngân hàng (ALM)\" để biết rõ tỷ lệ phủ.",
       "impact": "ΔNII/NII lớn (trị tuyệt đối) nghĩa là lợi nhuận toàn hệ thống ngân hàng nhạy cảm hơn với biến động lãi suất."
     },
     "bank_alm_system_liquidity_risk_ratio": {
       "group": "bank_alm",
+      "auto_source": "derived",
       "label": "Rủi ro thanh khoản hệ thống NH niêm yết (che phủ rút -10% tiền gửi)",
       "unit": "%",
-      "goodDirection": "higher",
-      "autoSource": "derived",
+      "good_direction": "higher",
       "series": [
         {
           "period": "2024-Q1",
-          "value": 236.1,
+          "value": 239.5,
           "source_url": null
         },
         {
@@ -48224,37 +48205,19 @@
           "source_url": null
         }
       ],
-      "trend": {
-        "latest": 319.7,
-        "latest_period": "2026-Q2",
-        "latest_source": null,
-        "n_points": 10,
-        "prior": 332.7,
-        "prior_period": "2026-Q1",
-        "delta": -13.0,
-        "delta_vs_4back": 50.4,
-        "far_period": "2025-Q2",
-        "direction": "down",
-        "value_arrow": "↓",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
-      },
       "note": "Tổng hợp có trọng số theo quy mô (Σ liquid assets / Σ tiền gửi bị rút toàn hệ thống) từ 26 ngân hàng niêm yết/UPCoM. Dữ liệu theo quý thật, cùng cách tính coverage như chỉ báo lãi suất ở trên.",
       "impact": "Tỷ lệ che phủ càng cao, hệ thống ngân hàng càng ít rủi ro thanh khoản khi có cú sốc rút tiền gửi đồng loạt."
     },
     "bank_alm_system_rollover_dependency_12m": {
       "group": "bank_alm",
+      "auto_source": "derived",
       "label": "Rollover Dependency 12 tháng hệ thống NH niêm yết",
       "unit": "%",
-      "goodDirection": "lower",
-      "autoSource": "derived",
+      "good_direction": "lower",
       "series": [
         {
           "period": "2024-Q1",
-          "value": 21.85,
+          "value": 22.22,
           "source_url": null
         },
         {
@@ -48264,12 +48227,12 @@
         },
         {
           "period": "2024-Q3",
-          "value": 25.2,
+          "value": 20.85,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 27.64,
+          "value": 27.67,
           "source_url": null
         },
         {
@@ -48279,17 +48242,17 @@
         },
         {
           "period": "2025-Q2",
-          "value": 36.53,
+          "value": 27.5,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 28.84,
+          "value": 28.07,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 32.26,
+          "value": 32.36,
           "source_url": null
         },
         {
@@ -48299,41 +48262,23 @@
         },
         {
           "period": "2026-Q2",
-          "value": 36.18,
+          "value": 35.65,
           "source_url": null
         }
       ],
-      "trend": {
-        "latest": 36.18,
-        "latest_period": "2026-Q2",
-        "latest_source": null,
-        "n_points": 10,
-        "prior": 28.98,
-        "prior_period": "2026-Q1",
-        "delta": 7.2,
-        "delta_vs_4back": -0.35,
-        "far_period": "2025-Q2",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
-      },
       "note": "Tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover/vay liên ngân hàng — tổng hợp có trọng số theo quy mô (Σ Forward Cumulative Gap / Σ Nợ đến hạn cùng kỳ, KHÔNG phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py. LƯU Ý: cần bảng \"Nợ phải trả\" theo kỳ hạn (chậm có hơn bảng gap) nên độ phủ dữ liệu MỖI QUÝ khác nhau (có kỳ chỉ ~13/26 ngân hàng) — so sánh 2 kỳ coverage lệch nhiều KHÔNG phản ánh đúng xu hướng thật, xem mục \"Rủi ro hệ thống ngân hàng\" để biết coverage/pha của kỳ mới nhất.",
       "impact": "Tỷ lệ càng cao, hệ thống càng phải cạnh tranh huy động/rollover nguồn vốn ngắn hạn — 1 trong những cơ chế trực tiếp đẩy lãi suất huy động kỳ hạn dài lên."
     },
     "bank_alm_system_rollover_dependency_1m": {
       "group": "bank_alm",
+      "auto_source": "derived",
       "label": "Rollover Dependency 1 tháng hệ thống NH niêm yết",
       "unit": "%",
-      "goodDirection": "lower",
-      "autoSource": "derived",
+      "good_direction": "lower",
       "series": [
         {
           "period": "2024-Q1",
-          "value": 48.27,
+          "value": 48.36,
           "source_url": null
         },
         {
@@ -48343,12 +48288,12 @@
         },
         {
           "period": "2024-Q3",
-          "value": 61.26,
+          "value": 54.09,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 60.95,
+          "value": 60.69,
           "source_url": null
         },
         {
@@ -48358,17 +48303,17 @@
         },
         {
           "period": "2025-Q2",
-          "value": 59.58,
+          "value": 50.08,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 56.09,
+          "value": 53.46,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 53.81,
+          "value": 53.83,
           "source_url": null
         },
         {
@@ -48378,41 +48323,23 @@
         },
         {
           "period": "2026-Q2",
-          "value": 56.68,
+          "value": 56.23,
           "source_url": null
         }
       ],
-      "trend": {
-        "latest": 56.68,
-        "latest_period": "2026-Q2",
-        "latest_source": null,
-        "n_points": 10,
-        "prior": 42.52,
-        "prior_period": "2026-Q1",
-        "delta": 14.16,
-        "delta_vs_4back": -2.9,
-        "far_period": "2025-Q2",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": false,
-        "label": "worsening",
-        "arrow": "▼",
-        "judgment_label": "Xấu đi",
-        "judgment_color": "#ef4444"
-      },
       "note": "Cùng công thức Rollover Dependency 12 tháng ở trên, tính riêng cho horizon ≤1 tháng.",
       "impact": "Horizon ngắn nhất — phản ánh áp lực rollover/huy động TỨC THỜI của hệ thống."
     },
     "bank_alm_system_long_term_funding_coverage": {
       "group": "bank_alm",
+      "auto_source": "derived",
       "label": "Long-term Funding Coverage hệ thống NH niêm yết",
       "unit": "%",
-      "goodDirection": "higher",
-      "autoSource": "derived",
+      "good_direction": "higher",
       "series": [
         {
           "period": "2024-Q1",
-          "value": 86.92,
+          "value": 86.03,
           "source_url": null
         },
         {
@@ -48422,12 +48349,12 @@
         },
         {
           "period": "2024-Q3",
-          "value": 85.62,
+          "value": 86.33,
           "source_url": null
         },
         {
           "period": "2024-Q4",
-          "value": 107.95,
+          "value": 107.31,
           "source_url": null
         },
         {
@@ -48437,17 +48364,17 @@
         },
         {
           "period": "2025-Q2",
-          "value": 80.21,
+          "value": 73.89,
           "source_url": null
         },
         {
           "period": "2025-Q3",
-          "value": 83.04,
+          "value": 81.03,
           "source_url": null
         },
         {
           "period": "2025-Q4",
-          "value": 88.01,
+          "value": 87.67,
           "source_url": null
         },
         {
@@ -48457,28 +48384,10 @@
         },
         {
           "period": "2026-Q2",
-          "value": 121.73,
+          "value": 120.31,
           "source_url": null
         }
       ],
-      "trend": {
-        "latest": 121.73,
-        "latest_period": "2026-Q2",
-        "latest_source": null,
-        "n_points": 10,
-        "prior": 70.5,
-        "prior_period": "2026-Q1",
-        "delta": 51.23,
-        "delta_vs_4back": 41.52,
-        "far_period": "2025-Q2",
-        "direction": "up",
-        "value_arrow": "↑",
-        "is_improving": true,
-        "label": "improving",
-        "arrow": "▲",
-        "judgment_label": "Tốt lên",
-        "judgment_color": "#10b981"
-      },
       "note": "(Nợ >1 năm + Vốn chủ sở hữu) / Tài sản >1 năm — tổng hợp có trọng số theo quy mô từ 26 ngân hàng niêm yết/UPCoM. KHÔNG phải NSFR chính thức Basel (không phân loại trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng. LƯU Ý: độ phủ dữ liệu khác nhau mỗi quý (xem ghi chú ở Rollover Dependency 12 tháng) — so sánh kỳ coverage lệch nhiều không phản ánh đúng xu hướng thật.",
       "impact": "Tỷ lệ càng thấp (xa 100%), tài sản dài hạn càng phụ thuộc vào nguồn vốn ngắn hạn phải liên tục rollover — cùng cơ chế đẩy lãi suất huy động kỳ hạn dài lên."
     }

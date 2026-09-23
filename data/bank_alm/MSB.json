@@ -267,15 +267,58 @@
       "fetched_at": "2026-09-01T09:50:54+07:00"
     },
     "2024-Q1": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 8122376.0,
+        "khong_anh_huong_lai_suat": 15941988.0,
+        "den_1_thang": -58084652.0,
+        "tu_1_3_thang": 33039096.0,
+        "tu_3_6_thang": -4594410.0,
+        "tu_6_12_thang": 993826.0,
+        "tu_1_5_nam": 13063015.0,
+        "tren_5_nam": 26550922.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 4998992.0,
+        "qua_han_den_3t": 3123384.0,
+        "den_1_thang": -72917404.0,
+        "tu_1_3_thang": -6188745.0,
+        "tu_3_12_thang": -5618872.0,
+        "tu_1_5_nam": 52535949.0,
+        "tren_5_nam": 59098857.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 143124323.0,
+        "tu_1_3_thang": 43234806.0,
+        "tu_3_12_thang": 53662978.0,
+        "tu_1_5_nam": 6461070.0,
+        "tren_5_nam": 1249.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 6533927.0,
+        "den_1_thang": 142458591.0,
+        "tu_1_3_thang": 41001593.0,
+        "tu_3_6_thang": 35364012.0,
+        "tu_6_12_thang": 16469572.0,
+        "tu_1_5_nam": 4656611.0,
+        "tren_5_nam": 120.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
-      "source": null,
-      "fetched_at": "2026-09-22T18:15:59+07:00"
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024 (xác nhận qua ảnh chụp người dùng)",
+        "url": null,
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-23T09:12:25+07:00"
     },
     "2024-Q2": {
       "status": "reported",
