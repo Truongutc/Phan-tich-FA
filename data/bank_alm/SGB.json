@@ -393,7 +393,7 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 562458.0,
-        "khong_anh_huong_lai_suat": 663036.0,
+        "khong_anh_huong_lai_suat": 1162068.0,
         "den_1_thang": -1006923.0,
         "tu_1_3_thang": -1898650.0,
         "tu_3_6_thang": -7071879.0,
@@ -402,16 +402,33 @@
         "tren_5_nam": 7868478.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 52948.0,
-        "qua_han_den_3t": 0.0,
-        "den_1_thang": 0.0,
-        "tu_1_3_thang": 52944.0,
-        "tu_3_12_thang": 11112350.0,
-        "tu_1_5_nam": 5823226.0,
-        "tren_5_nam": 11127070.0
+        "qua_han_tren_3t": 482570.0,
+        "qua_han_den_3t": 79889.0,
+        "den_1_thang": -2316418.0,
+        "tu_1_3_thang": -1173902.0,
+        "tu_3_12_thang": -52861.0,
+        "tu_1_5_nam": 2568610.0,
+        "tren_5_nam": 4824075.0
       },
-      "liabilities_by_bucket": null,
-      "interest_rate_liabilities_by_bucket": null,
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 11112350.0,
+        "tu_1_3_thang": 5823226.0,
+        "tu_3_12_thang": 11127070.0,
+        "tu_1_5_nam": 1107640.0,
+        "tren_5_nam": 282.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 5431138.0,
+        "tu_1_3_thang": 5056303.0,
+        "tu_3_6_thang": 7876626.0,
+        "tu_6_12_thang": 123650.0,
+        "tu_1_5_nam": 10681842.0,
+        "tren_5_nam": 1009.0
+      },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
       "sbv_dep_by_bucket": null,
@@ -423,7 +440,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-si-gn-cng-thng28032025-000000bo-co-ti-chnh-nm-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T23:13:40+07:00"
+      "fetched_at": "2026-09-23T09:31:55+07:00"
     }
   },
   "quarterly_balance_sheet": {
