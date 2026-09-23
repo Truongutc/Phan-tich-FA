@@ -344,9 +344,16 @@ def _backfill_ticker_period(ticker, period_key, candidates, force=False):
         # + OCR lai that bai thi GIU NGUYEN du lieu tot cu, khong lam mat du lieu vi 1 lan thu lai
         # khong thanh cong (vd tam thoi mat mang, hoac OCR khong on dinh giua cac lan chay).
         existing = bank_alm_store.get_period_entry(ticker, period_key)
-        if existing and existing.get("status") == "reported":
-            print(f"  [WARN] {ticker} {period_key}: OCR lai that bai, GIU NGUYEN du lieu that/nhap "
-                  f"tay cu da co (khong ghi de thanh missing)")
+        # SUA (user 2026-09-23, phat hien qua SHB/NVB 2024-Q1): truoc day CHI giu nguyen du lieu cu
+        # khi status="reported" - status="patched" (vd upsert_patched_period() vua ghi tay theo yeu
+        # cau user vi ky nay THAT SU khong co bao cao rieng, "va" tam tu ky gan nhat) bi coi nhu
+        # "chua co gi", bi GHI DE THANH "missing" ngay khi lan OCR thu lai nay khong tim thay gi (dung
+        # nhu du doan cua user - bao cao khong ton tai) - XOA MAT quyet dinh "va" da chu dong lam,
+        # lap lai VO HAN moi lan workflow chay lai (backfill_all_missing_periods() quet lai TAT CA ky
+        # da tung co, bao gom ca ky "patched"). Gio giu nguyen CA "reported" VA "patched".
+        if existing and existing.get("status") in ("reported", "patched"):
+            print(f"  [WARN] {ticker} {period_key}: OCR lai that bai, GIU NGUYEN du lieu cu da co "
+                  f"(status={existing.get('status')!r} - khong ghi de thanh missing)")
             return f"giu_nguyen_du_lieu_cu ({period_key})"
         bank_alm_store.mark_missing_period(ticker, period_key)
         return "thieu"

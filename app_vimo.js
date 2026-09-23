@@ -192,11 +192,96 @@ function renderBankingSystemRiskSection(risk, indicators) {
     const chartsGrid = document.getElementById('banking-risk-charts-grid');
     if (chartsGrid) {
         chartsGrid.innerHTML = '';
-        ['bank_alm_system_ir_risk_ratio', 'bank_alm_system_liquidity_risk_ratio',
-         'bank_alm_system_rollover_dependency_12m', 'bank_alm_system_long_term_funding_coverage'].forEach((key) => {
-            const ind = indicators && indicators[key];
-            if (ind) _renderGenericIndicatorCard(chartsGrid, key, ind);
+        // SUA (user 2026-09-23): truoc day 4 chart nam CHUNG 1 grid phang, khong ro chart nao
+        // "cao = xau" chart nao "cao = tot", va khong lam ro dau la trong tam phan tich (rui ro cau
+        // truc ky han - kho xu ly hon thanh khoan vi khong co cong cu thi truong 2 giai quyet nhanh
+        // duoc). Gio nhom lai thanh 3 khu chu de + cau dan giai thich rieng tung khu, dung mau CO
+        // DINH theo BAN CHAT chi bao (khong phai theo xu huong tang/giam nhu _renderGenericIndicatorCard
+        // dung cho cac chi bao khac) - do la_cao=xau to mau DO, cao=tot to mau XANH, nhat quan doc
+        // ngay khong can doi chieu goodDirection tung luc.
+        const _GROUPS = [
+            {
+                title: '⚡ Áp lực thanh khoản tức thời',
+                intro: 'Nếu xảy ra rút tiền đột ngột, hệ thống có đủ tài sản thanh khoản để tự cân đối trong ngắn hạn không? Rủi ro này thường DỄ xử lý hơn (có công cụ thị trường 2: OMO, liên ngân hàng...).',
+                keys: ['bank_alm_system_liquidity_risk_ratio'],
+            },
+            {
+                title: '🏗️ Rủi ro cấu trúc kỳ hạn nguồn vốn (TRỌNG TÂM)',
+                intro: 'Hệ thống cho vay dài hạn nhiều hơn vốn dài hạn huy động được → phải liên tục rollover/huy động mới → tạo áp lực đẩy lãi suất huy động kỳ hạn dài. Rủi ro này KHÓ xử lý hơn thanh khoản — không có công cụ thị trường 2 để giải quyết nhanh, chỉ có thể thay đổi dần qua cơ cấu lại nguồn vốn.',
+                keys: ['bank_alm_system_rollover_dependency_12m', 'bank_alm_system_long_term_funding_coverage'],
+            },
+            {
+                title: '📈 Sức chống chịu rủi ro lãi suất',
+                intro: 'Lợi nhuận toàn hệ thống thay đổi bao nhiêu khi lãi suất biến động — đo khả năng chống chịu tức thời, KHÔNG phải áp lực cấu trúc dài hạn (xem mục trên).',
+                keys: ['bank_alm_system_ir_risk_ratio'],
+            },
+        ];
+        _GROUPS.forEach((g) => {
+            const validKeys = g.keys.filter((k) => indicators && indicators[k]);
+            if (!validKeys.length) return;
+            const groupEl = document.createElement('div');
+            groupEl.style.marginBottom = '14px';
+            groupEl.innerHTML = `
+                <h5 style="margin:10px 0 4px">${g.title}</h5>
+                <p class="ind-source-note" style="margin-bottom:8px">${g.intro}</p>
+                <div class="vimo-indicator-grid" style="margin-top:0"></div>`;
+            chartsGrid.appendChild(groupEl);
+            const subGrid = groupEl.querySelector('.vimo-indicator-grid');
+            validKeys.forEach((key) => _renderBankingRiskChartCard(subGrid, key, indicators[key]));
         });
+    }
+}
+
+// Chart chuyen dung cho muc "Rui ro he thong ngan hang" (khac _renderGenericIndicatorCard o cho
+// dung mau CO DINH theo ban chat chi bao, khong phai theo xu huong tang/giam trong khung hien thi -
+// xem ghi chu o renderBankingSystemRiskSection). Cung hien badge chieu rui ro + canh bao coverage
+// thap NGAY TREN CARD (user 2026-09-23: doc chart mot minh de hieu nham "khong con rui ro" khi diem
+// moi nhat thuc ra mau qua nho, chua dai dien toan he thong - truoc day chi co canh bao nay trong
+// doan van rieng, de bi bo qua khi chi nhin chart).
+function _renderBankingRiskChartCard(grid, key, ind) {
+    const card = document.createElement('div');
+    card.className = 'vimo-indicator-card';
+    const t = ind.trend || {};
+    const valid = (ind.series || []).filter(p => p.value !== null && p.value !== undefined);
+    const hasChart = valid.length >= 2;
+    const canvasId = `chart-${key}`;
+    const isHigherBad = ind.goodDirection === 'lower';
+    const dirColor = isHigherBad ? '#ef4444' : '#10b981';
+    const dirBadge = isHigherBad ? '▲ Cao hơn = rủi ro cao hơn' : '▲ Cao hơn = an toàn hơn';
+
+    const latestPoint = valid[valid.length - 1];
+    const lowCovWarning = (latestPoint && latestPoint.coverage_pct != null && latestPoint.coverage_pct < 60)
+        ? `<div class="ind-note" style="color:#f59e0b">⚠️ Điểm mới nhất chỉ đại diện ${latestPoint.coverage_pct.toFixed(0)}% tổng tài sản hệ thống — CHƯA đủ để kết luận xu hướng.</div>`
+        : '';
+
+    card.innerHTML = `
+        <div class="ind-header">
+            <span class="ind-name">${ind.label}</span>
+            <span class="ind-judgment" style="background:${dirColor}22;color:${dirColor}">${dirBadge}</span>
+        </div>
+        <div class="ind-value">${t.latest !== null && t.latest !== undefined ? formatNumber(t.latest) : '-'} <span style="font-size:0.5em;color:var(--text-muted)">${ind.unit}</span></div>
+        <div class="ind-meta">Kỳ: ${t.latest_period ? _periodToDisplayLabel(t.latest_period) : '—'} · Nguồn: ${SOURCE_LABELS[ind.autoSource] || ind.autoSource}</div>
+        ${hasChart ? `<div class="ind-chart"><canvas id="${canvasId}"></canvas></div>` : ''}
+        ${lowCovWarning}
+        ${ind.impact ? `<div class="ind-note">${ind.impact}</div>` : ''}
+        ${ind.note ? `<div class="ind-source-note">${ind.note}</div>` : ''}
+    `;
+    grid.appendChild(card);
+
+    if (hasChart) {
+        const ctx = card.querySelector(`#${canvasId}`);
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: valid.map(p => _periodToDisplayLabel(p.period)),
+                datasets: [{
+                    data: valid.map(p => p.value), borderColor: dirColor,
+                    backgroundColor: dirColor + '15', fill: true, tension: 0.25, pointRadius: 2,
+                }],
+            },
+            options: CHART_DEFAULTS,
+        });
+        chartInstances.push(chart);
     }
 }
 

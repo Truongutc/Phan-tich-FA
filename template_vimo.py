@@ -2446,19 +2446,31 @@ def _add_bank_alm_derived_indicators(raw, trends):
     for period_key, agg in all_agg.items():
         if (agg["n_banks_reported"] + agg["n_banks_patched"]) == 0:
             continue
+        # SUA (user 2026-09-23): mang theo coverage_pct CUA DUNG KY DIEM DO (khong chi ghi rieng o
+        # cap aggregate) - de frontend hien duoc canh bao "diem nay chi dai dien X% tong tai san"
+        # NGAY TREN CHART, khong phai chi doc duoc trong doan van ban rieng ben duoi (de nguoi dung
+        # de nhin nham "khong con rui ro" khi thuc ra diem moi nhat mau qua nho, khong dai dien).
+        ir_cov = agg["interest_rate_risk"].get("coverage_pct")
+        liq_cov = agg["liquidity_risk"].get("coverage_pct")
         ir_ratio = agg["interest_rate_risk"]["stress_nii_ratio"].get("+100bp")
         if ir_ratio is not None:
-            ir_points.append({"period": period_key, "value": round(ir_ratio * 100, 3), "source_url": None})
+            ir_points.append({"period": period_key, "value": round(ir_ratio * 100, 3), "source_url": None,
+                               "coverage_pct": round(ir_cov, 1) if ir_cov is not None else None})
         cov10 = agg["liquidity_risk"]["deposit_run_coverage"].get("-10%")
         if cov10 is not None:
-            liq_points.append({"period": period_key, "value": round(cov10 * 100, 1), "source_url": None})
+            liq_points.append({"period": period_key, "value": round(cov10 * 100, 1), "source_url": None,
+                                "coverage_pct": round(liq_cov, 1) if liq_cov is not None else None})
         sf = agg.get("structural_funding") or {}
+        sf_cov = sf.get("coverage_pct")
         if sf.get("rollover_dependency_1m") is not None:
-            rollover_1m_points.append({"period": period_key, "value": round(sf["rollover_dependency_1m"] * 100, 2), "source_url": None})
+            rollover_1m_points.append({"period": period_key, "value": round(sf["rollover_dependency_1m"] * 100, 2), "source_url": None,
+                                        "coverage_pct": round(sf_cov, 1) if sf_cov is not None else None})
         if sf.get("rollover_dependency_12m") is not None:
-            rollover_12m_points.append({"period": period_key, "value": round(sf["rollover_dependency_12m"] * 100, 2), "source_url": None})
+            rollover_12m_points.append({"period": period_key, "value": round(sf["rollover_dependency_12m"] * 100, 2), "source_url": None,
+                                         "coverage_pct": round(sf_cov, 1) if sf_cov is not None else None})
         if sf.get("long_term_funding_coverage") is not None:
-            ltfc_points.append({"period": period_key, "value": round(sf["long_term_funding_coverage"] * 100, 2), "source_url": None})
+            ltfc_points.append({"period": period_key, "value": round(sf["long_term_funding_coverage"] * 100, 2), "source_url": None,
+                                 "coverage_pct": round(sf_cov, 1) if sf_cov is not None else None})
 
     if ir_points:
         raw["bank_alm_system_ir_risk_ratio"] = {

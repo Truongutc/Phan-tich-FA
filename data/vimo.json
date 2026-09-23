@@ -48124,52 +48124,62 @@
         {
           "period": "2024-Q1",
           "value": -0.487,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.0
         },
         {
           "period": "2024-Q2",
           "value": -1.662,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 26.6
         },
         {
           "period": "2024-Q3",
           "value": -0.793,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 34.9
         },
         {
           "period": "2024-Q4",
           "value": -1.073,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.8
         },
         {
           "period": "2025-Q1",
           "value": -0.857,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.3
         },
         {
           "period": "2025-Q2",
           "value": 0.891,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 42.6
         },
         {
           "period": "2025-Q3",
           "value": -0.281,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 27.4
         },
         {
           "period": "2025-Q4",
           "value": -0.156,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.3
         },
         {
           "period": "2026-Q1",
           "value": 1.593,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 24.4
         },
         {
           "period": "2026-Q2",
           "value": 0.825,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 13.0
         }
       ],
       "note": "Tổng hợp có trọng số theo quy mô (Σ stress NII / Σ NII toàn hệ thống, KHÔNG phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM — xem bank_system_risk.py. Dữ liệu theo quý thật (Q1-Q4); 1 số kỳ có thể vẫn đang \"vá\" (patched) từ kỳ liền trước với ngân hàng chưa công bố kịp — xem coverage trong mục \"Rủi ro hệ thống ngân hàng (ALM)\" để biết rõ tỷ lệ phủ.",
@@ -48185,52 +48195,62 @@
         {
           "period": "2024-Q1",
           "value": 235.8,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.0
         },
         {
           "period": "2024-Q2",
           "value": 250.1,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 26.6
         },
         {
           "period": "2024-Q3",
           "value": 243.0,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 34.9
         },
         {
           "period": "2024-Q4",
           "value": 269.9,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.8
         },
         {
           "period": "2025-Q1",
           "value": 261.1,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.3
         },
         {
           "period": "2025-Q2",
           "value": 269.3,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 42.6
         },
         {
           "period": "2025-Q3",
           "value": 297.3,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 27.4
         },
         {
           "period": "2025-Q4",
           "value": 337.9,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.3
         },
         {
           "period": "2026-Q1",
           "value": 331.9,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 24.4
         },
         {
           "period": "2026-Q2",
           "value": 319.7,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 13.0
         }
       ],
       "note": "Tổng hợp có trọng số theo quy mô (Σ liquid assets / Σ tiền gửi bị rút toàn hệ thống) từ 26 ngân hàng niêm yết/UPCoM. Dữ liệu theo quý thật, cùng cách tính coverage như chỉ báo lãi suất ở trên.",
@@ -48246,52 +48266,62 @@
         {
           "period": "2024-Q1",
           "value": 26.56,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 29.4
         },
         {
           "period": "2024-Q2",
           "value": 23.14,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 25.7
         },
         {
           "period": "2024-Q3",
           "value": 11.63,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 33.3
         },
         {
           "period": "2024-Q4",
           "value": 20.98,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.8
         },
         {
           "period": "2025-Q1",
           "value": 23.88,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.3
         },
         {
           "period": "2025-Q2",
           "value": 20.38,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 42.6
         },
         {
           "period": "2025-Q3",
           "value": 24.54,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 26.3
         },
         {
           "period": "2025-Q4",
           "value": 48.3,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.3
         },
         {
           "period": "2026-Q1",
           "value": 19.32,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 24.4
         },
         {
           "period": "2026-Q2",
           "value": 28.34,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 9.8
         }
       ],
       "note": "Tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover/vay liên ngân hàng — tổng hợp có trọng số theo quy mô (Σ Forward Cumulative Gap / Σ Nợ đến hạn cùng kỳ, KHÔNG phải trung bình cộng % từng ngân hàng) từ 26 ngân hàng niêm yết/UPCoM. Xem bank_system_risk.py. LƯU Ý: cần bảng \"Nợ phải trả\" theo kỳ hạn (chậm có hơn bảng gap) nên độ phủ dữ liệu MỖI QUÝ khác nhau (có kỳ chỉ ~13/26 ngân hàng) — so sánh 2 kỳ coverage lệch nhiều KHÔNG phản ánh đúng xu hướng thật, xem mục \"Rủi ro hệ thống ngân hàng\" để biết coverage/pha của kỳ mới nhất.",
@@ -48307,52 +48337,62 @@
         {
           "period": "2024-Q1",
           "value": 35.17,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 29.4
         },
         {
           "period": "2024-Q2",
           "value": 59.27,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 25.7
         },
         {
           "period": "2024-Q3",
           "value": 23.62,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 33.3
         },
         {
           "period": "2024-Q4",
           "value": 40.39,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.8
         },
         {
           "period": "2025-Q1",
           "value": 41.25,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.3
         },
         {
           "period": "2025-Q2",
           "value": 43.27,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 42.6
         },
         {
           "period": "2025-Q3",
           "value": 54.14,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 26.3
         },
         {
           "period": "2025-Q4",
           "value": 89.96,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.3
         },
         {
           "period": "2026-Q1",
           "value": 29.67,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 24.4
         },
         {
           "period": "2026-Q2",
           "value": 44.81,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 9.8
         }
       ],
       "note": "Cùng công thức Rollover Dependency 12 tháng ở trên, tính riêng cho horizon ≤1 tháng.",
@@ -48368,52 +48408,62 @@
         {
           "period": "2024-Q1",
           "value": 92.44,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 29.4
         },
         {
           "period": "2024-Q2",
           "value": 73.03,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 25.7
         },
         {
           "period": "2024-Q3",
           "value": 82.65,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 33.3
         },
         {
           "period": "2024-Q4",
           "value": 49.29,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.8
         },
         {
           "period": "2025-Q1",
           "value": 68.46,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 32.3
         },
         {
           "period": "2025-Q2",
           "value": 58.16,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 42.6
         },
         {
           "period": "2025-Q3",
           "value": 52.56,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 26.3
         },
         {
           "period": "2025-Q4",
           "value": 90.38,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 20.3
         },
         {
           "period": "2026-Q1",
           "value": 64.36,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 24.4
         },
         {
           "period": "2026-Q2",
           "value": 64.2,
-          "source_url": null
+          "source_url": null,
+          "coverage_pct": 9.8
         }
       ],
       "note": "(Nợ >1 năm + Vốn chủ sở hữu) / Tài sản >1 năm — tổng hợp có trọng số theo quy mô từ 26 ngân hàng niêm yết/UPCoM. KHÔNG phải NSFR chính thức Basel (không phân loại trọng số ASF/RSF) — chỉ số tự xây để theo dõi xu hướng. LƯU Ý: độ phủ dữ liệu khác nhau mỗi quý (xem ghi chú ở Rollover Dependency 12 tháng) — so sánh kỳ coverage lệch nhiều không phản ánh đúng xu hướng thật.",
