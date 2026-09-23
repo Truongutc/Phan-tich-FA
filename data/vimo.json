@@ -940,7 +940,7 @@
   },
   "bankingSystemRisk": {
     "asOf": "2026-Q2",
-    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +8.71% tổng tài sản (mức phân tán 10.73% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.9%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 35.7% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 120.3%. NH phụ thuộc rollover nhiều nhất: BVB (174%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 32.4% → 35.7%; Long-term Funding Coverage: 87.7% → 120.3% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
+    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +8.71% tổng tài sản (mức phân tán 10.73% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu CẦN LƯU Ý (sốc +200bp làm NII hệ thống đổi khoảng 21.9%). Ngân hàng lệch nhiều nhất: NAB (+46.4%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 32.8% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 114.2%. NH phụ thuộc rollover nhiều nhất: BVB (174%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 32.4% → 32.8%; Long-term Funding Coverage: 87.7% → 114.2% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "interestRateRisk": {
       "netGapRatio": 0.08709062031475644,
       "dispersionGapRatio": 0.10729019868162676,
@@ -962,7 +962,7 @@
       }
     },
     "liquidityRisk": {
-      "netGapRatio": -0.019232942223025896,
+      "netGapRatio": -0.02263847221352236,
       "liquidAssetsRatio": 0.19328435996013787,
       "depositRunCoverageByStress": {
         "-5%": 6.394845865091842,
@@ -975,22 +975,21 @@
       }
     },
     "structuralFunding": {
-      "rolloverDependency1m": 0.5623193764607829,
-      "rolloverDependency3m": 0.462324842935243,
-      "rolloverDependency12m": 0.35650884708300534,
-      "longTermFundingCoverage": 1.203135408767339,
-      "longTermStructuralGap": -0.20313540876733893,
+      "rolloverDependency1m": 0.5416088854984684,
+      "rolloverDependency3m": 0.4430172060088606,
+      "rolloverDependency12m": 0.32842988646589644,
+      "longTermFundingCoverage": 1.1424817049523677,
+      "longTermStructuralGap": -0.14248170495236767,
       "mostDependentBank": {
         "ticker": "BVB",
         "rollover_dependency_12m": 1.7426617985714004
       },
-      "coveragePct": 67.12362897435709,
-      "nBanksIncluded": 19,
+      "coveragePct": 75.3275206528812,
+      "nBanksIncluded": 20,
       "missingTickers": [
         "BAB",
         "CTG",
         "HDB",
-        "MBB",
         "MSB",
         "NVB",
         "OCB"
@@ -998,7 +997,7 @@
       "phase": {
         "phase": "mixed",
         "phaseLabel": "Chưa rõ xu hướng (tín hiệu hỗn hợp)",
-        "narrative": "Rollover dependency 12M: 32.4% → 35.7%; Long-term Funding Coverage: 87.7% → 120.3% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
+        "narrative": "Rollover dependency 12M: 32.4% → 32.8%; Long-term Funding Coverage: 87.7% → 114.2% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
         "periodsUsed": [
           "2025-Q4",
           "2026-Q1",
@@ -1007,7 +1006,7 @@
         "coveragePctByPeriod": [
           76.78625850106424,
           81.41879660475742,
-          67.12362897435709
+          75.3275206528812
         ]
       }
     },
@@ -1134,8 +1133,8 @@
         "period_used": "2026-Q2",
         "cum_gap_1y_ratio": 0.11756374980253895,
         "deposit_run_coverage_10pct": 2.14993660865688,
-        "rollover_dependency_12m": null,
-        "long_term_funding_coverage": null
+        "rollover_dependency_12m": 0.07132049301783454,
+        "long_term_funding_coverage": 0.8913988157625135
       },
       "MSB": {
         "status": "reported",
@@ -48262,7 +48261,7 @@
         },
         {
           "period": "2026-Q2",
-          "value": 35.65,
+          "value": 32.84,
           "source_url": null
         }
       ],
@@ -48323,7 +48322,7 @@
         },
         {
           "period": "2026-Q2",
-          "value": 56.23,
+          "value": 54.16,
           "source_url": null
         }
       ],
@@ -48384,7 +48383,7 @@
         },
         {
           "period": "2026-Q2",
-          "value": 120.31,
+          "value": 114.25,
           "source_url": null
         }
       ],
