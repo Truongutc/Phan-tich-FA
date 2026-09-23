@@ -1219,50 +1219,56 @@ _ALM_SHEET_HEADERS = [
 ]
 
 
-def _alm_side_diagnosis(gap_d, liab_d, ta_ty):
-    """Chan doan 1 BEN (lai suat HOAC thanh khoan) rieng le - tra ve None (khong co du lieu), "OK",
-    hoac "SAI (TS suy ra=X vs TS thuc=Y ty)". User (2026-09-23, qua vi du HDB Q2/2026) chi ra dung:
-    so tong 2 ben (IR vs LIQ) CHI biet "1 trong 2 sai", khong biet BEN NAO — trong khi TS suy ra =
-    Gap + No phai tra CUA TUNG BEN co the doi chieu DOC LAP voi Tong tai san THAT (Vietcap) de chi
-    thang ra dung ben dang sai, khong can doan."""
-    if not gap_d:
+def _alm_implied_total_assets(gap_d, liab_d):
+    """Tong tai san SUY RA tu 1 bang (Gap + No phai tra, ca 2 deu tinh tu CHINH tai lieu BCTC that -
+    khong qua don vi/quy uoc ben ngoai) - tra ve (gia_tri_ty_dong, None) hoac (None, None) neu thieu
+    du lieu. Tra ve don vi TY DONG (da chia 1000 tu trieu dong luu trong store)."""
+    if not gap_d or not liab_d:
         return None
     gap_sum = sum(v or 0 for v in gap_d.values()) / 1000
-    if not liab_d or not ta_ty:
-        return None
     liab_sum = sum(v or 0 for v in liab_d.values()) / 1000
-    implied_ta = gap_sum + liab_sum
-    ratio = implied_ta / ta_ty if ta_ty else None
-    if ratio is None or 0.5 <= ratio <= 2.0:
-        return "OK"
-    return f"SAI (TS suy ra={implied_ta:,.0f} vs TS thuc={ta_ty:,.0f} ty)"
+    return gap_sum + liab_sum
 
 
 def _alm_cross_check_label(entry, status_ls, status_tk, ta_ty):
-    """1 chuoi ngan gon cho cot "Kiem tra cheo LS/TK" - dung CHUNG cho ca 2 sheet Excel (Raw va
-    RawBuckets). Uu tien chan doan RIENG TUNG BEN qua _alm_side_diagnosis() (chi thang ben sai) khi
-    co du lieu No phai tra theo bucket; fallback ve so sanh tong 2 ben (khong chi duoc ben nao,
-    nhung van bat duoc bat thuong khi thieu No phai tra theo bucket rieng)."""
+    """1 chuoi cho cot "Kiem tra cheo LS/TK" - dung CHUNG cho ca 2 sheet Excel (Raw va RawBuckets).
+
+    SUA (user 2026-09-23, phan hoi qua vi du HDB Q2/2026): kiem tra CHINH phai la so TONG TAI SAN
+    SUY RA tu bang Lai suat vs SUY RA tu bang Thanh khoan VOI NHAU (ca 2 deu tu CHINH 1 tai lieu BCTC,
+    cung don vi/quy uoc trinh bay - so sanh nay dang tin cay nhat, KHONG le thuoc nguon ben ngoai).
+    Tong tai san THAT tu Vietcap (ta_ty) CHI dung lam THAM KHAO PHU de doan ben nao co kha nang dung
+    hon khi 2 ben lech nhau (KHONG dung lam chuan chinh vi co the lech ~1-2% do quy uoc gop/rong du
+    phong rui ro khac nhau giua Vietcap va thuyet minh - da xac nhan qua vi du ACB truoc do), tuyet
+    doi KHONG tu bao "SAI" chi vi lech so voi Vietcap khi ca 2 bang LS/TK van khop nhau tot."""
     if status_ls != "reported" or status_tk != "reported":
         return ""
     ir_gap = entry.get("interest_rate_gap") or {}
     liq_gap = entry.get("liquidity_gap") or {}
-    ir_diag = _alm_side_diagnosis(ir_gap, entry.get("interest_rate_liabilities_by_bucket"), ta_ty)
-    liq_diag = _alm_side_diagnosis(liq_gap, entry.get("liabilities_by_bucket"), ta_ty)
-    if ir_diag is not None or liq_diag is not None:
-        parts = []
-        if ir_diag is not None:
-            parts.append(f"LS {ir_diag}")
-        if liq_diag is not None:
-            parts.append(f"TK {liq_diag}")
-        return " | ".join(parts)
+    ta_ls = _alm_implied_total_assets(ir_gap, entry.get("interest_rate_liabilities_by_bucket"))
+    ta_tk = _alm_implied_total_assets(liq_gap, entry.get("liabilities_by_bucket"))
+
+    if ta_ls is not None and ta_tk is not None:
+        denom = max(abs(ta_ls), abs(ta_tk), 0.01)
+        diff_pct = abs(ta_ls - ta_tk) / denom * 100
+        if diff_pct <= 10:
+            return f"OK (TS LS={ta_ls:,.0f} ~ TS TK={ta_tk:,.0f} ty)"
+        # Lech nhau - dung ta_ty (Vietcap) CHI de GOI Y ben nao gan thuc te hon, khong khang dinh
+        hint = ""
+        if ta_ty:
+            d_ls = abs(ta_ls - ta_ty)
+            d_tk = abs(ta_tk - ta_ty)
+            hint = " -> nghi TK sai" if d_ls < d_tk else (" -> nghi LS sai" if d_tk < d_ls else "")
+        return f"LECH {diff_pct:.0f}%: TS LS={ta_ls:,.0f} vs TS TK={ta_tk:,.0f} ty (TS thuc~{ta_ty:,.0f} ty){hint}"
+
+    # Thieu No phai tra theo bucket o >=1 ben - khong tinh duoc Tong tai san suy ra, fallback ve so
+    # tong Gap don (kem canh bao ro la khong chac chan bang nao sai).
     ir_sum_ty = sum((v or 0) / 1000 for v in ir_gap.values())
     liq_sum_ty = sum((v or 0) / 1000 for v in liq_gap.values())
     if not (ir_sum_ty or liq_sum_ty):
         return ""
     _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
     _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
-    return "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% - 1 TRONG 2 SAI (chua ro ben nao, thieu No phai tra theo bucket de xac dinh)"
+    return "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% Gap LS/TK - thieu No phai tra theo bucket nen chua tinh duoc Tong tai san de xac dinh ben nao sai"
 
 
 def update_bank_alm_excel_sheet(out_dir):

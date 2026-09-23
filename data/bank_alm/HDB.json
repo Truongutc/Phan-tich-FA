@@ -274,22 +274,22 @@
         "tren_5_nam": 22235658.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 18545310000.0,
-        "qua_han_den_3t": 30988583000.0,
-        "den_1_thang": 65304107000.0,
-        "tu_1_3_thang": 0.0,
-        "tu_3_12_thang": 0.0,
-        "tu_1_5_nam": 0.0,
-        "tren_5_nam": 0.0
+        "qua_han_tren_3t": 18545910.0,
+        "qua_han_den_3t": 30968593.0,
+        "den_1_thang": -20828353.0,
+        "tu_1_3_thang": -65304109.0,
+        "tu_3_12_thang": -146785420.0,
+        "tu_1_5_nam": 198758947.0,
+        "tren_5_nam": 84691618.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
-        "den_1_thang": 0.0,
-        "tu_1_3_thang": 0.0,
-        "tu_3_12_thang": 8512000.0,
-        "tu_1_5_nam": 31200347000.0,
-        "tren_5_nam": 67753000.0
+        "den_1_thang": 260028857.0,
+        "tu_1_3_thang": 145967401.0,
+        "tu_3_12_thang": 472789512.0,
+        "tu_1_5_nam": 37222989.0,
+        "tren_5_nam": 39200347.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
@@ -312,7 +312,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/HDB_202608242020HDB2020BCTC20kiem20toan20hop20nhat201H20262020giai20trinh_10092026162008.pdf?v=1789032010337",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-23T15:12:19+07:00"
+      "fetched_at": "2026-09-23T15:28:34+07:00"
     },
     "2024-Q1": {
       "status": "reported",
