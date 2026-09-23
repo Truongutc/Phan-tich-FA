@@ -458,15 +458,54 @@
       "fetched_at": "2026-09-22T17:35:05+07:00"
     },
     "2024-Q3": {
-      "status": "missing",
+      "status": "reported",
       "patched_from": null,
-      "interest_rate_gap": null,
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "interest_rate_gap": {
+        "qua_han": 6899698.0,
+        "khong_anh_huong_lai_suat": 749164.0,
+        "den_1_thang": -83005712.0,
+        "tu_1_3_thang": 23578265.0,
+        "tu_3_6_thang": -1822815.0,
+        "tu_6_12_thang": 92262691.0,
+        "tu_1_5_nam": 2503281.0,
+        "tren_5_nam": 4225545.0
+      },
+      "liquidity_gap": {
+        "qua_han_den_3t": 2353440.0,
+        "qua_han_tren_3t": 4546258.0,
+        "den_1_thang": -85100225.0,
+        "tu_1_3_thang": -20699768.0,
+        "tu_3_12_thang": 50729244.0,
+        "tu_1_5_nam": 1779172.0,
+        "tren_5_nam": 91781996.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 186079310.0,
+        "tu_1_3_thang": 71278058.0,
+        "tu_3_12_thang": 82793607.0,
+        "tu_1_5_nam": 59007816.0,
+        "tren_5_nam": 6276718.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 11905799.0,
+        "den_1_thang": 193629722.0,
+        "tu_1_3_thang": 84551749.0,
+        "tu_3_6_thang": 63045522.0,
+        "tu_6_12_thang": 13991418.0,
+        "tu_1_5_nam": 36311299.0,
+        "tren_5_nam": 2000000.0
+      },
       "interest_rate_sensitivity_disclosed": null,
-      "balance_sheet_snapshot": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": null,
-      "fetched_at": "2026-09-22T17:00:52+07:00"
+      "fetched_at": "2026-09-23T09:39:04+07:00"
     },
     "2024-FY": {
       "status": "reported",
