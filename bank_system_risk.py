@@ -1219,6 +1219,52 @@ _ALM_SHEET_HEADERS = [
 ]
 
 
+def _alm_side_diagnosis(gap_d, liab_d, ta_ty):
+    """Chan doan 1 BEN (lai suat HOAC thanh khoan) rieng le - tra ve None (khong co du lieu), "OK",
+    hoac "SAI (TS suy ra=X vs TS thuc=Y ty)". User (2026-09-23, qua vi du HDB Q2/2026) chi ra dung:
+    so tong 2 ben (IR vs LIQ) CHI biet "1 trong 2 sai", khong biet BEN NAO — trong khi TS suy ra =
+    Gap + No phai tra CUA TUNG BEN co the doi chieu DOC LAP voi Tong tai san THAT (Vietcap) de chi
+    thang ra dung ben dang sai, khong can doan."""
+    if not gap_d:
+        return None
+    gap_sum = sum(v or 0 for v in gap_d.values()) / 1000
+    if not liab_d or not ta_ty:
+        return None
+    liab_sum = sum(v or 0 for v in liab_d.values()) / 1000
+    implied_ta = gap_sum + liab_sum
+    ratio = implied_ta / ta_ty if ta_ty else None
+    if ratio is None or 0.5 <= ratio <= 2.0:
+        return "OK"
+    return f"SAI (TS suy ra={implied_ta:,.0f} vs TS thuc={ta_ty:,.0f} ty)"
+
+
+def _alm_cross_check_label(entry, status_ls, status_tk, ta_ty):
+    """1 chuoi ngan gon cho cot "Kiem tra cheo LS/TK" - dung CHUNG cho ca 2 sheet Excel (Raw va
+    RawBuckets). Uu tien chan doan RIENG TUNG BEN qua _alm_side_diagnosis() (chi thang ben sai) khi
+    co du lieu No phai tra theo bucket; fallback ve so sanh tong 2 ben (khong chi duoc ben nao,
+    nhung van bat duoc bat thuong khi thieu No phai tra theo bucket rieng)."""
+    if status_ls != "reported" or status_tk != "reported":
+        return ""
+    ir_gap = entry.get("interest_rate_gap") or {}
+    liq_gap = entry.get("liquidity_gap") or {}
+    ir_diag = _alm_side_diagnosis(ir_gap, entry.get("interest_rate_liabilities_by_bucket"), ta_ty)
+    liq_diag = _alm_side_diagnosis(liq_gap, entry.get("liabilities_by_bucket"), ta_ty)
+    if ir_diag is not None or liq_diag is not None:
+        parts = []
+        if ir_diag is not None:
+            parts.append(f"LS {ir_diag}")
+        if liq_diag is not None:
+            parts.append(f"TK {liq_diag}")
+        return " | ".join(parts)
+    ir_sum_ty = sum((v or 0) / 1000 for v in ir_gap.values())
+    liq_sum_ty = sum((v or 0) / 1000 for v in liq_gap.values())
+    if not (ir_sum_ty or liq_sum_ty):
+        return ""
+    _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
+    _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
+    return "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% - 1 TRONG 2 SAI (chua ro ben nao, thieu No phai tra theo bucket de xac dinh)"
+
+
 def update_bank_alm_excel_sheet(out_dir):
     """Ghi sheet "ALM_NganHang_Raw" (dạng tidy/long: 1 hàng = 1 (ngân hàng, kỳ)) trong CÙNG workbook
     VIMO_Lich_Su_Chi_So.xlsx (out_dir/VIMO_Lich_Su_Chi_So.xlsx) trực tiếp từ data/bank_alm/, để dữ
@@ -1301,20 +1347,10 @@ def update_bank_alm_excel_sheet(out_dir):
                 else:
                     status_overall = "missing"
 
-                # Kiem tra cheo: tong lai suat vs tong thanh khoan CUNG ky PHAI xap xi bang nhau (ca
-                # 2 deu = Tong tai san - Tong no phai tra tai dung 1 thoi diem) - cung nguong 20% dung
-                # trong guard he thong (_aggregate_for_period). Hien TRUC TIEP o day de biet dong nao
-                # "reported" nhung THUC RA dang bi loai khoi tong hop he thong vi 1 trong 2 bang sai.
-                ir_sum_ty = sum((v or 0) / 1000 for v in (entry.get("interest_rate_gap") or {}).values())
-                liq_sum_ty = sum((v or 0) / 1000 for v in (entry.get("liquidity_gap") or {}).values())
-                if status_ls != "reported" or status_tk != "reported":
-                    cross_check = ""
-                elif not (ir_sum_ty or liq_sum_ty):
-                    cross_check = ""
-                else:
-                    _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
-                    _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
-                    cross_check = "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% - NGHI NGO SAI"
+                # Kiem tra cheo: uu tien chan doan RIENG TUNG BEN (LS/TK) qua Tong tai san suy ra vs
+                # Tong tai san THAT (Vietcap) - xem _alm_cross_check_label(). Hien TRUC TIEP o day de
+                # biet dong nao "reported" nhung THUC RA dang bi loai khoi tong hop he thong.
+                cross_check = _alm_cross_check_label(entry, status_ls, status_tk, m.get("total_assets"))
 
                 row = [
                     ticker, period_key, status_overall, status_ls, status_tk, cross_check, entry.get("patched_from"),
@@ -1396,6 +1432,7 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
     for ticker in sorted(BANKING_TICKERS):
         store = bank_alm_store.load_bank_store(ticker)
         gap_periods = store.get("gap_periods", {})
+        qbs = store.get("quarterly_balance_sheet", {})
         # SUA (user 2026-09-23): gop "-FY"/"-Q4" thanh DUY NHAT 1 hang "Q4" moi nam - cung nguyen tac
         # da ap dung o update_bank_alm_excel_sheet(), xem ghi chu chi tiet o do. Van GIU nguyen tac
         # "khong bo qua status=missing" (dong ngay duoi day) - chi khong con tach rieng "-FY" thanh
@@ -1448,16 +1485,9 @@ def _update_bank_alm_raw_buckets_sheet(xlsx_path):
                     status_overall = "reported"
                 else:
                     status_overall = "missing"
-                ir_sum_ty = sum((v or 0) / 1000 for v in ir_gap.values())
-                liq_sum_ty = sum((v or 0) / 1000 for v in liq_gap.values())
-                if status_ls != "reported" or status_tk != "reported":
-                    cross_check = ""
-                elif not (ir_sum_ty or liq_sum_ty):
-                    cross_check = ""
-                else:
-                    _denom = max(abs(ir_sum_ty), abs(liq_sum_ty), 0.01)
-                    _diff_pct = abs(ir_sum_ty - liq_sum_ty) / _denom * 100
-                    cross_check = "OK" if _diff_pct <= 20 else f"LECH {_diff_pct:.0f}% - NGHI NGO SAI"
+                bs_snap = qbs.get(period_key)
+                ta_ty = bs_snap.get("total_assets") if bs_snap else None
+                cross_check = _alm_cross_check_label(entry, status_ls, status_tk, ta_ty)
                 row = [ticker, period_key, status_overall, status_ls, status_tk, cross_check]
                 row += [_ty(liq_gap, k) for k in _LIQ_BUCKETS_ALL]
                 row += [_ty(liq_liab, k) for k in _LIQ_BUCKETS_ALL]
