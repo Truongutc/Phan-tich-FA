@@ -240,7 +240,7 @@ def refresh_bank_alm_data():
 
 # ── Backfill lịch sử (workflow_dispatch riêng, KHÔNG chạy trong cron hàng tuần) ─────────────────
 
-def backfill_period(period_key):
+def backfill_period(period_key, force=False):
     """Backfill 1 KỲ LỊCH SỬ cụ thể (vd "2024-FY") cho TẤT CẢ 26 ngân hàng — dùng cho
     .github/workflows/backfill_bank_alm.yml (workflow_dispatch thủ công, KHÔNG chạy tự động).
     Bỏ qua ngân hàng đã có status="reported" đúng kỳ này (không OCR lại vô ích). Ghi "missing" cho
@@ -253,7 +253,15 @@ def backfill_period(period_key):
     2. Nếu kỳ chuẩn hóa ra là quý 4 ("YYYY-Q4"), CHỦ ĐỘNG thử bản báo cáo NĂM ("YYYY-FY", đã kiểm
        toán, đáng tin hơn) TRƯỚC, chỉ fallback về đúng "YYYY-Q4" (báo cáo quý thường) nếu ngân hàng
        đó chưa có bản năm — nhất quán với thứ tự ưu tiên FY>Q4 đã dùng khi TỔNG HỢP hệ thống (xem
-       _ticker_gap_entry), giờ áp dụng luôn từ bước BACKFILL/FETCH thay vì chỉ ở bước tổng hợp."""
+       _ticker_gap_entry), giờ áp dụng luôn từ bước BACKFILL/FETCH thay vì chỉ ở bước tổng hợp.
+
+    `force=True` (user 2026-09-23, sau khi phat hien qua kiem tra cheo LS/TK: RAT NHIEU ky da
+    "reported" (co du du lieu) nhung THUC RA sai - lech cot, tron nham dong, sai vi tri... - cac loi
+    nay khong duoc backfill_period() thuong phat hien/OCR lai vi da "reported" thi bo qua): OCR LAI
+    KHONG DIEU KIEN CA 26 ngan hang cho ky nay du da "reported" tu truoc, tan dung cac fix da sua
+    trong code OCR (khop nham tieu de, mat dau am...) - CO THE tu sua duoc 1 phan, nhung KHONG chac
+    sua het moi loi (vd loi lech cot No phai tra theo bucket rieng, tron nham dong noi/ngoai bang -
+    2 loi nay CHUA duoc sua tan goc trong code, van can anh chup thuc te de sua tay)."""
     from bank_universe import BANKING_TICKERS
 
     normalized = _normalize_period_input(period_key)
@@ -271,13 +279,13 @@ def backfill_period(period_key):
     # ban DAU TIEN thanh cong, chi ghi "thieu" khi CA 2 deu khong co.
     candidates = [f"{year}-FY", f"{year}-Q4"] if period_key.endswith("-Q4") else [period_key]
 
-    results = {ticker: _backfill_ticker_period(ticker, period_key, candidates)
+    results = {ticker: _backfill_ticker_period(ticker, period_key, candidates, force=force)
                for ticker in sorted(BANKING_TICKERS)}
-    print(f"[DONE] Backfill {period_key}: {results}")
+    print(f"[DONE] Backfill {period_key} (force={force}): {results}")
     return results
 
 
-def backfill_all_missing_periods():
+def backfill_all_missing_periods(force=False):
     """Quét TẤT CẢ kỳ đã từng được backfill/nhập ít nhất 1 lần (bất kỳ trạng thái gì, ở BẤT KỲ ngân
     hàng nào — tức UNION của mọi period_key xuất hiện trong data/bank_alm/*.json) rồi chạy
     backfill_period() cho TỪNG kỳ đó — mỗi kỳ TỰ ĐỘNG bỏ qua (ticker, kỳ) đã có dữ liệu thật
@@ -288,7 +296,12 @@ def backfill_all_missing_periods():
 
     KHÔNG tự "phát minh" thêm kỳ chưa ai từng backfill (vd sẽ không tự chạy kỳ tương lai chưa có báo
     cáo) — chỉ quét lại đúng các kỳ ĐÃ CÓ ít nhất 1 bản ghi (kể cả "missing") trong store, tức đúng
-    những kỳ user đã từng chủ động backfill trước đây."""
+    những kỳ user đã từng chủ động backfill trước đây.
+
+    `force=True`: xem docstring backfill_period() - truyen thang xuong, OCR LAI KHONG DIEU KIEN toan
+    bo (ticker, ky) da tung backfill (26 ngan hang x N ky), khong chi cac to hop "missing". Ton
+    NHIEU thoi gian hon han (moi to hop deu OCR lai, khong chi to hop thieu) - workflow can nguong
+    timeout du rong (xem backfill_bank_alm.yml)."""
     from bank_universe import BANKING_TICKERS
     all_periods = set()
     for ticker in BANKING_TICKERS:
@@ -298,10 +311,10 @@ def backfill_all_missing_periods():
         print("[SKIP] Chua co ky nao tung duoc backfill - khong co gi de quet lai.")
         return {}
     sorted_periods = sorted(all_periods, key=bank_alm_store._period_sort_key)
-    print(f"[INFO] Quet lai {len(sorted_periods)} ky da tung backfill: {sorted_periods}")
+    print(f"[INFO] Quet lai {len(sorted_periods)} ky da tung backfill (force={force}): {sorted_periods}")
     results = {}
     for period_key in sorted_periods:
-        results[period_key] = backfill_period(period_key)
+        results[period_key] = backfill_period(period_key, force=force)
     return results
 
 
