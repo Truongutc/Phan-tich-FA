@@ -376,25 +376,41 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 4375564.0,
-        "khong_anh_huong_lai_suat": 2243177.0,
+        "khong_anh_huong_lai_suat": 2243777.0,
         "den_1_thang": -55572544.0,
         "tu_1_3_thang": 10498736.0,
         "tu_3_6_thang": 15084304.0,
-        "tu_6_12_thang": 10921574.0,
-        "tu_1_5_nam": 5595721.0,
-        "tren_5_nam": 7833498.0
+        "tu_6_12_thang": 24515366.0,
+        "tu_1_5_nam": 1092574.0,
+        "tren_5_nam": 5595721.0
       },
-      "liquidity_gap": null,
-      "liabilities_by_bucket": null,
+      "liquidity_gap": {
+        "qua_han_tren_3t": 1979835.0,
+        "qua_han_den_3t": 2395729.0,
+        "den_1_thang": -7536728.0,
+        "tu_1_3_thang": -12137468.0,
+        "tu_3_12_thang": -19371232.0,
+        "tu_1_5_nam": 8755934.0,
+        "tren_5_nam": 20639037.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 34648990.0,
+        "tu_1_3_thang": 32373209.0,
+        "tu_3_12_thang": 55428366.0,
+        "tu_1_5_nam": 5945984.0,
+        "tren_5_nam": 3508383.0
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
         "khong_anh_huong_lai_suat": 3164379.0,
         "den_1_thang": 107811536.0,
         "tu_1_3_thang": 11906764.0,
-        "tu_3_6_thang": 2453.0,
+        "tu_3_6_thang": 2453211.0,
         "tu_6_12_thang": 2029489.0,
         "tu_1_5_nam": 1031170.0,
-        "tren_5_nam": 3508.0
+        "tren_5_nam": 3508383.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -429,7 +445,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-vit-nam-thng-tn03052024-000000bo-co-ti-chnh-qu-1-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-22T18:21:36+07:00"
+      "fetched_at": "2026-09-23T09:37:40+07:00"
     },
     "2024-Q2": {
       "status": "reported",
