@@ -389,7 +389,13 @@ def _tokens_to_values(toks, lang="vi"):
         if tok == "-":
             vals.append(0.0)
             continue
-        neg = tok.startswith("(") and tok.endswith(")")
+        # SỬA (user 2026-09-23, phát hiện qua HDB Quý 2+3/2025 — số âm trong ngoặc bị đọc thành
+        # DƯƠNG dù giá trị đúng: OCR đôi khi làm MẤT 1 trong 2 dấu ngoặc (dấu ")" sát số kế bên dễ bị
+        # nhòe/mất trong bảng dày cột) — trước đây bắt buộc CẢ 2 dấu mới coi là âm, chỉ mất 1 dấu là
+        # coi như dương, SAI HOÀN TOÀN. Số dương THẬT không bao giờ dính dấu "(" hoặc ")" lẫn vào (chỉ
+        # số âm trong bảng này mới dùng ngoặc) nên chỉ cần 1 trong 2 dấu còn sót lại là ĐỦ để nhận
+        # diện âm, an toàn hơn nhiều so với yêu cầu đủ cả 2.
+        neg = tok.startswith("(") or tok.endswith(")")
         clean = tok.strip("()").replace(sep, "")
         try:
             v = float(clean)
@@ -562,7 +568,9 @@ _CURRENCY_ROW_RE = re.compile(
 def _clean_vn_number(tok):
     if tok in ("-", ""):
         return 0.0
-    neg = tok.startswith("(") and tok.endswith(")")
+    # Cung bug/fix sign nhu _tokens_to_values (xem ghi chu o do, user 2026-09-23 qua HDB) - chi can 1
+    # trong 2 dau ngoac con sot lai la du nhan dien am, khong doi hoi ca 2.
+    neg = tok.startswith("(") or tok.endswith(")")
     v = float(tok.strip("()").replace(".", ""))
     return -v if neg else v
 
