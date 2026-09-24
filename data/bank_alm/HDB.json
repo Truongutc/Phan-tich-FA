@@ -5,89 +5,109 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 32188101.0,
-        "khong_anh_huong_lai_suat": -186793362.0,
-        "den_1_thang": 67361441.0,
-        "tu_1_3_thang": 1239529.0,
-        "tu_3_6_thang": -69924.0,
-        "tu_6_12_thang": -2541.0,
-        "tu_1_5_nam": 192563942.0,
-        "tren_5_nam": 51324572.0
+        "qua_han": 32168101.0,
+        "khong_anh_huong_lai_suat": 72248901.0,
+        "den_1_thang": -60710575.0,
+        "tu_1_3_thang": 15289716.0,
+        "tu_3_6_thang": -57485824.0,
+        "tu_6_12_thang": 62649601.0,
+        "tu_1_5_nam": 2149252.0,
+        "tren_5_nam": 19650570.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": 13375215.0,
-        "qua_han_den_3t": 18782.0,
-        "den_1_thang": -32810300.0,
-        "tu_1_3_thang": 62444721.0,
-        "tu_3_12_thang": -30743167.0,
-        "tu_1_5_nam": 4671843.0,
-        "tren_5_nam": 85855742.0
+        "qua_han_den_3t": 18792886.0,
+        "den_1_thang": -32610300.0,
+        "tu_1_3_thang": -62444721.0,
+        "tu_3_12_thang": -30749167.0,
+        "tu_1_5_nam": 130923986.0,
+        "tren_5_nam": 48671843.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 2983.0,
-        "qua_han_den_3t": 147153.0,
-        "den_1_thang": 138083672.0,
-        "tu_1_3_thang": 835.0,
-        "tu_3_12_thang": 13375215.0,
-        "tu_1_5_nam": 18782.0,
-        "tren_5_nam": -32810300.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 293147153.0,
+        "tu_1_3_thang": 138083672.0,
+        "tu_3_12_thang": 316760835.0,
+        "tu_1_5_nam": 67059592.0,
+        "tren_5_nam": 37767171.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 281101110.0,
-        "den_1_thang": 153029094.0,
-        "tu_1_3_thang": 167078481.0,
-        "tu_3_6_thang": 179517.0,
-        "tu_6_12_thang": 9398.0,
+        "khong_anh_huong_lai_suat": 22058848.0,
+        "den_1_thang": 281101110.0,
+        "tu_1_3_thang": 153029094.0,
+        "tu_3_6_thang": 167079481.0,
+        "tu_6_12_thang": 179517998.0,
         "tu_1_5_nam": 49603653.0,
-        "tren_5_nam": 428233.0
+        "tren_5_nam": 428239.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260331_-_HDB_-_BCTC_kiem_toan_hop_nhat_nam_2025_giai_trinh_1775008453.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-17T18:20:09+07:00"
+      "fetched_at": "2026-09-24T09:28:21+07:00"
     },
     "2025-Q1": {
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 34722661.0,
-        "khong_anh_huong_lai_suat": -51511503.0,
-        "den_1_thang": -75409295.0,
-        "tu_1_3_thang": 44627686.0,
-        "tu_3_6_thang": 44368902.0,
-        "tu_6_12_thang": 91294547.0,
-        "tu_1_5_nam": 4972092.0,
-        "tren_5_nam": 12430134.0
-      },
-      "liquidity_gap": {
-        "qua_han_tren_3t": 34722661.0,
-        "qua_han_den_3t": 23897792.0,
+        "khong_anh_huong_lai_suat": 23897792.0,
         "den_1_thang": 44627686.0,
         "tu_1_3_thang": 44368902.0,
-        "tu_3_12_thang": 91294547.0,
-        "tu_1_5_nam": 4972.0,
-        "tren_5_nam": -12430134.0
+        "tu_3_6_thang": -91294547.0,
+        "tu_6_12_thang": 4972092.0,
+        "tu_1_5_nam": -12430134.0,
+        "tren_5_nam": 17976761.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 10670834.0,
+        "qua_han_den_3t": 24051827.0,
+        "den_1_thang": 17885868.0,
+        "tu_1_3_thang": -42306878.0,
+        "tu_3_12_thang": -70947796.0,
+        "tu_1_5_nam": 103743201.0,
+        "tren_5_nam": 23744157.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 20549053.0,
-        "qua_han_den_3t": 148828.0,
-        "den_1_thang": 4397.0,
-        "tu_1_3_thang": 555019.0,
-        "tu_3_12_thang": 169396523.0,
-        "tu_1_5_nam": 164417.0,
-        "tren_5_nam": 35220659.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 157379377.0,
+        "tu_1_3_thang": 99858084.0,
+        "tu_3_12_thang": 318885090.0,
+        "tu_1_5_nam": 39732227.0,
+        "tren_5_nam": 34423443.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 20549053.0,
+        "den_1_thang": 148828397.0,
+        "tu_1_3_thang": 111555919.0,
+        "tu_3_6_thang": 169396523.0,
+        "tu_6_12_thang": 164417094.0,
+        "tu_1_5_nam": 35220659.0,
+        "tren_5_nam": 310576.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2025",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/HDB_23052025143646.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T16:53:47+07:00"
+      "fetched_at": "2026-09-24T09:27:32+07:00"
     },
     "2025-Q2": {
       "status": "reported",
@@ -226,7 +246,7 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 31211573.0,
-        "khong_anh_huong_lai_suat": 10964236.0,
+        "khong_anh_huong_lai_suat": 47527370.0,
         "den_1_thang": 30280321.0,
         "tu_1_3_thang": 42838069.0,
         "tu_3_6_thang": -71427262.0,
@@ -252,13 +272,28 @@
         "tu_1_5_nam": 53399000.0,
         "tren_5_nam": 39385866.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 20345962.0,
+        "den_1_thang": 227063321.0,
+        "tu_1_3_thang": 135261260.0,
+        "tu_3_6_thang": 213471697.0,
+        "tu_6_12_thang": 267873957.0,
+        "tu_1_5_nam": 36587960.0,
+        "tren_5_nam": 426045.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2026",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260429_-_HDB_-_BCTC_hop_nhat_Quy_1.2026_giai_trinh_1777456090.pdf",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-08-31T23:26:12+07:00"
+      "fetched_at": "2026-09-24T09:28:55+07:00"
     },
     "2026-Q2": {
       "status": "reported",
@@ -404,34 +439,42 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": -186493134.0,
-        "khong_anh_huong_lai_suat": 41281457.0,
-        "den_1_thang": -85009986.0,
-        "tu_1_3_thang": 46209610.0,
-        "tu_3_6_thang": -195091587.0,
-        "tu_6_12_thang": 507685166.0,
-        "tu_1_5_nam": -21210034.0,
-        "tren_5_nam": -84329278.0
+        "qua_han": 25573401.0,
+        "khong_anh_huong_lai_suat": 30215695.0,
+        "den_1_thang": -10761258.0,
+        "tu_1_3_thang": 48480932.0,
+        "tu_3_6_thang": -45380418.0,
+        "tu_6_12_thang": 14890211.0,
+        "tu_1_5_nam": -20126855.0,
+        "tren_5_nam": 14886114.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 133137000.0,
-        "qua_han_den_3t": 37203000.0,
-        "den_1_thang": 17982000.0,
-        "tu_1_3_thang": 14154000.0,
-        "tu_3_12_thang": 122061000.0,
-        "tu_1_5_nam": 97855000.0,
-        "tren_5_nam": 17645000.0
+        "qua_han_tren_3t": 8198840.0,
+        "qua_han_den_3t": 17374561.0,
+        "den_1_thang": -41234709.0,
+        "tu_1_3_thang": -28115215.0,
+        "tu_3_12_thang": -21513415.0,
+        "tu_1_5_nam": 84333136.0,
+        "tren_5_nam": 38734624.0
       },
-      "liabilities_by_bucket": null,
-      "interest_rate_liabilities_by_bucket": {
-        "qua_han": 194691974.0,
-        "khong_anh_huong_lai_suat": -41234709.0,
-        "den_1_thang": 102384547.0,
-        "tu_1_3_thang": -28118215.0,
-        "tu_3_6_thang": 207685463.0,
-        "tu_6_12_thang": -21513418.0,
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 194691974.0,
+        "tu_1_3_thang": 102384547.0,
+        "tu_3_12_thang": 207685163.0,
         "tu_1_5_nam": 48604044.0,
-        "tren_5_nam": 84333136.0
+        "tren_5_nam": 18252061.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 19206651.0,
+        "den_1_thang": 182360236.0,
+        "tu_1_3_thang": 105667120.0,
+        "tu_3_6_thang": 144528458.0,
+        "tu_6_12_thang": 76163248.0,
+        "tu_1_5_nam": 43425819.0,
+        "tren_5_nam": 266257.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -473,14 +516,14 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-pht-trin-tp-h-ch-minh-hdbank13082024-181044bo-co-ti-chnh-tng-hp-bn-nin.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T18:44:26+07:00"
+      "fetched_at": "2026-09-24T09:24:26+07:00"
     },
     "2024-Q3": {
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 22597646.0,
-        "khong_anh_huong_lai_suat": 5124481.0,
+        "khong_anh_huong_lai_suat": 36637835.0,
         "den_1_thang": 27009972.0,
         "tu_1_3_thang": 54523370.0,
         "tu_3_6_thang": -28738228.0,
@@ -489,28 +532,28 @@
         "tren_5_nam": 16222559.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 22597646.0,
-        "qua_han_den_3t": 5124481.0,
-        "den_1_thang": 27009972.0,
-        "tu_1_3_thang": 54523370.0,
-        "tu_3_12_thang": -28738228.0,
-        "tu_1_5_nam": -37543386.0,
-        "tren_5_nam": -31932615.0
+        "qua_han_tren_3t": 7659694.0,
+        "qua_han_den_3t": 14937952.0,
+        "den_1_thang": 6765618.0,
+        "tu_1_3_thang": -34786849.0,
+        "tu_3_12_thang": -48574165.0,
+        "tu_1_5_nam": 77816585.0,
+        "tren_5_nam": 34958318.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 16840110.0,
-        "den_1_thang": 148895491.0,
-        "tu_1_3_thang": 15865942.0,
-        "tu_3_12_thang": 119801939.0,
-        "tu_1_5_nam": 125828430.0,
-        "tren_5_nam": 48483316.0
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 159045797.0,
+        "tu_1_3_thang": 105626504.0,
+        "tu_3_12_thang": 234760019.0,
+        "tu_1_5_nam": 53195412.0,
+        "tren_5_nam": 23357405.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 16840110.0,
+        "khong_anh_huong_lai_suat": 16840119.0,
         "den_1_thang": 148895491.0,
-        "tu_1_3_thang": 15865942.0,
+        "tu_1_3_thang": 115865942.0,
         "tu_3_6_thang": 119801939.0,
         "tu_6_12_thang": 125828430.0,
         "tu_1_5_nam": 48483316.0,
@@ -573,40 +616,48 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000004940711462450593ngn-hng-tmcp-pht-trin-tp-h-ch-minh-hdbank29102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T19:19:24+07:00"
+      "fetched_at": "2026-09-24T09:25:43+07:00"
     },
     "2024-FY": {
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 51240513.0,
+        "qua_han": 29563738.0,
+        "khong_anh_huong_lai_suat": 31411223.0,
         "den_1_thang": -554122.0,
         "tu_1_3_thang": 100569466.0,
         "tu_3_6_thang": -75392182.0,
-        "tu_6_12_thang": 154455562.0,
-        "tu_1_5_nam": 14098998.0,
-        "tren_5_nam": 19881096.0
+        "tu_6_12_thang": -8465466.0,
+        "tu_1_5_nam": -34069142.0,
+        "tren_5_nam": 19630628.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 276551000.0,
-        "qua_han_den_3t": 21519000.0,
-        "den_1_thang": 52071000.0,
-        "tu_1_3_thang": 38012000.0,
-        "tu_3_12_thang": 270198000.0,
-        "tu_1_5_nam": 131225000.0,
-        "tren_5_nam": 32270000.0
+        "qua_han_tren_3t": 8648668.0,
+        "qua_han_den_3t": 20915070.0,
+        "den_1_thang": -15902725.0,
+        "tu_1_3_thang": -21148869.0,
+        "tu_3_12_thang": -31672726.0,
+        "tu_1_5_nam": 70682616.0,
+        "tren_5_nam": 31172109.0
       },
-      "liabilities_by_bucket": null,
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 192554745.0,
+        "tu_1_3_thang": 80133314.0,
+        "tu_3_12_thang": 285564491.0,
+        "tu_1_5_nam": 53028373.0,
+        "tren_5_nam": 29428274.0
+      },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 29563738.0,
-        "khong_anh_huong_lai_suat": 0.0,
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 19829290.0,
         "den_1_thang": 183855599.0,
         "tu_1_3_thang": 86217693.0,
         "tu_3_6_thang": 139468979.0,
-        "tu_6_12_thang": 0.0,
-        "tu_1_5_nam": 0.0,
-        "tren_5_nam": 0.0
+        "tu_6_12_thang": 162919028.0,
+        "tu_1_5_nam": 48168140.0,
+        "tren_5_nam": 250468.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -648,7 +699,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/HDB_Baocaotaichinh_2024_Kiemtoan_Hopnhat_14042025115822.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T22:52:57+07:00"
+      "fetched_at": "2026-09-24T09:26:45+07:00"
     }
   },
   "quarterly_balance_sheet": {
