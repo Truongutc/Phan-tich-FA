@@ -78,21 +78,36 @@
         "tren_5_nam": 26349941.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 9026855.0,
-        "qua_han_den_3t": 30178725.0,
-        "den_1_thang": 73319350.0,
-        "tu_1_3_thang": 15756151.0,
-        "tu_3_12_thang": 5008800.0,
-        "tu_1_5_nam": 163289881.0,
-        "tren_5_nam": 1405621.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 39026855.0,
+        "tu_1_3_thang": 30178725.0,
+        "tu_3_12_thang": 73319350.0,
+        "tu_1_5_nam": 15756151.0,
+        "tren_5_nam": 5008800.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 3615851.0,
+        "den_1_thang": 37753665.0,
+        "tu_1_3_thang": 29583216.0,
+        "tu_3_6_thang": 37341131.0,
+        "tu_6_12_thang": 34400578.0,
+        "tu_1_5_nam": 15586640.0,
+        "tren_5_nam": 5008800.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2025",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/BAB_25Q1_BCTC_HN_07052025141647.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T09:57:27+07:00"
+      "fetched_at": "2026-09-24T09:12:42+07:00"
     },
     "2025-Q2": {
       "status": "reported",
@@ -170,14 +185,37 @@
         "tu_1_5_nam": 25315305.0,
         "tren_5_nam": 28588020.0
       },
-      "liabilities_by_bucket": null,
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 42359476.0,
+        "tu_1_3_thang": 30116590.0,
+        "tu_3_12_thang": 79132012.0,
+        "tu_1_5_nam": 22063376.0,
+        "tren_5_nam": 5519150.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 4425441.0,
+        "den_1_thang": 40802697.0,
+        "tu_1_3_thang": 29346813.0,
+        "tu_3_6_thang": 40304926.0,
+        "tu_6_12_thang": 36936080.0,
+        "tu_1_5_nam": 21855497.0,
+        "tren_5_nam": 5519150.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_586650_Bao_cao_tai_chinh_quy_32025_1763615639.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T15:13:52+07:00"
+      "fetched_at": "2026-09-24T09:12:55+07:00"
     },
     "2026-Q1": {
       "status": "reported",
@@ -241,7 +279,7 @@
         "khong_anh_huong_lai_suat": 5239558.0,
         "den_1_thang": -2125671.0,
         "tu_1_3_thang": 59912036.0,
-        "tu_3_6_thang": 1063.0,
+        "tu_3_6_thang": -1063925.0,
         "tu_6_12_thang": -23879123.0,
         "tu_1_5_nam": -1007457.0,
         "tren_5_nam": -23233719.0
@@ -256,21 +294,36 @@
         "tren_5_nam": 33140747.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 1549682.0,
-        "qua_han_den_3t": 1301066.0,
-        "den_1_thang": 898422.0,
-        "tu_1_3_thang": 2335204.0,
-        "tu_3_12_thang": 194661.0,
-        "tu_1_5_nam": 200611703.0,
-        "tren_5_nam": 4729353.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 62106871.0,
+        "tu_1_3_thang": 30384249.0,
+        "tu_3_12_thang": 77610971.0,
+        "tu_1_5_nam": 27549363.0,
+        "tren_5_nam": 2960249.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 5101220.0,
+        "den_1_thang": 60435888.0,
+        "tu_1_3_thang": 26485827.0,
+        "tu_3_6_thang": 33408818.0,
+        "tu_6_12_thang": 35882839.0,
+        "tu_1_5_nam": 13879402.0,
+        "tren_5_nam": 25417709.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/BAB_000000016757863_VI_BaoCaoTaiChinh_SoatXet_BanNien2026_18082026093732.pdf?v=1787020653929",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T09:34:31+07:00"
+      "fetched_at": "2026-09-24T09:13:39+07:00"
     },
     "2024-Q1": {
       "status": "reported",

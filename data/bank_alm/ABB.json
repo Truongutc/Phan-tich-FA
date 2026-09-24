@@ -261,40 +261,55 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 247707.0,
-        "khong_anh_huong_lai_suat": 1390702.0,
-        "den_1_thang": 949381.0,
-        "tu_1_3_thang": -19917863.0,
-        "tu_3_6_thang": 2864986.0,
-        "tu_6_12_thang": 10551903.0,
-        "tu_1_5_nam": 32340380.0,
-        "tren_5_nam": 0.0
+        "qua_han": 2353289.0,
+        "khong_anh_huong_lai_suat": 14666332.0,
+        "den_1_thang": -14812766.0,
+        "tu_1_3_thang": 62551204.0,
+        "tu_3_6_thang": -42376237.0,
+        "tu_6_12_thang": -9060161.0,
+        "tu_1_5_nam": -2349725.0,
+        "tren_5_nam": 8556499.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 247707.0,
+        "qua_han_tren_3t": 1247707.0,
         "qua_han_den_3t": 1390702.0,
-        "den_1_thang": 949381.0,
-        "tu_1_3_thang": -19917863.0,
+        "den_1_thang": -8949381.0,
+        "tu_1_3_thang": -19917862.0,
         "tu_3_12_thang": 2864986.0,
         "tu_1_5_nam": 10551903.0,
         "tren_5_nam": 32340380.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 13885339.0,
-        "qua_han_den_3t": 4013430.0,
-        "den_1_thang": 247707.0,
-        "tu_1_3_thang": 1390702.0,
-        "tu_3_12_thang": 949381.0,
-        "tu_1_5_nam": -19917863.0,
-        "tren_5_nam": 2864986.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 78477006.0,
+        "tu_1_3_thang": 50866785.0,
+        "tu_3_12_thang": 85952958.0,
+        "tu_1_5_nam": 12885339.0,
+        "tren_5_nam": 4013430.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 9115953.0,
+        "den_1_thang": 69415824.0,
+        "tu_1_3_thang": 50840802.0,
+        "tu_3_6_thang": 58978500.0,
+        "tu_6_12_thang": 26945671.0,
+        "tu_1_5_nam": 12885338.0,
+        "tren_5_nam": 4013430.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất Quý 1 năm 2026",
         "url": "https://cdn.24hmoney.vn/upload/file/2026-2/2026-05-09/no-name-1778265007.pdf",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-08-31T23:10:58+07:00"
+      "fetched_at": "2026-09-24T09:10:37+07:00"
     },
     "2026-Q2": {
       "status": "reported",

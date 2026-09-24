@@ -114,12 +114,12 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 13759080.0,
-        "khong_anh_huong_lai_suat": 13102990.0,
-        "den_1_thang": -89311372.0,
-        "tu_1_3_thang": 362703935.0,
-        "tu_3_6_thang": -108811405.0,
-        "tu_6_12_thang": -79539500.0,
-        "tu_1_5_nam": -64511549.0,
+        "khong_anh_huong_lai_suat": 12978730.0,
+        "den_1_thang": -89309541.0,
+        "tu_1_3_thang": 361707306.0,
+        "tu_3_6_thang": -105783538.0,
+        "tu_6_12_thang": -79398596.0,
+        "tu_1_5_nam": -64464981.0,
         "tren_5_nam": 44357787.0
       },
       "liquidity_gap": {
@@ -140,13 +140,28 @@
         "tu_1_5_nam": 50124508.0,
         "tren_5_nam": 7240.0
       },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 22060489.0,
+        "den_1_thang": 192145976.0,
+        "tu_1_3_thang": 226283452.0,
+        "tu_3_6_thang": 143158910.0,
+        "tu_6_12_thang": 167082827.0,
+        "tu_1_5_nam": 93168023.0,
+        "tren_5_nam": 2431114.0
+      },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ACB_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_19092025164217.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-08-31T11:43:25+07:00"
+      "fetched_at": "2026-09-24T09:11:33+07:00"
     },
     "2025-Q3": {
       "status": "reported",

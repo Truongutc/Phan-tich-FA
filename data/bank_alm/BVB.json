@@ -338,21 +338,36 @@
         "tren_5_nam": 38045060.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 2763426.0,
-        "qua_han_den_3t": 2489757.0,
-        "den_1_thang": -13276544.0,
-        "tu_1_3_thang": 41700966.0,
-        "tu_3_12_thang": -8732051.0,
-        "tu_1_5_nam": 29879680.0,
-        "tren_5_nam": -16209886.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 41700966.0,
+        "tu_1_3_thang": 29879680.0,
+        "tu_3_12_thang": 58987258.0,
+        "tu_1_5_nam": 3484853.0,
+        "tren_5_nam": 78.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 2981323.0,
+        "den_1_thang": 39908508.0,
+        "tu_1_3_thang": 29903736.0,
+        "tu_3_6_thang": 39737908.0,
+        "tu_6_12_thang": 18136173.0,
+        "tu_1_5_nam": 3385137.0,
+        "tren_5_nam": 50.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/BVB_202608132020BVB2020Bao20cao20tai20chinh20hop20nhat20ban20nien20202620da20soat20xet20kem20giai20trinh20bien20dong20loi20nhuan_20082026095227.pdf?v=1787194349784",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-01T09:38:24+07:00"
+      "fetched_at": "2026-09-24T09:16:04+07:00"
     },
     "2024-Q1": {
       "status": "reported",
