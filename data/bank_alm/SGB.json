@@ -2,216 +2,315 @@
   "ticker": "SGB",
   "gap_periods": {
     "2025-FY": {
-      "status": "reported",
-      "patched_from": null,
+      "status": "patched",
+      "patched_from": "2024-FY",
       "interest_rate_gap": {
-        "qua_han": 833514.0,
-        "khong_anh_huong_lai_suat": 613983.0,
-        "den_1_thang": 21630.0,
-        "tu_1_3_thang": -845455.0,
-        "tu_3_6_thang": -2842488.0,
-        "tu_6_12_thang": 7058210.0,
-        "tu_1_5_nam": 8326.0,
-        "tren_5_nam": 8364162.0
-      },
-      "liquidity_gap": {
-        "qua_han_tren_3t": 705416.0,
-        "qua_han_den_3t": 124609.0,
-        "den_1_thang": 8035.0,
-        "tu_1_3_thang": -1195814.0,
-        "tu_3_12_thang": -3443838.0,
-        "tu_1_5_nam": 3532206.0,
-        "tren_5_nam": 5608765.0
-      },
-      "liabilities_by_bucket": null,
-      "interest_rate_sensitivity_disclosed": null,
-      "source": {
-        "title": "Báo cáo tài chính hợp nhất năm 2025 (đã kiểm toán)",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_604675_Bao_cao_tai_chinh_nam_2025_1776046299.pdf",
-        "fetched_year": 2025
-      },
-      "fetched_at": "2026-08-31T01:33:44+07:00"
-    },
-    "2025-Q1": {
-      "status": "reported",
-      "patched_from": null,
-      "interest_rate_gap": {
-        "qua_han": 773080.0,
-        "khong_anh_huong_lai_suat": -2003750.0,
-        "den_1_thang": -2003750.0,
-        "tu_1_3_thang": -6983934.0,
-        "tu_3_6_thang": -6983934.0,
-        "tu_6_12_thang": 7556384.0,
-        "tu_1_5_nam": 7556384.0,
-        "tren_5_nam": -4082134.0
-      },
-      "liquidity_gap": {
-        "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 0.0,
-        "den_1_thang": 5121561.0,
-        "tu_1_3_thang": 2495000.0,
-        "tu_3_12_thang": 7616561.0,
-        "tu_1_5_nam": 545911.0,
-        "tren_5_nam": 227044.0
-      },
-      "liabilities_by_bucket": null,
-      "interest_rate_sensitivity_disclosed": null,
-      "source": {
-        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2025",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000000014834796_VI_BaoCaotaiChinh_HopNhat_Q1_2025_26042025110134.pdf",
-        "fetched_year": 2025
-      },
-      "fetched_at": "2026-08-31T10:26:54+07:00"
-    },
-    "2025-Q2": {
-      "status": "reported",
-      "patched_from": null,
-      "interest_rate_gap": {
-        "qua_han": 913942.0,
-        "khong_anh_huong_lai_suat": 718461.0,
-        "den_1_thang": 1590443.0,
-        "tu_1_3_thang": -1769245.0,
-        "tu_3_6_thang": -5048490.0,
-        "tu_6_12_thang": 6650659.0,
-        "tu_1_5_nam": -6945584.0,
-        "tren_5_nam": 7922468.0
-      },
-      "liquidity_gap": {
-        "qua_han_tren_3t": 648354.0,
-        "qua_han_den_3t": 264153.0,
-        "den_1_thang": 721247.0,
-        "tu_1_3_thang": 4548236.0,
-        "tu_3_12_thang": 10274402.0,
-        "tu_1_5_nam": 6408957.0,
-        "tren_5_nam": 13385030.0
-      },
-      "liabilities_by_bucket": {
-        "qua_han_tren_3t": 30906719.0,
-        "qua_han_den_3t": 648354.0,
-        "den_1_thang": 264153.0,
-        "tu_1_3_thang": 721247.0,
-        "tu_3_12_thang": 4548236.0,
-        "tu_1_5_nam": 10274402.0,
-        "tren_5_nam": 6408957.0
-      },
-      "interest_rate_sensitivity_disclosed": null,
-      "source": {
-        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2025 (đã soát xét)",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00019753086419753087ngn-hng-tmcp-si-gn-cng-thng14082025-000000bo-co-ti-chnh-bn-nin-2025_1_1022.pdf",
-        "fetched_year": 2025
-      },
-      "fetched_at": "2026-08-31T12:26:51+07:00"
-    },
-    "2025-Q3": {
-      "status": "reported",
-      "patched_from": null,
-      "interest_rate_gap": {
-        "qua_han": 1135182.0,
-        "khong_anh_huong_lai_suat": 774270.0,
-        "den_1_thang": 1050214.0,
-        "tu_1_3_thang": -229315.0,
-        "tu_3_6_thang": -3546510.0,
-        "tu_6_12_thang": 6476652.0,
-        "tu_1_5_nam": -9020852.0,
-        "tren_5_nam": 8093896.0
+        "qua_han": 562458.0,
+        "khong_anh_huong_lai_suat": 1162068.0,
+        "den_1_thang": -1006923.0,
+        "tu_1_3_thang": -1898650.0,
+        "tu_3_6_thang": -7071879.0,
+        "tu_6_12_thang": 7705262.0,
+        "tu_1_5_nam": -2908851.0,
+        "tren_5_nam": 7868478.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": 482570.0,
         "qua_han_den_3t": 79889.0,
-        "den_1_thang": 2316418.0,
-        "tu_1_3_thang": 1173902.0,
-        "tu_3_12_thang": -5286.0,
+        "den_1_thang": -2316418.0,
+        "tu_1_3_thang": -1173902.0,
+        "tu_3_12_thang": -52861.0,
         "tu_1_5_nam": 2568610.0,
         "tren_5_nam": 4824075.0
       },
-      "liabilities_by_bucket": null,
-      "interest_rate_sensitivity_disclosed": null,
-      "source": {
-        "title": "Báo cáo tài chính hợp nhất quý 3 năm 2025",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_585483_Bao_cao_tai_chinh_quy_32025_1761811756.pdf",
-        "fetched_year": 2025
-      },
-      "fetched_at": "2026-08-31T15:40:59+07:00"
-    },
-    "2026-Q1": {
-      "status": "reported",
-      "patched_from": null,
-      "interest_rate_gap": {
-        "qua_han": 1109773.0,
-        "khong_anh_huong_lai_suat": 640491.0,
-        "den_1_thang": -1713340.0,
-        "tu_1_3_thang": -813803.0,
-        "tu_3_6_thang": -3063365.0,
-        "tu_6_12_thang": 7369270.0,
-        "tu_1_5_nam": -8138569.0,
-        "tren_5_nam": 8709067.0
-      },
-      "liquidity_gap": {
+      "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
-        "den_1_thang": 0.0,
-        "tu_1_3_thang": 705416.0,
-        "tu_3_12_thang": 0.0,
-        "tu_1_5_nam": 5553.0,
-        "tren_5_nam": 13745799.0
+        "den_1_thang": 11112350.0,
+        "tu_1_3_thang": 5823226.0,
+        "tu_3_12_thang": 11127070.0,
+        "tu_1_5_nam": 1107640.0,
+        "tren_5_nam": 282.0
       },
-      "liabilities_by_bucket": {
-        "qua_han_tren_3t": 705416.0,
-        "qua_han_den_3t": 0.0,
-        "den_1_thang": 3481061.0,
-        "tu_1_3_thang": 190000.0,
-        "tu_3_12_thang": 0.0,
-        "tu_1_5_nam": 4181965.0,
-        "tren_5_nam": 0.0
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 5431138.0,
+        "tu_1_3_thang": 5056303.0,
+        "tu_3_6_thang": 7876626.0,
+        "tu_6_12_thang": 123650.0,
+        "tu_1_5_nam": 10681842.0,
+        "tren_5_nam": 1009.0
       },
       "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
       "source": {
-        "title": "Báo cáo tài chính hợp nhất quý 1 năm 2026",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_611277_Bao_cao_tai_chinh_quy_12026_1777027908.pdf",
-        "fetched_year": 2026
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-si-gn-cng-thng28032025-000000bo-co-ti-chnh-nm-2024.pdf",
+        "fetched_year": 2024
       },
-      "fetched_at": "2026-08-31T23:45:58+07:00"
+      "fetched_at": "2026-09-24T14:14:09+07:00"
+    },
+    "2025-Q1": {
+      "status": "patched",
+      "patched_from": "2024-FY",
+      "interest_rate_gap": {
+        "qua_han": 562458.0,
+        "khong_anh_huong_lai_suat": 1162068.0,
+        "den_1_thang": -1006923.0,
+        "tu_1_3_thang": -1898650.0,
+        "tu_3_6_thang": -7071879.0,
+        "tu_6_12_thang": 7705262.0,
+        "tu_1_5_nam": -2908851.0,
+        "tren_5_nam": 7868478.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 482570.0,
+        "qua_han_den_3t": 79889.0,
+        "den_1_thang": -2316418.0,
+        "tu_1_3_thang": -1173902.0,
+        "tu_3_12_thang": -52861.0,
+        "tu_1_5_nam": 2568610.0,
+        "tren_5_nam": 4824075.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 11112350.0,
+        "tu_1_3_thang": 5823226.0,
+        "tu_3_12_thang": 11127070.0,
+        "tu_1_5_nam": 1107640.0,
+        "tren_5_nam": 282.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 5431138.0,
+        "tu_1_3_thang": 5056303.0,
+        "tu_3_6_thang": 7876626.0,
+        "tu_6_12_thang": 123650.0,
+        "tu_1_5_nam": 10681842.0,
+        "tren_5_nam": 1009.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-si-gn-cng-thng28032025-000000bo-co-ti-chnh-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-24T14:14:09+07:00"
+    },
+    "2025-Q2": {
+      "status": "patched",
+      "patched_from": "2024-FY",
+      "interest_rate_gap": {
+        "qua_han": 562458.0,
+        "khong_anh_huong_lai_suat": 1162068.0,
+        "den_1_thang": -1006923.0,
+        "tu_1_3_thang": -1898650.0,
+        "tu_3_6_thang": -7071879.0,
+        "tu_6_12_thang": 7705262.0,
+        "tu_1_5_nam": -2908851.0,
+        "tren_5_nam": 7868478.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 482570.0,
+        "qua_han_den_3t": 79889.0,
+        "den_1_thang": -2316418.0,
+        "tu_1_3_thang": -1173902.0,
+        "tu_3_12_thang": -52861.0,
+        "tu_1_5_nam": 2568610.0,
+        "tren_5_nam": 4824075.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 11112350.0,
+        "tu_1_3_thang": 5823226.0,
+        "tu_3_12_thang": 11127070.0,
+        "tu_1_5_nam": 1107640.0,
+        "tren_5_nam": 282.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 5431138.0,
+        "tu_1_3_thang": 5056303.0,
+        "tu_3_6_thang": 7876626.0,
+        "tu_6_12_thang": 123650.0,
+        "tu_1_5_nam": 10681842.0,
+        "tren_5_nam": 1009.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-si-gn-cng-thng28032025-000000bo-co-ti-chnh-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-24T14:14:09+07:00"
+    },
+    "2025-Q3": {
+      "status": "patched",
+      "patched_from": "2024-FY",
+      "interest_rate_gap": {
+        "qua_han": 562458.0,
+        "khong_anh_huong_lai_suat": 1162068.0,
+        "den_1_thang": -1006923.0,
+        "tu_1_3_thang": -1898650.0,
+        "tu_3_6_thang": -7071879.0,
+        "tu_6_12_thang": 7705262.0,
+        "tu_1_5_nam": -2908851.0,
+        "tren_5_nam": 7868478.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 482570.0,
+        "qua_han_den_3t": 79889.0,
+        "den_1_thang": -2316418.0,
+        "tu_1_3_thang": -1173902.0,
+        "tu_3_12_thang": -52861.0,
+        "tu_1_5_nam": 2568610.0,
+        "tren_5_nam": 4824075.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 11112350.0,
+        "tu_1_3_thang": 5823226.0,
+        "tu_3_12_thang": 11127070.0,
+        "tu_1_5_nam": 1107640.0,
+        "tren_5_nam": 282.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 5431138.0,
+        "tu_1_3_thang": 5056303.0,
+        "tu_3_6_thang": 7876626.0,
+        "tu_6_12_thang": 123650.0,
+        "tu_1_5_nam": 10681842.0,
+        "tren_5_nam": 1009.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-si-gn-cng-thng28032025-000000bo-co-ti-chnh-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-24T14:14:09+07:00"
+    },
+    "2026-Q1": {
+      "status": "patched",
+      "patched_from": "2024-FY",
+      "interest_rate_gap": {
+        "qua_han": 562458.0,
+        "khong_anh_huong_lai_suat": 1162068.0,
+        "den_1_thang": -1006923.0,
+        "tu_1_3_thang": -1898650.0,
+        "tu_3_6_thang": -7071879.0,
+        "tu_6_12_thang": 7705262.0,
+        "tu_1_5_nam": -2908851.0,
+        "tren_5_nam": 7868478.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 482570.0,
+        "qua_han_den_3t": 79889.0,
+        "den_1_thang": -2316418.0,
+        "tu_1_3_thang": -1173902.0,
+        "tu_3_12_thang": -52861.0,
+        "tu_1_5_nam": 2568610.0,
+        "tren_5_nam": 4824075.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 11112350.0,
+        "tu_1_3_thang": 5823226.0,
+        "tu_3_12_thang": 11127070.0,
+        "tu_1_5_nam": 1107640.0,
+        "tren_5_nam": 282.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 5431138.0,
+        "tu_1_3_thang": 5056303.0,
+        "tu_3_6_thang": 7876626.0,
+        "tu_6_12_thang": 123650.0,
+        "tu_1_5_nam": 10681842.0,
+        "tren_5_nam": 1009.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất năm 2024 (đã kiểm toán)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000016460905349794237ngn-hng-tmcp-si-gn-cng-thng28032025-000000bo-co-ti-chnh-nm-2024.pdf",
+        "fetched_year": 2024
+      },
+      "fetched_at": "2026-09-24T14:14:09+07:00"
     },
     "2026-Q2": {
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 5408.0,
-        "khong_anh_huong_lai_suat": 1996935.0,
-        "den_1_thang": -1736260.0,
-        "tu_1_3_thang": -210984.0,
-        "tu_3_6_thang": 13.0,
-        "tu_6_12_thang": 2010235.0,
-        "tu_1_5_nam": -1747394.0,
-        "tren_5_nam": -216697.0
+        "qua_han": 1141339.0,
+        "khong_anh_huong_lai_suat": 2199896.0,
+        "den_1_thang": -2405815.0,
+        "tu_1_3_thang": -536378.0,
+        "tu_3_6_thang": -2675129.0,
+        "tu_6_12_thang": 7510508.0,
+        "tu_1_5_nam": -8339532.0,
+        "tren_5_nam": 7687170.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": 780710.0,
-        "qua_han_den_3t": 5830018.0,
-        "den_1_thang": -65902.0,
-        "tu_1_3_thang": -3997902.0,
-        "tu_3_12_thang": 13412683.0,
+        "qua_han_den_3t": 356463.0,
+        "den_1_thang": -2185336.0,
+        "tu_1_3_thang": -65902.0,
+        "tu_3_12_thang": -3997902.0,
         "tu_1_5_nam": 3862358.0,
-        "tren_5_nam": 1023263.0
+        "tren_5_nam": 5831668.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 780710.0,
+        "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
-        "den_1_thang": 3656288.0,
-        "tu_1_3_thang": 930859.0,
-        "tu_3_12_thang": 2000000.0,
-        "tu_1_5_nam": 5764116.0,
-        "tren_5_nam": 0.0
+        "den_1_thang": 11170605.0,
+        "tu_1_3_thang": 5830018.0,
+        "tu_3_12_thang": 13412683.0,
+        "tu_1_5_nam": 1023263.0,
+        "tren_5_nam": 220.0
       },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 1242.0,
-        "khong_anh_huong_lai_suat": 6650.0,
-        "den_1_thang": 2003585.0,
-        "tu_1_3_thang": 217786.0,
-        "tu_3_6_thang": 4471.0,
-        "tu_6_12_thang": 4484.0,
-        "tu_1_5_nam": 2014719.0,
-        "tren_5_nam": 223499.0
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 7872528.0,
+        "tu_1_3_thang": 3343458.0,
+        "tu_3_6_thang": 3734989.0,
+        "tu_6_12_thang": 124996.0,
+        "tu_1_5_nam": 16359970.0,
+        "tren_5_nam": 848.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -224,7 +323,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/SGB_000000016770459_VI__Bao_Cao_Tai_Chinh_Hop_Nhat_Ban_Nien_Nam_2026_daky_20082026151909.pdf?v=1787213952177",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-21T10:57:09+07:00"
+      "fetched_at": "2026-09-24T14:14:02+07:00"
     },
     "2024-Q1": {
       "status": "reported",
