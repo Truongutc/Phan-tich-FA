@@ -139,10 +139,10 @@
       "interest_rate_gap": {
         "qua_han": 35051097.0,
         "khong_anh_huong_lai_suat": 20920940.0,
-        "den_1_thang": -406084850.0,
-        "tu_1_3_thang": 313834131.0,
-        "tu_3_6_thang": 177722580.0,
-        "tu_6_12_thang": -128505057.0,
+        "den_1_thang": -406353280.0,
+        "tu_1_3_thang": 313848431.0,
+        "tu_3_6_thang": 177727233.0,
+        "tu_6_12_thang": -128505121.0,
         "tu_1_5_nam": 207311011.0,
         "tren_5_nam": 27428304.0
       },
@@ -159,14 +159,14 @@
         "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
         "den_1_thang": 1140726189.0,
-        "tu_1_3_thang": 25989132.0,
+        "tu_1_3_thang": 250989132.0,
         "tu_3_12_thang": 594732081.0,
         "tu_1_5_nam": 9662557.0,
         "tren_5_nam": 7777219.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 34209.0,
+        "khong_anh_huong_lai_suat": 34209749.0,
         "den_1_thang": 1117549830.0,
         "tu_1_3_thang": 251682484.0,
         "tu_3_6_thang": 238062294.0,
@@ -201,7 +201,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VCB_Baocaotaichinh_6T_2025_Soatxet_Hopnhat_06102025111259.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-19T06:55:48+07:00"
+      "fetched_at": "2026-09-25T13:55:35+07:00"
     },
     "2025-Q3": {
       "status": "reported",
@@ -315,32 +315,32 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 16724.0,
+        "qua_han": 16724099.0,
         "khong_anh_huong_lai_suat": 18215586.0,
-        "den_1_thang": 328430.0,
-        "tu_1_3_thang": 6627.0,
-        "tu_3_6_thang": 349931839.0,
-        "tu_6_12_thang": 177626350.0,
-        "tu_1_5_nam": -141504331.0,
-        "tren_5_nam": 28884667.0
+        "den_1_thang": -328570405.0,
+        "tu_1_3_thang": 351236765.0,
+        "tu_3_6_thang": 177616714.0,
+        "tu_6_12_thang": -14150331.0,
+        "tu_1_5_nam": 27565287.0,
+        "tren_5_nam": 31376000.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 267689868.0,
-        "qua_han_den_3t": -242377642.0,
-        "den_1_thang": 264996622.0,
-        "tu_1_3_thang": -292281407.0,
-        "tu_3_12_thang": -4445894.0,
-        "tu_1_5_nam": 8274253.0,
-        "tren_5_nam": -6543472.0
+        "qua_han_tren_3t": 10354714.0,
+        "qua_han_den_3t": 6369385.0,
+        "den_1_thang": -512672332.0,
+        "tu_1_3_thang": 140662800.0,
+        "tu_3_12_thang": -53001569.0,
+        "tu_1_5_nam": 239981888.0,
+        "tren_5_nam": 448318829.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 2098425513.0,
-        "qua_han_den_3t": 267689868.0,
-        "den_1_thang": 38962404.0,
-        "tu_1_3_thang": 292693298.0,
-        "tu_3_12_thang": 11265728.0,
-        "tu_1_5_nam": 3795288.0,
-        "tren_5_nam": 6736275.0
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 1343950998.0,
+        "tu_1_3_thang": 310986060.0,
+        "tu_3_12_thang": 636981633.0,
+        "tu_1_5_nam": 109702930.0,
+        "tren_5_nam": 7328446.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
@@ -348,9 +348,9 @@
         "den_1_thang": 1326046856.0,
         "tu_1_3_thang": 298273418.0,
         "tu_3_6_thang": 301769675.0,
-        "tu_6_12_thang": 330119.0,
-        "tu_1_5_nam": 4551.0,
-        "tren_5_nam": 107558628.0
+        "tu_6_12_thang": 330119551.0,
+        "tu_1_5_nam": 107558628.0,
+        "tren_5_nam": 2118575.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -363,7 +363,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VCB_202608142020VCB2020BCTC20hop20nhat20soat20xet20ban20nien202026_20082026091404.pdf?v=1787192046593",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-21T11:33:46+07:00"
+      "fetched_at": "2026-09-25T13:55:07+07:00"
     },
     "2024-Q1": {
       "status": "reported",
