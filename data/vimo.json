@@ -48098,9 +48098,9 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 2.641,
+          "value": 2.531,
           "source_url": null,
-          "coverage_pct": 76.9
+          "coverage_pct": 79.4
         },
         {
           "period": "2024-Q2",
@@ -48110,33 +48110,33 @@
         },
         {
           "period": "2024-Q3",
-          "value": 0.265,
+          "value": 0.11,
           "source_url": null,
-          "coverage_pct": 78.9
+          "coverage_pct": 81.5
         },
         {
           "period": "2024-Q4",
-          "value": -1.235,
+          "value": -1.387,
           "source_url": null,
-          "coverage_pct": 87.6
+          "coverage_pct": 90.2
         },
         {
           "period": "2025-Q1",
-          "value": 2.184,
+          "value": 2.045,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 76.6
         },
         {
           "period": "2025-Q2",
-          "value": 1.444,
+          "value": 1.365,
           "source_url": null,
-          "coverage_pct": 92.8
+          "coverage_pct": 95.2
         },
         {
           "period": "2025-Q3",
-          "value": 0.785,
+          "value": 0.704,
           "source_url": null,
-          "coverage_pct": 87.5
+          "coverage_pct": 90.0
         },
         {
           "period": "2025-Q4",
@@ -48171,7 +48171,7 @@
           "period": "2024-Q1",
           "value": 235.8,
           "source_url": null,
-          "coverage_pct": 76.9
+          "coverage_pct": 79.4
         },
         {
           "period": "2024-Q2",
@@ -48183,31 +48183,31 @@
           "period": "2024-Q3",
           "value": 243.0,
           "source_url": null,
-          "coverage_pct": 78.9
+          "coverage_pct": 81.5
         },
         {
           "period": "2024-Q4",
           "value": 269.9,
           "source_url": null,
-          "coverage_pct": 87.6
+          "coverage_pct": 90.2
         },
         {
           "period": "2025-Q1",
           "value": 261.1,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 76.6
         },
         {
           "period": "2025-Q2",
           "value": 269.3,
           "source_url": null,
-          "coverage_pct": 92.8
+          "coverage_pct": 95.2
         },
         {
           "period": "2025-Q3",
           "value": 297.3,
           "source_url": null,
-          "coverage_pct": 87.5
+          "coverage_pct": 90.0
         },
         {
           "period": "2025-Q4",
@@ -48240,9 +48240,9 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 13.68,
+          "value": 14.11,
           "source_url": null,
-          "coverage_pct": 75.3
+          "coverage_pct": 77.9
         },
         {
           "period": "2024-Q2",
@@ -48252,33 +48252,33 @@
         },
         {
           "period": "2024-Q3",
-          "value": 15.27,
+          "value": 15.62,
           "source_url": null,
-          "coverage_pct": 78.9
+          "coverage_pct": 81.5
         },
         {
           "period": "2024-Q4",
-          "value": 15.22,
+          "value": 15.37,
           "source_url": null,
-          "coverage_pct": 87.6
+          "coverage_pct": 90.2
         },
         {
           "period": "2025-Q1",
-          "value": 18.0,
+          "value": 18.19,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 76.6
         },
         {
           "period": "2025-Q2",
-          "value": 17.13,
+          "value": 17.43,
           "source_url": null,
-          "coverage_pct": 92.8
+          "coverage_pct": 95.2
         },
         {
           "period": "2025-Q3",
-          "value": 18.07,
+          "value": 18.3,
           "source_url": null,
-          "coverage_pct": 87.5
+          "coverage_pct": 90.0
         },
         {
           "period": "2025-Q4",
@@ -48311,9 +48311,9 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 29.37,
+          "value": 29.99,
           "source_url": null,
-          "coverage_pct": 75.3
+          "coverage_pct": 77.9
         },
         {
           "period": "2024-Q2",
@@ -48323,33 +48323,33 @@
         },
         {
           "period": "2024-Q3",
-          "value": 27.44,
+          "value": 27.96,
           "source_url": null,
-          "coverage_pct": 78.9
+          "coverage_pct": 81.5
         },
         {
           "period": "2024-Q4",
-          "value": 33.08,
+          "value": 33.1,
           "source_url": null,
-          "coverage_pct": 87.6
+          "coverage_pct": 90.2
         },
         {
           "period": "2025-Q1",
-          "value": 33.38,
+          "value": 33.79,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 76.6
         },
         {
           "period": "2025-Q2",
-          "value": 35.75,
+          "value": 35.99,
           "source_url": null,
-          "coverage_pct": 92.8
+          "coverage_pct": 95.2
         },
         {
           "period": "2025-Q3",
-          "value": 32.35,
+          "value": 32.4,
           "source_url": null,
-          "coverage_pct": 87.5
+          "coverage_pct": 90.0
         },
         {
           "period": "2025-Q4",
@@ -48382,9 +48382,9 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 70.69,
+          "value": 69.89,
           "source_url": null,
-          "coverage_pct": 75.3
+          "coverage_pct": 77.9
         },
         {
           "period": "2024-Q2",
@@ -48394,33 +48394,33 @@
         },
         {
           "period": "2024-Q3",
-          "value": 68.33,
+          "value": 67.75,
           "source_url": null,
-          "coverage_pct": 78.9
+          "coverage_pct": 81.5
         },
         {
           "period": "2024-Q4",
-          "value": 64.38,
+          "value": 64.34,
           "source_url": null,
-          "coverage_pct": 87.6
+          "coverage_pct": 90.2
         },
         {
           "period": "2025-Q1",
-          "value": 58.81,
+          "value": 59.03,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 76.6
         },
         {
           "period": "2025-Q2",
-          "value": 61.54,
+          "value": 61.22,
           "source_url": null,
-          "coverage_pct": 92.8
+          "coverage_pct": 95.2
         },
         {
           "period": "2025-Q3",
-          "value": 57.17,
+          "value": 57.09,
           "source_url": null,
-          "coverage_pct": 87.5
+          "coverage_pct": 90.0
         },
         {
           "period": "2025-Q4",
