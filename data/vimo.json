@@ -940,7 +940,7 @@
   },
   "bankingSystemRisk": {
     "asOf": "2026-Q2",
-    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +0.35% tổng tài sản (mức phân tán 3.42% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu VỪA PHẢI (sốc +200bp làm NII hệ thống đổi khoảng 9.0%). Ngân hàng lệch nhiều nhất: VBB (+18.5%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 16.8% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 66.4%. NH phụ thuộc rollover nhiều nhất: VIB (98%). Pha 1 — Áp lực cấu trúc ĐANG TĂNG: Rollover dependency 12M tăng từ 14.5% lên 16.8%, Long-term Funding Coverage giảm từ 68.5% xuống 66.4% — hệ thống ngày càng cần rollover/huy động thêm nguồn vốn dài hạn, áp lực cạnh tranh lãi suất huy động kỳ hạn dài có xu hướng TĂNG. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
+    "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +0.35% tổng tài sản (mức phân tán 3.42% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu VỪA PHẢI (sốc +200bp làm NII hệ thống đổi khoảng 9.0%). Ngân hàng lệch nhiều nhất: VBB (+18.5%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 16.8% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 66.4%. NH phụ thuộc rollover nhiều nhất: VIB (98%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 15.3% → 16.8%; Long-term Funding Coverage: 66.3% → 66.4% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "interestRateRisk": {
       "netGapRatio": 0.003547794007836527,
       "dispersionGapRatio": 0.03420175346248152,
@@ -997,16 +997,16 @@
         "VCB"
       ],
       "phase": {
-        "phase": "deterioration",
-        "phaseLabel": "Pha 1 — Áp lực cấu trúc ĐANG TĂNG",
-        "narrative": "Rollover dependency 12M tăng từ 14.5% lên 16.8%, Long-term Funding Coverage giảm từ 68.5% xuống 66.4% — hệ thống ngày càng cần rollover/huy động thêm nguồn vốn dài hạn, áp lực cạnh tranh lãi suất huy động kỳ hạn dài có xu hướng TĂNG.",
+        "phase": "mixed",
+        "phaseLabel": "Chưa rõ xu hướng (tín hiệu hỗn hợp)",
+        "narrative": "Rollover dependency 12M: 15.3% → 16.8%; Long-term Funding Coverage: 66.3% → 66.4% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
         "periodsUsed": [
           "2025-Q4",
           "2026-Q1",
           "2026-Q2"
         ],
         "coveragePctByPeriod": [
-          70.10130937877258,
+          74.7148192486348,
           83.89986164192877,
           78.09481541027156
         ]
@@ -48098,21 +48098,21 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 2.106,
+          "value": 2.641,
           "source_url": null,
-          "coverage_pct": 71.9
+          "coverage_pct": 76.9
         },
         {
           "period": "2024-Q2",
-          "value": -1.601,
+          "value": -1.096,
           "source_url": null,
-          "coverage_pct": 87.3
+          "coverage_pct": 92.2
         },
         {
           "period": "2024-Q3",
-          "value": -0.33,
+          "value": 0.265,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 78.9
         },
         {
           "period": "2024-Q4",
@@ -48122,27 +48122,27 @@
         },
         {
           "period": "2025-Q1",
-          "value": 1.036,
+          "value": 1.779,
           "source_url": null,
-          "coverage_pct": 75.7
+          "coverage_pct": 80.2
         },
         {
           "period": "2025-Q2",
-          "value": 0.625,
+          "value": 1.509,
           "source_url": null,
-          "coverage_pct": 82.4
+          "coverage_pct": 87.0
         },
         {
           "period": "2025-Q3",
-          "value": -0.101,
+          "value": 0.785,
           "source_url": null,
-          "coverage_pct": 82.9
+          "coverage_pct": 87.5
         },
         {
           "period": "2025-Q4",
-          "value": 0.084,
+          "value": 0.67,
           "source_url": null,
-          "coverage_pct": 70.1
+          "coverage_pct": 74.7
         },
         {
           "period": "2026-Q1",
@@ -48171,19 +48171,19 @@
           "period": "2024-Q1",
           "value": 235.8,
           "source_url": null,
-          "coverage_pct": 71.9
+          "coverage_pct": 76.9
         },
         {
           "period": "2024-Q2",
           "value": 250.1,
           "source_url": null,
-          "coverage_pct": 87.3
+          "coverage_pct": 92.2
         },
         {
           "period": "2024-Q3",
           "value": 243.0,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 78.9
         },
         {
           "period": "2024-Q4",
@@ -48195,25 +48195,25 @@
           "period": "2025-Q1",
           "value": 261.1,
           "source_url": null,
-          "coverage_pct": 75.7
+          "coverage_pct": 80.2
         },
         {
           "period": "2025-Q2",
           "value": 269.3,
           "source_url": null,
-          "coverage_pct": 82.4
+          "coverage_pct": 87.0
         },
         {
           "period": "2025-Q3",
           "value": 297.3,
           "source_url": null,
-          "coverage_pct": 82.9
+          "coverage_pct": 87.5
         },
         {
           "period": "2025-Q4",
           "value": 337.9,
           "source_url": null,
-          "coverage_pct": 70.1
+          "coverage_pct": 74.7
         },
         {
           "period": "2026-Q1",
@@ -48240,21 +48240,21 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 12.51,
+          "value": 13.68,
           "source_url": null,
-          "coverage_pct": 70.3
+          "coverage_pct": 75.3
         },
         {
           "period": "2024-Q2",
-          "value": 15.56,
+          "value": 16.45,
           "source_url": null,
-          "coverage_pct": 86.4
+          "coverage_pct": 91.3
         },
         {
           "period": "2024-Q3",
-          "value": 14.08,
+          "value": 15.27,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 78.9
         },
         {
           "period": "2024-Q4",
@@ -48264,27 +48264,27 @@
         },
         {
           "period": "2025-Q1",
-          "value": 16.6,
+          "value": 17.4,
           "source_url": null,
-          "coverage_pct": 75.7
+          "coverage_pct": 80.2
         },
         {
           "period": "2025-Q2",
-          "value": 17.11,
+          "value": 17.71,
           "source_url": null,
-          "coverage_pct": 82.4
+          "coverage_pct": 87.0
         },
         {
           "period": "2025-Q3",
-          "value": 17.47,
+          "value": 18.07,
           "source_url": null,
-          "coverage_pct": 82.9
+          "coverage_pct": 87.5
         },
         {
           "period": "2025-Q4",
-          "value": 14.49,
+          "value": 15.26,
           "source_url": null,
-          "coverage_pct": 70.1
+          "coverage_pct": 74.7
         },
         {
           "period": "2026-Q1",
@@ -48311,21 +48311,21 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 28.57,
+          "value": 29.37,
           "source_url": null,
-          "coverage_pct": 70.3
+          "coverage_pct": 75.3
         },
         {
           "period": "2024-Q2",
-          "value": 37.32,
+          "value": 37.57,
           "source_url": null,
-          "coverage_pct": 86.4
+          "coverage_pct": 91.3
         },
         {
           "period": "2024-Q3",
-          "value": 26.61,
+          "value": 27.44,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 78.9
         },
         {
           "period": "2024-Q4",
@@ -48335,27 +48335,27 @@
         },
         {
           "period": "2025-Q1",
-          "value": 32.33,
+          "value": 32.51,
           "source_url": null,
-          "coverage_pct": 75.7
+          "coverage_pct": 80.2
         },
         {
           "period": "2025-Q2",
-          "value": 36.19,
+          "value": 36.07,
           "source_url": null,
-          "coverage_pct": 82.4
+          "coverage_pct": 87.0
         },
         {
           "period": "2025-Q3",
-          "value": 32.54,
+          "value": 32.35,
           "source_url": null,
-          "coverage_pct": 82.9
+          "coverage_pct": 87.5
         },
         {
           "period": "2025-Q4",
-          "value": 24.55,
+          "value": 24.85,
           "source_url": null,
-          "coverage_pct": 70.1
+          "coverage_pct": 74.7
         },
         {
           "period": "2026-Q1",
@@ -48382,21 +48382,21 @@
       "series": [
         {
           "period": "2024-Q1",
-          "value": 73.87,
+          "value": 70.69,
           "source_url": null,
-          "coverage_pct": 70.3
+          "coverage_pct": 75.3
         },
         {
           "period": "2024-Q2",
-          "value": 71.55,
+          "value": 68.89,
           "source_url": null,
-          "coverage_pct": 86.4
+          "coverage_pct": 91.3
         },
         {
           "period": "2024-Q3",
-          "value": 71.39,
+          "value": 68.33,
           "source_url": null,
-          "coverage_pct": 74.3
+          "coverage_pct": 78.9
         },
         {
           "period": "2024-Q4",
@@ -48406,27 +48406,27 @@
         },
         {
           "period": "2025-Q1",
-          "value": 64.6,
+          "value": 62.37,
           "source_url": null,
-          "coverage_pct": 75.7
+          "coverage_pct": 80.2
         },
         {
           "period": "2025-Q2",
-          "value": 59.95,
+          "value": 58.18,
           "source_url": null,
-          "coverage_pct": 82.4
+          "coverage_pct": 87.0
         },
         {
           "period": "2025-Q3",
-          "value": 58.87,
+          "value": 57.17,
           "source_url": null,
-          "coverage_pct": 82.9
+          "coverage_pct": 87.5
         },
         {
           "period": "2025-Q4",
-          "value": 68.52,
+          "value": 66.34,
           "source_url": null,
-          "coverage_pct": 70.1
+          "coverage_pct": 74.7
         },
         {
           "period": "2026-Q1",
