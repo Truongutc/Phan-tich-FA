@@ -339,32 +339,32 @@
         "tren_5_nam": -2013367.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 8374292.0,
-        "qua_han_den_3t": 13654495.0,
-        "den_1_thang": -9098456.0,
-        "tu_1_3_thang": 53058702.0,
-        "tu_3_12_thang": -21336224.0,
-        "tu_1_5_nam": -13417819.0,
-        "tren_5_nam": -11549144.0
+        "qua_han_tren_3t": 3761629.0,
+        "qua_han_den_3t": 4612663.0,
+        "den_1_thang": -26473944.0,
+        "tu_1_3_thang": -14176445.0,
+        "tu_3_12_thang": -4185901.0,
+        "tu_1_5_nam": 8834177.0,
+        "tren_5_nam": 45300300.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 4416.0,
-        "den_1_thang": 2585.0,
-        "tu_1_3_thang": 67927157.0,
-        "tu_3_12_thang": 32883982.0,
-        "tu_1_5_nam": 42497780.0,
-        "tren_5_nam": 38387128.0
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 69179931.0,
+        "tu_1_3_thang": 31661466.0,
+        "tu_3_12_thang": 76333403.0,
+        "tu_1_5_nam": 17195277.0,
+        "tren_5_nam": 5833437.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 4416.0,
-        "den_1_thang": 2585.0,
-        "tu_1_3_thang": 67927157.0,
-        "tu_3_6_thang": 32883982.0,
-        "tu_6_12_thang": 42497780.0,
-        "tu_1_5_nam": 38387128.0,
-        "tren_5_nam": 12233515.0
+        "khong_anh_huong_lai_suat": 4162585.0,
+        "den_1_thang": 67927157.0,
+        "tu_1_3_thang": 32883982.0,
+        "tu_3_6_thang": 42497780.0,
+        "tu_6_12_thang": 38387128.0,
+        "tu_1_5_nam": 12233515.0,
+        "tren_5_nam": 2111367.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": {
@@ -411,13 +411,12 @@
         }
       },
       "fx_source": null,
-      "fx_checked": true,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002099802371541502ngn-hng-tmcp-nam-26042024-152717bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-19T09:36:33+07:00"
+      "fetched_at": "2026-09-25T13:58:07+07:00"
     },
     "2024-Q2": {
       "status": "reported",

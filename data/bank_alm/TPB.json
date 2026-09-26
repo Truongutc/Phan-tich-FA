@@ -455,18 +455,18 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": -4933420.0,
-        "khong_anh_huong_lai_suat": -116061954.0,
-        "den_1_thang": 63199611.0,
-        "tu_1_3_thang": 29714977.0,
-        "tu_3_6_thang": 5135729.0,
-        "tu_6_12_thang": 14623362.0,
-        "tu_1_5_nam": 18090209.0,
-        "tren_5_nam": -12022.0
+        "qua_han": 1198369.0,
+        "khong_anh_huong_lai_suat": 28346310.0,
+        "den_1_thang": -37552347.0,
+        "tu_1_3_thang": 44412182.0,
+        "tu_3_6_thang": -22427004.0,
+        "tu_6_12_thang": -4208996.0,
+        "tu_1_5_nam": -1804302.0,
+        "tren_5_nam": 30644848.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 796979.0,
-        "qua_han_den_3t": 401392.0,
+        "qua_han_tren_3t": 401392.0,
+        "qua_han_den_3t": 796979.0,
         "den_1_thang": -58965091.0,
         "tu_1_3_thang": -17919688.0,
         "tu_3_12_thang": 1721196.0,
@@ -483,14 +483,14 @@
         "tren_5_nam": 6314678.0
       },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 6131789.0,
-        "khong_anh_huong_lai_suat": 150540053.0,
-        "den_1_thang": 49788095.0,
-        "tu_1_3_thang": 64485300.0,
-        "tu_3_6_thang": 36922567.0,
-        "tu_6_12_thang": 18090209.0,
-        "tu_1_5_nam": -1804302.0,
-        "tren_5_nam": 30644848.0
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 6131789.0,
+        "den_1_thang": 150540053.0,
+        "tu_1_3_thang": 49788095.0,
+        "tu_3_6_thang": 64485300.0,
+        "tu_6_12_thang": 36922567.0,
+        "tu_1_5_nam": 18090209.0,
+        "tren_5_nam": -12022.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": {
@@ -519,7 +519,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00021174477696216825ngn-hng-tmcp-tin-phong19082024-000000bo-co-ti-chnh-hp-nht-bn-nin.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-18T15:20:43+07:00"
+      "fetched_at": "2026-09-25T13:58:42+07:00"
     },
     "2024-Q3": {
       "status": "reported",

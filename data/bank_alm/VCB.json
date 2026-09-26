@@ -369,14 +369,14 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 2670.0,
-        "khong_anh_huong_lai_suat": 30783989.0,
-        "den_1_thang": -289258708.0,
-        "tu_1_3_thang": 27819614.0,
-        "tu_3_6_thang": 194141344.0,
-        "tu_6_12_thang": 43762.0,
-        "tu_1_5_nam": 186643339.0,
-        "tren_5_nam": 209796282.0
+        "qua_han": 26700016.0,
+        "khong_anh_huong_lai_suat": 4083973.0,
+        "den_1_thang": -320042697.0,
+        "tu_1_3_thang": 317078322.0,
+        "tu_3_6_thang": 166321730.0,
+        "tu_6_12_thang": -150378846.0,
+        "tu_1_5_nam": 142880841.0,
+        "tren_5_nam": 23152943.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": 11990618.0,
@@ -412,13 +412,12 @@
       "customer_deposits_by_bucket": null,
       "fx_position": null,
       "fx_source": null,
-      "fx_checked": false,
       "source": {
         "title": "Báo cáo tài chính hợp nhất quý 1 năm 2024",
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VCB_24Q1_BCTC_HN.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-19T09:51:29+07:00"
+      "fetched_at": "2026-09-25T14:00:31+07:00"
     },
     "2024-Q2": {
       "status": "reported",

@@ -5,14 +5,14 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 1221650.0,
-        "khong_anh_huong_lai_suat": -30792724.0,
-        "den_1_thang": 4911645.0,
-        "tu_1_3_thang": 8336131.0,
-        "tu_3_6_thang": -11829620.0,
-        "tu_6_12_thang": 24306862.0,
-        "tu_1_5_nam": -2493673.0,
-        "tren_5_nam": -4856025.0
+        "qua_han": 3636072.0,
+        "khong_anh_huong_lai_suat": 4856025.0,
+        "den_1_thang": -6053075.0,
+        "tu_1_3_thang": 8910097.0,
+        "tu_3_6_thang": -14044932.0,
+        "tu_6_12_thang": 2476976.0,
+        "tu_1_5_nam": -2484820.0,
+        "tren_5_nam": 11667083.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": 2416659.0,
@@ -29,18 +29,18 @@
         "den_1_thang": 39521232.0,
         "tu_1_3_thang": 27155486.0,
         "tu_3_12_thang": 53919660.0,
-        "tu_1_5_nam": 3736.0,
+        "tu_1_5_nam": 3736380.0,
         "tren_5_nam": 1254457.0
       },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 2414422.0,
-        "khong_anh_huong_lai_suat": 38063171.0,
-        "den_1_thang": 27098451.0,
-        "tu_1_3_thang": 27672417.0,
-        "tu_3_6_thang": 25457105.0,
-        "tu_6_12_thang": 3627219.0,
-        "tu_1_5_nam": 3636072.0,
-        "tren_5_nam": 4856025.0
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 2414422.0,
+        "den_1_thang": 38063171.0,
+        "tu_1_3_thang": 27098451.0,
+        "tu_3_6_thang": 27672417.0,
+        "tu_6_12_thang": 25457105.0,
+        "tu_1_5_nam": 3627219.0,
+        "tren_5_nam": 1254430.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": null,
@@ -75,7 +75,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/_603502_Bao_cao_tai_chinh_nam_2025_1776046380.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-19T08:33:01+07:00"
+      "fetched_at": "2026-09-25T13:59:48+07:00"
     },
     "2025-Q1": {
       "status": "reported",

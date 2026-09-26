@@ -537,8 +537,8 @@
       "status": "reported",
       "patched_from": null,
       "interest_rate_gap": {
-        "qua_han": 11741559.0,
-        "khong_anh_huong_lai_suat": 5205.0,
+        "qua_han": 5205464.0,
+        "khong_anh_huong_lai_suat": 11741559.0,
         "den_1_thang": 8839178.0,
         "tu_1_3_thang": 42857965.0,
         "tu_3_6_thang": -10383728.0,
@@ -547,31 +547,31 @@
         "tren_5_nam": 10966001.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 11741559.0,
-        "qua_han_den_3t": 5205464.0,
-        "den_1_thang": 8839178.0,
-        "tu_1_3_thang": 42857965.0,
-        "tu_3_12_thang": -10383728.0,
-        "tu_1_5_nam": -24401563.0,
-        "tren_5_nam": 7968488.0
+        "qua_han_tren_3t": 4066003.0,
+        "qua_han_den_3t": 1169027.0,
+        "den_1_thang": -19110298.0,
+        "tu_1_3_thang": 7795438.0,
+        "tu_3_12_thang": 7837884.0,
+        "tu_1_5_nam": 7581958.0,
+        "tren_5_nam": 27796709.0
       },
       "liabilities_by_bucket": {
-        "qua_han_tren_3t": 34686990.0,
+        "qua_han_tren_3t": 0.0,
         "qua_han_den_3t": 0.0,
-        "den_1_thang": 67284774.0,
-        "tu_1_3_thang": 35362364.0,
-        "tu_3_12_thang": 55809783.0,
-        "tu_1_5_nam": 40967085.0,
-        "tren_5_nam": 15672.0
+        "den_1_thang": 98346546.0,
+        "tu_1_3_thang": 36194847.0,
+        "tu_3_12_thang": 99280833.0,
+        "tu_1_5_nam": 15944950.0,
+        "tren_5_nam": 4972956.0
       },
       "interest_rate_liabilities_by_bucket": {
-        "qua_han": 34686990.0,
-        "khong_anh_huong_lai_suat": 0.0,
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 34686990.0,
         "den_1_thang": 67284774.0,
         "tu_1_3_thang": 35362364.0,
         "tu_3_6_thang": 55809783.0,
         "tu_6_12_thang": 40967085.0,
-        "tu_1_5_nam": 15672.0,
+        "tu_1_5_nam": 15672315.0,
         "tren_5_nam": 4956821.0
       },
       "interest_rate_sensitivity_disclosed": null,
@@ -624,7 +624,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0001432806324110672ngn-hng-tmcp-ng-nam-30102024-000000bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-22T16:58:26+07:00"
+      "fetched_at": "2026-09-25T13:57:31+07:00"
     },
     "2024-FY": {
       "status": "reported",
