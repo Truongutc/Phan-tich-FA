@@ -1184,10 +1184,12 @@ def _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision
 
     para2_parts = []
     if positives:
-        para2_parts.append("Các điểm sáng cụ thể: " + "; ".join(f"({i+1}) {p}" for i, p in enumerate(positives)) + ".")
+        # MỖI Ý 1 DÒNG RIÊNG (user 2026-09-26: 90+ ý nối liền 1 đoạn, không đọc nổi) — xuống dòng bằng
+        # "\n" (web dùng white-space: pre-line; PDF đổi "\n" -> <br/> khi dựng Paragraph).
+        para2_parts.append("Các điểm sáng cụ thể:\n" + ";\n".join(f"({i+1}) {p}" for i, p in enumerate(positives)) + ".")
     if risks:
-        para2_parts.append("Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý: " + "; ".join(f"({i+1}) {r}" for i, r in enumerate(risks)) + ".")
-    para2 = " ".join(para2_parts)
+        para2_parts.append("Ngược lại, một số điểm nghẽn/rủi ro cần lưu ý:\n" + ";\n".join(f"({i+1}) {r}" for i, r in enumerate(risks)) + ".")
+    para2 = "\n\n".join(para2_parts)
 
     if valuation.get("erp") is not None:
         pb_clause = f", P/B {valuation['pb']:.2f}x" if valuation.get("pb") is not None else ""
@@ -1869,7 +1871,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     # cáo vì đây là phần quan trọng nhất theo yêu cầu user, không phải phần liệt kê số liệu thô.
     story.append(Paragraph("1. Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể", h1_st))
     story.append(Paragraph("1.1. Tổng quan bức tranh vĩ mô", h2_st))
-    story.append(Paragraph(synthesis["overview"], body_st))
+    story.append(Paragraph(synthesis["overview"].replace("\n\n", "<br/><br/>").replace("\n", "<br/>"), body_st))
     story.append(Paragraph("1.2. Tác động tới kinh tế Việt Nam", h2_st))
     for section in synthesis["economy_impact"]:
         story.append(Paragraph(section["heading"], h3_st))
@@ -2787,6 +2789,14 @@ _MONITORING_TABLE_ROWS = [
     ("public_investment_disbursement_rate", "Tỷ lệ giải ngân đầu tư công (lũy kế, %KH năm)"),
 ]
 _MONITORING_TABLE_MONTHLY_RE = re.compile(r"^\d{4}-\d{2}$")
+# Nguon PHU lap o trong (user 2026-09-26 "cap nhat cac data con thieu"): Hai quan chi cong bo so lieu
+# xuat/nhap khau CHINH THUC (hang thang) tre hon Tong cuc Thong ke - tren bang van thieu T7/T8 du
+# nguon TCTK (export_growth/import_growth, cung y nghia YoY kim ngach) da co. Chi lap KHI nguon chinh
+# THIEU dung thang do, danh dau o lap bang "*" (altSourceIdx) de khong lan voi so Hai quan.
+_MONITORING_FALLBACK = {
+    "export_growth_customs": "export_growth",
+    "import_growth_customs": "import_growth",
+}
 
 
 def _build_monitoring_table(raw, n_months=13):
@@ -2816,6 +2826,15 @@ def _build_monitoring_table(raw, n_months=13):
             continue
         by_period = {p["period"]: p["value"] for p in ind["series"] if p.get("value") is not None}
         values = [by_period.get(p) for p in periods]
+        alt_idx = []
+        fb_key = _MONITORING_FALLBACK.get(key)
+        fb = raw.get(fb_key) if fb_key else None
+        if fb:
+            fb_by = {p["period"]: p["value"] for p in fb["series"] if p.get("value") is not None}
+            for i, p in enumerate(periods):
+                if values[i] is None and fb_by.get(p) is not None:
+                    values[i] = fb_by[p]
+                    alt_idx.append(i)
         if sum(1 for v in values if v is not None) < 6:
             continue
         # Màu tính theo min-max của TOÀN BỘ LỊCH SỬ chỉ báo (colorMin/colorMax), KHÔNG phải chỉ
@@ -2827,6 +2846,7 @@ def _build_monitoring_table(raw, n_months=13):
         all_vals = [p["value"] for p in ind["series"] if p.get("value") is not None]
         rows.append({"key": key, "label": label, "unit": ind["unit"],
                      "goodDirection": ind["good_direction"], "values": values,
+                     "altSourceIdx": alt_idx,
                      "colorMin": min(all_vals), "colorMax": max(all_vals)})
     if not rows:
         return None

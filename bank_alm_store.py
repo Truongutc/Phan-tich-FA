@@ -45,28 +45,67 @@ def _store_path(ticker):
     return os.path.join(STORE_DIR, f"{ticker.upper()}.json")
 
 
+def _empty_store(ticker, load_error=None):
+    st = {"ticker": ticker, "gap_periods": {}, "quarterly_balance_sheet": {}, "last_cheap_check": None}
+    if load_error:
+        st["_load_error"] = str(load_error)
+    return st
+
+
 def load_bank_store(ticker):
-    """Trả về dict store của 1 ticker, hoặc {"ticker": TICKER, "gap_periods": {}, "quarterly_balance_sheet":
-    {}, "last_cheap_check": None} nếu chưa có file/lỗi đọc (KHÔNG BAO GIỜ raise)."""
+    """Tra ve dict store cua 1 ticker. File CHUA TON TAI -> store rong hop le. Loi DOC that su (file
+    bi khoa, dang duoc ghi do, JSON hong...) -> thu lai vai lan; van loi thi tra ve store rong co co
+    "_load_error" - save_bank_store() TU CHOI ghi store nay (xem duoi). KHONG BAO GIO raise.
+
+    SUA 2026-09-26 (mat du lieu that: chay fetch_macro_data.py lam 3 file LPB/KLB/MBB mat het
+    gap_periods): ban cu nuot MOI loi doc roi tra ve store rong nhu "chua co file" - buoc cap nhat khac
+    (record_cheap_check/upsert_quarterly_balance_sheet) sau do load->sua->save GHI DE file that bang
+    store rong, xoa sach du lieu da doi chieu thu cong."""
+    import time
     ticker = ticker.upper()
     path = _store_path(ticker)
     if not os.path.exists(path):
-        return {"ticker": ticker, "gap_periods": {}, "quarterly_balance_sheet": {}, "last_cheap_check": None}
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            store = json.load(f)
-        store.setdefault("gap_periods", {})
-        store.setdefault("quarterly_balance_sheet", {})
-        store.setdefault("last_cheap_check", None)
-        return store
-    except Exception:
-        return {"ticker": ticker, "gap_periods": {}, "quarterly_balance_sheet": {}, "last_cheap_check": None}
+        return _empty_store(ticker)
+    last_err = None
+    for attempt in range(4):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                store = json.load(f)
+            store.setdefault("gap_periods", {})
+            store.setdefault("quarterly_balance_sheet", {})
+            store.setdefault("last_cheap_check", None)
+            return store
+        except Exception as e:
+            last_err = e
+            time.sleep(0.3 * (attempt + 1))
+    print(f"  [ERROR] bank_alm_store: khong doc duoc {path} ({last_err}) - KHONG ghi de file nay")
+    return _empty_store(ticker, load_error=last_err)
 
 
 def save_bank_store(ticker, store):
+    """Ghi store (atomic: ghi file tam roi thay the, tranh file nua chung). TU CHOI ghi khi (a) store
+    den tu 1 lan doc loi ("_load_error"), (b) ghi lam MAT >50% gap_periods so voi file dang co tren dia
+    (dau hieu ghi de bang store rong/hong) - de ghi co chu dich thi truyen allow_shrink qua
+    store["_allow_shrink"] = True truoc khi luu."""
+    ticker = ticker.upper()
+    if store.get("_load_error"):
+        raise RuntimeError(f"tu choi ghi {ticker}: store duoc tao tu lan doc loi ({store['_load_error']})")
+    allow_shrink = store.pop("_allow_shrink", False)
+    path = _store_path(ticker)
+    new_n = len((store.get("gap_periods") or {}))
+    if os.path.exists(path) and not allow_shrink:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                old_n = len((json.load(f).get("gap_periods") or {}))
+        except Exception:
+            old_n = 0
+        if old_n >= 4 and new_n < old_n / 2:
+            raise RuntimeError(f"tu choi ghi {ticker}: gap_periods giam {old_n} -> {new_n} (nghi ghi de bang store rong)")
     os.makedirs(STORE_DIR, exist_ok=True)
-    with open(_store_path(ticker.upper()), "w", encoding="utf-8") as f:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump(store, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, path)
 
 
 def upsert_reported_period(ticker, period_key, gaps_dict, source):

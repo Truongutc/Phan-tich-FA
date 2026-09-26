@@ -1139,6 +1139,156 @@ def build_system_risk_summary_text(agg, phase_info=None):
     return " ".join(parts)
 
 
+# ── Danh gia CO CAU trang thai rui ro toan he thong (user 2026-09-26: ban tom tat cu chi liet ke
+# so lieu, chua noi ro TOT/XAU, co lech ky han khong, dang co rui ro gi, can nho gi) ──
+# Muc do: 0 = tot, 1 = can theo doi, 2 = xau. Nguong la nguong THAM CHIEU noi bo (khong phai chuan
+# quy dinh) - ghi ro trong van ban de nguoi doc khong nham la chi tieu Basel.
+_LEVEL_LABEL = {0: "TỐT", 1: "CẦN THEO DÕI", 2: "XẤU"}
+
+
+def _grade_liquidity_cover(c):
+    if c is None:
+        return None
+    return 0 if c >= 1.0 else (1 if c >= 0.5 else 2)
+
+
+def _grade_ir_stress(r_abs):
+    if r_abs is None:
+        return None
+    return 0 if r_abs < 0.05 else (1 if r_abs < 0.15 else 2)
+
+
+def _grade_rollover(rd):
+    if rd is None:
+        return None
+    return 0 if rd < 0.20 else (1 if rd < 0.30 else 2)
+
+
+def _grade_ltfc(x):
+    if x is None:
+        return None
+    return 0 if x >= 0.80 else (1 if x >= 0.50 else 2)
+
+
+def build_system_assessment(agg, phase_info=None):
+    """Danh gia co cau (dict) cho JSON "bankingSystemRisk.assessment": tinh trang chung, tung mang
+    (thanh khoan / lai suat / co cau ky han nguon von), rui ro dang co, va nhung dieu can nho. Moi
+    mang la 1 danh sach `points` (moi y 1 dong) de giao dien hien tung dong rieng, khong dinh vao
+    nhau. Chi dung so lieu da co trong agg (+ phase_info)."""
+    if not agg:
+        return None
+    ir, liq = agg["interest_rate_risk"], agg["liquidity_risk"]
+    sf = agg.get("structural_funding") or {}
+    by_bank = agg.get("by_bank") or {}
+    pct = lambda v, d=1: f"{v*100:.{d}f}%"
+    areas, risks, takeaways = [], [], []
+
+    # 1) Thanh khoan
+    cov10 = (liq.get("deposit_run_coverage") or {}).get("-10%")
+    cov20 = (liq.get("deposit_run_coverage") or {}).get("-20%")
+    la = liq.get("liquid_assets_ratio")
+    lvl_liq = _grade_liquidity_cover(cov20)
+    if lvl_liq is not None:
+        weak = sorted([(t, b["deposit_run_coverage_10pct"]) for t, b in by_bank.items()
+                       if b.get("deposit_run_coverage_10pct") is not None and b["deposit_run_coverage_10pct"] < 1.0],
+                      key=lambda x: x[1])
+        pts = [f"Tài sản thanh khoản chiếm {pct(la)} tổng tài sản.",
+               f"Che phủ {pct(cov10,0)} nếu khách rút 10% tiền gửi; {pct(cov20,0)} nếu rút 20%."]
+        pts.append({0: "Kết luận: hệ thống tự đứng vững được trước một đợt rút tiền lớn, chưa cần hỗ trợ bên ngoài.",
+                    1: "Kết luận: chịu được rút tiền nhẹ nhưng sẽ căng nếu rút tiền nhanh và rộng.",
+                    2: "Kết luận: không đủ tài sản thanh khoản tự cân đối khi rút tiền lớn."}[lvl_liq])
+        if weak:
+            pts.append(f"Lưu ý cục bộ: {len(weak)} ngân hàng che phủ dưới 100% ở kịch bản -10%: "
+                       + ", ".join(f"{t} ({c*100:.0f}%)" for t, c in weak[:5]) + ".")
+            risks.append(f"Thanh khoản mỏng cục bộ: {', '.join(t for t, _ in weak[:5])} không đủ che kịch bản rút tiền -10%.")
+        pts.append("Rủi ro này thường dễ xử lý hơn cấu trúc kỳ hạn (có OMO, thị trường liên ngân hàng).")
+        areas.append({"key": "liquidity", "icon": "⚡", "title": "Rủi ro thanh khoản (tức thời)",
+                      "level": lvl_liq, "label": _LEVEL_LABEL[lvl_liq], "points": pts})
+        takeaways.append(f"Thanh khoản tức thời {_LEVEL_LABEL[lvl_liq].lower()}: che {pct(cov10,0)} (rút 10%) / {pct(cov20,0)} (rút 20%) tiền gửi.")
+
+    # 2) Lai suat
+    worst200 = (ir.get("stress_nii_ratio") or {}).get("+200bp")
+    net = ir.get("net_gap_ratio")
+    lvl_ir = _grade_ir_stress(abs(worst200)) if worst200 is not None else None
+    if lvl_ir is not None:
+        stress_v = (ir.get("stress_nii") or {}).get("+200bp") or 0
+        direction = ("lãi suất TĂNG có lợi cho lợi nhuận lãi (tài sản định giá lại nhanh hơn nguồn vốn)"
+                     if stress_v > 0 else "lãi suất TĂNG bất lợi cho lợi nhuận lãi (nguồn vốn định giá lại nhanh hơn tài sản)")
+        pts = [f"Gap ròng ≤1 năm: {net*100:+.2f}% tổng tài sản.",
+               f"Nếu lãi suất biến động 200bp, lợi nhuận lãi thuần toàn hệ thống đổi khoảng {abs(worst200)*100:.1f}%.",
+               f"Chiều tác động: {direction}."]
+        disp = ir.get("dispersion_gap_ratio")
+        if disp is not None and net is not None and abs(net) < 0.4 * disp:
+            pts.append(f"Gap ròng nhỏ chủ yếu do các ngân hàng bù trừ nhau (mức phân tán {disp*100:.1f}%); mỗi ngân hàng là pháp nhân "
+                       f"riêng nên bù trừ này không thực sự phòng hộ.")
+        offs = sorted([(t, b["cum_gap_1y_ratio"]) for t, b in by_bank.items()
+                       if b.get("cum_gap_1y_ratio") is not None and abs(b["cum_gap_1y_ratio"]) >= 0.10],
+                      key=lambda x: -abs(x[1]))
+        if offs:
+            pts.append("Ngân hàng lệch lãi suất lớn (≥10% tài sản): " + ", ".join(f"{t} ({r*100:+.0f}%)" for t, r in offs[:5]) + ".")
+            risks.append("Lệch định giá lại lãi suất lớn ở: " + ", ".join(t for t, _ in offs[:5]) + ".")
+        areas.append({"key": "interest_rate", "icon": "📈", "title": "Rủi ro lãi suất",
+                      "level": lvl_ir, "label": _LEVEL_LABEL[lvl_ir], "points": pts})
+        takeaways.append(f"Rủi ro lãi suất {_LEVEL_LABEL[lvl_ir].lower()}: sốc 200bp đổi lợi nhuận lãi ~{abs(worst200)*100:.1f}%.")
+
+    # 3) Co cau ky han nguon von
+    rd, ltfc = sf.get("rollover_dependency_12m"), sf.get("long_term_funding_coverage")
+    lv_parts = [x for x in (_grade_rollover(rd), _grade_ltfc(ltfc)) if x is not None]
+    if lv_parts:
+        lvl_st = max(lv_parts)
+        pts = []
+        if ltfc is not None:
+            pts.append(f"Nguồn vốn ổn định (nợ >1 năm + vốn chủ) chỉ tài trợ {pct(ltfc)} tài sản kỳ hạn >1 năm — "
+                       f"khoảng {pct(1-ltfc,0)} tài sản dài hạn đang được nuôi bằng vốn ngắn hạn hơn: CÓ lệch kỳ hạn.")
+        if rd is not None:
+            pts.append(f"{pct(rd)} nghĩa vụ đến hạn trong 12 tháng không được tài sản cùng kỳ hạn tự trả, phải huy động mới/rollover.")
+        pts.append("Đây là đặc thù mô hình huy động ngắn – cho vay dài: không gây khủng hoảng tức thời, nhưng đẩy chi phí huy động "
+                   "kỳ dài lên khi thị trường thắt chặt, và không có công cụ thị trường 2 để xử lý nhanh.")
+        mdb = sf.get("most_dependent_bank")
+        hi = sorted([(t, b["rollover_dependency_12m"]) for t, b in by_bank.items()
+                     if b.get("rollover_dependency_12m") is not None and b["rollover_dependency_12m"] >= 0.30],
+                    key=lambda x: -x[1])
+        if hi:
+            pts.append("Phụ thuộc rollover cao (≥30%): " + ", ".join(f"{t} ({r*100:.0f}%)" for t, r in hi[:5]) + ".")
+            risks.append("Phụ thuộc rollover cao: " + ", ".join(t for t, _ in hi[:5]) + ".")
+        elif mdb:
+            pts.append(f"Ngân hàng phụ thuộc rollover nhiều nhất: {mdb['ticker']} ({mdb['rollover_dependency_12m']*100:.0f}%).")
+        if phase_info:
+            pts.append(f"Xu hướng: {phase_info['phaseLabel']}. {phase_info['narrative']}")
+        pts.append("Ngưỡng đánh giá là ngưỡng tham chiếu nội bộ, không phải NSFR của Basel.")
+        if lvl_st >= 1:
+            risks.append("Cơ cấu kỳ hạn lệch: vốn dài hạn ổn định chưa đủ tài trợ tài sản dài hạn → áp lực đẩy lãi suất huy động "
+                         "kỳ dài khi thanh khoản thị trường thắt.")
+        areas.append({"key": "structure", "icon": "🏗️", "title": "Cơ cấu kỳ hạn tài sản – nguồn vốn (trọng tâm)",
+                      "level": lvl_st, "label": _LEVEL_LABEL[lvl_st], "points": pts})
+        takeaways.append(f"Cơ cấu kỳ hạn {_LEVEL_LABEL[lvl_st].lower()}: nguồn vốn ổn định phủ "
+                         f"{pct(ltfc,0) if ltfc is not None else 'N/A'} tài sản dài hạn; {pct(rd,0) if rd is not None else 'N/A'} nghĩa vụ ≤12 tháng phải rollover.")
+
+    if not areas:
+        return None
+    worst = max(a["level"] for a in areas)
+    weak_names = [a["title"].split(" (")[0] for a in areas if a["level"] == worst and worst > 0]
+    if worst == 0:
+        overall = {"level": 0, "label": "LÀNH MẠNH", "headline": "Cả thanh khoản, lãi suất và cơ cấu kỳ hạn đều ở mức tốt."}
+    elif worst == 1:
+        overall = {"level": 1, "label": "ỔN ĐỊNH – CÓ ĐIỂM CẦN THEO DÕI",
+                   "headline": "Hệ thống nhìn chung ổn định; điểm cần theo dõi: " + ", ".join(w.lower() for w in weak_names) + "."}
+    else:
+        overall = {"level": 2, "label": "CÓ RỦI RO ĐÁNG KỂ",
+                   "headline": "Có mảng ở mức xấu: " + ", ".join(w.lower() for w in weak_names) + "."}
+    n_patched = agg.get("n_banks_patched") or 0
+    cov = agg.get("assets_coverage_pct")
+    if n_patched:
+        risks.append(f"{n_patched} ngân hàng đang dùng số liệu vá từ kỳ trước, kết luận có thể lệch nhẹ khi họ công bố.")
+    if cov is not None and cov < 95:
+        risks.append(f"Dữ liệu chỉ phủ {cov:.0f}% tổng tài sản hệ thống — chưa đại diện đầy đủ.")
+    if not risks:
+        risks.append("Chưa thấy rủi ro nổi bật ở kỳ này; tiếp tục theo dõi xu hướng kỳ hạn qua các quý.")
+    takeaways.append("Phân biệt 3 loại rủi ro: thanh khoản (rút tiền – dễ xử lý), lãi suất (biến động lợi nhuận), "
+                     "cơ cấu kỳ hạn (áp lực chi phí vốn dài hạn – khó xử lý nhất).")
+    return {"overall": overall, "areas": areas, "risks": risks, "takeaways": takeaways, "asOf": agg["period"]}
+
+
 def build_banking_system_risk_section(agg, history=None):
     """Xây dict cho field JSON top-level "bankingSystemRisk" (mục RIÊNG trong data/vimo.json) từ 1
     kỳ đã tổng hợp. Trả về None nếu agg rỗng/không có ngân hàng nào có dữ liệu.
@@ -1156,6 +1306,7 @@ def build_banking_system_risk_section(agg, history=None):
     return {
         "asOf": agg["period"],
         "summaryText": build_system_risk_summary_text(agg, phase_info=phase_info),
+        "assessment": build_system_assessment(agg, phase_info=phase_info),
         "interestRateRisk": {
             "netGapRatio": ir["net_gap_ratio"], "dispersionGapRatio": ir["dispersion_gap_ratio"],
             "stressNiiByShock": ir["stress_nii"], "stressNiiRatioByShock": ir["stress_nii_ratio"],

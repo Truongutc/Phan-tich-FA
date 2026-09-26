@@ -130,6 +130,7 @@ function renderBankingSystemRiskSection(risk, indicators) {
 
     const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text || '-'; };
     set('synthesis-banking-risk-summary', risk.summaryText);
+    _renderBankingAssessment(risk.assessment);
 
     const cov = risk.coverage || {};
     const ir = risk.interestRateRisk || {};
@@ -192,44 +193,57 @@ function renderBankingSystemRiskSection(risk, indicators) {
     const chartsGrid = document.getElementById('banking-risk-charts-grid');
     if (chartsGrid) {
         chartsGrid.innerHTML = '';
-        // SUA (user 2026-09-23): truoc day 4 chart nam CHUNG 1 grid phang, khong ro chart nao
-        // "cao = xau" chart nao "cao = tot", va khong lam ro dau la trong tam phan tich (rui ro cau
-        // truc ky han - kho xu ly hon thanh khoan vi khong co cong cu thi truong 2 giai quyet nhanh
-        // duoc). Gio nhom lai thanh 3 khu chu de + cau dan giai thich rieng tung khu, dung mau CO
-        // DINH theo BAN CHAT chi bao (khong phai theo xu huong tang/giam nhu _renderGenericIndicatorCard
-        // dung cho cac chi bao khac) - do la_cao=xau to mau DO, cao=tot to mau XANH, nhat quan doc
-        // ngay khong can doi chieu goodDirection tung luc.
-        const _GROUPS = [
-            {
-                title: '⚡ Áp lực thanh khoản tức thời',
-                intro: 'Nếu xảy ra rút tiền đột ngột, hệ thống có đủ tài sản thanh khoản để tự cân đối trong ngắn hạn không? Rủi ro này thường DỄ xử lý hơn (có công cụ thị trường 2: OMO, liên ngân hàng...).',
-                keys: ['bank_alm_system_liquidity_risk_ratio'],
-            },
-            {
-                title: '🏗️ Rủi ro cấu trúc kỳ hạn nguồn vốn (TRỌNG TÂM)',
-                intro: 'Hệ thống cho vay dài hạn nhiều hơn vốn dài hạn huy động được → phải liên tục rollover/huy động mới → tạo áp lực đẩy lãi suất huy động kỳ hạn dài. Rủi ro này KHÓ xử lý hơn thanh khoản — không có công cụ thị trường 2 để giải quyết nhanh, chỉ có thể thay đổi dần qua cơ cấu lại nguồn vốn.',
-                keys: ['bank_alm_system_rollover_dependency_12m', 'bank_alm_system_long_term_funding_coverage'],
-            },
-            {
-                title: '📈 Sức chống chịu rủi ro lãi suất',
-                intro: 'Lợi nhuận toàn hệ thống thay đổi bao nhiêu khi lãi suất biến động — đo khả năng chống chịu tức thời, KHÔNG phải áp lực cấu trúc dài hạn (xem mục trên).',
-                keys: ['bank_alm_system_ir_risk_ratio'],
-            },
+        // SUA (user 2026-09-26): xep 4 chart thanh luoi 2x2 - HANG TREN 2 chi bao "cao hon = an toan hon"
+        // (xanh) canh nhau, HANG DUOI 2 chi bao "cao hon = rui ro hon" (do) canh nhau, de doc chieu
+        // tot/xau khong can doi chieu tung the. Phan loai theo goodDirection cua chinh chi bao (khong
+        // hard-code theo ten), ten chi bao da noi ro thuoc mang nao (thanh khoan/cau truc ky han/lai suat).
+        const _KEYS = ['bank_alm_system_liquidity_risk_ratio', 'bank_alm_system_long_term_funding_coverage',
+                       'bank_alm_system_rollover_dependency_12m', 'bank_alm_system_ir_risk_ratio'];
+        const _valid = _KEYS.filter((k) => indicators && indicators[k]);
+        const _rows = [
+            {title: '🟢 Chỉ báo CAO HƠN = AN TOÀN HƠN (càng cao càng tốt)', color: '#10b981',
+             keys: _valid.filter((k) => indicators[k].goodDirection !== 'lower')},
+            {title: '🔴 Chỉ báo CAO HƠN = RỦI RO HƠN (càng thấp càng tốt)', color: '#ef4444',
+             keys: _valid.filter((k) => indicators[k].goodDirection === 'lower')},
         ];
-        _GROUPS.forEach((g) => {
-            const validKeys = g.keys.filter((k) => indicators && indicators[k]);
-            if (!validKeys.length) return;
-            const groupEl = document.createElement('div');
-            groupEl.style.marginBottom = '14px';
-            groupEl.innerHTML = `
-                <h5 style="margin:10px 0 4px">${g.title}</h5>
-                <p class="ind-source-note" style="margin-bottom:8px">${g.intro}</p>
-                <div class="vimo-indicator-grid" style="margin-top:0"></div>`;
-            chartsGrid.appendChild(groupEl);
-            const subGrid = groupEl.querySelector('.vimo-indicator-grid');
-            validKeys.forEach((key) => _renderBankingRiskChartCard(subGrid, key, indicators[key]));
+        _rows.forEach((r) => {
+            if (!r.keys.length) return;
+            const rowEl = document.createElement('div');
+            rowEl.innerHTML = `<div class="bank-chart-row-title" style="color:${r.color}">${r.title}</div>
+                <div class="bank-chart-grid-2"></div>`;
+            chartsGrid.appendChild(rowEl);
+            const g = rowEl.querySelector('.bank-chart-grid-2');
+            r.keys.forEach((key) => _renderBankingRiskChartCard(g, key, indicators[key]));
         });
     }
+}
+
+// Khoi DANH GIA trang thai toan he thong (user 2026-09-26): tinh trang chung + tung mang (thanh khoan /
+// lai suat / co cau ky han) voi MOI Y 1 DONG RIENG + rui ro dang co + dieu can nho. Du lieu tu
+// risk.assessment (bank_system_risk.build_system_assessment) - khong tinh lai o JS.
+function _renderBankingAssessment(a) {
+    const el = document.getElementById('banking-risk-assessment');
+    if (!el) return;
+    if (!a) { el.innerHTML = ''; return; }
+    const COL = {0: '#10b981', 1: '#f59e0b', 2: '#ef4444'};
+    const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const ov = a.overall || {};
+    const c0 = COL[ov.level] || '#94a3b8';
+    let html = `<div class="bank-assess-overall" style="background:${c0}22;color:${c0}">
+        Tình trạng chung: ${esc(ov.label || '')} <div style="font-weight:500;color:var(--text-main,#f3f4f6);margin-top:2px;font-size:0.9em">${esc(ov.headline || '')}</div></div>`;
+    html += '<div class="bank-assess-grid">' + (a.areas || []).map((ar) => {
+        const c = COL[ar.level] || '#94a3b8';
+        return `<div class="bank-assess-card">
+            <h5><span>${ar.icon || ''} ${esc(ar.title)}</span><span class="lvl" style="background:${c}22;color:${c}">${esc(ar.label)}</span></h5>
+            <ul>${(ar.points || []).map((p) => `<li>${esc(p)}</li>`).join('')}</ul></div>`;
+    }).join('') + '</div>';
+    if ((a.risks || []).length) {
+        html += `<div class="bank-assess-box"><h5>⚠️ Rủi ro đang có</h5><ul class="bank-assess-list">${a.risks.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></div>`;
+    }
+    if ((a.takeaways || []).length) {
+        html += `<div class="bank-assess-box"><h5>📌 Điều cần nhớ về hệ thống ngân hàng (${esc(a.asOf || '')})</h5><ul class="bank-assess-list">${a.takeaways.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></div>`;
+    }
+    el.innerHTML = html;
 }
 
 // Chart chuyen dung cho muc "Rui ro he thong ngan hang" (khac _renderGenericIndicatorCard o cho
@@ -409,17 +423,25 @@ function renderMonitoringTable(table) {
         // sẵn (user 2026-08-03: tín dụng 18,23% vẫn cao so lịch sử nhưng bị tô đỏ vì cửa sổ hiện
         // tại chỉ có 18-22%).
         const lo = row.colorMin, hi = row.colorMax;
-        const cells = row.values.map(v => {
+        const alt = new Set(row.altSourceIdx || []);
+        const cells = row.values.map((v, ci) => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
             let g = hi === lo ? 0.5 : (v - lo) / (hi - lo);
             if (row.goodDirection === 'lower') g = 1 - g;
             const bg = _heatmapColor(g);
-            return `<td style="background:${bg}">${formatNumber(v)}${row.unit === '%' ? '%' : ''}</td>`;
+            const star = alt.has(ci) ? '<sup title="Nguồn phụ: Tổng cục Thống kê (số Hải quan chưa công bố)">*</sup>' : '';
+            return `<td style="background:${bg}">${formatNumber(v)}${row.unit === '%' ? '%' : ''}${star}</td>`;
         }).join('');
         return `<tr><th title="${row.key}">${row.label}</th>${cells}</tr>`;
     }).join('');
 
     el.innerHTML = thead + `<tbody>${tbody}</tbody>`;
+    const anyAlt = table.rows.some(r => (r.altSourceIdx || []).length);
+    let noteEl = document.getElementById('monitoring-table-altnote');
+    if (anyAlt) {
+        if (!noteEl) { noteEl = document.createElement('p'); noteEl.id = 'monitoring-table-altnote'; noteEl.className = 'ind-source-note'; el.insertAdjacentElement('afterend', noteEl); }
+        noteEl.textContent = '* Ô có dấu * lấy từ nguồn phụ (Tổng cục Thống kê) vì số liệu Hải quan tháng đó chưa được công bố; các ô "—" còn lại là kỳ nguồn chưa công bố hoặc nguồn không có số liệu.';
+    } else if (noteEl) { noteEl.remove(); }
 }
 
 function _heatmapColor(g) {

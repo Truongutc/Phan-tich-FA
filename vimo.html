@@ -74,6 +74,18 @@
         }
         .monitoring-table tbody td { font-weight: 600; color: #0b1220; }
         .monitoring-table tbody td.na { color: var(--text-muted, #6b7280); background: transparent !important; font-weight: 400; }
+        .bank-assess-overall { border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-weight: 700; }
+        .bank-assess-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .bank-assess-card { border-radius: 10px; padding: 10px 14px; border: 1px solid rgba(148,163,184,.25); background: rgba(15,23,42,.35); }
+        .bank-assess-card h5 { margin: 0 0 6px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 0.95em; }
+        .bank-assess-card .lvl { font-size: 0.75em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+        .bank-assess-card ul, .bank-assess-list { margin: 0; padding-left: 18px; }
+        .bank-assess-card li, .bank-assess-list li { font-size: 0.85em; line-height: 1.6; margin-bottom: 6px; }
+        .bank-assess-box { margin-bottom: 12px; }
+        .bank-assess-box h5 { margin: 8px 0 4px; }
+        .bank-chart-row-title { margin: 14px 0 2px; font-weight: 700; font-size: 0.95em; }
+        .bank-chart-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        @media (max-width: 760px) { .bank-chart-grid-2 { grid-template-columns: 1fr; } }
         .vimo-indicator-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -286,7 +298,9 @@
             </div>
             <div class="vimo-synthesis-section" id="synthesis-banking-risk-section" style="display:none">
                 <h4>🏦 Đánh giá rủi ro toàn hệ thống ngân hàng</h4>
-                <p id="synthesis-banking-risk-summary" class="vimo-synthesis-text"></p>
+                <div id="banking-risk-assessment"></div>
+                <details style="margin:8px 0"><summary class="ind-source-note" style="cursor:pointer">Xem bản tóm tắt dạng văn bản (đầy đủ số liệu)</summary>
+                    <p id="synthesis-banking-risk-summary" class="vimo-synthesis-text"></p></details>
                 <div class="vimo-indicator-grid" id="banking-risk-stats-grid"></div>
                 <p id="synthesis-banking-risk-phase" class="vimo-synthesis-text" style="font-weight:600;color:#60a5fa"></p>
                 <p id="synthesis-banking-risk-missing" class="ind-source-note"></p>
