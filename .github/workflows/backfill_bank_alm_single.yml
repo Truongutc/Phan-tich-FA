@@ -46,6 +46,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Chot chan 2026-09: test cac loai loi doc sai da gap that (xem test_bank_alm_validate.py) - neu
+      # ai do sua bo kiem tra roi lam no mat kha nang bat loi, workflow dung ngay o day.
+      - name: Test bo kiem tra ALM
+        run: python test_bank_alm_validate.py
+
       # Nhap ma -> chi OCR lai dung 1 ma do (backfill_single_ticker). De trong ma -> quet ca 26 ma,
       # TU DONG bo qua ma nao da co du lieu that ("reported", ke ca du lieu nhap tay - da luu cung
       # status nay), CHI OCR lai dung nhung ma dang "missing" o ky nay (backfill_period() - ham DUNG
@@ -63,6 +68,14 @@ jobs:
               print('[INFO] Khong nhap ma - tu dong quet + OCR lai TAT CA ma dang missing o ky nay.')
               backfill_period(period)
           "
+
+      # Quet TOAN BO du lieu ALM bang bank_alm_validate (so cheo tong tai san/tong no 2 bang, no phai
+      # tra khong co qua han, no khong trung dong gap, tong tai san vs Vietcap...). Ky nghi doc sai duoc
+      # ghi vao data/bank_alm/_needs_review.json + tom tat trong tab Summary cua run; KHONG lam fail
+      # workflow (de van luu duoc so lieu moi de xem), nhung ky da doi chieu thu cong (`verified`) se
+      # KHONG bi OCR ghi de neu ket qua moi khong qua kiem tra (xem bank_alm_store.upsert_reported_period).
+      - name: Kiem tra hop ly du lieu ALM
+        run: python bank_alm_validate.py
 
       # Sheet ALM_NganHang_Raw tu doc lai TOAN BO data/bank_alm/*.json (nguon du lieu goc) moi lan
       # chay nen ghi de an toan, luon phan anh dung trang thai moi nhat - giong het buoc tuong ung

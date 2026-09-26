@@ -97,9 +97,38 @@ def upsert_reported_period(ticker, period_key, gaps_dict, source):
         new_val = gaps_dict.get(key)
         return new_val if new_val is not None else existing.get(key)
 
+    # Chot kiem tra hop ly 2026-09 (xem bank_alm_validate.py): KHONG chan ghi (van luu de con so de xem lai)
+    # nhung gan `validation` + dua ky loi vao hang doi xem lai, de loi doc nham khong am tham nam trong so
+    # lieu he thong nhu truoc day.
+    validation = None
+    try:
+        import bank_alm_validate as _v
+        _cand = {
+            "interest_rate_gap": _merge("interest_rate_gap"),
+            "interest_rate_liabilities_by_bucket": _merge("interest_rate_liabilities_by_bucket"),
+            "liquidity_gap": _merge("liquidity_gap"),
+            "liabilities_by_bucket": _merge("liabilities_by_bucket"),
+        }
+        _snap = (store.get("quarterly_balance_sheet") or {}).get(gap_period_to_quarter(period_key)) or {}
+        _res = _v.validate_entry(_cand, _snap.get("total_assets"))
+        validation = {"ok": _res["ok"], "level": _res["level"], "issues": [i["code"] for i in _res["issues"]]}
+        _v.queue_review(ticker, period_key, _res, source)
+        if not _res["ok"]:
+            print(f"  [VALIDATE] {ticker} {period_key}: NGHI DOC SAI - " +
+                  "; ".join(i["msg"] for i in _res["issues"] if i["level"] == "fail"))
+            # Ky da duoc DOI CHIEU THU CONG voi PDF (verified) thi OCR moi doc sai KHONG duoc ghi de
+            if existing.get("verified"):
+                print(f"  [KEEP] {ticker} {period_key}: giu so lieu da doi chieu thu cong "
+                      f"(verified={existing.get('verified')!r}), bo ket qua OCR moi vi khong qua kiem tra")
+                return existing
+    except Exception as _e:
+        print(f"  [WARN] validate {ticker} {period_key}: {_e}")
+
     store["gap_periods"][period_key] = {
         "status": "reported",
         "patched_from": None,
+        "validation": validation,
+        "verified": None,
         "interest_rate_gap": _merge("interest_rate_gap"),
         "liquidity_gap": _merge("liquidity_gap"),
         "liabilities_by_bucket": _merge("liabilities_by_bucket"),

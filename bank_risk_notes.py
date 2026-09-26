@@ -761,6 +761,21 @@ def _extract_gaps_from_pdf(pdf_path, bs_total_assets_ty=None):
                     vals = [a - l for a, l in zip(assets_vals, liab_vals)]
                     print(f"  [DIAG] {key} trang {p+1}: tinh gap = Tong tai san - Tong no phai tra "
                           f"(lop du phong thu 4, khong doc truc tiep duoc dong Muc chenh)")
+            if vals and liab_vals:
+                # Doi chieu 3 dong cung bang (Tong tai san - Tong no - Muc chenh) NGAY khi doc: no phai
+                # tra khong co qua han; bucket lech dong nhat gap = tai san - no (loi doc nham dong
+                # "Muc chenh lech" vao cot no - loi pho bien nhat o dot doc lai thu cong 2026-09) duoc
+                # sua bang assets - gap NEU chi lech cuc bo. Chi chay khi doc duoc du 3 dong.
+                try:
+                    import bank_alm_validate as _v
+                    _assets = _extract_number_row(text, _ROW_LABEL_FLAT_ASSETS if lang == "vi" else _ROW_LABEL_FLAT_ASSETS_EN,
+                                                  n, lang=numfmt)
+                    n_overdue = 1 if key == "lai_suat" else 2
+                    liab_vals, _w = _v.reconcile_liabilities(_assets, liab_vals, vals, n_overdue)
+                    for _m in _w:
+                        print(f"  [RECONCILE] {key} trang {p+1}: {_m}")
+                except Exception as _e:
+                    print(f"  [WARN] reconcile {key} trang {p+1}: {_e}")
             if vals and liab_result_key not in result and liab_vals:
                 if unit_divisor != 1:
                     liab_vals = [v / unit_divisor for v in liab_vals]
