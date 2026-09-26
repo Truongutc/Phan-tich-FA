@@ -53,7 +53,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20260330_-_VAB_BCTC_hop_nhat_da_kiem_toan_Nam_2025_1775054500.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-25T08:44:30+07:00"
+      "fetched_at": "2026-09-25T08:44:30+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2025-Q1": {
       "status": "reported",
@@ -131,7 +137,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000000014787653_VI_BaoCaoTaiChinh_Q1_2025_18042025134138.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-25T08:42:57+07:00"
+      "fetched_at": "2026-09-25T08:42:57+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2025-Q2": {
       "status": "reported",
@@ -147,22 +159,22 @@
         "tren_5_nam": 9403819.0
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 1654473.0,
-        "qua_han_den_3t": 7260627.0,
-        "den_1_thang": 252027.0,
-        "tu_1_3_thang": 20691694.0,
-        "tu_3_12_thang": 14454149.0,
-        "tu_1_5_nam": -29611413.0,
-        "tren_5_nam": -13481228.0
+        "qua_han_tren_3t": 987741.0,
+        "qua_han_den_3t": 666732.0,
+        "den_1_thang": 6151180.0,
+        "tu_1_3_thang": -7630130.0,
+        "tu_3_12_thang": -8972924.0,
+        "tu_1_5_nam": 13133271.0,
+        "tren_5_nam": 6288275.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 2082861.0,
-        "den_1_thang": 26125789.0,
-        "tu_1_3_thang": 979187.0,
-        "tu_3_12_thang": 1796417.0,
-        "tu_1_5_nam": 64365375.0,
-        "tren_5_nam": 27576869.0
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 41695826.0,
+        "tu_1_3_thang": 21499662.0,
+        "tu_3_12_thang": 55268857.0,
+        "tu_1_5_nam": 5062244.0,
+        "tren_5_nam": 1000000.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
@@ -172,7 +184,7 @@
         "tu_3_6_thang": 1796417.0,
         "tu_6_12_thang": 64365375.0,
         "tu_1_5_nam": 27576869.0,
-        "tren_5_nam": 6000.0
+        "tren_5_nam": 1600090.0
       },
       "interest_rate_sensitivity_disclosed": null,
       "cash_by_bucket": {
@@ -209,7 +221,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000007054673721340387ngn-hng-tmcp-vit-24072025-000000bo-co-ti-chnh-hp-nht-qu_1_0914.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-22T07:41:35+07:00"
+      "fetched_at": "2026-09-26T08:29:48+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2025-Q3": {
       "status": "reported",
@@ -263,7 +281,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251017_-_VAB_-_BCTC_HN_Q3.2025_1761126486.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-25T08:43:27+07:00"
+      "fetched_at": "2026-09-25T08:43:27+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2026-Q1": {
       "status": "reported",
@@ -312,7 +336,13 @@
         "url": null,
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-18T08:32:03+07:00"
+      "fetched_at": "2026-09-18T08:32:03+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2026-Q2": {
       "status": "reported",
@@ -366,7 +396,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VAB_202608212020VAB2020BCTC20HN20SOAT20XET20BAN20NIEN202026_22082026105705.pdf?v=1787371027647",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-25T13:35:23+07:00"
+      "fetched_at": "2026-09-25T13:35:23+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2024-Q1": {
       "status": "reported",
@@ -435,7 +471,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/0002717391304347826ngn-hng-tmcp-vit-25042024-000000bo-co-ti-chnh-qu-1-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-25T08:36:35+07:00"
+      "fetched_at": "2026-09-25T08:36:35+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2024-Q2": {
       "status": "reported",
@@ -489,7 +531,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00012351778656126482ngn-hng-tmcp-vit-29082024-000000bo-co-ti-chnh-bn-nin-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-25T08:37:22+07:00"
+      "fetched_at": "2026-09-25T08:37:22+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2024-Q3": {
       "status": "reported",
@@ -596,7 +644,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000004940711462450593ngn-hng-tmcp-vit-28102024-000000bo-co-ti-chnh-qu-3-2024.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-25T08:37:53+07:00"
+      "fetched_at": "2026-09-25T08:37:53+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     },
     "2024-FY": {
       "status": "reported",
@@ -673,7 +727,13 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/000000014702176_VI_BaoCaoTaiCHinh_KiemToan_2024_08042025164137.pdf",
         "fetched_year": 2024
       },
-      "fetched_at": "2026-09-25T08:40:18+07:00"
+      "fetched_at": "2026-09-25T08:40:18+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     }
   },
   "quarterly_balance_sheet": {
