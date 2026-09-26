@@ -1431,6 +1431,19 @@ def _build_watch_points(raw, trends, scorecard, banking_system_risk=None):
     return "\n".join(lines)
 
 
+def _break_semicolons(text):
+    """Xuống dòng sau dấu ';' ngăn cách các ý chính (chỉ khi theo sau là khoảng trắng, nên không đụng
+    số/ký hiệu). Trả nguyên giá trị nếu không phải chuỗi."""
+    if not isinstance(text, str):
+        return text
+    return re.sub(r";[ \t]+", ";\n", text)
+
+
+def _para_html(text):
+    """Chuỗi có xuống dòng -> HTML cho reportlab Paragraph (đoạn trống -> 2 <br/>)."""
+    return (text or "").replace("\n\n", "<br/><br/>").replace("\n", "<br/>")
+
+
 def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict,
                           banking_system_risk=None):
     """Tổng hợp phân tích đa chỉ số RULE-BASED (không AI) — trả dict {overview, economy_impact,
@@ -1439,12 +1452,18 @@ def build_synthesis_vimo(raw, trends, scorecard, scorecard_total, valuation, dec
     banking_system_risk (dict từ _add_bank_alm_derived_indicators, có thể None) chỉ được lồng vào
     watch_points ở đây — mục RIÊNG "Rủi ro hệ thống ngân hàng (ALM)" nằm ở build_pdf_vimo/
     save_json_vimo, không phải ở đây."""
+    # Xuống dòng sau MỖI dấu ";" phân tách ý chính (user 2026-09-26: 1 đoạn nối liền hàng chục ý khó
+    # đọc) — áp dụng chung cho mọi khối lời đánh giá; web hiển thị bằng white-space: pre-line, PDF đổi
+    # xuống dòng -> <br/> (xem _para_html).
+    econ = _build_economy_impact(raw, trends)
+    if isinstance(econ, list):
+        econ = [{**sec, "text": _break_semicolons(sec.get("text"))} for sec in econ]
     return {
         "verdict": verdict,
         "overview": _build_overview(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, verdict),
-        "economy_impact": _build_economy_impact(raw, trends),
-        "market_impact": _build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text),
-        "watch_points": _build_watch_points(raw, trends, scorecard, banking_system_risk),
+        "economy_impact": econ,
+        "market_impact": _break_semicolons(_build_market_impact(raw, trends, scorecard_total, valuation, decision_label, decision_text)),
+        "watch_points": _break_semicolons(_build_watch_points(raw, trends, scorecard, banking_system_risk)),
     }
 
 
@@ -1875,11 +1894,11 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
     story.append(Paragraph("1.2. Tác động tới kinh tế Việt Nam", h2_st))
     for section in synthesis["economy_impact"]:
         story.append(Paragraph(section["heading"], h3_st))
-        story.append(Paragraph(section["text"], body_st))
+        story.append(Paragraph(_para_html(section["text"]), body_st))
     story.append(Paragraph("1.3. Tác động tới thị trường chứng khoán", h2_st))
-    story.append(Paragraph(synthesis["market_impact"], body_st))
+    story.append(Paragraph(_para_html(synthesis["market_impact"]), body_st))
     story.append(Paragraph("1.4. Điểm cần theo dõi tiếp", h2_st))
-    story.append(Paragraph(synthesis["watch_points"], body_st))
+    story.append(Paragraph(_para_html(synthesis["watch_points"]), body_st))
 
     # ── 1.5. Rủi ro hệ thống ngân hàng (ALM) — mục RIÊNG (yêu cầu user 2026-08-30), tách khỏi câu
     # tóm tắt đã lồng ở 1.4 watch_points (2 VỊ TRÍ như đã thống nhất). Chỉ hiển thị khi có dữ liệu.

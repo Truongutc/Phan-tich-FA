@@ -368,7 +368,7 @@ function renderScorecard(scorecard) {
             <span class="lbl">${gname}</span>
             <span class="val" style="color:${scoreColor(g.score)}">${scoreText(g.score)}</span>
             <div style="font-size:0.7em;color:var(--text-muted);margin-top:4px">${g.nVotes} phiếu bầu</div>
-            ${g.reason ? `<div style="font-size:0.68em;color:var(--text-muted);margin-top:4px;line-height:1.3">${g.reason}</div>` : ''}
+            ${g.reason ? `<div style="font-size:0.68em;color:var(--text-muted);margin-top:4px;line-height:1.4;text-align:left">${String(g.reason).replace(/;\s+/g, ';<br>')}</div>` : ''}
         </div>
     `).join('');
 

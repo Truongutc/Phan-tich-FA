@@ -1170,7 +1170,7 @@ def _grade_ltfc(x):
     return 0 if x >= 0.80 else (1 if x >= 0.50 else 2)
 
 
-def build_system_assessment(agg, phase_info=None):
+def build_system_assessment(agg, phase_info=None, history=None):
     """Danh gia co cau (dict) cho JSON "bankingSystemRisk.assessment": tinh trang chung, tung mang
     (thanh khoan / lai suat / co cau ky han nguon von), rui ro dang co, va nhung dieu can nho. Moi
     mang la 1 danh sach `points` (moi y 1 dong) de giao dien hien tung dong rieng, khong dinh vao
@@ -1255,6 +1255,23 @@ def build_system_assessment(agg, phase_info=None):
             pts.append(f"Ngân hàng phụ thuộc rollover nhiều nhất: {mdb['ticker']} ({mdb['rollover_dependency_12m']*100:.0f}%).")
         if phase_info:
             pts.append(f"Xu hướng: {phase_info['phaseLabel']}. {phase_info['narrative']}")
+        # So voi DINH cang thang / muc tot nhat trong lich su (chi nhung ky co do phu >=60% tai san) -
+        # phase_info chi nhin 3 ky cuoi nen khong thay duoc dinh nam xa hon (user 2026-09-26).
+        try:
+            hp = [(h["period"], (h.get("structural_funding") or {})) for h in (history or [])]
+            hp = [(pk, sfh) for pk, sfh in hp if sfh.get("rollover_dependency_12m") is not None
+                  and sfh.get("long_term_funding_coverage") is not None and (sfh.get("coverage_pct") or 0) >= 60]
+            if len(hp) >= 4 and rd is not None and ltfc is not None:
+                peak = max(hp, key=lambda x: x[1]["rollover_dependency_12m"])
+                best = min(hp, key=lambda x: x[1]["rollover_dependency_12m"])
+                if peak[0] != agg["period"]:
+                    pts.append(f"Đỉnh căng thẳng cấu trúc trong lịch sử: {peak[0]} (Rollover 12M {peak[1]['rollover_dependency_12m']*100:.1f}%, "
+                               f"LTFC {peak[1]['long_term_funding_coverage']*100:.1f}%). Hiện Rollover {rd*100:.1f}% / LTFC {ltfc*100:.1f}%.")
+                if best[0] != agg["period"]:
+                    pts.append(f"Kỳ cơ cấu tốt nhất: {best[0]} (Rollover 12M {best[1]['rollover_dependency_12m']*100:.1f}%, "
+                               f"LTFC {best[1]['long_term_funding_coverage']*100:.1f}%).")
+        except Exception:
+            pass
         pts.append("Ngưỡng đánh giá là ngưỡng tham chiếu nội bộ, không phải NSFR của Basel.")
         if lvl_st >= 1:
             risks.append("Cơ cấu kỳ hạn lệch: vốn dài hạn ổn định chưa đủ tài trợ tài sản dài hạn → áp lực đẩy lãi suất huy động "
@@ -1306,7 +1323,7 @@ def build_banking_system_risk_section(agg, history=None):
     return {
         "asOf": agg["period"],
         "summaryText": build_system_risk_summary_text(agg, phase_info=phase_info),
-        "assessment": build_system_assessment(agg, phase_info=phase_info),
+        "assessment": build_system_assessment(agg, phase_info=phase_info, history=history),
         "interestRateRisk": {
             "netGapRatio": ir["net_gap_ratio"], "dispersionGapRatio": ir["dispersion_gap_ratio"],
             "stressNiiByShock": ir["stress_nii"], "stressNiiRatioByShock": ir["stress_nii_ratio"],
