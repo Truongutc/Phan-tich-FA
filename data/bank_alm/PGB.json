@@ -214,7 +214,7 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 2330516.0,
-        "khong_anh_huong_lai_suat": 1132545.0,
+        "khong_anh_huong_lai_suat": 2082268.0,
         "den_1_thang": -3902588.0,
         "tu_1_3_thang": 10570121.0,
         "tu_3_6_thang": -3337242.0,
@@ -242,7 +242,7 @@
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 2082268.0,
+        "khong_anh_huong_lai_suat": 1132545.0,
         "den_1_thang": 34782332.0,
         "tu_1_3_thang": 11423210.0,
         "tu_3_6_thang": 14121918.0,

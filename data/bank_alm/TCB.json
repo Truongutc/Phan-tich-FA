@@ -71,9 +71,9 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 1821596.0,
-        "khong_anh_huong_lai_suat": 18283935.0,
+        "khong_anh_huong_lai_suat": 95230846.0,
         "den_1_thang": 43482750.0,
-        "tu_1_3_thang": 22543383.0,
+        "tu_1_3_thang": -111075107.0,
         "tu_3_6_thang": -42724840.0,
         "tu_6_12_thang": 122342670.0,
         "tu_1_5_nam": 9047887.0,
@@ -99,9 +99,9 @@
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 95230846.0,
+        "khong_anh_huong_lai_suat": 18283935.0,
         "den_1_thang": 244772303.0,
-        "tu_1_3_thang": 111075107.0,
+        "tu_1_3_thang": 244693597.0,
         "tu_3_6_thang": 119173815.0,
         "tu_6_12_thang": 84946293.0,
         "tu_1_5_nam": 123316883.0,
@@ -118,7 +118,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/00001234567901234568ngn-hng-tmcp-k-thng-vit-nam21042025-000000bo-co-ti-chnh-hp-nht-qu.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-25T08:25:48+07:00"
+      "fetched_at": "2026-09-26T08:16:18+07:00"
     },
     "2025-Q2": {
       "status": "reported",
@@ -214,7 +214,7 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 2789178.0,
-        "khong_anh_huong_lai_suat": 25969017.0,
+        "khong_anh_huong_lai_suat": 96777862.0,
         "den_1_thang": 15857889.0,
         "tu_1_3_thang": -26597343.0,
         "tu_3_6_thang": -14404453.0,
@@ -242,7 +242,7 @@
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 96777862.0,
+        "khong_anh_huong_lai_suat": 25969017.0,
         "den_1_thang": 286754945.0,
         "tu_1_3_thang": 236130599.0,
         "tu_3_6_thang": 157619206.0,
@@ -261,7 +261,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/20251021_-_TCB_-_Techcombank-VAS-bao_cao_tai_chinh_hop_nhat-3Q25_1761042656.pdf",
         "fetched_year": 2025
       },
-      "fetched_at": "2026-09-25T08:27:04+07:00"
+      "fetched_at": "2026-09-26T08:16:30+07:00"
     },
     "2026-Q1": {
       "status": "reported",
@@ -371,7 +371,7 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 3810006.0,
-        "khong_anh_huong_lai_suat": 34847361.0,
+        "khong_anh_huong_lai_suat": 117529579.0,
         "den_1_thang": 82009904.0,
         "tu_1_3_thang": -95304106.0,
         "tu_3_6_thang": -54611182.0,
@@ -399,7 +399,7 @@
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 117529579.0,
+        "khong_anh_huong_lai_suat": 34847361.0,
         "den_1_thang": 254851383.0,
         "tu_1_3_thang": 300752915.0,
         "tu_3_6_thang": 195273618.0,
@@ -429,7 +429,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/TCB_202608132020TCB2020Bao20cao20tai20chinh20hop20nhat20soat20xet202Q2026_19082026102705.pdf?v=1787110027315",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-09-25T08:29:36+07:00"
+      "fetched_at": "2026-09-26T08:16:39+07:00"
     },
     "2024-Q1": {
       "status": "reported",
@@ -726,7 +726,7 @@
       "patched_from": null,
       "interest_rate_gap": {
         "qua_han": 1895916.0,
-        "khong_anh_huong_lai_suat": 29656092.0,
+        "khong_anh_huong_lai_suat": 97258114.0,
         "den_1_thang": 59845329.0,
         "tu_1_3_thang": -87190243.0,
         "tu_3_6_thang": -45912177.0,
@@ -754,7 +754,7 @@
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0.0,
-        "khong_anh_huong_lai_suat": 97258114.0,
+        "khong_anh_huong_lai_suat": 29656092,
         "den_1_thang": 231124786.0,
         "tu_1_3_thang": 218559366.0,
         "tu_3_6_thang": 136604356.0,
