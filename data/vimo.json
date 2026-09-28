@@ -1017,6 +1017,7 @@
           "points": [
             "Nguồn vốn ổn định (nợ >1 năm + vốn chủ) chỉ tài trợ 64.2% tài sản kỳ hạn >1 năm — khoảng 36% tài sản dài hạn đang được nuôi bằng vốn ngắn hạn hơn: CÓ lệch kỳ hạn.",
             "16.7% nghĩa vụ đến hạn trong 12 tháng không được tài sản cùng kỳ hạn tự trả, phải huy động mới/rollover.",
+            "Tính riêng phần thiếu hụt (gộp, không cho bù trừ giữa ngân hàng) vẫn ra 17% — gần với số ròng 17%, cho thấy áp lực này KHÁ ĐỒNG ĐỀU giữa các ngân hàng, không chỉ tập trung ở vài nơi.",
             "Đây là đặc thù mô hình huy động ngắn – cho vay dài: không gây khủng hoảng tức thời, nhưng đẩy chi phí huy động kỳ dài lên khi thị trường thắt chặt, và không có công cụ thị trường 2 để xử lý nhanh.",
             "Phụ thuộc rollover cao (≥30%): MSB (34%), OCB (34%).",
             "Xu hướng: Chưa rõ xu hướng (tín hiệu hỗn hợp). Rollover dependency 12M: 15.7% → 16.7%; Long-term Funding Coverage: 65.2% → 64.2% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa.",
@@ -1096,6 +1097,8 @@
       "rolloverDependency1m": 0.25575423530714303,
       "rolloverDependency3m": 0.16909554469477403,
       "rolloverDependency12m": 0.16678743394675422,
+      "rolloverDependency12mGross": 0.16678743394675422,
+      "nBanksShort12m": 26,
       "longTermFundingCoverage": 0.6423835937375468,
       "longTermStructuralGap": 0.35761640626245317,
       "mostDependentBank": {

@@ -1018,6 +1018,16 @@ def _aggregate_for_period(period_key):
     sum_cons_gap_1m = sum_cons_gap_3m = sum_cons_gap_12m = 0.0
     sum_liab_due_1m = sum_liab_due_3m = sum_liab_due_12m = 0.0
     sum_long_term_assets = sum_stable_funding = 0.0
+    # GROSS refinancing need (user 2026-09-28, doi chieu voi framework "Funding Pressure" - phan
+    # biet Gross vs Net system pressure): sum_cons_gap_12m o tren la NET (cong THANG gia tri co
+    # dau, ngan hang thieu von va ngan hang du von BU TRU nhau) - nhung 1 ngan hang la 1 phap nhan
+    # RIENG, khong the tu dong "cho vay" phan du cua minh sang ngan hang khac de bu dap thieu hut ky
+    # han (phai qua thi truong lien ngan hang, co gioi han/lai suat rieng) - net am NHO khong co
+    # nghia toan he thong khong ai phai tim von. sum_gross_shortfall_12m CHI cong phan THIEU HUT
+    # (bo qua ngan hang dang du von ky han) - cho biet THUC SU can tim bao nhieu von moi de bu dap,
+    # khong bi che di boi phan du cua ngan hang khac.
+    sum_gross_shortfall_12m = 0.0
+    n_banks_short_12m = 0
     sum_ta_structural = 0.0  # tong tai san CHI cua cac NH co du lieu hop le cho cau truc ky han
     n_banks_structural = 0
     # Do phu RIENG cho ty le rui ro lai suat/thanh khoan chinh (user 2026-09-23, sau khi them guard
@@ -1161,6 +1171,9 @@ def _aggregate_for_period(period_key):
                 sum_cons_gap_3m += m["liq_cum_gap_3m_conservative"]
             if m.get("liq_cum_gap_1y_conservative") is not None:
                 sum_cons_gap_12m += m["liq_cum_gap_1y_conservative"]
+                if m["liq_cum_gap_1y_conservative"] < 0:
+                    sum_gross_shortfall_12m += -m["liq_cum_gap_1y_conservative"]
+                    n_banks_short_12m += 1
             if m.get("liab_due_1m") is not None:
                 sum_liab_due_1m += m["liab_due_1m"]
             if m.get("liab_due_3m") is not None:
@@ -1225,6 +1238,11 @@ def _aggregate_for_period(period_key):
     rollover_dep_1m_sys = (abs(sum_cons_gap_1m) / sum_liab_due_1m) if sum_liab_due_1m else None
     rollover_dep_3m_sys = (abs(sum_cons_gap_3m) / sum_liab_due_3m) if sum_liab_due_3m else None
     rollover_dep_12m_sys = (abs(sum_cons_gap_12m) / sum_liab_due_12m) if sum_liab_due_12m else None
+    # GROSS (user 2026-09-28) - CUNG mau so sum_liab_due_12m de so truc tiep duoc voi ban NET o
+    # tren, chi khac TU SO: chi cong phan THIEU HUT thuc su (khong bi ngan hang du von che di).
+    # Gross >> Net (|sum_cons_gap_12m|) nghia la ap luc dang BI CHE BOT boi cach cong don (net) -
+    # tung ngan hang rieng le thuc te can tim von nhieu hon so voi con so "toan he thong" gon nhe.
+    rollover_dep_12m_gross_sys = (sum_gross_shortfall_12m / sum_liab_due_12m) if sum_liab_due_12m else None
     long_term_funding_coverage_sys = (sum_stable_funding / sum_long_term_assets) if sum_long_term_assets else None
     # Do phu RIENG cho cau truc ky han (khac han assets_coverage_pct chung o tren) — bug that phat
     # hien 2026-09-21 (user nghi ngo dung, xem thao luan): "liabilities_by_bucket" thuong cham co du
@@ -1261,6 +1279,7 @@ def _aggregate_for_period(period_key):
         "structural_funding": {
             "rollover_dependency_1m": rollover_dep_1m_sys, "rollover_dependency_3m": rollover_dep_3m_sys,
             "rollover_dependency_12m": rollover_dep_12m_sys,
+            "rollover_dependency_12m_gross": rollover_dep_12m_gross_sys, "n_banks_short_12m": n_banks_short_12m,
             "long_term_funding_coverage": long_term_funding_coverage_sys,
             "long_term_structural_gap": (1 - long_term_funding_coverage_sys)
                                          if long_term_funding_coverage_sys is not None else None,
@@ -1592,6 +1611,26 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
                        f"khoảng {pct(1-ltfc,0)} tài sản dài hạn đang được nuôi bằng vốn ngắn hạn hơn: CÓ lệch kỳ hạn.")
         if rd is not None:
             pts.append(f"{pct(rd)} nghĩa vụ đến hạn trong 12 tháng không được tài sản cùng kỳ hạn tự trả, phải huy động mới/rollover.")
+        # THEM (user 2026-09-28, doi chieu voi 1 framework ben ngoai gui - "Gross vs Net system
+        # pressure"): rd o tren la NET (cong THANG gia tri co dau qua tat ca ngan hang - ngan hang
+        # thieu von va ngan hang du von ky han BU TRU nhau trong tong). Nhung moi ngan hang la 1
+        # phap nhan RIENG, khong tu dong "cho vay" phan du sang ngan hang khac de bu thieu hut (phai
+        # qua thi truong lien ngan hang, co han muc/lai suat rieng) - net thap KHONG dam bao khong
+        # ai phai tim von. rd_gross CHI cong phan THIEU HUT thuc su (bo qua ngan hang dang du von),
+        # cho biet dung muc ap luc tai tai tro THUC TE cua nhung ngan hang dang thieu.
+        rd_gross = sf.get("rollover_dependency_12m_gross")
+        n_short = sf.get("n_banks_short_12m")
+        n_struct = sf.get("n_banks_included")
+        if rd_gross is not None and rd is not None:
+            if rd_gross > rd * 1.15:
+                pts.append(f"Con số RÒNG (net) {pct(rd,0)} ở trên đang bị bù trừ giữa ngân hàng thiếu vốn và ngân hàng dư vốn kỳ hạn — "
+                            f"nếu chỉ cộng riêng phần THIẾU HỤT (gộp, không cho bù trừ, đúng bản chất mỗi ngân hàng là 1 pháp nhân riêng) "
+                            f"thì tỷ lệ lên tới {pct(rd_gross,0)}"
+                            + (f", tức {n_short}/{n_struct} ngân hàng đang thực sự thiếu hụt kỳ hạn ≤12 tháng." if n_short is not None and n_struct else ".")
+                            + " Áp lực tái tài trợ thực tế của NHỮNG NGÂN HÀNG ĐANG THIẾU lớn hơn số toàn hệ thống cho thấy.")
+                risks.append(f"Áp lực tái tài trợ gộp (gross, {pct(rd_gross,0)}) cao hơn đáng kể số ròng (net, {pct(rd,0)}) — rủi ro tập trung ở một nhóm ngân hàng, không lan đều toàn hệ thống.")
+            else:
+                pts.append(f"Tính riêng phần thiếu hụt (gộp, không cho bù trừ giữa ngân hàng) vẫn ra {pct(rd_gross,0)} — gần với số ròng {pct(rd,0)}, cho thấy áp lực này KHÁ ĐỒNG ĐỀU giữa các ngân hàng, không chỉ tập trung ở vài nơi.")
         pts.append("Đây là đặc thù mô hình huy động ngắn – cho vay dài: không gây khủng hoảng tức thời, nhưng đẩy chi phí huy động "
                    "kỳ dài lên khi thị trường thắt chặt, và không có công cụ thị trường 2 để xử lý nhanh.")
         mdb = sf.get("most_dependent_bank")
@@ -1755,6 +1794,8 @@ def build_banking_system_risk_section(agg, history=None, credit_deposit_series=N
             "rolloverDependency1m": sf.get("rollover_dependency_1m"),
             "rolloverDependency3m": sf.get("rollover_dependency_3m"),
             "rolloverDependency12m": sf.get("rollover_dependency_12m"),
+            "rolloverDependency12mGross": sf.get("rollover_dependency_12m_gross"),
+            "nBanksShort12m": sf.get("n_banks_short_12m"),
             "longTermFundingCoverage": sf.get("long_term_funding_coverage"),
             "longTermStructuralGap": sf.get("long_term_structural_gap"),
             "mostDependentBank": sf.get("most_dependent_bank"),
