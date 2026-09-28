@@ -1549,11 +1549,21 @@ function renderInternationalSection(indicators) {
 // ═══════════════════════════════════════════════════════════
 // BIỂU ĐỒ TỔNG QUAN VĨ MÔ — đặt NGAY TRÊN ĐẦU trang (user 2026-08-08, kèm ảnh mẫu dashboard
 // "VĨ MÔ VIỆT NAM THÁNG 7/2026") để thấy diễn biến chung mà không phải kéo xem nhiều chart bên
-// dưới. 2 biểu đồ: năm hiện tại (chỉ vẽ các tháng đã có) + năm gần nhất đã hoàn chỉnh (đủ 12
-// tháng) để so sánh — dữ liệu do _build_macro_overview() (template_vimo.py) đóng gói sẵn thành
-// {currentYear, recentFullYear}, mỗi năm là list {key, label, unit, values[]} theo đúng thứ tự
-// tháng 1..N. IIP/CPI/Xuất-Nhập khẩu dùng chung trục % (trái); FDI giải ngân (tỷ USD) và Giải
-// ngân đầu tư công (nghìn tỷ đồng) lệch quy mô rất nhiều nên mỗi chỉ số 1 trục riêng bên phải.
+// dưới. Dữ liệu do _build_macro_overview() (template_vimo.py) đóng gói sẵn thành {currentYear,
+// recentFullYear}, mỗi năm là list {key, label, unit, values[]} theo đúng thứ tự tháng 1..N.
+//
+// NÂNG CẤP (user 2026-09-28, đối chiếu lại với ảnh mẫu — bản cũ dồn 7 chỉ báo + 3 trục vào 1
+// biểu đồ duy nhất, "quá sơ sài và đọc khó hiểu"): 3 thay đổi chính, bám sát đúng cách trình bày
+// của ảnh mẫu thay vì chỉ vẽ 1 line chart phẳng:
+//   1. Dải thẻ KPI phía trên — đọc THẲNG giá trị mới nhất từng chỉ báo (không cần dò biểu đồ),
+//      giống các ô số bên phải ảnh mẫu ("SẢN XUẤT CÔNG NGHIỆP 14,5%"...).
+//   2. Tách riêng nhóm % tăng trưởng (IIP/Bán lẻ/XK/NK/CPI, chung 1 trục) khỏi nhóm vốn giải
+//      ngân lũy kế (FDI tỷ USD / ĐT công nghìn tỷ, 2 trục riêng) — 2 biểu đồ NHỎ dễ đọc thay vì
+//      1 biểu đồ 3 trục chồng chéo.
+//   3. Nhãn giá trị tại từng điểm (khi năm hiện tại còn ít tháng, giống ảnh mẫu ghi số dưới mỗi
+//      tháng) + đường nét đứt "bình quân lũy kế từ đầu năm" cho nhóm %, tương ứng đúng cặp
+//      "Tháng X/2026" (nét liền) / "Bình quân NT/2026" (nét đứt) trong ảnh mẫu — GSO cũng công
+//      bố song song 2 số này (tăng trưởng của riêng tháng đó vs bình quân N tháng đầu năm).
 // ═══════════════════════════════════════════════════════════
 const MACRO_OVERVIEW_COLORS = {
     iip_growth: '#3b82f6',
@@ -1580,39 +1590,164 @@ function renderMacroOverview(macroOverview) {
     const titleCurrent = document.getElementById('macro-overview-title-current');
     const titleRecent = document.getElementById('macro-overview-title-recent');
     if (hasCurrent) {
-        titleCurrent.textContent = `📅 Năm ${current.year} (đến hết tháng ${current.monthsShown})`;
-        _renderMacroOverviewChart('chart-macro-overview-current', current);
+        titleCurrent.textContent = `📅 Năm ${current.year} — số liệu mới nhất: tháng ${current.monthsShown}/${current.year} (đến hết tháng ${current.monthsShown})`;
+        _renderMacroOverviewKpiStrip('macro-overview-kpi-current', current);
+        _renderMacroOverviewChartPair('current', current);
     }
     if (hasRecent) {
-        titleRecent.textContent = `📅 Năm ${recent.year} (đối chiếu, đủ 12 tháng)`;
-        _renderMacroOverviewChart('chart-macro-overview-recent', recent);
+        titleRecent.textContent = `📅 Đối chiếu: năm ${recent.year} (đã hoàn tất 12 tháng)`;
+        _renderMacroOverviewChartPair('recent', recent);
     }
 }
 
-function _renderMacroOverviewChart(canvasId, yearData) {
+// Dải thẻ KPI: giá trị THÁNG MỚI NHẤT + chênh lệch so với tháng liền trước cho từng chỉ báo —
+// trả lời trực tiếp "đây là kỳ nào, số liệu bao nhiêu, vừa biến động ra sao" mà không cần đọc biểu
+// đồ (yêu cầu user 2026-09-28: "đọc hiểu luôn dữ liệu gì, số liệu biến động ra sao").
+function _renderMacroOverviewKpiStrip(containerId, yearData) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    el.innerHTML = yearData.series.map(row => {
+        const color = MACRO_OVERVIEW_COLORS[row.key] || '#9aa5bd';
+        const vals = row.values;
+        let lastIdx = -1;
+        for (let i = vals.length - 1; i >= 0; i--) {
+            if (vals[i] !== null && vals[i] !== undefined) { lastIdx = i; break; }
+        }
+        if (lastIdx < 0) return '';
+        const latest = vals[lastIdx];
+        let prevIdx = -1;
+        for (let i = lastIdx - 1; i >= 0; i--) {
+            if (vals[i] !== null && vals[i] !== undefined) { prevIdx = i; break; }
+        }
+        let deltaHtml = '';
+        if (prevIdx >= 0) {
+            const delta = latest - vals[prevIdx];
+            const arrow = delta > 0.05 ? '▲' : (delta < -0.05 ? '▼' : '▬');
+            deltaHtml = `<span class="vimo-macro-kpi-delta">${arrow} ${delta >= 0 ? '+' : ''}${delta.toFixed(1)} so T${prevIdx + 1}</span>`;
+        }
+        const unitSuffix = row.unit === '%' ? '%' : ` ${row.unit}`;
+        return `
+            <div class="vimo-macro-kpi-card" style="border-left-color:${color}">
+                <span class="vimo-macro-kpi-label">${esc(row.label)}</span>
+                <span class="vimo-macro-kpi-value" style="color:${color}">${latest.toFixed(1)}<small>${esc(unitSuffix)}</small></span>
+                <span class="vimo-macro-kpi-meta">Tháng ${lastIdx + 1}/${yearData.year}${deltaHtml ? ' · ' : ''}${deltaHtml}</span>
+            </div>`;
+    }).join('');
+}
+
+// Bình quân CỘNG DỒN từ tháng 1 đến đúng tháng đó (vd tháng 5 = trung bình giá trị tháng 1..5) —
+// đúng cách GSO công bố song song "riêng tháng"/"bình quân N tháng đầu năm", dùng làm đường nét
+// đứt đối chiếu trong _renderMacroPctChart (giống cặp nét liền/nét đứt trong ảnh mẫu).
+function _cumulativeAvg(values) {
+    const out = [];
+    let sum = 0, n = 0;
+    for (const v of values) {
+        if (v !== null && v !== undefined) { sum += v; n += 1; }
+        out.push(n ? sum / n : null);
+    }
+    return out;
+}
+
+function _renderMacroOverviewChartPair(prefix, yearData) {
+    const labels = Array.from({ length: yearData.monthsShown }, (_, i) => `T${i + 1}`);
+    const pctSeries = yearData.series.filter(r => r.unit === '%');
+    const absSeries = yearData.series.filter(r => r.unit !== '%');
+
+    const pctWrap = document.getElementById(`macro-overview-${prefix}-pct-wrap`);
+    const absWrap = document.getElementById(`macro-overview-${prefix}-abs-wrap`);
+    if (pctWrap) pctWrap.style.display = pctSeries.length ? '' : 'none';
+    if (absWrap) absWrap.style.display = absSeries.length ? '' : 'none';
+
+    if (pctSeries.length) {
+        _renderMacroPctChart(`chart-macro-overview-${prefix}-pct`, labels, pctSeries, yearData.monthsShown);
+    }
+    if (absSeries.length) {
+        _renderMacroAbsChart(`chart-macro-overview-${prefix}-abs`, labels, absSeries);
+    }
+}
+
+function _renderMacroPctChart(canvasId, labels, series, monthsShown) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
-    const labels = Array.from({ length: yearData.monthsShown }, (_, i) => `Tháng ${i + 1}`);
-
-    const datasets = yearData.series.map(row => {
+    // Năm hiện tại thường mới có vài tháng (ít điểm) -> hiện nhãn giá trị ở MỌI điểm, giống ảnh
+    // mẫu; năm đối chiếu đủ 12 tháng x nhiều đường dễ rối -> chỉ hiện nhãn ở điểm CUỐI (quy ước
+    // _endpointDatalabelsConfig đã dùng cho các chart nhiều đường/nhiều điểm khác trong file này).
+    const showAllPoints = monthsShown <= 9;
+    const datasets = [];
+    series.forEach(row => {
         const color = MACRO_OVERVIEW_COLORS[row.key] || '#9aa5bd';
-        const yAxisID = row.unit === '%' ? 'y' : (row.key === 'fdi_disbursed' ? 'y1' : 'y2');
+        datasets.push({
+            label: row.label, data: row.values,
+            borderColor: color, backgroundColor: color + '20', pointBackgroundColor: color,
+            fill: false, tension: 0.25, pointRadius: 3, borderWidth: 2.5, spanGaps: true,
+            datalabels: showAllPoints ? {
+                display: (ctx) => ctx.dataset.data[ctx.dataIndex] !== null && ctx.dataset.data[ctx.dataIndex] !== undefined,
+                color, align: 'top', anchor: 'end', offset: 3, font: { size: 9, weight: '700' },
+                formatter: (v) => v.toFixed(1),
+            } : _endpointDatalabelsConfig(1),
+        });
+        // Đường nét đứt "bình quân lũy kế từ đầu năm" — chỉ hiện nhãn ở điểm cuối (giá trị bình
+        // quân tính đến tháng mới nhất), tránh chồng lấn với nhãn của đường nét liền ở trên.
+        datasets.push({
+            label: `${row.label} (bình quân lũy kế)`, data: _cumulativeAvg(row.values),
+            borderColor: color, borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0,
+            fill: false, tension: 0.25, spanGaps: true,
+            datalabels: { ..._endpointDatalabelsConfig(1), font: { size: 8, style: 'italic' } },
+        });
+    });
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: {
+                    display: true, labels: { boxWidth: 11, font: { size: 9 },
+                        // Chỉ liệt kê tên chỉ báo (đường nét liền) trong chú giải — đường bình quân
+                        // dùng CHUNG màu + kiểu nét đứt đã ghi rõ trong phụ đề phía trên biểu đồ,
+                        // liệt kê thêm ở đây sẽ nhân đôi số dòng chú giải không cần thiết.
+                        filter: (item) => !item.text.includes('(bình quân lũy kế)') },
+                },
+            },
+            scales: {
+                ...CHART_DEFAULTS.scales,
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+function _renderMacroAbsChart(canvasId, labels, series) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const hasFdi = series.some(r => r.key === 'fdi_disbursed');
+    const hasPublicInv = series.some(r => r.key === 'public_investment_disbursement_value');
+
+    const datasets = series.map(row => {
+        const color = MACRO_OVERVIEW_COLORS[row.key] || '#9aa5bd';
+        const yAxisID = row.key === 'fdi_disbursed' ? 'y1' : 'y2';
         return {
             label: row.label, data: row.values, yAxisID,
-            borderColor: color, backgroundColor: color + '15', fill: false,
-            tension: 0.25, pointRadius: 3, spanGaps: true,
+            borderColor: color, backgroundColor: color + '20', pointBackgroundColor: color,
+            fill: false, tension: 0.25, pointRadius: 3, borderWidth: 2.5, spanGaps: true,
+            // Chỉ 2 đường tối đa (FDI + ĐT công) nên hiện nhãn ở MỌI điểm luôn an toàn (không rối
+            // như biểu đồ % có tới 5 đường), giống các con số lũy kế ghi dưới mỗi tháng trong ảnh mẫu.
+            datalabels: {
+                display: (ctx) => ctx.dataset.data[ctx.dataIndex] !== null && ctx.dataset.data[ctx.dataIndex] !== undefined,
+                color, align: 'top', anchor: 'end', offset: 3, font: { size: 9, weight: '700' },
+                formatter: (v) => v.toFixed(1),
+            },
         };
     });
 
-    const hasFdi = yearData.series.some(r => r.key === 'fdi_disbursed');
-    const hasPublicInv = yearData.series.some(r => r.key === 'public_investment_disbursement_value');
-    const scales = {
-        x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
-        y: { ...CHART_DEFAULTS.scales.y, position: 'left',
-             title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
-    };
+    const scales = { x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false } };
     if (hasFdi) {
-        scales.y1 = { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+        scales.y1 = { ...CHART_DEFAULTS.scales.y, position: 'left',
                       title: { display: true, text: 'FDI giải ngân (tỷ USD)', color: '#9aa5bd', font: { size: 9 } } };
     }
     if (hasPublicInv) {
@@ -1625,9 +1760,10 @@ function _renderMacroOverviewChart(canvasId, yearData) {
         data: { labels, datasets },
         options: {
             ...CHART_DEFAULTS,
-            plugins: { legend: { display: true, labels: { boxWidth: 11, font: { size: 10 } } } },
+            plugins: { legend: { display: true, labels: { boxWidth: 11, font: { size: 9 } } } },
             scales,
         },
+        plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
 }

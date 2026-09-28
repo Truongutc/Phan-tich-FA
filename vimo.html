@@ -141,6 +141,14 @@
         .vimo-valhist-chart-wrap:fullscreen .vimo-fullscreen-btn:hover { background: rgba(239, 68, 68, 0.3); }
         .vimo-chart-title { font-size: 0.92em; font-weight: 600; color: var(--text-main, #f3f4f6); margin: 18px 0 0; }
         .vimo-chart-title:first-child { margin-top: 0; }
+        .vimo-chart-subtitle { font-size: 0.78em; color: var(--text-muted, #9ca3af); margin: 4px 0 6px; }
+        .vimo-macro-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 4px; }
+        .vimo-macro-kpi-card { border-left: 3px solid #64748b; border-radius: 8px; padding: 8px 12px; background: rgba(15,23,42,.35); border-top: 1px solid rgba(148,163,184,.15); border-right: 1px solid rgba(148,163,184,.15); border-bottom: 1px solid rgba(148,163,184,.15); }
+        .vimo-macro-kpi-label { display: block; font-size: 0.72em; color: var(--text-muted, #9ca3af); margin-bottom: 2px; white-space: normal; }
+        .vimo-macro-kpi-value { display: block; font-family: 'Outfit', sans-serif; font-size: 1.3em; font-weight: 800; }
+        .vimo-macro-kpi-value small { font-size: 0.5em; font-weight: 600; margin-left: 2px; }
+        .vimo-macro-kpi-meta { display: block; font-size: 0.68em; color: var(--text-muted, #9ca3af); margin-top: 2px; }
+        .vimo-macro-kpi-delta { font-weight: 700; }
     </style>
 </head>
 <body>
@@ -186,15 +194,40 @@
 
         <!-- Biểu đồ tổng quan Vĩ mô: IIP/CPI/XNK (%) + FDI giải ngân & Giải ngân đầu tư công (lũy kế),
              đặt NGAY TRÊN ĐẦU trang để thấy diễn biến chung mà không phải kéo xem nhiều chart bên
-             dưới (user 2026-08-08, kèm ảnh mẫu dashboard "VĨ MÔ VIỆT NAM THÁNG 7/2026") — 2 biểu đồ:
-             năm hiện tại (chỉ vẽ các tháng đã có) + năm gần nhất đã hoàn chỉnh (đủ 12 tháng) để so sánh. -->
+             dưới (user 2026-08-08, kèm ảnh mẫu dashboard "VĨ MÔ VIỆT NAM THÁNG 7/2026") — 2 cặp biểu
+             đồ: năm hiện tại (chỉ vẽ các tháng đã có) + năm gần nhất đã hoàn chỉnh (đủ 12 tháng).
+             NÂNG CẤP (user 2026-09-28, đối chiếu lại với đúng ảnh mẫu — bản cũ "quá sơ sài, khó
+             hiểu số liệu"): thêm dải thẻ KPI hiện thẳng giá trị mới nhất từng chỉ báo (đọc số ngay
+             không cần nhìn biểu đồ), tách riêng nhóm % tăng trưởng khỏi nhóm vốn giải ngân lũy kế
+             (trước dồn chung 1 biểu đồ 3 trục gây rối), có nhãn giá trị tại từng điểm + đường nét
+             đứt "bình quân lũy kế từ đầu năm" giống ảnh mẫu — xem _renderMacroOverviewKpiStrip/
+             _renderMacroPctChart/_renderMacroAbsChart trong app_vimo.js. -->
         <div class="card margin-top-20" id="macro-overview-card" style="display:none">
             <h3 class="border-blue">📈 Diễn biến Vĩ mô Tổng quan</h3>
+            <div class="vimo-macro-kpi-grid" id="macro-overview-kpi-current"></div>
             <div class="vimo-chart-title" id="macro-overview-title-current"></div>
-            <div class="ind-chart" style="height:320px"><canvas id="chart-macro-overview-current"></canvas></div>
+            <div class="bank-chart-grid-2">
+                <div id="macro-overview-current-pct-wrap">
+                    <p class="vimo-chart-subtitle">Tăng trưởng theo tháng (YoY, %) — nét liền: số liệu tháng · nét đứt: bình quân lũy kế từ đầu năm</p>
+                    <div class="ind-chart" style="height:300px"><canvas id="chart-macro-overview-current-pct"></canvas></div>
+                </div>
+                <div id="macro-overview-current-abs-wrap">
+                    <p class="vimo-chart-subtitle">Vốn giải ngân lũy kế từ đầu năm</p>
+                    <div class="ind-chart" style="height:300px"><canvas id="chart-macro-overview-current-abs"></canvas></div>
+                </div>
+            </div>
             <div class="vimo-chart-title" id="macro-overview-title-recent"></div>
-            <div class="ind-chart" style="height:320px"><canvas id="chart-macro-overview-recent"></canvas></div>
-            <p class="ind-source-note" style="margin-top:8px">FDI giải ngân & Giải ngân đầu tư công là số LŨY KẾ TỪ ĐẦU NĂM (reset về gần 0 mỗi tháng 1, tăng dần theo tháng). Các chỉ số % (IIP/CPI/Xuất-Nhập khẩu) là tăng trưởng so với cùng kỳ năm trước (YoY).</p>
+            <div class="bank-chart-grid-2">
+                <div id="macro-overview-recent-pct-wrap">
+                    <p class="vimo-chart-subtitle">Tăng trưởng theo tháng (YoY, %)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-macro-overview-recent-pct"></canvas></div>
+                </div>
+                <div id="macro-overview-recent-abs-wrap">
+                    <p class="vimo-chart-subtitle">Vốn giải ngân lũy kế từ đầu năm</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-macro-overview-recent-abs"></canvas></div>
+                </div>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">FDI giải ngân & Giải ngân đầu tư công là số LŨY KẾ TỪ ĐẦU NĂM (reset về gần 0 mỗi tháng 1, tăng dần theo tháng). Các chỉ số % (IIP/CPI/Xuất-Nhập khẩu) là tăng trưởng so với cùng kỳ năm trước (YoY); đường nét đứt là bình quân cộng dồn từ tháng 1 đến đúng tháng đó (giống cách GSO công bố "bình quân N tháng").</p>
         </div>
 
         <!-- Đánh giá Tổng thể — trả lời trực tiếp: đang tốt lên/xấu đi, rõ ràng/xám, phù hợp đầu tư không -->
