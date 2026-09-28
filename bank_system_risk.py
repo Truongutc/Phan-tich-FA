@@ -368,6 +368,23 @@ def _backfill_ticker_period(ticker, period_key, candidates, force=False):
             print(f"  [WARN] {ticker} {period_key}: OCR lai that bai, GIU NGUYEN du lieu cu da co "
                   f"(status={existing.get('status')!r} - khong ghi de thanh missing)")
             return f"giu_nguyen_du_lieu_cu ({period_key})"
+        # SUA (user 2026-09-28): truoc day khong OCR duoc la ghi thang "missing", khien 1 ky VUA MOI
+        # xuat hien (vd sang quy moi nhung ngan hang nay chua kip cong bo) bi loai HOAN TOAN khoi tong
+        # hop he thong (agg coi nhu khong co so lieu) thay vi duoc "va tam" bang ky gan nhat da co -
+        # giong nguyen tac da dung trong refresh_bank_alm_data() (cron hang tuan) nhung backfill thu
+        # cong lai chua co. Neu ngan hang DA TUNG co it nhat 1 ky "reported" CU HON ky dang xet, "va"
+        # (carry-forward) tu ky do va danh dau RO status="patched" (KHONG phai "reported" - cot Trang
+        # thai/Kiem tra cheo trong sheet Excel se hien "patched", nguoi dung biet ngay day la so lieu
+        # MUON tu ky truoc, khong phai da cong bo that) de tranh trong du lieu gay sai lech tinh toan
+        # he thong; se tu dong duoc THAY THE bang so lieu that ngay khi 1 lan backfill sau OCR thanh
+        # cong. CHI ap dung khi ky dang xet MOI HON ky da co (khong "va nguoc" cho ky lich su that su
+        # chua ton tai, vd truoc khi ngan hang niem yet - nhung ky do van ghi "missing" nhu cu).
+        latest_reported = bank_alm_store.latest_reported_period(ticker)
+        if latest_reported and bank_alm_store._period_sort_key(period_key) > bank_alm_store._period_sort_key(latest_reported):
+            bank_alm_store.upsert_patched_period(ticker, period_key, latest_reported)
+            print(f"  [PATCH] {ticker} {period_key}: chua co bao cao rieng, va tam tu ky {latest_reported} "
+                  f"(status=patched) de tranh trong du lieu - se cap nhat lai khi co bao cao that")
+            return f"da_va_tu_{latest_reported}"
         bank_alm_store.mark_missing_period(ticker, period_key)
         return "thieu"
     except Exception as e:
