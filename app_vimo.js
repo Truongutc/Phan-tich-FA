@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderMonitoringTable(data.monitoringTable);
     renderSynthesis(data.synthesis);
     renderValuation(data.marketValuation);
-    renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decision, data.decisionHeadline);
+    renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decisionExvin, data.decisionHeadline, data.decision);
     renderIndicatorGroups(data.indicators);
     renderInternationalSection(data.indicators);
     // PHẢI gọi SAU renderIndicatorGroups() — hàm đó destroy() TOÀN BỘ chartInstances hiện có ở
@@ -493,10 +493,15 @@ function renderValuation(val) {
 // ═══════════════════════════════════════════════════════════
 // SO SÁNH 2 QUYẾT ĐỊNH — headline (có VIN) vs ex-VIN (user 2026-07-25: "chia ra 2 quyết định:
 // nếu nhìn vào VN-Index thì quyết định là gì... nếu nhìn theo VN-Index no VIN thì quyết định là gì").
+// SUA (user 2026-09-28): decisionExvin/decisionHeadline ở đây là 2 khuyến nghị ĐỨNG RIÊNG (mỗi góc
+// nhìn tính độc lập, KHÔNG kết hợp) — chỉ để so sánh/minh hoạ chênh lệch. Quyết định CHÍNH hiển thị
+// ở "Đánh giá Tổng thể" (data.decision) đã KẾT HỢP cả 2 (mua tỷ trọng cao cần CẢ 2 cùng xác nhận
+// rẻ, chỉ cần 1 trong 2 báo đắt là đủ để cảnh báo bán/giảm tỷ trọng) — truyền thêm decisionCombined
+// để ghi rõ trong cảnh báo lệch, tránh gây hiểu nhầm với 2 khuyến nghị đứng riêng trong bảng.
 // ═══════════════════════════════════════════════════════════
-function renderVnindexCompare(valExvin, valHeadline, decisionExvin, decisionHeadline) {
+function renderVnindexCompare(valExvin, valHeadline, decisionExvin, decisionHeadline, decisionCombined) {
     const card = document.getElementById('vnindex-compare-card');
-    if (!valHeadline || !decisionHeadline) { card.style.display = 'none'; return; }
+    if (!valHeadline || !decisionHeadline || !decisionExvin) { card.style.display = 'none'; return; }
     card.style.display = '';
 
     const fmtX = (v) => v !== null && v !== undefined ? `${formatNumber(v)}x` : '-';
@@ -513,7 +518,7 @@ function renderVnindexCompare(valExvin, valHeadline, decisionExvin, decisionHead
                 <th style="padding:6px 8px">P/E</th>
                 <th style="padding:6px 8px">P/B</th>
                 <th style="padding:6px 8px">Đánh giá định giá</th>
-                <th style="padding:6px 8px">Khuyến nghị</th>
+                <th style="padding:6px 8px">Khuyến nghị (đứng riêng)</th>
             </tr></thead>
             <tbody>
                 ${rows.map(r => `
@@ -532,7 +537,7 @@ function renderVnindexCompare(valExvin, valHeadline, decisionExvin, decisionHead
     const warnEl = document.getElementById('vnindex-compare-warning');
     if (decisionExvin.label !== decisionHeadline.label) {
         warnEl.style.display = '';
-        warnEl.textContent = `⚠ 2 góc nhìn cho khuyến nghị KHÁC NHAU — VIN (VIC/VHM/VRE/VPL) đang làm lệch kết luận định giá chung của thị trường một cách đáng kể.`;
+        warnEl.textContent = `⚠ 2 góc nhìn ĐỨNG RIÊNG cho khuyến nghị KHÁC NHAU — VIN (VIC/VHM/VRE/VPL) đang làm lệch kết luận định giá chung của thị trường một cách đáng kể. Khuyến nghị CHÍNH (kết hợp cả 2, xem mục "Đánh giá Tổng thể" phía trên)${decisionCombined ? `: ${decisionCombined.label}` : ''} — mua tỷ trọng cao/mạnh cần CẢ 2 góc nhìn cùng xác nhận rẻ, chỉ cần 1 trong 2 báo đắt là đủ để cảnh báo giảm tỷ trọng.`;
     } else {
         warnEl.style.display = 'none';
     }

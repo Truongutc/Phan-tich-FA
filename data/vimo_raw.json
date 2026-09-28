@@ -136,6 +136,12 @@
         "total": -1,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Nên mua vào"
+      },
+      {
+        "date": "2026-09-28",
+        "total": -1,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Tăng tỷ trọng vừa phải"
       }
     ]
   },

@@ -935,6 +935,32 @@ def calc_decision_matrix(scorecard_total, valuation_label, lai_suat_score=0, lai
         return "Giải ngân một phần", "Định giá hợp lý dù vĩ mô còn bất lợi — giải ngân một phần, chọn lọc, chưa dốc toàn lực cho tới khi vĩ mô cải thiện hoặc định giá rẻ hơn."
 
 
+def _combine_valuation_labels(headline_label, exvin_label):
+    """Kết hợp 2 góc nhìn định giá (headline có VIN vs ex-VIN, xem calc_market_valuation_headline())
+    thành 1 nhãn DUY NHẤT dùng cho ma trận quyết định CHÍNH (calc_decision_matrix) — theo yêu cầu
+    user (2026-09-28), phản hồi qua ví dụ thực tế: headline "Hợp lý" + ex-VIN "Rẻ/Hấp dẫn" trước đây
+    khiến quyết định CHÍNH chỉ dựa 1 mình ex-VIN, kết luận "Nên mua vào" trong khi bức tranh chung
+    (có VIN) chỉ trung tính — nghe quá mạnh so với thực tế.
+
+    Nguyên tắc BẤT ĐỐI XỨNG có chủ đích: MUA tỷ trọng cao/mua mạnh đòi hỏi CẢ 2 góc nhìn cùng xác
+    nhận rẻ (đồng thuận), còn CẢNH BÁO bán/giảm tỷ trọng chỉ cần 1 TRONG 2 góc nhìn báo đắt là đủ
+    thận trọng — logic "mua cần đồng thuận, bán chỉ cần 1 tín hiệu" giống nguyên tắc quản trị rủi ro
+    thông thường (lạc quan cần chắc chắn hơn bi quan). Nhãn kết quả feed thẳng vào
+    calc_decision_matrix() y hệt như 1 valuation_label thường, không cần sửa gì ở đó:
+      - Bất kỳ bên nào "Đắt/Kém hấp dẫn"           -> "Đắt/Kém hấp dẫn" (kích hoạt các nhánh bán/giảm)
+      - CẢ 2 bên cùng "Rẻ/Hấp dẫn"                  -> "Rẻ/Hấp dẫn" (đủ điều kiện xét lên tỷ trọng cao)
+      - Còn lại (vd 1 bên Hợp lý + 1 bên Rẻ, không bên nào Đắt) -> "Hợp lý" (trung tính, mua vừa phải)
+    headline_label=None (chưa có dữ liệu headline) coi như đồng nhất với exvin_label — tương đương
+    chỉ xét 1 mình ex-VIN như hành vi CŨ trước khi có nâng cấp này."""
+    if headline_label is None:
+        headline_label = exvin_label
+    if headline_label == "Đắt/Kém hấp dẫn" or exvin_label == "Đắt/Kém hấp dẫn":
+        return "Đắt/Kém hấp dẫn"
+    if headline_label == "Rẻ/Hấp dẫn" and exvin_label == "Rẻ/Hấp dẫn":
+        return "Rẻ/Hấp dẫn"
+    return "Hợp lý"
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # ĐÁNH GIÁ TỔNG THỂ — user yêu cầu rõ: phải trả lời được "vĩ mô đang tốt lên hay xấu đi" (XU
 # HƯỚNG theo thời gian, không chỉ mức điểm tại 1 thời điểm), "gam màu xám hay sáng tỏ" (mức độ
@@ -1767,6 +1793,7 @@ def build_interbank_curve_chart(out_dir, raw):
 def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label,
                     decision_text, charts, synthesis, verdict,
                     valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
+                    decision_label_exvin=None, decision_text_exvin=None,
                     banking_system_risk=None):
     doc = SimpleDocTemplate(pdf_path, pagesize=A4, rightMargin=15 * mm, leftMargin=15 * mm,
                              topMargin=15 * mm, bottomMargin=15 * mm)
@@ -1806,12 +1833,17 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
                             f"Ngày lập: {today_str}", body_st))
     story.append(Spacer(1, 8))
 
+    # SUA (user 2026-09-28): decision_label/decision_text ở đây giờ là quyết định CHÍNH đã KẾT HỢP
+    # 2 góc nhìn định giá (xem _combine_valuation_labels trong run_vimo_analysis) — đổi tên cột/nhãn
+    # từ "(ex-VIN)" sang "(kết hợp)" cho đúng bản chất, tránh hiểu nhầm đây vẫn là số ex-VIN đơn lẻ.
+    # decision_label_exvin/decision_text_exvin (đứng RIÊNG, không kết hợp) chỉ dùng cho đúng 1 hàng
+    # "VN-Index ex-VIN" trong bảng so sánh bên dưới.
     summary_data = [
-        ["Scorecard Vĩ Mô (tổng)", "Định giá (ex-VIN)", "ERP (ex-VIN)", "Khuyến nghị (ex-VIN)"],
+        ["Scorecard Vĩ Mô (tổng)", "Định giá (ex-VIN)", "ERP (ex-VIN)", "Khuyến nghị CHÍNH (kết hợp 2 góc nhìn)"],
         [f"{scorecard_total:+d} / {len(SCORECARD_GROUPS)}", valuation["valuation_label"],
          f"{valuation['erp']*100:.2f}%" if valuation["erp"] is not None else "N/A", decision_label],
     ]
-    t_sum = Table(summary_data, colWidths=[42 * mm, 42 * mm, 32 * mm, 55 * mm])
+    t_sum = Table(summary_data, colWidths=[38 * mm, 34 * mm, 28 * mm, 71 * mm])
     t_sum.setStyle(tbl_style())
     story.append(t_sum)
     story.append(Paragraph(
@@ -1819,29 +1851,34 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
         "trong box CAPM bên dưới (hằng số giả định ~7% dùng riêng cho mô hình CAPM/Gordon Growth), "
         "2 con số phục vụ 2 mục đích khác nhau.</i>", small_st))
     story.append(Spacer(1, 6))
-    story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn (ex-VIN):</b> {decision_text}", body_st))
+    story.append(Paragraph(f"<b>Khuyến nghị phân bổ vốn (kết hợp 2 góc nhìn định giá):</b> {decision_text}", body_st))
 
     # 2 QUYẾT ĐỊNH SONG SONG — user (2026-07-25): so sánh trực tiếp góc nhìn headline (có VIN) vs
-    # ex-VIN (loại VIC/VHM/VRE/VPL), cùng 1 bảng để thấy ngay chênh lệch kết luận nếu có.
+    # ex-VIN (loại VIC/VHM/VRE/VPL), cùng 1 bảng để thấy ngay chênh lệch kết luận nếu có. Mỗi hàng
+    # hiện khuyến nghị ĐỨNG RIÊNG của đúng góc nhìn đó (decision_label_headline/decision_label_exvin),
+    # KHÔNG phải quyết định CHÍNH đã kết hợp ở trên — 2 khái niệm khác nhau, xem chú thích bên dưới.
     if valuation_headline and decision_label_headline:
         pe_h, pe_e = valuation_headline.get("pe"), valuation.get("pe")
         pb_h, pb_e = valuation_headline.get("pb"), valuation.get("pb")
+        dec_label_exvin_disp = decision_label_exvin or decision_label
         compare_data = [
-            ["Góc nhìn", "P/E", "P/B", "Đánh giá định giá", "Khuyến nghị"],
+            ["Góc nhìn", "P/E", "P/B", "Đánh giá định giá", "Khuyến nghị (đứng riêng)"],
             ["VN-Index (headline, có VIN)", f"{pe_h:.2f}x" if pe_h else "N/A",
              f"{pb_h:.2f}x" if pb_h else "N/A", valuation_headline["valuation_label"], decision_label_headline],
             ["VN-Index ex-VIN (loại VIC/VHM/VRE/VPL)", f"{pe_e:.2f}x" if pe_e else "N/A",
-             f"{pb_e:.2f}x" if pb_e else "N/A", valuation["valuation_label"], decision_label],
+             f"{pb_e:.2f}x" if pb_e else "N/A", valuation["valuation_label"], dec_label_exvin_disp],
         ]
-        t_compare = Table(compare_data, colWidths=[62 * mm, 20 * mm, 20 * mm, 30 * mm, 39 * mm])
+        t_compare = Table(compare_data, colWidths=[58 * mm, 18 * mm, 18 * mm, 30 * mm, 47 * mm])
         t_compare.setStyle(tbl_style())
         story.append(Spacer(1, 8))
         story.append(Paragraph("<b>🔍 So sánh 2 góc nhìn định giá — có/không VIN:</b>", body_st))
         story.append(t_compare)
-        if decision_label != decision_label_headline:
+        if dec_label_exvin_disp != decision_label_headline:
             story.append(Paragraph(
-                f"⚠ 2 góc nhìn cho khuyến nghị KHÁC NHAU — VIN (VIC/VHM/VRE/VPL) đang làm lệch "
-                f"kết luận định giá chung của thị trường một cách đáng kể.", body_st))
+                f"⚠ 2 góc nhìn ĐỨNG RIÊNG cho khuyến nghị KHÁC NHAU — VIN (VIC/VHM/VRE/VPL) đang làm lệch "
+                f"kết luận định giá chung của thị trường một cách đáng kể. Khuyến nghị CHÍNH (kết hợp cả 2, "
+                f"xem đầu báo cáo) là <b>{decision_label}</b>: mua tỷ trọng cao/mạnh cần CẢ 2 góc nhìn cùng "
+                f"xác nhận rẻ, chỉ cần 1 trong 2 báo đắt là đủ để cảnh báo giảm tỷ trọng.", body_st))
 
     rc = valuation.get("risk_compensation")
     if rc:
@@ -2070,6 +2107,7 @@ def build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation,
 def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
                     synthesis, pdf_url=None,
                     valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
+                    decision_label_exvin=None, decision_text_exvin=None,
                     monitoring_table=None, macro_overview=None, banking_system_risk=None):
     out = {
         "sector": "Vĩ mô",
@@ -2081,7 +2119,14 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
             "total": scorecard_total,
         },
         "marketValuation": valuation,
+        # "decision" = quyết định CHÍNH đã KẾT HỢP 2 góc nhìn định giá (headline có VIN + ex-VIN,
+        # xem _combine_valuation_labels trong run_vimo_analysis, user 2026-09-28) — dùng cho "Đánh
+        # giá Tổng thể", banner Scorecard, synthesis. "decisionExvin" (MỚI) là khuyến nghị ĐỨNG
+        # RIÊNG chỉ theo ex-VIN (giá trị "decision" CŨ trước bản nâng cấp này) — CHỈ dùng để hiển thị
+        # đúng hàng "ex-VIN" trong bảng so sánh 2 góc nhìn, KHÔNG phải quyết định chính.
         "decision": {"label": decision_label, "text": decision_text},
+        "decisionExvin": ({"label": decision_label_exvin, "text": decision_text_exvin}
+                           if decision_label_exvin else None),
         "marketValuationHeadline": valuation_headline,
         "decisionHeadline": ({"label": decision_label_headline, "text": decision_text_headline}
                               if decision_label_headline else None),
@@ -3099,11 +3144,6 @@ def run_vimo_analysis():
         print(f"  {gname}: {g['score']:+d} ({g['n_votes']} phiếu bầu)")
     print(f"  => TỔNG SCORECARD: {scorecard_total:+d} / {len(SCORECARD_GROUPS)}")
 
-    print("[INFO] Tính định giá thị trường (P/E, ERP) — ex-VIN (nguồn chính)...")
-    valuation = calc_market_valuation(raw, rf)
-    print(f"  P/E={valuation['pe']} | ERP={valuation['erp']*100:.2f}%" if valuation['erp'] is not None else "  P/E/ERP: N/A")
-    print(f"  => {valuation['valuation_label']}")
-
     # Tính XU HƯỚNG (verdict) TRƯỚC ma trận quyết định — user (2026-07-25) yêu cầu ma trận phân
     # biệt "vĩ mô tốt lên" (trend đang cải thiện) khỏi "vĩ mô đã đảo chiều được XÁC NHẬN" (macro
     # tốt + trend đang cải thiện cùng lúc), nên cần trend_label sẵn sàng trước khi gọi
@@ -3128,16 +3168,22 @@ def run_vimo_analysis():
     # calc_decision_matrix) — theo phản hồi user (2026-07-25): lãi suất là yếu tố then chốt nhất.
     lai_suat_score = scorecard.get("Lãi suất", {}).get("score", 0)
     decision_score = scorecard_total + lai_suat_score
-    decision_label, decision_text = calc_decision_matrix(
+
+    # 2 GÓC NHÌN ĐỊNH GIÁ SONG SONG — user (2026-07-25): "chia ra 2 quyết định: nếu nhìn vào
+    # VN-Index thì quyết định là gì, định giá hấp dẫn không. Nếu nhìn theo VN-Index no VIN thì
+    # quyết định là gì". Tính CẢ 2 (đứng riêng lẻ) TRƯỚC — cần cả 2 nhãn định giá sẵn sàng để kết
+    # hợp thành quyết định CHÍNH ngay bên dưới (xem _combine_valuation_labels).
+    print("[INFO] Tính định giá thị trường (P/E, ERP) — ex-VIN...")
+    valuation = calc_market_valuation(raw, rf)
+    print(f"  P/E={valuation['pe']} | ERP={valuation['erp']*100:.2f}%" if valuation['erp'] is not None else "  P/E/ERP: N/A")
+    print(f"  => {valuation['valuation_label']}")
+    decision_label_exvin, decision_text_exvin = calc_decision_matrix(
         decision_score, valuation["valuation_label"],
         lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1),
         trend_label=verdict["trend_label"], high_risk=high_risk)
-    print(f"[INFO] Ma trận quyết định (ex-VIN): {decision_label} — {decision_text} (điểm quyết định có trọng số: {decision_score:+d})")
+    print(f"[INFO] Ma trận quyết định (ex-VIN, đứng riêng): {decision_label_exvin} — {decision_text_exvin} "
+          f"(điểm quyết định có trọng số: {decision_score:+d})")
 
-    # 2 QUYẾT ĐỊNH SONG SONG — user (2026-07-25): "chia ra 2 quyết định: nếu nhìn vào VN-Index thì
-    # quyết định là gì, định giá hấp dẫn không. Nếu nhìn theo VN-Index no VIN thì quyết định là
-    # gì". Cùng scorecard_total/lai_suat_score (vĩ mô không đổi theo góc nhìn định giá) nhưng
-    # valuation_label khác nhau -> decision_label có thể khác nhau giữa 2 góc nhìn.
     print("[INFO] Tính định giá thị trường — headline (có VIN, đối chiếu song song)...")
     valuation_headline = calc_market_valuation_headline(raw, rf)
     decision_label_headline = decision_text_headline = None
@@ -3149,9 +3195,25 @@ def run_vimo_analysis():
             decision_score, valuation_headline["valuation_label"],
             lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1),
             trend_label=verdict["trend_label"], high_risk=high_risk)
-        print(f"[INFO] Ma trận quyết định (headline): {decision_label_headline} — {decision_text_headline}")
+        print(f"[INFO] Ma trận quyết định (headline, đứng riêng): {decision_label_headline} — {decision_text_headline}")
     else:
         print("  [INFO] Chưa có dữ liệu headline P/E-P/B (vnindex_pe_headline) — bỏ qua đối chiếu song song.")
+
+    # QUYẾT ĐỊNH CHÍNH (user 2026-09-28): KẾT HỢP cả 2 góc nhìn thay vì chỉ dùng riêng ex-VIN —
+    # xem _combine_valuation_labels() để biết nguyên tắc bất đối xứng "mua cần đồng thuận cả 2,
+    # bán chỉ cần 1 cảnh báo". Đây là nhãn/text dùng cho "Đánh giá Tổng thể", banner Scorecard,
+    # synthesis và PDF — decision_label_exvin/decision_label_headline ở trên vẫn giữ nguyên để
+    # hiển thị RIÊNG trong bảng "So sánh 2 góc nhìn định giá" (mỗi góc nhìn đứng độc lập).
+    combined_valuation_label = _combine_valuation_labels(
+        valuation_headline["valuation_label"] if valuation_headline else None,
+        valuation["valuation_label"])
+    decision_label, decision_text = calc_decision_matrix(
+        decision_score, combined_valuation_label,
+        lai_suat_score=lai_suat_score, lai_suat_veto=(lai_suat_score == -1),
+        trend_label=verdict["trend_label"], high_risk=high_risk)
+    print(f"[INFO] Ma trận quyết định CHÍNH (kết hợp 2 góc nhìn -> {combined_valuation_label}): "
+          f"{decision_label} — {decision_text}")
+
     today_str_iso = datetime.datetime.now().strftime("%Y-%m-%d")
     today_entry = {
         "date": today_str_iso, "total": scorecard_total,
@@ -3250,13 +3312,17 @@ def run_vimo_analysis():
     build_pdf_vimo(pdf_path, raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text,
                     charts, synthesis, verdict,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
-                    decision_text_headline=decision_text_headline, banking_system_risk=banking_system_risk)
+                    decision_text_headline=decision_text_headline,
+                    decision_label_exvin=decision_label_exvin, decision_text_exvin=decision_text_exvin,
+                    banking_system_risk=banking_system_risk)
     print(f"  [OK] PDF: {pdf_path}")
 
     print("[INFO] Saving JSON dashboard...")
     save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
-                    decision_text_headline=decision_text_headline, monitoring_table=monitoring_table,
+                    decision_text_headline=decision_text_headline,
+                    decision_label_exvin=decision_label_exvin, decision_text_exvin=decision_text_exvin,
+                    monitoring_table=monitoring_table,
                     macro_overview=macro_overview, banking_system_risk=banking_system_risk)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
