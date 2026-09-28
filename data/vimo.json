@@ -66,7 +66,7 @@
       },
       "Lạm phát": {
         "score": -1,
-        "nVotes": 3,
+        "nVotes": 4,
         "detail": [
           {
             "indicator": "cpi_yoy",
@@ -93,9 +93,17 @@
             "judgment_label": "Tốt lên",
             "kind": "trend",
             "state": "xấu"
+          },
+          {
+            "indicator": "core_headline_cpi_gap",
+            "label": "CPI đầu (+4.89%) trừ CPI lõi (+4.55%) = +0.34 điểm %",
+            "vote": -1,
+            "arrow": "⚠",
+            "judgment_label": "lạm phát đầu và lõi cùng cao, đã lan rộng ra cầu tiêu dùng, đáng lo hơn lạm phát do chi phí đơn thuần",
+            "kind": "level"
           }
         ],
-        "reason": "CPI vượt mục tiêu và đang tăng; Lạm phát lõi còn ở mức xấu so với cùng kỳ 5 năm qua dù đang tốt lên."
+        "reason": "CPI vượt mục tiêu và đang tăng; Lạm phát lõi còn ở mức xấu so với cùng kỳ 5 năm qua dù đang tốt lên; CPI đầu-lõi lạm phát đầu và lõi cùng cao, đã lan rộng ra cầu tiêu dùng, đáng lo hơn lạm phát do chi phí đơn thuần."
       },
       "Lãi suất": {
         "score": -1,
@@ -1005,6 +1013,7 @@
             "Gap ròng ≤1 năm: +0.97% tổng tài sản.",
             "Nếu lãi suất biến động 200bp, lợi nhuận lãi thuần toàn hệ thống đổi khoảng 9.3%.",
             "Chiều tác động: lãi suất TĂNG có lợi cho lợi nhuận lãi (tài sản định giá lại nhanh hơn nguồn vốn).",
+            "Lưu ý: đây là rủi ro GIÁ TRỊ do lệch kỳ hạn (duration), khác rủi ro vỡ nợ tín dụng — tài sản \"an toàn\" (trái phiếu Chính phủ, cho vay tốt) vẫn có thể lỗ giá trị kinh tế khi lãi suất biến động mạnh, dù chưa ghi nhận lỗ kế toán ngay (tương tự case SVB 2023).",
             "Gap ròng nhỏ chủ yếu do các ngân hàng bù trừ nhau (mức phân tán 4.6%); mỗi ngân hàng là pháp nhân riêng nên bù trừ này không thực sự phòng hộ.",
             "Ngân hàng lệch lãi suất lớn (≥10% tài sản): MSB (-17%), KLB (-17%), BAB (+15%), NVB (-13%), OCB (+11%)."
           ]

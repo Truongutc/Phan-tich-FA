@@ -398,6 +398,86 @@ def _import_export_gap_level_vote(raw, trends):
             "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
 
 
+# CHÊNH LỆCH CPI ĐẦU (headline) - CPI LÕI (core) — kiến thức mới học từ econ-life-atlas-final.
+# vercel.app (user 2026-09-28 yêu cầu áp dụng): luận điểm #2 "Lạm phát không phải 1 hiện tượng duy
+# nhất — chẩn đoán sai LOẠI lạm phát dẫn tới chính sách sai" (misconception M-06 tương tự: phản ứng
+# đúng của NHNN khác nhau tùy NGUYÊN NHÂN lạm phát, không chỉ nhìn mỗi con số CPI đầu). CPI đầu bao
+# gồm thực phẩm/năng lượng (biến động mạnh, thường do CHI PHÍ/NHẬP KHẨU — giá dầu, tỷ giá, đứt gãy
+# chuỗi cung ứng) trong khi CPI lõi loại bỏ 2 nhóm đó (phản ánh áp lực CẦU TIÊU DÙNG lan rộng, bền
+# vững hơn) — gap RỘNG (đầu >> lõi) nghĩa là lạm phát chủ yếu do CHI PHÍ/NHẬP KHẨU (thắt chặt tiền
+# tệ mạnh tay có thể sai thuốc, không giải quyết được gốc rễ); gap HẸP mà CẢ 2 cùng vượt mục tiêu
+# nghĩa là lạm phát đã LAN RỘNG ra cầu tiêu dùng (đáng lo hơn, đúng lúc cần thắt chặt tiền tệ).
+# Ngưỡng 1,5 điểm % (tròn, chưa có ví dụ thật để hiệu chỉnh — sẽ điều chỉnh nếu phát hiện sai lệch
+# qua các kỳ thực tế). vote=0 khi gap rộng (KHÔNG áp đặt tốt/xấu — chỉ làm rõ NGUYÊN NHÂN, tránh
+# double-count với phiếu mức cpi_yoy đã có ở LEVEL_VOTE_FUNCS).
+CORE_HEADLINE_CPI_GAP_WIDE = 1.5
+
+
+def _core_headline_cpi_gap_level_vote(raw, trends):
+    headline = trends.get("cpi_yoy", {}).get("latest")
+    core = trends.get("core_inflation", {}).get("latest")
+    if headline is None or core is None:
+        return None
+    gap = round(headline - core, 2)
+    label = f"CPI đầu ({headline:+.2f}%) trừ CPI lõi ({core:+.2f}%) = {gap:+.2f} điểm %"
+    if abs(gap) >= CORE_HEADLINE_CPI_GAP_WIDE:
+        vote = 0
+        judgment_label = "lạm phát chủ yếu do chi phí/thực phẩm-năng lượng/nhập khẩu, chưa lan rộng ra cầu tiêu dùng"
+    elif headline > CPI_TARGET_CEILING:
+        vote = -1
+        judgment_label = "lạm phát đầu và lõi cùng cao, đã lan rộng ra cầu tiêu dùng, đáng lo hơn lạm phát do chi phí đơn thuần"
+    else:
+        vote = 1
+        judgment_label = "lạm phát đầu và lõi cùng thấp, kiểm soát tốt cả về chi phí lẫn cầu tiêu dùng"
+    return {"indicator": "core_headline_cpi_gap", "label": label, "vote": vote,
+            "arrow": "→" if vote == 0 else ("⚠" if vote < 0 else "✓"), "judgment_label": judgment_label}
+
+
+# BỐI CẢNH nới lỏng/thắt chặt lãi suất so với sức khỏe tăng trưởng — kiến thức mới học từ
+# econ-life-atlas-final.vercel.app (user 2026-09-28 yêu cầu áp dụng): hiểu nhầm M-06 "Lãi suất giảm
+# thì mọi tài sản rủi ro đều tăng" — SAI, còn tùy NGUYÊN NHÂN cắt giảm: nới lỏng khi tăng trưởng
+# TỐT (hỗ trợ đà tăng trưởng, tín hiệu tích cực thực chất) khác hẳn nới lỏng khi tăng trưởng XẤU
+# (phòng thủ/cấp cứu — lợi nhuận doanh nghiệp co lại, rủi ro tăng, có thể LẤN ÁT tác động tích cực
+# của lãi suất thấp lên định giá). Tương tự, THẮT CHẶT giữa lúc tăng trưởng đã yếu là rủi ro
+# "chính sách sai nhịp" (không phải thắt chặt bình thường lúc kinh tế đang nóng).
+#
+# Ưu tiên refinancing_rate (tín hiệu CHÍNH SÁCH trực tiếp của NHNN) làm đại diện xu hướng lãi suất;
+# nếu đang đi ngang (is_improving=None, policy rate ít đổi giữa các kỳ) thì lần lượt fallback sang
+# interbank_rate_3m rồi deposit_rate_12m_market_avg (biến động thường xuyên hơn, vẫn phản ánh đúng
+# mặt bằng lãi suất chung). vote=0 LUÔN (không đổi điểm nhóm "Lãi suất" — từng chỉ báo đã có phiếu
+# xu hướng riêng của chính nó, hàm này CHỈ bổ sung nhãn giải thích BỐI CẢNH tăng trưởng đi kèm,
+# tránh tính trùng tín hiệu). Trả None (im lặng) khi xu hướng lãi suất đang đi ngang hoặc không đủ
+# dữ liệu tăng trưởng, hoặc khi tổ hợp là "bình thường" (thắt chặt lúc tăng trưởng tốt) — chỉ lên
+# tiếng đúng 3 tình huống ĐÁNG chú ý nêu trên.
+def _rate_easing_context_level_vote(raw, trends):
+    rate_indicator = None
+    for key in ("refinancing_rate", "interbank_rate_3m", "deposit_rate_12m_market_avg"):
+        t = trends.get(key, {})
+        if t.get("is_improving") is not None:
+            rate_indicator = key
+            rate_improving = t["is_improving"]
+            break
+    if rate_indicator is None:
+        return None
+    growth_improving = trends.get("gdp_growth", {}).get("is_improving")
+    if growth_improving is None:
+        return None
+    rate_label = SHORT_LABEL.get(rate_indicator, rate_indicator)
+    if rate_improving and not growth_improving:
+        label = f"{rate_label} đang hạ trong khi GDP đang xấu đi"
+        judgment_label = "nới lỏng phòng thủ vì tăng trưởng yếu, chưa chắc là tín hiệu tích cực thực chất cho tài sản rủi ro"
+    elif rate_improving and growth_improving:
+        label = f"{rate_label} đang hạ cùng lúc GDP đang cải thiện"
+        judgment_label = "nới lỏng hỗ trợ đà tăng trưởng, tín hiệu tích cực thực chất"
+    elif (not rate_improving) and not growth_improving:
+        label = f"{rate_label} đang tăng trong khi GDP đang xấu đi"
+        judgment_label = "thắt chặt giữa lúc tăng trưởng yếu, rủi ro chính sách sai nhịp"
+    else:
+        return None  # thắt chặt lúc tăng trưởng tốt - bình thường/kỳ vọng, không cần nêu thêm
+    return {"indicator": "rate_easing_context", "label": label, "vote": 0,
+            "arrow": "→", "judgment_label": judgment_label}
+
+
 # Các "phiếu mức" cần dữ liệu TỪ NHIỀU CHỈ BÁO cùng lúc (không chỉ 1 chỉ báo tự so với ngưỡng của
 # chính nó như LEVEL_VOTE_FUNCS) — gắn theo TÊN NHÓM Scorecard (LIST vì 1 nhóm có thể có nhiều
 # phép so sánh độc lập), gọi hết trong calc_scorecard. Gắn vào "Thanh khoản" (KHÔNG PHẢI "Lãi
@@ -408,11 +488,14 @@ def _import_export_gap_level_vote(raw, trends):
 # báo "+1 Tốt" trong khi đường cong liên ngân hàng dốc lên và NHNN chỉ bơm không hút — sửa cả
 # việc phân nhóm chỉ báo (ở đây) VÀ việc credit_growth bị tính sai chiều (xem SCORECARD_GROUPS).
 # Thêm 2026-08-08 (user): gdp_cpi_gap vào "Tăng trưởng", import_export_gap vào "Thương mại &
-# Hàng hóa" — xem lý do/ngưỡng ngay phía trên.
+# Hàng hóa" — xem lý do/ngưỡng ngay phía trên. Thêm 2026-09-28 (user, kiến thức từ econ-life-atlas):
+# core_headline_cpi_gap vào "Lạm phát", rate_easing_context vào "Lãi suất".
 GROUP_LEVEL_CHECKS = {
     "Thanh khoản": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote,
                      _alt_deposit_channel_gap_level_vote, _credit_deposit_gap_level_vote],
     "Tăng trưởng": [_gdp_cpi_gap_level_vote],
+    "Lạm phát": [_core_headline_cpi_gap_level_vote],
+    "Lãi suất": [_rate_easing_context_level_vote],
     "Thương mại & Hàng hóa": [_import_export_gap_level_vote],
 }
 SHORT_LABEL["deposit_rate_gap"] = "Ngân hàng"
@@ -421,6 +504,8 @@ SHORT_LABEL["alt_deposit_channel_gap"] = "Kênh thay thế"
 SHORT_LABEL["gdp_cpi_gap"] = "GDP-CPI"
 SHORT_LABEL["import_export_gap"] = "NK-XK"
 SHORT_LABEL["credit_deposit_gap"] = "Tín dụng-Huy động"
+SHORT_LABEL["core_headline_cpi_gap"] = "CPI đầu-lõi"
+SHORT_LABEL["rate_easing_context"] = "Bối cảnh lãi suất"
 
 
 # ══════════════════════════════════════════════════════════════════════════

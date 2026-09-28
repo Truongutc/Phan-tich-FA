@@ -1233,7 +1233,16 @@ def build_system_assessment(agg, phase_info=None, history=None):
                      if stress_v > 0 else "lãi suất TĂNG bất lợi cho lợi nhuận lãi (nguồn vốn định giá lại nhanh hơn tài sản)")
         pts = [f"Gap ròng ≤1 năm: {net*100:+.2f}% tổng tài sản.",
                f"Nếu lãi suất biến động 200bp, lợi nhuận lãi thuần toàn hệ thống đổi khoảng {abs(worst200)*100:.1f}%.",
-               f"Chiều tác động: {direction}."]
+               f"Chiều tác động: {direction}.",
+               # Kien thuc moi (user 2026-09-28, hoc tu government-bond-atlas.vercel.app) - case
+               # SVB 2023: mat 1,8 ty USD tren danh muc TRAI PHIEU KHO BAC (khong co rui ro vo no)
+               # THUAN TUY vi lech ky han (duration) khi lai suat tang - "an toan tin dung" KHONG
+               # dong nghia "khong the mat gia tri". Ap dung dung cho ALM ngan hang: tai san
+               # co ky han dai (kha nang tra no tot) van co the LO GIA TRI KINH TE khi lai suat
+               # tang, du ngan hang khong ghi nhan lo ke toan ngay (tai san giu-den-dao-han).
+               "Lưu ý: đây là rủi ro GIÁ TRỊ do lệch kỳ hạn (duration), khác rủi ro vỡ nợ tín dụng — "
+               "tài sản \"an toàn\" (trái phiếu Chính phủ, cho vay tốt) vẫn có thể lỗ giá trị kinh tế "
+               "khi lãi suất biến động mạnh, dù chưa ghi nhận lỗ kế toán ngay (tương tự case SVB 2023)."]
         disp = ir.get("dispersion_gap_ratio")
         if disp is not None and net is not None and abs(net) < 0.4 * disp:
             pts.append(f"Gap ròng nhỏ chủ yếu do các ngân hàng bù trừ nhau (mức phân tán {disp*100:.1f}%); mỗi ngân hàng là pháp nhân "
