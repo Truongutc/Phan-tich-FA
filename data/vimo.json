@@ -152,8 +152,8 @@
             "kind": "level"
           },
           {
-            "indicator": "tcbs_ipower_gap",
-            "label": "Lãi suất iPower TCBS (9.00%) so với huy động niêm yết 12 tháng (5.90%)",
+            "indicator": "alt_deposit_channel_gap",
+            "label": "Lãi suất kênh thay thế cao nhất (Cake 9.60%) so với huy động niêm yết 12 tháng (5.90%)",
             "vote": -1,
             "arrow": "⚠",
             "judgment_label": "cao hơn niêm yết nhiều, thị trường đói vốn",
@@ -168,7 +168,7 @@
             "kind": "level"
           }
         ],
-        "reason": "Cung tiền M2 xấu đi; Dự trữ ngoại hối còn ở mức xấu so với cùng kỳ 5 năm qua dù đang tốt lên; Ngân hàng huy động trong khung an toàn; Liên ngân hàng cao hơn niêm yết, căng thanh khoản; iPower TCBS cao hơn niêm yết nhiều, thị trường đói vốn; Tín dụng-Huy động tín dụng vượt xa huy động, ngân hàng phải tăng lãi suất tìm vốn."
+        "reason": "Cung tiền M2 xấu đi; Dự trữ ngoại hối còn ở mức xấu so với cùng kỳ 5 năm qua dù đang tốt lên; Ngân hàng huy động trong khung an toàn; Liên ngân hàng cao hơn niêm yết, căng thanh khoản; Kênh thay thế cao hơn niêm yết nhiều, thị trường đói vốn; Tín dụng-Huy động tín dụng vượt xa huy động, ngân hàng phải tăng lãi suất tìm vốn."
       },
       "Tỷ giá & Dòng vốn ngoại": {
         "score": 1,
@@ -45936,6 +45936,31 @@
       },
       "note": "Nguồn 40yo.vn (tổng hợp IMF WEO/World Bank/ADB/UNCTAD), endpoint JSON công khai 40yo.vn/data/countries/VNM.json — chỉ hiển thị từ 2016 (dữ liệu gốc có thể sâu hơn nhiều, xem 40yo.vn/vi-mo/vn nếu cần lịch sử xa hơn). Các năm sau hiện tại (nếu có) là DỰ BÁO của IMF/ADB, không phải số liệu thực tế đã công bố.",
       "impact": "Chỉ báo tham khảo bổ sung, chưa dùng cho Scorecard — mở rộng phạm vi theo dõi sang các mảng hệ thống chưa có nguồn tự động trước đây (đường cong lợi suất, cơ cấu nợ TPCP/TPDN, cán cân thanh toán chi tiết, dân số, ngân sách dài hạn)."
+    },
+    "deposit_rate_cake_max": {
+      "group": "monetary",
+      "label": "Lãi suất Cake 12 tháng + ưu đãi (cao nhất)",
+      "unit": "%",
+      "goodDirection": "lower",
+      "autoSource": "cake_scrape",
+      "series": [
+        {
+          "period": "2026-W15",
+          "value": 9.600000000000001,
+          "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
+        }
+      ],
+      "trend": {
+        "latest": 9.600000000000001,
+        "latest_period": "2026-W15",
+        "latest_source": "https://cake.vn/tien-gui/tien-gui-tieu-chuan",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "Chỉ báo mới 2026-09-28 (user đề xuất, đánh giá TỐT HƠN iPower TCBS) — cake.vn/tien-gui/tien-gui-tieu-chuan, ngân hàng số Cake (VCCB): lãi suất niêm yết kỳ hạn 12 tháng (Cuối kỳ hạn) CỘNG mức ưu đãi khuyến mãi cao nhất đang chạy (mục 'Thêm ưu đãi', áp dụng kỳ hạn 6-13 tháng nên bao gồm cả kỳ hạn 12 tháng đang lấy) — vd niêm yết 7,4%/năm + ưu đãi 2,2% = 9,6%/năm. Cùng bản chất 'kênh gửi tiền thay thế' như iPower TCBS: khi hệ thống ngân hàng căng huy động, Cake phải tăng lãi suất/khuyến mãi để cạnh tranh hút tiền — mức này HẠ xuống nghĩa là áp lực huy động đã dịu bớt. Period dùng NGÀY ÁP DỤNG CHÍNH THỨC ghi trên trang (không phải ngày fetch) — xem fetch_cake_max_rate().",
+      "impact": "Cake hạ lãi suất 12 tháng + ưu đãi đồng nghĩa áp lực huy động/thanh khoản bên ngoài hệ thống ngân hàng truyền thống đã dịu bớt. Ngược lại, mức này tăng lên (niêm yết tăng hoặc khuyến mãi tăng) là tín hiệu SỚM cho thấy căng thẳng huy động đang lan rộng."
     },
     "fdi_disbursed_quarterly": {
       "group": "trade",

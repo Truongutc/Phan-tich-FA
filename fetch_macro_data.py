@@ -1964,6 +1964,55 @@ def fetch_tcbs_ipower_max_rate():
         return None, None, None
 
 
+def fetch_cake_max_rate():
+    """cake.vn/tien-gui/tien-gui-tieu-chuan — lãi suất tiết kiệm kỳ hạn 12 tháng (Cuối kỳ hạn) CỘNG
+    THÊM % ưu đãi khuyến mãi cao nhất đang chạy, của Cake (ngân hàng số thuộc VCCB) — user (2026-09-
+    28) đánh giá đây là kênh tham chiếu TỐT HƠN iPower TCBS cho áp lực huy động thị trường: "họ công
+    bố có 7.4% nhưng thêm ưu đãi 2.2%" — cùng logic 'kênh gửi tiền thay thế' như iPower: khi hệ
+    thống ngân hàng căng huy động, Cake phải tăng lãi suất/khuyến mãi để cạnh tranh hút tiền, mức
+    này HẠ xuống nghĩa là áp lực huy động đã dịu bớt (xem fetch_tcbs_ipower_max_rate() ở trên).
+
+    Trang là Next.js SSR THẬT (không cần JS) nhưng bảng so sánh CHÍNH chỉ render sẵn 4 dòng đầu (kỳ
+    hạn 1-4 tháng, các kỳ hạn dài hơn ẩn sau nút "Xem tất cả" — không có trong HTML tĩnh); riêng
+    WIDGET "Chọn kỳ hạn" của công cụ tính lãi lại có SẴN toàn bộ 15 kỳ hạn (kể cả 12 tháng) ngay
+    trong HTML tĩnh — dùng nguồn này thay vì bảng chính. Khuyến mãi ("Thêm ưu đãi") áp dụng cho kỳ
+    hạn 6-13 tháng nên CÓ bao gồm kỳ hạn 12 tháng đang lấy — lấy mức ưu đãi CAO NHẤT đang hiển thị
+    (có thể có nhiều mức cho khách gửi lần đầu/lần tiếp theo). Trả (rate, period_iso, source_url)
+    hoặc (None, None, None) nếu lỗi/không tìm thấy — KHÔNG đoán mù khi cấu trúc trang đã đổi."""
+    url = "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
+    try:
+        resp = requests.get(url, timeout=20, headers={"User-Agent": UA})
+        if resp.status_code != 200:
+            print(f"  [WARN] Cake: HTTP {resp.status_code}.")
+            return None, None, None
+        text = re.sub(r"<[^>]+>", " ", resp.text)
+        text = re.sub(r"&nbsp;", " ", text)
+        text = re.sub(r"\s+", " ", text)
+
+        m_base = re.search(r"Chọn kỳ hạn.*?\b12\s*Tháng\s*([\d,\.]+)\s*%", text)
+        if not m_base:
+            print("  [WARN] Cake: không tìm thấy lãi suất kỳ hạn 12 tháng trong widget tính lãi — trang có thể đã đổi cấu trúc.")
+            return None, None, None
+        base_rate = float(m_base.group(1).replace(",", "."))
+
+        promo_max = 0.0
+        promo_m = re.search(r"Thêm ưu đãi(.*?)Ước tính số tiền", text)
+        if promo_m:
+            for pm in re.finditer(r"Tặng(?: đến)?\s*([\d,\.]+)\s*%", promo_m.group(1)):
+                promo_max = max(promo_max, float(pm.group(1).replace(",", ".")))
+
+        rate = base_rate + promo_max
+        period = _current_period_weekly()
+        m2 = re.search(r"Áp dụng chính thức từ \d{1,2}h\d{2} ngày (\d{2})/(\d{2})/(\d{4})", text)
+        if m2:
+            eff_date = datetime.date(int(m2.group(3)), int(m2.group(2)), int(m2.group(1)))
+            period = _current_period_weekly(eff_date)
+        return rate, period, url
+    except Exception as e:
+        print(f"  [WARN] Cake thất bại: {e}")
+        return None, None, None
+
+
 # Lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) không có API/trang công bố chính thức nào —
 # chỉ xuất hiện rải rác trong tin tức khi báo chí phát hiện/phỏng vấn. RSS_NEWS_FEEDS là các
 # nguồn tin thật, tần suất cao, đã xác nhận hoạt động (không phải trang search JS-rendered).
@@ -2745,6 +2794,34 @@ def update_vimo_raw():
     if tcbs_rate is not None:
         _append_point(raw, "deposit_rate_tcbs_ipower_max", tcbs_period, tcbs_rate, tcbs_src)
         print(f"  -> {tcbs_period}: {tcbs_rate}%")
+
+    print("[Cake — lãi suất 12 tháng + ưu đãi cao nhất (kênh gửi tiền thay thế, tích lũy theo TUẦN)]")
+    cake_rate, cake_period, cake_src = fetch_cake_max_rate()
+    if cake_rate is not None:
+        # Chỉ báo MỚI (2026-09-28, user đề xuất) — tự khởi tạo container nếu vimo_raw.json chưa có
+        # key này (giống cách _ARIC_KEY_MAP ở trên tự tạo raw[key] lần đầu), không cần seed riêng.
+        if "deposit_rate_cake_max" not in raw:
+            raw["deposit_rate_cake_max"] = {
+                "group": "monetary", "label": "Lãi suất Cake 12 tháng + ưu đãi (cao nhất)",
+                "unit": "%", "good_direction": "lower", "auto_source": "cake_scrape",
+                "note": ("Chỉ báo mới 2026-09-28 (user đề xuất, đánh giá TỐT HƠN iPower TCBS) — "
+                         "cake.vn/tien-gui/tien-gui-tieu-chuan, ngân hàng số Cake (VCCB): lãi suất "
+                         "niêm yết kỳ hạn 12 tháng (Cuối kỳ hạn) CỘNG mức ưu đãi khuyến mãi cao nhất "
+                         "đang chạy (mục 'Thêm ưu đãi', áp dụng kỳ hạn 6-13 tháng nên bao gồm cả kỳ "
+                         "hạn 12 tháng đang lấy) — vd niêm yết 7,4%/năm + ưu đãi 2,2% = 9,6%/năm. "
+                         "Cùng bản chất 'kênh gửi tiền thay thế' như iPower TCBS: khi hệ thống ngân "
+                         "hàng căng huy động, Cake phải tăng lãi suất/khuyến mãi để cạnh tranh hút "
+                         "tiền — mức này HẠ xuống nghĩa là áp lực huy động đã dịu bớt. Period dùng "
+                         "NGÀY ÁP DỤNG CHÍNH THỨC ghi trên trang (không phải ngày fetch) — xem "
+                         "fetch_cake_max_rate()."),
+                "impact": ("Cake hạ lãi suất 12 tháng + ưu đãi đồng nghĩa áp lực huy động/thanh khoản "
+                           "bên ngoài hệ thống ngân hàng truyền thống đã dịu bớt. Ngược lại, mức này "
+                           "tăng lên (niêm yết tăng hoặc khuyến mãi tăng) là tín hiệu SỚM cho thấy "
+                           "căng thẳng huy động đang lan rộng."),
+                "series": [],
+            }
+        _append_point(raw, "deposit_rate_cake_max", cake_period, cake_rate, cake_src)
+        print(f"  -> {cake_period}: {cake_rate}%")
 
     print("[RSS tin tức — lãi suất huy động THỎA THUẬN (quét CafeF/VietStock, chỉ ghi khi có tin mới khớp)]")
     hit = fetch_negotiated_deposit_rate_news()

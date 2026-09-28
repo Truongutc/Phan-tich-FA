@@ -282,23 +282,37 @@ def _interbank_vs_deposit_level_vote(raw, trends):
             "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
 
 
-# So lãi suất iPower TCBS (mức CAO NHẤT quảng cáo — kênh 'gửi tiền' thay thế ngoài ngân hàng
-# truyền thống) với huy động niêm yết Big4 cùng kỳ hạn gần nhất — user (2026-07-24): "khi thanh
-# khoản căng cứng, lãi suất huy động lên cao thì chính sách tiền gửi của TCBS cũng tăng theo...
-# khi nào TCBS hạ mức này thì đồng nghĩa áp lực lãi suất bên ngoài đã qua đi". Đáng tin cậy hơn
-# deposit_rate_negotiated_max (tin tức, thưa) vì TCBS công bố công khai + có ngày hiệu lực rõ,
-# lấy được MỖI LẦN Action chạy (dùng chung ngưỡng DEPOSIT_RATE_GAP_CEILING với gap huy động thật).
-def _tcbs_ipower_gap_level_vote(raw, trends):
+# So lãi suất kênh "gửi tiền" thay thế ngoài ngân hàng truyền thống (mức CAO NHẤT đang quảng cáo,
+# GIỮA iPower TCBS và Cake) với huy động niêm yết Big4 cùng kỳ hạn gần nhất — user (2026-07-24):
+# "khi thanh khoản căng cứng, lãi suất huy động lên cao thì chính sách tiền gửi của TCBS cũng tăng
+# theo... khi nào TCBS hạ mức này thì đồng nghĩa áp lực lãi suất bên ngoài đã qua đi". Đáng tin cậy
+# hơn deposit_rate_negotiated_max (tin tức, thưa) vì cả 2 nguồn đều công bố công khai + có ngày
+# hiệu lực rõ, lấy được MỖI LẦN Action chạy (dùng chung ngưỡng DEPOSIT_RATE_GAP_CEILING với gap
+# huy động thật).
+#
+# SỬA (user 2026-09-28): thêm Cake (cake.vn/tien-gui/tien-gui-tieu-chuan — lãi suất 12 tháng CỘNG
+# ưu đãi khuyến mãi cao nhất đang chạy, xem fetch_cake_max_rate()) — user đánh giá đây là kênh tham
+# chiếu TỐT HƠN iPower cho áp lực huy động thị trường. LẤY MỨC CAO HƠN trong 2 kênh (thay vì cộng
+# thêm 1 phiếu bầu riêng cho Cake) — cả 2 đo CÙNG 1 hiện tượng ("kênh gửi tiền thay thế phải tăng
+# lãi suất/khuyến mãi để cạnh tranh hút tiền khi hệ thống ngân hàng căng huy động"), thêm phiếu
+# riêng sẽ tính trùng tín hiệu và làm nhóm "Thanh khoản" bị lệch trọng số quá mức về đúng 1 chủ đề
+# này so với các phép so sánh khác trong nhóm. Lấy MAX vì bất kỳ 1 trong 2 kênh tăng mạnh đã đủ là
+# tín hiệu cảnh báo sớm áp lực huy động (không cần chờ CẢ 2 cùng tăng).
+def _alt_deposit_channel_gap_level_vote(raw, trends):
     tcbs = trends.get("deposit_rate_tcbs_ipower_max", {}).get("latest")
+    cake = trends.get("deposit_rate_cake_max", {}).get("latest")
     listed = trends.get("deposit_rate_12m_vcb", {}).get("latest")
-    if tcbs is None or listed is None:
+    candidates = [("iPower TCBS", tcbs), ("Cake", cake)]
+    candidates = [(name, v) for name, v in candidates if v is not None]
+    if not candidates or listed is None:
         return None
-    gap = tcbs - listed
+    channel_name, channel_rate = max(candidates, key=lambda x: x[1])
+    gap = channel_rate - listed
     vote = -1 if gap > DEPOSIT_RATE_GAP_CEILING else 1
-    label = f"Lãi suất iPower TCBS ({tcbs:.2f}%) so với huy động niêm yết 12 tháng ({listed:.2f}%)"
+    label = f"Lãi suất kênh thay thế cao nhất ({channel_name} {channel_rate:.2f}%) so với huy động niêm yết 12 tháng ({listed:.2f}%)"
     judgment_label = ("cao hơn niêm yết nhiều, thị trường đói vốn" if vote < 0
                        else "chênh lệch trong khung an toàn")
-    return {"indicator": "tcbs_ipower_gap", "label": label, "vote": vote,
+    return {"indicator": "alt_deposit_channel_gap", "label": label, "vote": vote,
             "arrow": "⚠" if vote < 0 else "✓", "judgment_label": judgment_label}
 
 
@@ -397,13 +411,13 @@ def _import_export_gap_level_vote(raw, trends):
 # Hàng hóa" — xem lý do/ngưỡng ngay phía trên.
 GROUP_LEVEL_CHECKS = {
     "Thanh khoản": [_deposit_rate_gap_level_vote, _interbank_vs_deposit_level_vote,
-                     _tcbs_ipower_gap_level_vote, _credit_deposit_gap_level_vote],
+                     _alt_deposit_channel_gap_level_vote, _credit_deposit_gap_level_vote],
     "Tăng trưởng": [_gdp_cpi_gap_level_vote],
     "Thương mại & Hàng hóa": [_import_export_gap_level_vote],
 }
 SHORT_LABEL["deposit_rate_gap"] = "Ngân hàng"
 SHORT_LABEL["interbank_vs_deposit"] = "Liên ngân hàng"
-SHORT_LABEL["tcbs_ipower_gap"] = "iPower TCBS"
+SHORT_LABEL["alt_deposit_channel_gap"] = "Kênh thay thế"
 SHORT_LABEL["gdp_cpi_gap"] = "GDP-CPI"
 SHORT_LABEL["import_export_gap"] = "NK-XK"
 SHORT_LABEL["credit_deposit_gap"] = "Tín dụng-Huy động"

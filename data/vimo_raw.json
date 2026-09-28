@@ -41235,5 +41235,21 @@
         "source_url": "https://40yo.vn/vi-mo/vn"
       }
     ]
+  },
+  "deposit_rate_cake_max": {
+    "group": "monetary",
+    "label": "Lãi suất Cake 12 tháng + ưu đãi (cao nhất)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "cake_scrape",
+    "note": "Chỉ báo mới 2026-09-28 (user đề xuất, đánh giá TỐT HƠN iPower TCBS) — cake.vn/tien-gui/tien-gui-tieu-chuan, ngân hàng số Cake (VCCB): lãi suất niêm yết kỳ hạn 12 tháng (Cuối kỳ hạn) CỘNG mức ưu đãi khuyến mãi cao nhất đang chạy (mục 'Thêm ưu đãi', áp dụng kỳ hạn 6-13 tháng nên bao gồm cả kỳ hạn 12 tháng đang lấy) — vd niêm yết 7,4%/năm + ưu đãi 2,2% = 9,6%/năm. Cùng bản chất 'kênh gửi tiền thay thế' như iPower TCBS: khi hệ thống ngân hàng căng huy động, Cake phải tăng lãi suất/khuyến mãi để cạnh tranh hút tiền — mức này HẠ xuống nghĩa là áp lực huy động đã dịu bớt. Period dùng NGÀY ÁP DỤNG CHÍNH THỨC ghi trên trang (không phải ngày fetch) — xem fetch_cake_max_rate().",
+    "impact": "Cake hạ lãi suất 12 tháng + ưu đãi đồng nghĩa áp lực huy động/thanh khoản bên ngoài hệ thống ngân hàng truyền thống đã dịu bớt. Ngược lại, mức này tăng lên (niêm yết tăng hoặc khuyến mãi tăng) là tín hiệu SỚM cho thấy căng thẳng huy động đang lan rộng.",
+    "series": [
+      {
+        "period": "2026-W15",
+        "value": 9.600000000000001,
+        "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
+      }
+    ]
   }
 }
