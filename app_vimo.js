@@ -1600,9 +1600,16 @@ function renderMacroOverview(macroOverview) {
     }
 }
 
-// Dải thẻ KPI: giá trị THÁNG MỚI NHẤT + chênh lệch so với tháng liền trước cho từng chỉ báo —
-// trả lời trực tiếp "đây là kỳ nào, số liệu bao nhiêu, vừa biến động ra sao" mà không cần đọc biểu
-// đồ (yêu cầu user 2026-09-28: "đọc hiểu luôn dữ liệu gì, số liệu biến động ra sao").
+// Dải thẻ KPI: DIỄN HỌA giá trị THÁNG MỚI NHẤT của từng chỉ báo ra dạng số dễ đọc (đúng như ảnh
+// mẫu — mỗi ô chỉ "kể lại" 1 số đã có trên chart cho dễ nhìn, KHÔNG PHẢI so sánh mới).
+// SỬA (user 2026-09-28, xem lại đúng ảnh mẫu): bản trước hiện "▲ +0.5 so T7" — dễ hiểu NHẦM thành
+// "so với tháng trước" trong khi bản chất % ở đây là tăng trưởng YoY (so với CÙNG KỲ năm trước),
+// giá trị tháng này cao/thấp hơn giá trị tháng trước (đều là số YoY) không phải là 1 khái niệm "so
+// tháng trước" theo nghĩa thông thường — BỎ delta này. Thay bằng đúng cặp số ảnh mẫu dùng: giá trị
+// THÁNG (khớp đường nét liền trên chart) + BÌNH QUÂN LŨY KẾ TỪ ĐẦU NĂM đến đúng tháng đó (khớp
+// đường nét đứt) — vd ảnh mẫu "BÁN LẺ...13,1% / 7T: 13,1%". Chỉ áp dụng cho chỉ báo %; chỉ báo lũy
+// kế tuyệt đối (FDI/ĐT công) không có khái niệm "bình quân" tương đương nên chỉ ghi rõ "lũy kế từ
+// đầu năm" để không ai hiểu lầm đó là YoY.
 function _renderMacroOverviewKpiStrip(containerId, yearData) {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -1616,22 +1623,15 @@ function _renderMacroOverviewKpiStrip(containerId, yearData) {
         }
         if (lastIdx < 0) return '';
         const latest = vals[lastIdx];
-        let prevIdx = -1;
-        for (let i = lastIdx - 1; i >= 0; i--) {
-            if (vals[i] !== null && vals[i] !== undefined) { prevIdx = i; break; }
-        }
-        let deltaHtml = '';
-        if (prevIdx >= 0) {
-            const delta = latest - vals[prevIdx];
-            const arrow = delta > 0.05 ? '▲' : (delta < -0.05 ? '▼' : '▬');
-            deltaHtml = `<span class="vimo-macro-kpi-delta">${arrow} ${delta >= 0 ? '+' : ''}${delta.toFixed(1)} so T${prevIdx + 1}</span>`;
-        }
         const unitSuffix = row.unit === '%' ? '%' : ` ${row.unit}`;
+        const metaHtml = row.unit === '%'
+            ? `Tháng ${lastIdx + 1}/${yearData.year} (YoY) · BQ ${lastIdx + 1}T: ${_cumulativeAvg(vals)[lastIdx].toFixed(1)}%`
+            : `Tháng ${lastIdx + 1}/${yearData.year} · lũy kế từ đầu năm`;
         return `
             <div class="vimo-macro-kpi-card" style="border-left-color:${color}">
                 <span class="vimo-macro-kpi-label">${esc(row.label)}</span>
                 <span class="vimo-macro-kpi-value" style="color:${color}">${latest.toFixed(1)}<small>${esc(unitSuffix)}</small></span>
-                <span class="vimo-macro-kpi-meta">Tháng ${lastIdx + 1}/${yearData.year}${deltaHtml ? ' · ' : ''}${deltaHtml}</span>
+                <span class="vimo-macro-kpi-meta">${metaHtml}</span>
             </div>`;
     }).join('');
 }
