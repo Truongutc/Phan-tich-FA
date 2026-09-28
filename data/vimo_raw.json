@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-09-26 03:32",
+    "last_auto_update": "2026-09-28 09:19",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -139,7 +139,7 @@
       },
       {
         "date": "2026-09-28",
-        "total": -1,
+        "total": 0,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Tăng tỷ trọng vừa phải"
       }
@@ -1857,6 +1857,11 @@
         "period": "2026-W39",
         "value": 4.5,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W40",
+        "value": 4.5,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Lãi suất điều hành thay đổi theo quyết định (event-driven), không phải chuỗi liên tục đều đặn theo quý. Nâng cấp lên sbv.gov.vn/vi/lãi-suất1 (bảng HTML thật, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy) — link này TỪNG bị kết luận nhầm là 404 ở lần khảo sát trước; user cung cấp lại URL, test kỹ hơn (đúng domain www. + theo redirect) xác nhận hoạt động thật.",
@@ -1926,6 +1931,11 @@
       },
       {
         "period": "2026-W39",
+        "value": 7.2,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W40",
         "value": 7.2,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -3878,6 +3888,11 @@
         "period": "2026-W39",
         "value": 7.55,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W40",
+        "value": 7.55,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3942,6 +3957,11 @@
       },
       {
         "period": "2026-W39",
+        "value": 8.0,
+        "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
+      },
+      {
+        "period": "2026-W40",
         "value": 8.0,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
@@ -4386,6 +4406,11 @@
         "period": "2026-W39",
         "value": 5.9,
         "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+      },
+      {
+        "period": "2026-W40",
+        "value": 5.9,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
       }
     ],
     "note": "Nguồn: API JSON thật của Vietcombank (vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal, field tenor='12-months'/currencyCode='VND'/tenorType='Savings') — tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. 'lower=better' mang tính quy ước (giống các lãi suất khác trong dashboard) — thực ra lãi suất huy động tăng có thể là tín hiệu TỐT (thu hút tiết kiệm) hoặc XẤU (ngân hàng cạnh tranh thanh khoản), không kết luận một chiều — CHỈ BÁO THAM CHIẾU, không tính vào Scorecard 5 nhóm. Đã khảo sát nhưng KHÔNG tìm được nguồn ổn định cho lãi suất cho vay SXKD/mua nhà của VCB (không có endpoint tương ứng).",
@@ -4481,6 +4506,11 @@
       },
       {
         "period": "2026-W39",
+        "value": 6.2,
+        "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
+      },
+      {
+        "period": "2026-W40",
         "value": 6.2,
         "source_url": "https://www.namabank.com.vn/lai-suat-tien-gui-vnd-2"
       }
@@ -5112,6 +5142,11 @@
         "period": "2026-W39",
         "value": 7.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W40",
+        "value": 7.15,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
     "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max.",
@@ -5176,6 +5211,11 @@
       },
       {
         "period": "2026-W39",
+        "value": 6.15,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W40",
         "value": 6.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
@@ -5465,7 +5505,7 @@
       },
       {
         "period": "2026-09",
-        "value": 25965.7,
+        "value": 25936.55,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -6969,7 +7009,7 @@
       {
         "period": "2026-09-25",
         "value": -273.21,
-        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=26/09/2026"
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=28/09/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -7035,6 +7075,11 @@
       {
         "period": "2026-W39",
         "value": 331,
+        "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
+      },
+      {
+        "period": "2026-W40",
+        "value": 333,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],
