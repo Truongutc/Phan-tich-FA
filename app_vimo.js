@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cùng lý do thứ tự gọi như renderMacroOverview() ở trên (SAU renderIndicatorGroups()) — 2
     // chart trong mục này dùng _renderGenericIndicatorCard(), cùng cơ chế chartInstances.
     renderBankingSystemRiskSection(data.bankingSystemRisk, data.indicators);
+    renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -297,6 +298,90 @@ function _renderBankingRiskChartCard(grid, key, ind) {
         });
         chartInstances.push(chart);
     }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CƠ CẤU TÍN DỤNG & HUY ĐỘNG TOÀN NGÀNH NGÂN HÀNG (user 2026-09-28) — tổng hợp trực tiếp từ BCTC
+// 26 ngân hàng niêm yết/UPCoM (bank_system_risk.build_bank_credit_deposit_system_series, KHÔNG
+// cần OCR như ALM gap kỳ hạn), đóng gói vào bankingSystemRisk.creditDepositStructure =
+// {periods, nBanks, creditComposition:{loans,tpdn}, depositComposition:{customerDeposits,bonds,
+// tctdDeposits,kbnnCounted}}. User yêu cầu ĐÚNG dạng "biểu đồ miền" (stacked area mượt, có chấm
+// tròn trong legend) như ảnh mẫu gửi kèm — 1 cụm giá trị tuyệt đối (tổng cột TĂNG theo quy mô
+// thật, không bó ở 100%) + 1 cụm theo % cơ cấu (0-100%, tính lại từ giá trị tuyệt đối phía trên).
+// ═══════════════════════════════════════════════════════════
+function renderCreditDepositStructure(cds) {
+    const card = document.getElementById('credit-deposit-structure-card');
+    if (!card) return;
+    if (!cds || !cds.periods || !cds.periods.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    const nMax = Math.max(...cds.nBanks);
+    const nMin = Math.min(...cds.nBanks);
+    document.getElementById('credit-deposit-structure-title').textContent =
+        `📅 ${cds.periods[0]} — ${cds.periods[cds.periods.length - 1]} `
+        + (nMin === nMax ? `(${nMax}/26 ngân hàng có dữ liệu mọi quý)`
+                          : `(số ngân hàng có dữ liệu mỗi quý: ${nMin}–${nMax}/26)`);
+
+    const CREDIT_SERIES = [
+        { key: 'loans', label: 'Cho vay khách hàng', color: '#3b82f6' },
+        { key: 'tpdn', label: 'TPDN đang nắm giữ', color: '#f59e0b' },
+    ];
+    const DEPOSIT_SERIES = [
+        { key: 'customerDeposits', label: 'Tiền gửi khách hàng', color: '#10b981' },
+        { key: 'bonds', label: 'Giấy tờ có giá phát hành', color: '#a78bfa' },
+        { key: 'tctdDeposits', label: 'Tiền gửi TCTD khác', color: '#3b82f6' },
+        { key: 'kbnnCounted', label: 'KBNN (tính theo TT26)', color: '#f59e0b' },
+    ];
+
+    _renderAreaCompositionChart('chart-credit-structure-abs', cds.periods, CREDIT_SERIES, cds.creditComposition, false);
+    _renderAreaCompositionChart('chart-credit-structure-pct', cds.periods, CREDIT_SERIES, cds.creditComposition, true);
+    _renderAreaCompositionChart('chart-deposit-structure-abs', cds.periods, DEPOSIT_SERIES, cds.depositComposition, false);
+    _renderAreaCompositionChart('chart-deposit-structure-pct', cds.periods, DEPOSIT_SERIES, cds.depositComposition, true);
+}
+
+function _renderAreaCompositionChart(canvasId, periods, seriesDefs, compositionData, pctMode) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const totals = periods.map((_, i) => seriesDefs.reduce((sum, s) => sum + (compositionData[s.key][i] || 0), 0));
+    const dataFor = (key) => pctMode
+        ? periods.map((_, i) => totals[i] ? (compositionData[key][i] / totals[i] * 100) : null)
+        : compositionData[key];
+
+    const datasets = seriesDefs.map(s => ({
+        label: s.label, data: dataFor(s.key),
+        borderColor: s.color, backgroundColor: s.color + '70', fill: true,
+        tension: 0.3, pointRadius: 3, pointBackgroundColor: s.color, borderWidth: 2, spanGaps: true,
+    }));
+    // Nhãn TỔNG (chỉ ở cụm giá trị tuyệt đối) trên đỉnh lớp cuối cùng của cột xếp lớp — đúng yêu
+    // cầu "có sự tăng về giá trị tổng" nhìn thấy được ngay trên chart, không phải suy ra từ mắt.
+    if (!pctMode) {
+        datasets[datasets.length - 1].datalabels = {
+            display: true, anchor: 'end', align: 'top', color: '#e5e9f0', font: { size: 9, weight: '700' },
+            formatter: (v, ctx) => {
+                const total = ctx.chart.data.datasets.reduce((sum, d) => sum + (d.data[ctx.dataIndex] || 0), 0);
+                return total.toLocaleString('vi-VN', { maximumFractionDigits: 0 });
+            },
+        };
+    }
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: {
+                legend: { display: true, position: 'top',
+                          labels: { boxWidth: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+            },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, min: 0, ...(pctMode ? { max: 100 } : {}),
+                     title: { display: true, text: pctMode ? '%' : 'Tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: pctMode ? [] : [ChartDataLabels],
+    });
+    chartInstances.push(chart);
 }
 
 // Đánh giá Tổng thể — 3 câu hỏi user luôn quan tâm: đang tốt lên/xấu đi (xu hướng so kỳ trước),

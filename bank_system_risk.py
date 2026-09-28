@@ -61,14 +61,19 @@ def _normalize_period_input(raw):
 
 # Field code Vietcap (xem template_banking.py get_yr — CHIA /1e9 để ra tỷ đồng, khớp đơn vị dùng
 # xuyên suốt template_banking.py/bank_risk_notes.py). Nguồn BALANCE_SHEET, trừ khi ghi chú khác.
-# inv_sec_bs/von_cg/tctd_dep: chưa được dùng ở đâu trong file này — giữ lại vì rẻ (đã lấy sẵn cùng
-# 1 lượt fetch_data.fetch_all) và dành cho phần mở rộng LDR/CASA/NIM theo quý hệ thống (user đã
-# đồng ý phạm vi "từ Q1-2025 tới nay" 2026-08-30) — PHẦN ĐÓ CHƯA XÂY, đây chỉ là input để dành.
+# inv_sec_bs: chưa dùng ở đâu trong file này, giữ lại vì rẻ (lấy sẵn cùng 1 lượt fetch_data.fetch_all).
+# von_cg/tctd_dep/kbnn_dep/kbnn_loan: dùng cho _ldr_components() bên dưới (user 2026-09-28, xây
+# tiếp phần LDR/tín dụng-huy động hệ thống đã dự trù input từ 2026-08-30).
 _BS_FIELD_MAP = {
     "total_assets": "bsa53", "equity": "bsa78", "customer_deposits": "bsb113",
     "cash": "bsa2", "sbv_dep": "bsb97", "bank_dep": "bsb98", "interbank_liab": "bsb112",
     "loans": "bsb103", "bonds_issued": "bsb116", "inv_sec_bs": "bsb106",
     "von_cg": "bsb115", "tctd_dep": "bsb270",
+    # Them 2026-09-28 (user yeu cau tinh LDR toan he thong theo dung Thong tu 22/2019 + 26/2022,
+    # xem template_banking.py da tham so hoa cong thuc nay cho phan tich 1 ma le - kbnn_dep/kbnn_loan
+    # la 2 khoan Tien gui/Vay Kho bac Nha nuoc, CHI TINH 1 PHAN vao mau so LDR theo lo trinh TT26
+    # (xem _KBNN_COUNTED_RATE_BY_YEAR).
+    "kbnn_dep": "bsb110", "kbnn_loan": "bsb111",
 }
 
 _IR_HORIZON_1Y_KEYS = ["den_1_thang", "tu_1_3_thang", "tu_3_6_thang", "tu_6_12_thang"]
@@ -121,6 +126,48 @@ def _quarter_key_from_record(rec):
     return f"{y}-Q{q}"
 
 
+# ── LDR / Tín dụng - Huy động toàn hệ thống (user 2026-09-28) ────────────────────────────────
+# Công thức Y HỆT bản đã tham số hoá trong template_banking.py (phân tích 1 mã lẻ, dùng cho báo
+# cáo cổ phiếu hàng năm) — chỉ khác: ở ĐÓ tỷ lệ KBNN tra theo VỊ TRÍ trong years_hist (giả định
+# luôn đúng 5 năm gần nhất kết thúc ở năm hiện tại), còn Ở ĐÂY tra theo NĂM THỰC TẾ của kỳ (hàm
+# này chạy cho BẤT KỲ quý nào, không có giả định vị trí cố định). Theo Thông tư 26/2022/TT-NHNN
+# (lộ trình giảm dần tỷ lệ tính Tiền gửi Kho bạc Nhà nước vào "tổng nguồn vốn huy động" của mẫu
+# số LDR): 2023=50%, 2024=40%, 2025 trở đi=20%; trước 2023 (TT26 chưa có hiệu lực) tính 0%.
+_KBNN_COUNTED_RATE_BY_YEAR = {2023: 0.50, 2024: 0.40}
+_KBNN_COUNTED_RATE_DEFAULT_FROM_2025 = 0.20
+
+
+def _kbnn_counted_rate(year):
+    if year < 2023:
+        return 0.0
+    return _KBNN_COUNTED_RATE_BY_YEAR.get(year, _KBNN_COUNTED_RATE_DEFAULT_FROM_2025)
+
+
+def _ldr_components(snap, year):
+    """Tính Tổng tín dụng (mở rộng) / Tổng huy động / LDR theo đúng Thông tư 22/2019 +
+    26/2022/TT-NHNN — CÙNG công thức đã tham số hoá trong template_banking.py cho phân tích 1 mã
+    lẻ (KHÔNG phải Loans/Deposits đơn thuần — user đã chỉ ra công thức đơn thuần đó sai, không
+    phản ánh đúng khác biệt cơ cấu nguồn vốn giữa các ngân hàng). Bắt buộc phải có loans +
+    customer_deposits (2 trường luôn có ở mọi ngân hàng/quý); các trường chi tiết khác (tpdn,
+    bonds_issued, tctd_dep, kbnn_dep/loan, ky_quy, von_cg) coi là 0 nếu thiếu — không phải ngân
+    hàng nào cũng tách bạch đủ chi tiết ở phần thuyết minh. Trả (tong_tin_dung, tong_huy_dong, ldr)
+    — cả 3 None nếu thiếu loans/customer_deposits."""
+    loans = snap.get("loans")
+    cust_dep = snap.get("customer_deposits")
+    if not loans or not cust_dep:
+        return None, None, None
+    tpdn = snap.get("tpdn") or 0
+    bonds = snap.get("bonds_issued") or 0
+    tctd_dep = snap.get("tctd_dep") or 0
+    kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
+    ky_quy = snap.get("ky_quy") or 0
+    von_cg = snap.get("von_cg") or 0
+    tong_tin_dung = loans + tpdn
+    tong_huy_dong = cust_dep + bonds + tctd_dep + kbnn_counted - ky_quy - von_cg
+    ldr = (tong_tin_dung / tong_huy_dong * 100) if tong_huy_dong else None
+    return tong_tin_dung, tong_huy_dong, ldr
+
+
 # ── Cập nhật bảng cân đối theo quý (KHÔNG cần OCR — Vietcap, đã cache sẵn) ─────────────────────
 
 def refresh_quarterly_balance_sheet_all_banks():
@@ -135,11 +182,21 @@ def refresh_quarterly_balance_sheet_all_banks():
             raw = fetch_data.fetch_all(ticker, use_cache=True)
             bs_q = raw["sections"]["BALANCE_SHEET"].get("quarters", [])
             is_q = raw["sections"]["INCOME_STATEMENT"].get("quarters", [])
+            # Them 2026-09-28 (user yeu cau LDR toan he thong): TPDN (nob184) va Tien ky quy
+            # (nob73, fallback nob75 - 2 so thu tu muc thuyet minh khac nhau giua cac nam/BCTC,
+            # cung cach template_banking.py da xu ly cho phan tich 1 ma le) nam o muc NOTE, khong
+            # phai BALANCE_SHEET, nen phai gop rieng theo quarter-key giong is_by_qkey o duoi.
+            nt_q = raw["sections"]["NOTE"].get("quarters", [])
             is_by_qkey = {}
             for rec in is_q:
                 qk = _quarter_key_from_record(rec)
                 if qk:
                     is_by_qkey[qk] = rec
+            nt_by_qkey = {}
+            for rec in nt_q:
+                qk = _quarter_key_from_record(rec)
+                if qk:
+                    nt_by_qkey[qk] = rec
             for rec in bs_q:
                 qk = _quarter_key_from_record(rec)
                 if not qk:
@@ -147,12 +204,202 @@ def refresh_quarterly_balance_sheet_all_banks():
                 snap = {name: (rec.get(code) or 0) / 1e9 for name, code in _BS_FIELD_MAP.items()}
                 nii_rec = is_by_qkey.get(qk)
                 snap["nii"] = (nii_rec.get("isb27") or 0) / 1e9 if nii_rec else None
+                nt_rec = nt_by_qkey.get(qk)
+                if nt_rec:
+                    snap["tpdn"] = (nt_rec.get("nob184") or 0) / 1e9
+                    _ky_quy_raw = nt_rec.get("nob73") if nt_rec.get("nob73") is not None else nt_rec.get("nob75")
+                    snap["ky_quy"] = (_ky_quy_raw or 0) / 1e9
+                else:
+                    snap["tpdn"] = snap["ky_quy"] = None
                 bank_alm_store.upsert_quarterly_balance_sheet(ticker, qk, snap)
             n_ok += 1
         except Exception as e:
             print(f"  [WARN] He thong ALM ({ticker}): loi cap nhat bang can doi quy ({e})")
             n_fail += 1
     print(f"  [INFO] He thong ALM: da cap nhat bang can doi quy cho {n_ok}/{n_ok+n_fail} ngan hang")
+
+
+def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
+    """Tổng hợp TÍN DỤNG/HUY ĐỘNG/LDR TOÀN HỆ THỐNG 26 ngân hàng niêm yết/UPCoM theo quý, từ
+    quarterly_balance_sheet (KHÔNG cần OCR — đã có sẵn từ Vietcap qua
+    refresh_quarterly_balance_sheet_all_banks) — khác ALM (gap thanh khoản/lãi suất) phụ thuộc OCR
+    thuyết minh BCTC nên độ phủ thất thường, dữ liệu này đã xác nhận (2026-09-28) đủ CẢ 26/26 ngân
+    hàng mọi quý từ 2024-Q1 tới nay.
+
+    scan NGƯỢC tới 1 năm TRƯỚC start_period (để tính YoY cho ĐÚNG quý đầu tiên trong khoảng hiển
+    thị) nhưng chỉ TRẢ VỀ các quý >= start_period.
+
+    Trả dict {"periods", "totalCredit", "totalDeposit", "ldrSystem", "creditGrowthYoy",
+    "depositGrowthYoy", "gap", "nBanks", "creditComposition": {"loans","tpdn"},
+    "depositComposition": {"customerDeposits","bonds","tctdDeposits","kbnnCounted"}} — mỗi giá trị
+    là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY). Đơn vị tỷ đồng, trừ
+    ldrSystem/creditGrowthYoy/depositGrowthYoy/gap là %/điểm %. KHÔNG BAO GIỜ raise — trả dict với
+    "periods": [] nếu chưa có dữ liệu gì."""
+    from bank_universe import BANKING_TICKERS
+    empty = {"periods": [], "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
+             "creditGrowthYoy": [], "depositGrowthYoy": [], "gap": [], "nBanks": [],
+             "creditComposition": {"loans": [], "tpdn": []},
+             "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": []}}
+    try:
+        stores = {}
+        all_periods = set()
+        for ticker in sorted(BANKING_TICKERS):
+            store = bank_alm_store.load_bank_store(ticker)
+            qbs = store.get("quarterly_balance_sheet", {})
+            stores[ticker] = qbs
+            all_periods.update(k for k in qbs if re.match(r"^\d{4}-Q[1-4]$", k))
+
+        per_period = {}
+        for period in sorted(all_periods):
+            year = int(period.split("-")[0])
+            agg = {"totalCredit": 0.0, "totalDeposit": 0.0, "n": 0, "loans": 0.0, "tpdn": 0.0,
+                   "customerDeposits": 0.0, "bonds": 0.0, "tctdDeposits": 0.0, "kbnnCounted": 0.0}
+            for ticker in sorted(BANKING_TICKERS):
+                snap = stores[ticker].get(period)
+                if not snap:
+                    continue
+                tong_tin_dung, tong_huy_dong, _ldr = _ldr_components(snap, year)
+                if tong_tin_dung is None:
+                    continue
+                agg["totalCredit"] += tong_tin_dung
+                agg["totalDeposit"] += tong_huy_dong
+                agg["loans"] += snap.get("loans") or 0
+                agg["tpdn"] += snap.get("tpdn") or 0
+                agg["customerDeposits"] += snap.get("customer_deposits") or 0
+                agg["bonds"] += snap.get("bonds_issued") or 0
+                agg["tctdDeposits"] += snap.get("tctd_dep") or 0
+                agg["kbnnCounted"] += ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
+                agg["n"] += 1
+            if agg["n"] > 0:
+                per_period[period] = agg
+
+        def _yoy(period, key):
+            year, q = period.split("-")
+            prior = per_period.get(f"{int(year) - 1}-{q}")
+            cur = per_period.get(period)
+            if not cur or not prior or not prior.get(key):
+                return None
+            return round((cur[key] / prior[key] - 1) * 100, 2)
+
+        out_periods = sorted(p for p in per_period if p >= start_period)
+        result = {"periods": out_periods, "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
+                  "creditGrowthYoy": [], "depositGrowthYoy": [], "gap": [], "nBanks": [],
+                  "creditComposition": {"loans": [], "tpdn": []},
+                  "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": []}}
+        for p in out_periods:
+            agg = per_period[p]
+            result["totalCredit"].append(round(agg["totalCredit"], 1))
+            result["totalDeposit"].append(round(agg["totalDeposit"], 1))
+            result["ldrSystem"].append(round(agg["totalCredit"] / agg["totalDeposit"] * 100, 2) if agg["totalDeposit"] else None)
+            cg, dg = _yoy(p, "totalCredit"), _yoy(p, "totalDeposit")
+            result["creditGrowthYoy"].append(cg)
+            result["depositGrowthYoy"].append(dg)
+            result["gap"].append(round(cg - dg, 2) if (cg is not None and dg is not None) else None)
+            result["nBanks"].append(agg["n"])
+            result["creditComposition"]["loans"].append(round(agg["loans"], 1))
+            result["creditComposition"]["tpdn"].append(round(agg["tpdn"], 1))
+            result["depositComposition"]["customerDeposits"].append(round(agg["customerDeposits"], 1))
+            result["depositComposition"]["bonds"].append(round(agg["bonds"], 1))
+            result["depositComposition"]["tctdDeposits"].append(round(agg["tctdDeposits"], 1))
+            result["depositComposition"]["kbnnCounted"].append(round(agg["kbnnCounted"], 1))
+        return result
+    except Exception as e:
+        print(f"  [WARN] build_bank_credit_deposit_system_series: loi ({e})")
+        return empty
+
+
+# ── Sheet Excel dữ liệu THÔ tín dụng/huy động/LDR từng ngân hàng (user 2026-09-28) ──────────────
+
+_LDR_SHEET_NAME = "LDR_NganHang_Raw"
+_LDR_SHEET_HEADERS = [
+    "Ma", "Ky", "Cho vay KH (ty)", "TPDN (ty)", "Tong tin dung (ty)",
+    "Tien gui KH (ty)", "GTCG phat hanh (ty)", "Tien gui TCTD khac (ty)",
+    "KBNN tinh vao mau so (ty)", "Ky quy (ty)", "Von tai tro-uy thac (ty)",
+    "Tong huy dong (ty)", "LDR (%)",
+]
+
+
+def update_bank_ldr_excel_sheet(out_dir, start_period="2024-Q1"):
+    """Ghi sheet "LDR_NganHang_Raw" (dạng tidy: 1 hàng = 1 (ngân hàng, quý)) + sheet tổng hợp
+    "LDR_TongHop_HeThong" (1 hàng = 1 quý, tổng CẢ 26 ngân hàng) trong CÙNG workbook
+    VIMO_Lich_Su_Chi_So.xlsx — user (2026-09-28) muốn xem được dữ liệu thô làm cơ sở tính Tổng tín
+    dụng/Tổng huy động/LDR toàn hệ thống, không chỉ đọc kết quả cuối. GHI ĐÈ TOÀN BỘ sheet mỗi lần
+    chạy (cùng nguyên tắc update_bank_alm_excel_sheet — bảng tra cứu theo hàng, không phải chuỗi
+    thời gian theo cột)."""
+    import openpyxl
+    from bank_universe import BANKING_TICKERS
+
+    xlsx_path = os.path.join(out_dir, "VIMO_Lich_Su_Chi_So.xlsx")
+    if os.path.exists(xlsx_path):
+        wb = openpyxl.load_workbook(xlsx_path)
+    else:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+
+    if _LDR_SHEET_NAME in wb.sheetnames:
+        wb.remove(wb[_LDR_SHEET_NAME])
+    ws = wb.create_sheet(title=_LDR_SHEET_NAME)
+    for c, h in enumerate(_LDR_SHEET_HEADERS, start=1):
+        ws.cell(row=1, column=c, value=h)
+
+    row_idx = 2
+    for ticker in sorted(BANKING_TICKERS):
+        store = bank_alm_store.load_bank_store(ticker)
+        qbs = store.get("quarterly_balance_sheet", {})
+        for period in sorted(p for p in qbs if p >= start_period and re.match(r"^\d{4}-Q[1-4]$", p)):
+            snap = qbs[period]
+            year = int(period.split("-")[0])
+            tong_tin_dung, tong_huy_dong, ldr = _ldr_components(snap, year)
+            if tong_tin_dung is None:
+                continue
+            kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
+            row = [
+                ticker, period, snap.get("loans"), snap.get("tpdn"), round(tong_tin_dung, 1),
+                snap.get("customer_deposits"), snap.get("bonds_issued"), snap.get("tctd_dep"),
+                round(kbnn_counted, 1), snap.get("ky_quy"), snap.get("von_cg"),
+                round(tong_huy_dong, 1), round(ldr, 2) if ldr is not None else None,
+            ]
+            for c, val in enumerate(row, start=1):
+                ws.cell(row=row_idx, column=c, value=val)
+            row_idx += 1
+
+    for c in range(1, len(_LDR_SHEET_HEADERS) + 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 16
+
+    os.makedirs(out_dir, exist_ok=True)
+    wb.save(xlsx_path)
+    print(f"  [OK] Sheet {_LDR_SHEET_NAME}: {row_idx - 2} hang")
+
+    _update_bank_ldr_summary_sheet(xlsx_path, start_period=start_period)
+
+
+_LDR_SUMMARY_SHEET_NAME = "LDR_TongHop_HeThong"
+_LDR_SUMMARY_HEADERS = [
+    "Ky", "So NH co du lieu", "Tong tin dung toan HT (ty)", "Tong huy dong toan HT (ty)",
+    "LDR toan he thong (%)", "Tang truong tin dung YoY (%)", "Tang truong huy dong YoY (%)",
+    "GAP tin dung - huy dong (diem %)",
+]
+
+
+def _update_bank_ldr_summary_sheet(xlsx_path, start_period="2024-Q1"):
+    import openpyxl
+    series = build_bank_credit_deposit_system_series(start_period=start_period)
+    wb = openpyxl.load_workbook(xlsx_path)
+    if _LDR_SUMMARY_SHEET_NAME in wb.sheetnames:
+        wb.remove(wb[_LDR_SUMMARY_SHEET_NAME])
+    ws = wb.create_sheet(title=_LDR_SUMMARY_SHEET_NAME)
+    for c, h in enumerate(_LDR_SUMMARY_HEADERS, start=1):
+        ws.cell(row=1, column=c, value=h)
+    for i, p in enumerate(series["periods"]):
+        row = [p, series["nBanks"][i], series["totalCredit"][i], series["totalDeposit"][i],
+               series["ldrSystem"][i], series["creditGrowthYoy"][i], series["depositGrowthYoy"][i],
+               series["gap"][i]]
+        for c, val in enumerate(row, start=1):
+            ws.cell(row=i + 2, column=c, value=val)
+    for c in range(1, len(_LDR_SUMMARY_HEADERS) + 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 20
+    wb.save(xlsx_path)
+    print(f"  [OK] Sheet {_LDR_SUMMARY_SHEET_NAME}: {len(series['periods'])} hang")
 
 
 # ── Kiểm tra độ mới + vá dữ liệu thiếu (chạy hàng tuần, OCR CHỈ khi thực sự cần) ────────────────
@@ -441,11 +688,17 @@ def _ticker_gap_entry(store, canonical_quarter):
     return entry, (canonical_quarter if entry else None)
 
 
-def _bank_period_metrics(entry, bs_snap):
+def _bank_period_metrics(entry, bs_snap, year=None):
     """Tính các chỉ số THÔ của 1 ngân hàng tại 1 kỳ từ (entry gap_periods, snapshot bảng cân đối
     cùng kỳ) — dùng CHUNG cho cả _aggregate_for_period (cộng dồn hệ thống) và
     update_bank_alm_excel_sheet (ghi hàng chi tiết từng ngân hàng), để 2 nơi này KHÔNG BAO GIỜ lệch
-    công thức nhau. Trả về {} nếu entry rỗng/missing hoặc thiếu snapshot bảng cân đối cùng kỳ."""
+    công thức nhau. Trả về {} nếu entry rỗng/missing hoặc thiếu snapshot bảng cân đối cùng kỳ.
+
+    `year` (SỬA 2026-09-28): năm THẬT của kỳ (vd 2026 cho "2026-Q2") — dùng cho _ldr_components()
+    tra đúng tỷ lệ KBNN theo lộ trình TT26. Trước đây "ldr" ở đây tính THÔ (loans/customer_deposits,
+    KHÔNG có TPDN/GTCG/TCTD/KBNN/ký quỹ/vốn ủy thác) — CHÍNH công thức mà template_banking.py (phân
+    tích 1 mã lẻ) đã sửa vì user chỉ ra là sai. Đồng bộ lại để sheet "ALM_NganHang_Raw" và
+    "LDR_NganHang_Raw" không hiện 2 số LDR khác nhau cho cùng 1 (ngân hàng, kỳ)."""
     if not entry or entry.get("status") == "missing" or not bs_snap or not bs_snap.get("total_assets"):
         return {}
     ta = bs_snap["total_assets"]
@@ -625,7 +878,14 @@ def _bank_period_metrics(entry, bs_snap):
         ir_al_ratio_by_bucket = {}
 
     loans = bs_snap.get("loans")
-    ldr = (loans / cust_dep) if (loans and cust_dep) else None
+    if year is not None:
+        # _ldr_components() tra ve ldr da x100 (dang %, vd 85.3) - "ldr" o day PHAI la RATIO 0-1
+        # (cung quy uoc voi cac truong *_ratio khac trong ham nay), hien thi qua _pct() (x100 lan
+        # nua) o noi goi - chia lai /100 de khop quy uoc, tranh hien 8530% do nhan trung 2 lan.
+        _, _, _ldr_pct = _ldr_components(bs_snap, year)
+        ldr = (_ldr_pct / 100) if _ldr_pct is not None else None
+    else:
+        ldr = (loans / cust_dep) if (loans and cust_dep) else None
 
     return {
         "total_assets": ta, "equity": bs_snap.get("equity"), "nii": bs_snap.get("nii"),
@@ -742,7 +1002,7 @@ def _aggregate_for_period(period_key):
 
         status = entry["status"]
         bs_snap = qbs.get(period_key)
-        m = _bank_period_metrics(entry, bs_snap)
+        m = _bank_period_metrics(entry, bs_snap, year=int(period_key.split("-")[0]))
         if not m:
             by_bank[ticker] = {"status": status, "note": "thieu snapshot bang can doi cung ky"}
             continue
@@ -1547,7 +1807,7 @@ def update_bank_alm_excel_sheet(out_dir):
                 period_key = canonical_pk
                 status = entry.get("status")
                 bs_snap = qbs.get(period_key)
-                m = _bank_period_metrics(entry, bs_snap)
+                m = _bank_period_metrics(entry, bs_snap, year=year)
                 source = entry.get("source") or {}
 
                 def _pct(key):

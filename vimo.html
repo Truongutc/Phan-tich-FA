@@ -340,6 +340,41 @@
             </div>
         </div>
 
+        <!-- Cơ cấu Tín dụng & Huy động toàn ngành Ngân hàng theo BCTC (user 2026-09-28) — KHÁC
+             mục "Rủi ro hệ thống ngân hàng (ALM)" ở trên (đó là gap kỳ hạn, phụ thuộc OCR thuyết
+             minh BCTC); đây là TỔNG HỢP TRỰC TIẾP tín dụng/huy động/LDR từ 26 ngân hàng niêm yết/
+             UPCoM (Vietcap, không cần OCR). 4 chỉ báo dạng line (tăng trưởng tín dụng/huy động
+             YoY, GAP, LDR hệ thống) tự hiện trong nhóm "bank_alm" chung (renderIndicatorGroups) —
+             card này chứa 4 biểu đồ MIỀN (stacked area, theo đúng ảnh mẫu user gửi): 2 giá trị
+             tuyệt đối (tỷ đồng, tổng cột tăng dần theo quy mô thật) + 2 theo % cơ cấu (0-100%). -->
+        <div class="card margin-top-20" id="credit-deposit-structure-card" style="display:none">
+            <h3 class="border-blue">🏦 Cơ cấu Tín dụng & Huy động toàn ngành Ngân hàng (theo BCTC)</h3>
+            <div class="vimo-chart-title" id="credit-deposit-structure-title"></div>
+            <div class="vimo-chart-title">Giá trị tuyệt đối (tỷ đồng)</div>
+            <div class="bank-chart-grid-2">
+                <div>
+                    <p class="vimo-chart-subtitle">Cơ cấu tín dụng (mở rộng theo TT22/26)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-credit-structure-abs"></canvas></div>
+                </div>
+                <div>
+                    <p class="vimo-chart-subtitle">Cơ cấu huy động (mẫu số LDR theo TT22/26)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-deposit-structure-abs"></canvas></div>
+                </div>
+            </div>
+            <div class="vimo-chart-title">Theo tỷ trọng cơ cấu (%)</div>
+            <div class="bank-chart-grid-2">
+                <div>
+                    <p class="vimo-chart-subtitle">Cơ cấu tín dụng (% trong tổng tín dụng mở rộng)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-credit-structure-pct"></canvas></div>
+                </div>
+                <div>
+                    <p class="vimo-chart-subtitle">Cơ cấu huy động (% trong tổng huy động theo TT22/26)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-deposit-structure-pct"></canvas></div>
+                </div>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">Tổng hợp từ BCTC 26 ngân hàng niêm yết/UPCoM (Vietcap) — là TỔNG toàn ngành mỗi quý, không phải trung bình. "Tín dụng" = Cho vay khách hàng + TPDN đang nắm giữ; "Huy động" = Tiền gửi KH + Giấy tờ có giá + Tiền gửi TCTD khác + KBNN (tính theo tỷ lệ Thông tư 26/2022) — biểu đồ cơ cấu chỉ hiện các thành phần CỘNG DƯƠNG (không trừ ký quỹ/vốn ủy thác, 2 khoản trừ nhỏ nằm trong sheet Excel "LDR_NganHang_Raw"/"LDR_TongHop_HeThong" để xem đầy đủ).</p>
+        </div>
+
         <!-- Định giá thị trường -->
         <div class="card margin-top-20">
             <h3 class="border-blue">💎 Định giá Thị trường (VN-Index)</h3>

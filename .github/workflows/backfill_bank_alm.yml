@@ -86,7 +86,7 @@ jobs:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
         run: |
-          python -c "from bank_system_risk import update_bank_alm_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO')"
+          python -c "from bank_system_risk import refresh_quarterly_balance_sheet_all_banks, update_bank_alm_excel_sheet, update_bank_ldr_excel_sheet; refresh_quarterly_balance_sheet_all_banks(); update_bank_alm_excel_sheet('Bao cao/VIMO'); update_bank_ldr_excel_sheet('Bao cao/VIMO')"
           python3 - << 'PYEOF'
           import glob
           import google_drive_uploader
@@ -145,7 +145,11 @@ jobs:
                   git show origin/master:"Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx" > "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx"
                   git add "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx"
                   if git rebase --continue; then
-                    python -c "from bank_system_risk import update_bank_alm_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO')"
+                    # KHONG goi lai refresh_quarterly_balance_sheet_all_banks() o day (khac step
+                    # chinh phia tren) - day chi la REGENERATE lai file Excel tu du lieu JSON DA
+                    # MERGE xong sau rebase, khong can fetch lai Vietcap (tranh goi API 26 lan vo ich
+                    # moi lan retry rebase).
+                    python -c "from bank_system_risk import update_bank_alm_excel_sheet, update_bank_ldr_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO'); update_bank_ldr_excel_sheet('Bao cao/VIMO')"
                     git add "Bao cao/VIMO/"
                     if ! git diff --staged --quiet; then
                       git commit --amend --no-edit

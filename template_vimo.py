@@ -2717,13 +2717,107 @@ def _add_bank_alm_derived_indicators(raw, trends):
         trends["bank_alm_system_long_term_funding_coverage"] = calc_trend(ltfc_points, "higher")
         print(f"  -> Long-term Funding Coverage he thong NH: {len(ltfc_points)} diem")
 
+    # Tín dụng/huy động/LDR TOÀN HỆ THỐNG theo BCTC (user 2026-09-28) — KHÁC nguồn với
+    # credit_growth_yoy_monthly/deposit_growth_yoy_monthly ở _add_credit_derived_indicators (đó là
+    # số dư TOÀN NỀN KINH TẾ từ VBMA, còn đây là TỔNG HỢP TRỰC TIẾP từ BCTC 26 ngân hàng niêm yết/
+    # UPCoM — dùng quarterly_balance_sheet đã có sẵn từ Vietcap, KHÔNG cần OCR nên độ phủ đủ cả
+    # 26/26 ngân hàng mọi quý từ 2024-Q1 (đã xác nhận qua kiểm tra thực tế), khác ALM (gap thanh
+    # khoản/lãi suất) phụ thuộc OCR thuyết minh BCTC nên độ phủ thất thường hơn). 2 nguồn này ĐỐI
+    # CHIẾU nhau: nếu lệch nhiều nghĩa là phần tín dụng/huy động NGOÀI 26 ngân hàng niêm yết/UPCoM
+    # (ngân hàng nhỏ chưa niêm yết, quỹ tín dụng...) đang biến động khác biệt hệ thống niêm yết.
+    try:
+        from bank_system_risk import build_bank_credit_deposit_system_series
+        cd_series = build_bank_credit_deposit_system_series()
+    except Exception as e:
+        print(f"  [WARN] Tin dung/huy dong he thong theo BCTC: bo qua ({e})")
+        cd_series = None
+
+    if cd_series and cd_series["periods"]:
+        def _series_points(values, coverage=None):
+            pts = []
+            for i, p in enumerate(cd_series["periods"]):
+                v = values[i]
+                if v is None:
+                    continue
+                point = {"period": p, "value": v, "source_url": None}
+                if coverage is not None:
+                    point["coverage_pct"] = round(coverage[i] / 26 * 100, 1)
+                pts.append(point)
+            return pts
+
+        cov = cd_series["nBanks"]
+        cg_pts = _series_points(cd_series["creditGrowthYoy"], cov)
+        dg_pts = _series_points(cd_series["depositGrowthYoy"], cov)
+        gap_pts = _series_points(cd_series["gap"], cov)
+        ldr_pts = _series_points(cd_series["ldrSystem"], cov)
+
+        if cg_pts:
+            raw["bank_report_credit_growth_yoy"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tăng trưởng tín dụng toàn ngành NH niêm yết (YoY, theo BCTC)", "unit": "%",
+                "good_direction": "higher", "series": cg_pts,
+                "note": ("Tổng (Cho vay khách hàng + TPDN đang nắm giữ) CỘNG DỒN từ BCTC 26 ngân hàng "
+                         "niêm yết/UPCoM (quarterly_balance_sheet, Vietcap — KHÔNG qua OCR), so cùng "
+                         "quý năm trước (YoY thật). Khác credit_growth_yoy_monthly (VBMA, toàn nền "
+                         "kinh tế bao gồm cả ngân hàng chưa niêm yết) — đối chiếu 2 nguồn để biết phần "
+                         "chênh nằm ở đâu."),
+                "impact": "Tăng trưởng tín dụng nhóm ngân hàng niêm yết tăng tốc nhanh hơn hẳn huy động là dấu hiệu áp lực tìm vốn ngay trong nhóm ngân hàng lớn, ảnh hưởng trực tiếp lãi suất huy động niêm yết.",
+            }
+            trends["bank_report_credit_growth_yoy"] = calc_trend(cg_pts, "higher")
+        if dg_pts:
+            raw["bank_report_deposit_growth_yoy"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tăng trưởng huy động toàn ngành NH niêm yết (YoY, theo BCTC)", "unit": "%",
+                "good_direction": "higher", "series": dg_pts,
+                "note": ("Tổng huy động theo đúng mẫu số LDR (Thông tư 22/2019 + 26/2022/TT-NHNN: Tiền "
+                         "gửi KH + Giấy tờ có giá + Tiền gửi TCTD khác + phần Tiền gửi/vay KBNN được "
+                         "tính theo lộ trình − Tiền ký quỹ − Vốn tài trợ/ủy thác) cộng dồn từ BCTC 26 "
+                         "ngân hàng niêm yết/UPCoM, so cùng quý năm trước."),
+                "impact": "So cùng phương pháp với tăng trưởng tín dụng ở trên để biết nhóm ngân hàng niêm yết đang cho vay vượt khả năng huy động hay không.",
+            }
+            trends["bank_report_deposit_growth_yoy"] = calc_trend(dg_pts, "higher")
+        if gap_pts:
+            raw["bank_report_credit_deposit_gap"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "GAP tín dụng - huy động toàn ngành NH niêm yết (theo BCTC)", "unit": "điểm %",
+                "good_direction": "lower", "series": gap_pts,
+                "note": "= Tăng trưởng tín dụng YoY − Tăng trưởng huy động YoY, cả 2 tính từ BCTC 26 ngân hàng niêm yết/UPCoM ở trên.",
+                "impact": "GAP dương lớn kéo dài là dấu hiệu nhóm ngân hàng niêm yết phải tăng lãi suất huy động/tìm nguồn vốn thay thế để bù đắp.",
+            }
+            trends["bank_report_credit_deposit_gap"] = calc_trend(gap_pts, "lower")
+        if ldr_pts:
+            raw["bank_report_ldr_system"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "LDR toàn ngành NH niêm yết (theo BCTC, đã điều chỉnh TT22/26)", "unit": "%",
+                "good_direction": "lower", "series": ldr_pts,
+                "note": "Σ Tổng tín dụng / Σ Tổng huy động (cả 2 đã tính theo TT22/26 ở trên) toàn 26 ngân hàng niêm yết/UPCoM — KHÔNG phải trung bình cộng LDR từng ngân hàng.",
+                "impact": "LDR hệ thống tiến gần/vượt trần 85% (Thông tư 22) là dấu hiệu toàn ngành ít dư địa cho vay thêm mà không tăng huy động.",
+            }
+            trends["bank_report_ldr_system"] = calc_trend(ldr_pts, "lower")
+        print(f"  -> Tin dung/huy dong/LDR toan nganh NH niem yet (theo BCTC): {len(cd_series['periods'])} quy")
+
     if not all_agg:
-        return None
-    # recompute_system_aggregate_all_periods() trả về dict ĐÃ SẮP XẾP theo kỳ tăng dần (dict Python
-    # giữ nguyên thứ tự chèn) — lấy key CUỐI CÙNG là kỳ mới nhất, không cần sắp xếp lại.
-    all_agg_list = list(all_agg.values())
-    latest_period = list(all_agg.keys())[-1]
-    return build_banking_system_risk_section(all_agg[latest_period], history=all_agg_list)
+        result = None
+    else:
+        # recompute_system_aggregate_all_periods() trả về dict ĐÃ SẮP XẾP theo kỳ tăng dần (dict
+        # Python giữ nguyên thứ tự chèn) — lấy key CUỐI CÙNG là kỳ mới nhất, không cần sắp xếp lại.
+        all_agg_list = list(all_agg.values())
+        latest_period = list(all_agg.keys())[-1]
+        result = build_banking_system_risk_section(all_agg[latest_period], history=all_agg_list)
+
+    # Cơ cấu tín dụng/huy động theo quý (dữ liệu dạng NHIỀU chuỗi xếp lớp — không hợp với cơ chế
+    # "1 chỉ báo = 1 chart" chung ở trên) — gắn thẳng vào mục bankingSystemRisk để web dựng riêng
+    # 2 biểu đồ cột chồng (xem renderCreditDepositStructure trong app_vimo.js).
+    if cd_series and cd_series["periods"]:
+        if result is None:
+            result = {}
+        result["creditDepositStructure"] = {
+            "periods": cd_series["periods"],
+            "creditComposition": cd_series["creditComposition"],
+            "depositComposition": cd_series["depositComposition"],
+            "nBanks": cd_series["nBanks"],
+        }
+    return result
 
 
 def _yoy_from_level_series(level_by_period, source_url):
@@ -3433,6 +3527,13 @@ def run_vimo_analysis():
         update_bank_alm_excel_sheet(out_dir)
     except Exception as e:
         print(f"  [WARN] Bo qua sheet ALM ngan hang ({e})")
+
+    print("[INFO] Cập nhật sheet dữ liệu thô tín dụng/huy động/LDR ngân hàng (Vietcap -> Excel)...")
+    try:
+        from bank_system_risk import update_bank_ldr_excel_sheet
+        update_bank_ldr_excel_sheet(out_dir)
+    except Exception as e:
+        print(f"  [WARN] Bo qua sheet LDR ngan hang ({e})")
 
     for p in charts.values():
         try:
