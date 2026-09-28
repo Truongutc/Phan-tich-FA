@@ -337,6 +337,47 @@ function renderCreditDepositStructure(cds) {
     _renderAreaCompositionChart('chart-credit-structure-pct', cds.periods, CREDIT_SERIES, cds.creditComposition, true);
     _renderAreaCompositionChart('chart-deposit-structure-abs', cds.periods, DEPOSIT_SERIES, cds.depositComposition, false);
     _renderAreaCompositionChart('chart-deposit-structure-pct', cds.periods, DEPOSIT_SERIES, cds.depositComposition, true);
+    // THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy động
+    // theo số liệu 26 bank" — 4 đường: tín dụng/huy động YoY (nét liền) + tín dụng/huy động YTD
+    // (nét đứt, so cuối năm trước) trên CÙNG 1 chart — 2 khái niệm đã đối chiếu với số SBV công
+    // bố ở các lượt trước (headline SBV thường trích YTD, không phải YoY), để cạnh nhau cho dễ so.
+    if (cds.creditGrowthYoy) {
+        _renderGrowthComparisonChart('chart-bank-credit-deposit-growth', cds.periods, [
+            { key: 'creditGrowthYoy', label: 'Tín dụng YoY', color: '#3b82f6', dash: false },
+            { key: 'depositGrowthYoy', label: 'Huy động YoY', color: '#10b981', dash: false },
+            { key: 'creditGrowthYtd', label: 'Tín dụng YTD (so cuối năm trước)', color: '#3b82f6', dash: true },
+            { key: 'depositGrowthYtd', label: 'Huy động YTD (so cuối năm trước)', color: '#10b981', dash: true },
+        ], cds);
+    }
+}
+
+function _renderGrowthComparisonChart(canvasId, periods, seriesDefs, cds) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const datasets = seriesDefs.map(s => ({
+        label: s.label, data: cds[s.key],
+        borderColor: s.color, backgroundColor: s.color + '15', fill: false,
+        borderDash: s.dash ? [6, 4] : [], borderWidth: s.dash ? 1.5 : 2.5,
+        tension: 0.25, pointRadius: s.dash ? 0 : 3, pointBackgroundColor: s.color, spanGaps: true,
+        // Chi hien nhan o DIEM CUOI (giong _endpointDatalabelsConfig da dung cho cac chart nhieu
+        // duong khac) - 4 duong x 10 quy hien het se roi, gia tri chi tiet tung quy da co san trong
+        // sheet Excel LDR_TongHop_HeThong cho nguoi can xem day du.
+        datalabels: _endpointDatalabelsConfig(1),
+    }));
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
 }
 
 function _renderAreaCompositionChart(canvasId, periods, seriesDefs, compositionData, pctMode) {

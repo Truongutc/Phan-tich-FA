@@ -2849,6 +2849,13 @@ def _add_bank_alm_derived_indicators(raw, trends):
             "creditComposition": cd_series["creditComposition"],
             "depositComposition": cd_series["depositComposition"],
             "nBanks": cd_series["nBanks"],
+            # THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy
+            # động theo số liệu 26 bank" — gộp thẳng vào đây (đã có periods/nBanks dùng chung) để
+            # web vẽ 1 chart riêng ngay trong card "Cơ cấu Tín dụng & Huy động", không cần đi tìm
+            # rải rác giữa các card chỉ báo chung "bank_alm". Gồm CẢ YoY và YTD (so cuối năm trước)
+            # — 2 khái niệm khác nhau đã đối chiếu với SBV ở các lượt trước, để trên 1 chart cho dễ so.
+            "creditGrowthYoy": cd_series["creditGrowthYoy"], "depositGrowthYoy": cd_series["depositGrowthYoy"],
+            "creditGrowthYtd": cd_series["creditGrowthYtd"], "depositGrowthYtd": cd_series["depositGrowthYtd"],
         }
     return result
 
