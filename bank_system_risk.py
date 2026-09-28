@@ -230,14 +230,23 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     thị) nhưng chỉ TRẢ VỀ các quý >= start_period.
 
     Trả dict {"periods", "totalCredit", "totalDeposit", "ldrSystem", "creditGrowthYoy",
-    "depositGrowthYoy", "gap", "nBanks", "creditComposition": {"loans","tpdn"},
+    "depositGrowthYoy", "creditGrowthYtd", "depositGrowthYtd", "gap", "nBanks",
+    "creditComposition": {"loans","tpdn"},
     "depositComposition": {"customerDeposits","bonds","tctdDeposits","kbnnCounted"}} — mỗi giá trị
-    là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY). Đơn vị tỷ đồng, trừ
-    ldrSystem/creditGrowthYoy/depositGrowthYoy/gap là %/điểm %. KHÔNG BAO GIỜ raise — trả dict với
-    "periods": [] nếu chưa có dữ liệu gì."""
+    là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY/YTD). Đơn vị tỷ đồng, trừ
+    ldrSystem/creditGrowthYoy/depositGrowthYoy/creditGrowthYtd/depositGrowthYtd/gap là %/điểm %.
+    KHÔNG BAO GIỜ raise — trả dict với "periods": [] nếu chưa có dữ liệu gì.
+
+    creditGrowthYtd/depositGrowthYtd (2026-09-28, user phát hiện qua bản tin SBV "dư nợ tín dụng
+    tăng 7,41% so với cuối năm 2025, tăng 18,1% so với cùng kỳ 2025" — 2 số khác nhau vì SBV báo
+    CẢ 2 cách tính cùng lúc, KHÔNG mâu thuẫn: 7,41% là YTD/so cuối năm trước, 18,1% là YoY thật)
+    — thêm YTD (so với 31/12 năm trước, reset mỗi quý 1) ĐỂ ĐỐI CHIẾU TRỰC TIẾP với cách SBV/báo
+    chí thường trích dẫn headline ("tăng trưởng tín dụng X% tính đến hết tháng N"), tránh so nhầm
+    YoY của mình với YTD của nguồn khác như user vừa gặp."""
     from bank_universe import BANKING_TICKERS
     empty = {"periods": [], "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
-             "creditGrowthYoy": [], "depositGrowthYoy": [], "gap": [], "nBanks": [],
+             "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
+             "gap": [], "nBanks": [],
              "creditComposition": {"loans": [], "tpdn": []},
              "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": []}}
     try:
@@ -281,9 +290,18 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                 return None
             return round((cur[key] / prior[key] - 1) * 100, 2)
 
+        def _ytd(period, key):
+            year = int(period.split("-")[0])
+            base = per_period.get(f"{year - 1}-Q4")
+            cur = per_period.get(period)
+            if not cur or not base or not base.get(key):
+                return None
+            return round((cur[key] / base[key] - 1) * 100, 2)
+
         out_periods = sorted(p for p in per_period if p >= start_period)
         result = {"periods": out_periods, "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
-                  "creditGrowthYoy": [], "depositGrowthYoy": [], "gap": [], "nBanks": [],
+                  "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
+                  "gap": [], "nBanks": [],
                   "creditComposition": {"loans": [], "tpdn": []},
                   "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": []}}
         for p in out_periods:
@@ -294,6 +312,8 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             cg, dg = _yoy(p, "totalCredit"), _yoy(p, "totalDeposit")
             result["creditGrowthYoy"].append(cg)
             result["depositGrowthYoy"].append(dg)
+            result["creditGrowthYtd"].append(_ytd(p, "totalCredit"))
+            result["depositGrowthYtd"].append(_ytd(p, "totalDeposit"))
             # SUA (user 2026-09-28): GAP la CHENH LECH GIA TRI TUYET DOI (Tong tin dung - Tong huy
             # dong, ty dong) - KHONG PHAI chenh lech % tang truong (nham lan truoc do). Am (huy dong
             # > tin dung, LDR<100%) la binh thuong/an toan; tien gan 0 hoac duong (tin dung vuot huy
@@ -405,6 +425,11 @@ _LDR_SUMMARY_SHEET_NAME = "LDR_TongHop_HeThong"
 _LDR_SUMMARY_HEADERS = [
     "Ky", "So NH co du lieu", "Tong tin dung toan HT (ty)", "Tong huy dong toan HT (ty)",
     "LDR toan he thong (%)", "Tang truong tin dung YoY (%)", "Tang truong huy dong YoY (%)",
+    # 2 cot THEM (user 2026-09-28, doi chieu voi cach SBV/bao chi thuong trich dan headline "tang
+    # truong tin dung X% tinh den het thang N" - la YTD/so cuoi nam truoc, KHONG PHAI YoY) - vd ban
+    # tin SBV H1/2026: "tang 7,41% so cuoi nam 2025" (YTD) vs "tang 18,1% so cung ky 2025" (YoY) -
+    # 2 so KHAC nhau nhung KHONG mau thuan, chi la 2 cach tinh khac nhau cung cong bo.
+    "Tang truong tin dung so cuoi nam truoc - YTD (%)", "Tang truong huy dong so cuoi nam truoc - YTD (%)",
     "GAP tin dung - huy dong (ty)",
 ]
 
@@ -421,6 +446,7 @@ def _update_bank_ldr_summary_sheet(xlsx_path, start_period="2024-Q1"):
     for i, p in enumerate(series["periods"]):
         row = [p, series["nBanks"][i], series["totalCredit"][i], series["totalDeposit"][i],
                series["ldrSystem"][i], series["creditGrowthYoy"][i], series["depositGrowthYoy"][i],
+               series["creditGrowthYtd"][i], series["depositGrowthYtd"][i],
                series["gap"][i]]
         for c, val in enumerate(row, start=1):
             ws.cell(row=i + 2, column=c, value=val)
@@ -1617,6 +1643,7 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
         idx = cds["periods"].index(agg["period"])
         ldr_sys = cds["ldrSystem"][idx]
         cg, dg, gap_abs = cds["creditGrowthYoy"][idx], cds["depositGrowthYoy"][idx], cds["gap"][idx]
+        cg_ytd, dg_ytd = cds.get("creditGrowthYtd", [None] * len(cds["periods"]))[idx], cds.get("depositGrowthYtd", [None] * len(cds["periods"]))[idx]
         lvl_fb = _grade_funding_balance(ldr_sys)
         if lvl_fb is not None:
             pts = [f"LDR toàn hệ thống (26 NH niêm yết/UPCoM, theo BCTC): {ldr_sys:.1f}%"
@@ -1625,6 +1652,12 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
             if cg is not None and dg is not None:
                 direction = ("tín dụng tăng NHANH HƠN huy động" if cg > dg else "huy động tăng nhanh hơn hoặc ngang tín dụng")
                 pts.append(f"Tăng trưởng tín dụng {cg:+.1f}% so huy động {dg:+.1f}% (YoY) — {direction}.")
+            if cg_ytd is not None and dg_ytd is not None:
+                # THEM (user 2026-09-28, phat hien qua ban tin SBV H1/2026 ghi CA 2 so cung luc:
+                # "tang 7,41% so cuoi nam 2025" (YTD) va "tang 18,1% so cung ky 2025" (YoY) - 2 so
+                # KHONG mau thuan, chi 2 cach tinh khac - ghi ro YTD o day de doi chieu dung loai
+                # voi headline SBV/bao chi (thuong trich YTD, KHONG PHAI YoY nhu dong tren).
+                pts.append(f"So cuối năm trước (YTD, cùng cách SBV thường công bố): tín dụng {cg_ytd:+.1f}% / huy động {dg_ytd:+.1f}%.")
             if gap_abs is not None:
                 if gap_abs < 0:
                     # SUA (2026-09-28, phat hien qua vi du that: LDR 87% "XAU" nhung gap tuyet doi

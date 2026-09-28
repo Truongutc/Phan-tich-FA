@@ -347,19 +347,48 @@ function _renderAreaCompositionChart(canvasId, periods, seriesDefs, compositionD
         ? periods.map((_, i) => totals[i] ? (compositionData[key][i] / totals[i] * 100) : null)
         : compositionData[key];
 
+    // SUA (user 2026-09-28: "tôi nhìn chả biết cái nào tăng giảm" — biểu đồ miền xếp lớp trước đó
+    // KHÔNG hiện số nào ngoài tổng, không đọc được từng thành phần đang tăng/giảm ra sao) — hiện
+    // GIÁ TRỊ RIÊNG của TỪNG lớp tại MỌI điểm, đặt giữa đúng dải màu của lớp đó (anchor/align
+    // 'center' — vị trí tự nhiên nhất cho biểu đồ miền xếp lớp, khác biểu đồ cột/đường thường).
     const datasets = seriesDefs.map(s => ({
         label: s.label, data: dataFor(s.key),
         borderColor: s.color, backgroundColor: s.color + '70', fill: true,
         tension: 0.3, pointRadius: 3, pointBackgroundColor: s.color, borderWidth: 2, spanGaps: true,
+        datalabels: {
+            // An nhan khi lop QUA MONG (< 2% tong ky do, vd TPDN gan 0 giai doan dau) - nhan cua 1
+            // lop mong se choang len nhan lop ben canh (da thay qua screenshot thuc te), thay vi co
+            // nghia ("0" lap lai nhieu lan). Van hien du trong hinh dang mien + chu giai, chi bo
+            // qua so cho diem qua nho khong doc duoc.
+            display: (ctx) => {
+                const v = ctx.dataset.data[ctx.dataIndex];
+                if (v === null || v === undefined) return false;
+                // pctMode: v DA la % (0-100) nen ty trong = v/100; abs mode: ty trong = v/tong tuyet doi.
+                const t = totals[ctx.dataIndex] || 0;
+                const share = pctMode ? (v / 100) : (t ? v / t : 0);
+                return share >= 0.02;
+            },
+            anchor: 'center', align: 'center', color: '#f8fafc', font: { size: 8, weight: '700' },
+            formatter: (v) => pctMode ? `${v.toFixed(1)}%` : Math.round(v).toLocaleString('vi-VN'),
+        },
     }));
-    // Nhãn TỔNG (chỉ ở cụm giá trị tuyệt đối) trên đỉnh lớp cuối cùng của cột xếp lớp — đúng yêu
-    // cầu "có sự tăng về giá trị tổng" nhìn thấy được ngay trên chart, không phải suy ra từ mắt.
+    // Nhãn TỔNG THÊM (chỉ ở cụm giá trị tuyệt đối, không cần ở % vì luôn ~100%) trên đỉnh lớp cuối
+    // cùng — đúng yêu cầu "có sự tăng về giá trị tổng" nhìn thấy được ngay, không phải suy ra từ
+    // mắt. chartjs-plugin-datalabels cho phép NHIỀU nhãn/dataset qua khoá con "labels" (mỗi khoá
+    // là 1 nhãn độc lập, merge với config gốc) — dùng đúng API này thay vì gán chồng đè 1 object.
     if (!pctMode) {
-        datasets[datasets.length - 1].datalabels = {
-            display: true, anchor: 'end', align: 'top', color: '#e5e9f0', font: { size: 9, weight: '700' },
-            formatter: (v, ctx) => {
-                const total = ctx.chart.data.datasets.reduce((sum, d) => sum + (d.data[ctx.dataIndex] || 0), 0);
-                return total.toLocaleString('vi-VN', { maximumFractionDigits: 0 });
+        const lastDataset = datasets[datasets.length - 1];
+        const valueCfg = lastDataset.datalabels;
+        lastDataset.datalabels = {
+            labels: {
+                value: valueCfg,
+                total: {
+                    anchor: 'end', align: 'top', color: '#e5e9f0', font: { size: 9, weight: '700' },
+                    formatter: (v, ctx) => {
+                        const total = ctx.chart.data.datasets.reduce((sum, d) => sum + (d.data[ctx.dataIndex] || 0), 0);
+                        return 'Tổng ' + total.toLocaleString('vi-VN', { maximumFractionDigits: 0 });
+                    },
+                },
             },
         };
     }
@@ -379,7 +408,7 @@ function _renderAreaCompositionChart(canvasId, periods, seriesDefs, compositionD
                      title: { display: true, text: pctMode ? '%' : 'Tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
-        plugins: pctMode ? [] : [ChartDataLabels],
+        plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
 }

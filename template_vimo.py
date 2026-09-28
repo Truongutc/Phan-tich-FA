@@ -2748,6 +2748,8 @@ def _add_bank_alm_derived_indicators(raw, trends):
         cov = cd_series["nBanks"]
         cg_pts = _series_points(cd_series["creditGrowthYoy"], cov)
         dg_pts = _series_points(cd_series["depositGrowthYoy"], cov)
+        cg_ytd_pts = _series_points(cd_series["creditGrowthYtd"], cov)
+        dg_ytd_pts = _series_points(cd_series["depositGrowthYtd"], cov)
         gap_pts = _series_points(cd_series["gap"], cov)
         ldr_pts = _series_points(cd_series["ldrSystem"], cov)
 
@@ -2776,6 +2778,32 @@ def _add_bank_alm_derived_indicators(raw, trends):
                 "impact": "So cùng phương pháp với tăng trưởng tín dụng ở trên để biết nhóm ngân hàng niêm yết đang cho vay vượt khả năng huy động hay không.",
             }
             trends["bank_report_deposit_growth_yoy"] = calc_trend(dg_pts, "higher")
+        if cg_ytd_pts:
+            # THEM (user 2026-09-28): doi chieu voi cach SBV/bao chi thuong trich dan headline
+            # "tang truong tin dung X% tinh den het thang N" - la YTD/so cuoi nam truoc (reset moi
+            # thang 1), KHONG PHAI YoY nhu 2 chi bao o tren - vd ban tin SBV H1/2026 ghi CA 2 so
+            # cung luc: "tang 7,41% so cuoi nam 2025" (YTD) va "tang 18,1% so cung ky 2025" (YoY),
+            # KHONG mau thuan, chi la 2 cach tinh khac nhau. Them chi bao nay de nguoi dung so dung
+            # loai voi cong bo chinh thuc, tranh so nham YoY cua minh voi YTD cua nguon khac.
+            raw["bank_report_credit_growth_ytd"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tăng trưởng tín dụng toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC)", "unit": "%",
+                "good_direction": "higher", "series": cg_ytd_pts,
+                "note": ("Cùng Tổng tín dụng (Cho vay khách hàng + TPDN) ở trên, nhưng so với mốc 31/12 năm trước "
+                         "(RESET mỗi quý 1, khác chỉ báo YoY ở trên không reset) — đúng cách SBV/báo chí thường "
+                         "trích dẫn headline \"tăng trưởng tín dụng X% tính đến hết tháng N\"."),
+                "impact": "Dùng để đối chiếu trực tiếp với số liệu SBV công bố (thường ở dạng YTD) — số liệu 26 ngân hàng niêm yết/UPCoM lệch với số toàn hệ thống (bao gồm ngân hàng nhỏ/chưa niêm yết) là bình thường, không phải sai số.",
+            }
+            trends["bank_report_credit_growth_ytd"] = calc_trend(cg_ytd_pts, "higher")
+        if dg_ytd_pts:
+            raw["bank_report_deposit_growth_ytd"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tăng trưởng huy động toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC)", "unit": "%",
+                "good_direction": "higher", "series": dg_ytd_pts,
+                "note": "Cùng Tổng huy động (theo TT22/26) ở trên, nhưng so với mốc 31/12 năm trước (RESET mỗi quý 1) — cùng cách tính YTD như chỉ báo tín dụng ở trên.",
+                "impact": "So cùng phương pháp YTD với tăng trưởng tín dụng ở trên.",
+            }
+            trends["bank_report_deposit_growth_ytd"] = calc_trend(dg_ytd_pts, "higher")
         if gap_pts:
             # SUA (user 2026-09-28): GAP la CHENH LECH GIA TRI TUYET DOI (Tong tin dung - Tong huy
             # dong, ty dong) - KHONG PHAI chenh lech % tang truong (ban truoc nham lan). Am (huy
