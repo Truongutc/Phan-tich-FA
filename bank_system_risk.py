@@ -294,7 +294,11 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             cg, dg = _yoy(p, "totalCredit"), _yoy(p, "totalDeposit")
             result["creditGrowthYoy"].append(cg)
             result["depositGrowthYoy"].append(dg)
-            result["gap"].append(round(cg - dg, 2) if (cg is not None and dg is not None) else None)
+            # SUA (user 2026-09-28): GAP la CHENH LECH GIA TRI TUYET DOI (Tong tin dung - Tong huy
+            # dong, ty dong) - KHONG PHAI chenh lech % tang truong (nham lan truoc do). Am (huy dong
+            # > tin dung, LDR<100%) la binh thuong/an toan; tien gan 0 hoac duong (tin dung vuot huy
+            # dong) la dau hieu ngan hang phai tim nguon von thay the ngoai huy dong khach hang.
+            result["gap"].append(round(agg["totalCredit"] - agg["totalDeposit"], 1))
             result["nBanks"].append(agg["n"])
             result["creditComposition"]["loans"].append(round(agg["loans"], 1))
             result["creditComposition"]["tpdn"].append(round(agg["tpdn"], 1))
@@ -316,6 +320,8 @@ _LDR_SHEET_HEADERS = [
     "Tien gui KH (ty)", "GTCG phat hanh (ty)", "Tien gui TCTD khac (ty)",
     "KBNN tinh vao mau so (ty)", "Ky quy (ty)", "Von tai tro-uy thac (ty)",
     "Tong huy dong (ty)", "LDR (%)",
+    "GAP tin dung - huy dong (ty)",
+    "Tang truong tin dung so cuoi nam truoc (%)", "Tang truong huy dong so cuoi nam truoc (%)",
 ]
 
 
@@ -325,7 +331,14 @@ def update_bank_ldr_excel_sheet(out_dir, start_period="2024-Q1"):
     VIMO_Lich_Su_Chi_So.xlsx — user (2026-09-28) muốn xem được dữ liệu thô làm cơ sở tính Tổng tín
     dụng/Tổng huy động/LDR toàn hệ thống, không chỉ đọc kết quả cuối. GHI ĐÈ TOÀN BỘ sheet mỗi lần
     chạy (cùng nguyên tắc update_bank_alm_excel_sheet — bảng tra cứu theo hàng, không phải chuỗi
-    thời gian theo cột)."""
+    thời gian theo cột).
+
+    2 cột THÊM (user 2026-09-28):
+    - "GAP tín dụng - huy động (tỷ)" = Tổng tín dụng − Tổng huy động (GIÁ TRỊ TUYỆT ĐỐI, tỷ đồng —
+      KHÔNG PHẢI chênh lệch % tăng trưởng) của TỪNG ngân hàng từng quý.
+    - "Tăng trưởng ... so cuối năm trước (%)" = so với mốc 31/12 năm trước (reset mỗi tháng 1, giống
+      _ytd_from_level_series ở template_vimo.py) — tính từ chính Tổng tín dụng/Tổng huy động (đã
+      gồm TPDN/GTCG/TCTD/KBNN theo TT22/26), KHÔNG PHẢI Cho vay KH/Tiền gửi KH đơn thuần."""
     import openpyxl
     from bank_universe import BANKING_TICKERS
 
@@ -346,18 +359,33 @@ def update_bank_ldr_excel_sheet(out_dir, start_period="2024-Q1"):
     for ticker in sorted(BANKING_TICKERS):
         store = bank_alm_store.load_bank_store(ticker)
         qbs = store.get("quarterly_balance_sheet", {})
-        for period in sorted(p for p in qbs if p >= start_period and re.match(r"^\d{4}-Q[1-4]$", p)):
+        # Tinh TRUOC cho TOAN BO cac ky co du lieu (khong gioi han start_period) - can tra cuu moc
+        # Q4 nam truoc lam co so YTD ngay ca khi moc do (vd 2023-Q4) nam TRUOC start_period hien thi.
+        components_by_period = {}
+        for period in sorted(p for p in qbs if re.match(r"^\d{4}-Q[1-4]$", p)):
             snap = qbs[period]
             year = int(period.split("-")[0])
             tong_tin_dung, tong_huy_dong, ldr = _ldr_components(snap, year)
-            if tong_tin_dung is None:
-                continue
+            if tong_tin_dung is not None:
+                components_by_period[period] = (tong_tin_dung, tong_huy_dong, ldr)
+
+        for period in sorted(p for p in components_by_period if p >= start_period):
+            snap = qbs[period]
+            year = int(period.split("-")[0])
+            tong_tin_dung, tong_huy_dong, ldr = components_by_period[period]
             kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
+            gap_abs = round(tong_tin_dung - tong_huy_dong, 1)
+
+            base = components_by_period.get(f"{year - 1}-Q4")
+            credit_ytd = round((tong_tin_dung / base[0] - 1) * 100, 2) if base and base[0] else None
+            deposit_ytd = round((tong_huy_dong / base[1] - 1) * 100, 2) if base and base[1] else None
+
             row = [
                 ticker, period, snap.get("loans"), snap.get("tpdn"), round(tong_tin_dung, 1),
                 snap.get("customer_deposits"), snap.get("bonds_issued"), snap.get("tctd_dep"),
                 round(kbnn_counted, 1), snap.get("ky_quy"), snap.get("von_cg"),
                 round(tong_huy_dong, 1), round(ldr, 2) if ldr is not None else None,
+                gap_abs, credit_ytd, deposit_ytd,
             ]
             for c, val in enumerate(row, start=1):
                 ws.cell(row=row_idx, column=c, value=val)
@@ -377,7 +405,7 @@ _LDR_SUMMARY_SHEET_NAME = "LDR_TongHop_HeThong"
 _LDR_SUMMARY_HEADERS = [
     "Ky", "So NH co du lieu", "Tong tin dung toan HT (ty)", "Tong huy dong toan HT (ty)",
     "LDR toan he thong (%)", "Tang truong tin dung YoY (%)", "Tang truong huy dong YoY (%)",
-    "GAP tin dung - huy dong (diem %)",
+    "GAP tin dung - huy dong (ty)",
 ]
 
 

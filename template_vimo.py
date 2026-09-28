@@ -2777,12 +2777,16 @@ def _add_bank_alm_derived_indicators(raw, trends):
             }
             trends["bank_report_deposit_growth_yoy"] = calc_trend(dg_pts, "higher")
         if gap_pts:
+            # SUA (user 2026-09-28): GAP la CHENH LECH GIA TRI TUYET DOI (Tong tin dung - Tong huy
+            # dong, ty dong) - KHONG PHAI chenh lech % tang truong (ban truoc nham lan). Am (huy
+            # dong > tin dung, LDR<100%) la binh thuong; tien gan 0/duong la dau hieu can tim von
+            # thay the ngoai huy dong khach hang.
             raw["bank_report_credit_deposit_gap"] = {
                 "group": "bank_alm", "auto_source": "derived",
-                "label": "GAP tín dụng - huy động toàn ngành NH niêm yết (theo BCTC)", "unit": "điểm %",
+                "label": "GAP tín dụng - huy động toàn ngành NH niêm yết (theo BCTC)", "unit": "tỷ đồng",
                 "good_direction": "lower", "series": gap_pts,
-                "note": "= Tăng trưởng tín dụng YoY − Tăng trưởng huy động YoY, cả 2 tính từ BCTC 26 ngân hàng niêm yết/UPCoM ở trên.",
-                "impact": "GAP dương lớn kéo dài là dấu hiệu nhóm ngân hàng niêm yết phải tăng lãi suất huy động/tìm nguồn vốn thay thế để bù đắp.",
+                "note": "= Tổng tín dụng − Tổng huy động (đã tính theo TT22/26, GIÁ TRỊ TUYỆT ĐỐI) toàn 26 ngân hàng niêm yết/UPCoM ở trên — âm là bình thường (huy động > tín dụng, LDR<100%).",
+                "impact": "GAP tiến gần 0 hoặc dương (tín dụng vượt huy động) là dấu hiệu nhóm ngân hàng niêm yết phải tìm nguồn vốn thay thế (liên ngân hàng, GTCG...) ngoài huy động khách hàng để bù đắp.",
             }
             trends["bank_report_credit_deposit_gap"] = calc_trend(gap_pts, "lower")
         if ldr_pts:
