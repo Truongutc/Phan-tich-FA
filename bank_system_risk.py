@@ -1475,7 +1475,17 @@ def _grade_ltfc(x):
     return 0 if x >= 0.80 else (1 if x >= 0.50 else 2)
 
 
-def build_system_assessment(agg, phase_info=None, history=None):
+def _grade_funding_balance(ldr_system_pct):
+    """ldr_system_pct: LDR hệ thống dạng %, vd 86.9 (KHÔNG phải ratio 0-1, khác các hàm _grade_*
+    khác trong file — LDR toàn hệ thống tính từ build_bank_credit_deposit_system_series() vốn đã
+    trả về dạng % sẵn). Trần 85% theo Thông tư 22/2019/TT-NHNN — sát/vượt trần = XẤU, còn cách
+    5 điểm % = CẦN THEO DÕI, còn dư địa rộng = TỐT."""
+    if ldr_system_pct is None:
+        return None
+    return 2 if ldr_system_pct >= 85 else (1 if ldr_system_pct >= 80 else 0)
+
+
+def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_series=None):
     """Danh gia co cau (dict) cho JSON "bankingSystemRisk.assessment": tinh trang chung, tung mang
     (thanh khoan / lai suat / co cau ky han nguon von), rui ro dang co, va nhung dieu can nho. Moi
     mang la 1 danh sach `points` (moi y 1 dong) de giao dien hien tung dong rieng, khong dinh vao
@@ -1595,6 +1605,61 @@ def build_system_assessment(agg, phase_info=None, history=None):
         takeaways.append(f"Cơ cấu kỳ hạn {_LEVEL_LABEL[lvl_st].lower()}: nguồn vốn ổn định phủ "
                          f"{pct(ltfc,0) if ltfc is not None else 'N/A'} tài sản dài hạn; {pct(rd,0) if rd is not None else 'N/A'} nghĩa vụ ≤12 tháng phải rollover.")
 
+    # 4) Can doi nguon von (tin dung - huy dong) — user (2026-09-28): "bo sung goc nhin ve tin dung
+    # va huy dong tac dong the nao toi ap luc thanh khoan/lai suat toan he thong, hien toan he
+    # thong da can duoc nguon von chua, vd giai doan huy dong kho tin dung cao ma lai dao han GTCG
+    # nhieu thi kha nang ap luc von se lon". Dung credit_deposit_series (tu
+    # build_bank_credit_deposit_system_series(), tinh TRUC TIEP tu BCTC 26 ngan hang - KHAC nguon
+    # voi ir/liq/sf o tren vốn tinh tu 2 bang gap OCR) — CHI them mang nay khi co du lieu kỳ THAT
+    # trung dung agg["period"] (2 nguon co the lech ky vi phu thuoc OCR/BCTC khac tien do).
+    cds = credit_deposit_series
+    if cds and cds.get("periods") and agg["period"] in cds["periods"]:
+        idx = cds["periods"].index(agg["period"])
+        ldr_sys = cds["ldrSystem"][idx]
+        cg, dg, gap_abs = cds["creditGrowthYoy"][idx], cds["depositGrowthYoy"][idx], cds["gap"][idx]
+        lvl_fb = _grade_funding_balance(ldr_sys)
+        if lvl_fb is not None:
+            pts = [f"LDR toàn hệ thống (26 NH niêm yết/UPCoM, theo BCTC): {ldr_sys:.1f}%"
+                   + (" — đã sát/vượt trần 85% (Thông tư 22)." if ldr_sys >= 85
+                      else f" — còn cách trần 85% khoảng {85 - ldr_sys:.1f} điểm %.")]
+            if cg is not None and dg is not None:
+                direction = ("tín dụng tăng NHANH HƠN huy động" if cg > dg else "huy động tăng nhanh hơn hoặc ngang tín dụng")
+                pts.append(f"Tăng trưởng tín dụng {cg:+.1f}% so huy động {dg:+.1f}% (YoY) — {direction}.")
+            if gap_abs is not None:
+                if gap_abs < 0:
+                    # SUA (2026-09-28, phat hien qua vi du that: LDR 87% "XAU" nhung gap tuyet doi
+                    # van am - 2 con so KHONG mau thuan, chi la 2 goc nhin khac nhau): khi LDR da
+                    # sat/vuot tran, dem tuyet doi con lai KHONG con nhieu y nghia thuc te vi bi
+                    # CHAN boi ty le quy dinh (85%), khong phai boi luong huy dong tuyet doi - phai
+                    # noi ro de tranh nghe mau thuan voi nhan "XAU"/"CAN THEO DOI" o tren.
+                    pts.append(f"Tổng tín dụng đang thấp hơn Tổng huy động {abs(gap_abs):,.0f} tỷ đồng"
+                               + (" — nhưng tỷ lệ LDR đã sát/vượt trần 85% nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng."
+                                  if lvl_fb >= 1 else
+                                  " — vẫn còn đệm vốn để cho vay thêm mà không cần huy động mới ngay."))
+                else:
+                    pts.append(f"Tổng tín dụng đã VƯỢT Tổng huy động {gap_abs:,.0f} tỷ đồng — phải dựa vào nguồn vốn khác (liên ngân hàng, giấy tờ có giá...) để bù đắp.")
+            # Ket noi voi Rollover Dependency/LTFC (da tinh o tren, dung chung nguong _grade_rollover/
+            # _grade_ltfc) - mo ta dung kich ban "kep" user neu: LDR cang/tang ve tran XAY RA CUNG
+            # LUC voi nhieu nghia vu (gom giay to co gia/trai phieu ngan hang phat hanh) den han
+            # ngan chua duoc tai san cung ky tu tra -> ap luc von KEP, de day lai suat huy dong len.
+            lvl_rd = _grade_rollover(rd)
+            if lvl_fb >= 1 and lvl_rd is not None and lvl_rd >= 1 and rd is not None:
+                pts.append(f"CẢNH BÁO KỊCH BẢN KÉP: LDR đang {'sát/vượt trần' if lvl_fb == 2 else 'thu hẹp dần khoảng đệm về trần'} "
+                           f"ĐỒNG THỜI {pct(rd, 0)} nghĩa vụ (gồm giấy tờ có giá/trái phiếu do ngân hàng phát hành) đến hạn "
+                           f"≤12 tháng chưa được tài sản cùng kỳ tự trả — hệ thống vừa phải tìm vốn mới cho tăng trưởng tín "
+                           f"dụng, vừa phải xoay vốn trả nợ đến hạn cùng lúc, đây là bối cảnh dễ đẩy lãi suất huy động lên nhất.")
+                risks.append("Áp lực vốn kép: LDR hệ thống cao trùng lúc nhiều nghĩa vụ (gồm giấy tờ có giá) đến hạn ngắn.")
+            else:
+                pts.append("Chưa thấy trùng lặp giữa áp lực LDR và áp lực đáo hạn nguồn vốn ngắn hạn ở kỳ này.")
+            conclusion = {0: "Kết luận: hệ thống ĐÃ CÂN được nguồn vốn — còn dư địa cho vay thêm mà không cần huy động gấp.",
+                          1: "Kết luận: hệ thống đang DẦN THU HẸP khoảng đệm vốn, cần theo dõi sát các quý tới.",
+                          2: "Kết luận: hệ thống CHƯA CÂN được nguồn vốn — tín dụng đã tăng sát/vượt khả năng huy động."}[lvl_fb]
+            pts.append(conclusion)
+            areas.append({"key": "funding_balance", "icon": "💰", "title": "Cân đối nguồn vốn (tín dụng – huy động)",
+                          "level": lvl_fb, "label": _LEVEL_LABEL[lvl_fb], "points": pts})
+            takeaways.append(f"Cân đối nguồn vốn {_LEVEL_LABEL[lvl_fb].lower()}: LDR hệ thống {ldr_sys:.1f}%"
+                             + (f", tín dụng {cg:+.1f}% vs huy động {dg:+.1f}% (YoY)." if cg is not None and dg is not None else "."))
+
     if not areas:
         return None
     worst = max(a["level"] for a in areas)
@@ -1620,13 +1685,16 @@ def build_system_assessment(agg, phase_info=None, history=None):
     return {"overall": overall, "areas": areas, "risks": risks, "takeaways": takeaways, "asOf": agg["period"]}
 
 
-def build_banking_system_risk_section(agg, history=None):
+def build_banking_system_risk_section(agg, history=None, credit_deposit_series=None):
     """Xây dict cho field JSON top-level "bankingSystemRisk" (mục RIÊNG trong data/vimo.json) từ 1
     kỳ đã tổng hợp. Trả về None nếu agg rỗng/không có ngân hàng nào có dữ liệu.
 
     `history`: list các agg CŨ HƠN (kể cả agg hiện tại ở cuối, xem classify_structural_funding_phase)
     — tuỳ chọn, dùng để tính PHA áp lực cấu trúc kỳ hạn nguồn vốn/lãi suất huy động (xem "Danh gia
-    rui ro thanh khoan cau truc he thong.docx", user 2026-09-21)."""
+    rui ro thanh khoan cau truc he thong.docx", user 2026-09-21).
+
+    `credit_deposit_series` (2026-09-28): dict từ build_bank_credit_deposit_system_series() — dùng
+    để thêm mảng đánh giá "Cân đối nguồn vốn (tín dụng – huy động)" trong build_system_assessment()."""
     if not agg or (agg["n_banks_reported"] + agg["n_banks_patched"]) == 0:
         return None
     ir, liq, sf = agg["interest_rate_risk"], agg["liquidity_risk"], agg.get("structural_funding") or {}
@@ -1637,7 +1705,8 @@ def build_banking_system_risk_section(agg, history=None):
     return {
         "asOf": agg["period"],
         "summaryText": build_system_risk_summary_text(agg, phase_info=phase_info),
-        "assessment": build_system_assessment(agg, phase_info=phase_info, history=history),
+        "assessment": build_system_assessment(agg, phase_info=phase_info, history=history,
+                                               credit_deposit_series=credit_deposit_series),
         "interestRateRisk": {
             "netGapRatio": ir["net_gap_ratio"], "dispersionGapRatio": ir["dispersion_gap_ratio"],
             "stressNiiByShock": ir["stress_nii"], "stressNiiRatioByShock": ir["stress_nii_ratio"],

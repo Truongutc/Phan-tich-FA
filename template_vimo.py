@@ -2807,7 +2807,8 @@ def _add_bank_alm_derived_indicators(raw, trends):
         # Python giữ nguyên thứ tự chèn) — lấy key CUỐI CÙNG là kỳ mới nhất, không cần sắp xếp lại.
         all_agg_list = list(all_agg.values())
         latest_period = list(all_agg.keys())[-1]
-        result = build_banking_system_risk_section(all_agg[latest_period], history=all_agg_list)
+        result = build_banking_system_risk_section(all_agg[latest_period], history=all_agg_list,
+                                                     credit_deposit_series=cd_series)
 
     # Cơ cấu tín dụng/huy động theo quý (dữ liệu dạng NHIỀU chuỗi xếp lớp — không hợp với cơ chế
     # "1 chỉ báo = 1 chart" chung ở trên) — gắn thẳng vào mục bankingSystemRisk để web dựng riêng

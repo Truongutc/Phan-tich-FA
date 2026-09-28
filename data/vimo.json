@@ -985,9 +985,9 @@
     "summaryText": "Rủi ro lãi suất hệ thống: gap ròng ≤1 năm = +0.97% tổng tài sản (mức phân tán 4.63% — phần bù trừ giữa các ngân hàng KHÔNG thực sự phòng hộ lẫn nhau vì là các pháp nhân riêng biệt), khả năng chống chịu VỪA PHẢI (sốc +200bp làm NII hệ thống đổi khoảng 9.3%). Ngân hàng lệch nhiều nhất: MSB (-17.2%). Rủi ro thanh khoản hệ thống: Liquid Assets/Tổng TS = 19.3%, khả năng chống chịu TỐT (che phủ 160% ở kịch bản rút -20% tiền gửi). Ngân hàng thanh khoản yếu nhất: VAB (che phủ -10%: 162%). Cấu trúc kỳ hạn nguồn vốn: Rollover Dependency 12 tháng = 16.7% (tỷ lệ nghĩa vụ đến hạn ≤12 tháng KHÔNG được tài sản cùng kỳ hạn tự tài trợ, buộc phải huy động mới/rollover), Long-term Funding Coverage = 64.2%. NH phụ thuộc rollover nhiều nhất: MSB (34%). Chưa rõ xu hướng (tín hiệu hỗn hợp): Rollover dependency 12M: 15.7% → 16.7%; Long-term Funding Coverage: 65.2% → 64.2% — chưa đủ rõ ràng để xác định pha, cần theo dõi thêm ít nhất 1 kỳ nữa. Độ phủ dữ liệu: 26/26 ngân hàng đã công bố kỳ 2026-Q2 — che phủ 100% tổng tài sản hệ thống.",
     "assessment": {
       "overall": {
-        "level": 1,
-        "label": "ỔN ĐỊNH – CÓ ĐIỂM CẦN THEO DÕI",
-        "headline": "Hệ thống nhìn chung ổn định; điểm cần theo dõi: rủi ro lãi suất, cơ cấu kỳ hạn tài sản – nguồn vốn."
+        "level": 2,
+        "label": "CÓ RỦI RO ĐÁNG KỂ",
+        "headline": "Có mảng ở mức xấu: cân đối nguồn vốn."
       },
       "areas": [
         {
@@ -1034,6 +1034,20 @@
             "Kỳ cơ cấu tốt nhất: 2024-Q4 (Rollover 12M 14.8%, LTFC 66.5%).",
             "Ngưỡng đánh giá là ngưỡng tham chiếu nội bộ, không phải NSFR của Basel."
           ]
+        },
+        {
+          "key": "funding_balance",
+          "icon": "💰",
+          "title": "Cân đối nguồn vốn (tín dụng – huy động)",
+          "level": 2,
+          "label": "XẤU",
+          "points": [
+            "LDR toàn hệ thống (26 NH niêm yết/UPCoM, theo BCTC): 87.0% — đã sát/vượt trần 85% (Thông tư 22).",
+            "Tăng trưởng tín dụng +16.6% so huy động +12.6% (YoY) — tín dụng tăng NHANH HƠN huy động.",
+            "Tổng tín dụng đang thấp hơn Tổng huy động 2,127,564 tỷ đồng — nhưng tỷ lệ LDR đã sát/vượt trần 85% nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng.",
+            "Chưa thấy trùng lặp giữa áp lực LDR và áp lực đáo hạn nguồn vốn ngắn hạn ở kỳ này.",
+            "Kết luận: hệ thống CHƯA CÂN được nguồn vốn — tín dụng đã tăng sát/vượt khả năng huy động."
+          ]
         }
       ],
       "risks": [
@@ -1045,6 +1059,7 @@
         "Thanh khoản tức thời tốt: che 320% (rút 10%) / 160% (rút 20%) tiền gửi.",
         "Rủi ro lãi suất cần theo dõi: sốc 200bp đổi lợi nhuận lãi ~9.3%.",
         "Cơ cấu kỳ hạn cần theo dõi: nguồn vốn ổn định phủ 64% tài sản dài hạn; 17% nghĩa vụ ≤12 tháng phải rollover.",
+        "Cân đối nguồn vốn xấu: LDR hệ thống 87.0%, tín dụng +16.6% vs huy động +12.6% (YoY).",
         "Phân biệt 3 loại rủi ro: thanh khoản (rút tiền – dễ xử lý), lãi suất (biến động lợi nhuận), cơ cấu kỳ hạn (áp lực chi phí vốn dài hạn – khó xử lý nhất)."
       ],
       "asOf": "2026-Q2"
