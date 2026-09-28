@@ -1110,6 +1110,23 @@ def fetch_bank_risk_gaps_cached(ticker):
         return fetch_bank_risk_gaps(ticker)
 
     import bank_alm_store
+
+    def _entry_to_result(period_key, entry):
+        result = {"period_key": period_key}
+        for k in ("interest_rate_gap", "liquidity_gap", "liabilities_by_bucket",
+                  "interest_rate_sensitivity_disclosed"):
+            if entry.get(k) is not None:
+                result[k] = entry[k]
+        src = entry.get("source") or {}
+        result["source_title"] = src.get("title")
+        result["source_url"] = src.get("url")
+        result["fetched_year"] = src.get("fetched_year")
+        return result
+
+    def _is_usable(entry):
+        return bool(entry) and entry.get("status") in ("reported", "patched") and \
+            (entry.get("interest_rate_gap") or entry.get("liquidity_gap"))
+
     cheap_period = latest_reviewed_period(ticker)
     if cheap_period:
         try:
@@ -1117,18 +1134,26 @@ def fetch_bank_risk_gaps_cached(ticker):
             stored = bank_alm_store.get_period_entry(ticker, cheap_period)
         except Exception:
             stored = None
-        if stored and stored.get("status") == "reported" and \
-                (stored.get("interest_rate_gap") or stored.get("liquidity_gap")):
-            result = {"period_key": cheap_period}
-            for k in ("interest_rate_gap", "liquidity_gap", "liabilities_by_bucket",
-                      "interest_rate_sensitivity_disclosed"):
-                if stored.get(k) is not None:
-                    result[k] = stored[k]
-            src = stored.get("source") or {}
-            result["source_title"] = src.get("title")
-            result["source_url"] = src.get("url")
-            result["fetched_year"] = src.get("fetched_year")
-            return result
+        if stored and stored.get("status") == "reported" and _is_usable(stored):
+            return _entry_to_result(cheap_period, stored)
+
+    # MOI (user 2026-09-28, sau khi hoan tat doc lai/xac minh du lieu ALM CA 26 ngan hang): truoc
+    # day neu ky moi nhat CHUA phai "reported" dung boc tach (vd dang "patched" - ngan hang chua
+    # cong bo bao cao ky nay, da duoc VA TAM tu ky truoc, xem bank_alm_store.upsert_patched_period)
+    # thi roi thang xuong OCR/fetch song song MOI o duoi - LUON that bai vi bao cao that chua ton
+    # tai, tra ve None, khien phan danh gia ALM cua ma do bi TRONG HOAN TOAN du store DA CO SAN
+    # du lieu tot (that hoac va tam) co the dung ngay. "Toi da co du ALM cua cac ngan hang... hay
+    # truy suat du lieu ALM cua ngan hang do de ra phan danh gia" (user) — dung THANG du lieu TOT
+    # NHAT dang co trong store (uu tien "reported", chap nhan "patched" khi chua co ban that) TRUOC
+    # khi thu OCR song song moi, thay vi de trong.
+    try:
+        store = bank_alm_store.load_bank_store(ticker)
+        usable = [(pk, e) for pk, e in store.get("gap_periods", {}).items() if _is_usable(e)]
+    except Exception:
+        usable = []
+    if usable:
+        best_pk, best_entry = max(usable, key=lambda kv: bank_alm_store._period_sort_key(kv[0]))
+        return _entry_to_result(best_pk, best_entry)
 
     partial = fetch_bank_risk_gaps(ticker)
     if partial and partial.get("period_key"):
