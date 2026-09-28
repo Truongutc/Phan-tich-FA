@@ -1530,6 +1530,51 @@ def _grade_funding_balance(ldr_system_pct):
     return 2 if ldr_system_pct >= 85 else (1 if ldr_system_pct >= 80 else 0)
 
 
+def _history_trend_and_extremes(history, extract_fn, higher_is_worse, min_points=4):
+    """DÙNG CHUNG cho thanh khoản/lãi suất (user 2026-09-28: "chi tiết nhất có thể... nhìn vào có
+    biết hệ thống đang căng dần hay đã qua điểm xấu nhất" — trước đó CHỈ mảng "structure" có xu
+    hướng + đỉnh/đáy lịch sử, thanh khoản/lãi suất chưa có). `history`: list agg dict qua các kỳ
+    (agg hiện tại là phần tử CUỐI). `extract_fn(agg_entry) -> (value, coverage_pct) | None` — value
+    là chỉ số cần theo dõi, coverage_pct để LOẠI kỳ có độ phủ quá thấp (<60%, cùng ngưỡng đã dùng
+    cho cấu trúc kỳ hạn) tránh đỉnh/đáy giả do mẫu số quá nhỏ 1 kỳ nào đó.
+
+    Trả {"trend_text": str|None, "peak": (period,value)|None, "best": (period,value)|None} — peak
+    là kỳ XẤU NHẤT trong lịch sử đủ dữ liệu, best là kỳ TỐT NHẤT; cả 2 None nếu chưa đủ min_points
+    kỳ hợp lệ. trend_text None nếu chưa đủ 2 kỳ hoặc kỳ liền trước không đổi."""
+    pts = []
+    for h in (history or []):
+        r = extract_fn(h)
+        if r is None:
+            continue
+        value, coverage_pct = r
+        if value is None or (coverage_pct is not None and coverage_pct < 60):
+            continue
+        pts.append((h["period"], value))
+    result = {"trend_text": None, "peak": None, "best": None}
+    if len(pts) >= 2:
+        prev_period, prev_val = pts[-2]
+        cur_val = pts[-1][1]
+        if abs(cur_val - prev_val) > 1e-9:
+            worse = (cur_val > prev_val) if higher_is_worse else (cur_val < prev_val)
+            result["trend_text"] = f"{'XẤU ĐI' if worse else 'TỐT LÊN'} so với {prev_period}."
+    if len(pts) >= min_points:
+        result["peak"] = max(pts, key=lambda x: x[1]) if higher_is_worse else min(pts, key=lambda x: x[1])
+        result["best"] = min(pts, key=lambda x: x[1]) if higher_is_worse else max(pts, key=lambda x: x[1])
+    return result
+
+
+def _liq_cov10_extract(h):
+    liq_h = h.get("liquidity_risk") or {}
+    v = (liq_h.get("deposit_run_coverage") or {}).get("-10%")
+    return (v, liq_h.get("coverage_pct")) if v is not None else None
+
+
+def _ir_stress200_extract(h):
+    ir_h = h.get("interest_rate_risk") or {}
+    v = (ir_h.get("stress_nii_ratio") or {}).get("+200bp")
+    return (abs(v), ir_h.get("coverage_pct")) if v is not None else None
+
+
 def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_series=None):
     """Danh gia co cau (dict) cho JSON "bankingSystemRisk.assessment": tinh trang chung, tung mang
     (thanh khoan / lai suat / co cau ky han nguon von), rui ro dang co, va nhung dieu can nho. Moi
@@ -1562,6 +1607,20 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
                        + ", ".join(f"{t} ({c*100:.0f}%)" for t, c in weak[:5]) + ".")
             risks.append(f"Thanh khoản mỏng cục bộ: {', '.join(t for t, _ in weak[:5])} không đủ che kịch bản rút tiền -10%.")
         pts.append("Rủi ro này thường dễ xử lý hơn cấu trúc kỳ hạn (có OMO, thị trường liên ngân hàng).")
+        # THEM (user 2026-09-28): xu huong + dinh/day lich su - coverage THAP hon la XAU hon
+        # (higher_is_worse=False).
+        te_liq = _history_trend_and_extremes(history, _liq_cov10_extract, higher_is_worse=False)
+        if te_liq["trend_text"]:
+            pts.append(f"Xu hướng che phủ rút 10%: {te_liq['trend_text']}")
+        if te_liq["peak"]:
+            # SUA (user 2026-09-28): TRUOC im lang bo qua khi ky "xau nhat" CHINH LA ky hien tai -
+            # day la tin hieu QUAN TRONG NHAT can bao ("dang o diem cang nhat lich su"), khong nen an di.
+            if te_liq["peak"][0] == agg["period"]:
+                pts.append(f"⚠ Hiện tại ({agg['period']}) ĐANG LÀ kỳ căng thanh khoản nhất trong lịch sử theo dõi (che phủ rút 10% chỉ {pct(cov10,0)}).")
+            else:
+                pts.append(f"Kỳ căng nhất trong lịch sử theo dõi: {te_liq['peak'][0]} (che phủ rút 10% chỉ {te_liq['peak'][1]*100:.0f}%) — hiện tại {pct(cov10,0)}.")
+        if te_liq["best"] and te_liq["best"][0] != agg["period"]:
+            pts.append(f"Kỳ an toàn nhất: {te_liq['best'][0]} (che phủ {te_liq['best'][1]*100:.0f}%).")
         areas.append({"key": "liquidity", "icon": "⚡", "title": "Rủi ro thanh khoản (tức thời)",
                       "level": lvl_liq, "label": _LEVEL_LABEL[lvl_liq], "points": pts})
         takeaways.append(f"Thanh khoản tức thời {_LEVEL_LABEL[lvl_liq].lower()}: che {pct(cov10,0)} (rút 10%) / {pct(cov20,0)} (rút 20%) tiền gửi.")
@@ -1596,6 +1655,18 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
         if offs:
             pts.append("Ngân hàng lệch lãi suất lớn (≥10% tài sản): " + ", ".join(f"{t} ({r*100:+.0f}%)" for t, r in offs[:5]) + ".")
             risks.append("Lệch định giá lại lãi suất lớn ở: " + ", ".join(t for t, _ in offs[:5]) + ".")
+        # THEM (user 2026-09-28): xu huong + dinh/day lich su - dung TRI TUYET DOI cua stress ratio
+        # (muc do nhay cam, khong quan tam chieu +/-) nen |stress| CAO HON la XAU hon (higher_is_worse=True).
+        te_ir = _history_trend_and_extremes(history, _ir_stress200_extract, higher_is_worse=True)
+        if te_ir["trend_text"]:
+            pts.append(f"Xu hướng độ nhạy cảm lãi suất: {te_ir['trend_text']}")
+        if te_ir["peak"]:
+            if te_ir["peak"][0] == agg["period"]:
+                pts.append(f"⚠ Hiện tại ({agg['period']}) ĐANG LÀ kỳ nhạy cảm lãi suất nhất trong lịch sử theo dõi (sốc 200bp đổi lợi nhuận lãi {abs(worst200)*100:.1f}%).")
+            else:
+                pts.append(f"Kỳ nhạy cảm nhất trong lịch sử theo dõi: {te_ir['peak'][0]} (sốc 200bp đổi lợi nhuận lãi {te_ir['peak'][1]*100:.1f}%) — hiện tại {abs(worst200)*100:.1f}%.")
+        if te_ir["best"] and te_ir["best"][0] != agg["period"]:
+            pts.append(f"Kỳ ít nhạy cảm nhất: {te_ir['best'][0]} (sốc 200bp đổi lợi nhuận lãi {te_ir['best'][1]*100:.1f}%).")
         areas.append({"key": "interest_rate", "icon": "📈", "title": "Rủi ro lãi suất",
                       "level": lvl_ir, "label": _LEVEL_LABEL[lvl_ir], "points": pts})
         takeaways.append(f"Rủi ro lãi suất {_LEVEL_LABEL[lvl_ir].lower()}: sốc 200bp đổi lợi nhuận lãi ~{abs(worst200)*100:.1f}%.")
@@ -1653,7 +1724,9 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
             if len(hp) >= 4 and rd is not None and ltfc is not None:
                 peak = max(hp, key=lambda x: x[1]["rollover_dependency_12m"])
                 best = min(hp, key=lambda x: x[1]["rollover_dependency_12m"])
-                if peak[0] != agg["period"]:
+                if peak[0] == agg["period"]:
+                    pts.append(f"⚠ Hiện tại ({agg['period']}) ĐANG LÀ đỉnh căng thẳng cấu trúc kỳ hạn trong lịch sử theo dõi (Rollover 12M {rd*100:.1f}%, LTFC {ltfc*100:.1f}%).")
+                else:
                     pts.append(f"Đỉnh căng thẳng cấu trúc trong lịch sử: {peak[0]} (Rollover 12M {peak[1]['rollover_dependency_12m']*100:.1f}%, "
                                f"LTFC {peak[1]['long_term_funding_coverage']*100:.1f}%). Hiện Rollover {rd*100:.1f}% / LTFC {ltfc*100:.1f}%.")
                 if best[0] != agg["period"]:
@@ -1723,6 +1796,22 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
                 risks.append("Áp lực vốn kép: LDR hệ thống cao trùng lúc nhiều nghĩa vụ (gồm giấy tờ có giá) đến hạn ngắn.")
             else:
                 pts.append("Chưa thấy trùng lặp giữa áp lực LDR và áp lực đáo hạn nguồn vốn ngắn hạn ở kỳ này.")
+            # THEM (user 2026-09-28): xu huong + dinh/day - cds da la CA CHUOI lich su (khac agg
+            # chi co 1 ky), nen tinh THANG tu mang, khong can qua _history_trend_and_extremes.
+            ldr_hist_pts = [(p, v) for p, v in zip(cds["periods"], cds["ldrSystem"]) if v is not None]
+            if len(ldr_hist_pts) >= 2 and ldr_hist_pts[-1][0] == agg["period"]:
+                prev_p, prev_v = ldr_hist_pts[-2]
+                if abs(ldr_sys - prev_v) > 1e-9:
+                    pts.append(f"Xu hướng LDR: {'TĂNG (căng hơn)' if ldr_sys > prev_v else 'GIẢM (dịu hơn)'} so với {prev_p} ({prev_v:.1f}%).")
+            if len(ldr_hist_pts) >= 4:
+                peak_p, peak_v = max(ldr_hist_pts, key=lambda x: x[1])
+                best_p, best_v = min(ldr_hist_pts, key=lambda x: x[1])
+                if peak_p == agg["period"]:
+                    pts.append(f"⚠ Hiện tại ({agg['period']}) ĐANG LÀ kỳ LDR cao nhất (căng nhất) trong lịch sử theo dõi ({ldr_sys:.1f}%).")
+                else:
+                    pts.append(f"LDR cao nhất trong lịch sử theo dõi: {peak_p} ({peak_v:.1f}%) — hiện tại {ldr_sys:.1f}%.")
+                if best_p != agg["period"]:
+                    pts.append(f"LDR thấp nhất (an toàn nhất) trong lịch sử theo dõi: {best_p} ({best_v:.1f}%).")
             conclusion = {0: "Kết luận: hệ thống ĐÃ CÂN được nguồn vốn — còn dư địa cho vay thêm mà không cần huy động gấp.",
                           1: "Kết luận: hệ thống đang DẦN THU HẸP khoảng đệm vốn, cần theo dõi sát các quý tới.",
                           2: "Kết luận: hệ thống CHƯA CÂN được nguồn vốn — tín dụng đã tăng sát/vượt khả năng huy động."}[lvl_fb]

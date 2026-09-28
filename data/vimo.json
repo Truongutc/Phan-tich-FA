@@ -990,7 +990,10 @@
             "Tài sản thanh khoản chiếm 19.3% tổng tài sản.",
             "Che phủ 320% nếu khách rút 10% tiền gửi; 160% nếu rút 20%.",
             "Kết luận: hệ thống tự đứng vững được trước một đợt rút tiền lớn, chưa cần hỗ trợ bên ngoài.",
-            "Rủi ro này thường dễ xử lý hơn cấu trúc kỳ hạn (có OMO, thị trường liên ngân hàng)."
+            "Rủi ro này thường dễ xử lý hơn cấu trúc kỳ hạn (có OMO, thị trường liên ngân hàng).",
+            "Xu hướng che phủ rút 10%: XẤU ĐI so với 2026-Q1.",
+            "Kỳ căng nhất trong lịch sử theo dõi: 2024-Q1 (che phủ rút 10% chỉ 236%) — hiện tại 320%.",
+            "Kỳ an toàn nhất: 2025-Q4 (che phủ 338%)."
           ]
         },
         {
@@ -1005,7 +1008,10 @@
             "Chiều tác động: lãi suất TĂNG có lợi cho lợi nhuận lãi (tài sản định giá lại nhanh hơn nguồn vốn).",
             "Lưu ý: đây là rủi ro GIÁ TRỊ do lệch kỳ hạn (duration), khác rủi ro vỡ nợ tín dụng — tài sản \"an toàn\" (trái phiếu Chính phủ, cho vay tốt) vẫn có thể lỗ giá trị kinh tế khi lãi suất biến động mạnh, dù chưa ghi nhận lỗ kế toán ngay (tương tự case SVB 2023).",
             "Gap ròng nhỏ chủ yếu do các ngân hàng bù trừ nhau (mức phân tán 4.6%); mỗi ngân hàng là pháp nhân riêng nên bù trừ này không thực sự phòng hộ.",
-            "Ngân hàng lệch lãi suất lớn (≥10% tài sản): MSB (-17%), KLB (-17%), BAB (+15%), NVB (-13%), OCB (+11%)."
+            "Ngân hàng lệch lãi suất lớn (≥10% tài sản): MSB (-17%), KLB (-17%), BAB (+15%), NVB (-13%), OCB (+11%).",
+            "Xu hướng độ nhạy cảm lãi suất: XẤU ĐI so với 2026-Q1.",
+            "⚠ Hiện tại (2026-Q2) ĐANG LÀ kỳ nhạy cảm lãi suất nhất trong lịch sử theo dõi (sốc 200bp đổi lợi nhuận lãi 9.3%).",
+            "Kỳ ít nhạy cảm nhất: 2025-Q4 (sốc 200bp đổi lợi nhuận lãi 0.3%)."
           ]
         },
         {
@@ -1038,6 +1044,9 @@
             "So cuối năm trước (YTD, cùng cách SBV thường công bố): tín dụng +8.0% / huy động +1.8%.",
             "Tổng tín dụng đang thấp hơn Tổng huy động 2,127,564 tỷ đồng — nhưng tỷ lệ LDR đã sát/vượt trần 85% nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng.",
             "Chưa thấy trùng lặp giữa áp lực LDR và áp lực đáo hạn nguồn vốn ngắn hạn ở kỳ này.",
+            "Xu hướng LDR: TĂNG (căng hơn) so với 2026-Q1 (83.2%).",
+            "⚠ Hiện tại (2026-Q2) ĐANG LÀ kỳ LDR cao nhất (căng nhất) trong lịch sử theo dõi (87.0%).",
+            "LDR thấp nhất (an toàn nhất) trong lịch sử theo dõi: 2025-Q4 (81.9%).",
             "Kết luận: hệ thống CHƯA CÂN được nguồn vốn — tín dụng đã tăng sát/vượt khả năng huy động."
           ]
         }
