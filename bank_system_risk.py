@@ -31,6 +31,7 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import re
+import statistics
 
 import bank_alm_store
 
@@ -197,6 +198,30 @@ def refresh_quarterly_balance_sheet_all_banks():
                 qk = _quarter_key_from_record(rec)
                 if qk:
                     nt_by_qkey[qk] = rec
+            # SUA (user 2026-09-30, phat hien qua vi du that STB 2026-Q2): nob73 doi khi tra ve 1
+            # con so BAT THUONG cho DUNG 1 ky (vd STB 2026-Q2: nob73=630.626 ty = 70,7% tong tai san
+            # ky do, trong khi cac ky KHAC cua CHINH STB chi ~16-17 nghin ty) - Vietcap doi khi tra
+            # sai cot/dong cho 1 ky don le. KHONG dung 1 nguong tuyet doi "% tong tai san" chung cho
+            # moi ngan hang (da thu, sai: VCB CO THAT nob73 ~10-13% TA O MOI KY, on dinh, khong phai
+            # bat thuong - nguong tuyet doi se ghi nham TOAN BO VCB thanh None). Dung SO VOI LICH SU
+            # CUA CHINH NGAN HANG DO: tinh truoc "gia tri so bo" (uu tien nob73>0, fallback nob75)
+            # cho TAT CA cac ky, lay MEDIAN lam moc tham chieu rieng cho ngan hang - 1 ky lech qua xa
+            # median (>3x hoac <1/3x) VA candidate con lai gan median hon thi doi sang candidate do.
+            _prelim_by_qk = {}
+            for rec in bs_q:
+                qk = _quarter_key_from_record(rec)
+                if not qk:
+                    continue
+                nt_rec = nt_by_qkey.get(qk)
+                if not nt_rec:
+                    continue
+                _kq73 = (nt_rec.get("nob73") or 0) / 1e9
+                _kq75 = (nt_rec.get("nob75") or 0) / 1e9
+                _prelim = _kq73 if _kq73 > 0 else _kq75
+                if _prelim > 0:
+                    _prelim_by_qk[qk] = (_prelim, _kq73, _kq75)
+            _median_kq = statistics.median(v[0] for v in _prelim_by_qk.values()) if _prelim_by_qk else None
+
             for rec in bs_q:
                 qk = _quarter_key_from_record(rec)
                 if not qk:
@@ -207,8 +232,19 @@ def refresh_quarterly_balance_sheet_all_banks():
                 nt_rec = nt_by_qkey.get(qk)
                 if nt_rec:
                     snap["tpdn"] = (nt_rec.get("nob184") or 0) / 1e9
-                    _ky_quy_raw = nt_rec.get("nob73") if nt_rec.get("nob73") is not None else nt_rec.get("nob75")
-                    snap["ky_quy"] = (_ky_quy_raw or 0) / 1e9
+                    _prelim, _kq73, _kq75 = _prelim_by_qk.get(qk, (0.0, 0.0, 0.0))
+                    if _median_kq and _prelim > 0 and (_prelim > _median_kq * 3 or _prelim < _median_kq / 3):
+                        _alt = _kq75 if _prelim == _kq73 else _kq73
+                        if _alt > 0 and _median_kq / 3 <= _alt <= _median_kq * 3:
+                            print(f"  [WARN] {ticker} {qk}: ky_quy nob73/75 lech xa lich su cua chinh {ticker} "
+                                  f"(median={_median_kq:.0f} ty) - {_prelim:.0f} ty bat thuong, doi sang {_alt:.0f} ty hop ly hon.")
+                            snap["ky_quy"] = _alt
+                        else:
+                            print(f"  [WARN] {ticker} {qk}: ky_quy bat thuong (nob73={_kq73:.0f} ty, nob75={_kq75:.0f} ty, "
+                                  f"median lich su {ticker}={_median_kq:.0f} ty) - CA 2 candidate deu lech xa, ghi None (khong doan).")
+                            snap["ky_quy"] = None
+                    else:
+                        snap["ky_quy"] = _prelim
                 else:
                     snap["tpdn"] = snap["ky_quy"] = None
                 bank_alm_store.upsert_quarterly_balance_sheet(ticker, qk, snap)

@@ -1176,7 +1176,7 @@
       "kbnn_loan": 113.392,
       "nii": 2450.092,
       "tpdn": 0.0,
-      "ky_quy": 580.971
+      "ky_quy": null
     },
     "2023-Q3": {
       "total_assets": 365450.226,
@@ -1195,7 +1195,7 @@
       "kbnn_loan": 106.926,
       "nii": 2632.779,
       "tpdn": 0.0,
-      "ky_quy": 505.461
+      "ky_quy": null
     },
     "2023-Q4": {
       "total_assets": 382863.179,
@@ -1214,7 +1214,7 @@
       "kbnn_loan": 89.576,
       "nii": 3346.053,
       "tpdn": 0.0,
-      "ky_quy": 564.205
+      "ky_quy": null
     },
     "2024-Q1": {
       "total_assets": 409763.817,
@@ -1233,7 +1233,7 @@
       "kbnn_loan": 1089.16,
       "nii": 3464.497,
       "tpdn": 0.0,
-      "ky_quy": 838.777
+      "ky_quy": null
     },
     "2024-Q2": {
       "total_assets": 442582.942,
@@ -1252,7 +1252,7 @@
       "kbnn_loan": 92.953,
       "nii": 3644.632,
       "tpdn": 0.0,
-      "ky_quy": 830.386
+      "ky_quy": null
     },
     "2024-Q3": {
       "total_assets": 455804.658,
@@ -1328,7 +1328,7 @@
       "kbnn_loan": 6548.402,
       "nii": 3735.854,
       "tpdn": 0.0,
-      "ky_quy": 663.462
+      "ky_quy": null
     },
     "2025-Q3": {
       "total_assets": 539149.295,

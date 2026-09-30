@@ -1013,7 +1013,7 @@
       "kbnn_loan": 0.0,
       "nii": 248.269,
       "tpdn": 123.0,
-      "ky_quy": 1874.339013148
+      "ky_quy": null
     },
     "2020-Q4": {
       "total_assets": 36153.124,
@@ -1165,7 +1165,7 @@
       "kbnn_loan": 0.0,
       "nii": 333.117,
       "tpdn": 395.762,
-      "ky_quy": 14625.106
+      "ky_quy": null
     },
     "2022-Q4": {
       "total_assets": 48991.137,
