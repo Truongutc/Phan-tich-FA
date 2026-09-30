@@ -230,25 +230,34 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     thị) nhưng chỉ TRẢ VỀ các quý >= start_period.
 
     Trả dict {"periods", "totalCredit", "totalDeposit", "ldrSystem", "creditGrowthYoy",
-    "depositGrowthYoy", "creditGrowthYtd", "depositGrowthYtd", "gap", "nBanks",
+    "depositGrowthYoy", "creditGrowthYtd", "depositGrowthYtd", "gap", "nBanks", "totalEquity",
+    "equityGrowthYoy", "equityGrowthYtd",
     "creditComposition": {"loans","tpdn"},
-    "depositComposition": {"customerDeposits","bonds","tctdDeposits","kbnnCounted"}} — mỗi giá trị
-    là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY/YTD). Đơn vị tỷ đồng, trừ
-    ldrSystem/creditGrowthYoy/depositGrowthYoy/creditGrowthYtd/depositGrowthYtd/gap là %/điểm %.
-    KHÔNG BAO GIỜ raise — trả dict với "periods": [] nếu chưa có dữ liệu gì.
+    "depositComposition": {"customerDeposits","bonds","tctdDeposits","kbnnCounted","equity"}} — mỗi
+    giá trị là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY/YTD). Đơn vị tỷ đồng,
+    trừ ldrSystem/creditGrowthYoy/depositGrowthYoy/creditGrowthYtd/depositGrowthYtd/equityGrowthYoy/
+    equityGrowthYtd/gap là %/điểm %. KHÔNG BAO GIỜ raise — trả dict với "periods": [] nếu chưa có
+    dữ liệu gì.
 
     creditGrowthYtd/depositGrowthYtd (2026-09-28, user phát hiện qua bản tin SBV "dư nợ tín dụng
     tăng 7,41% so với cuối năm 2025, tăng 18,1% so với cùng kỳ 2025" — 2 số khác nhau vì SBV báo
     CẢ 2 cách tính cùng lúc, KHÔNG mâu thuẫn: 7,41% là YTD/so cuối năm trước, 18,1% là YoY thật)
     — thêm YTD (so với 31/12 năm trước, reset mỗi quý 1) ĐỂ ĐỐI CHIẾU TRỰC TIẾP với cách SBV/báo
     chí thường trích dẫn headline ("tăng trưởng tín dụng X% tính đến hết tháng N"), tránh so nhầm
-    YoY của mình với YTD của nguồn khác như user vừa gặp."""
+    YoY của mình với YTD của nguồn khác như user vừa gặp.
+
+    totalEquity/equityGrowthYoy/equityGrowthYtd/depositComposition["equity"] (2026-09-30, user):
+    VCSH là vốn KHÔNG có kỳ hạn (không ai "rút" được như tiền gửi) — VCSH tăng lớn nghĩa là hệ
+    thống có thêm 1 lớp đệm vốn bền vững, áp lực huy động thực tế sẽ dịu hơn so với chỉ soi riêng
+    tiền gửi. Long-term Funding Coverage (đã có, xem stable_funding trong _bank_period_metrics)
+    ĐÃ GỘP VCSH vào tử số từ trước — nhưng đó là 1 TỶ LỆ, không cho thấy riêng VCSH đang tăng/giảm
+    bao nhiêu — nên tách riêng thành chỉ báo độc lập theo đúng yêu cầu."""
     from bank_universe import BANKING_TICKERS
     empty = {"periods": [], "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
              "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
-             "gap": [], "nBanks": [],
+             "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
              "creditComposition": {"loans": [], "tpdn": []},
-             "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": []}}
+             "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": [], "equity": []}}
     try:
         stores = {}
         all_periods = set()
@@ -262,7 +271,8 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
         for period in sorted(all_periods):
             year = int(period.split("-")[0])
             agg = {"totalCredit": 0.0, "totalDeposit": 0.0, "n": 0, "loans": 0.0, "tpdn": 0.0,
-                   "customerDeposits": 0.0, "bonds": 0.0, "tctdDeposits": 0.0, "kbnnCounted": 0.0}
+                   "customerDeposits": 0.0, "bonds": 0.0, "tctdDeposits": 0.0, "kbnnCounted": 0.0,
+                   "equity": 0.0}
             for ticker in sorted(BANKING_TICKERS):
                 snap = stores[ticker].get(period)
                 if not snap:
@@ -278,6 +288,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                 agg["bonds"] += snap.get("bonds_issued") or 0
                 agg["tctdDeposits"] += snap.get("tctd_dep") or 0
                 agg["kbnnCounted"] += ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
+                agg["equity"] += snap.get("equity") or 0
                 agg["n"] += 1
             if agg["n"] > 0:
                 per_period[period] = agg
@@ -301,9 +312,9 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
         out_periods = sorted(p for p in per_period if p >= start_period)
         result = {"periods": out_periods, "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
                   "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
-                  "gap": [], "nBanks": [],
+                  "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
                   "creditComposition": {"loans": [], "tpdn": []},
-                  "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": []}}
+                  "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": [], "equity": []}}
         for p in out_periods:
             agg = per_period[p]
             result["totalCredit"].append(round(agg["totalCredit"], 1))
@@ -320,12 +331,16 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             # dong) la dau hieu ngan hang phai tim nguon von thay the ngoai huy dong khach hang.
             result["gap"].append(round(agg["totalCredit"] - agg["totalDeposit"], 1))
             result["nBanks"].append(agg["n"])
+            result["totalEquity"].append(round(agg["equity"], 1))
+            result["equityGrowthYoy"].append(_yoy(p, "equity"))
+            result["equityGrowthYtd"].append(_ytd(p, "equity"))
             result["creditComposition"]["loans"].append(round(agg["loans"], 1))
             result["creditComposition"]["tpdn"].append(round(agg["tpdn"], 1))
             result["depositComposition"]["customerDeposits"].append(round(agg["customerDeposits"], 1))
             result["depositComposition"]["bonds"].append(round(agg["bonds"], 1))
             result["depositComposition"]["tctdDeposits"].append(round(agg["tctdDeposits"], 1))
             result["depositComposition"]["kbnnCounted"].append(round(agg["kbnnCounted"], 1))
+            result["depositComposition"]["equity"].append(round(agg["equity"], 1))
         return result
     except Exception as e:
         print(f"  [WARN] build_bank_credit_deposit_system_series: loi ({e})")
@@ -342,6 +357,7 @@ _LDR_SHEET_HEADERS = [
     "Tong huy dong (ty)", "LDR (%)",
     "GAP tin dung - huy dong (ty)",
     "Tang truong tin dung so cuoi nam truoc (%)", "Tang truong huy dong so cuoi nam truoc (%)",
+    "Von chu so huu - VCSH (ty)",
 ]
 
 
@@ -405,7 +421,7 @@ def update_bank_ldr_excel_sheet(out_dir, start_period="2024-Q1"):
                 snap.get("customer_deposits"), snap.get("bonds_issued"), snap.get("tctd_dep"),
                 round(kbnn_counted, 1), snap.get("ky_quy"), snap.get("von_cg"),
                 round(tong_huy_dong, 1), round(ldr, 2) if ldr is not None else None,
-                gap_abs, credit_ytd, deposit_ytd,
+                gap_abs, credit_ytd, deposit_ytd, snap.get("equity"),
             ]
             for c, val in enumerate(row, start=1):
                 ws.cell(row=row_idx, column=c, value=val)
@@ -431,6 +447,10 @@ _LDR_SUMMARY_HEADERS = [
     # 2 so KHAC nhau nhung KHONG mau thuan, chi la 2 cach tinh khac nhau cung cong bo.
     "Tang truong tin dung so cuoi nam truoc - YTD (%)", "Tang truong huy dong so cuoi nam truoc - YTD (%)",
     "GAP tin dung - huy dong (ty)",
+    # 3 cot THEM (user 2026-09-30): VCSH la von KHONG co ky han (khong ai "rut" duoc nhu tien gui),
+    # tang lon nghia la co them 1 lop dem von ben vung - theo doi RIENG ben ngoai ty le LTFC (LTFC
+    # da gop VCSH vao tu so nhung la 1 TY LE, khong cho thay rieng VCSH dang tang/giam bao nhieu).
+    "Tong VCSH toan HT (ty)", "Tang truong VCSH YoY (%)", "Tang truong VCSH so cuoi nam truoc - YTD (%)",
 ]
 
 
@@ -447,7 +467,8 @@ def _update_bank_ldr_summary_sheet(xlsx_path, start_period="2024-Q1"):
         row = [p, series["nBanks"][i], series["totalCredit"][i], series["totalDeposit"][i],
                series["ldrSystem"][i], series["creditGrowthYoy"][i], series["depositGrowthYoy"][i],
                series["creditGrowthYtd"][i], series["depositGrowthYtd"][i],
-               series["gap"][i]]
+               series["gap"][i],
+               series["totalEquity"][i], series["equityGrowthYoy"][i], series["equityGrowthYtd"][i]]
         for c, val in enumerate(row, start=1):
             ws.cell(row=i + 2, column=c, value=val)
     for c in range(1, len(_LDR_SUMMARY_HEADERS) + 1):

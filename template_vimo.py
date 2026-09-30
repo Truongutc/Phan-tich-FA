@@ -2752,6 +2752,9 @@ def _add_bank_alm_derived_indicators(raw, trends):
         dg_ytd_pts = _series_points(cd_series["depositGrowthYtd"], cov)
         gap_pts = _series_points(cd_series["gap"], cov)
         ldr_pts = _series_points(cd_series["ldrSystem"], cov)
+        eq_level_pts = _series_points(cd_series["totalEquity"], cov)
+        eq_yoy_pts = _series_points(cd_series["equityGrowthYoy"], cov)
+        eq_ytd_pts = _series_points(cd_series["equityGrowthYtd"], cov)
 
         if cg_pts:
             raw["bank_report_credit_growth_yoy"] = {
@@ -2804,6 +2807,38 @@ def _add_bank_alm_derived_indicators(raw, trends):
                 "impact": "So cùng phương pháp YTD với tăng trưởng tín dụng ở trên.",
             }
             trends["bank_report_deposit_growth_ytd"] = calc_trend(dg_ytd_pts, "higher")
+        # THEM (user 2026-09-30): "VCSH la luong von KHONG co ky han - tang lon thi von cua bank
+        # lon, ap luc huy dong khong cang nhu chi soi mo tien gui". Long-term Funding Coverage (da
+        # co, xem stable_funding trong bank_system_risk._bank_period_metrics) DA GOM VCSH vao tu so
+        # tu truoc, nhung do la 1 TY LE - khong cho thay RIENG VCSH dang tang/giam bao nhieu. Tach
+        # rieng thanh 3 chi bao doc lap theo dung yeu cau: quy mo tuyet doi + 2 kieu tang truong.
+        if eq_level_pts:
+            raw["bank_report_total_equity"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tổng Vốn chủ sở hữu toàn ngành NH niêm yết (theo BCTC)", "unit": "tỷ đồng",
+                "good_direction": "higher", "series": eq_level_pts,
+                "note": "Σ Vốn chủ sở hữu (bsa78, Vietcap) cộng dồn từ BCTC 26 ngân hàng niêm yết/UPCoM mỗi quý — KHÔNG phải trung bình.",
+                "impact": "VCSH là vốn KHÔNG có kỳ hạn (không ai 'rút' được như tiền gửi) — quy mô VCSH tăng là thêm 1 lớp đệm vốn bền vững, làm dịu áp lực huy động thực tế so với chỉ nhìn riêng tiền gửi/LDR.",
+            }
+            trends["bank_report_total_equity"] = calc_trend(eq_level_pts, "higher")
+        if eq_yoy_pts:
+            raw["bank_report_equity_growth_yoy"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tăng trưởng VCSH toàn ngành NH niêm yết (YoY, theo BCTC)", "unit": "%",
+                "good_direction": "higher", "series": eq_yoy_pts,
+                "note": "Tăng trưởng Σ VCSH so cùng quý năm trước (YoY thật) — cùng phương pháp với tăng trưởng tín dụng/huy động ở trên.",
+                "impact": "VCSH tăng nhanh hơn huy động là dấu hiệu hệ thống đang tự bồi đắp thêm đệm vốn bền vững (giữ lại lợi nhuận, tăng vốn), không chỉ dựa vào huy động ngắn hạn để tài trợ tăng trưởng tài sản.",
+            }
+            trends["bank_report_equity_growth_yoy"] = calc_trend(eq_yoy_pts, "higher")
+        if eq_ytd_pts:
+            raw["bank_report_equity_growth_ytd"] = {
+                "group": "bank_alm", "auto_source": "derived",
+                "label": "Tăng trưởng VCSH toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC)", "unit": "%",
+                "good_direction": "higher", "series": eq_ytd_pts,
+                "note": "Cùng Σ VCSH ở trên, nhưng so với mốc 31/12 năm trước (RESET mỗi quý 1) — cùng cách tính YTD như tín dụng/huy động.",
+                "impact": "So cùng phương pháp YTD với tăng trưởng tín dụng/huy động ở trên.",
+            }
+            trends["bank_report_equity_growth_ytd"] = calc_trend(eq_ytd_pts, "higher")
         if gap_pts:
             # SUA (user 2026-09-28): GAP la CHENH LECH GIA TRI TUYET DOI (Tong tin dung - Tong huy
             # dong, ty dong) - KHONG PHAI chenh lech % tang truong (ban truoc nham lan). Am (huy
@@ -2849,6 +2884,11 @@ def _add_bank_alm_derived_indicators(raw, trends):
             "creditComposition": cd_series["creditComposition"],
             "depositComposition": cd_series["depositComposition"],
             "nBanks": cd_series["nBanks"],
+            # THEM (user 2026-09-30): can CA muc TUYET DOI (khong chi tang truong %) de ve chart
+            # "Tong tin dung vs Tong huy dong & LDR" - truoc do CHUA co, gay loi "reading 'map' of
+            # undefined" o app_vimo.js khi doc cds.totalCredit/totalDeposit/ldrSystem.
+            "totalCredit": cd_series["totalCredit"], "totalDeposit": cd_series["totalDeposit"],
+            "ldrSystem": cd_series["ldrSystem"],
             # THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy
             # động theo số liệu 26 bank" — gộp thẳng vào đây (đã có periods/nBanks dùng chung) để
             # web vẽ 1 chart riêng ngay trong card "Cơ cấu Tín dụng & Huy động", không cần đi tìm
@@ -2856,6 +2896,11 @@ def _add_bank_alm_derived_indicators(raw, trends):
             # — 2 khái niệm khác nhau đã đối chiếu với SBV ở các lượt trước, để trên 1 chart cho dễ so.
             "creditGrowthYoy": cd_series["creditGrowthYoy"], "depositGrowthYoy": cd_series["depositGrowthYoy"],
             "creditGrowthYtd": cd_series["creditGrowthYtd"], "depositGrowthYtd": cd_series["depositGrowthYtd"],
+            # THEM (user 2026-09-30): VCSH tang truong (YoY/YTD) + quy mo tuyet doi, de ve chung
+            # trong bieu do tang truong hien co va bieu do co cau huy dong (depositComposition da
+            # co san key "equity" tu build_bank_credit_deposit_system_series).
+            "totalEquity": cd_series["totalEquity"],
+            "equityGrowthYoy": cd_series["equityGrowthYoy"], "equityGrowthYtd": cd_series["equityGrowthYtd"],
         }
     return result
 

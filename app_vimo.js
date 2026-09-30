@@ -322,19 +322,27 @@ function renderCreditDepositStructure(cds) {
         + (nMin === nMax ? `(${nMax}/26 ngân hàng có dữ liệu mọi quý)`
                           : `(số ngân hàng có dữ liệu mỗi quý: ${nMin}–${nMax}/26)`);
 
-    const CREDIT_SERIES = [
-        { key: 'loans', label: 'Cho vay khách hàng', color: '#3b82f6' },
-        { key: 'tpdn', label: 'TPDN đang nắm giữ', color: '#f59e0b' },
-    ];
+    // THEM 'equity' (user 2026-09-30): VCSH la von KHONG co ky han (khong ai "rut" duoc nhu tien
+    // gui) - tang lon nghia la co them 1 lop dem von ben vung, xem duoc quy mo VCSH bien dong ra
+    // sao NGAY canh cac thanh phan huy dong khac. LUU Y: tu day chart nay la "Nguon von" (huy dong
+    // + VCSH), KHAC "Tong huy dong (mau so LDR theo TT22/26)" dung o cac cho khac (LDR/GAP tin
+    // dung-huy dong KHONG gom VCSH) - da sua tieu de + chu thich duoi chart de ro rang, tranh nham.
     const DEPOSIT_SERIES = [
         { key: 'customerDeposits', label: 'Tiền gửi khách hàng', color: '#10b981' },
         { key: 'bonds', label: 'Giấy tờ có giá phát hành', color: '#a78bfa' },
         { key: 'tctdDeposits', label: 'Tiền gửi TCTD khác', color: '#3b82f6' },
         { key: 'kbnnCounted', label: 'KBNN (tính theo TT26)', color: '#f59e0b' },
+        { key: 'equity', label: 'Vốn chủ sở hữu (VCSH)', color: '#ef4444' },
     ];
 
-    _renderAreaCompositionChart('chart-credit-structure-abs', cds.periods, CREDIT_SERIES, cds.creditComposition, false);
-    _renderAreaCompositionChart('chart-credit-structure-pct', cds.periods, CREDIT_SERIES, cds.creditComposition, true);
+    // SUA (user 2026-09-30): bỏ 2 biểu đồ "cơ cấu tín dụng" (Cho vay KH vs TPDN) — TPDN quá nhỏ so
+    // Cho vay KH nên chart gần như vô nghĩa (thấy 1 màu). Thay bằng 2 biểu đồ Tổng tín dụng vs
+    // Tổng huy động (+ 1 đường nét đứt LDR) — 1 bản huy động THƯỜNG (mẫu số LDR theo TT22/26),
+    // 1 bản CỘNG THÊM VCSH (đúng yêu cầu "tính VCSH vào tổng huy động thôi").
+    const totalDepositPlusEquity = cds.totalDeposit.map((v, i) => (v ?? 0) + (cds.totalEquity[i] ?? 0));
+    const ldrWithEquity = cds.totalCredit.map((v, i) => totalDepositPlusEquity[i] ? (v / totalDepositPlusEquity[i] * 100) : null);
+    _renderCreditFundingLdrChart('chart-credit-structure-abs', cds.periods, cds.totalCredit, cds.totalDeposit, cds.ldrSystem, 'Tổng huy động (theo TT22/26)');
+    _renderCreditFundingLdrChart('chart-credit-structure-pct', cds.periods, cds.totalCredit, totalDepositPlusEquity, ldrWithEquity, 'Tổng huy động + VCSH');
     _renderAreaCompositionChart('chart-deposit-structure-abs', cds.periods, DEPOSIT_SERIES, cds.depositComposition, false);
     _renderAreaCompositionChart('chart-deposit-structure-pct', cds.periods, DEPOSIT_SERIES, cds.depositComposition, true);
     // THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy động
@@ -373,6 +381,57 @@ function _renderGrowthComparisonChart(canvasId, periods, seriesDefs, cds) {
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
                 y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// Tổng tín dụng vs Tổng huy động (2 miền, KHÔNG xếp lớp — 2 đại lượng độc lập so cạnh nhau, không
+// phải 2 thành phần cộng thành 1 tổng) + 1 đường nét đứt thể hiện LDR (hoặc tỷ lệ tương đương khi
+// mẫu số có cộng thêm VCSH) — trục phải riêng cho %. Thay cho biểu đồ "cơ cấu tín dụng" cũ (Cho
+// vay KH vs TPDN, user 2026-09-30 chỉ ra TPDN quá nhỏ nên chart gần như vô nghĩa).
+function _renderCreditFundingLdrChart(canvasId, periods, creditArr, fundingArr, ratioArr, fundingLabel) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const levelDatalabels = (color) => ({
+        display: (ctx) => ctx.dataset.data.slice(ctx.dataIndex + 1).every(v => v === null || v === undefined)
+            && (ctx.dataset.data[ctx.dataIndex] !== null && ctx.dataset.data[ctx.dataIndex] !== undefined),
+        color, font: { size: 9, weight: '700' }, anchor: 'end', align: 'right', offset: 4, clip: false,
+        formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }),
+    });
+    const datasets = [
+        {
+            label: 'Tổng tín dụng', data: creditArr, yAxisID: 'y',
+            borderColor: '#3b82f6', backgroundColor: '#3b82f620', fill: true, tension: 0.3,
+            pointRadius: 3, pointBackgroundColor: '#3b82f6', borderWidth: 2, spanGaps: true,
+            datalabels: levelDatalabels('#3b82f6'),
+        },
+        {
+            label: fundingLabel, data: fundingArr, yAxisID: 'y',
+            borderColor: '#10b981', backgroundColor: '#10b98120', fill: true, tension: 0.3,
+            pointRadius: 3, pointBackgroundColor: '#10b981', borderWidth: 2, spanGaps: true,
+            datalabels: levelDatalabels('#10b981'),
+        },
+        {
+            label: 'LDR (%)', data: ratioArr, yAxisID: 'y1',
+            borderColor: '#f59e0b', borderDash: [6, 4], borderWidth: 2, pointRadius: 0, fill: false,
+            tension: 0.25, spanGaps: true, datalabels: _endpointDatalabelsConfig(1),
+        },
+    ];
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 10 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
