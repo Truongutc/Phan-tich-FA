@@ -445,6 +445,24 @@ function renderMaturityStructure(ms) {
     _renderAreaCompositionChart('chart-maturity-assets-pct', ms.periods, MATURITY_SERIES, assetsData, true);
     _renderAreaCompositionChart('chart-maturity-liab-abs', ms.periods, MATURITY_SERIES, liabData, false);
     _renderAreaCompositionChart('chart-maturity-liab-pct', ms.periods, MATURITY_SERIES, liabData, true);
+
+    // THEM (user 2026-09-30): "vẽ biểu đồ miền tỉ trọng 100%... theo 3 loại kỳ hạn: ngắn hạn (gồm
+    // quá hạn + toàn bộ tiền kỳ hạn ≤12 tháng), trung hạn (1-5 năm), dài hạn (>5 năm)" — gộp tiếp
+    // 6 bucket ở trên xuống còn 3 nhóm lớn, CHỈ vẽ bản % (100% stacked) vì đó là điều user yêu cầu
+    // cụ thể — đọc trực tiếp lệch kỳ hạn tài sản/nguồn vốn ở mức tổng quan nhất, không cần soi 6
+    // bucket chi tiết.
+    const MATURITY_SERIES_3 = [
+        { key: 'ngan_han', label: 'Ngắn hạn (≤12 tháng, gồm quá hạn)', color: '#ef4444' },
+        { key: 'trung_han', label: 'Trung hạn (1-5 năm)', color: '#8b5cf6' },
+        { key: 'dai_han', label: 'Dài hạn (>5 năm)', color: '#10b981' },
+    ];
+    const _mergeTo3 = (byBucket) => {
+        const ngan = ms.periods.map((_, i) => (byBucket['qua_han_tren_3t'][i] || 0) + (byBucket['qua_han_den_3t'][i] || 0)
+            + (byBucket['den_1_thang'][i] || 0) + (byBucket['tu_1_3_thang'][i] || 0) + (byBucket['tu_3_12_thang'][i] || 0));
+        return { ngan_han: ngan, trung_han: byBucket['tu_1_5_nam'], dai_han: byBucket['tren_5_nam'] };
+    };
+    _renderAreaCompositionChart('chart-maturity-assets-3buckets-pct', ms.periods, MATURITY_SERIES_3, _mergeTo3(ms.assetsByBucket), true);
+    _renderAreaCompositionChart('chart-maturity-liab-3buckets-pct', ms.periods, MATURITY_SERIES_3, _mergeTo3(ms.liabilitiesByBucket), true);
 }
 
 // Tổng tín dụng vs Tổng huy động (2 miền, KHÔNG xếp lớp — 2 đại lượng độc lập so cạnh nhau, không
