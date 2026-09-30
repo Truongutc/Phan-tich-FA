@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // chart trong mục này dùng _renderGenericIndicatorCard(), cùng cơ chế chartInstances.
     renderBankingSystemRiskSection(data.bankingSystemRisk, data.indicators);
     renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
+    renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -404,6 +405,46 @@ function _renderGrowthComparisonChart(canvasId, periods, seriesDefs, cds) {
         plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
+}
+
+// THEM (user 2026-09-30): "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo các kỳ hạn ... để biết
+// tài sản đang cơ cấu lệch về kỳ dài hạn hơn nguồn vốn nên áp lực rolling tiền gửi tăng" — 2 biểu
+// đồ miền xếp lớp (TOÀN HỆ THỐNG) theo TỪNG bucket kỳ hạn, tái dùng _renderAreaCompositionChart
+// (đã dùng cho cơ cấu huy động). Gộp 2 bucket "quá hạn" (qua_han_tren_3t/qua_han_den_3t, thường
+// rất nhỏ) thành 1 "Quá hạn" cho gọn — KHÁC maturityStructure.assetsByBucket/liabilitiesByBucket ở
+// vimo.json (giữ nguyên 7 bucket gốc, không gộp, để backend/Excel tra cứu chi tiết được).
+function renderMaturityStructure(ms) {
+    const card = document.getElementById('maturity-structure-card');
+    if (!card) return;
+    if (!ms || !ms.periods || !ms.periods.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    const nMax = Math.max(...ms.nBanks);
+    const nMin = Math.min(...ms.nBanks);
+    document.getElementById('maturity-structure-title').textContent =
+        `📅 ${ms.periods[0]} — ${ms.periods[ms.periods.length - 1]} `
+        + (nMin === nMax ? `(${nMax}/26 ngân hàng có đủ dữ liệu thuyết minh kỳ hạn)`
+                          : `(số ngân hàng có dữ liệu mỗi quý: ${nMin}–${nMax}/26 — phụ thuộc OCR thuyết minh, độ phủ thấp hơn hẳn các biểu đồ Tín dụng/Huy động khác)`);
+
+    const MATURITY_SERIES = [
+        { key: 'qua_han', label: 'Quá hạn', color: '#ef4444' },
+        { key: 'den_1_thang', label: 'Đến 1 tháng', color: '#f59e0b' },
+        { key: 'tu_1_3_thang', label: '1-3 tháng', color: '#eab308' },
+        { key: 'tu_3_12_thang', label: '3-12 tháng', color: '#3b82f6' },
+        { key: 'tu_1_5_nam', label: '1-5 năm', color: '#8b5cf6' },
+        { key: 'tren_5_nam', label: '>5 năm', color: '#10b981' },
+    ];
+    const _mergeOverdue = (byBucket) => {
+        const qh = ms.periods.map((_, i) => (byBucket['qua_han_tren_3t'][i] || 0) + (byBucket['qua_han_den_3t'][i] || 0));
+        return { qua_han: qh, den_1_thang: byBucket['den_1_thang'], tu_1_3_thang: byBucket['tu_1_3_thang'],
+                 tu_3_12_thang: byBucket['tu_3_12_thang'], tu_1_5_nam: byBucket['tu_1_5_nam'], tren_5_nam: byBucket['tren_5_nam'] };
+    };
+    const assetsData = _mergeOverdue(ms.assetsByBucket);
+    const liabData = _mergeOverdue(ms.liabilitiesByBucket);
+    _renderAreaCompositionChart('chart-maturity-assets-abs', ms.periods, MATURITY_SERIES, assetsData, false);
+    _renderAreaCompositionChart('chart-maturity-assets-pct', ms.periods, MATURITY_SERIES, assetsData, true);
+    _renderAreaCompositionChart('chart-maturity-liab-abs', ms.periods, MATURITY_SERIES, liabData, false);
+    _renderAreaCompositionChart('chart-maturity-liab-pct', ms.periods, MATURITY_SERIES, liabData, true);
 }
 
 // Tổng tín dụng vs Tổng huy động (2 miền, KHÔNG xếp lớp — 2 đại lượng độc lập so cạnh nhau, không

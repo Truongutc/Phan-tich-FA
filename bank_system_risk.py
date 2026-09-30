@@ -1054,6 +1054,13 @@ def _bank_period_metrics(entry, bs_snap, year=None):
         "liquidity_buffer_coverage_1m": liquidity_buffer_coverage_1m,
         "near_cash_1m": near_cash_1m, "near_cash_coverage_1m_precise": near_cash_coverage_1m_precise,
         "customer_deposits_pct_1m": cust_dep_pct_1m, "customer_deposits_pct_1y": cust_dep_pct_1y,
+        # THEM (user 2026-09-30, "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo kỳ hạn" - trực quan
+        # hoá lệch kỳ hạn tài sản/nguồn vốn gây áp lực rollover): expose THẲNG 2 dict theo bucket kỳ
+        # hạn (đã tính sẵn ở assets_liq_ty/liab_liq_ty phía trên cho các tỷ lệ khác) để
+        # _aggregate_for_period() cộng dồn TOÀN HỆ THỐNG theo TỪNG bucket — {} nếu thiếu
+        # liabilities_by_bucket (không suy đoán).
+        "assets_by_bucket_liq": assets_liq_ty if liab_liq_raw else {},
+        "liab_by_bucket_liq": liab_liq_ty if liab_liq_raw else {},
     }
 
 
@@ -1080,6 +1087,12 @@ def _aggregate_for_period(period_key):
     sum_cons_gap_1m = sum_cons_gap_3m = sum_cons_gap_12m = 0.0
     sum_liab_due_1m = sum_liab_due_3m = sum_liab_due_12m = 0.0
     sum_long_term_assets = sum_stable_funding = 0.0
+    # THEM (user 2026-09-30, "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo kỳ hạn"): cộng dồn TOÀN
+    # HỆ THỐNG (tỷ đồng) tài sản/nguồn vốn theo TỪNG bucket kỳ hạn (_LIQ_CUMULATIVE_ORDER) — CÙNG
+    # cổng "structural_funding_valid" đã dùng cho các tỷ lệ khác trong hàm này (đã lọc qua đủ guard
+    # kiểm tra dữ liệu hỏng ở trên), tránh cộng dữ liệu bị OCR sai lệch vào chart trực quan.
+    sum_assets_by_bucket = {k: 0.0 for k in _LIQ_CUMULATIVE_ORDER}
+    sum_liab_by_bucket = {k: 0.0 for k in _LIQ_CUMULATIVE_ORDER}
     # GROSS refinancing need (user 2026-09-28, doi chieu voi framework "Funding Pressure" - phan
     # biet Gross vs Net system pressure): sum_cons_gap_12m o tren la NET (cong THANG gia tri co
     # dau, ngan hang thieu von va ngan hang du von BU TRU nhau) - nhung 1 ngan hang la 1 phap nhan
@@ -1246,6 +1259,9 @@ def _aggregate_for_period(period_key):
                 sum_long_term_assets += m["long_term_assets"]
             if m.get("stable_funding") is not None:
                 sum_stable_funding += m["stable_funding"]
+            for k in _LIQ_CUMULATIVE_ORDER:
+                sum_assets_by_bucket[k] += (m.get("assets_by_bucket_liq") or {}).get(k, 0.0)
+                sum_liab_by_bucket[k] += (m.get("liab_by_bucket_liq") or {}).get(k, 0.0)
         sum_liquid_assets += m["liquid_assets"]
         sum_cust_dep += m["customer_deposits"]
 
@@ -1349,6 +1365,11 @@ def _aggregate_for_period(period_key):
                                     if worst_rollover else None,
             "coverage_pct": structural_funding_coverage_pct, "n_banks_included": n_banks_structural,
             "missing_tickers": sorted(missing_structural),
+            # THEM (user 2026-09-30): tài sản/nguồn vốn TOÀN HỆ THỐNG theo TỪNG bucket kỳ hạn (tỷ
+            # đồng, chỉ cộng ngân hàng có structural_funding_valid — cùng phạm vi n_banks_included ở
+            # trên) — dùng vẽ 2 biểu đồ cơ cấu (tài sản/nguồn vốn) theo kỳ hạn ở template_vimo.py.
+            "assetsByBucket": {k: round(v, 1) for k, v in sum_assets_by_bucket.items()},
+            "liabilitiesByBucket": {k: round(v, 1) for k, v in sum_liab_by_bucket.items()},
         },
         "by_bank": by_bank,
     }

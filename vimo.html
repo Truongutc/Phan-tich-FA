@@ -381,6 +381,40 @@
             <p class="ind-source-note" style="margin-top:8px">Tổng hợp từ BCTC 26 ngân hàng niêm yết/UPCoM (Vietcap) — là TỔNG toàn ngành mỗi quý, không phải trung bình. "Tín dụng" = Cho vay khách hàng + TPDN đang nắm giữ; "Huy động" = Tiền gửi KH + Giấy tờ có giá + Tiền gửi TCTD khác + KBNN (tính theo tỷ lệ Thông tư 26/2022) — biểu đồ cơ cấu chỉ hiện các thành phần CỘNG DƯƠNG (không trừ ký quỹ/vốn ủy thác, 2 khoản trừ nhỏ nằm trong sheet Excel "LDR_NganHang_Raw"/"LDR_TongHop_HeThong" để xem đầy đủ). LƯU Ý: biểu đồ/cột bên phải (huy động + VCSH) KHÁC "Tổng huy động" dùng để tính LDR/GAP tín dụng-huy động ở sheet LDR_TongHop_HeThong (KHÔNG gồm VCSH, đúng định nghĩa pháp lý Thông tư 22/26) — 2 cách tính phục vụ 2 mục đích khác nhau, không phải sai số.</p>
         </div>
 
+        <!-- THEM (user 2026-09-30): "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo các kỳ hạn ...
+             để biết tài sản đang cơ cấu lệch về kỳ dài hạn hơn nguồn vốn nên áp lực rolling tiền
+             gửi tăng" — nguồn dữ liệu KHÁC card Tín dụng & Huy động ở trên (card đó dùng
+             quarterly_balance_sheet, Vietcap trực tiếp, đủ 26/26 mọi quý); card NÀY dùng
+             liquidity_gap/liabilities_by_bucket (OCR thuyết minh gap thanh khoản), độ phủ THẤP hơn
+             hẳn — xem renderMaturityStructure trong app_vimo.js. -->
+        <div class="card margin-top-20" id="maturity-structure-card" style="display:none">
+            <h3 class="border-blue">⏳ Cơ cấu Tài sản &amp; Nguồn vốn theo Kỳ hạn toàn ngành Ngân hàng</h3>
+            <div class="vimo-chart-title" id="maturity-structure-title"></div>
+            <div class="vimo-chart-title">Cơ cấu Tài sản theo kỳ hạn</div>
+            <div class="bank-chart-grid-2">
+                <div>
+                    <p class="vimo-chart-subtitle">Giá trị tuyệt đối (tỷ đồng)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-maturity-assets-abs"></canvas></div>
+                </div>
+                <div>
+                    <p class="vimo-chart-subtitle">Theo tỷ trọng cơ cấu (%)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-maturity-assets-pct"></canvas></div>
+                </div>
+            </div>
+            <div class="vimo-chart-title">Cơ cấu Nguồn vốn theo kỳ hạn</div>
+            <div class="bank-chart-grid-2">
+                <div>
+                    <p class="vimo-chart-subtitle">Giá trị tuyệt đối (tỷ đồng)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-maturity-liab-abs"></canvas></div>
+                </div>
+                <div>
+                    <p class="vimo-chart-subtitle">Theo tỷ trọng cơ cấu (%)</p>
+                    <div class="ind-chart" style="height:280px"><canvas id="chart-maturity-liab-pct"></canvas></div>
+                </div>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">Tổng hợp CÓ TRỌNG SỐ theo quy mô (cộng tuyệt đối tỷ đồng rồi mới chia tỷ trọng) từ thuyết minh gap thanh khoản (OCR) của các ngân hàng có đủ dữ liệu mỗi quý — độ phủ thấp hơn hẳn card Tín dụng &amp; Huy động ở trên (nguồn Vietcap trực tiếp), xem số ngân hàng/quý ở dòng phụ đề phía trên. So 2 biểu đồ "Theo tỷ trọng" (Tài sản vs Nguồn vốn) cạnh nhau: nếu cột Tài sản nghiêng nhiều về "1-5 năm"/"&gt;5 năm" trong khi cột Nguồn vốn vẫn tập trung ở "Đến 1 tháng"/"1-3 tháng", đó là dấu hiệu lệch kỳ hạn (maturity mismatch) — ngân hàng phải liên tục tái huy động (rollover) tiền gửi ngắn hạn để tài trợ tài sản dài hạn, càng lệch nhiều thì áp lực rollover/lãi suất huy động càng lớn.</p>
+        </div>
+
         <!-- Định giá thị trường -->
         <div class="card margin-top-20">
             <h3 class="border-blue">💎 Định giá Thị trường (VN-Index)</h3>

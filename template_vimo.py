@@ -2608,6 +2608,13 @@ def _add_bank_alm_derived_indicators(raw, trends):
     all_agg = recompute_system_aggregate_all_periods()
     ir_points, liq_points = [], []
     rollover_1m_points, rollover_12m_points, ltfc_points = [], [], []
+    # THEM (user 2026-09-30, "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo kỳ hạn" - trực quan
+    # hoá lệch kỳ hạn tài sản/nguồn vốn gây áp lực rollover): gom periods + assetsByBucket/
+    # liabilitiesByBucket (đã cộng dồn hệ thống ở bank_system_risk._aggregate_for_period, cùng gate
+    # "structural_funding_valid" như rollover_dependency/LTFC ở trên) — CHỈ nhận kỳ có
+    # n_banks_included > 0 (tránh vẽ kỳ toàn 0 do chưa ngân hàng nào qua được guard dữ liệu).
+    from bank_system_risk import _LIQ_CUMULATIVE_ORDER
+    maturity_periods, maturity_assets, maturity_liab, maturity_nbanks = [], {k: [] for k in _LIQ_CUMULATIVE_ORDER}, {k: [] for k in _LIQ_CUMULATIVE_ORDER}, []
     for period_key, agg in all_agg.items():
         if (agg["n_banks_reported"] + agg["n_banks_patched"]) == 0:
             continue
@@ -2636,6 +2643,12 @@ def _add_bank_alm_derived_indicators(raw, trends):
         if sf.get("long_term_funding_coverage") is not None:
             ltfc_points.append({"period": period_key, "value": round(sf["long_term_funding_coverage"] * 100, 2), "source_url": None,
                                  "coverage_pct": round(sf_cov, 1) if sf_cov is not None else None})
+        if sf.get("n_banks_included"):
+            maturity_periods.append(period_key)
+            for k in _LIQ_CUMULATIVE_ORDER:
+                maturity_assets[k].append(sf["assetsByBucket"].get(k, 0.0))
+                maturity_liab[k].append(sf["liabilitiesByBucket"].get(k, 0.0))
+            maturity_nbanks.append(sf["n_banks_included"])
 
     if ir_points:
         raw["bank_alm_system_ir_risk_ratio"] = {
@@ -2910,6 +2923,21 @@ def _add_bank_alm_derived_indicators(raw, trends):
             # co san key "equity" tu build_bank_credit_deposit_system_series).
             "totalEquity": cd_series["totalEquity"],
             "equityGrowthYoy": cd_series["equityGrowthYoy"], "equityGrowthYtd": cd_series["equityGrowthYtd"],
+        }
+
+    # THEM (user 2026-09-30): "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo kỳ hạn ... để biết
+    # tài sản đang cơ cấu lệch về kỳ dài hạn hơn nguồn vốn nên áp lực rollover tiền gửi tăng" — 2
+    # biểu đồ miền xếp lớp (tài sản/nguồn vốn theo TỪNG bucket kỳ hạn) TOÀN HỆ THỐNG, cùng cơ chế
+    # với creditDepositStructure ở trên nhưng nguồn dữ liệu KHÁC (phụ thuộc OCR thuyết minh gap
+    # lãi suất/thanh khoản — liabilities_by_bucket — nên độ phủ THẤP hơn nhiều so với
+    # creditDepositStructure (Vietcap trực tiếp, 26/26 mọi quý); "nBanks" đi kèm để web cảnh báo
+    # rõ độ phủ từng kỳ thay vì để người xem tưởng nhầm là đủ 26 ngân hàng.
+    if maturity_periods:
+        if result is None:
+            result = {}
+        result["maturityStructure"] = {
+            "periods": maturity_periods, "nBanks": maturity_nbanks,
+            "assetsByBucket": maturity_assets, "liabilitiesByBucket": maturity_liab,
         }
     return result
 
