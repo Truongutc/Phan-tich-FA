@@ -63,13 +63,17 @@ def _normalize_period_input(raw):
 # Field code Vietcap (xem template_banking.py get_yr — CHIA /1e9 để ra tỷ đồng, khớp đơn vị dùng
 # xuyên suốt template_banking.py/bank_risk_notes.py). Nguồn BALANCE_SHEET, trừ khi ghi chú khác.
 # inv_sec_bs: chưa dùng ở đâu trong file này, giữ lại vì rẻ (lấy sẵn cùng 1 lượt fetch_data.fetch_all).
-# von_cg/tctd_dep/kbnn_dep/kbnn_loan: dùng cho _ldr_components() bên dưới (user 2026-09-28, xây
-# tiếp phần LDR/tín dụng-huy động hệ thống đã dự trù input từ 2026-08-30).
+# tctd_dep/kbnn_dep/kbnn_loan: dùng cho _ldr_components() bên dưới (user 2026-09-28, xây tiếp phần
+# LDR/tín dụng-huy động hệ thống đã dự trù input từ 2026-08-30).
+# von_cg KHÔNG còn ở map này (SỬA 2026-09-30 — xem chi tiết ở refresh_quarterly_balance_sheet_all_banks):
+# trước đây lấy "bsb115", nhưng đối chiếu BCTC thật (STB) thì "bsb115" là "Vốn tài trợ, ủy thác đầu
+# tư" — MỘT KHOẢN LIABILITY KHÁC HẲN, không phải "Tiền gửi vốn chuyên dùng" (sub-item trong Note 9
+# "Tiền gửi của khách hàng"). "Vốn chuyên dùng" ĐÚNG nằm ở NOTE section (nob70), cùng chỗ với ky_quy.
 _BS_FIELD_MAP = {
     "total_assets": "bsa53", "equity": "bsa78", "customer_deposits": "bsb113",
     "cash": "bsa2", "sbv_dep": "bsb97", "bank_dep": "bsb98", "interbank_liab": "bsb112",
     "loans": "bsb103", "bonds_issued": "bsb116", "inv_sec_bs": "bsb106",
-    "von_cg": "bsb115", "tctd_dep": "bsb270",
+    "tctd_dep": "bsb270",
     # Them 2026-09-28 (user yeu cau tinh LDR toan he thong theo dung Thong tu 22/2019 + 26/2022,
     # xem template_banking.py da tham so hoa cong thuc nay cho phan tich 1 ma le - kbnn_dep/kbnn_loan
     # la 2 khoan Tien gui/Vay Kho bac Nha nuoc, CHI TINH 1 PHAN vao mau so LDR theo lo trinh TT26
@@ -183,10 +187,23 @@ def refresh_quarterly_balance_sheet_all_banks():
             raw = fetch_data.fetch_all(ticker, use_cache=True)
             bs_q = raw["sections"]["BALANCE_SHEET"].get("quarters", [])
             is_q = raw["sections"]["INCOME_STATEMENT"].get("quarters", [])
-            # Them 2026-09-28 (user yeu cau LDR toan he thong): TPDN (nob184) va Tien ky quy
-            # (nob73, fallback nob75 - 2 so thu tu muc thuyet minh khac nhau giua cac nam/BCTC,
-            # cung cach template_banking.py da xu ly cho phan tich 1 ma le) nam o muc NOTE, khong
-            # phai BALANCE_SHEET, nen phai gop rieng theo quarter-key giong is_by_qkey o duoi.
+            # Them 2026-09-28 (user yeu cau LDR toan he thong): TPDN (nob184), Tien ky quy va Von
+            # chuyen dung nam o muc NOTE, khong phai BALANCE_SHEET, nen phai gop rieng theo
+            # quarter-key giong is_by_qkey o duoi.
+            #
+            # SUA 2026-09-30 (user chup anh Note 9 "Tien gui cua khach hang" cua STB Q2/2026 - doi
+            # chieu truc tiep voi BCTC thuc): field DUNG cho "Tien gui ky quy" la nob69 (KHONG PHAI
+            # nob73/nob75 nhu truoc - 2 field nay lech xa gia tri thuc SUOT NHIEU NAM, khong chi 1
+            # ky - vd STB nob73 ~14-18 nghin ty MOI QUY tu 2019, trong khi thuc te (nob69, khop
+            # 100% voi anh chup: 625.960/819.717 ty) chi ~400-800 ty. Kiem tra them VCB/BID/CTG/MBB/
+            # TCB/ACB: nob69 luon on dinh ~0.15-0.7% tong tai san O MOI BANK - hop ly cho 1 khoan
+            # ky quy nho, con nob73 dao dong 0-10% TA KHONG NHAT QUAN giua cac bank -> nob73/75
+            # KHONG con dung lam fallback (da chung minh SAI, fallback ve gia tri sai con nguy hiem
+            # hon la bo trong).
+            # Tuong tu, "Von chuyen dung" truoc lay tu bsb115 (BALANCE_SHEET) - doi chieu BCTC thuc
+            # thi bsb115 la "Von tai tro, uy thac dau tu" (mot khoan liability KHAC HAN), khong phai
+            # "Tien gui von chuyen dung" (sub-item trong Note 9). Field DUNG la nob70 (khop 100% voi
+            # anh chup: 1.377.245/1.109.361 ty) - cung nam o NOTE, canh nob69.
             nt_q = raw["sections"]["NOTE"].get("quarters", [])
             is_by_qkey = {}
             for rec in is_q:
@@ -198,29 +215,41 @@ def refresh_quarterly_balance_sheet_all_banks():
                 qk = _quarter_key_from_record(rec)
                 if qk:
                     nt_by_qkey[qk] = rec
-            # SUA (user 2026-09-30, phat hien qua vi du that STB 2026-Q2): nob73 doi khi tra ve 1
-            # con so BAT THUONG cho DUNG 1 ky (vd STB 2026-Q2: nob73=630.626 ty = 70,7% tong tai san
-            # ky do, trong khi cac ky KHAC cua CHINH STB chi ~16-17 nghin ty) - Vietcap doi khi tra
-            # sai cot/dong cho 1 ky don le. KHONG dung 1 nguong tuyet doi "% tong tai san" chung cho
-            # moi ngan hang (da thu, sai: VCB CO THAT nob73 ~10-13% TA O MOI KY, on dinh, khong phai
-            # bat thuong - nguong tuyet doi se ghi nham TOAN BO VCB thanh None). Dung SO VOI LICH SU
-            # CUA CHINH NGAN HANG DO: tinh truoc "gia tri so bo" (uu tien nob73>0, fallback nob75)
-            # cho TAT CA cac ky, lay MEDIAN lam moc tham chieu rieng cho ngan hang - 1 ky lech qua xa
-            # median (>3x hoac <1/3x) VA candidate con lai gan median hon thi doi sang candidate do.
-            _prelim_by_qk = {}
-            for rec in bs_q:
-                qk = _quarter_key_from_record(rec)
-                if not qk:
-                    continue
-                nt_rec = nt_by_qkey.get(qk)
-                if not nt_rec:
-                    continue
-                _kq73 = (nt_rec.get("nob73") or 0) / 1e9
-                _kq75 = (nt_rec.get("nob75") or 0) / 1e9
-                _prelim = _kq73 if _kq73 > 0 else _kq75
-                if _prelim > 0:
-                    _prelim_by_qk[qk] = (_prelim, _kq73, _kq75)
-            _median_kq = statistics.median(v[0] for v in _prelim_by_qk.values()) if _prelim_by_qk else None
+
+            # Danh sach (qk, gia tri) SAP THEO THOI GIAN cho nob69/nob70 - dung de tinh median CUC
+            # BO (rolling window), KHONG dung median TOAN BO lich su: nob69/70 co xu huong tang dan
+            # tu nhien qua nhieu nam (vd VCB ky_quy ~1.000 ty nam 2018 -> ~8.000 ty nam 2025, VBB von
+            # chuyen dung ~1 ty -> ~100+ ty) - median toan bo lich su se BAO NHAM hang loat ky CU
+            # (nho hon median vi con o giai doan dau xu huong) thanh "bat thuong", trong khi chung
+            # hoan toan HOP LY o THOI DIEM do. Rolling window (may quy LAN CAN, KHONG tinh ky dang
+            # xet) bam theo xu huong nen tranh duoc loai bao nham nay, van bat duoc 1 ky dot bien
+            # DON LE (vd loi Vietcap tra sai 1 dong/cot).
+            _qk_sorted = sorted(nt_by_qkey.keys(), key=lambda qk: (int(qk[:4]), int(qk[-1])))
+
+            def _local_median_flag(field_name, half_window=4, ratio=8.0, min_neighbors=4):
+                """Tra dict {qk: True/False} - True = gia tri ky do LECH XA median cua CAC KY LAN
+                CAN (nua so truoc + nua sau, KHONG tinh chinh ky do), theo nguong `ratio` (>ratio x
+                hoac <1/ratio x). Ky thieu >= min_neighbors lang gieng hop le (dau/cuoi chuoi, hoac
+                gia tri qua thua) thi KHONG flag (khong du co so, ưu tiên KHONG bao nham)."""
+                n = len(_qk_sorted)
+                vals = {qk: (nt_by_qkey[qk].get(field_name) or 0) / 1e9 for qk in _qk_sorted}
+                flags = {}
+                for i, qk in enumerate(_qk_sorted):
+                    v = vals[qk]
+                    if v <= 0:
+                        flags[qk] = False
+                        continue
+                    lo, hi = max(0, i - half_window), min(n, i + half_window + 1)
+                    neighbors = [vals[_qk_sorted[j]] for j in range(lo, hi) if j != i and vals[_qk_sorted[j]] > 0]
+                    if len(neighbors) < min_neighbors:
+                        flags[qk] = False
+                        continue
+                    local_med = statistics.median(neighbors)
+                    flags[qk] = v > local_med * ratio or v < local_med / ratio
+                return flags, vals
+
+            _kq_flags, _kq_vals = _local_median_flag("nob69")
+            _vcg_flags, _vcg_vals = _local_median_flag("nob70")
 
             for rec in bs_q:
                 qk = _quarter_key_from_record(rec)
@@ -232,21 +261,20 @@ def refresh_quarterly_balance_sheet_all_banks():
                 nt_rec = nt_by_qkey.get(qk)
                 if nt_rec:
                     snap["tpdn"] = (nt_rec.get("nob184") or 0) / 1e9
-                    _prelim, _kq73, _kq75 = _prelim_by_qk.get(qk, (0.0, 0.0, 0.0))
-                    if _median_kq and _prelim > 0 and (_prelim > _median_kq * 3 or _prelim < _median_kq / 3):
-                        _alt = _kq75 if _prelim == _kq73 else _kq73
-                        if _alt > 0 and _median_kq / 3 <= _alt <= _median_kq * 3:
-                            print(f"  [WARN] {ticker} {qk}: ky_quy nob73/75 lech xa lich su cua chinh {ticker} "
-                                  f"(median={_median_kq:.0f} ty) - {_prelim:.0f} ty bat thuong, doi sang {_alt:.0f} ty hop ly hon.")
-                            snap["ky_quy"] = _alt
-                        else:
-                            print(f"  [WARN] {ticker} {qk}: ky_quy bat thuong (nob73={_kq73:.0f} ty, nob75={_kq75:.0f} ty, "
-                                  f"median lich su {ticker}={_median_kq:.0f} ty) - CA 2 candidate deu lech xa, ghi None (khong doan).")
-                            snap["ky_quy"] = None
+                    if _kq_flags.get(qk):
+                        print(f"  [WARN] {ticker} {qk}: ky_quy (nob69={_kq_vals[qk]:.0f} ty) lech xa cac ky lan can "
+                              f"cua {ticker} - ghi None (khong doan).")
+                        snap["ky_quy"] = None
                     else:
-                        snap["ky_quy"] = _prelim
+                        snap["ky_quy"] = _kq_vals.get(qk, 0.0)
+                    if _vcg_flags.get(qk):
+                        print(f"  [WARN] {ticker} {qk}: von_chuyen_dung (nob70={_vcg_vals[qk]:.0f} ty) lech xa cac ky lan can "
+                              f"cua {ticker} - ghi None (khong doan).")
+                        snap["von_cg"] = None
+                    else:
+                        snap["von_cg"] = _vcg_vals.get(qk, 0.0)
                 else:
-                    snap["tpdn"] = snap["ky_quy"] = None
+                    snap["tpdn"] = snap["ky_quy"] = snap["von_cg"] = None
                 bank_alm_store.upsert_quarterly_balance_sheet(ticker, qk, snap)
             n_ok += 1
         except Exception as e:

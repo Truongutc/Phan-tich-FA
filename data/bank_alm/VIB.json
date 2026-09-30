@@ -733,13 +733,13 @@
       "loans": 83279.543,
       "bonds_issued": 8017.092,
       "inv_sec_bs": 35964.319,
-      "von_cg": 27.618,
       "tctd_dep": 22398.748,
       "kbnn_dep": 2643.944,
       "kbnn_loan": 0.0,
       "nii": 1052.535,
       "tpdn": 6632.959,
-      "ky_quy": 5003.626
+      "ky_quy": 163.584,
+      "von_cg": 54.101
     },
     "2018-Q2": {
       "total_assets": 127237.947,
@@ -752,13 +752,13 @@
       "loans": 86200.406,
       "bonds_issued": 7554.478,
       "inv_sec_bs": 26645.929,
-      "von_cg": 24.71,
       "tctd_dep": 17400.217,
       "kbnn_dep": 2646.09,
       "kbnn_loan": 0.0,
       "nii": 1203.862,
       "tpdn": 5998.166,
-      "ky_quy": 4719.617
+      "ky_quy": 148.175,
+      "von_cg": 166.812
     },
     "2018-Q3": {
       "total_assets": 132506.95,
@@ -771,13 +771,13 @@
       "loans": 89687.957,
       "bonds_issued": 9403.368,
       "inv_sec_bs": 26713.816,
-      "von_cg": 21.896,
       "tctd_dep": 18080.377,
       "kbnn_dep": 2657.397,
       "kbnn_loan": 0.0,
       "nii": 1273.502,
       "tpdn": 6686.74,
-      "ky_quy": 5256.218
+      "ky_quy": 143.709,
+      "von_cg": 58.044
     },
     "2018-Q4": {
       "total_assets": 139000.254,
@@ -790,13 +790,13 @@
       "loans": 95260.822,
       "bonds_issued": 10152.43,
       "inv_sec_bs": 28572.852,
-      "von_cg": 19.818,
       "tctd_dep": 17215.102,
       "kbnn_dep": 2300.079,
       "kbnn_loan": 832.575,
       "nii": 1298.918,
       "tpdn": 4560.0,
-      "ky_quy": 5936.391
+      "ky_quy": 194.094,
+      "von_cg": 104.835
     },
     "2019-Q1": {
       "total_assets": 144836.31,
@@ -809,13 +809,13 @@
       "loans": 100869.689,
       "bonds_issued": 10454.903,
       "inv_sec_bs": 29533.618,
-      "von_cg": 17.988,
       "tctd_dep": 18027.136,
       "kbnn_dep": 3078.536,
       "kbnn_loan": 0.0,
       "nii": 1385.178,
       "tpdn": 4485.75,
-      "ky_quy": 5329.024
+      "ky_quy": 136.507,
+      "von_cg": 374.604
     },
     "2019-Q2": {
       "total_assets": 163856.431,
@@ -828,13 +828,13 @@
       "loans": 113386.619,
       "bonds_issued": 15257.112,
       "inv_sec_bs": 30331.956,
-      "von_cg": 11.015,
       "tctd_dep": 20214.287,
       "kbnn_dep": 3234.833,
       "kbnn_loan": 528.545,
       "nii": 1532.088,
       "tpdn": 4231.5,
-      "ky_quy": 5606.039
+      "ky_quy": 151.879,
+      "von_cg": 152.523
     },
     "2019-Q3": {
       "total_assets": 175657.834,
@@ -847,13 +847,13 @@
       "loans": 121966.052,
       "bonds_issued": 15247.848,
       "inv_sec_bs": 36557.06,
-      "von_cg": 10.858,
       "tctd_dep": 18076.167,
       "kbnn_dep": 3596.415,
       "kbnn_loan": 0.0,
       "nii": 1618.523,
       "tpdn": 3872.75,
-      "ky_quy": 5341.174
+      "ky_quy": 174.429,
+      "von_cg": 58.534
     },
     "2019-Q4": {
       "total_assets": 184570.119,
@@ -866,13 +866,13 @@
       "loans": 127942.036,
       "bonds_issued": 17154.847,
       "inv_sec_bs": 27841.992,
-      "von_cg": 10.702,
       "tctd_dep": 14178.878,
       "kbnn_dep": 3773.25,
       "kbnn_loan": 0.0,
       "nii": 1674.522,
       "tpdn": 3018.5,
-      "ky_quy": 6238.466
+      "ky_quy": 311.531,
+      "von_cg": 57.17
     },
     "2020-Q1": {
       "total_assets": 193314.367,
@@ -885,13 +885,13 @@
       "loans": 133467.428,
       "bonds_issued": 17622.161,
       "inv_sec_bs": 44087.06,
-      "von_cg": 10.547,
       "tctd_dep": 18102.562,
       "kbnn_dep": 4730.119,
       "kbnn_loan": 0.0,
       "nii": 1799.491,
       "tpdn": 2623.25,
-      "ky_quy": 5992.1
+      "ky_quy": 238.745,
+      "von_cg": 54.293
     },
     "2020-Q2": {
       "total_assets": 202369.814,
@@ -904,13 +904,13 @@
       "loans": 136276.52,
       "bonds_issued": 19821.292,
       "inv_sec_bs": 31621.6,
-      "von_cg": 10.395,
       "tctd_dep": 19283.486,
       "kbnn_dep": 5404.854,
       "kbnn_loan": 0.0,
       "nii": 1901.936,
       "tpdn": 2005.0,
-      "ky_quy": 6219.386
+      "ky_quy": 227.413,
+      "von_cg": 63.827
     },
     "2020-Q3": {
       "total_assets": 213086.346,
@@ -923,13 +923,13 @@
       "loans": 147458.347,
       "bonds_issued": 27679.604,
       "inv_sec_bs": 30597.218,
-      "von_cg": 10.239,
       "tctd_dep": 13095.343,
       "kbnn_dep": 5556.254,
       "kbnn_loan": 0.0,
       "nii": 2233.417,
       "tpdn": 2094.25,
-      "ky_quy": 6238.466
+      "ky_quy": 225.366,
+      "von_cg": 114.288
     },
     "2020-Q4": {
       "total_assets": 244701.478,
@@ -942,13 +942,13 @@
       "loans": 167797.844,
       "bonds_issued": 28558.863,
       "inv_sec_bs": 41371.557,
-      "von_cg": 10.088,
       "tctd_dep": 26874.923,
       "kbnn_dep": 4396.495,
       "kbnn_loan": 0.0,
       "nii": 2561.263,
       "tpdn": 1732.0,
-      "ky_quy": 7516.064
+      "ky_quy": 351.049,
+      "von_cg": 60.255
     },
     "2021-Q1": {
       "total_assets": 257866.042,
@@ -961,13 +961,13 @@
       "loans": 175606.988,
       "bonds_issued": 28487.129,
       "inv_sec_bs": 37135.356,
-      "von_cg": 9.936,
       "tctd_dep": 33052.865,
       "kbnn_dep": 5251.864,
       "kbnn_loan": 0.0,
       "nii": 2778.385,
       "tpdn": 2668.25,
-      "ky_quy": 7659.462
+      "ky_quy": 313.181,
+      "von_cg": 47.128
     },
     "2021-Q2": {
       "total_assets": 277200.433,
@@ -980,13 +980,13 @@
       "loans": 180970.774,
       "bonds_issued": 29226.93,
       "inv_sec_bs": 40043.727,
-      "von_cg": 9.447,
       "tctd_dep": 29823.099,
       "kbnn_dep": 10806.994,
       "kbnn_loan": 0.0,
       "nii": 2959.605,
       "tpdn": 2297.0,
-      "ky_quy": 8502.911
+      "ky_quy": 361.04,
+      "von_cg": 231.27
     },
     "2021-Q3": {
       "total_assets": 285035.255,
@@ -999,13 +999,13 @@
       "loans": 185703.815,
       "bonds_issued": 27136.926,
       "inv_sec_bs": 43811.699,
-      "von_cg": 9.069,
       "tctd_dep": 35911.84,
       "kbnn_dep": 11317.936,
       "kbnn_loan": 0.0,
       "nii": 2678.429,
       "tpdn": 2128.5,
-      "ky_quy": 8968.425
+      "ky_quy": 201.111,
+      "von_cg": 203.246
     },
     "2021-Q4": {
       "total_assets": 309517.129,
@@ -1018,13 +1018,13 @@
       "loans": 199116.43,
       "bonds_issued": 42298.182,
       "inv_sec_bs": 44737.181,
-      "von_cg": 8.648,
       "tctd_dep": 38019.67,
       "kbnn_dep": 10430.709,
       "kbnn_loan": 0.0,
       "nii": 3399.728,
       "tpdn": 2586.0,
-      "ky_quy": 9221.084
+      "ky_quy": 160.087,
+      "von_cg": 137.04
     },
     "2022-Q1": {
       "total_assets": 333850.243,
@@ -1037,13 +1037,13 @@
       "loans": 211470.497,
       "bonds_issued": 42761.874,
       "inv_sec_bs": 51388.186,
-      "von_cg": 8.511,
       "tctd_dep": 43889.559,
       "kbnn_dep": 13518.031,
       "kbnn_loan": 0.0,
       "nii": 3515.891,
       "tpdn": 2570.0,
-      "ky_quy": 7970.446
+      "ky_quy": 178.336,
+      "von_cg": 99.845
     },
     "2022-Q2": {
       "total_assets": 348022.816,
@@ -1056,13 +1056,13 @@
       "loans": 218784.626,
       "bonds_issued": 40701.844,
       "inv_sec_bs": 48757.928,
-      "von_cg": 8.372,
       "tctd_dep": 41048.773,
       "kbnn_dep": 13644.875,
       "kbnn_loan": 0.0,
       "nii": 3699.595,
       "tpdn": 2270.0,
-      "ky_quy": 9293.388
+      "ky_quy": 436.518,
+      "von_cg": 105.175
     },
     "2022-Q3": {
       "total_assets": 340910.343,
@@ -1075,13 +1075,13 @@
       "loans": 223283.589,
       "bonds_issued": 35188.844,
       "inv_sec_bs": 49557.155,
-      "von_cg": 8.231,
       "tctd_dep": 49906.439,
       "kbnn_dep": 11375.973,
       "kbnn_loan": 0.0,
       "nii": 3836.028,
       "tpdn": 3624.815,
-      "ky_quy": 9440.252
+      "ky_quy": 300.444,
+      "von_cg": 83.193
     },
     "2022-Q4": {
       "total_assets": 343069.186,
@@ -1094,13 +1094,13 @@
       "loans": 228879.249,
       "bonds_issued": 31774.818,
       "inv_sec_bs": 40278.72,
-      "von_cg": 8.092,
       "tctd_dep": 45957.711,
       "kbnn_dep": 9434.943,
       "kbnn_loan": 0.0,
       "nii": 3911.041,
       "tpdn": 1830.0,
-      "ky_quy": 8120.838
+      "ky_quy": 204.45,
+      "von_cg": 68.771
     },
     "2023-Q1": {
       "total_assets": 357247.165,
@@ -1113,13 +1113,13 @@
       "loans": 226004.365,
       "bonds_issued": 31496.289,
       "inv_sec_bs": 73766.977,
-      "von_cg": 7.655,
       "tctd_dep": 67893.907,
       "kbnn_dep": 6699.743,
       "kbnn_loan": 0.0,
       "nii": 4304.106,
       "tpdn": 1455.0,
-      "ky_quy": 8369.592
+      "ky_quy": 503.857,
+      "von_cg": null
     },
     "2023-Q2": {
       "total_assets": 378662.835,
@@ -1132,13 +1132,13 @@
       "loans": 231347.002,
       "bonds_issued": 25346.83,
       "inv_sec_bs": 50259.444,
-      "von_cg": 7.195,
       "tctd_dep": 83951.657,
       "kbnn_dep": 8369.44,
       "kbnn_loan": 0.0,
       "nii": 4401.862,
       "tpdn": 1005.0,
-      "ky_quy": 7743.706
+      "ky_quy": 205.995,
+      "von_cg": 143.128
     },
     "2023-Q3": {
       "total_assets": 384419.101,
@@ -1151,13 +1151,13 @@
       "loans": 241890.738,
       "bonds_issued": 23526.936,
       "inv_sec_bs": 52384.561,
-      "von_cg": 7.064,
       "tctd_dep": 75497.339,
       "kbnn_dep": 8434.816,
       "kbnn_loan": 0.0,
       "nii": 4673.187,
       "tpdn": 835.0,
-      "ky_quy": 8264.903
+      "ky_quy": 337.785,
+      "von_cg": 174.236
     },
     "2023-Q4": {
       "total_assets": 409880.584,
@@ -1170,13 +1170,13 @@
       "loans": 262074.228,
       "bonds_issued": 23896.936,
       "inv_sec_bs": 60988.364,
-      "von_cg": 6.93,
       "tctd_dep": 74755.571,
       "kbnn_dep": 7720.365,
       "kbnn_loan": 0.0,
       "nii": 4333.289,
       "tpdn": 725.0,
-      "ky_quy": 9883.706
+      "ky_quy": 333.686,
+      "von_cg": 55.907
     },
     "2024-Q1": {
       "total_assets": 413887.815,
@@ -1189,13 +1189,13 @@
       "loans": 262910.844,
       "bonds_issued": 23195.805,
       "inv_sec_bs": 44298.356,
-      "von_cg": 6.524,
       "tctd_dep": 80399.593,
       "kbnn_dep": 7562.347,
       "kbnn_loan": 0.0,
       "nii": 4357.794,
       "tpdn": 550.0,
-      "ky_quy": 10545.109
+      "ky_quy": 312.727,
+      "von_cg": 20.485
     },
     "2024-Q2": {
       "total_assets": 430962.08,
@@ -1208,13 +1208,13 @@
       "loans": 273996.195,
       "bonds_issued": 15994.695,
       "inv_sec_bs": 28742.093,
-      "von_cg": 6.09,
       "tctd_dep": 95731.525,
       "kbnn_dep": 5361.271,
       "kbnn_loan": 0.0,
       "nii": 4316.913,
       "tpdn": 550.0,
-      "ky_quy": 12871.017
+      "ky_quy": 395.298,
+      "von_cg": 123.819
     },
     "2024-Q3": {
       "total_assets": 445377.594,
@@ -1227,13 +1227,13 @@
       "loans": 292146.173,
       "bonds_issued": 21955.688,
       "inv_sec_bs": 57909.577,
-      "von_cg": 5.71,
       "tctd_dep": 91674.365,
       "kbnn_dep": 5188.638,
       "kbnn_loan": 2191.882,
       "nii": 4159.34,
       "tpdn": 550.0,
-      "ky_quy": 14155.365
+      "ky_quy": 255.076,
+      "von_cg": 88.303
     },
     "2024-Q4": {
       "total_assets": 493158.37,
@@ -1246,13 +1246,13 @@
       "loans": 318316.079,
       "bonds_issued": 23262.579,
       "inv_sec_bs": 50344.312,
-      "von_cg": 5.368,
       "tctd_dep": 94513.735,
       "kbnn_dep": 5663.284,
       "kbnn_loan": 18586.891,
       "nii": 3916.365,
       "tpdn": 550.0,
-      "ky_quy": 17666.375
+      "ky_quy": 399.777,
+      "von_cg": 73.107
     },
     "2025-Q1": {
       "total_assets": 495727.377,
@@ -1265,13 +1265,13 @@
       "loans": 329264.074,
       "bonds_issued": 25800.0,
       "inv_sec_bs": 49438.602,
-      "von_cg": 5.006,
       "tctd_dep": 101767.957,
       "kbnn_dep": 6097.006,
       "kbnn_loan": 9747.104,
       "nii": 3737.109,
       "tpdn": 375.0,
-      "ky_quy": 19095.532
+      "ky_quy": 387.588,
+      "von_cg": 119.393
     },
     "2025-Q2": {
       "total_assets": 530909.024,
@@ -1284,13 +1284,13 @@
       "loans": 351360.111,
       "bonds_issued": 29200.0,
       "inv_sec_bs": 67210.426,
-      "von_cg": 3.465,
       "tctd_dep": 99715.013,
       "kbnn_dep": 6492.928,
       "kbnn_loan": 14424.044,
       "nii": 3968.694,
       "tpdn": 375.0,
-      "ky_quy": 17725.193
+      "ky_quy": 353.097,
+      "von_cg": 207.227
     },
     "2025-Q3": {
       "total_assets": 543559.67,
@@ -1303,13 +1303,13 @@
       "loans": 367863.425,
       "bonds_issued": 27145.0,
       "inv_sec_bs": 53170.066,
-      "von_cg": 3.386,
       "tctd_dep": 97026.697,
       "kbnn_dep": 6996.2,
       "kbnn_loan": 13178.619,
       "nii": 4172.726,
       "tpdn": 375.0,
-      "ky_quy": 18045.744
+      "ky_quy": 375.04,
+      "von_cg": 131.034
     },
     "2025-Q4": {
       "total_assets": 556098.441,
@@ -1322,13 +1322,13 @@
       "loans": 377113.195,
       "bonds_issued": 35070.7,
       "inv_sec_bs": 51149.531,
-      "von_cg": 3.306,
       "tctd_dep": 117968.284,
       "kbnn_dep": 9951.086,
       "kbnn_loan": 10980.813,
       "nii": 4213.631,
       "tpdn": 0.0,
-      "ky_quy": 22152.864
+      "ky_quy": 462.664,
+      "von_cg": 124.984
     },
     "2026-Q1": {
       "total_assets": 564145.938,
@@ -1341,13 +1341,13 @@
       "loans": 381361.994,
       "bonds_issued": 34770.7,
       "inv_sec_bs": 49089.083,
-      "von_cg": 2.997,
       "tctd_dep": 105880.121,
       "kbnn_dep": 12350.162,
       "kbnn_loan": 13859.761,
       "nii": 4038.566,
       "tpdn": 0.0,
-      "ky_quy": 22459.395
+      "ky_quy": 674.153,
+      "von_cg": 72.75
     },
     "2026-Q2": {
       "total_assets": 580998.048,
@@ -1360,13 +1360,13 @@
       "loans": 392020.433,
       "bonds_issued": 37970.7,
       "inv_sec_bs": 49276.373,
-      "von_cg": 2.722,
       "tctd_dep": 104084.33,
       "kbnn_dep": 12564.438,
       "kbnn_loan": 24335.557,
       "nii": 4367.969,
       "tpdn": 0.0,
-      "ky_quy": 24877.936
+      "ky_quy": 415.306,
+      "von_cg": 111.483
     }
   },
   "last_cheap_check": {

@@ -1101,7 +1101,7 @@ Bắt buộc tự tính các chỉ số ngân hàng theo công thức chuẩn t�
  1. **NIM Quý (năm hóa)**: `NIM_q = (Thu nhập lãi thuần quý (isb27) * 4) / (Cho vay bsb103 + Giấy tờ có giá bsb116)`.
  2. **LDR Quý theo Thông tư 22 & 26**: 
     - **Tử số** = Cho vay khách hàng (`bsb103`) + Trái phiếu doanh nghiệp (`nob47` hoặc `nob48`).
-    - **Mẫu số** = Tiền gửi khách hàng (`bsb113`) + Phát hành GTCG (`bsb116`) + Tiền gửi KBNN × Tỷ lệ lộ trình năm (2023: 35%, 2024: 50%, 2025: 60%, 2026F+: 80%) - Tiền gửi ký quỹ (`nob73`) - Vốn chuyên dùng (`bsb115`).
+    - **Mẫu số** = Tiền gửi khách hàng (`bsb113`) + Phát hành GTCG (`bsb116`) + Tiền gửi KBNN × Tỷ lệ lộ trình năm (2023: 35%, 2024: 50%, 2025: 60%, 2026F+: 80%) - Tiền gửi ký quỹ (`nob69`, SỬA 2026-09-30 — không phải `nob73`) - Vốn chuyên dùng (`nob70`, SỬA 2026-09-30 — không phải `bsb115`, vốn `bsb115` là "Vốn tài trợ, uỷ thác đầu tư", một khoản khác hẳn).
  3. **CASA Quý**: `CASA_q = Tiền gửi không kỳ hạn (`nob66`) / Tiền gửi khách hàng (`nob65`)`.
  4. **NPL Quý**: `NPL_q = Nợ xấu / Cho vay khách hàng (bsb103)`.
  5. **Bao phủ nợ xấu (LLR) Quý/Năm**: Phải dùng Trị tuyệt đối của Tài khoản Dự phòng rủi ro cho vay khách hàng (**`bsb105`** trên Balance Sheet) chia cho Nợ xấu tuyệt đối, cấm dùng `bsb104` (Tài sản sinh lãi khác) hay Chi phí dự phòng PnL (`isb41`).

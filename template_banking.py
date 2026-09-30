@@ -529,8 +529,12 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # TPDN = Trái phiếu do các TCKT trong nước phát hành (mục chứng khoán đầu tư sẵn sàng để bán)
     tpdn_hist = [get_yr(nt_recs, y, "nob184") for y in years_hist]
     kbnn_hist = [get_yr(bs_recs, y, "bsb110") + get_yr(bs_recs, y, "bsb111") for y in years_hist]
-    ky_quy_hist = [get_yr(nt_recs, y, "nob73") or get_yr(nt_recs, y, "nob75") or 0 for y in years_hist]
-    voncg_hist = [get_yr(bs_recs, y, "bsb115") for y in years_hist]
+    # SUA 2026-09-30 (doi chieu BCTC thuc STB Note 9 "Tien gui cua khach hang"): field DUNG cho
+    # "Tien gui ky quy" la nob69 (khong phai nob73/75 - lech xa gia tri thuc SUOT NHIEU NAM, khong
+    # chi 1 ky don le). "Von chuyen dung" (Note 9) la nob70, KHONG PHAI bsb115 (Balance Sheet) -
+    # bsb115 thuc ra la "Von tai tro, uy thac dau tu", mot khoan liability KHAC HAN.
+    ky_quy_hist = [get_yr(nt_recs, y, "nob69") or 0 for y in years_hist]
+    voncg_hist = [get_yr(nt_recs, y, "nob70") or 0 for y in years_hist]
     # Tiền gửi của các TCTD khác (bsb270) — theo Thông tư 22/2019/TT-NHNN, "Tổng nguồn vốn huy động"
     # ở mẫu số LDR gồm "tiền gửi của tổ chức trong nước và nước ngoài, BAO GỒM CẢ tiền gửi của tổ
     # chức tín dụng, chi nhánh ngân hàng nước ngoài khác". Trước đây thiếu hẳn khoản này, khiến LDR
@@ -911,8 +915,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             rec = nt_q_map_g.get((yr, q), {})
             return (rec.get("nob184") or 0) / 1e9
         def get_ky_quy_q(yr, q):
+            # SUA 2026-09-30: nob69 dung (nob73/75 lech xa BCTC thuc, xem ghi chu o ky_quy_hist tren)
             rec = nt_q_map_g.get((yr, q), {})
-            return (rec.get("nob73") or rec.get("nob75") or 0) / 1e9
+            return (rec.get("nob69") or 0) / 1e9
+        def get_voncg_q(yr, q):
+            # SUA 2026-09-30: "Von chuyen dung" (Note 9) la nob70, KHONG PHAI bsb115 (Balance Sheet -
+            # do la "Von tai tro, uy thac dau tu", khoan liability KHAC HAN)
+            rec = nt_q_map_g.get((yr, q), {})
+            return (rec.get("nob70") or 0) / 1e9
 
         def get_kbnn_rate(yr):
             if yr <= 2022: return 0.0
@@ -934,7 +944,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             b_val = q_rec.get("bsb116", 0) / 1e9
             k_val = (q_rec.get("bsb110", 0) or q_rec.get("bsb111", 0) or 0) / 1e9
             ky_quy_val = get_ky_quy_q(yr, q_num)
-            voncg_val = (q_rec.get("bsb115", 0) or 0) / 1e9
+            voncg_val = get_voncg_q(yr, q_num)
             funding_absolute.append(d_val + b_val + k_val * get_kbnn_rate(yr) - ky_quy_val - voncg_val)
 
         # Build map: (year, quarter) → (credit, funding) cho toàn bộ dữ liệu
@@ -948,7 +958,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
             bv = rec.get("bsb116", 0) / 1e9
             kv = (rec.get("bsb110", 0) or rec.get("bsb111", 0) or 0) / 1e9
             ky_quy_v = get_ky_quy_q(y, q)
-            voncg_v = (rec.get("bsb115", 0) or 0) / 1e9
+            voncg_v = get_voncg_q(y, q)
             all_cf[(y, q)] = (lv + tv, dv + bv + kv * get_kbnn_rate(y) - ky_quy_v - voncg_v)
         
         for idx, q_rec in enumerate(q_bs_slice):
@@ -1466,8 +1476,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     bq_dep  = [(r.get("bsb113") or 0) / 1e9 for r in bs_q_recs]
     bq_bonds = [(r.get("bsb116") or 0) / 1e9 for r in bs_q_recs]
     bq_kbnn = [((r.get("bsb110") or 0) + (r.get("bsb111") or 0)) / 1e9 for r in bs_q_recs]
-    bq_kyquy = [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob73") or get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob75") or 0 for r in bs_q_recs]
-    bq_voncg = [(r.get("bsb115") or 0) / 1e9 for r in bs_q_recs]
+    # SUA 2026-09-30: field dung la nob69 (ky_quy) / nob70 (von chuyen dung), khong phai nob73/75/bsb115
+    # (xem ghi chu chi tiet o ky_quy_hist/voncg_hist phia tren).
+    bq_kyquy = [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob69") for r in bs_q_recs]
+    bq_voncg = [get_nt_q(r.get("yearReport"), r.get("lengthReport"), "nob70") for r in bs_q_recs]
     bq_tctd_dep = [(r.get("bsb270") or 0) / 1e9 for r in bs_q_recs]  # Tiền gửi của TCTD khác — mẫu số LDR theo Circular 22/2019
 
     def kbnn_rate_for_year(yr):
@@ -2388,8 +2400,9 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         nt = nt_q_sorted[i] if i < len(nt_q_sorted) else {}
         credit_q = (rq.get("bsb103") or 0)/1e9 + (nt.get("nob184") or 0)/1e9
         kbnn_q = ((rq.get("bsb110") or 0) + (rq.get("bsb111") or 0)) / 1e9
-        ky_quy_q = (nt.get("nob73") or nt.get("nob75") or 0) / 1e9
-        voncg_q = (rq.get("bsb115") or 0) / 1e9
+        # SUA 2026-09-30: nob69 (ky_quy) / nob70 (von chuyen dung) - khong phai nob73/75/bsb115
+        ky_quy_q = (nt.get("nob69") or 0) / 1e9
+        voncg_q = (nt.get("nob70") or 0) / 1e9
         tctd_dep_q = (rq.get("bsb270") or 0) / 1e9
         funding_q = ((rq.get("bsb113") or 0) + (rq.get("bsb116") or 0))/1e9 + tctd_dep_q + kbnn_q*_ldr_kbnn_rate(rq.get("yearReport", 2026)) - ky_quy_q - voncg_q
         ldr_q_json.append(safe_div(credit_q, funding_q))
