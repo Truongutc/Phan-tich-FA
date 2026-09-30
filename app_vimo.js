@@ -349,12 +349,19 @@ function renderCreditDepositStructure(cds) {
     // theo số liệu 26 bank" — 4 đường: tín dụng/huy động YoY (nét liền) + tín dụng/huy động YTD
     // (nét đứt, so cuối năm trước) trên CÙNG 1 chart — 2 khái niệm đã đối chiếu với số SBV công
     // bố ở các lượt trước (headline SBV thường trích YTD, không phải YoY), để cạnh nhau cho dễ so.
+    // THEM depositGrowthYoyNarrow/YtdNarrow (user 2026-09-30): "Huy động" YoY/YTD 2 dong tren la
+    // dinh nghia RONG (TT22/26 - gom ca tien gui TCTD khac + trai phieu, tang RAT NHANH nam 2025
+    // nen keo sat tin dung) - khac han so "huy dong" HEP (chi tien gui KH) ma VBMA/bao chi hay
+    // dung, gay hieu lam "gap khong khop" khi doi chieu 2 chart. Them 2 dong nay (mau cam, khop
+    // mau "huy dong" tren chart VBMA quoc gia) de so TRUC TIEP ca 2 dinh nghia tren CUNG 1 chart.
     if (cds.creditGrowthYoy) {
         _renderGrowthComparisonChart('chart-bank-credit-deposit-growth', cds.periods, [
             { key: 'creditGrowthYoy', label: 'Tín dụng YoY', color: '#3b82f6', dash: false },
-            { key: 'depositGrowthYoy', label: 'Huy động YoY', color: '#10b981', dash: false },
+            { key: 'depositGrowthYoy', label: 'Huy động YoY (rộng — TT22/26)', color: '#10b981', dash: false },
+            { key: 'depositGrowthYoyNarrow', label: 'Huy động YoY (hẹp — chỉ tiền gửi KH, khớp VBMA)', color: '#f59e0b', dash: false },
             { key: 'creditGrowthYtd', label: 'Tín dụng YTD (so cuối năm trước)', color: '#3b82f6', dash: true },
-            { key: 'depositGrowthYtd', label: 'Huy động YTD (so cuối năm trước)', color: '#10b981', dash: true },
+            { key: 'depositGrowthYtd', label: 'Huy động YTD (rộng — TT22/26)', color: '#10b981', dash: true },
+            { key: 'depositGrowthYtdNarrow', label: 'Huy động YTD (hẹp — chỉ tiền gửi KH, khớp VBMA)', color: '#f59e0b', dash: true },
         ], cds);
     }
 }

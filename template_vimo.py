@@ -2896,6 +2896,15 @@ def _add_bank_alm_derived_indicators(raw, trends):
             # — 2 khái niệm khác nhau đã đối chiếu với SBV ở các lượt trước, để trên 1 chart cho dễ so.
             "creditGrowthYoy": cd_series["creditGrowthYoy"], "depositGrowthYoy": cd_series["depositGrowthYoy"],
             "creditGrowthYtd": cd_series["creditGrowthYtd"], "depositGrowthYtd": cd_series["depositGrowthYtd"],
+            # THEM (user 2026-09-30): "Huy động" o 2 dong tren la dinh nghia RONG theo LDR (TT22/26 -
+            # gom ca tien gui TCTD khac + trai phieu), khac han so "huy dong" hep (chi tien gui KH)
+            # ma VBMA/bao chi hay dung khi so sanh voi tin dung - 2 khoan lien NH+trai phieu tang RAT
+            # NHANH nam 2025 (lien NH +53%, trai phieu +31%) keo "Tong huy dong" gan sat tin dung,
+            # gay hieu lam "khong khop" khi doi chieu voi chart VBMA (dung dinh nghia hep, gap ro
+            # hon nhieu). Them 2 dong NAY (chi tinh customerDeposits, CUNG dinh nghia voi VBMA) de
+            # ve chung 1 chart, doi chieu truc tiep khong can nho giai thich moi lan.
+            "depositGrowthYoyNarrow": cd_series["depositGrowthYoyNarrow"],
+            "depositGrowthYtdNarrow": cd_series["depositGrowthYtdNarrow"],
             # THEM (user 2026-09-30): VCSH tang truong (YoY/YTD) + quy mo tuyet doi, de ve chung
             # trong bieu do tang truong hien co va bieu do co cau huy dong (depositComposition da
             # co san key "equity" tu build_bank_credit_deposit_system_series).

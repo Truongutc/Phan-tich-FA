@@ -258,8 +258,11 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     thị) nhưng chỉ TRẢ VỀ các quý >= start_period.
 
     Trả dict {"periods", "totalCredit", "totalDeposit", "ldrSystem", "creditGrowthYoy",
-    "depositGrowthYoy", "creditGrowthYtd", "depositGrowthYtd", "gap", "nBanks", "totalEquity",
-    "equityGrowthYoy", "equityGrowthYtd",
+    "depositGrowthYoy", "creditGrowthYtd", "depositGrowthYtd",
+    "depositGrowthYoyNarrow", "depositGrowthYtdNarrow" (2026-09-30: tăng trưởng CHỈ riêng tiền
+    gửi khách hàng — KHÔNG gồm tiền gửi TCTD khác/trái phiếu như depositGrowthYoy/Ytd — để đối
+    chiếu trực tiếp, cùng định nghĩa, với số liệu huy động quốc gia của VBMA/báo chí),
+    "gap", "nBanks", "totalEquity", "equityGrowthYoy", "equityGrowthYtd",
     "creditComposition": {"loans","tpdn"},
     "depositComposition": {"customerDeposits","bonds","tctdDeposits","kbnnCounted","equity"}} — mỗi
     giá trị là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY/YTD). Đơn vị tỷ đồng,
@@ -283,6 +286,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     from bank_universe import BANKING_TICKERS
     empty = {"periods": [], "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
              "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
+             "depositGrowthYoyNarrow": [], "depositGrowthYtdNarrow": [],
              "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
              "creditComposition": {"loans": [], "tpdn": []},
              "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": [], "equity": []}}
@@ -340,6 +344,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
         out_periods = sorted(p for p in per_period if p >= start_period)
         result = {"periods": out_periods, "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
                   "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
+                  "depositGrowthYoyNarrow": [], "depositGrowthYtdNarrow": [],
                   "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
                   "creditComposition": {"loans": [], "tpdn": []},
                   "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": [], "equity": []}}
@@ -353,6 +358,14 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             result["depositGrowthYoy"].append(dg)
             result["creditGrowthYtd"].append(_ytd(p, "totalCredit"))
             result["depositGrowthYtd"].append(_ytd(p, "totalDeposit"))
+            # depositGrowthY*Narrow (2026-09-30, user doi chieu voi chart VBMA toan nganh - "huy
+            # dong" cua VBMA CHI la tien gui KH thuan (khong gom lien NH/trai phieu), khac han
+            # "Tong huy dong" (depositGrowthYoy/Ytd o tren, dinh nghia LDR TT22/26, CONG THEM tien
+            # gui TCTD khac + trai phieu - 2 khoan nay tang RAT NHANH 2025 lam "Tong huy dong" sat
+            # nut tin dung, gay hieu lam "khong khop" so voi so bao chi/VBMA hay trich). Them dong
+            # NAY de doi chieu TRUC TIEP, cung dinh nghia, voi chart VBMA tren 1 mat bieu do.
+            result["depositGrowthYoyNarrow"].append(_yoy(p, "customerDeposits"))
+            result["depositGrowthYtdNarrow"].append(_ytd(p, "customerDeposits"))
             # SUA (user 2026-09-28): GAP la CHENH LECH GIA TRI TUYET DOI (Tong tin dung - Tong huy
             # dong, ty dong) - KHONG PHAI chenh lech % tang truong (nham lan truoc do). Am (huy dong
             # > tin dung, LDR<100%) la binh thuong/an toan; tien gan 0 hoac duong (tin dung vuot huy
