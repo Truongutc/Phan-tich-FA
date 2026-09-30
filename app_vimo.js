@@ -379,7 +379,18 @@ function _renderGrowthComparisonChart(canvasId, periods, seriesDefs, cds) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                // SUA (user 2026-09-30, phat hien qua nham lan doc sai ky khi so voi chart VBMA
+                // khac): maxTicksLimit ke thua tu CHART_DEFAULTS (=8) VAN gioi han so nhan hien du
+                // autoSkip=false - voi 10 ky (2024-Q1..2026-Q2) bi RUT xuong chi con 4 nhan
+                // (2024-Q1/Q3, 2025-Q3, 2026-Q1), khien dinh Q4 (dung ky "cuoi nam") KHONG co nhan
+                // truc X rieng, de nham thanh dang nhin vao ky khac. Ghi de maxTicksLimit = so ky
+                // thuc te de LUON hien DU ca 10 nhan, khong bi rut gon.
+                // SUA (user 2026-09-30): maxRotation/autoSkip/maxTicksLimit la thuoc tinh cua
+                // "ticks" (long BEN TRONG ticks:{...}), KHONG PHAI thuoc tinh cap scale nhu viet
+                // truoc do - spread CHART_DEFAULTS.scales.x roi ghi de o CAP SCALE la NO-OP hoan
+                // toan (ticks long ben trong van giu nguyen autoSkip:true, maxTicksLimit:8 cu), day
+                // la nguyen nhan cac chart quy chi hien 5/10 nhan du code "tuong nhu" da doi.
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
@@ -427,7 +438,12 @@ function _renderCreditFundingLdrChart(canvasId, periods, creditArr, fundingArr, 
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 10 } } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                // SUA (user 2026-09-30): maxRotation/autoSkip/maxTicksLimit la thuoc tinh cua
+                // "ticks" (long BEN TRONG ticks:{...}), KHONG PHAI thuoc tinh cap scale nhu viet
+                // truoc do - spread CHART_DEFAULTS.scales.x roi ghi de o CAP SCALE la NO-OP hoan
+                // toan (ticks long ben trong van giu nguyen autoSkip:true, maxTicksLimit:8 cu), day
+                // la nguyen nhan cac chart quy chi hien 5/10 nhan du code "tuong nhu" da doi.
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
                      title: { display: true, text: 'Tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
@@ -503,7 +519,12 @@ function _renderAreaCompositionChart(canvasId, periods, seriesDefs, compositionD
                           labels: { boxWidth: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
             },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                // SUA (user 2026-09-30): maxRotation/autoSkip/maxTicksLimit la thuoc tinh cua
+                // "ticks" (long BEN TRONG ticks:{...}), KHONG PHAI thuoc tinh cap scale nhu viet
+                // truoc do - spread CHART_DEFAULTS.scales.x roi ghi de o CAP SCALE la NO-OP hoan
+                // toan (ticks long ben trong van giu nguyen autoSkip:true, maxTicksLimit:8 cu), day
+                // la nguyen nhan cac chart quy chi hien 5/10 nhan du code "tuong nhu" da doi.
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, min: 0, ...(pctMode ? { max: 100 } : {}),
                      title: { display: true, text: pctMode ? '%' : 'Tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
             },
@@ -1202,7 +1223,7 @@ function renderGdpUseContributionChart(grid, indicators) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 },
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true,
                      title: { display: true, text: 'Điểm % đóng góp', color: '#9aa5bd', font: { size: 9 } } },
             },
@@ -1331,7 +1352,7 @@ function renderInterbank6mHistoryChart(grid, indicators) {
                 legend: { display: true, labels: { boxWidth: 12 } },
                 datalabels: _endpointDatalabelsConfig(2),
             },
-            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } } },
         },
         plugins: [ChartDataLabels],
     });
@@ -1387,7 +1408,7 @@ function renderBondYieldHistoryChart(grid, indicators) {
                 legend: { display: true, labels: { boxWidth: 12 } },
                 datalabels: _endpointDatalabelsConfig(2),
             },
-            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } } },
         },
         plugins: [ChartDataLabels],
     });
@@ -1450,7 +1471,7 @@ function renderOmoHistoryChart(grid, indicators) {
                 legend: { display: true, labels: { boxWidth: 12 } },
             },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 },
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Tồn kho (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'Bơm/hút ròng (tỷ đồng/ngày)', color: '#9aa5bd', font: { size: 9 } } },
@@ -1523,7 +1544,7 @@ function renderTradeBalanceMonthlyChart(grid, indicators) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 },
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
                      title: { display: true, text: 'Kim ngạch XK/NK (tỷ USD)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
@@ -1587,7 +1608,7 @@ function renderTinPhieuHistoryChart(grid, indicators) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 12 } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Tồn kho (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'Bơm/hút ròng (tỷ đồng)', color: '#9aa5bd', font: { size: 9 } } },
@@ -1642,7 +1663,7 @@ function renderMultiTenorHistoryChart(grid, indicators, tenors, canvasId, title,
                 legend: { display: true, labels: { boxWidth: 12 } },
                 datalabels: _endpointDatalabelsConfig(2),
             },
-            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } } },
         },
         plugins: [ChartDataLabels],
     });
@@ -1706,7 +1727,7 @@ function renderUsYieldSpreadChart(grid, indicators) {
                 legend: { display: true, labels: { boxWidth: 12 } },
                 datalabels: _endpointDatalabelsConfig(2),
             },
-            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+            scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } } },
         },
         plugins: [ChartDataLabels],
     });
@@ -1927,7 +1948,7 @@ function _renderMacroPctChart(canvasId, labels, series, monthsShown) {
             },
             scales: {
                 ...CHART_DEFAULTS.scales,
-                x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false },
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: labels.length } },
                 y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
@@ -1959,7 +1980,7 @@ function _renderMacroAbsChart(canvasId, labels, series) {
         };
     });
 
-    const scales = { x: { ...CHART_DEFAULTS.scales.x, maxRotation: 0, autoSkip: false } };
+    const scales = { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: labels.length } } };
     if (hasFdi) {
         scales.y1 = { ...CHART_DEFAULTS.scales.y, position: 'left',
                       title: { display: true, text: 'FDI giải ngân (tỷ USD)', color: '#9aa5bd', font: { size: 9 } } };
