@@ -1431,7 +1431,7 @@
       "nii": 457.546,
       "tpdn": 196.374,
       "ky_quy": 612.62,
-      "von_cg": null
+      "von_cg": 0.481
     },
     "2026-Q2": {
       "total_assets": 89312.48,
@@ -1450,7 +1450,7 @@
       "nii": 521.519,
       "tpdn": 1000.0,
       "ky_quy": 578.738,
-      "von_cg": null
+      "von_cg": 0.523
     }
   },
   "last_cheap_check": {

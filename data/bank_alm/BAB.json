@@ -805,7 +805,7 @@
       "nii": 487.298,
       "tpdn": 0.0,
       "ky_quy": 55.958,
-      "von_cg": null
+      "von_cg": 0.005
     },
     "2019-Q4": {
       "total_assets": 107892.774,
@@ -824,7 +824,7 @@
       "nii": 536.9,
       "tpdn": 0.0,
       "ky_quy": 65.363,
-      "von_cg": null
+      "von_cg": 3.481
     },
     "2020-Q1": {
       "total_assets": 109828.721,
@@ -919,7 +919,7 @@
       "nii": 453.181,
       "tpdn": 1461.723,
       "ky_quy": 45.187,
-      "von_cg": null
+      "von_cg": 0.028
     },
     "2021-Q2": {
       "total_assets": 111282.902,

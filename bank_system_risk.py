@@ -31,7 +31,6 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import re
-import statistics
 
 import bank_alm_store
 
@@ -216,41 +215,16 @@ def refresh_quarterly_balance_sheet_all_banks():
                 if qk:
                     nt_by_qkey[qk] = rec
 
-            # Danh sach (qk, gia tri) SAP THEO THOI GIAN cho nob69/nob70 - dung de tinh median CUC
-            # BO (rolling window), KHONG dung median TOAN BO lich su: nob69/70 co xu huong tang dan
-            # tu nhien qua nhieu nam (vd VCB ky_quy ~1.000 ty nam 2018 -> ~8.000 ty nam 2025, VBB von
-            # chuyen dung ~1 ty -> ~100+ ty) - median toan bo lich su se BAO NHAM hang loat ky CU
-            # (nho hon median vi con o giai doan dau xu huong) thanh "bat thuong", trong khi chung
-            # hoan toan HOP LY o THOI DIEM do. Rolling window (may quy LAN CAN, KHONG tinh ky dang
-            # xet) bam theo xu huong nen tranh duoc loai bao nham nay, van bat duoc 1 ky dot bien
-            # DON LE (vd loi Vietcap tra sai 1 dong/cot).
-            _qk_sorted = sorted(nt_by_qkey.keys(), key=lambda qk: (int(qk[:4]), int(qk[-1])))
-
-            def _local_median_flag(field_name, half_window=4, ratio=8.0, min_neighbors=4):
-                """Tra dict {qk: True/False} - True = gia tri ky do LECH XA median cua CAC KY LAN
-                CAN (nua so truoc + nua sau, KHONG tinh chinh ky do), theo nguong `ratio` (>ratio x
-                hoac <1/ratio x). Ky thieu >= min_neighbors lang gieng hop le (dau/cuoi chuoi, hoac
-                gia tri qua thua) thi KHONG flag (khong du co so, ưu tiên KHONG bao nham)."""
-                n = len(_qk_sorted)
-                vals = {qk: (nt_by_qkey[qk].get(field_name) or 0) / 1e9 for qk in _qk_sorted}
-                flags = {}
-                for i, qk in enumerate(_qk_sorted):
-                    v = vals[qk]
-                    if v <= 0:
-                        flags[qk] = False
-                        continue
-                    lo, hi = max(0, i - half_window), min(n, i + half_window + 1)
-                    neighbors = [vals[_qk_sorted[j]] for j in range(lo, hi) if j != i and vals[_qk_sorted[j]] > 0]
-                    if len(neighbors) < min_neighbors:
-                        flags[qk] = False
-                        continue
-                    local_med = statistics.median(neighbors)
-                    flags[qk] = v > local_med * ratio or v < local_med / ratio
-                return flags, vals
-
-            _kq_flags, _kq_vals = _local_median_flag("nob69")
-            _vcg_flags, _vcg_vals = _local_median_flag("nob70")
-
+            # BO LUOI AN TOAN "median" (da thu ca median toan bo lich su VA median cuc bo/rolling
+            # window - ca 2 deu SAI NHIEU, tu ban chat 2 khoan nay (Tien gui ky quy/von chuyen dung
+            # cua khach hang chuyen biet) VON DA hay nhay manh giua cac quy vi phu thuoc dong tien
+            # ra/vao cua tung khach hang cu the, khong theo 1 xu huong on dinh de median du doan
+            # duoc). Da doi chieu tay qua BCTC thuc (khong OCR) 2 truong hop bi flag truoc day - CA
+            # 2 deu la SO DUNG, chi la bien dong manh thoi (vd ACB 2024-Q1 von_chuyen_dung nhay tu
+            # vai chuc len 4.559 ty - khop 100% Note 10 BCTC ACB; PGB 2026-Q1 von_chuyen_dung ~0,48
+            # ty, bi coi la "bat thuong" khi so voi ky truoc chi vi gia tri qua nho lam ty le bi
+            # nhieu). KET LUAN: nob69/nob70 (da xac nhan DUNG FIELD qua STB) tin duoc truc tiep,
+            # khong nen tu dong doan/loai bo gia tri nao ma khong co BCTC thuc de doi chieu.
             for rec in bs_q:
                 qk = _quarter_key_from_record(rec)
                 if not qk:
@@ -261,18 +235,8 @@ def refresh_quarterly_balance_sheet_all_banks():
                 nt_rec = nt_by_qkey.get(qk)
                 if nt_rec:
                     snap["tpdn"] = (nt_rec.get("nob184") or 0) / 1e9
-                    if _kq_flags.get(qk):
-                        print(f"  [WARN] {ticker} {qk}: ky_quy (nob69={_kq_vals[qk]:.0f} ty) lech xa cac ky lan can "
-                              f"cua {ticker} - ghi None (khong doan).")
-                        snap["ky_quy"] = None
-                    else:
-                        snap["ky_quy"] = _kq_vals.get(qk, 0.0)
-                    if _vcg_flags.get(qk):
-                        print(f"  [WARN] {ticker} {qk}: von_chuyen_dung (nob70={_vcg_vals[qk]:.0f} ty) lech xa cac ky lan can "
-                              f"cua {ticker} - ghi None (khong doan).")
-                        snap["von_cg"] = None
-                    else:
-                        snap["von_cg"] = _vcg_vals.get(qk, 0.0)
+                    snap["ky_quy"] = (nt_rec.get("nob69") or 0) / 1e9
+                    snap["von_cg"] = (nt_rec.get("nob70") or 0) / 1e9
                 else:
                     snap["tpdn"] = snap["ky_quy"] = snap["von_cg"] = None
                 bank_alm_store.upsert_quarterly_balance_sheet(ticker, qk, snap)

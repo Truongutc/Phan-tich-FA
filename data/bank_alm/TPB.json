@@ -766,8 +766,8 @@
       "kbnn_loan": 1031.108,
       "nii": 1064.786,
       "tpdn": 6033.074,
-      "ky_quy": null,
-      "von_cg": null
+      "ky_quy": 32.79,
+      "von_cg": 521.417
     },
     "2018-Q3": {
       "total_assets": 126912.061,
@@ -976,7 +976,7 @@
       "nii": 2263.489,
       "tpdn": 12557.774,
       "ky_quy": 933.101,
-      "von_cg": null
+      "von_cg": 0.736
     },
     "2021-Q2": {
       "total_assets": 242246.851,
