@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-10-01 10:11",
+  "lastUpdated": "2026-10-01 10:42",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -47152,6 +47152,456 @@
       },
       "note": "chogia.vn/ngoai-te/usd-cho-den/ (endpoint AJAX nội bộ, ~28 ngày gần nhất mỗi lần gọi — tích lũy dần qua các lần chạy).",
       "impact": "Tỷ giá USD ngoài hệ thống ngân hàng — chênh lệch lớn với tỷ giá NHTM là dấu hiệu đầu cơ/nhu cầu USD ngoài luồng chính thức tăng."
+    },
+    "bop_sbv_current_account": {
+      "group": "external",
+      "label": "Cán cân vãng lai (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": -11101.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": -11101.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_goods_export": {
+      "group": "external",
+      "label": "Hàng hóa: Xuất khẩu (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 143586.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 143586.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_goods_import": {
+      "group": "external",
+      "label": "Hàng hóa: Nhập khẩu (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 149083.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 149083.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_services_export": {
+      "group": "external",
+      "label": "Dịch vụ: Xuất khẩu (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 8238.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 8238.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_services_import": {
+      "group": "external",
+      "label": "Dịch vụ: Nhập khẩu (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 11808.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 11808.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_investment_income_received": {
+      "group": "external",
+      "label": "Thu nhập đầu tư: Thu (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 1327.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 1327.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_investment_income_paid": {
+      "group": "external",
+      "label": "Thu nhập đầu tư: Chi (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 6983.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 6983.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_secondary_income_received": {
+      "group": "external",
+      "label": "Chuyển giao vãng lai: Thu (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 4250.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 4250.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_secondary_income_paid": {
+      "group": "external",
+      "label": "Chuyển giao vãng lai: Chi (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 628.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 628.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_financial_account": {
+      "group": "external",
+      "label": "Cán cân tài chính (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 1899.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 1899.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_fdi_assets_bop": {
+      "group": "external",
+      "label": "Đầu tư trực tiếp ra nước ngoài — Tài sản có (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": -190.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": -190.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_fdi_liabilities_bop": {
+      "group": "external",
+      "label": "Đầu tư trực tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 6090.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 6090.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_portfolio_assets_bop": {
+      "group": "external",
+      "label": "Đầu tư gián tiếp ra nước ngoài — Tài sản có (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 13.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 13.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_portfolio_liabilities_bop": {
+      "group": "external",
+      "label": "Đầu tư gián tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": -1518.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": -1518.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_external_debt_net": {
+      "group": "external",
+      "label": "Vay, trả nợ nước ngoài — ròng (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": -175.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": -175.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_errors_omissions": {
+      "group": "external",
+      "label": "Lỗi và Sai sót (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 9283.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 9283.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_overall_balance": {
+      "group": "external",
+      "label": "Cán cân tổng thể (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": 81.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": 81.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
+    },
+    "bop_sbv_reserve_assets_change": {
+      "group": "external",
+      "label": "Δ Tài sản dự trữ trong kỳ (BOP, NHNN)",
+      "unit": "triệu USD",
+      "goodDirection": "lower",
+      "autoSource": "sbv",
+      "series": [
+        {
+          "period": "2026-Q2",
+          "value": -81.0,
+          "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        }
+      ],
+      "trend": {
+        "latest": -81.0,
+        "latest_period": "2026-Q2",
+        "latest_source": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te",
+        "n_points": 1,
+        "label": "insufficient",
+        "arrow": "—",
+        "is_improving": null
+      },
+      "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()). LƯU Ý QUY ƯỚC DẤU: NHNN trình bày dòng này theo quy ước \"Tài sản có\" — ÂM (-) nghĩa là Tài sản dự trữ TĂNG (tích lũy thêm dự trữ, giống dòng \"Đầu tư trực tiếp ra nước ngoài: Tài sản có\" cùng bảng — tăng tài sản ghi âm); DƯƠNG (+) nghĩa là dự trữ GIẢM.",
+      "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ."
     },
     "fdi_disbursed_quarterly": {
       "group": "trade",

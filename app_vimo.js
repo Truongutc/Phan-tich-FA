@@ -480,20 +480,23 @@ function renderMaturityStructure(ms) {
 const FX_PRESSURE_LAYERS = [
     {
         id: 'demand', title: '① Cầu ngoại tệ (Potential USD Demand)',
-        keys: ['import_growth_customs', 'import_growth_customs_mom'],
-        missing: ['Dịch vụ nhập/trả lợi nhuận FDI/trả nợ nước ngoài — hiện chỉ có số THUẦN ở lớp "Đối chiếu BOP" bên dưới, chưa tách riêng chiều "chi/trả" (cần nguồn SBV/IMF chi tiết hơn)'],
+        keys: ['import_growth_customs', 'import_growth_customs_mom',
+               'bop_sbv_services_import', 'bop_sbv_investment_income_paid', 'bop_sbv_secondary_income_paid',
+               'bop_sbv_fdi_assets_bop', 'bop_sbv_portfolio_assets_bop'],
+        missing: ['Trả nợ gốc nước ngoài TÁCH RIÊNG khỏi rút vốn mới — hiện chỉ có số RÒNG (external_debt_net ở lớp "Đối chiếu BOP"); lợi nhuận FDI chuyển ra TÁCH RIÊNG khỏi tổng Thu nhập đầu tư — NHNN BOP không tách, không nên tự gắn nhãn "FDI profit remittance" cho investment_income_paid (rộng hơn)'],
     },
     {
         id: 'supply', title: '② Cung ngoại tệ (Potential USD Supply)',
-        keys: ['export_growth_customs', 'export_growth_customs_mom', 'fdi_disbursed', 'fdi_registered_usd_bn', 'trade_balance'],
-        missing: ['Kiều hối, doanh thu du lịch quốc tế — chưa có (nên lấy từ BOP/NSO theo đúng khuyến nghị, KHÔNG lấy số báo chí theo địa phương)'],
+        keys: ['export_growth_customs', 'export_growth_customs_mom', 'fdi_disbursed', 'fdi_registered_usd_bn', 'trade_balance',
+               'bop_sbv_services_export', 'bop_sbv_investment_income_received', 'bop_sbv_secondary_income_received',
+               'bop_sbv_fdi_liabilities_bop', 'bop_sbv_portfolio_liabilities_bop'],
+        missing: ['Kiều hối ĐÚNG NGHĨA (personal remittances) — bop_sbv_secondary_income_received là proxy RỘNG HƠN (toàn bộ chuyển giao vãng lai, không riêng kiều hối cá nhân), không nên gắn nhãn "kiều hối" cho nó; doanh thu du lịch quốc tế tách riêng — chưa có'],
     },
     {
-        id: 'bop', title: '③ Đối chiếu BOP (Current Account + Financial Account)',
-        keys: ['bop_goods', 'bop_services', 'bop_primary_income', 'bop_secondary_income',
-               'finacc_fdi_assets', 'finacc_fdi_liabilities', 'finacc_portfolio_assets', 'finacc_portfolio_liabilities',
-               'finacc_other_assets', 'finacc_other_liabilities'],
-        missing: ['Errors & Omissions, Overall Balance, Δ Dự trữ (reconciliation) — CHƯA CÓ, nguồn hiện tại (40yo.vn) không có 2 dòng này cho Việt Nam; cần tích hợp mới IMF SDMX/BOP hoặc trang BOP quý của SBV'],
+        id: 'bop', title: '③ Đối chiếu BOP (Current Account + Financial Account + Reconciliation)',
+        keys: ['bop_sbv_current_account', 'bop_sbv_financial_account', 'bop_sbv_external_debt_net',
+               'bop_sbv_errors_omissions', 'bop_sbv_overall_balance', 'bop_sbv_reserve_assets_change'],
+        missing: [],
     },
     {
         id: 'market', title: '④ Áp lực thị trường',

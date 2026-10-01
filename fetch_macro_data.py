@@ -22,6 +22,7 @@ if hasattr(sys.stderr, "reconfigure"):
 import re
 import glob
 import json
+import time
 import datetime
 import unicodedata
 import subprocess
@@ -1523,6 +1524,96 @@ def fetch_sbv_omo_rate():
         return {}
 
 
+# Nhãn chính xác trên bảng BOP (user 2026-10-01, cung cấp link trực tiếp) -> field_key. GIỮ NGUYÊN
+# dấu câu/khoảng trắng CHÍNH XÁC như trên trang (đã verify qua khảo sát thủ công, xem
+# fetch_sbv_bop_quarterly()) — regex nối thêm "\|(-?[\d]+)\|" để lấy giá trị (Triệu USD) ngay sau
+# nhãn trên bảng đã làm sạch HTML. CHỈ lấy các dòng TRỌNG YẾU nhất theo đúng khung "Áp lực Ngoại
+# tệ" (Cầu/Cung/Đối chiếu BOP) — KHÔNG lấy hết ~40 dòng chi tiết nhất (vd "Tổ chức tín dụng"/"Dân
+# cư" lồng trong "Tiền và tiền gửi") vì quá chi tiết/dễ nhầm nhãn trùng giữa các mục cha-con.
+_SBV_BOP_FIELD_MAP = [
+    ("current_account", r"A\. Cán cân vãng lai"),
+    ("goods_export", r"Hàng hóa: Xuất khẩu f\.o\.b"),
+    ("goods_import", r"Hàng hóa: Nhập khẩu f\.o\.b"),
+    ("services_export", r"Dịch vụ: Xuất khẩu"),
+    ("services_import", r"Dịch vụ: Nhập khẩu"),
+    ("investment_income_received", r"Thu nhập đầu tư \(Thu nhập sơ cấp\): Thu"),
+    ("investment_income_paid", r"Thu nhập đầu tư \(Thu nhập sơ cấp\): Chi"),
+    ("secondary_income_received", r"Chuyển giao vãng lai \(Thu nhập thứ cấp\): Thu"),
+    ("secondary_income_paid", r"Chuyển giao vãng lai \(Thu nhập thứ cấp\): Chi"),
+    ("financial_account", r"C\. Cán cân tài chính"),
+    ("fdi_assets_bop", r"Đầu tư trực tiếp ra nước ngoài: Tài sản có"),
+    ("fdi_liabilities_bop", r"Đầu tư trực tiếp vào Việt Nam: Tài sản nợ"),
+    ("portfolio_assets_bop", r"Đầu tư gián tiếp ra nước ngoài: Tài sản có"),
+    ("portfolio_liabilities_bop", r"Đầu tư gián tiếp vào Việt Nam: Tài sản nợ"),
+    ("external_debt_net", r"Vay, trả nợ nước ngoài"),
+    ("errors_omissions", r"D\. Lỗi và Sai sót"),
+    ("overall_balance", r"E\. Cán cân tổng thể"),
+    ("reserve_assets_change", r"Tài sản dự trữ"),
+]
+_ROMAN_TO_QUARTER = {"I": 1, "II": 2, "III": 3, "IV": 4}
+
+
+def fetch_sbv_bop_quarterly():
+    """sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng Cán cân thanh toán quốc tế (BOP) CHÍNH
+    THỨC của NHNN, chuẩn BPM6 đầy đủ (Cán cân vãng lai/vốn/tài chính, Lỗi và Sai sót, Cán cân
+    tổng thể, Dự trữ) — HTML thật, KHÔNG cần JS render, nhưng có WAF (F5 BIG-IP) chặn request
+    thiếu header "giống browser" (chỉ User-Agent KHÔNG ĐỦ — thiếu Accept/Accept-Language/Referer
+    sẽ bị trả trang "Request Rejected" 244 bytes thay vì nội dung thật, đã verify qua khảo sát
+    thủ công 2026-10-01). Trang CHÍNH LUÔN hiện QUÝ MỚI NHẤT đã công bố — KHÔNG dùng URL phụ
+    "/-/asset_publisher/.../content/quý-x-năm-y" để lấy quý cũ: đã test, URL đó bị WAF chặn NGẮT
+    QUÃNG (có lúc 200 kèm nội dung đầy, có lúc 200 kèm trang lỗi F5 generic "incident ID: N/A")
+    — KHÔNG đủ ổn định để backfill lịch sử. Lịch sử sẽ tự tích lũy dần qua các lần Action chạy
+    (mỗi quý NHNN công bố, 1 lần chạy mới sẽ bắt được).
+
+    NGAY CẢ trang CHÍNH cũng bị chặn NGẮT QUÃNG (đã gặp thực tế: "403 ... No server for url" dù
+    cùng URL/header vừa chạy thành công vài phút trước — khả năng cao là rate-limit tạm thời của
+    WAF, không phải lỗi cấu trúc trang) — thử lại TỐI ĐA 3 LẦN, cách nhau vài giây, trước khi bỏ
+    cuộc. KHÔNG lặp quá nhiều (tránh làm WAF nghi ngờ thêm, cũng tránh Action chạy quá lâu).
+    Trả (period, {field_key: value_trieu_usd}) hoặc (None, {}) nếu lỗi/không tìm thấy nhãn quý."""
+    url = "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+    headers = {
+        "User-Agent": UA,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": "https://www.sbv.gov.vn/",
+    }
+    last_err = None
+    for attempt in range(3):
+        try:
+            r = requests.get(url, headers=headers, timeout=20, verify=False)
+            r.raise_for_status()
+            break
+        except Exception as e:
+            last_err = e
+            if attempt < 2:
+                time.sleep(5)
+    else:
+        print(f"  [WARN] SBV BOP thất bại sau 3 lần thử: {last_err}")
+        return None, {}
+    try:
+        text = re.sub(r"<[^>]+>", "|", r.text)
+        text = re.sub(r"(\|\s*)+", "|", text)
+
+        m = re.search(r"Quý\s+([IVX]+)\s+NĂM\s+(\d{4})", text, re.IGNORECASE)
+        if not m:
+            print("  [WARN] SBV BOP: không tìm thấy nhãn quý trên trang")
+            return None, {}
+        q = _ROMAN_TO_QUARTER.get(m.group(1).upper())
+        if not q:
+            return None, {}
+        period = f"{m.group(2)}-Q{q}"
+
+        out = {}
+        for key, label_pattern in _SBV_BOP_FIELD_MAP:
+            vm = re.search(label_pattern + r"\|(-?[\d]+)\|", text)
+            if vm:
+                out[key] = float(vm.group(1))
+        return period, out
+    except Exception as e:
+        print(f"  [WARN] SBV BOP thất bại: {e}")
+        return None, {}
+
+
 VIRA_BULLETIN_URL_TMPL = ("https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/"
                            "Ban-tin-Kinh-te-Tai-chinh-ngay-{d:02d}-{m:02d}-{y}-.html")
 
@@ -2925,6 +3016,63 @@ def update_vimo_raw():
         print(f"  -> {period}: {value}% — \"{title}\"")
     else:
         print("  -> Không có tin mới khớp từ khóa (bình thường, đây là tin hiếm)")
+
+    # THEM (user 2026-10-01, phát hiện NHNN công bố BOP quý đầy đủ CHUẨN BPM6 — "không nhất thiết
+    # phải chờ scraper IMF cho E&O/Overall Balance"): lấp 3 ô ⏳ quan trọng nhất của card "Áp lực
+    # Ngoại tệ" (Errors & Omissions, Overall Balance, Δ Dự trữ) TRỰC TIẾP từ nguồn chính thức duy
+    # nhất, cùng lúc lấy thêm ~13 dòng khác (Dịch vụ/Thu nhập đầu tư/Chuyển giao vãng lai/FDI/Đầu
+    # tư gián tiếp/Vay-trả nợ nước ngoài) phục vụ lớp Cầu/Cung — xem fetch_sbv_bop_quarterly().
+    print("[NHNN — Cán cân thanh toán quốc tế (BOP) theo quý]")
+    bop_period, bop_data = fetch_sbv_bop_quarterly()
+    if bop_period and bop_data:
+        # (label, good_direction) — "higher" là mặc định trung tính (KHÔNG hàm ý "tăng luôn tốt")
+        # cho hầu hết dòng — chi tiết tốt/xấu thực tế đã giải thích riêng ở "impact" từng chỉ báo.
+        # reserve_assets_change dùng "lower" vì NHNN trình bày theo quy ước "Tài sản có" (tăng ghi
+        # ÂM, giống dòng "Đầu tư trực tiếp ra nước ngoài: Tài sản có" cùng bảng) — xem note riêng.
+        _SBV_BOP_META = {
+            "current_account": ("Cán cân vãng lai (BOP, NHNN)", "higher"),
+            "goods_export": ("Hàng hóa: Xuất khẩu (BOP, NHNN)", "higher"),
+            "goods_import": ("Hàng hóa: Nhập khẩu (BOP, NHNN)", "higher"),
+            "services_export": ("Dịch vụ: Xuất khẩu (BOP, NHNN)", "higher"),
+            "services_import": ("Dịch vụ: Nhập khẩu (BOP, NHNN)", "higher"),
+            "investment_income_received": ("Thu nhập đầu tư: Thu (BOP, NHNN)", "higher"),
+            "investment_income_paid": ("Thu nhập đầu tư: Chi (BOP, NHNN)", "higher"),
+            "secondary_income_received": ("Chuyển giao vãng lai: Thu (BOP, NHNN)", "higher"),
+            "secondary_income_paid": ("Chuyển giao vãng lai: Chi (BOP, NHNN)", "higher"),
+            "financial_account": ("Cán cân tài chính (BOP, NHNN)", "higher"),
+            "fdi_assets_bop": ("Đầu tư trực tiếp ra nước ngoài — Tài sản có (BOP, NHNN)", "higher"),
+            "fdi_liabilities_bop": ("Đầu tư trực tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)", "higher"),
+            "portfolio_assets_bop": ("Đầu tư gián tiếp ra nước ngoài — Tài sản có (BOP, NHNN)", "higher"),
+            "portfolio_liabilities_bop": ("Đầu tư gián tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)", "higher"),
+            "external_debt_net": ("Vay, trả nợ nước ngoài — ròng (BOP, NHNN)", "higher"),
+            "errors_omissions": ("Lỗi và Sai sót (BOP, NHNN)", "higher"),
+            "overall_balance": ("Cán cân tổng thể (BOP, NHNN)", "higher"),
+            "reserve_assets_change": ("Δ Tài sản dự trữ trong kỳ (BOP, NHNN)", "lower"),
+        }
+        for key, value in bop_data.items():
+            raw_key = f"bop_sbv_{key}"
+            label, good_dir = _SBV_BOP_META.get(key, (key, "higher"))
+            if raw_key not in raw:
+                note = ("sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN "
+                         "(chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự "
+                         "tích lũy dần qua các lần Action chạy, không backfill được (xem "
+                         "fetch_sbv_bop_quarterly()).")
+                if key == "reserve_assets_change":
+                    note += (" LƯU Ý QUY ƯỚC DẤU: NHNN trình bày dòng này theo quy ước \"Tài sản có\" "
+                              "— ÂM (-) nghĩa là Tài sản dự trữ TĂNG (tích lũy thêm dự trữ, giống dòng "
+                              "\"Đầu tư trực tiếp ra nước ngoài: Tài sản có\" cùng bảng — tăng tài sản "
+                              "ghi âm); DƯƠNG (+) nghĩa là dự trữ GIẢM.")
+                raw[raw_key] = {
+                    "group": "external", "label": label, "unit": "triệu USD",
+                    "good_direction": good_dir, "auto_source": "sbv", "note": note,
+                    "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
+                    "series": [],
+                }
+            _merge_point_anywhere(raw, raw_key, bop_period, value,
+                                   "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te")
+        print(f"  -> {bop_period}: {len(bop_data)}/{len(_SBV_BOP_FIELD_MAP)} dòng BOP")
+    else:
+        print("  -> Không lấy được dữ liệu BOP (WAF chặn hoặc đổi cấu trúc trang)")
 
     print("[Hải quan — Xuất/nhập khẩu theo tháng (file Excel cục bộ, CHỈ có khi chạy thủ công trên máy có sẵn thư mục)]")
     xnk = load_customs_xnk_local()
