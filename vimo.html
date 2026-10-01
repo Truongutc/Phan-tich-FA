@@ -444,8 +444,12 @@
                  cho câu hỏi "áp lực tỷ giá". Xem renderFxSupplyDemandChart/renderFxRateGapChart
                  trong app_vimo.js — tự ẩn nếu thiếu dữ liệu nguồn. -->
             <div class="vimo-chart-title">📊 Áp lực tỷ giá</div>
-            <div id="fx-supply-demand-chart-card" style="display:none">
-                <p class="vimo-chart-subtitle">Cung - Cầu ngoại tệ (BOP quý, NHNN) — nét liền = Cung (xanh), nét đứt = Cầu (đỏ), CÙNG đơn vị (triệu USD) nên so trực tiếp được, KHÔNG cộng/trừ thành 1 điểm số.</p>
+            <div id="fx-supply-demand-total-chart-card" style="display:none">
+                <p class="vimo-chart-subtitle">Tổng Cung vs Tổng Cầu ngoại tệ (BOP quý, NHNN) — cộng 4 cấu phần cùng chiều (Cung/Cầu) thành 2 đường, CÙNG đơn vị (triệu USD), KHÔNG trừ thành 1 điểm số áp lực duy nhất.</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand-total"></canvas></div>
+            </div>
+            <div id="fx-supply-demand-chart-card" style="display:none" class="margin-top-20">
+                <p class="vimo-chart-subtitle">Chi tiết 8 cấu phần Cung - Cầu ngoại tệ — nét liền = Cung (xanh), nét đứt = Cầu (đỏ), CÙNG đơn vị (triệu USD) nên so trực tiếp được, KHÔNG cộng/trừ thành 1 điểm số.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand"></canvas></div>
             </div>
             <div id="fx-rate-gap-chart-card" style="display:none" class="margin-top-20">

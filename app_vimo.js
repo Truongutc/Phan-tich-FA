@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
     renderFxPressureCard(data.indicators);
+    renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
 
@@ -707,6 +708,64 @@ function renderFxSupplyDemandChart(indicators) {
         options: {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM (user 2026-10-01): "thêm biểu đồ tổng cung và tổng cầu ngoại tệ thì sẽ rõ hơn về áp
+// lực" — CỘNG CÁC CẤU PHẦN CÙNG CHIỀU (4 thành phần Cung với nhau, 4 thành phần Cầu với nhau —
+// phép cộng CÙNG ĐƠN VỊ, KHÔNG rủi ro quy ước dấu như trừ Cung-Cầu thành 1 số) thành 2 ĐƯỜNG
+// riêng (Tổng Cung/Tổng Cầu), KHÔNG gộp tiếp thành 1 hiệu số/điểm áp lực duy nhất — vẫn giữ
+// đúng nguyên tắc "không tính FX Pressure = Demand − Supply" mà user đã chốt trước đó, chỉ dễ
+// so trực quan hơn biểu đồ 8 đường chi tiết ở renderFxSupplyDemandChart.
+function renderFxSupplyDemandTotalChart(indicators) {
+    const canvas = document.getElementById('chart-fx-supply-demand-total');
+    const card = document.getElementById('fx-supply-demand-total-chart-card');
+    if (!canvas) return;
+    const SUPPLY_KEYS = ['bop_sbv_goods_export', 'bop_sbv_services_export', 'bop_sbv_investment_income_received', 'bop_sbv_secondary_income_received'];
+    const DEMAND_KEYS = ['bop_sbv_goods_import', 'bop_sbv_services_import', 'bop_sbv_investment_income_paid', 'bop_sbv_secondary_income_paid'];
+    const allKeys = [...SUPPLY_KEYS, ...DEMAND_KEYS];
+    if (!allKeys.some(k => indicators[k] && indicators[k].series.length)) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = Array.from(new Set(allKeys.flatMap(k => (indicators[k]?.series || []).map(p => p.period)))).sort();
+    const sumByPeriod = (keys) => periods.map(p => {
+        let sum = null;
+        keys.forEach(k => {
+            const pt = indicators[k]?.series.find(x => x.period === p);
+            if (pt && pt.value !== null && pt.value !== undefined) {
+                sum = (sum ?? 0) + pt.value;
+            }
+        });
+        return sum;
+    });
+    const totalSupply = sumByPeriod(SUPPLY_KEYS);
+    const totalDemand = sumByPeriod(DEMAND_KEYS);
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: periods,
+            datasets: [
+                { label: 'Tổng Cung (Xuất khẩu + Dịch vụ XK + Thu nhập ĐT thu + Chuyển giao vãng lai thu)',
+                  data: totalSupply, borderColor: '#10b981', backgroundColor: '#10b98120', fill: true,
+                  tension: 0.25, pointRadius: 3, pointBackgroundColor: '#10b981', borderWidth: 2.5, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(0) },
+                { label: 'Tổng Cầu (Nhập khẩu + Dịch vụ NK + Thu nhập ĐT chi + Chuyển giao vãng lai chi)',
+                  data: totalDemand, borderColor: '#ef4444', backgroundColor: '#ef444420', fill: true,
+                  tension: 0.25, pointRadius: 3, pointBackgroundColor: '#ef4444', borderWidth: 2.5, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(0) },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 10 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
