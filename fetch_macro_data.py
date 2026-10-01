@@ -1588,6 +1588,74 @@ _SBV_BOP_FIELD_MAP = [
 _ROMAN_TO_QUARTER = {"I": 1, "II": 2, "III": 3, "IV": 4}
 
 
+def fetch_darvas_reer_neer_vietnam():
+    """bruegel.org — bộ dữ liệu NEER/REER của Zsolt Darvas (cập nhật định kỳ, KHÔNG phải nguồn
+    "chính thức" IMF/BIS nhưng user xác nhận IMF TỰ DÙNG Darvas làm nguồn NEER/REER cho Việt Nam
+    trong phân tích Article IV — vì BIS (WS_EER) và IMF.STA:EER (dataset mới) đều KHÔNG có Việt
+    Nam (đã verify qua API thật, xem lịch sử trao đổi 2026-10-01). Darvas CÓ Việt Nam, theo
+    THÁNG, từ 1993 (NEER)/1995 (REER) tới gần hiện tại — basket "120" (Broad, 120 đối tác
+    thương mại) đúng loại user muốn ("Broad", không cần "Narrow").
+
+    File .zip có TÊN CHỨA NGÀY cập nhật (vd 'REER_database_ver22Sep2026.zip') — KHÔNG hard-code
+    URL, phải crawl link download MỚI NHẤT từ trang chính mỗi lần chạy (trang này tự cập nhật
+    link khi Bruegel ra bản mới). File ~5MB, chấp nhận được để tải lại mỗi lần chạy (không cache
+    riêng — đơn giản hơn, khớp quy ước các nguồn khác trong file này không cache riêng).
+
+    Trả {"neer": [(period, value)...], "reer": [(period, value)...]} (period dạng 'YYYY-MM') —
+    rỗng nếu lỗi/thiếu xlrd/không tìm thấy Việt Nam trong bảng."""
+    try:
+        import xlrd
+    except ImportError:
+        print("  [WARN] Thiếu thư viện xlrd (pip install xlrd) — bỏ qua Darvas NEER/REER.")
+        return {"neer": [], "reer": []}
+    try:
+        r = requests.get(
+            "https://www.bruegel.org/publications/datasets/real-effective-exchange-rates-for-178-countries-a-new-database",
+            headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        m = re.search(r'href="([^"]*REER_database[^"]*\.zip)"', r.text)
+        if not m:
+            print("  [WARN] Darvas NEER/REER: không tìm thấy link download .zip trên trang — có thể đổi cấu trúc.")
+            return {"neer": [], "reer": []}
+        zip_url = m.group(1)
+        if zip_url.startswith("/"):
+            zip_url = "https://www.bruegel.org" + zip_url
+
+        import zipfile, io
+        rz = requests.get(zip_url, headers={"User-Agent": UA}, timeout=60)
+        rz.raise_for_status()
+        z = zipfile.ZipFile(io.BytesIO(rz.content))
+        xls_name = next((n for n in z.namelist() if n.lower().endswith(".xls")), None)
+        if not xls_name:
+            print("  [WARN] Darvas NEER/REER: không tìm thấy file .xls trong .zip.")
+            return {"neer": [], "reer": []}
+        wb = xlrd.open_workbook(file_contents=z.read(xls_name))
+
+        out = {"neer": [], "reer": []}
+        for sheet_name, out_key in [("NEER_MONTHLY_120", "neer"), ("REER_MONTHLY_120", "reer")]:
+            if sheet_name not in wb.sheet_names():
+                continue
+            sh = wb.sheet_by_name(sheet_name)
+            col_prefix = f"{out_key.upper()}_120_VN"
+            col = next((c for c in range(sh.ncols) if sh.cell_value(0, c) == col_prefix), None)
+            if col is None:
+                print(f"  [WARN] Darvas {sheet_name}: không tìm thấy cột Việt Nam ('{col_prefix}').")
+                continue
+            for row in range(1, sh.nrows):
+                period_raw = sh.cell_value(row, 0)
+                pm = re.match(r"(\d{4})M(\d{2})", str(period_raw))
+                if not pm:
+                    continue
+                value = sh.cell_value(row, col)
+                if value == "":
+                    continue
+                out[out_key].append((f"{pm.group(1)}-{pm.group(2)}", float(value)))
+        return out
+    except Exception as e:
+        print(f"  [WARN] Darvas NEER/REER thất bại: {e}")
+        return {"neer": [], "reer": []}
+
+
 def fetch_sbv_bop_quarterly():
     """sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng Cán cân thanh toán quốc tế (BOP) CHÍNH
     THỨC của NHNN, chuẩn BPM6 đầy đủ (Cán cân vãng lai/vốn/tài chính, Lỗi và Sai sót, Cán cân
@@ -3155,6 +3223,42 @@ def update_vimo_raw():
         print(f"  -> {bop_period}: {len(bop_data)}/{len(_SBV_BOP_FIELD_MAP)} dòng BOP")
     else:
         print("  -> Không lấy được dữ liệu BOP (WAF chặn hoặc đổi cấu trúc trang)")
+
+    # THEM (user 2026-10-01): NEER/REER Việt Nam — BIS (WS_EER) và IMF.STA:EER đều KHÔNG có Việt
+    # Nam (đã verify qua API thật), nhưng Darvas (Bruegel) CÓ, theo tháng, và chính IMF cũng dùng
+    # Darvas làm nguồn NEER/REER cho Việt Nam trong phân tích Article IV — xem fetch_darvas_reer_
+    # neer_vietnam(). KHÔNG gọi là "IMF NEER/REER" — ghi rõ nguồn Darvas, không phải BIS/IMF chính
+    # thức (khác methodology, dù tương quan cao).
+    print("[Bruegel (Darvas) — NEER/REER Việt Nam theo tháng]")
+    darvas = fetch_darvas_reer_neer_vietnam()
+    for key, label, unit_label in [
+        ("neer", "Tỷ giá hiệu lực danh nghĩa (NEER) Việt Nam — Darvas (Bruegel)", "Index (tháng cơ sở nội bộ Darvas)"),
+        ("reer", "Tỷ giá hiệu lực thực (REER) Việt Nam — Darvas (Bruegel)", "Index (tháng cơ sở nội bộ Darvas)"),
+    ]:
+        pts = darvas.get(key, [])
+        if not pts:
+            continue
+        raw_key = f"darvas_{key}_vn"
+        if raw_key not in raw:
+            raw[raw_key] = {
+                "group": "external", "label": label, "unit": unit_label, "good_direction": "lower",
+                "auto_source": "derived", "series": [],
+                "note": ("bruegel.org (Zsolt Darvas, 'Timely measurement of REER', cập nhật định kỳ) — KHÔNG phải "
+                         "nguồn chính thức BIS/IMF (methodology riêng: tỷ giá song phương + CPI + trọng số thương "
+                         "mại), nhưng Việt Nam KHÔNG có trong bộ BIS (WS_EER)/IMF (IMF.STA:EER) — đã verify qua gọi "
+                         "API thật, cả 2 đều 0 dữ liệu cho Việt Nam. IMF tự dùng Darvas làm nguồn NEER/REER Việt Nam "
+                         "trong phân tích Article IV (tương quan cao với EER chính thức của IMF). Basket 'Broad' "
+                         "(120 đối tác thương mại, KHÔNG dùng basket 'Narrow' 51 đối tác)."),
+                "impact": ("NEER tăng = VND lên giá danh nghĩa so với rổ tiền tệ đối tác thương mại (KHÔNG chỉ riêng "
+                            "USD như USD/VND); REER tăng = VND lên giá THỰC (đã điều chỉnh lạm phát tương đối), nghĩa "
+                            "là hàng hóa VN kém cạnh tranh hơn về giá. USD/VND tăng nhưng NEER ổn định = áp lực chủ "
+                            "yếu từ riêng USD (DXY mạnh lên toàn cầu); USD/VND tăng VÀ NEER giảm = áp lực tỷ giá rộng "
+                            "hơn, không chỉ do USD."),
+            }
+        darvas_src = "https://www.bruegel.org/publications/datasets/real-effective-exchange-rates-for-178-countries-a-new-database"
+        for period, value in pts:
+            _merge_point_anywhere(raw, raw_key, period, round(value, 4), darvas_src)
+        print(f"  -> {key.upper()}: {len(pts)} điểm (mới nhất {pts[-1][0]}={pts[-1][1]:.2f})")
 
     print("[Hải quan — Xuất/nhập khẩu theo tháng (file Excel cục bộ, CHỈ có khi chạy thủ công trên máy có sẵn thư mục)]")
     xnk = load_customs_xnk_local()

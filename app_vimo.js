@@ -475,8 +475,11 @@ function renderMaturityStructure(ms) {
 // ứng NHNN, KHÔNG gộp thành 1 "FX stress score"): curate các chỉ báo macro ĐÃ CÓ SẴN (rải rác
 // trong các nhóm "trade"/"external"/"monetary" chung) vào 1 card riêng theo đúng 5 lớp user yêu
 // cầu — KHÔNG tính toán gì mới ở đây, chỉ tổ chức lại cách hiển thị những gì đã có + đánh dấu rõ
-// phần CHƯA CÓ dữ liệu (NEER/REER, Errors & Omissions/Overall Balance, kiều hối/du lịch, FDI
-// XNK tách riêng) để biết chính xác bổ sung vào ĐÚNG LỚP nào sau này, không phải thiết kế lại.
+// phần CHƯA CÓ dữ liệu để biết chính xác bổ sung vào ĐÚNG LỚP nào sau này, không phải thiết kế
+// lại — ĐÃ LẤP: NEER/REER (Darvas/Bruegel, BIS/IMF.STA:EER không có Việt Nam), Errors &
+// Omissions/Overall Balance/Δ Dự trữ (NHNN BOP quý), FDI XNK tách Domestic/FDI (lớp ⑥ riêng,
+// NSO). CÒN THIẾU: Kiều hối đúng nghĩa (personal remittances, cần IMF BOP SDMX — query thử
+// nghiệm trả 0 dữ liệu dù query đúng cú pháp, cần điều tra thêm), doanh thu du lịch quốc tế tách riêng.
 const FX_PRESSURE_LAYERS = [
     {
         id: 'demand', title: '① Cầu ngoại tệ (Potential USD Demand)',
@@ -502,8 +505,9 @@ const FX_PRESSURE_LAYERS = [
         id: 'market', title: '④ Áp lực thị trường',
         keys: ['usdvnd', 'usdvnd_monthly_avg', 'usdvnd_growth_mom', 'usdvnd_growth_yoy',
                'usdvnd_vcb_sell_daily', 'usd_cho_den_sell_daily', 'usd_cho_den_vcb_gap', 'usd_cho_den_vcb_gap_pct',
-               'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on'],
-        missing: ['NEER/REER (BIS, theo tháng) — CHƯA CÓ, cần scraper mới cho CSV effective exchange rate của BIS'],
+               'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on',
+               'darvas_neer_vn', 'darvas_reer_vn'],
+        missing: [],
     },
     {
         id: 'response', title: '⑤ Phản ứng NHNN',
