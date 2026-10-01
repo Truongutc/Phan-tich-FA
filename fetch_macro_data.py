@@ -34,6 +34,12 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 VIMO_RAW_PATH = os.path.join(PROJECT_ROOT, "data", "vimo_raw.json")
+# File RIÊNG (không phải vimo_raw.json — tránh phá vỡ quy ước "mọi key cấp 1 của raw đều là 1
+# indicator dạng {group,label,unit,series,...}" mà nhiều hàm khác trong template_vimo.py giả định
+# khi lặp raw.items(), xem fetch_dulieukinhte_gdp_sector/fetch_dulieukinhte_cpi_group) — lưu LEVEL
+# (giá trị tuyệt đối, chưa tính YoY) theo từng ngành/nhóm hàng, dùng để dựng bảng heatmap GDP theo
+# ngành + CPI theo nhóm hàng (user 2026-10-01) trong template_vimo._build_level_yoy_heatmap().
+SECTOR_DETAIL_PATH = os.path.join(PROJECT_ROOT, "data", "vimo_sector_detail.json")
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
@@ -1717,6 +1723,121 @@ def fetch_dulieukinhte_kieu_hoi_hcm():
     except Exception as e:
         print(f"  [WARN] dulieukinhte.com kiều hối TP.HCM thất bại: {e}")
         return {}
+
+
+def _fetch_dulieukinhte_table(url, quarterly, label_filter=None):
+    """Scraper DÙNG CHUNG cho các trang dạng bảng "table-macro-data" của dulieukinhte.com có
+    NHIỀU HÀNG đều muốn lấy hết (khác fetch_dulieukinhte_bop/fetch_dulieukinhte_kieu_hoi_hcm chỉ
+    lọc đúng field cần, 2 hàm đó giữ nguyên không refactor vì đang chạy ổn). quarterly=True đọc
+    header dạng "Qn-YYYY" (BOP/kiều hối/GDP...), False đọc "MM-YYYY" (CPI/bán lẻ...). label_filter
+    (set[str] hoặc None=lấy hết) để lọc bớt nếu chỉ cần vài hàng. Trả {label: {period: value}} —
+    rỗng nếu lỗi/đổi cấu trúc trang."""
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        text = r.text
+
+        m_table = re.search(r'<table class="table-macro-data.*?</table>', text, re.S)
+        if not m_table:
+            print(f"  [WARN] dulieukinhte.com ({url}): không tìm thấy bảng — có thể đổi cấu trúc trang.")
+            return {}
+        table_html = m_table.group(0)
+
+        if quarterly:
+            periods_raw = re.findall(r'<th scope="col">(Q[1-4]-\d{4})</th>', table_html)
+            periods = []
+            for p in periods_raw:
+                pm = re.match(r"Q([1-4])-(\d{4})", p)
+                periods.append(f"{pm.group(2)}-Q{pm.group(1)}")
+        else:
+            periods_raw = re.findall(r'<th scope="col">(\d{2})-(\d{4})</th>', table_html)
+            periods = [f"{y}-{m}" for m, y in periods_raw]
+        if not periods:
+            print(f"  [WARN] dulieukinhte.com ({url}): không tìm thấy header kỳ.")
+            return {}
+
+        out = {}
+        for row_html in re.findall(r"<tr[^>]*>(.*?)</tr>", table_html, re.S):
+            m_label = re.search(r'class="row-link[^"]*">([^<]+)<', row_html)
+            if not m_label:
+                continue
+            label = m_label.group(1).strip()
+            if label_filter is not None and label not in label_filter:
+                continue
+            values = re.findall(r'<td class="">([^<]*)</td>', row_html)
+            if len(values) < len(periods):
+                continue
+            row_data = {}
+            for period, val_str in zip(periods, values):
+                val_str = val_str.strip()
+                if val_str and val_str != "-":
+                    row_data[period] = _vn_number(val_str)
+            if row_data:
+                out[label] = row_data
+        return out
+    except Exception as e:
+        print(f"  [WARN] dulieukinhte.com ({url}) thất bại: {e}")
+        return {}
+
+
+def fetch_dulieukinhte_gdp_sector():
+    """dulieukinhte.com/du-lieu/gdp-so-sanh-theo-quy-269 — GDP theo giá so sánh (quý), tách theo
+    NGÀNH kinh tế (nông-lâm-thủy sản/công nghiệp-xây dựng/dịch vụ + các ngành con), nguồn Cục
+    Thống kê (NSO). Đây là MỨC (tỷ đồng, giá so sánh — KHÔNG phải %YoY), dùng để tự tính YoY theo
+    ngành ở template_vimo._build_level_yoy_heatmap(). Trả {ngành: {period: value_ty_dong}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/gdp-so-sanh-theo-quy-269", quarterly=True)
+
+
+def fetch_dulieukinhte_cpi_group():
+    """dulieukinhte.com/du-lieu/chi-so-gia-tieu-dung-cpi-272 — Chỉ số giá tiêu dùng (CPI) theo
+    NHÓM HÀNG (tháng), nguồn NSO. Đây là CHỈ SỐ (điểm, gốc so sánh nội bộ NSO — KHÔNG phải %YoY),
+    dùng để tự tính YoY theo nhóm hàng ở template_vimo._build_level_yoy_heatmap(). Trả {nhóm hàng:
+    {period: index_points}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/chi-so-gia-tieu-dung-cpi-272", quarterly=False)
+
+
+def fetch_dulieukinhte_export_commodity():
+    """dulieukinhte.com/du-lieu/xuat-khau-theo-mat-hang-313 — Kim ngạch XUẤT KHẨU theo MẶT HÀNG
+    (tháng, ~56 mặt hàng), nguồn Tổng cục Hải quan. MỨC (triệu USD — KHÔNG phải %YoY), dùng để tự
+    tính YoY theo mặt hàng ở template_vimo._build_level_yoy_heatmap(). Trả {mặt hàng: {period:
+    value_trieu_usd}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/xuat-khau-theo-mat-hang-313", quarterly=False)
+
+
+def fetch_dulieukinhte_import_commodity():
+    """dulieukinhte.com/du-lieu/nhap-khau-theo-mat-hang-314 — Kim ngạch NHẬP KHẨU theo MẶT HÀNG
+    (tháng, ~59 mặt hàng), nguồn Tổng cục Hải quan. MỨC (triệu USD). Trả {mặt hàng: {period:
+    value_trieu_usd}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/nhap-khau-theo-mat-hang-314", quarterly=False)
+
+
+def fetch_dulieukinhte_export_price():
+    """dulieukinhte.com/du-lieu/gia-xuat-khau-286 — Giá XUẤT KHẨU bình quân theo mặt hàng (tháng,
+    ~19 mặt hàng, USD/tấn), nguồn Tổng cục Hải quan. MỨC (USD/tấn — KHÔNG phải %YoY). Trả {mặt
+    hàng: {period: value_usd_per_ton}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/gia-xuat-khau-286", quarterly=False)
+
+
+def fetch_dulieukinhte_import_price():
+    """dulieukinhte.com/du-lieu/gia-nhap-khau-287 — Giá NHẬP KHẨU bình quân theo mặt hàng (tháng,
+    ~19 mặt hàng, USD/tấn), nguồn Tổng cục Hải quan. MỨC (USD/tấn). Trả {mặt hàng: {period:
+    value_usd_per_ton}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/gia-nhap-khau-287", quarterly=False)
+
+
+def fetch_dulieukinhte_export_fdi_split():
+    """dulieukinhte.com/du-lieu/tong-xuat-khau-292 — Kim ngạch XUẤT KHẨU theo THÁNG (ĐƠN LẺ, không
+    phải lũy kế như export_domestic_usd_bn/export_fdi_usd_bn hiện có — xem fetch_nso_gdp_structure_
+    report()), tách khu vực trong nước/FDI, nguồn Tổng cục Hải quan. Trả {"Tổng"/"Khu vực trong
+    nước"/"Khu vực trong FDI": {period: value_trieu_usd}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/tong-xuat-khau-292", quarterly=False)
+
+
+def fetch_dulieukinhte_import_fdi_split():
+    """dulieukinhte.com/du-lieu/tong-nhap-khau-293 — Kim ngạch NHẬP KHẨU theo THÁNG (ĐƠN LẺ, không
+    phải lũy kế), tách khu vực trong nước/FDI, nguồn Tổng cục Hải quan. Trả {"Tổng"/"Khu vực trong
+    nước"/"Khu vực trong FDI": {period: value_trieu_usd}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/tong-nhap-khau-293", quarterly=False)
 
 
 def fetch_darvas_reer_neer_vietnam():
@@ -3443,6 +3564,46 @@ def update_vimo_raw():
     else:
         print("  -> Không lấy được (đổi cấu trúc trang?)")
 
+    # THEM (user 2026-10-01, "dữ liệu tổng xuất khẩu nhập khẩu này có thể tính được xuất khẩu FDI
+    # và nhập khẩu FDI ảnh hưởng ntn tới xnk của VN"): XNK theo THÁNG ĐƠN LẺ (khác export_domestic_
+    # usd_bn/export_fdi_usd_bn hiện có — những dòng đó LŨY KẾ từ đầu năm, quét regex câu văn báo cáo
+    # NSO rất dễ vỡ nếu đổi cách viết câu) tách khu vực trong nước/FDI, nguồn Hải quan qua
+    # dulieukinhte.com (bảng tĩnh, ổn định hơn). Tính thêm % tỷ trọng FDI trong tổng KNXK/KNNK mỗi
+    # tháng — trả lời trực tiếp câu hỏi "FDI ảnh hưởng thế nào" (xem _add_fdi_trade_share trong
+    # template_vimo.py, KHÔNG lưu % này vào vimo_raw.json — tính lại mỗi lần chạy từ 3 dòng MỨC).
+    _TRADE_MONTHLY_META = {
+        "Tổng": ("total", "Tổng (Hải quan, theo tháng)"),
+        "Khu vực trong nước": ("domestic", "Khu vực kinh tế trong nước (Hải quan, theo tháng)"),
+        "Khu vực trong FDI": ("fdi", "Khu vực FDI (Hải quan, theo tháng)"),
+    }
+    for direction, fetch_fn, url in [
+        ("export", fetch_dulieukinhte_export_fdi_split, "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"),
+        ("import", fetch_dulieukinhte_import_fdi_split, "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"),
+    ]:
+        label_vn = "Xuất khẩu" if direction == "export" else "Nhập khẩu"
+        print(f"[dulieukinhte.com — {label_vn} theo tháng, tách khu vực trong nước/FDI (Hải quan)]")
+        split_data = fetch_fn()
+        n_points = 0
+        for row_label, (suffix, desc) in _TRADE_MONTHLY_META.items():
+            series = split_data.get(row_label)
+            if not series:
+                continue
+            raw_key = f"{direction}_monthly_{suffix}"
+            if raw_key not in raw:
+                raw[raw_key] = {
+                    "group": "trade", "label": f"{label_vn} — {desc}", "unit": "triệu USD",
+                    "good_direction": "higher", "auto_source": "customs",
+                    "note": ("dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG "
+                             "1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_"
+                             "usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn)."),
+                    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+                    "series": [],
+                }
+            for period, value in series.items():
+                _merge_point_anywhere(raw, raw_key, period, value, url)
+            n_points += len(series)
+        print(f"  -> {n_points} điểm (Tổng/trong nước/FDI)")
+
     # THEM (user 2026-10-01): NEER/REER Việt Nam — BIS (WS_EER) và IMF.STA:EER đều KHÔNG có Việt
     # Nam (đã verify qua API thật), nhưng Darvas (Bruegel) CÓ, theo tháng, và chính IMF cũng dùng
     # Darvas làm nguồn NEER/REER cho Việt Nam trong phân tích Article IV — xem fetch_darvas_reer_
@@ -3506,6 +3667,44 @@ def update_vimo_raw():
     raw["_meta"]["last_auto_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     save_raw(raw)
     print("\n[OK] Đã ghi data/vimo_raw.json")
+
+    # THEM (user 2026-10-01, "làm cho tôi bảng GDP theo ngành... có màu để biểu thị nhóm nào đang
+    # tốt lên xấu đi" / "cơ cấu CPI... làm biểu đồ tổng hợp... có màu để biểu thị cái nào đang nhức
+    # nhối"): lưu RIÊNG vào data/vimo_sector_detail.json (KHÔNG phải vimo_raw.json ở trên — đây là
+    # MỨC theo từng ngành/nhóm hàng, không phải 1 indicator dạng {group,label,series} nên không cho
+    # vào raw, tránh vỡ các vòng lặp raw.items() ở template_vimo.py). Merge dồn theo kỳ (dulieukinhte
+    # chỉ hiện ~13 quý/37 tháng gần nhất mỗi lần — giữ lại kỳ cũ đã lưu, không mất lịch sử khi dulieu-
+    # kinhte cắt bớt cửa sổ hiển thị). template_vimo._build_level_yoy_heatmap() đọc file này để tự
+    # tính %YoY (MỨC theo ngành/nhóm hàng không so trực tiếp được, phải quy về YoY mới so được).
+    print("[dulieukinhte.com — GDP theo ngành (quý) + CPI theo nhóm hàng (tháng), cho bảng heatmap]")
+    try:
+        with open(SECTOR_DETAIL_PATH, "r", encoding="utf-8") as f:
+            sector_detail = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        sector_detail = {}
+
+    # THEM (user 2026-10-01, "xuất khẩu theo mặt hàng... lập bảng màu để biết mặt hàng nào đang
+    # xuất khẩu tốt lên" / "tương tự với nhập khẩu theo mặt hàng" / "đây là bảng dữ liệu giá nhập
+    # khẩu, hãy tạo bảng để biết giá đang căng không" / "tương tự với giá xuất khẩu"): cùng cơ chế
+    # merge-dồn-theo-kỳ như GDP/CPI ở trên — 6 bộ dùng CHUNG 1 vòng lặp (tránh lặp code 6 lần).
+    _SECTOR_DETAIL_SOURCES = [
+        ("gdp_sector_levels", "GDP theo ngành (quý)", fetch_dulieukinhte_gdp_sector),
+        ("cpi_group_levels", "CPI theo nhóm hàng (tháng)", fetch_dulieukinhte_cpi_group),
+        ("export_commodity_levels", "Xuất khẩu theo mặt hàng (tháng)", fetch_dulieukinhte_export_commodity),
+        ("import_commodity_levels", "Nhập khẩu theo mặt hàng (tháng)", fetch_dulieukinhte_import_commodity),
+        ("export_price_levels", "Giá xuất khẩu bình quân theo mặt hàng (tháng)", fetch_dulieukinhte_export_price),
+        ("import_price_levels", "Giá nhập khẩu bình quân theo mặt hàng (tháng)", fetch_dulieukinhte_import_price),
+    ]
+    for file_key, label_vn, fetch_fn in _SECTOR_DETAIL_SOURCES:
+        new_data = fetch_fn()
+        sector_detail.setdefault(file_key, {})
+        for label, series in new_data.items():
+            sector_detail[file_key].setdefault(label, {}).update(series)
+        print(f"  -> {label_vn}: {len(new_data)}/{len(sector_detail[file_key])} hàng (mới/tổng đã lưu)")
+
+    with open(SECTOR_DETAIL_PATH, "w", encoding="utf-8") as f:
+        json.dump(sector_detail, f, ensure_ascii=False, indent=2)
+    print(f"  -> Đã ghi {SECTOR_DETAIL_PATH}")
 
     # Rủi ro lãi suất/thanh khoản TOÀN HỆ THỐNG ngân hàng (2026-08) — ghi RIÊNG vào
     # data/bank_alm/<TICKER>.json (KHÔNG phải vimo_raw.json ở trên), template_vimo.py đọc lại các

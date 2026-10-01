@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-10-01 16:29",
+    "last_auto_update": "2026-10-01 16:58",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -1953,7 +1953,7 @@
       },
       {
         "period": "2026-W40",
-        "value": 6.9,
+        "value": 6.63,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -3968,7 +3968,7 @@
       },
       {
         "period": "2026-W40",
-        "value": 7.48,
+        "value": 7.54,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -4039,7 +4039,7 @@
       },
       {
         "period": "2026-W40",
-        "value": 8.0,
+        "value": 8.55,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -46765,6 +46765,1182 @@
         "period": "2026-Q2",
         "value": 2032.0,
         "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      }
+    ]
+  },
+  "export_monthly_total": {
+    "group": "trade",
+    "label": "Xuất khẩu — Tổng (Hải quan, theo tháng)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
+    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 32370.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-09",
+        "value": 31410.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-10",
+        "value": 29310.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-11",
+        "value": 31080.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-12",
+        "value": 32910.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-01",
+        "value": 33570.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-02",
+        "value": 24820.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-03",
+        "value": 34010.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-04",
+        "value": 30940.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-05",
+        "value": 32810.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-06",
+        "value": 33090.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-07",
+        "value": 35920.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-08",
+        "value": 37589.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-09",
+        "value": 34049.63,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-10",
+        "value": 35587.42,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-11",
+        "value": 33733.77,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-12",
+        "value": 35528.99,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-01",
+        "value": 33085.29,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-02",
+        "value": 31109.32,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-03",
+        "value": 38509.84,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-04",
+        "value": 37445.44,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-05",
+        "value": 39595.45,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-06",
+        "value": 39489.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-07",
+        "value": 42265.54,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-08",
+        "value": 43386.35,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-09",
+        "value": 42670.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-10",
+        "value": 42049.21,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-11",
+        "value": 39111.77,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-12",
+        "value": 44050.04,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-01",
+        "value": 43189.64,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-02",
+        "value": 33090.03,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-03",
+        "value": 46435.72,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-04",
+        "value": 45986.23,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-05",
+        "value": 46929.35,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-06",
+        "value": 50787.25,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-07",
+        "value": 53081.33,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-08",
+        "value": 54794.76,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      }
+    ]
+  },
+  "export_monthly_domestic": {
+    "group": "trade",
+    "label": "Xuất khẩu — Khu vực kinh tế trong nước (Hải quan, theo tháng)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
+    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 8430.56,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-09",
+        "value": 8295.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-10",
+        "value": 10360.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-11",
+        "value": 8485.77,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-12",
+        "value": 9437.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-01",
+        "value": 9026.51,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-02",
+        "value": 6616.24,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-03",
+        "value": 9539.53,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-04",
+        "value": 8726.99,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-05",
+        "value": 9372.15,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-06",
+        "value": 9334.74,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-07",
+        "value": 9869.39,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-08",
+        "value": 10837.2,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-09",
+        "value": 9388.75,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-10",
+        "value": 10297.45,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-11",
+        "value": 9850.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-12",
+        "value": 10682.84,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-01",
+        "value": 9489.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-02",
+        "value": 8388.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-03",
+        "value": 11077.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-04",
+        "value": 11655.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-05",
+        "value": 8608.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-06",
+        "value": 8640.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-07",
+        "value": 8947.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-08",
+        "value": 9164.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-09",
+        "value": 8655.48,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-10",
+        "value": 8598.32,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-11",
+        "value": 8359.32,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-12",
+        "value": 9835.82,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-01",
+        "value": 9552.49,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-02",
+        "value": 6596.63,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-03",
+        "value": 9009.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-04",
+        "value": 9836.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-05",
+        "value": 9089.26,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-06",
+        "value": 10073.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-07",
+        "value": 10272.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-08",
+        "value": 10498.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      }
+    ]
+  },
+  "export_monthly_fdi": {
+    "group": "trade",
+    "label": "Xuất khẩu — Khu vực FDI (Hải quan, theo tháng)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
+    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 23939.44,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-09",
+        "value": 23114.82,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-10",
+        "value": 18950.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-11",
+        "value": 22594.23,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2023-12",
+        "value": 23472.03,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-01",
+        "value": 24543.49,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-02",
+        "value": 18203.76,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-03",
+        "value": 24470.47,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-04",
+        "value": 22213.01,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-05",
+        "value": 23437.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-06",
+        "value": 23755.26,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-07",
+        "value": 26050.61,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-08",
+        "value": 26753.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-09",
+        "value": 24660.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-10",
+        "value": 25289.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-11",
+        "value": 23883.65,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2024-12",
+        "value": 24846.15,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-01",
+        "value": 23595.41,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-02",
+        "value": 22720.64,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-03",
+        "value": 27432.27,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-04",
+        "value": 25790.26,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-05",
+        "value": 30986.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-06",
+        "value": 30848.87,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-07",
+        "value": 33319.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-08",
+        "value": 34222.29,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-09",
+        "value": 34014.83,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-10",
+        "value": 33450.89,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-11",
+        "value": 30752.44,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2025-12",
+        "value": 34214.21,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-01",
+        "value": 33637.15,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-02",
+        "value": 26493.41,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-03",
+        "value": 37426.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-04",
+        "value": 36149.93,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-05",
+        "value": 37840.08,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-06",
+        "value": 40714.13,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-07",
+        "value": 42809.15,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      },
+      {
+        "period": "2026-08",
+        "value": 44295.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
+      }
+    ]
+  },
+  "import_monthly_total": {
+    "group": "trade",
+    "label": "Nhập khẩu — Tổng (Hải quan, theo tháng)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
+    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 28550.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-09",
+        "value": 29120.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-10",
+        "value": 29310.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-11",
+        "value": 29800.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-12",
+        "value": 30630.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-01",
+        "value": 30650.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-02",
+        "value": 23720.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-03",
+        "value": 31080.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-04",
+        "value": 30260.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-05",
+        "value": 33810.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-06",
+        "value": 30150.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-07",
+        "value": 33800.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-08",
+        "value": 33059.43,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-09",
+        "value": 31758.45,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-10",
+        "value": 33600.61,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-11",
+        "value": 32667.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-12",
+        "value": 35005.01,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-01",
+        "value": 30060.51,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-02",
+        "value": 32659.28,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-03",
+        "value": 36875.3,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-04",
+        "value": 36868.75,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-05",
+        "value": 39044.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-06",
+        "value": 36662.64,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-07",
+        "value": 39998.52,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-08",
+        "value": 39669.3,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-09",
+        "value": 42670.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-10",
+        "value": 39445.2,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-11",
+        "value": 37983.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-12",
+        "value": 44686.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-01",
+        "value": 44974.08,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-02",
+        "value": 34102.37,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-03",
+        "value": 47112.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-04",
+        "value": 49979.63,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-05",
+        "value": 52141.01,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-06",
+        "value": 53431.72,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-07",
+        "value": 56668.26,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-08",
+        "value": 54907.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      }
+    ]
+  },
+  "import_monthly_domestic": {
+    "group": "trade",
+    "label": "Nhập khẩu — Khu vực kinh tế trong nước (Hải quan, theo tháng)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
+    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 10250.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-09",
+        "value": 10370.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-10",
+        "value": 10360.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-11",
+        "value": 10600.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-12",
+        "value": 10980.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-01",
+        "value": 11150.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-02",
+        "value": 8420.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-03",
+        "value": 10830.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-04",
+        "value": 11210.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-05",
+        "value": 12810.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-06",
+        "value": 10950.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-07",
+        "value": 12200.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-08",
+        "value": 12003.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-09",
+        "value": 10938.8,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-10",
+        "value": 12677.81,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-11",
+        "value": 12375.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-12",
+        "value": 13999.34,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-01",
+        "value": 10891.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-02",
+        "value": 11874.17,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-03",
+        "value": 13982.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-04",
+        "value": 14479.66,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-05",
+        "value": 10859.29,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-06",
+        "value": 10789.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-07",
+        "value": 11285.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-08",
+        "value": 10760.41,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-09",
+        "value": 8655.48,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-10",
+        "value": 11380.58,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-11",
+        "value": 11340.7,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-12",
+        "value": 14573.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-01",
+        "value": 12910.07,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-02",
+        "value": 9551.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-03",
+        "value": 13446.13,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-04",
+        "value": 14767.04,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-05",
+        "value": 13175.04,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-06",
+        "value": 14194.09,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-07",
+        "value": 13796.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-08",
+        "value": 12814.79,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      }
+    ]
+  },
+  "import_monthly_fdi": {
+    "group": "trade",
+    "label": "Nhập khẩu — Khu vực FDI (Hải quan, theo tháng)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
+    "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 18300.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-09",
+        "value": 18750.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-10",
+        "value": 18950.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-11",
+        "value": 19200.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2023-12",
+        "value": 19650.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-01",
+        "value": 19500.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-02",
+        "value": 15300.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-03",
+        "value": 20250.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-04",
+        "value": 19050.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-05",
+        "value": 21000.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-06",
+        "value": 19200.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-07",
+        "value": 21600.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-08",
+        "value": 21055.86,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-09",
+        "value": 20819.66,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-10",
+        "value": 20922.8,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-11",
+        "value": 20292.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2024-12",
+        "value": 21005.66,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-01",
+        "value": 19168.84,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-02",
+        "value": 20785.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-03",
+        "value": 22892.33,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-04",
+        "value": 22389.1,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-05",
+        "value": 28185.59,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-06",
+        "value": 25874.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-07",
+        "value": 28714.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-08",
+        "value": 28908.89,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-09",
+        "value": 34014.83,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-10",
+        "value": 28064.62,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-11",
+        "value": 26642.3,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2025-12",
+        "value": 30113.39,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-01",
+        "value": 32064.01,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-02",
+        "value": 24550.4,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-03",
+        "value": 33666.43,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-04",
+        "value": 35212.59,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-05",
+        "value": 38965.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-06",
+        "value": 39237.63,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-07",
+        "value": 42871.62,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      },
+      {
+        "period": "2026-08",
+        "value": 42093.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       }
     ]
   }

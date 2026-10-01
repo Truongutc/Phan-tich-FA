@@ -2207,7 +2207,10 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
                     synthesis, pdf_url=None,
                     valuation_headline=None, decision_label_headline=None, decision_text_headline=None,
                     decision_label_exvin=None, decision_text_exvin=None,
-                    monitoring_table=None, macro_overview=None, banking_system_risk=None):
+                    monitoring_table=None, macro_overview=None, banking_system_risk=None,
+                    gdp_sector_table=None, cpi_group_table=None,
+                    export_commodity_table=None, import_commodity_table=None,
+                    export_price_table=None, import_price_table=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -2232,6 +2235,12 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         "synthesis": synthesis,
         "monitoringTable": monitoring_table,
         "macroOverview": macro_overview,
+        "gdpSectorTable": gdp_sector_table,
+        "cpiGroupTable": cpi_group_table,
+        "exportCommodityTable": export_commodity_table,
+        "importCommodityTable": import_commodity_table,
+        "exportPriceTable": export_price_table,
+        "importPriceTable": import_price_table,
         # Mục RIÊNG (yêu cầu user 2026-08-30) — dict từ bank_system_risk.build_banking_system_risk_section,
         # None nếu chưa có ngân hàng nào có dữ liệu. KHÔNG chứa mảng history riêng (xem ghi chú
         # _add_bank_alm_derived_indicators) — chuỗi thời gian đã có sẵn ở indicators.bank_alm_system_*.
@@ -2338,6 +2347,8 @@ _FX_PRESSURE_KEYS_BY_SHEET = {
         "fdi_disbursed", "fdi_registered_usd_bn", "trade_balance",
         "export_domestic_usd_bn", "export_fdi_usd_bn", "import_domestic_usd_bn", "import_fdi_usd_bn",
         "fdi_trade_balance", "domestic_trade_balance",
+        "export_monthly_total", "export_monthly_domestic", "export_monthly_fdi", "export_fdi_share_pct",
+        "import_monthly_total", "import_monthly_domestic", "import_monthly_fdi", "import_fdi_share_pct",
         "forex_reserves_monthly", "forex_reserves_sdr", "omo_rate_7d",
         "tin_phieu_outstanding_balance", "tin_phieu_net_operation",
     ],
@@ -3377,6 +3388,37 @@ def _add_usd_cho_den_vcb_gap(raw, trends):
     print(f"  -> Gap ty gia cho den - VCB (%): {len(pct_points)} diem")
 
 
+def _add_fdi_trade_share(raw, trends):
+    """% tỷ trọng khu vực FDI trong tổng kim ngạch XK/NK theo tháng (user 2026-10-01: "dữ liệu
+    tổng xuất khẩu nhập khẩu này có thể tính được xuất khẩu FDI và nhập khẩu FDI ảnh hưởng ntn tới
+    xnk của VN") = export_monthly_fdi / export_monthly_total × 100 (và tương tự nhập khẩu) — từ
+    fetch_dulieukinhte_export_fdi_split()/fetch_dulieukinhte_import_fdi_split() (fetch_macro_data.py).
+    Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."""
+    for direction, label_vn in [("export", "Xuất khẩu"), ("import", "Nhập khẩu")]:
+        total = raw.get(f"{direction}_monthly_total")
+        fdi = raw.get(f"{direction}_monthly_fdi")
+        if not total or not fdi:
+            continue
+        total_by_period = {p["period"]: p["value"] for p in total["series"] if p.get("value")}
+        points = []
+        for p in fdi["series"]:
+            t = total_by_period.get(p["period"])
+            if p.get("value") is None or not t:
+                continue
+            points.append({"period": p["period"], "value": round(p["value"] / t * 100, 2), "source_url": None})
+        if not points:
+            continue
+        key = f"{direction}_fdi_share_pct"
+        raw[key] = {
+            "group": "trade", "label": f"{label_vn} — Tỷ trọng khu vực FDI (%)", "unit": "%",
+            "good_direction": "higher", "auto_source": "derived", "series": points,
+            "note": f"= {direction}_monthly_fdi / {direction}_monthly_total × 100 (Hải quan qua dulieukinhte.com, theo tháng). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+            "impact": f"Tỷ trọng FDI trong {label_vn.lower()} cao đồng nghĩa tăng trưởng {label_vn.lower()} phụ thuộc nhiều vào khu vực FDI (Samsung, Foxconn...) hơn là DN nội địa — KHÔNG hàm ý tốt/xấu tuyệt đối, chỉ phản ánh cơ cấu (xem fdi_trade_balance/domestic_trade_balance ở lớp 'Cơ cấu Thương mại' để biết thêm chiều cán cân).",
+        }
+        trends[key] = calc_trend(points, "higher")
+        print(f"  -> Ty trong FDI trong {label_vn}: {len(points)} diem")
+
+
 # Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
 # kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
 # Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
@@ -3464,6 +3506,137 @@ def _build_monitoring_table(raw, n_months=13):
                      "goodDirection": ind["good_direction"], "values": values,
                      "altSourceIdx": alt_idx,
                      "colorMin": min(all_vals), "colorMax": max(all_vals)})
+    if not rows:
+        return None
+    return {"periods": periods, "rows": rows}
+
+
+SECTOR_DETAIL_PATH = os.path.join(PROJECT_ROOT, "data", "vimo_sector_detail.json")
+
+
+def _load_sector_detail():
+    try:
+        with open(SECTOR_DETAIL_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def _build_level_yoy_heatmap(level_data, quarterly, n_periods, min_points, good_direction,
+                              break_threshold_pct=None):
+    """Nhận {label: {period: value}} (MỨC tuyệt đối theo ngành/nhóm hàng, từ fetch_dulieukinhte_
+    gdp_sector/fetch_dulieukinhte_cpi_group, data/vimo_sector_detail.json) — tự tính %YoY (quý: so
+    cùng quý năm trước; tháng: so cùng tháng năm trước, MỨC không so trực tiếp được vì khác quy mô
+    tuyệt đối giữa các ngành/nhóm), rồi dựng heatmap CÙNG QUY ƯỚC MÀU với _build_monitoring_table()
+    (colorMin/colorMax = min-max TOÀN BỘ LỊCH SỬ YoY của RIÊNG hàng đó, không so giữa các hàng khác
+    nhau — "xanh" luôn nghĩa là tốt hơn SO VỚI LỊCH SỬ CỦA CHÍNH NGÀNH/NHÓM ĐÓ, không phải so hàng
+    khác). Trả {"periods":[...], "rows":[{"label","values","colorMin","colorMax","goodDirection"}]}
+    hoặc None nếu không có hàng nào đủ dữ liệu (>= min_points điểm YoY).
+
+    break_threshold_pct (user 2026-10-01, phát hiện khi test CPI thật): NSO đổi NĂM GỐC SO SÁNH
+    giữa kỳ (chính trang dulieukinhte.com cũng có bài riêng "Năm gốc so sánh là gì? Vì sao số liệu
+    bị nhảy" dẫn ngay trên trang CPI) làm MỨC (không phải %YoY) nhảy bậc giả tạo giữa 2 kỳ LIÊN
+    TIẾP (vd CPI 120,44 (10/2025) -> 104,08 (11/2025), đổi -13,6% 1 tháng — KHÔNG phải giảm giá
+    thật). Nếu tính YoY xuyên qua điểm nhảy này sẽ ra số âm/dương giả (đã thấy -10% đến -25% "giảm
+    phát" giả ở CPI). CHỈ áp dụng cho chuỗi THÁNG biến động tự nhiên mượt (CPI) — chuỗi QUÝ (GDP)
+    biến động mùa vụ BÌNH THƯỜNG đã rất lớn giữa quý liền kề (Q1 luôn thấp hơn Q4 >40%), KHÔNG dùng
+    được cách phát hiện "nhảy giữa 2 kỳ liên tiếp" này — để None (mặc định) cho GDP."""
+    def shift_year(period, years=1):
+        if quarterly:
+            y, q = period.split("-Q")
+            return f"{int(y) - years}-Q{q}"
+        y, m = period.split("-")
+        return f"{int(y) - years}-{m}"
+
+    def shift_one(period):
+        if quarterly:
+            y, q = period.split("-Q")
+            y, q = int(y), int(q) + 1
+            if q > 4:
+                q = 1
+                y += 1
+            return f"{y}-Q{q}"
+        y, m = period.split("-")
+        y, m = int(y), int(m) + 1
+        if m > 12:
+            m = 1
+            y += 1
+        return f"{y}-{m:02d}"
+
+    # Phát hiện break TOÀN CỤC (không theo từng hàng riêng, user 2026-10-01 phát hiện khi test CPI
+    # thật): NSO đổi năm gốc tác động CẢ RỔ HÀNG CPI CÙNG LÚC (cùng 1 tháng), nhưng biên độ nhảy ở
+    # TỪNG NHÓM hàng khác nhau rất nhiều (ví dụ thật: headline CPI -13,6%, Lương thực -24%, nhưng
+    # Bưu chính viễn thông chỉ +4,8%, Văn hoá giải trí -6,9% — nếu xét ngưỡng riêng từng hàng sẽ BỎ
+    # SÓT các hàng biên độ nhỏ dù cùng 1 lần đổi gốc). Chỉ cần ÍT NHẤT 1 hàng nhảy vượt
+    # break_threshold_pct (mức rất cao, CPI/GDP thường KHÔNG BAO GIỜ tự nhiên nhảy vậy trong 1 kỳ)
+    # tại ĐÚNG 1 transition là đủ để coi ĐÓ là điểm đổi gốc, rồi áp dụng loại trừ cho TẤT CẢ các
+    # hàng tại transition đó (không chỉ hàng vừa phát hiện).
+    # Yêu cầu ÍT NHẤT MỘT NỬA số hàng có dữ liệu tại transition đó cùng nhảy vượt ngưỡng — phân
+    # biệt "đổi năm gốc" (toàn bộ rổ nhảy ĐỒNG LOẠT, ví dụ thật: 17/17 nhóm CPI cùng nhảy >4,5%) với
+    # 1 cú sốc giá THẬT ở riêng 1 nhóm (vd xăng tăng giá mạnh 1 tháng — chỉ 1/17 nhóm nhảy, không
+    # nên bị coi là break rồi loại YoY của CẢ các nhóm khác).
+    global_break_after = set()
+    if break_threshold_pct is not None:
+        all_periods_sorted = sorted({p for series in level_data.values() for p in series})
+        for i in range(len(all_periods_sorted) - 1):
+            p0, p1 = all_periods_sorted[i], all_periods_sorted[i + 1]
+            if shift_one(p0) != p1:
+                continue
+            n_total, n_jump = 0, 0
+            for series in level_data.values():
+                v0, v1 = series.get(p0), series.get(p1)
+                if v0 and v1 is not None:
+                    n_total += 1
+                    if abs((v1 - v0) / v0) * 100 > break_threshold_pct:
+                        n_jump += 1
+            if n_total and n_jump / n_total >= 0.5:
+                global_break_after.add(p0)
+
+    def splice(series):
+        """Nối chuỗi MỨC qua các điểm đổi gốc đã phát hiện (global_break_after) bằng hệ số tỷ lệ
+        TẠI ĐÚNG điểm chuyển — kỹ thuật "splicing" thống kê tiêu chuẩn khi không có hệ số quy đổi
+        chính thức, giả định biến động giá THẬT đúng tháng/quý chuyển gốc ≈ 0 (sai số nhỏ, NHƯNG
+        tốt hơn nhiều so với để nguyên gây nhảy bậc giả tạo -13%/-24% như CPI thật đã gặp) — nhờ
+        vậy vẫn giữ được YoY cho các kỳ GẦN NHẤT (sau điểm đổi gốc) thay vì phải bỏ hẳn ~1 năm dữ
+        liệu mới nhất, đúng cái user cần nhất ("nhìn là biết CPI đang tăng do cái gì" — ngay bây
+        giờ, không phải 1 năm trước)."""
+        if not global_break_after:
+            return series
+        spliced, scale, prev_period = {}, 1.0, None
+        for period in sorted(series.keys()):
+            val = series[period]
+            if prev_period in global_break_after and shift_one(prev_period) == period and val:
+                scale = spliced[prev_period] / val
+            spliced[period] = val * scale
+            prev_period = period
+        return spliced
+
+    rows_yoy = {}
+    all_yoy_periods = set()
+    for label, series in level_data.items():
+        spliced_series = splice(series)
+        yoy = {}
+        for period, val in spliced_series.items():
+            prev_val = spliced_series.get(shift_year(period))
+            if prev_val is not None and prev_val != 0:
+                yoy[period] = (val - prev_val) / abs(prev_val) * 100
+        if yoy:
+            rows_yoy[label] = yoy
+            all_yoy_periods.update(yoy.keys())
+
+    periods = sorted(all_yoy_periods)[-n_periods:]
+    if not periods:
+        return None
+
+    rows = []
+    for label, yoy in rows_yoy.items():
+        values = [yoy.get(p) for p in periods]
+        if sum(1 for v in values if v is not None) < min_points:
+            continue
+        all_vals = list(yoy.values())
+        rows.append({"label": label, "values": values,
+                     "colorMin": min(all_vals), "colorMax": max(all_vals),
+                     "goodDirection": good_direction})
     if not rows:
         return None
     return {"periods": periods, "rows": rows}
@@ -3804,6 +3977,9 @@ def run_vimo_analysis():
     print("[INFO] Tính gap ty gia USD cho den vs Vietcombank (KHÔNG lưu vào vimo_raw.json)...")
     _add_usd_cho_den_vcb_gap(raw, trends)
 
+    print("[INFO] Tính ty trong FDI trong XK/NK theo thang (KHÔNG lưu vào vimo_raw.json)...")
+    _add_fdi_trade_share(raw, trends)
+
     print("[INFO] Tổng hợp rủi ro hệ thống ngân hàng (ALM) từ data/bank_alm/ (KHÔNG lưu vào vimo_raw.json)...")
     banking_system_risk = _add_bank_alm_derived_indicators(raw, trends)
     if banking_system_risk:
@@ -3819,6 +3995,55 @@ def run_vimo_analysis():
         print(f"  -> {len(monitoring_table['rows'])} hàng x {len(monitoring_table['periods'])} tháng")
     else:
         print("  -> Chưa đủ dữ liệu tháng để dựng bảng.")
+
+    print("[INFO] Dựng bảng heatmap GDP theo ngành (YoY, tự tính từ MỨC) + CPI theo nhóm hàng (YoY)...")
+    sector_detail = _load_sector_detail()
+    gdp_sector_table = _build_level_yoy_heatmap(
+        sector_detail.get("gdp_sector_levels", {}), quarterly=True, n_periods=9, min_points=4,
+        good_direction="higher")
+    if gdp_sector_table:
+        print(f"  -> GDP theo ngành: {len(gdp_sector_table['rows'])} hàng x {len(gdp_sector_table['periods'])} quý")
+    else:
+        print("  -> Chưa đủ dữ liệu quý để dựng bảng GDP theo ngành.")
+    cpi_group_table = _build_level_yoy_heatmap(
+        sector_detail.get("cpi_group_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        good_direction="lower", break_threshold_pct=4.0)
+    if cpi_group_table:
+        print(f"  -> CPI theo nhóm hàng: {len(cpi_group_table['rows'])} hàng x {len(cpi_group_table['periods'])} tháng")
+    else:
+        print("  -> Chưa đủ dữ liệu tháng để dựng bảng CPI theo nhóm hàng.")
+
+    print("[INFO] Dựng bảng heatmap XK/NK theo mặt hàng (YoY)...")
+    export_commodity_table = _build_level_yoy_heatmap(
+        sector_detail.get("export_commodity_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        good_direction="higher")
+    if export_commodity_table:
+        print(f"  -> Xuất khẩu theo mặt hàng: {len(export_commodity_table['rows'])} hàng x {len(export_commodity_table['periods'])} tháng")
+    else:
+        print("  -> Chưa đủ dữ liệu để dựng bảng xuất khẩu theo mặt hàng.")
+    import_commodity_table = _build_level_yoy_heatmap(
+        sector_detail.get("import_commodity_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        good_direction="higher")
+    if import_commodity_table:
+        print(f"  -> Nhập khẩu theo mặt hàng: {len(import_commodity_table['rows'])} hàng x {len(import_commodity_table['periods'])} tháng")
+    else:
+        print("  -> Chưa đủ dữ liệu để dựng bảng nhập khẩu theo mặt hàng.")
+
+    print("[INFO] Dựng bảng heatmap giá XK/NK bình quân theo mặt hàng (YoY, màu phân kỳ đỏ-trắng-xanh)...")
+    export_price_table = _build_level_yoy_heatmap(
+        sector_detail.get("export_price_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        good_direction="higher")
+    if export_price_table:
+        print(f"  -> Giá xuất khẩu: {len(export_price_table['rows'])} hàng x {len(export_price_table['periods'])} tháng")
+    else:
+        print("  -> Chưa đủ dữ liệu để dựng bảng giá xuất khẩu.")
+    import_price_table = _build_level_yoy_heatmap(
+        sector_detail.get("import_price_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        good_direction="lower")
+    if import_price_table:
+        print(f"  -> Giá nhập khẩu: {len(import_price_table['rows'])} hàng x {len(import_price_table['periods'])} tháng")
+    else:
+        print("  -> Chưa đủ dữ liệu để dựng bảng giá nhập khẩu.")
 
     print("[INFO] Dựng biểu đồ tổng quan vĩ mô (năm hiện tại + năm gần nhất đã hoàn chỉnh)...")
     macro_overview = _build_macro_overview(raw)
@@ -3884,7 +4109,10 @@ def run_vimo_analysis():
                     decision_text_headline=decision_text_headline,
                     decision_label_exvin=decision_label_exvin, decision_text_exvin=decision_text_exvin,
                     monitoring_table=monitoring_table,
-                    macro_overview=macro_overview, banking_system_risk=banking_system_risk)
+                    macro_overview=macro_overview, banking_system_risk=banking_system_risk,
+                    gdp_sector_table=gdp_sector_table, cpi_group_table=cpi_group_table,
+                    export_commodity_table=export_commodity_table, import_commodity_table=import_commodity_table,
+                    export_price_table=export_price_table, import_price_table=import_price_table)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)

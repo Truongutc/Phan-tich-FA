@@ -74,6 +74,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderScorecard(data.scorecard);
     renderDecision(data.decision, data.scorecard.total);
     renderMonitoringTable(data.monitoringTable);
+    renderGdpSectorTable(data.gdpSectorTable);
+    renderCpiGroupTable(data.cpiGroupTable);
+    renderExportCommodityTable(data.exportCommodityTable);
+    renderImportCommodityTable(data.importCommodityTable);
+    renderExportPriceTable(data.exportPriceTable);
+    renderImportPriceTable(data.importPriceTable);
     renderSynthesis(data.synthesis);
     renderValuation(data.marketValuation);
     renderVnindexCompare(data.marketValuation, data.marketValuationHeadline, data.decisionExvin, data.decisionHeadline, data.decision);
@@ -525,7 +531,9 @@ const FX_PRESSURE_LAYERS = [
         // thành lớp riêng để không bị đọc nhầm là 1 proxy cung/cầu USD.
         id: 'trade_structure', title: '⑥ Cơ cấu Thương mại theo Khu vực DN (Trade Structure — KHÔNG phải dòng ngoại tệ thực)',
         keys: ['export_domestic_usd_bn', 'export_fdi_usd_bn', 'import_domestic_usd_bn', 'import_fdi_usd_bn',
-               'fdi_trade_balance', 'domestic_trade_balance'],
+               'fdi_trade_balance', 'domestic_trade_balance',
+               'export_monthly_total', 'export_monthly_domestic', 'export_monthly_fdi', 'export_fdi_share_pct',
+               'import_monthly_total', 'import_monthly_domestic', 'import_monthly_fdi', 'import_fdi_share_pct'],
         missing: [],
     },
 ];
@@ -1019,6 +1027,104 @@ function _heatmapColor(g) {
     const gr = Math.round(red[1] + (green[1] - red[1]) * g);
     const b = Math.round(red[2] + (green[2] - red[2]) * g);
     return `rgba(${r},${gr},${b},1)`;
+}
+
+// Bảng GDP theo ngành / CPI theo nhóm hàng (heatmap YoY, user 2026-10-01) — dựng sẵn trong
+// _build_level_yoy_heatmap() (template_vimo.py): %YoY TỰ TÍNH từ MỨC (GDP giá so sánh / chỉ số
+// CPI, dulieukinhte.com) vì MỨC khác quy mô giữa các ngành/nhóm không so màu trực tiếp được. Cùng
+// quy ước màu với renderMonitoringTable() (màu theo thang RIÊNG từng hàng, không so hàng khác) —
+// viết hàm RIÊNG (không sửa renderMonitoringTable) vì 2 bảng mới không có cột "key"/"unit"/
+// altSourceIdx, period có thể là quý ("YYYY-Qn") hoặc tháng ("YYYY-MM").
+function _periodToShortLabelQOrM(period) {
+    const mQ = /^(\d{4})-Q([1-4])$/.exec(period);
+    if (mQ) return `Q${mQ[2]}-${mQ[1].slice(2)}`;
+    return _periodToShortLabel(period);
+}
+
+function _renderHeatmapTableGeneric(cardId, elId, table, firstColLabel) {
+    const card = document.getElementById(cardId);
+    const el = document.getElementById(elId);
+    if (!card || !el) return;
+    if (!table || !table.rows || !table.rows.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    const periods = table.periods;
+    const thead = `<thead><tr><th>${firstColLabel}</th>${periods.map(p => `<th>${_periodToShortLabelQOrM(p)}</th>`).join('')}</tr></thead>`;
+    const tbody = table.rows.map(row => {
+        const lo = row.colorMin, hi = row.colorMax;
+        const cells = row.values.map(v => {
+            if (v === null || v === undefined) return `<td class="na">—</td>`;
+            let g = hi === lo ? 0.5 : (v - lo) / (hi - lo);
+            if (row.goodDirection === 'lower') g = 1 - g;
+            const bg = _heatmapColor(g);
+            return `<td style="background:${bg}">${formatNumber(v)}%</td>`;
+        }).join('');
+        return `<tr><th>${row.label}</th>${cells}</tr>`;
+    }).join('');
+    el.innerHTML = thead + `<tbody>${tbody}</tbody>`;
+}
+
+function renderGdpSectorTable(table) {
+    _renderHeatmapTableGeneric('gdp-sector-table-card', 'gdp-sector-table', table, 'Ngành (GDP, YoY)');
+}
+
+function renderCpiGroupTable(table) {
+    _renderHeatmapTableGeneric('cpi-group-table-card', 'cpi-group-table', table, 'Nhóm hàng (CPI, YoY)');
+}
+
+function renderExportCommodityTable(table) {
+    _renderHeatmapTableGeneric('export-commodity-table-card', 'export-commodity-table', table, 'Mặt hàng XK (YoY)');
+}
+
+function renderImportCommodityTable(table) {
+    _renderHeatmapTableGeneric('import-commodity-table-card', 'import-commodity-table', table, 'Mặt hàng NK (YoY)');
+}
+
+// Bảng giá XK/NK bình quân theo mặt hàng (user 2026-10-01: "cái nào giá tăng thì màu đỏ còn thấp
+// thì trắng rồi xanh lá") — màu PHÂN KỲ quanh mốc 0% (KHÁC _heatmapColor min-max theo lịch sử
+// riêng từng hàng ở trên): đỏ = giá tăng (YoY dương), trắng = quanh 0%, xanh = giá giảm (YoY âm).
+// Thang màu CHUNG CHO CẢ BẢNG (maxAbs = trị tuyệt đối lớn nhất trong toàn bảng, không riêng từng
+// hàng) để so sánh được mức độ tăng/giảm GIỮA các mặt hàng với nhau — khác mục đích của bảng GDP/
+// CPI (so 1 ngành/nhóm với CHÍNH NÓ trong lịch sử).
+function _heatmapColorDiverging(g) {
+    // g từ -1 (giảm mạnh, xanh #10b981) tới 0 (trắng) tới +1 (tăng mạnh, đỏ #ef4444).
+    const white = [255, 255, 255];
+    const red = [239, 68, 68], green = [16, 185, 129];
+    const target = g >= 0 ? red : green;
+    const t = Math.min(Math.abs(g), 1);
+    const r = Math.round(white[0] + (target[0] - white[0]) * t);
+    const gr = Math.round(white[1] + (target[1] - white[1]) * t);
+    const b = Math.round(white[2] + (target[2] - white[2]) * t);
+    return `rgba(${r},${gr},${b},1)`;
+}
+
+function _renderHeatmapTableDiverging(cardId, elId, table, firstColLabel) {
+    const card = document.getElementById(cardId);
+    const el = document.getElementById(elId);
+    if (!card || !el) return;
+    if (!table || !table.rows || !table.rows.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    const maxAbs = Math.max(...table.rows.flatMap(r => r.values.filter(v => v !== null && v !== undefined).map(Math.abs)), 1e-9);
+    const periods = table.periods;
+    const thead = `<thead><tr><th>${firstColLabel}</th>${periods.map(p => `<th>${_periodToShortLabelQOrM(p)}</th>`).join('')}</tr></thead>`;
+    const tbody = table.rows.map(row => {
+        const cells = row.values.map(v => {
+            if (v === null || v === undefined) return `<td class="na">—</td>`;
+            const bg = _heatmapColorDiverging(v / maxAbs);
+            return `<td style="background:${bg};color:#0b1220">${formatNumber(v)}%</td>`;
+        }).join('');
+        return `<tr><th>${row.label}</th>${cells}</tr>`;
+    }).join('');
+    el.innerHTML = thead + `<tbody>${tbody}</tbody>`;
+}
+
+function renderExportPriceTable(table) {
+    _renderHeatmapTableDiverging('export-price-table-card', 'export-price-table', table, 'Mặt hàng (Giá XK, YoY)');
+}
+
+function renderImportPriceTable(table) {
+    _renderHeatmapTableDiverging('import-price-table-card', 'import-price-table', table, 'Mặt hàng (Giá NK, YoY)');
 }
 
 // ═══════════════════════════════════════════════════════════

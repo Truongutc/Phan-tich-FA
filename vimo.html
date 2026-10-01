@@ -272,6 +272,63 @@
             <p class="ind-source-note" style="margin-top:8px">Màu theo THANG RIÊNG của từng hàng (min-max của TOÀN BỘ LỊCH SỬ chỉ báo, không chỉ 13 tháng đang hiển thị) — xanh = giá trị tốt hơn (theo chiều tốt/xấu của từng chỉ báo) so với chính nó trong quá khứ, đỏ = xấu hơn. Chỉ hiện chỉ báo có đủ dữ liệu (≥6/13 tháng) trong cửa sổ. Lưu ý riêng "Tỷ lệ giải ngân đầu tư công": đây là số LŨY KẾ TỪ ĐẦU NĂM (reset thấp mỗi tháng 1 rồi tăng dần), nên màu đỏ/xanh phản ánh vị trí trong thang lũy kế nhiều năm, không hẳn là "đang xấu đi" theo nghĩa thông thường.</p>
         </div>
 
+        <!-- Bảng GDP theo ngành (YoY, tự tính từ MỨC giá so sánh — NSO qua dulieukinhte.com), heatmap
+             màu để thấy ngay ngành nào đang tốt lên/xấu đi (user 2026-10-01) -->
+        <div class="card margin-top-20" id="gdp-sector-table-card" style="display:none">
+            <h3 class="border-blue">🏭 GDP theo ngành (YoY)</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="gdp-sector-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ MỨC GDP theo giá so sánh (quý, nguồn Cục Thống kê qua dulieukinhte.com) — so cùng quý năm trước. Màu theo THANG RIÊNG của từng ngành (min-max toàn bộ lịch sử YoY của chính ngành đó) — xanh = ngành đang tăng trưởng tốt hơn so với chính nó trong quá khứ, đỏ = tăng trưởng yếu hơn/suy giảm. Chỉ hiện ngành có ≥4 điểm YoY.</p>
+        </div>
+
+        <!-- Bảng CPI theo nhóm hàng (YoY, tự tính từ chỉ số giá — NSO qua dulieukinhte.com), heatmap
+             màu để thấy ngay nhóm hàng nào đang "nhức nhối" (tăng giá mạnh) (user 2026-10-01) -->
+        <div class="card margin-top-20" id="cpi-group-table-card" style="display:none">
+            <h3 class="border-blue">🛒 CPI theo nhóm hàng (YoY)</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="cpi-group-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ chỉ số giá theo nhóm hàng (tháng, nguồn Cục Thống kê qua dulieukinhte.com) — so cùng tháng năm trước. Màu theo THANG RIÊNG của từng nhóm hàng (min-max toàn bộ lịch sử YoY của chính nhóm đó) — đỏ = nhóm hàng đang tăng giá mạnh hơn so với chính nó trong quá khứ (đáng lo), xanh = tăng giá dịu hơn/giảm. Chỉ hiện nhóm có ≥6 điểm YoY.</p>
+        </div>
+
+        <!-- Bảng XK theo mặt hàng (YoY, user 2026-10-01: "mặt hàng nào đang xuất khẩu tốt lên") -->
+        <div class="card margin-top-20" id="export-commodity-table-card" style="display:none">
+            <h3 class="border-blue">📦 Xuất khẩu theo mặt hàng (YoY)</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="export-commodity-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ kim ngạch xuất khẩu theo mặt hàng (tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu theo THANG RIÊNG của từng mặt hàng (min-max toàn bộ lịch sử YoY của chính mặt hàng đó) — xanh = xuất khẩu đang tăng trưởng tốt hơn so với chính nó trong quá khứ, đỏ = yếu hơn/suy giảm. Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
+        </div>
+
+        <!-- Bảng NK theo mặt hàng (YoY) -->
+        <div class="card margin-top-20" id="import-commodity-table-card" style="display:none">
+            <h3 class="border-blue">📦 Nhập khẩu theo mặt hàng (YoY)</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="import-commodity-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ kim ngạch nhập khẩu theo mặt hàng (tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu theo THANG RIÊNG của từng mặt hàng — xanh = nhập khẩu tăng mạnh hơn so với chính nó trong quá khứ, đỏ = yếu hơn/giảm (CHỈ phản ánh xu hướng khối lượng/giá trị nhập, KHÔNG hàm ý tốt/xấu — nhập khẩu tăng có thể vì cầu sản xuất trong nước tăng). Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
+        </div>
+
+        <!-- Bảng giá XK bình quân theo mặt hàng (YoY, màu phân kỳ, user 2026-10-01: "giá đang căng
+             không, giá tăng màu đỏ còn thấp thì trắng rồi xanh lá") -->
+        <div class="card margin-top-20" id="export-price-table-card" style="display:none">
+            <h3 class="border-blue">💹 Giá xuất khẩu bình quân theo mặt hàng (YoY)</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="export-price-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ giá xuất khẩu bình quân theo mặt hàng (USD/tấn, tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh mốc 0% (thang CHUNG cho cả bảng, không riêng từng hàng) — đỏ = giá tăng, trắng = quanh 0%, xanh = giá giảm. Với xuất khẩu, giá tăng thường có lợi cho VN (thu nhiều USD hơn/tấn) — màu đỏ ở đây chỉ thể hiện HƯỚNG biến động, không phải "xấu". Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
+        </div>
+
+        <!-- Bảng giá NK bình quân theo mặt hàng (YoY, màu phân kỳ) -->
+        <div class="card margin-top-20" id="import-price-table-card" style="display:none">
+            <h3 class="border-blue">💹 Giá nhập khẩu bình quân theo mặt hàng (YoY)</h3>
+            <div class="monitoring-table-scroll">
+                <table class="monitoring-table" id="import-price-table"></table>
+            </div>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ giá nhập khẩu bình quân theo mặt hàng (USD/tấn, tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh mốc 0% (thang CHUNG cho cả bảng) — đỏ = giá tăng (áp lực chi phí nhập khẩu/lạm phát nhập khẩu — "căng"), trắng = quanh 0%, xanh = giá giảm (dịu áp lực). Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
+        </div>
+
         <!-- So sánh 2 quyết định: VN-Index headline (có VIN) vs ex-VIN -->
         <div class="card margin-top-20" id="vnindex-compare-card" style="display:none">
             <h3 class="border-blue">🔍 So sánh 2 góc nhìn định giá — có/không VIN</h3>
