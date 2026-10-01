@@ -1083,9 +1083,13 @@ function renderImportCommodityTable(table) {
 // Bảng giá XK/NK bình quân theo mặt hàng (user 2026-10-01: "cái nào giá tăng thì màu đỏ còn thấp
 // thì trắng rồi xanh lá") — màu PHÂN KỲ quanh mốc 0% (KHÁC _heatmapColor min-max theo lịch sử
 // riêng từng hàng ở trên): đỏ = giá tăng (YoY dương), trắng = quanh 0%, xanh = giá giảm (YoY âm).
-// Thang màu CHUNG CHO CẢ BẢNG (maxAbs = trị tuyệt đối lớn nhất trong toàn bảng, không riêng từng
-// hàng) để so sánh được mức độ tăng/giảm GIỮA các mặt hàng với nhau — khác mục đích của bảng GDP/
-// CPI (so 1 ngành/nhóm với CHÍNH NÓ trong lịch sử).
+// Thang màu NGƯỠNG CỐ ĐỊNH (user 2026-10-01: "cứ giá tăng trên 30% là đỏ, dưới 30% thì nhạt dần")
+// — KHÔNG dùng maxAbs của cả bảng nữa (1 mặt hàng nhảy đột biến, vd "Quặng và khoáng sản khác"
+// +575%, sẽ kéo thang giãn ra làm mọi ô khác nhạt màu hẳn dù bản thân tăng/giảm 20-40% vẫn đáng
+// chú ý) — DIVERGING_SCALE_PCT = 30 là mốc bão hoà màu (đỏ/xanh đậm nhất), giá trị VƯỢT 30% vẫn
+// giữ màu đậm nhất (clamp), không đậm hơn nữa.
+const DIVERGING_SCALE_PCT = 30;
+
 function _heatmapColorDiverging(g) {
     // g từ -1 (giảm mạnh, xanh #10b981) tới 0 (trắng) tới +1 (tăng mạnh, đỏ #ef4444).
     const white = [255, 255, 255];
@@ -1105,13 +1109,12 @@ function _renderHeatmapTableDiverging(cardId, elId, table, firstColLabel) {
     if (!table || !table.rows || !table.rows.length) { card.style.display = 'none'; return; }
     card.style.display = '';
 
-    const maxAbs = Math.max(...table.rows.flatMap(r => r.values.filter(v => v !== null && v !== undefined).map(Math.abs)), 1e-9);
     const periods = table.periods;
     const thead = `<thead><tr><th>${firstColLabel}</th>${periods.map(p => `<th>${_periodToShortLabelQOrM(p)}</th>`).join('')}</tr></thead>`;
     const tbody = table.rows.map(row => {
         const cells = row.values.map(v => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
-            const bg = _heatmapColorDiverging(v / maxAbs);
+            const bg = _heatmapColorDiverging(v / DIVERGING_SCALE_PCT);
             return `<td style="background:${bg};color:#0b1220">${formatNumber(v)}%</td>`;
         }).join('');
         return `<tr><th>${row.label}</th>${cells}</tr>`;

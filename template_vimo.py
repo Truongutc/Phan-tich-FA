@@ -4085,14 +4085,14 @@ def run_vimo_analysis():
     print("[INFO] Dựng bảng heatmap GDP theo ngành (YoY, tự tính từ MỨC) + CPI theo nhóm hàng (YoY)...")
     sector_detail = _load_sector_detail()
     gdp_sector_table = _build_level_yoy_heatmap(
-        sector_detail.get("gdp_sector_levels", {}), quarterly=True, n_periods=9, min_points=4,
+        sector_detail.get("gdp_sector_levels", {}), quarterly=True, n_periods=40, min_points=4,
         good_direction="higher")
     if gdp_sector_table:
         print(f"  -> GDP theo ngành: {len(gdp_sector_table['rows'])} hàng x {len(gdp_sector_table['periods'])} quý")
     else:
         print("  -> Chưa đủ dữ liệu quý để dựng bảng GDP theo ngành.")
     cpi_group_table = _build_level_yoy_heatmap(
-        sector_detail.get("cpi_group_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        sector_detail.get("cpi_group_levels", {}), quarterly=False, n_periods=60, min_points=6,
         good_direction="lower", break_threshold_pct=4.0)
     if cpi_group_table:
         print(f"  -> CPI theo nhóm hàng: {len(cpi_group_table['rows'])} hàng x {len(cpi_group_table['periods'])} tháng")
@@ -4101,14 +4101,14 @@ def run_vimo_analysis():
 
     print("[INFO] Dựng bảng heatmap XK/NK theo mặt hàng (YoY)...")
     export_commodity_table = _build_level_yoy_heatmap(
-        sector_detail.get("export_commodity_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        sector_detail.get("export_commodity_levels", {}), quarterly=False, n_periods=60, min_points=6,
         good_direction="higher")
     if export_commodity_table:
         print(f"  -> Xuất khẩu theo mặt hàng: {len(export_commodity_table['rows'])} hàng x {len(export_commodity_table['periods'])} tháng")
     else:
         print("  -> Chưa đủ dữ liệu để dựng bảng xuất khẩu theo mặt hàng.")
     import_commodity_table = _build_level_yoy_heatmap(
-        sector_detail.get("import_commodity_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        sector_detail.get("import_commodity_levels", {}), quarterly=False, n_periods=60, min_points=6,
         good_direction="higher")
     if import_commodity_table:
         print(f"  -> Nhập khẩu theo mặt hàng: {len(import_commodity_table['rows'])} hàng x {len(import_commodity_table['periods'])} tháng")
@@ -4117,14 +4117,14 @@ def run_vimo_analysis():
 
     print("[INFO] Dựng bảng heatmap giá XK/NK bình quân theo mặt hàng (YoY, màu phân kỳ đỏ-trắng-xanh)...")
     export_price_table = _build_level_yoy_heatmap(
-        sector_detail.get("export_price_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        sector_detail.get("export_price_levels", {}), quarterly=False, n_periods=60, min_points=6,
         good_direction="higher")
     if export_price_table:
         print(f"  -> Giá xuất khẩu: {len(export_price_table['rows'])} hàng x {len(export_price_table['periods'])} tháng")
     else:
         print("  -> Chưa đủ dữ liệu để dựng bảng giá xuất khẩu.")
     import_price_table = _build_level_yoy_heatmap(
-        sector_detail.get("import_price_levels", {}), quarterly=False, n_periods=13, min_points=6,
+        sector_detail.get("import_price_levels", {}), quarterly=False, n_periods=60, min_points=6,
         good_direction="lower")
     if import_price_table:
         print(f"  -> Giá nhập khẩu: {len(import_price_table['rows'])} hàng x {len(import_price_table['periods'])} tháng")
