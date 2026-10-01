@@ -3419,6 +3419,89 @@ def _add_fdi_trade_share(raw, trends):
         print(f"  -> Ty trong FDI trong {label_vn}: {len(points)} diem")
 
 
+def _add_retail_sales_derived(raw, trends):
+    """Tăng trưởng bán lẻ DANH NGHĨA (so cùng kỳ) cho 5 dòng (tổng + 4 cấu phần, từ
+    fetch_dulieukinhte_retail_sales() — fetch_macro_data.py) + tăng trưởng THỰC (trừ lạm phát)
+    cho dòng tổng — user (2026-10-01): "tổng mức bán lẻ sẽ đánh giá về sức tiêu thụ và nhu cầu chi
+    tiêu của người dân... đánh giá sức khỏe nền kinh tế". Dòng tổng BACKFILL trực tiếp vào
+    retail_sales_growth (chỉ báo ĐÃ CÓ, đang dùng trong Scorecard nhóm Tăng trưởng + biểu đồ tổng
+    quan vĩ mô — trước đây quét câu văn báo cáo NSO rất dễ vỡ, chỉ có vài điểm rải rác, user tự
+    phát hiện thiếu cả năm 2025 khi xem biểu đồ đối chiếu). 4 cấu phần còn lại tạo chỉ báo MỚI để
+    so sánh TỐC ĐỘ tăng hàng hoá (thiết yếu) vs dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm) —
+    dịch vụ tăng nhanh hơn hàng hoá là tín hiệu tiêu dùng "khỏe" thực sự (niềm tin cải thiện),
+    không chỉ tăng do giá. Tăng trưởng THỰC ≈ (1+danh nghĩa)/(1+CPI YoY) − 1 — danh nghĩa trừ lạm
+    phát mới phản ánh đúng SỨC MUA thật, không bị giá cả che mờ. Phái sinh tính toán, KHÔNG lưu
+    retail_sales_growth_real/các dòng *_growth cấu phần vào vimo_raw.json (retail_sales_growth
+    headline thì CÓ lưu — đã là chỉ báo cũ, backfill thêm điểm vào y nguyên)."""
+    cpi = raw.get("cpi_yoy")
+    cpi_by_period = {p["period"]: p["value"] for p in cpi["series"] if p.get("value") is not None} if cpi else {}
+
+    _COMPONENTS = [
+        ("retail_sales_total_monthly", "retail_sales_growth", "Tổng mức bán lẻ HH & DV (YoY, danh nghĩa)", True),
+        ("retail_sales_goods_monthly", "retail_sales_goods_growth", "Bán lẻ hàng hoá (YoY, danh nghĩa)", False),
+        ("retail_sales_hospitality_monthly", "retail_sales_hospitality_growth", "Dịch vụ lưu trú, ăn uống (YoY, danh nghĩa)", False),
+        ("retail_sales_travel_monthly", "retail_sales_travel_growth", "Du lịch lữ hành (YoY, danh nghĩa)", False),
+        ("retail_sales_other_monthly", "retail_sales_other_growth", "Dịch vụ khác (YoY, danh nghĩa)", False),
+    ]
+    for level_key, growth_key, label, is_headline in _COMPONENTS:
+        level_ind = raw.get(level_key)
+        if not level_ind:
+            continue
+        by_period = {p["period"]: p["value"] for p in level_ind["series"] if p.get("value") is not None}
+        src = level_ind["series"][-1]["source_url"] if level_ind["series"] else None
+        points = _yoy_from_level_series(by_period, src)
+        if not points:
+            continue
+        if growth_key not in raw:
+            raw[growth_key] = {
+                "group": "growth", "label": label, "unit": "%", "good_direction": "higher",
+                "auto_source": "derived" if not is_headline else "nso_scrape", "series": [],
+                "note": (f"= YoY của {level_key} (dulieukinhte.com, mirror NSO, theo tháng, giá "
+                         "hiện hành). Phái sinh tính toán."
+                         + (" Backfill vào chỉ báo retail_sales_growth đã có sẵn (trước đây quét "
+                            "câu văn báo cáo NSO, dễ vỡ, thưa dữ liệu)." if is_headline else
+                            " So với retail_sales_growth (tổng) để biết tiêu dùng đang dịch chuyển "
+                            "sang hàng hoá hay dịch vụ.")),
+                "impact": "Tăng trưởng DANH NGHĨA (CHƯA trừ lạm phát) — xem retail_sales_growth_real để có góc nhìn sức mua THỰC.",
+            }
+        # Merge theo period (không dùng _merge_point_anywhere — hàm đó ở fetch_macro_data.py,
+        # không import sang đây) — chỉ cần merge tại chỗ, KHÔNG lưu lại vimo_raw.json (raw trong
+        # template_vimo.py chỉ ở trong bộ nhớ của lần chạy này, LEVEL gốc mới là thứ được lưu, nên
+        # backfill lại đúng y vậy mỗi lần chạy, không mất dữ liệu).
+        series = raw[growth_key]["series"]
+        by_existing_period = {p["period"]: p for p in series}
+        for pt in points:
+            if pt["period"] in by_existing_period:
+                by_existing_period[pt["period"]]["value"] = pt["value"]
+                by_existing_period[pt["period"]]["source_url"] = pt["source_url"]
+            else:
+                series.append(dict(pt))
+                by_existing_period[pt["period"]] = series[-1]
+        series.sort(key=lambda p: p["period"])
+        trends[growth_key] = calc_trend(series, "higher")
+        print(f"  -> {label}: {len(points)} diem")
+
+    # Tăng trưởng THỰC (trừ lạm phát) cho dòng tổng — ưu tiên most-accurate ngay sau khi đã backfill.
+    total_growth = raw.get("retail_sales_growth")
+    if total_growth and cpi_by_period:
+        real_points = []
+        for p in total_growth["series"]:
+            cpi_val = cpi_by_period.get(p["period"])
+            if p.get("value") is None or cpi_val is None:
+                continue
+            real = round((1 + p["value"] / 100) / (1 + cpi_val / 100) * 100 - 100, 2)
+            real_points.append({"period": p["period"], "value": real, "source_url": None})
+        if real_points:
+            raw["retail_sales_growth_real"] = {
+                "group": "growth", "label": "Tổng mức bán lẻ HH & DV (YoY, THỰC — đã trừ CPI)", "unit": "%",
+                "good_direction": "higher", "auto_source": "derived", "series": real_points,
+                "note": "≈ (1 + retail_sales_growth/100) / (1 + cpi_yoy/100) − 1 — trừ lạm phát để biết sức mua THỰC, không bị giá cả che mờ (vd tăng danh nghĩa 8% nhưng CPI 4% thì sức mua thực chỉ tăng ~4%). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+                "impact": "Đây là thước đo ĐÚNG để đánh giá sức khỏe tiêu dùng — tăng trưởng danh nghĩa cao nhưng THỰC thấp/âm nghĩa là dân chỉ đang trả giá cao hơn, không mua nhiều hơn. THỰC dương và tăng dần là tín hiệu tiêu dùng khỏe thật.",
+            }
+            trends["retail_sales_growth_real"] = calc_trend(real_points, "higher")
+            print(f"  -> Tổng mức bán lẻ (YoY, THỰC): {len(real_points)} diem")
+
+
 # Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
 # kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
 # Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
@@ -3979,6 +4062,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính ty trong FDI trong XK/NK theo thang (KHÔNG lưu vào vimo_raw.json)...")
     _add_fdi_trade_share(raw, trends)
+
+    print("[INFO] Tinh tang truong ban le danh nghia + thuc (KHÔNG lưu vào vimo_raw.json)...")
+    _add_retail_sales_derived(raw, trends)
 
     print("[INFO] Tổng hợp rủi ro hệ thống ngân hàng (ALM) từ data/bank_alm/ (KHÔNG lưu vào vimo_raw.json)...")
     banking_system_risk = _add_bank_alm_derived_indicators(raw, trends)

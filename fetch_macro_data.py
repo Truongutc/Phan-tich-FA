@@ -1825,6 +1825,17 @@ def fetch_dulieukinhte_import_price():
     return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/gia-nhap-khau-287", quarterly=False)
 
 
+def fetch_dulieukinhte_retail_sales():
+    """dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273 — Tổng mức bán lẻ hàng hóa & dịch
+    vụ tiêu dùng theo THÁNG (ĐƠN LẺ, giá hiện hành — DANH NGHĨA, chưa trừ lạm phát), tách 4 cấu
+    phần (Bán lẻ hàng hoá / Dịch vụ lưu trú-ăn uống / Du lịch lữ hành / Dịch vụ khác), nguồn Cục
+    Thống kê (NSO). User (2026-10-01) muốn dùng để đánh giá sức tiêu thụ/nhu cầu chi tiêu — xem
+    _add_retail_sales_derived() trong template_vimo.py (tính YoY danh nghĩa + THỰC, trừ CPI).
+    Backfill DÀY HƠN NHIỀU so với nguồn cũ (quét câu văn báo cáo NSO, dễ vỡ, hiện chỉ có 1-2 điểm
+    rải rác/năm — xem gdp_struct["retail_sales_yoy_pct"]). Trả {dòng: {period: value_ty_dong}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273", quarterly=False)
+
+
 def fetch_dulieukinhte_export_fdi_split():
     """dulieukinhte.com/du-lieu/tong-xuat-khau-292 — Kim ngạch XUẤT KHẨU theo THÁNG (ĐƠN LẺ, không
     phải lũy kế như export_domestic_usd_bn/export_fdi_usd_bn hiện có — xem fetch_nso_gdp_structure_
@@ -3563,6 +3574,43 @@ def update_vimo_raw():
         print(f"  -> {len(kieu_hoi_data)} quý ({min(kieu_hoi_data)}..{max(kieu_hoi_data)})")
     else:
         print("  -> Không lấy được (đổi cấu trúc trang?)")
+
+    # THEM (user 2026-10-01, "tổng mức bán lẻ sẽ đánh giá về sức tiêu thụ và nhu cầu chi tiêu của
+    # người dân ... tư duy về chỉ số này đánh giá như nào về sức khỏe nền kinh tế"): backfill DÀY
+    # HƠN NHIỀU cho retail_sales_growth (trước chỉ 1-2 điểm/năm, quét câu văn báo cáo NSO rất dễ
+    # vỡ — user tự thấy thiếu khi xem biểu đồ đối chiếu năm 2025), cộng 4 cấu phần MỚI để so sánh
+    # cơ cấu tiêu dùng (hàng hoá vs dịch vụ lưu trú-ăn uống vs du lịch — xem fetch_dulieukinhte_
+    # retail_sales()). Tính YoY (danh nghĩa + THỰC, trừ CPI) ở _add_retail_sales_derived()
+    # (template_vimo.py), KHÔNG tính ở đây (cần cpi_yoy đã tính xong, chạy sau update_vimo_raw()).
+    print("[dulieukinhte.com — Tổng mức bán lẻ hàng hóa & dịch vụ tiêu dùng theo tháng (NSO)]")
+    _RETAIL_SALES_META = {
+        "Tổng mức bán lẻ HH và DV": ("retail_sales_total_monthly", "Tổng mức bán lẻ HH & DV tiêu dùng (theo tháng, danh nghĩa)"),
+        "Bán lẻ hàng hoá": ("retail_sales_goods_monthly", "Bán lẻ hàng hoá (theo tháng, danh nghĩa)"),
+        "Dịch vụ lưu trữ, ăn uống": ("retail_sales_hospitality_monthly", "Dịch vụ lưu trú, ăn uống (theo tháng, danh nghĩa)"),
+        "Du lịch lữ hành": ("retail_sales_travel_monthly", "Du lịch lữ hành (theo tháng, danh nghĩa)"),
+        "Dịch vụ khác": ("retail_sales_other_monthly", "Dịch vụ khác (theo tháng, danh nghĩa)"),
+    }
+    retail_data = fetch_dulieukinhte_retail_sales()
+    n_points = 0
+    for row_label, (raw_key, label) in _RETAIL_SALES_META.items():
+        series = retail_data.get(row_label)
+        if not series:
+            continue
+        if raw_key not in raw:
+            raw[raw_key] = {
+                "group": "growth", "label": label, "unit": "tỷ đồng", "good_direction": "higher",
+                "auto_source": "nso",
+                "note": ("dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN "
+                         "HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có "
+                         "sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực."),
+                "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá.",
+                "series": [],
+            }
+        for period, value in series.items():
+            _merge_point_anywhere(raw, raw_key, period, value,
+                                   "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273")
+        n_points += len(series)
+    print(f"  -> {n_points} điểm (5 dòng: tổng + 4 cấu phần)")
 
     # THEM (user 2026-10-01, "dữ liệu tổng xuất khẩu nhập khẩu này có thể tính được xuất khẩu FDI
     # và nhập khẩu FDI ảnh hưởng ntn tới xnk của VN"): XNK theo THÁNG ĐƠN LẺ (khác export_domestic_

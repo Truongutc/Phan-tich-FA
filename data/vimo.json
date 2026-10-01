@@ -1,7 +1,7 @@
 {
   "sector": "Vĩ mô",
   "gdrivePdfUrl": null,
-  "lastUpdated": "2026-10-01 16:58",
+  "lastUpdated": "2026-10-01 17:32",
   "scorecard": {
     "groups": {
       "Tăng trưởng": {
@@ -302,31 +302,31 @@
     "text": "Vĩ mô đã ĐẢO CHIỀU được XÁC NHẬN (Scorecard đang dương điểm VÀ đang cải thiện so với kỳ trước) + định giá rẻ — giải ngân mạnh, tăng tỷ trọng cổ phiếu lớn, ưu tiên ngành hưởng lợi từ vĩ mô."
   },
   "marketValuationHeadline": {
-    "pe": 12.05,
+    "pe": 13.31,
     "pb": 1.97,
     "rf": 0.045880000000000004,
-    "erp": 0.03710755186721991,
+    "erp": 0.029251480090157767,
     "valuation_label": "Hợp lý",
-    "pe_source": "https://24hmoney.vn/indices/vn-index",
+    "pe_source": "https://worldperatio.com/area/vietnam/",
     "pb_source": "https://24hmoney.vn/indices/vn-index",
     "risk_compensation": {
-      "earnings_yield": 0.08298755186721991,
+      "earnings_yield": 0.07513148009015777,
       "deposit_rf": 0.061500000000000006,
       "hurdle_1_5x_bond": 0.06882,
       "hurdle_2x_bond": 0.09176000000000001,
       "hurdle_1_5x_deposit": 0.09225000000000001,
       "label": "Bù đắp tối thiểu, chưa có biên an toàn",
       "color": "warn",
-      "text": "Earnings Yield (1/P·E) hiện 8.30%. So với lãi suất TPCP 10 năm (4.59%): ĐẠT mức 1,5 lần (6.88%), CHƯA đạt mức 2 lần (9.18%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.15%): CHƯA đạt mức 1,5 lần (9.23%). => Bù đắp tối thiểu, chưa có biên an toàn."
+      "text": "Earnings Yield (1/P·E) hiện 7.51%. So với lãi suất TPCP 10 năm (4.59%): ĐẠT mức 1,5 lần (6.88%), CHƯA đạt mức 2 lần (9.18%). So với lãi suất huy động BÌNH QUÂN THỊ TRƯỜNG thực tế (6.15%): CHƯA đạt mức 1,5 lần (9.23%). => Bù đắp tối thiểu, chưa có biên an toàn."
     },
     "capm_valuation": {
-      "roe": 0.1634854771784232,
+      "roe": 0.1480090157776108,
       "coe": 0.11588000000000001,
-      "justified_pb": 1.7226089432061809,
-      "premium_pct": 0.14361417184643543,
-      "label": "Quanh vùng P/B hợp lý (CAPM)",
-      "color": "warn",
-      "text": "ROE VN-Index (P/B÷P/E) = 16.35%. Chi phí vốn chủ sở hữu CAPM (Rf 4.59% + β1.0×ERP Việt Nam 7.0%) = 11.59%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.72x, so với P/B thực tế 1.97x => cao hơn 14.4%. => Quanh vùng P/B hợp lý (CAPM)."
+      "justified_pb": 1.4876899784093927,
+      "premium_pct": 0.3242006255270222,
+      "label": "Đắt hơn nhiều so với P/B hợp lý (CAPM)",
+      "color": "bad",
+      "text": "ROE VN-Index (P/B÷P/E) = 14.80%. Chi phí vốn chủ sở hữu CAPM (Rf 4.59% + β1.0×ERP Việt Nam 7.0%) = 11.59%. P/B hợp lý (Gordon Growth, g=5%) = (ROE-g)/(COE-g) = 1.49x, so với P/B thực tế 1.97x => cao hơn 32.4%. => Đắt hơn nhiều so với P/B hợp lý (CAPM)."
     }
   },
   "decisionHeadline": {
@@ -351,14 +351,14 @@
         "available": true
       },
       "clarity_label": "Xám — tín hiệu trái chiều/hỗn hợp",
-      "clarity_pct": 57.2,
-      "clarity_detail": "99/173 chỉ báo có xu hướng rõ đang tốt lên (57%), 74/173 đang xấu đi."
+      "clarity_pct": 57.9,
+      "clarity_detail": "103/178 chỉ báo có xu hướng rõ đang tốt lên (58%), 75/178 đang xấu đi."
     },
-    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang cải thiện ▲ — So với tuần trước (2026-09-25): -1/6 → +1/6 ▲. So với tháng trước (2026-08-31): +1/6 → +1/6 →. So với quý trước (2026-07-09): -2/6 → +1/6 ▲. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 99/173 chỉ báo có xu hướng rõ đang tốt lên (57%), 74/173 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Tăng tỷ trọng vừa phải\".\n\nScorecard Vĩ Mô tổng hợp đạt +1/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lãi suất và Tỷ giá & Dòng vốn ngoại. Ngược lại, nhóm Lạm phát và Thanh khoản đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Thương mại & Hàng hóa giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể:\n(1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026);\n(2) Doanh số bán lẻ (YoY) đạt 14.95 % (kỳ T8/2026);\n(3) Lạm phát cơ bản (YoY) đạt 4.55 % (kỳ T8/2026);\n(4) Lãi suất liên ngân hàng 3 tháng đạt 6.63 % (kỳ Tuần 40/2026);\n(5) Tăng trưởng tín dụng (YoY) đạt 8.97 % (kỳ T7/2026);\n(6) Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết) đạt 6.00 % (kỳ T8/2026);\n(7) Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP đạt 15.20 % (kỳ 6T đầu 2026);\n(8) Xuất khẩu (YoY) đạt 26.01 % (kỳ T8/2026);\n(9) FDI giải ngân (lũy kế) đạt 17.25 tỷ USD (kỳ T8/2026);\n(10) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025);\n(11) Nợ công / GDP đạt 32.86 % (kỳ 2024);\n(12) Thu ngân sách (YoY) đạt 20.91 % (kỳ Q2/2026);\n(13) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 33.62 % (kỳ T8/2026);\n(14) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026);\n(15) Giá dầu Brent đạt 114.89 USD/thùng (kỳ 2026-09-22);\n(16) VN-Index P/E (ex-VIN) đạt 10.55 x (kỳ T10/2026);\n(17) VN-Index P/B (ex-VIN) đạt 1.65 x (kỳ T10/2026);\n(18) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026);\n(19) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026);\n(20) FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế) đạt 40.60 tỷ USD (kỳ T8/2026);\n(21) Tổng dư nợ tín dụng toàn nền kinh tế đạt 20150411.00 tỷ VND (kỳ T6/2026);\n(22) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025);\n(23) Đóng góp vào lạm phát — nhóm Nhà, điện, nước đạt 1.24 điểm % (kỳ T8/2026);\n(24) VN-Index P/E (headline, có VIN) đạt 12.05 x (kỳ T10/2026);\n(25) VN-Index P/B (headline, có VIN) đạt 1.97 x (kỳ T10/2026);\n(26) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt 10038.00 tỷ đồng (kỳ 2026-09-30);\n(27) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 50.50 % (kỳ T8/2026);\n(28) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026);\n(29) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026);\n(30) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026);\n(31) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 546.80 nghìn tỷ đồng (kỳ T8/2026);\n(32) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026);\n(33) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt 162.00 nghìn người (kỳ 2026-08-01);\n(34) CPI lõi Mỹ (YoY) đạt 2.45 % (kỳ 2026-08-01);\n(35) PCE Mỹ (YoY) đạt 3.70 % (kỳ 2026-07-01);\n(36) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.42 % (kỳ 2026-08-01);\n(37) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01);\n(38) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01);\n(39) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025);\n(40) Tổng huy động vốn toàn nền kinh tế đạt 17440361.00 tỷ VND (kỳ T6/2026);\n(41) Tong cung tien M2 đạt 20414616.00 ty VND (kỳ T6/2026);\n(42) Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng đạt 669.10 nghìn tỷ đồng (kỳ T7/2026);\n(43) Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng) đạt 7.31 % (kỳ 2025);\n(44) Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng) đạt 11.89 % (kỳ 2025);\n(45) Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 7.09 % (kỳ T6/2026);\n(46) Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 5.60 % (kỳ T6/2026);\n(47) Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng) đạt 4.99 % (kỳ T6/2026);\n(48) Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %) đạt 2.89 điểm % (kỳ 2025);\n(49) Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %) đạt 3.99 điểm % (kỳ 2025);\n(50) Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %) đạt 1.06 điểm % (kỳ 2025);\n(51) Chênh lệch lợi suất TPCP 2Y-1Y (VN) đạt 11.90 điểm % (kỳ T9/2026);\n(52) Dự trữ ngoại hối — ngoại tệ (theo tháng) đạt 86318.00 tỷ USD (kỳ T6/2026);\n(53) Tỷ giá USD/VND (bình quân tháng) đạt 26070.00 VND (kỳ T9/2026);\n(54) P/E thị trường (theo tháng, từ 2016) đạt 14.26 lần (kỳ T9/2026);\n(55) Chỉ số giá cổ phiếu (theo tháng) đạt 1827.72 điểm (kỳ T9/2026);\n(56) Cán cân vãng lai — Dịch vụ đạt -1.67 tỷ USD (kỳ Q1/2026);\n(57) Cán cân vãng lai — Thu nhập sơ cấp đạt -1.23 tỷ USD (kỳ Q1/2026);\n(58) Cán cân tài chính — FDI (nợ) đạt -4.34 tỷ USD (kỳ Q1/2026);\n(59) Cán cân tài chính — Đầu tư gián tiếp (nợ) đạt 1.41 tỷ USD (kỳ Q1/2026);\n(60) Cán cân tài chính — Khác (nợ) đạt -0.68 tỷ USD (kỳ Q1/2026);\n(61) FDI — Vốn cổ phần đạt -3.13 tỷ USD (kỳ Q1/2026);\n(62) Đầu tư khác — Tiền & tiền gửi đạt 2.75 tỷ USD (kỳ Q1/2026);\n(63) Tiền gửi (cán cân tài chính) — Khu vực ngân hàng đạt 0.41 tỷ USD (kỳ Q1/2026);\n(64) Dư nợ TPDN / GDP (ADB) đạt 7.92 % GDP (kỳ Q1/2026);\n(65) Dư nợ tín phiếu NHTW / GDP (ADB) đạt 2.19 % GDP (kỳ Q1/2026);\n(66) Cơ cấu kỳ hạn TPCP — 1-3 năm đạt 8.85 % dư nợ (kỳ Q2/2026);\n(67) Cơ cấu kỳ hạn TPCP — 3-5 năm đạt 15.62 % dư nợ (kỳ Q2/2026);\n(68) Cơ cấu kỳ hạn TPDN — 3-5 năm đạt 14.35 % dư nợ (kỳ Q2/2026);\n(69) Cơ cấu kỳ hạn TPDN — 5-10 năm đạt 26.25 % dư nợ (kỳ Q2/2026);\n(70) Cơ cấu kỳ hạn TPDN — Trên 10 năm đạt 1.49 % dư nợ (kỳ Q2/2026);\n(71) Cơ cấu nhà đầu tư nắm giữ TPCP — Khác đạt 2.30 % (kỳ Q1/2026);\n(72) Vốn hóa thị trường chứng khoán / GDP đạt 61.40 % GDP (kỳ 2025);\n(73) Nợ công / GDP (có dự báo tới 2031) đạt 26.60 % GDP (kỳ 2031);\n(74) Tỷ lệ đô thị hóa đạt 38.80 % dân số (kỳ 2025);\n(75) Dân số 65+ tuổi đạt 22.00 triệu người (kỳ 2050);\n(76) GDP theo sử dụng — Tiêu dùng Chính phủ đạt 9.40 % GDP (kỳ 2025);\n(77) GDP theo sử dụng — Đầu tư (GFCF) đạt 34.60 % GDP (kỳ 2031);\n(78) Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986) đạt 42.70 % GDP (kỳ 2025);\n(79) Tổng đầu tư / GDP đạt 34.60 % GDP (kỳ 2031);\n(80) GDP bình quân đầu người (danh nghĩa) đạt 6652.00 USD (kỳ 2031);\n(81) GDP bình quân đầu người (PPP) đạt 27821.00 Int$ (kỳ 2031);\n(82) GNI bình quân đầu người (Atlas) đạt 4970.00 USD (kỳ 2025);\n(83) Hàng hóa: Xuất khẩu (BOP, NHNN) đạt 143586.00 triệu USD (kỳ Q2/2026);\n(84) Hàng hóa: Nhập khẩu (BOP, NHNN) đạt 149083.00 triệu USD (kỳ Q2/2026);\n(85) Dịch vụ: Nhập khẩu (BOP, NHNN) đạt 11808.00 triệu USD (kỳ Q2/2026);\n(86) Thu nhập đầu tư: Thu (BOP, NHNN) đạt 1327.00 triệu USD (kỳ Q2/2026);\n(87) Thu nhập đầu tư: Chi (BOP, NHNN) đạt 6983.00 triệu USD (kỳ Q2/2026);\n(88) Chuyển giao vãng lai: Thu (BOP, NHNN) đạt 4250.00 triệu USD (kỳ Q2/2026);\n(89) Cán cân tài chính (BOP, NHNN) đạt 1899.00 triệu USD (kỳ Q2/2026);\n(90) Đầu tư trực tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN) đạt 6090.00 triệu USD (kỳ Q2/2026);\n(91) Lỗi và Sai sót (BOP, NHNN) đạt 9283.00 triệu USD (kỳ Q2/2026);\n(92) Cán cân tổng thể (BOP, NHNN) đạt 81.00 triệu USD (kỳ Q2/2026);\n(93) Δ Tài sản dự trữ trong kỳ (BOP, NHNN) đạt -81.00 triệu USD (kỳ Q2/2026);\n(94) Tỷ giá hiệu lực danh nghĩa (NEER) Việt Nam — Darvas (Bruegel) đạt 79.56 Index (tháng cơ sở nội bộ Darvas) (kỳ T8/2026);\n(95) Tỷ giá hiệu lực thực (REER) Việt Nam — Darvas (Bruegel) đạt 145.66 Index (tháng cơ sở nội bộ Darvas) (kỳ T8/2026);\n(96) Kiều hối về TP.HCM (NHNN Chi nhánh Khu vực 2) đạt 2032.00 triệu USD (kỳ Q2/2026);\n(97) Xuất khẩu — Tổng (Hải quan, theo tháng) đạt 54794.76 triệu USD (kỳ T8/2026);\n(98) Xuất khẩu — Khu vực kinh tế trong nước (Hải quan, theo tháng) đạt 10498.85 triệu USD (kỳ T8/2026);\n(99) Xuất khẩu — Khu vực FDI (Hải quan, theo tháng) đạt 44295.91 triệu USD (kỳ T8/2026);\n(100) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 101.30 nghìn tỷ đồng (kỳ T8/2026);\n(101) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026);\n(102) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026);\n(103) Spread lợi suất TPCP Mỹ 10 năm - 2 năm đạt 0.31 điểm % (kỳ 2026-09-24);\n(104) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.94 điểm % (kỳ 2026-09-24);\n(105) Chênh lệch lãi suất VND-USD (O/N liên NH VND − Fed Funds) đạt 0.62 điểm % (kỳ T8/2026);\n(106) Tỷ giá USD/VND — % thay đổi so tháng trước (MoM) đạt -0.68 % (kỳ T9/2026);\n(107) Tỷ giá USD/VND — % thay đổi so cùng kỳ năm trước (YoY) đạt -1.32 % (kỳ T9/2026);\n(108) Xuất khẩu — % thay đổi so tháng trước (MoM, Hải quan) đạt 8.06 % (kỳ T6/2026);\n(109) Gap tỷ giá USD chợ đen − Vietcombank (bán ra) đạt -127.00 VND (kỳ 2026-09-29);\n(110) Gap tỷ giá USD chợ đen − Vietcombank (% so VCB) đạt -0.48 % (kỳ 2026-09-29);\n(111) Nhập khẩu — Tỷ trọng khu vực FDI (%) đạt 76.66 % (kỳ T8/2026);\n(112) Tăng trưởng tín dụng toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC) đạt 8.04 % (kỳ Q2/2026);\n(113) Tăng trưởng huy động toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC) đạt 5.34 % (kỳ Q2/2026);\n(114) Tổng Vốn chủ sở hữu toàn ngành NH niêm yết (theo BCTC) đạt 1741257.50 tỷ đồng (kỳ Q2/2026);\n(115) Tăng trưởng VCSH toàn ngành NH niêm yết (YoY, theo BCTC) đạt 18.95 % (kỳ Q2/2026);\n(116) Tăng trưởng VCSH toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC) đạt 8.87 % (kỳ Q2/2026).\n\nNgược lại, một số điểm nghẽn/rủi ro cần lưu ý:\n(1) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.40 % (kỳ T8/2026);\n(2) PMI sản xuất (S&P Global) đạt 51.90 điểm (kỳ T9/2026);\n(3) CPI (YoY) đạt 4.89 % (kỳ T8/2026);\n(4) Lãi suất liên ngân hàng qua đêm (O/N) đạt 7.00 % (kỳ 2026-09-30);\n(5) Lãi suất liên ngân hàng 1 tuần đạt 7.00 % (kỳ 2026-09-30);\n(6) Lãi suất liên ngân hàng 2 tuần đạt 6.40 % (kỳ 2026-09-30);\n(7) Lãi suất liên ngân hàng 9 tháng đạt 8.55 % (kỳ Tuần 40/2026);\n(8) Tăng trưởng cung tiền M2 (YoY) đạt 4.24 % (kỳ T6/2026);\n(9) Tăng trưởng huy động vốn (YoY) đạt 10.39 % (kỳ T6/2026);\n(10) Nhập khẩu (YoY) đạt 37.90 % (kỳ T8/2026);\n(11) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026);\n(12) Chi ngân sách (YoY) đạt -8.16 % (kỳ Q2/2026);\n(13) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026);\n(14) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026);\n(15) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026);\n(16) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt -890.44 tỷ VND (kỳ 2026-09-30);\n(17) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 336.00 ngày (kỳ Tuần 40/2026);\n(18) Đóng góp vào lạm phát — nhóm Thực phẩm đạt 1.57 điểm % (kỳ T8/2026);\n(19) Đóng góp vào lạm phát — nhóm Vận tải đạt 0.78 điểm % (kỳ T8/2026);\n(20) Đóng góp vào lạm phát — nhóm Khác đạt 1.24 điểm % (kỳ T8/2026);\n(21) Số dư OMO đang lưu hành (kênh cầm cố) đạt 150496.94 tỷ đồng (kỳ 2026-09-30);\n(22) Lợi suất TPCP Mỹ kỳ hạn 10 năm đạt 5.18 % (kỳ 2026-09-24);\n(23) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 3.18 % (kỳ 2026-08-01);\n(24) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.94 % (kỳ 2026-08-01);\n(25) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.99 % (kỳ 2026-08-01);\n(26) CPI Mỹ (YoY) đạt 3.35 % (kỳ 2026-08-01);\n(27) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01);\n(28) Lợi suất TPCP Mỹ kỳ hạn 3 tháng đạt 4.24 % (kỳ 2026-09-24);\n(29) Lợi suất TPCP Mỹ kỳ hạn 1 năm đạt 4.51 % (kỳ 2026-09-24);\n(30) Lợi suất TPCP Mỹ kỳ hạn 2 năm đạt 4.87 % (kỳ 2026-09-24);\n(31) Lợi suất TPCP Mỹ kỳ hạn 5 năm đạt 5.03 % (kỳ 2026-09-24);\n(32) Lợi suất TPCP Mỹ kỳ hạn 30 năm đạt 5.47 % (kỳ 2026-09-24);\n(33) CPI (HICP) Eurozone (YoY) đạt 3.23 % (kỳ 2026-08-01);\n(34) Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng) đạt 17.41 % (kỳ T6/2026);\n(35) Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng) đạt 10.39 % (kỳ T6/2026);\n(36) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 156.84 % (kỳ T6/2026);\n(37) Lợi suất TPCP thứ cấp 2 năm (40yo) đạt 3.79 % (kỳ T9/2026);\n(38) Chênh lệch lợi suất TPCP 10Y-2Y (VN) đạt 75.90 điểm % (kỳ T8/2026);\n(39) Chênh lệch lợi suất TPCP 10Y VN so với Mỹ đạt -0.21 điểm % (kỳ T9/2026);\n(40) Chênh lệch lợi suất TPCP 2Y VN so với Mỹ đạt -0.58 điểm % (kỳ T9/2026);\n(41) Cán cân vãng lai — Hàng hóa đạt 2.43 tỷ USD (kỳ Q1/2026);\n(42) Cán cân vãng lai — Thu nhập thứ cấp đạt 3.19 tỷ USD (kỳ Q1/2026);\n(43) Cán cân tài chính — FDI (tài sản) đạt 0.16 tỷ USD (kỳ Q1/2026);\n(44) Cán cân tài chính — Đầu tư gián tiếp (tài sản) đạt -0.01 tỷ USD (kỳ Q1/2026);\n(45) Cán cân tài chính — Khác (tài sản) đạt 2.57 tỷ USD (kỳ Q1/2026);\n(46) FDI — Công cụ nợ đạt -1.21 tỷ USD (kỳ Q1/2026);\n(47) Đầu tư khác — Cho vay đạt -0.53 tỷ USD (kỳ Q1/2026);\n(48) Tiền gửi (cán cân tài chính) — Khu vực khác đạt 2.34 tỷ USD (kỳ Q1/2026);\n(49) Vay nợ (cán cân tài chính) — Chính phủ đạt 0.54 tỷ USD (kỳ Q1/2026);\n(50) Vay nợ (cán cân tài chính) — Khu vực khác đạt -1.07 tỷ USD (kỳ Q1/2026);\n(51) Cơ cấu kỳ hạn TPCP — 5-10 năm đạt 51.39 % dư nợ (kỳ Q2/2026);\n(52) Cơ cấu kỳ hạn TPCP — Trên 10 năm đạt 24.14 % dư nợ (kỳ Q2/2026);\n(53) Cơ cấu kỳ hạn TPDN — 1-3 năm đạt 57.91 % dư nợ (kỳ Q2/2026);\n(54) Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng đạt 36.56 % (kỳ Q1/2026);\n(55) Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm đạt 60.44 % (kỳ Q1/2026);\n(56) Dân số 0-14 tuổi đạt 18.70 triệu người (kỳ 2050);\n(57) Dân số 15-64 tuổi (lao động) đạt 69.30 triệu người (kỳ 2050);\n(58) Tỷ lệ phụ thuộc chung đạt 58.60 % (kỳ 2050);\n(59) Tỷ lệ phụ thuộc — Người già đạt 31.70 % (kỳ 2050);\n(60) GDP theo sử dụng — Tiêu dùng hộ gia đình đạt 53.20 % GDP (kỳ 2025);\n(61) GDP theo sử dụng — Xuất khẩu đạt 79.36 % GDP (kỳ 2026);\n(62) GDP theo sử dụng — Nhập khẩu đạt 75.19 % GDP (kỳ 2026);\n(63) Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986) đạt 11.60 % GDP (kỳ 2025);\n(64) Tiết kiệm quốc gia / GDP đạt 35.20 % GDP (kỳ 2031);\n(65) Cán cân vãng lai (BOP, NHNN) đạt -11101.00 triệu USD (kỳ Q2/2026);\n(66) Dịch vụ: Xuất khẩu (BOP, NHNN) đạt 8238.00 triệu USD (kỳ Q2/2026);\n(67) Chuyển giao vãng lai: Chi (BOP, NHNN) đạt 628.00 triệu USD (kỳ Q2/2026);\n(68) Đầu tư trực tiếp ra nước ngoài — Tài sản có (BOP, NHNN) đạt -190.00 triệu USD (kỳ Q2/2026);\n(69) Đầu tư gián tiếp ra nước ngoài — Tài sản có (BOP, NHNN) đạt 13.00 triệu USD (kỳ Q2/2026);\n(70) Đầu tư gián tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN) đạt -1518.00 triệu USD (kỳ Q2/2026);\n(71) Vay, trả nợ nước ngoài — ròng (BOP, NHNN) đạt -175.00 triệu USD (kỳ Q2/2026);\n(72) Nhập khẩu — Tổng (Hải quan, theo tháng) đạt 54907.98 triệu USD (kỳ T8/2026);\n(73) Nhập khẩu — Khu vực kinh tế trong nước (Hải quan, theo tháng) đạt 12814.79 triệu USD (kỳ T8/2026);\n(74) Nhập khẩu — Khu vực FDI (Hải quan, theo tháng) đạt 42093.18 triệu USD (kỳ T8/2026);\n(75) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026);\n(76) FDI đăng ký theo tháng (rời rạc) đạt 2.50 tỷ USD (kỳ T8/2026);\n(77) Nhập khẩu — % thay đổi so tháng trước (MoM, Hải quan) đạt 1.94 % (kỳ T6/2026);\n(78) Rủi ro lãi suất hệ thống NH niêm yết (ΔNII/NII khi LS +100bp) đạt 4.63 % (kỳ Q2/2026);\n(79) Rủi ro thanh khoản hệ thống NH niêm yết (che phủ rút -10% tiền gửi) đạt 319.70 % (kỳ Q2/2026);\n(80) Rollover Dependency 1 tháng hệ thống NH niêm yết đạt 25.58 % (kỳ Q2/2026);\n(81) Tăng trưởng tín dụng toàn ngành NH niêm yết (YoY, theo BCTC) đạt 16.62 % (kỳ Q2/2026);\n(82) Tăng trưởng huy động toàn ngành NH niêm yết (YoY, theo BCTC) đạt 17.03 % (kỳ Q2/2026);\n(83) GAP tín dụng - huy động toàn ngành NH niêm yết (theo BCTC) đạt -3472922.50 tỷ đồng (kỳ Q2/2026);\n(84) LDR toàn ngành NH niêm yết (theo BCTC, đã điều chỉnh TT22/26) đạt 80.35 % (kỳ Q2/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 10.55x, P/B 1.65x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.89% — mức định giá được xếp loại \"Rẻ/Hấp dẫn\". Kết hợp Scorecard vĩ mô (+1/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Tăng tỷ trọng vừa phải\": Định giá hợp lý và vĩ mô đang CẢI THIỆN so với kỳ trước — có thể tăng tỷ trọng cổ phiếu vừa phải, chọn lọc theo ngành hưởng lợi từ xu hướng cải thiện.",
+    "overview": "TÓM TẮT: Xu hướng vĩ mô đang đang cải thiện ▲ — So với tuần trước (2026-09-25): -1/6 → +1/6 ▲. So với tháng trước (2026-08-31): +1/6 → +1/6 →. So với quý trước (2026-07-09): -2/6 → +1/6 ▲. Bức tranh tổng thể hiện ở mức \"Xám — tín hiệu trái chiều/hỗn hợp\" — 103/178 chỉ báo có xu hướng rõ đang tốt lên (58%), 75/178 đang xấu đi. Về mức độ phù hợp đầu tư: khuyến nghị hiện tại là \"Tăng tỷ trọng vừa phải\".\n\nScorecard Vĩ Mô tổng hợp đạt +1/6 điểm, cho thấy bức tranh vĩ mô Việt Nam hiện nghiêng tích cực. Động lực tích cực đến từ nhóm Tăng trưởng, Lãi suất và Tỷ giá & Dòng vốn ngoại. Ngược lại, nhóm Lạm phát và Thanh khoản đang là điểm nghẽn, kéo lùi điểm tổng. Nhóm Thương mại & Hàng hóa giữ trạng thái trung tính — các chỉ báo trong nhóm chưa đồng thuận rõ hướng.\n\nCác điểm sáng cụ thể:\n(1) Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026);\n(2) Doanh số bán lẻ (YoY) đạt 18.57 % (kỳ T8/2026);\n(3) Lạm phát cơ bản (YoY) đạt 4.55 % (kỳ T8/2026);\n(4) Lãi suất liên ngân hàng 3 tháng đạt 6.63 % (kỳ Tuần 40/2026);\n(5) Tăng trưởng tín dụng (YoY) đạt 8.97 % (kỳ T7/2026);\n(6) Lãi suất huy động THỎA THUẬN cao nhất ghi nhận (ngoài biểu niêm yết) đạt 6.00 % (kỳ T8/2026);\n(7) Tăng trưởng tích lũy tài sản (đầu tư) theo phương pháp sử dụng GDP đạt 15.20 % (kỳ 6T đầu 2026);\n(8) Xuất khẩu (YoY) đạt 26.01 % (kỳ T8/2026);\n(9) FDI giải ngân (lũy kế) đạt 17.25 tỷ USD (kỳ T8/2026);\n(10) Dự trữ ngoại hối đạt 85.58 tỷ USD (kỳ 2025);\n(11) Nợ công / GDP đạt 32.86 % (kỳ 2024);\n(12) Thu ngân sách (YoY) đạt 20.91 % (kỳ Q2/2026);\n(13) Vốn đầu tư NSNN (YoY) — Đầu tư công đạt 33.62 % (kỳ T8/2026);\n(14) Tỷ lệ thất nghiệp đạt 2.21 % (kỳ Q1/2026);\n(15) Giá dầu Brent đạt 114.89 USD/thùng (kỳ 2026-09-22);\n(16) VN-Index P/E (ex-VIN) đạt 10.55 x (kỳ T10/2026);\n(17) VN-Index P/B (ex-VIN) đạt 1.65 x (kỳ T10/2026);\n(18) Cơ cấu GDP — Công nghiệp & Xây dựng đạt 37.66 % (kỳ 6T đầu 2026);\n(19) Cơ cấu vốn đầu tư — Khu vực Nhà nước đạt 28.10 % (kỳ 6T đầu 2026);\n(20) FDI đăng ký (cấp mới + điều chỉnh + góp vốn mua cổ phần, lũy kế) đạt 40.60 tỷ USD (kỳ T8/2026);\n(21) Tổng dư nợ tín dụng toàn nền kinh tế đạt 20150411.00 tỷ VND (kỳ T6/2026);\n(22) Thâm hụt/thặng dư ngân sách (%GDP) đạt 1.94 % (kỳ 2025);\n(23) Đóng góp vào lạm phát — nhóm Nhà, điện, nước đạt 1.24 điểm % (kỳ T8/2026);\n(24) VN-Index P/E (headline, có VIN) đạt 13.31 x (kỳ T10/2026);\n(25) VN-Index P/B (headline, có VIN) đạt 1.97 x (kỳ T10/2026);\n(26) NHNN bơm ròng/hút ròng qua OMO (kênh cầm cố) đạt 10038.00 tỷ đồng (kỳ 2026-09-30);\n(27) Tỷ lệ giải ngân vốn đầu tư công (lũy kế, % kế hoạch năm) đạt 50.50 % (kỳ T8/2026);\n(28) Kim ngạch xuất khẩu theo tháng đạt 50.79 tỷ USD (kỳ T6/2026);\n(29) Kim ngạch nhập khẩu theo tháng đạt 53.43 tỷ USD (kỳ T6/2026);\n(30) Cán cân thương mại theo tháng (Hải quan) đạt -2.64 tỷ USD (kỳ T6/2026);\n(31) Giá trị giải ngân vốn đầu tư công (lũy kế từ đầu năm) đạt 546.80 nghìn tỷ đồng (kỳ T8/2026);\n(32) Vốn đầu tư thực hiện toàn xã hội theo quý (giá hiện hành) đạt 1059.50 nghìn tỷ đồng (kỳ Q2/2026);\n(33) Việc làm phi nông nghiệp Mỹ (thay đổi trong tháng) đạt 162.00 nghìn người (kỳ 2026-08-01);\n(34) CPI lõi Mỹ (YoY) đạt 2.45 % (kỳ 2026-08-01);\n(35) PCE Mỹ (YoY) đạt 3.70 % (kỳ 2026-07-01);\n(36) Chỉ số sản xuất công nghiệp Mỹ (YoY) đạt 1.42 % (kỳ 2026-08-01);\n(37) Tăng trưởng GDP Eurozone (QoQ) đạt -0.09 % (kỳ 2023-01-01);\n(38) Chỉ số sản xuất công nghiệp Eurozone (YoY) đạt -5.69 % (kỳ 2023-10-01);\n(39) GDP danh nghĩa Việt Nam (theo năm) đạt 12847571.22 tỷ VND (kỳ 2025);\n(40) Tổng huy động vốn toàn nền kinh tế đạt 17440361.00 tỷ VND (kỳ T6/2026);\n(41) Tong cung tien M2 đạt 20414616.00 ty VND (kỳ T6/2026);\n(42) Tổng mức bán lẻ hàng hóa và doanh thu dịch vụ tiêu dùng đạt 669.10 nghìn tỷ đồng (kỳ T7/2026);\n(43) Tăng trưởng tiêu dùng tư nhân (GDP theo cấu phần sử dụng) đạt 7.31 % (kỳ 2025);\n(44) Tăng trưởng tiêu dùng chính phủ (GDP theo cấu phần sử dụng) đạt 11.89 % (kỳ 2025);\n(45) Tăng trưởng dư nợ tín dụng toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 7.09 % (kỳ T6/2026);\n(46) Tăng trưởng huy động vốn toàn nền kinh tế so cuối năm trước (YTD, theo tháng) đạt 5.60 % (kỳ T6/2026);\n(47) Tăng trưởng cung tiền M2 so cuối năm trước (YTD, theo tháng) đạt 4.99 % (kỳ T6/2026);\n(48) Đóng góp của Đầu tư vào tăng trưởng GDP (điểm %) đạt 2.89 điểm % (kỳ 2025);\n(49) Đóng góp của Tiêu dùng tư nhân vào tăng trưởng GDP (điểm %) đạt 3.99 điểm % (kỳ 2025);\n(50) Đóng góp của Tiêu dùng chính phủ vào tăng trưởng GDP (điểm %) đạt 1.06 điểm % (kỳ 2025);\n(51) Chênh lệch lợi suất TPCP 2Y-1Y (VN) đạt 11.90 điểm % (kỳ T9/2026);\n(52) Dự trữ ngoại hối — ngoại tệ (theo tháng) đạt 86318.00 tỷ USD (kỳ T6/2026);\n(53) Tỷ giá USD/VND (bình quân tháng) đạt 26070.00 VND (kỳ T9/2026);\n(54) P/E thị trường (theo tháng, từ 2016) đạt 14.26 lần (kỳ T9/2026);\n(55) Chỉ số giá cổ phiếu (theo tháng) đạt 1827.72 điểm (kỳ T9/2026);\n(56) Cán cân vãng lai — Dịch vụ đạt -1.67 tỷ USD (kỳ Q1/2026);\n(57) Cán cân vãng lai — Thu nhập sơ cấp đạt -1.23 tỷ USD (kỳ Q1/2026);\n(58) Cán cân tài chính — FDI (nợ) đạt -4.34 tỷ USD (kỳ Q1/2026);\n(59) Cán cân tài chính — Đầu tư gián tiếp (nợ) đạt 1.41 tỷ USD (kỳ Q1/2026);\n(60) Cán cân tài chính — Khác (nợ) đạt -0.68 tỷ USD (kỳ Q1/2026);\n(61) FDI — Vốn cổ phần đạt -3.13 tỷ USD (kỳ Q1/2026);\n(62) Đầu tư khác — Tiền & tiền gửi đạt 2.75 tỷ USD (kỳ Q1/2026);\n(63) Tiền gửi (cán cân tài chính) — Khu vực ngân hàng đạt 0.41 tỷ USD (kỳ Q1/2026);\n(64) Dư nợ TPDN / GDP (ADB) đạt 7.92 % GDP (kỳ Q1/2026);\n(65) Dư nợ tín phiếu NHTW / GDP (ADB) đạt 2.19 % GDP (kỳ Q1/2026);\n(66) Cơ cấu kỳ hạn TPCP — 1-3 năm đạt 8.85 % dư nợ (kỳ Q2/2026);\n(67) Cơ cấu kỳ hạn TPCP — 3-5 năm đạt 15.62 % dư nợ (kỳ Q2/2026);\n(68) Cơ cấu kỳ hạn TPDN — 3-5 năm đạt 14.35 % dư nợ (kỳ Q2/2026);\n(69) Cơ cấu kỳ hạn TPDN — 5-10 năm đạt 26.25 % dư nợ (kỳ Q2/2026);\n(70) Cơ cấu kỳ hạn TPDN — Trên 10 năm đạt 1.49 % dư nợ (kỳ Q2/2026);\n(71) Cơ cấu nhà đầu tư nắm giữ TPCP — Khác đạt 2.30 % (kỳ Q1/2026);\n(72) Vốn hóa thị trường chứng khoán / GDP đạt 61.40 % GDP (kỳ 2025);\n(73) Nợ công / GDP (có dự báo tới 2031) đạt 26.60 % GDP (kỳ 2031);\n(74) Tỷ lệ đô thị hóa đạt 38.80 % dân số (kỳ 2025);\n(75) Dân số 65+ tuổi đạt 22.00 triệu người (kỳ 2050);\n(76) GDP theo sử dụng — Tiêu dùng Chính phủ đạt 9.40 % GDP (kỳ 2025);\n(77) GDP theo sử dụng — Đầu tư (GFCF) đạt 34.60 % GDP (kỳ 2031);\n(78) Cơ cấu GDP theo ngành — Dịch vụ (theo năm, từ 1986) đạt 42.70 % GDP (kỳ 2025);\n(79) Tổng đầu tư / GDP đạt 34.60 % GDP (kỳ 2031);\n(80) GDP bình quân đầu người (danh nghĩa) đạt 6652.00 USD (kỳ 2031);\n(81) GDP bình quân đầu người (PPP) đạt 27821.00 Int$ (kỳ 2031);\n(82) GNI bình quân đầu người (Atlas) đạt 4970.00 USD (kỳ 2025);\n(83) Hàng hóa: Xuất khẩu (BOP, NHNN) đạt 143586.00 triệu USD (kỳ Q2/2026);\n(84) Hàng hóa: Nhập khẩu (BOP, NHNN) đạt 149083.00 triệu USD (kỳ Q2/2026);\n(85) Dịch vụ: Nhập khẩu (BOP, NHNN) đạt 11808.00 triệu USD (kỳ Q2/2026);\n(86) Thu nhập đầu tư: Thu (BOP, NHNN) đạt 1327.00 triệu USD (kỳ Q2/2026);\n(87) Thu nhập đầu tư: Chi (BOP, NHNN) đạt 6983.00 triệu USD (kỳ Q2/2026);\n(88) Chuyển giao vãng lai: Thu (BOP, NHNN) đạt 4250.00 triệu USD (kỳ Q2/2026);\n(89) Cán cân tài chính (BOP, NHNN) đạt 1899.00 triệu USD (kỳ Q2/2026);\n(90) Đầu tư trực tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN) đạt 6090.00 triệu USD (kỳ Q2/2026);\n(91) Lỗi và Sai sót (BOP, NHNN) đạt 9283.00 triệu USD (kỳ Q2/2026);\n(92) Cán cân tổng thể (BOP, NHNN) đạt 81.00 triệu USD (kỳ Q2/2026);\n(93) Δ Tài sản dự trữ trong kỳ (BOP, NHNN) đạt -81.00 triệu USD (kỳ Q2/2026);\n(94) Tỷ giá hiệu lực danh nghĩa (NEER) Việt Nam — Darvas (Bruegel) đạt 79.56 Index (tháng cơ sở nội bộ Darvas) (kỳ T8/2026);\n(95) Tỷ giá hiệu lực thực (REER) Việt Nam — Darvas (Bruegel) đạt 145.66 Index (tháng cơ sở nội bộ Darvas) (kỳ T8/2026);\n(96) Kiều hối về TP.HCM (NHNN Chi nhánh Khu vực 2) đạt 2032.00 triệu USD (kỳ Q2/2026);\n(97) Xuất khẩu — Tổng (Hải quan, theo tháng) đạt 54794.76 triệu USD (kỳ T8/2026);\n(98) Xuất khẩu — Khu vực kinh tế trong nước (Hải quan, theo tháng) đạt 10498.85 triệu USD (kỳ T8/2026);\n(99) Xuất khẩu — Khu vực FDI (Hải quan, theo tháng) đạt 44295.91 triệu USD (kỳ T8/2026);\n(100) Tổng mức bán lẻ HH & DV tiêu dùng (theo tháng, danh nghĩa) đạt 679814.08 tỷ đồng (kỳ T8/2026);\n(101) Bán lẻ hàng hoá (theo tháng, danh nghĩa) đạt 507417.98 tỷ đồng (kỳ T8/2026);\n(102) Dịch vụ lưu trú, ăn uống (theo tháng, danh nghĩa) đạt 90454.89 tỷ đồng (kỳ T8/2026);\n(103) Dịch vụ khác (theo tháng, danh nghĩa) đạt 72824.26 tỷ đồng (kỳ T8/2026);\n(104) Giá trị giải ngân đầu tư công theo tháng (rời rạc) đạt 101.30 nghìn tỷ đồng (kỳ T8/2026);\n(105) Xuất khẩu YoY (Hải quan, theo tháng) đạt 27.48 % (kỳ T6/2026);\n(106) Nhập khẩu YoY (Hải quan, theo tháng) đạt 45.82 % (kỳ T6/2026);\n(107) Spread lợi suất TPCP Mỹ 10 năm - 2 năm đạt 0.31 điểm % (kỳ 2026-09-24);\n(108) Spread lợi suất TPCP Mỹ 10 năm - 3 tháng đạt 0.94 điểm % (kỳ 2026-09-24);\n(109) Chênh lệch lãi suất VND-USD (O/N liên NH VND − Fed Funds) đạt 0.62 điểm % (kỳ T8/2026);\n(110) Tỷ giá USD/VND — % thay đổi so tháng trước (MoM) đạt -0.68 % (kỳ T9/2026);\n(111) Tỷ giá USD/VND — % thay đổi so cùng kỳ năm trước (YoY) đạt -1.32 % (kỳ T9/2026);\n(112) Xuất khẩu — % thay đổi so tháng trước (MoM, Hải quan) đạt 8.06 % (kỳ T6/2026);\n(113) Gap tỷ giá USD chợ đen − Vietcombank (bán ra) đạt -127.00 VND (kỳ 2026-09-29);\n(114) Gap tỷ giá USD chợ đen − Vietcombank (% so VCB) đạt -0.48 % (kỳ 2026-09-29);\n(115) Nhập khẩu — Tỷ trọng khu vực FDI (%) đạt 76.66 % (kỳ T8/2026);\n(116) Bán lẻ hàng hoá (YoY, danh nghĩa) đạt 16.98 % (kỳ T8/2026);\n(117) Dịch vụ lưu trú, ăn uống (YoY, danh nghĩa) đạt 26.04 % (kỳ T8/2026);\n(118) Dịch vụ khác (YoY, danh nghĩa) đạt 21.80 % (kỳ T8/2026);\n(119) Tổng mức bán lẻ HH & DV (YoY, THỰC — đã trừ CPI) đạt 13.04 % (kỳ T8/2026);\n(120) Tăng trưởng tín dụng toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC) đạt 8.04 % (kỳ Q2/2026);\n(121) Tăng trưởng huy động toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC) đạt 5.34 % (kỳ Q2/2026);\n(122) Tổng Vốn chủ sở hữu toàn ngành NH niêm yết (theo BCTC) đạt 1741257.50 tỷ đồng (kỳ Q2/2026);\n(123) Tăng trưởng VCSH toàn ngành NH niêm yết (YoY, theo BCTC) đạt 18.95 % (kỳ Q2/2026);\n(124) Tăng trưởng VCSH toàn ngành NH niêm yết (so cuối năm trước - YTD, theo BCTC) đạt 8.87 % (kỳ Q2/2026).\n\nNgược lại, một số điểm nghẽn/rủi ro cần lưu ý:\n(1) Chỉ số sản xuất công nghiệp IIP (YoY) đạt 14.40 % (kỳ T8/2026);\n(2) PMI sản xuất (S&P Global) đạt 51.90 điểm (kỳ T9/2026);\n(3) CPI (YoY) đạt 4.89 % (kỳ T8/2026);\n(4) Lãi suất liên ngân hàng qua đêm (O/N) đạt 7.00 % (kỳ 2026-09-30);\n(5) Lãi suất liên ngân hàng 1 tuần đạt 7.00 % (kỳ 2026-09-30);\n(6) Lãi suất liên ngân hàng 2 tuần đạt 6.40 % (kỳ 2026-09-30);\n(7) Lãi suất liên ngân hàng 9 tháng đạt 8.55 % (kỳ Tuần 40/2026);\n(8) Tăng trưởng cung tiền M2 (YoY) đạt 4.24 % (kỳ T6/2026);\n(9) Tăng trưởng huy động vốn (YoY) đạt 10.39 % (kỳ T6/2026);\n(10) Nhập khẩu (YoY) đạt 37.90 % (kỳ T8/2026);\n(11) Cán cân thương mại (lũy kế) đạt -3.64 tỷ USD (kỳ Q1/2026);\n(12) Chi ngân sách (YoY) đạt -8.16 % (kỳ Q2/2026);\n(13) Cơ cấu GDP — Nông, Lâm nghiệp & Thủy sản đạt 10.61 % (kỳ 6T đầu 2026);\n(14) Cơ cấu GDP — Thuế sản phẩm trừ trợ cấp sản phẩm đạt 8.21 % (kỳ 6T đầu 2026);\n(15) Cơ cấu vốn đầu tư — Khu vực ngoài Nhà nước (tư nhân) đạt 53.80 % (kỳ 6T đầu 2026);\n(16) Khối ngoại mua/bán ròng HOSE (theo phiên) đạt -890.44 tỷ VND (kỳ 2026-09-30);\n(17) Số ngày kể từ lần chào bán tín phiếu NHNN gần nhất (hút thanh khoản) đạt 336.00 ngày (kỳ Tuần 40/2026);\n(18) Đóng góp vào lạm phát — nhóm Thực phẩm đạt 1.57 điểm % (kỳ T8/2026);\n(19) Đóng góp vào lạm phát — nhóm Vận tải đạt 0.78 điểm % (kỳ T8/2026);\n(20) Đóng góp vào lạm phát — nhóm Khác đạt 1.24 điểm % (kỳ T8/2026);\n(21) Số dư OMO đang lưu hành (kênh cầm cố) đạt 150496.94 tỷ đồng (kỳ 2026-09-30);\n(22) Lợi suất TPCP Mỹ kỳ hạn 10 năm đạt 5.18 % (kỳ 2026-09-24);\n(23) Lợi suất TPCP Đức kỳ hạn 10 năm (đại diện Eurozone) đạt 3.18 % (kỳ 2026-08-01);\n(24) Lợi suất TPCP Nhật kỳ hạn 10 năm đạt 2.94 % (kỳ 2026-08-01);\n(25) Lợi suất TPCP Anh kỳ hạn 10 năm đạt 4.99 % (kỳ 2026-08-01);\n(26) CPI Mỹ (YoY) đạt 3.35 % (kỳ 2026-08-01);\n(27) Tăng trưởng GDP Mỹ (QoQ, theo năm) đạt 1.50 % (kỳ 2026-04-01);\n(28) Lợi suất TPCP Mỹ kỳ hạn 3 tháng đạt 4.24 % (kỳ 2026-09-24);\n(29) Lợi suất TPCP Mỹ kỳ hạn 1 năm đạt 4.51 % (kỳ 2026-09-24);\n(30) Lợi suất TPCP Mỹ kỳ hạn 2 năm đạt 4.87 % (kỳ 2026-09-24);\n(31) Lợi suất TPCP Mỹ kỳ hạn 5 năm đạt 5.03 % (kỳ 2026-09-24);\n(32) Lợi suất TPCP Mỹ kỳ hạn 30 năm đạt 5.47 % (kỳ 2026-09-24);\n(33) CPI (HICP) Eurozone (YoY) đạt 3.23 % (kỳ 2026-08-01);\n(34) Tăng trưởng dư nợ tín dụng toàn nền kinh tế YoY (theo tháng) đạt 17.41 % (kỳ T6/2026);\n(35) Tăng trưởng huy động vốn toàn nền kinh tế YoY (theo tháng) đạt 10.39 % (kỳ T6/2026);\n(36) Tỷ lệ Tín dụng / GDP danh nghĩa đạt 156.84 % (kỳ T6/2026);\n(37) Lợi suất TPCP thứ cấp 2 năm (40yo) đạt 3.79 % (kỳ T9/2026);\n(38) Chênh lệch lợi suất TPCP 10Y-2Y (VN) đạt 75.90 điểm % (kỳ T8/2026);\n(39) Chênh lệch lợi suất TPCP 10Y VN so với Mỹ đạt -0.21 điểm % (kỳ T9/2026);\n(40) Chênh lệch lợi suất TPCP 2Y VN so với Mỹ đạt -0.58 điểm % (kỳ T9/2026);\n(41) Cán cân vãng lai — Hàng hóa đạt 2.43 tỷ USD (kỳ Q1/2026);\n(42) Cán cân vãng lai — Thu nhập thứ cấp đạt 3.19 tỷ USD (kỳ Q1/2026);\n(43) Cán cân tài chính — FDI (tài sản) đạt 0.16 tỷ USD (kỳ Q1/2026);\n(44) Cán cân tài chính — Đầu tư gián tiếp (tài sản) đạt -0.01 tỷ USD (kỳ Q1/2026);\n(45) Cán cân tài chính — Khác (tài sản) đạt 2.57 tỷ USD (kỳ Q1/2026);\n(46) FDI — Công cụ nợ đạt -1.21 tỷ USD (kỳ Q1/2026);\n(47) Đầu tư khác — Cho vay đạt -0.53 tỷ USD (kỳ Q1/2026);\n(48) Tiền gửi (cán cân tài chính) — Khu vực khác đạt 2.34 tỷ USD (kỳ Q1/2026);\n(49) Vay nợ (cán cân tài chính) — Chính phủ đạt 0.54 tỷ USD (kỳ Q1/2026);\n(50) Vay nợ (cán cân tài chính) — Khu vực khác đạt -1.07 tỷ USD (kỳ Q1/2026);\n(51) Cơ cấu kỳ hạn TPCP — 5-10 năm đạt 51.39 % dư nợ (kỳ Q2/2026);\n(52) Cơ cấu kỳ hạn TPCP — Trên 10 năm đạt 24.14 % dư nợ (kỳ Q2/2026);\n(53) Cơ cấu kỳ hạn TPDN — 1-3 năm đạt 57.91 % dư nợ (kỳ Q2/2026);\n(54) Cơ cấu nhà đầu tư nắm giữ TPCP — Ngân hàng đạt 36.56 % (kỳ Q1/2026);\n(55) Cơ cấu nhà đầu tư nắm giữ TPCP — Bảo hiểm đạt 60.44 % (kỳ Q1/2026);\n(56) Dân số 0-14 tuổi đạt 18.70 triệu người (kỳ 2050);\n(57) Dân số 15-64 tuổi (lao động) đạt 69.30 triệu người (kỳ 2050);\n(58) Tỷ lệ phụ thuộc chung đạt 58.60 % (kỳ 2050);\n(59) Tỷ lệ phụ thuộc — Người già đạt 31.70 % (kỳ 2050);\n(60) GDP theo sử dụng — Tiêu dùng hộ gia đình đạt 53.20 % GDP (kỳ 2025);\n(61) GDP theo sử dụng — Xuất khẩu đạt 79.36 % GDP (kỳ 2026);\n(62) GDP theo sử dụng — Nhập khẩu đạt 75.19 % GDP (kỳ 2026);\n(63) Cơ cấu GDP theo ngành — Nông-Lâm-Thủy sản (theo năm, từ 1986) đạt 11.60 % GDP (kỳ 2025);\n(64) Tiết kiệm quốc gia / GDP đạt 35.20 % GDP (kỳ 2031);\n(65) Cán cân vãng lai (BOP, NHNN) đạt -11101.00 triệu USD (kỳ Q2/2026);\n(66) Dịch vụ: Xuất khẩu (BOP, NHNN) đạt 8238.00 triệu USD (kỳ Q2/2026);\n(67) Chuyển giao vãng lai: Chi (BOP, NHNN) đạt 628.00 triệu USD (kỳ Q2/2026);\n(68) Đầu tư trực tiếp ra nước ngoài — Tài sản có (BOP, NHNN) đạt -190.00 triệu USD (kỳ Q2/2026);\n(69) Đầu tư gián tiếp ra nước ngoài — Tài sản có (BOP, NHNN) đạt 13.00 triệu USD (kỳ Q2/2026);\n(70) Đầu tư gián tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN) đạt -1518.00 triệu USD (kỳ Q2/2026);\n(71) Vay, trả nợ nước ngoài — ròng (BOP, NHNN) đạt -175.00 triệu USD (kỳ Q2/2026);\n(72) Nhập khẩu — Tổng (Hải quan, theo tháng) đạt 54907.98 triệu USD (kỳ T8/2026);\n(73) Nhập khẩu — Khu vực kinh tế trong nước (Hải quan, theo tháng) đạt 12814.79 triệu USD (kỳ T8/2026);\n(74) Nhập khẩu — Khu vực FDI (Hải quan, theo tháng) đạt 42093.18 triệu USD (kỳ T8/2026);\n(75) Du lịch lữ hành (theo tháng, danh nghĩa) đạt 9116.95 tỷ đồng (kỳ T8/2026);\n(76) FDI giải ngân theo quý (rời rạc) đạt 5.41 tỷ USD (kỳ Q1/2026);\n(77) FDI đăng ký theo tháng (rời rạc) đạt 2.50 tỷ USD (kỳ T8/2026);\n(78) Nhập khẩu — % thay đổi so tháng trước (MoM, Hải quan) đạt 1.94 % (kỳ T6/2026);\n(79) Du lịch lữ hành (YoY, danh nghĩa) đạt 13.77 % (kỳ T8/2026);\n(80) Rủi ro lãi suất hệ thống NH niêm yết (ΔNII/NII khi LS +100bp) đạt 4.63 % (kỳ Q2/2026);\n(81) Rủi ro thanh khoản hệ thống NH niêm yết (che phủ rút -10% tiền gửi) đạt 319.70 % (kỳ Q2/2026);\n(82) Rollover Dependency 1 tháng hệ thống NH niêm yết đạt 25.58 % (kỳ Q2/2026);\n(83) Tăng trưởng tín dụng toàn ngành NH niêm yết (YoY, theo BCTC) đạt 16.62 % (kỳ Q2/2026);\n(84) Tăng trưởng huy động toàn ngành NH niêm yết (YoY, theo BCTC) đạt 17.03 % (kỳ Q2/2026);\n(85) GAP tín dụng - huy động toàn ngành NH niêm yết (theo BCTC) đạt -3472922.50 tỷ đồng (kỳ Q2/2026);\n(86) LDR toàn ngành NH niêm yết (theo BCTC, đã điều chỉnh TT22/26) đạt 80.35 % (kỳ Q2/2026).\n\nVề định giá, VN-Index đang giao dịch ở P/E 10.55x, P/B 1.65x, tương ứng ERP (lợi suất thu nhập trừ lãi suất phi rủi ro) 4.89% — mức định giá được xếp loại \"Rẻ/Hấp dẫn\". Kết hợp Scorecard vĩ mô (+1/6) và mức định giá này, khuyến nghị phân bổ vốn hiện tại là \"Tăng tỷ trọng vừa phải\": Định giá hợp lý và vĩ mô đang CẢI THIỆN so với kỳ trước — có thể tăng tỷ trọng cổ phiếu vừa phải, chọn lọc theo ngành hưởng lợi từ xu hướng cải thiện.",
     "economy_impact": [
       {
         "heading": "Tăng trưởng & Lạm phát",
-        "text": "Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026), tốt lên;\nChỉ số sản xuất công nghiệp IIP (YoY) đạt 14.40 % (kỳ T8/2026), xấu đi;\nPMI sản xuất (S&P Global) đạt 51.90 điểm (kỳ T9/2026), xấu đi;\nDoanh số bán lẻ (YoY) đạt 14.95 % (kỳ T8/2026), tốt lên. Theo NSO, động lực tăng trưởng GDP 2026-Q2 chủ yếu đến từ khu vực Công nghiệp-Xây dựng (đóng góp 50.07% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, tư nhân và FDI — tăng 15.20% (2026-H1), vượt xa tốc độ tăng tiêu dùng cuối cùng, cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. Ở chiều giá cả, CPI (YoY) đạt 4.89 % (kỳ T8/2026), xấu đi;\nLạm phát cơ bản (YoY) đạt 4.55 % (kỳ T8/2026), tốt lên. Giá dầu Brent hạ nhiệt là một kênh giảm áp lực CPI đáng chú ý — tác động trực tiếp nhất qua cấu phần chi phí vận tải/nhiên liệu trong rổ CPI (nhóm Giao thông), gián tiếp qua chi phí logistics đầu vào của doanh nghiệp sản xuất, chứ không phải do giá lương thực-thực phẩm hạ."
+        "text": "Tăng trưởng GDP (YoY) đạt 8.39 % (kỳ Q2/2026), tốt lên;\nChỉ số sản xuất công nghiệp IIP (YoY) đạt 14.40 % (kỳ T8/2026), xấu đi;\nPMI sản xuất (S&P Global) đạt 51.90 điểm (kỳ T9/2026), xấu đi;\nDoanh số bán lẻ (YoY) đạt 18.57 % (kỳ T8/2026), tốt lên. Theo NSO, động lực tăng trưởng GDP 2026-Q2 chủ yếu đến từ khu vực Công nghiệp-Xây dựng (đóng góp 50.07% vào mức tăng chung), trong đó ngành chế biến-chế tạo là hạt nhân. Xét theo phía cầu (phương pháp sử dụng GDP), tích lũy tài sản — tức ĐẦU TƯ, gồm cả đầu tư công, tư nhân và FDI — tăng 15.20% (2026-H1), vượt xa tốc độ tăng tiêu dùng cuối cùng, cho thấy tăng trưởng đang được dẫn dắt chủ yếu bởi đầu tư và xuất khẩu hơn là cầu tiêu dùng nội địa. Ở chiều giá cả, CPI (YoY) đạt 4.89 % (kỳ T8/2026), xấu đi;\nLạm phát cơ bản (YoY) đạt 4.55 % (kỳ T8/2026), tốt lên. Giá dầu Brent hạ nhiệt là một kênh giảm áp lực CPI đáng chú ý — tác động trực tiếp nhất qua cấu phần chi phí vận tải/nhiên liệu trong rổ CPI (nhóm Giao thông), gián tiếp qua chi phí logistics đầu vào của doanh nghiệp sản xuất, chứ không phải do giá lương thực-thực phẩm hạ."
       },
       {
         "heading": "Thanh khoản hệ thống & Lãi suất chính thức (OMO/VNIBOR/niêm yết Big4)",
@@ -444,6 +444,30 @@
         "altSourceIdx": [],
         "colorMin": 32.7,
         "colorMax": 56.5
+      },
+      {
+        "key": "retail_sales_growth",
+        "label": "Doanh số bán lẻ (YoY)",
+        "unit": "%",
+        "goodDirection": "higher",
+        "values": [
+          10.92,
+          12.06,
+          8.44,
+          10.06,
+          11.55,
+          9.93,
+          13.21,
+          13.82,
+          15.07,
+          16.04,
+          17.29,
+          18.57,
+          null
+        ],
+        "altSourceIdx": [],
+        "colorMin": 0.85,
+        "colorMax": 18.57
       },
       {
         "key": "export_growth_customs",
@@ -790,14 +814,14 @@
           "label": "Bán lẻ hàng hóa & dịch vụ tiêu dùng (YoY)",
           "unit": "%",
           "values": [
-            null,
-            null,
-            12.1,
-            null,
-            11.8,
-            14.32,
-            14.46,
-            14.95
+            11.55,
+            9.93,
+            13.21,
+            13.82,
+            15.07,
+            16.04,
+            17.29,
+            18.57
           ]
         },
         {
@@ -905,18 +929,18 @@
           "label": "Bán lẻ hàng hóa & dịch vụ tiêu dùng (YoY)",
           "unit": "%",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            9.2,
-            null,
-            null,
-            null,
-            null,
-            null
+            8.23,
+            10.36,
+            10.85,
+            10.48,
+            10.04,
+            10.53,
+            9.42,
+            9.35,
+            10.92,
+            12.06,
+            8.44,
+            10.06
           ]
         },
         {
@@ -6585,46 +6609,141 @@
       "autoSource": "vietnambiz",
       "series": [
         {
+          "period": "2024-08",
+          "value": 2.63,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 3.32,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 0.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 2.25,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 1.5,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 8.23,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 10.36,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 10.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 10.48,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 10.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 10.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
           "period": "2025-07",
-          "value": 9.2,
-          "source_url": "https://tradingeconomics.com/vietnam/retail-sales-yoy"
+          "value": 9.42,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 9.35,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 10.92,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 12.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 8.44,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 10.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 11.55,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 9.93,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
         },
         {
           "period": "2026-03",
-          "value": 12.1,
-          "source_url": "https://baotintuc.vn/kinh-te/tin-hieu-lac-quan-tu-thi-truong-ban-le-va-dich-vu-tieu-dung-20260406101506726.htm"
+          "value": 13.21,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 13.82,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
         },
         {
           "period": "2026-05",
-          "value": 11.8,
-          "source_url": "https://nvsk.vnanet.vn/tieu-dung-noi-dia-khoi-sac-doanh-thu-ban-le-tang-hon-11-1-186193.vna"
+          "value": 15.07,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
         },
         {
           "period": "2026-06",
-          "value": 14.32,
-          "source_url": "https://data.vietnambiz.vn/macro-economic"
+          "value": 16.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
         },
         {
           "period": "2026-07",
-          "value": 14.46,
-          "source_url": "https://data.vietnambiz.vn/macro-economic"
+          "value": 17.29,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
         },
         {
           "period": "2026-08",
-          "value": 14.95,
-          "source_url": "https://data.vietnambiz.vn/macro-economic"
+          "value": 18.57,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
         }
       ],
       "trend": {
-        "latest": 14.95,
+        "latest": 18.57,
         "latest_period": "2026-08",
-        "latest_source": "https://data.vietnambiz.vn/macro-economic",
-        "n_points": 6,
-        "prior": 14.46,
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 25,
+        "prior": 17.29,
         "prior_period": "2026-07",
-        "delta": 0.49,
-        "delta_vs_4back": 2.85,
-        "far_period": "2026-03",
+        "delta": 1.28,
+        "delta_vs_4back": 4.75,
+        "far_period": "2026-04",
         "direction": "up",
         "value_arrow": "↑",
         "is_improving": true,
@@ -16467,18 +16586,18 @@
         },
         {
           "period": "2026-10",
-          "value": 12.05,
-          "source_url": "https://24hmoney.vn/indices/vn-index"
+          "value": 13.31,
+          "source_url": "https://worldperatio.com/area/vietnam/"
         }
       ],
       "trend": {
-        "latest": 12.05,
+        "latest": 13.31,
         "latest_period": "2026-10",
-        "latest_source": "https://24hmoney.vn/indices/vn-index",
+        "latest_source": "https://worldperatio.com/area/vietnam/",
         "n_points": 4,
         "prior": 13.56,
         "prior_period": "2026-09",
-        "delta": -1.51,
+        "delta": -0.25,
         "direction": "down",
         "value_arrow": "↓",
         "is_improving": true,
@@ -57604,6 +57723,1076 @@
       "note": "dulieukinhte.com (mirror Tổng cục Hải quan), HTML tĩnh. GIÁ TRỊ RIÊNG 1 THÁNG (KHÔNG phải lũy kế — khác export_domestic_usd_bn/export_fdi_usd_bn hiện có, 2 nhóm chỉ báo bổ sung cho nhau, không trộn lẫn).",
       "impact": "Thuộc nhóm 'trade structure' — xem export_fdi_share_pct/import_fdi_share_pct (phái sinh) để biết tỷ trọng FDI trong tổng KNXK/KNNK."
     },
+    "retail_sales_total_monthly": {
+      "group": "growth",
+      "label": "Tổng mức bán lẻ HH & DV tiêu dùng (theo tháng, danh nghĩa)",
+      "unit": "tỷ đồng",
+      "goodDirection": "higher",
+      "autoSource": "nso",
+      "series": [
+        {
+          "period": "2023-08",
+          "value": 510910.48,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-09",
+          "value": 512211.66,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-10",
+          "value": 528380.77,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-11",
+          "value": 545231.45,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-12",
+          "value": 551714.38,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-01",
+          "value": 515951.99,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-02",
+          "value": 521781.61,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-03",
+          "value": 506542.1,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-04",
+          "value": 511948.55,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-05",
+          "value": 520142.55,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-06",
+          "value": 516774.61,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-07",
+          "value": 521247.19,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-08",
+          "value": 524336.57,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 529241.81,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 532881.02,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 557480.12,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 559992.59,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 558421.09,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 575830.29,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 561508.72,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 565610.66,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 572388.91,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 571213.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 570364.45,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 573342.36,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 587042.31,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 597143.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 604509.27,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 616353.09,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 622892.93,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 633032.03,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 635665.55,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 643765.07,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 658641.54,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 662837.51,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 668997.3,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 679814.08,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 679814.08,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 37,
+        "prior": 668997.3,
+        "prior_period": "2026-07",
+        "delta": 10816.78,
+        "delta_vs_4back": 36049.01,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+      "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá."
+    },
+    "retail_sales_goods_monthly": {
+      "group": "growth",
+      "label": "Bán lẻ hàng hoá (theo tháng, danh nghĩa)",
+      "unit": "tỷ đồng",
+      "goodDirection": "higher",
+      "autoSource": "nso",
+      "series": [
+        {
+          "period": "2023-08",
+          "value": 397472.37,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-09",
+          "value": 394127.68,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-10",
+          "value": 406355.42,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-11",
+          "value": 419044.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-12",
+          "value": 426255.98,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-01",
+          "value": 393686.74,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-02",
+          "value": 404590.93,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-03",
+          "value": 392957.82,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-04",
+          "value": 394437.8,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-05",
+          "value": 403828.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-06",
+          "value": 399693.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-07",
+          "value": 401088.82,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-08",
+          "value": 401789.47,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 404976.9,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 410159.2,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 427784.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 429042.75,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 424215.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 445922.46,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 431357.12,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 432359.69,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 436234.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 434052.57,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 433211.6,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 433774.4,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 446033.19,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 454476.18,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 457137.67,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 472694.42,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 476102.58,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 484454.0,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 482918.37,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 488280.18,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 494739.57,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 495901.18,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 499311.13,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 507417.98,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 507417.98,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 37,
+        "prior": 499311.13,
+        "prior_period": "2026-07",
+        "delta": 8106.85,
+        "delta_vs_4back": 19137.8,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+      "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá."
+    },
+    "retail_sales_hospitality_monthly": {
+      "group": "growth",
+      "label": "Dịch vụ lưu trú, ăn uống (theo tháng, danh nghĩa)",
+      "unit": "tỷ đồng",
+      "goodDirection": "higher",
+      "autoSource": "nso",
+      "series": [
+        {
+          "period": "2023-08",
+          "value": 56669.9,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-09",
+          "value": 59022.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-10",
+          "value": 59319.84,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-11",
+          "value": 59581.97,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-12",
+          "value": 58560.01,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-01",
+          "value": 57804.46,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-02",
+          "value": 58645.57,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-03",
+          "value": 57898.34,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-04",
+          "value": 59363.86,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-05",
+          "value": 59842.77,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-06",
+          "value": 59986.91,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-07",
+          "value": 61189.97,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-08",
+          "value": 61847.0,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 62448.1,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 59872.22,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 62545.98,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 63236.46,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 65356.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 65835.17,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 65518.64,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 67718.23,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 69824.76,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 70464.82,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 70330.33,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 71766.38,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 71521.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 70434.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 72444.68,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 72275.94,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 74414.71,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 77735.87,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 79530.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 81268.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 85549.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 86427.61,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 88123.05,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 90454.89,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 90454.89,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 37,
+        "prior": 88123.05,
+        "prior_period": "2026-07",
+        "delta": 2331.84,
+        "delta_vs_4back": 9186.04,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+      "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá."
+    },
+    "retail_sales_travel_monthly": {
+      "group": "growth",
+      "label": "Du lịch lữ hành (theo tháng, danh nghĩa)",
+      "unit": "tỷ đồng",
+      "goodDirection": "higher",
+      "autoSource": "nso",
+      "series": [
+        {
+          "period": "2023-08",
+          "value": 3629.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-09",
+          "value": 3801.72,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-10",
+          "value": 4020.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-11",
+          "value": 3913.5,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-12",
+          "value": 3824.2,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-01",
+          "value": 4832.75,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-02",
+          "value": 4335.73,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-03",
+          "value": 4738.66,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-04",
+          "value": 5090.43,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-05",
+          "value": 5104.71,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-06",
+          "value": 5021.24,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-07",
+          "value": 5314.1,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-08",
+          "value": 5686.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 5256.78,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 4900.13,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 5805.34,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 5281.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 5369.45,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 7031.58,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 6929.0,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 7323.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 8503.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 8078.4,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 7440.62,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 8013.67,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 8000.5,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 7965.4,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 8144.46,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 7651.89,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 7433.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 7645.0,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 8186.17,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 8453.73,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 8740.35,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 8833.91,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 9788.98,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 9116.95,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 9116.95,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 37,
+        "prior": 9788.98,
+        "prior_period": "2026-07",
+        "delta": -672.03,
+        "delta_vs_4back": 663.22,
+        "far_period": "2026-04",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
+      },
+      "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+      "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá."
+    },
+    "retail_sales_other_monthly": {
+      "group": "growth",
+      "label": "Dịch vụ khác (theo tháng, danh nghĩa)",
+      "unit": "tỷ đồng",
+      "goodDirection": "higher",
+      "autoSource": "nso",
+      "series": [
+        {
+          "period": "2023-08",
+          "value": 53139.16,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-09",
+          "value": 55260.19,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-10",
+          "value": 58684.98,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-11",
+          "value": 62691.14,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2023-12",
+          "value": 63074.19,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-01",
+          "value": 59628.03,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-02",
+          "value": 54209.39,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-03",
+          "value": 50947.34,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-04",
+          "value": 53057.0,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-05",
+          "value": 51366.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-06",
+          "value": 52072.61,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-07",
+          "value": 53654.3,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-08",
+          "value": 55014.08,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 56559.97,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 57949.47,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 61343.92,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 62431.5,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 63480.07,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 57041.08,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 57704.48,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 58209.68,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 57826.24,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 58618.07,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 59381.85,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 59787.79,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 61486.67,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 64267.41,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 66782.47,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 63730.84,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 64942.6,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 63197.1,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 65030.95,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 65762.31,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 69612.55,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 71674.82,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 71774.14,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 72824.26,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 72824.26,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 37,
+        "prior": 71774.14,
+        "prior_period": "2026-07",
+        "delta": 1050.12,
+        "delta_vs_4back": 7061.95,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+      "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá."
+    },
     "fdi_disbursed_quarterly": {
       "group": "trade",
       "label": "FDI giải ngân theo quý (rời rạc)",
@@ -62224,6 +63413,776 @@
       },
       "note": "= import_monthly_fdi / import_monthly_total × 100 (Hải quan qua dulieukinhte.com, theo tháng). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
       "impact": "Tỷ trọng FDI trong nhập khẩu cao đồng nghĩa tăng trưởng nhập khẩu phụ thuộc nhiều vào khu vực FDI (Samsung, Foxconn...) hơn là DN nội địa — KHÔNG hàm ý tốt/xấu tuyệt đối, chỉ phản ánh cơ cấu (xem fdi_trade_balance/domestic_trade_balance ở lớp 'Cơ cấu Thương mại' để biết thêm chiều cán cân)."
+    },
+    "retail_sales_goods_growth": {
+      "group": "growth",
+      "label": "Bán lẻ hàng hoá (YoY, danh nghĩa)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2024-08",
+          "value": 1.09,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 2.75,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 0.94,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 2.09,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 0.65,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 7.75,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 10.22,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 9.77,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 9.61,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 8.02,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 8.6,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 8.01,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 7.96,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 10.14,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 10.8,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 6.86,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 10.17,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 12.23,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 8.64,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 11.95,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 12.93,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 13.41,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 14.25,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 15.26,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 16.98,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 16.98,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 25,
+        "prior": 15.26,
+        "prior_period": "2026-07",
+        "delta": 1.72,
+        "delta_vs_4back": 4.05,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "= YoY của retail_sales_goods_monthly (dulieukinhte.com, mirror NSO, theo tháng, giá hiện hành). Phái sinh tính toán. So với retail_sales_growth (tổng) để biết tiêu dùng đang dịch chuyển sang hàng hoá hay dịch vụ.",
+      "impact": "Tăng trưởng DANH NGHĨA (CHƯA trừ lạm phát) — xem retail_sales_growth_real để có góc nhìn sức mua THỰC."
+    },
+    "retail_sales_hospitality_growth": {
+      "group": "growth",
+      "label": "Dịch vụ lưu trú, ăn uống (YoY, danh nghĩa)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2024-08",
+          "value": 9.14,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 5.8,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 0.93,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 4.97,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 7.99,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 13.06,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 12.26,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 13.16,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 14.07,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 16.68,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 17.47,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 14.94,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 16.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 14.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 17.64,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 15.83,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 14.29,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 13.86,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 18.08,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 21.39,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 20.01,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 22.52,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 22.65,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 25.3,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 26.04,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 26.04,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 25,
+        "prior": 25.3,
+        "prior_period": "2026-07",
+        "delta": 0.74,
+        "delta_vs_4back": 6.03,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "= YoY của retail_sales_hospitality_monthly (dulieukinhte.com, mirror NSO, theo tháng, giá hiện hành). Phái sinh tính toán. So với retail_sales_growth (tổng) để biết tiêu dùng đang dịch chuyển sang hàng hoá hay dịch vụ.",
+      "impact": "Tăng trưởng DANH NGHĨA (CHƯA trừ lạm phát) — xem retail_sales_growth_real để có góc nhìn sức mua THỰC."
+    },
+    "retail_sales_travel_growth": {
+      "group": "growth",
+      "label": "Du lịch lữ hành (YoY, danh nghĩa)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2024-08",
+          "value": 56.7,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 38.27,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": 21.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": 48.34,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": 38.12,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 11.11,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 62.18,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 46.22,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 43.86,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 66.59,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 60.88,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 40.02,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 40.92,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 52.19,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 62.55,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 40.29,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 44.87,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 38.43,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 8.72,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 18.14,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 15.44,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 2.78,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 9.35,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 31.56,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 13.77,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 13.77,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 25,
+        "prior": 31.56,
+        "prior_period": "2026-07",
+        "delta": -17.79,
+        "delta_vs_4back": -1.67,
+        "far_period": "2026-04",
+        "direction": "down",
+        "value_arrow": "↓",
+        "is_improving": false,
+        "label": "worsening",
+        "arrow": "▼",
+        "judgment_label": "Xấu đi",
+        "judgment_color": "#ef4444"
+      },
+      "note": "= YoY của retail_sales_travel_monthly (dulieukinhte.com, mirror NSO, theo tháng, giá hiện hành). Phái sinh tính toán. So với retail_sales_growth (tổng) để biết tiêu dùng đang dịch chuyển sang hàng hoá hay dịch vụ.",
+      "impact": "Tăng trưởng DANH NGHĨA (CHƯA trừ lạm phát) — xem retail_sales_growth_real để có góc nhìn sức mua THỰC."
+    },
+    "retail_sales_other_growth": {
+      "group": "growth",
+      "label": "Dịch vụ khác (YoY, danh nghĩa)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2024-08",
+          "value": 3.53,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-09",
+          "value": 2.35,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-10",
+          "value": -1.25,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-11",
+          "value": -2.15,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2024-12",
+          "value": -1.02,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-01",
+          "value": 6.46,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-02",
+          "value": 5.22,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-03",
+          "value": 13.26,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-04",
+          "value": 9.71,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-05",
+          "value": 12.58,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-06",
+          "value": 12.57,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-07",
+          "value": 10.67,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-08",
+          "value": 8.68,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-09",
+          "value": 8.71,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-10",
+          "value": 10.9,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-11",
+          "value": 8.87,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2025-12",
+          "value": 2.08,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-01",
+          "value": 2.3,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-02",
+          "value": 10.79,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-03",
+          "value": 12.7,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-04",
+          "value": 12.97,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-05",
+          "value": 20.38,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-06",
+          "value": 22.27,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-07",
+          "value": 20.87,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        },
+        {
+          "period": "2026-08",
+          "value": 21.8,
+          "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+        }
+      ],
+      "trend": {
+        "latest": 21.8,
+        "latest_period": "2026-08",
+        "latest_source": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273",
+        "n_points": 25,
+        "prior": 20.87,
+        "prior_period": "2026-07",
+        "delta": 0.93,
+        "delta_vs_4back": 8.83,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "= YoY của retail_sales_other_monthly (dulieukinhte.com, mirror NSO, theo tháng, giá hiện hành). Phái sinh tính toán. So với retail_sales_growth (tổng) để biết tiêu dùng đang dịch chuyển sang hàng hoá hay dịch vụ.",
+      "impact": "Tăng trưởng DANH NGHĨA (CHƯA trừ lạm phát) — xem retail_sales_growth_real để có góc nhìn sức mua THỰC."
+    },
+    "retail_sales_growth_real": {
+      "group": "growth",
+      "label": "Tổng mức bán lẻ HH & DV (YoY, THỰC — đã trừ CPI)",
+      "unit": "%",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2024-08",
+          "value": -0.79,
+          "source_url": null
+        },
+        {
+          "period": "2024-09",
+          "value": 0.67,
+          "source_url": null
+        },
+        {
+          "period": "2024-10",
+          "value": -1.98,
+          "source_url": null
+        },
+        {
+          "period": "2024-11",
+          "value": -0.51,
+          "source_url": null
+        },
+        {
+          "period": "2024-12",
+          "value": -1.4,
+          "source_url": null
+        },
+        {
+          "period": "2025-01",
+          "value": 4.44,
+          "source_url": null
+        },
+        {
+          "period": "2025-02",
+          "value": 7.24,
+          "source_url": null
+        },
+        {
+          "period": "2025-03",
+          "value": 7.49,
+          "source_url": null
+        },
+        {
+          "period": "2025-04",
+          "value": 7.14,
+          "source_url": null
+        },
+        {
+          "period": "2025-05",
+          "value": 6.59,
+          "source_url": null
+        },
+        {
+          "period": "2025-06",
+          "value": 6.72,
+          "source_url": null
+        },
+        {
+          "period": "2025-07",
+          "value": 6.04,
+          "source_url": null
+        },
+        {
+          "period": "2025-08",
+          "value": 5.92,
+          "source_url": null
+        },
+        {
+          "period": "2025-09",
+          "value": 7.29,
+          "source_url": null
+        },
+        {
+          "period": "2025-10",
+          "value": 8.53,
+          "source_url": null
+        },
+        {
+          "period": "2025-11",
+          "value": 4.69,
+          "source_url": null
+        },
+        {
+          "period": "2025-12",
+          "value": 6.36,
+          "source_url": null
+        },
+        {
+          "period": "2026-01",
+          "value": 8.8,
+          "source_url": null
+        },
+        {
+          "period": "2026-02",
+          "value": 6.37,
+          "source_url": null
+        },
+        {
+          "period": "2026-03",
+          "value": 8.18,
+          "source_url": null
+        },
+        {
+          "period": "2026-04",
+          "value": 7.93,
+          "source_url": null
+        },
+        {
+          "period": "2026-05",
+          "value": 8.97,
+          "source_url": null
+        },
+        {
+          "period": "2026-06",
+          "value": 10.84,
+          "source_url": null
+        },
+        {
+          "period": "2026-07",
+          "value": 12.29,
+          "source_url": null
+        },
+        {
+          "period": "2026-08",
+          "value": 13.04,
+          "source_url": null
+        }
+      ],
+      "trend": {
+        "latest": 13.04,
+        "latest_period": "2026-08",
+        "latest_source": null,
+        "n_points": 25,
+        "prior": 12.29,
+        "prior_period": "2026-07",
+        "delta": 0.75,
+        "delta_vs_4back": 5.11,
+        "far_period": "2026-04",
+        "direction": "up",
+        "value_arrow": "↑",
+        "is_improving": true,
+        "label": "improving",
+        "arrow": "▲",
+        "judgment_label": "Tốt lên",
+        "judgment_color": "#10b981"
+      },
+      "note": "≈ (1 + retail_sales_growth/100) / (1 + cpi_yoy/100) − 1 — trừ lạm phát để biết sức mua THỰC, không bị giá cả che mờ (vd tăng danh nghĩa 8% nhưng CPI 4% thì sức mua thực chỉ tăng ~4%). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": "Đây là thước đo ĐÚNG để đánh giá sức khỏe tiêu dùng — tăng trưởng danh nghĩa cao nhưng THỰC thấp/âm nghĩa là dân chỉ đang trả giá cao hơn, không mua nhiều hơn. THỰC dương và tăng dần là tín hiệu tiêu dùng khỏe thật."
     },
     "bank_alm_system_ir_risk_ratio": {
       "group": "bank_alm",

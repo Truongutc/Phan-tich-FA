@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-10-01 16:58",
+    "last_auto_update": "2026-10-01 17:32",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -9839,8 +9839,8 @@
       },
       {
         "period": "2026-10",
-        "value": 12.05,
-        "source_url": "https://24hmoney.vn/indices/vn-index"
+        "value": 13.31,
+        "source_url": "https://worldperatio.com/area/vietnam/"
       }
     ],
     "note": "Chỉ báo mới 2026-07-25 — P/E VN-Index THẬT (bao gồm cả họ VIN: VIC/VHM/VRE/VPL), fetch SONG SONG với vnindex_pe (ex-VIN) để có 2 quyết định phân bổ vốn độc lập đối chiếu nhau (user 2026-07-25). Nguồn: 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} trong window.__NUXT__).",
@@ -47941,6 +47941,986 @@
         "period": "2026-08",
         "value": 42093.18,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
+      }
+    ]
+  },
+  "retail_sales_total_monthly": {
+    "group": "growth",
+    "label": "Tổng mức bán lẻ HH & DV tiêu dùng (theo tháng, danh nghĩa)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+    "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 510910.48,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-09",
+        "value": 512211.66,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-10",
+        "value": 528380.77,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-11",
+        "value": 545231.45,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-12",
+        "value": 551714.38,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-01",
+        "value": 515951.99,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-02",
+        "value": 521781.61,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-03",
+        "value": 506542.1,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-04",
+        "value": 511948.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-05",
+        "value": 520142.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-06",
+        "value": 516774.61,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-07",
+        "value": 521247.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-08",
+        "value": 524336.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-09",
+        "value": 529241.81,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-10",
+        "value": 532881.02,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-11",
+        "value": 557480.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-12",
+        "value": 559992.59,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-01",
+        "value": 558421.09,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-02",
+        "value": 575830.29,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-03",
+        "value": 561508.72,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-04",
+        "value": 565610.66,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-05",
+        "value": 572388.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-06",
+        "value": 571213.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-07",
+        "value": 570364.45,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-08",
+        "value": 573342.36,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-09",
+        "value": 587042.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-10",
+        "value": 597143.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-11",
+        "value": 604509.27,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-12",
+        "value": 616353.09,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-01",
+        "value": 622892.93,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-02",
+        "value": 633032.03,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-03",
+        "value": 635665.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-04",
+        "value": 643765.07,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-05",
+        "value": 658641.54,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-06",
+        "value": 662837.51,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-07",
+        "value": 668997.3,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-08",
+        "value": 679814.08,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      }
+    ]
+  },
+  "retail_sales_goods_monthly": {
+    "group": "growth",
+    "label": "Bán lẻ hàng hoá (theo tháng, danh nghĩa)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+    "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 397472.37,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-09",
+        "value": 394127.68,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-10",
+        "value": 406355.42,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-11",
+        "value": 419044.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-12",
+        "value": 426255.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-01",
+        "value": 393686.74,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-02",
+        "value": 404590.93,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-03",
+        "value": 392957.82,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-04",
+        "value": 394437.8,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-05",
+        "value": 403828.53,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-06",
+        "value": 399693.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-07",
+        "value": 401088.82,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-08",
+        "value": 401789.47,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-09",
+        "value": 404976.9,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-10",
+        "value": 410159.2,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-11",
+        "value": 427784.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-12",
+        "value": 429042.75,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-01",
+        "value": 424215.53,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-02",
+        "value": 445922.46,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-03",
+        "value": 431357.12,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-04",
+        "value": 432359.69,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-05",
+        "value": 436234.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-06",
+        "value": 434052.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-07",
+        "value": 433211.6,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-08",
+        "value": 433774.4,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-09",
+        "value": 446033.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-10",
+        "value": 454476.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-11",
+        "value": 457137.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-12",
+        "value": 472694.42,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-01",
+        "value": 476102.58,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-02",
+        "value": 484454.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-03",
+        "value": 482918.37,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-04",
+        "value": 488280.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-05",
+        "value": 494739.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-06",
+        "value": 495901.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-07",
+        "value": 499311.13,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-08",
+        "value": 507417.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      }
+    ]
+  },
+  "retail_sales_hospitality_monthly": {
+    "group": "growth",
+    "label": "Dịch vụ lưu trú, ăn uống (theo tháng, danh nghĩa)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+    "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 56669.9,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-09",
+        "value": 59022.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-10",
+        "value": 59319.84,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-11",
+        "value": 59581.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-12",
+        "value": 58560.01,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-01",
+        "value": 57804.46,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-02",
+        "value": 58645.57,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-03",
+        "value": 57898.34,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-04",
+        "value": 59363.86,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-05",
+        "value": 59842.77,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-06",
+        "value": 59986.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-07",
+        "value": 61189.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-08",
+        "value": 61847.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-09",
+        "value": 62448.1,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-10",
+        "value": 59872.22,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-11",
+        "value": 62545.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-12",
+        "value": 63236.46,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-01",
+        "value": 65356.04,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-02",
+        "value": 65835.17,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-03",
+        "value": 65518.64,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-04",
+        "value": 67718.23,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-05",
+        "value": 69824.76,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-06",
+        "value": 70464.82,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-07",
+        "value": 70330.33,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-08",
+        "value": 71766.38,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-09",
+        "value": 71521.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-10",
+        "value": 70434.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-11",
+        "value": 72444.68,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-12",
+        "value": 72275.94,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-01",
+        "value": 74414.71,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-02",
+        "value": 77735.87,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-03",
+        "value": 79530.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-04",
+        "value": 81268.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-05",
+        "value": 85549.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-06",
+        "value": 86427.61,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-07",
+        "value": 88123.05,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-08",
+        "value": 90454.89,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      }
+    ]
+  },
+  "retail_sales_travel_monthly": {
+    "group": "growth",
+    "label": "Du lịch lữ hành (theo tháng, danh nghĩa)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+    "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 3629.04,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-09",
+        "value": 3801.72,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-10",
+        "value": 4020.53,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-11",
+        "value": 3913.5,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-12",
+        "value": 3824.2,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-01",
+        "value": 4832.75,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-02",
+        "value": 4335.73,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-03",
+        "value": 4738.66,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-04",
+        "value": 5090.43,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-05",
+        "value": 5104.71,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-06",
+        "value": 5021.24,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-07",
+        "value": 5314.1,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-08",
+        "value": 5686.53,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-09",
+        "value": 5256.78,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-10",
+        "value": 4900.13,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-11",
+        "value": 5805.34,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-12",
+        "value": 5281.88,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-01",
+        "value": 5369.45,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-02",
+        "value": 7031.58,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-03",
+        "value": 6929.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-04",
+        "value": 7323.06,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-05",
+        "value": 8503.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-06",
+        "value": 8078.4,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-07",
+        "value": 7440.62,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-08",
+        "value": 8013.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-09",
+        "value": 8000.5,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-10",
+        "value": 7965.4,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-11",
+        "value": 8144.46,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-12",
+        "value": 7651.89,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-01",
+        "value": 7433.04,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-02",
+        "value": 7645.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-03",
+        "value": 8186.17,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-04",
+        "value": 8453.73,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-05",
+        "value": 8740.35,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-06",
+        "value": 8833.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-07",
+        "value": 9788.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-08",
+        "value": 9116.95,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      }
+    ]
+  },
+  "retail_sales_other_monthly": {
+    "group": "growth",
+    "label": "Dịch vụ khác (theo tháng, danh nghĩa)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "note": "dulieukinhte.com (mirror Tổng cục Thống kê), HTML tĩnh. Theo GIÁ HIỆN HÀNH (danh nghĩa, CHƯA trừ lạm phát) — xem retail_sales_growth (đã có sẵn)/retail_sales_growth_real (phái sinh) để có %YoY danh nghĩa/thực.",
+    "impact": "Đo trực tiếp sức mua/tiêu dùng nội địa theo tháng — so sánh tốc độ tăng giữa hàng hoá (thiết yếu) và dịch vụ lưu trú-ăn uống/du lịch (trải nghiệm, nhạy cảm với niềm tin tiêu dùng) để biết tiêu dùng đang 'khỏe' (dịch chuyển sang dịch vụ) hay chỉ tăng do giá.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 53139.16,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-09",
+        "value": 55260.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-10",
+        "value": 58684.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-11",
+        "value": 62691.14,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2023-12",
+        "value": 63074.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-01",
+        "value": 59628.03,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-02",
+        "value": 54209.39,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-03",
+        "value": 50947.34,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-04",
+        "value": 53057.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-05",
+        "value": 51366.53,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-06",
+        "value": 52072.61,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-07",
+        "value": 53654.3,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-08",
+        "value": 55014.08,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-09",
+        "value": 56559.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-10",
+        "value": 57949.47,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-11",
+        "value": 61343.92,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2024-12",
+        "value": 62431.5,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-01",
+        "value": 63480.07,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-02",
+        "value": 57041.08,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-03",
+        "value": 57704.48,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-04",
+        "value": 58209.68,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-05",
+        "value": 57826.24,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-06",
+        "value": 58618.07,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-07",
+        "value": 59381.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-08",
+        "value": 59787.79,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-09",
+        "value": 61486.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-10",
+        "value": 64267.41,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-11",
+        "value": 66782.47,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2025-12",
+        "value": 63730.84,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-01",
+        "value": 64942.6,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-02",
+        "value": 63197.1,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-03",
+        "value": 65030.95,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-04",
+        "value": 65762.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-05",
+        "value": 69612.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-06",
+        "value": 71674.82,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-07",
+        "value": 71774.14,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
+      },
+      {
+        "period": "2026-08",
+        "value": 72824.26,
+        "source_url": "https://dulieukinhte.com/du-lieu/ban-le-hang-hoa-va-dich-vu-273"
       }
     ]
   }
