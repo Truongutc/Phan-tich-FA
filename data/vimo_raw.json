@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-10-01 10:42",
+    "last_auto_update": "2026-10-01 11:37",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -42203,5 +42203,101 @@
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
       }
     ]
+  },
+  "export_domestic_usd_bn": {
+    "group": "trade",
+    "label": "Xuất khẩu — khu vực kinh tế trong nước (lũy kế, NSO)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "series": [
+      {
+        "period": "2026-08",
+        "value": 74.47,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1), KHÔNG PHẢI số riêng 1 tháng.",
+    "impact": "Thuộc nhóm 'trade structure' (cơ cấu XNK theo khu vực DN) — KHÔNG dùng để suy ra cung/cầu USD thực tế qua hệ thống ngân hàng (DN FDI có thể dùng vốn/giữ doanh thu ở nước ngoài, xem FDI_Trade_Balance/Domestic_Trade_Balance)."
+  },
+  "export_fdi_usd_bn": {
+    "group": "trade",
+    "label": "Xuất khẩu — khu vực FDI (lũy kế, NSO)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "series": [
+      {
+        "period": "2026-08",
+        "value": 300.37,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1), KHÔNG PHẢI số riêng 1 tháng.",
+    "impact": "Thuộc nhóm 'trade structure' (cơ cấu XNK theo khu vực DN) — KHÔNG dùng để suy ra cung/cầu USD thực tế qua hệ thống ngân hàng (DN FDI có thể dùng vốn/giữ doanh thu ở nước ngoài, xem FDI_Trade_Balance/Domestic_Trade_Balance)."
+  },
+  "import_domestic_usd_bn": {
+    "group": "trade",
+    "label": "Nhập khẩu — khu vực kinh tế trong nước (lũy kế, NSO)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "series": [
+      {
+        "period": "2026-08",
+        "value": 105.07,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1), KHÔNG PHẢI số riêng 1 tháng.",
+    "impact": "Thuộc nhóm 'trade structure' (cơ cấu XNK theo khu vực DN) — KHÔNG dùng để suy ra cung/cầu USD thực tế qua hệ thống ngân hàng (DN FDI có thể dùng vốn/giữ doanh thu ở nước ngoài, xem FDI_Trade_Balance/Domestic_Trade_Balance)."
+  },
+  "import_fdi_usd_bn": {
+    "group": "trade",
+    "label": "Nhập khẩu — khu vực FDI (lũy kế, NSO)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "nso",
+    "series": [
+      {
+        "period": "2026-08",
+        "value": 290.23,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1), KHÔNG PHẢI số riêng 1 tháng.",
+    "impact": "Thuộc nhóm 'trade structure' (cơ cấu XNK theo khu vực DN) — KHÔNG dùng để suy ra cung/cầu USD thực tế qua hệ thống ngân hàng (DN FDI có thể dùng vốn/giữ doanh thu ở nước ngoài, xem FDI_Trade_Balance/Domestic_Trade_Balance)."
+  },
+  "fdi_trade_balance": {
+    "group": "trade",
+    "label": "FDI Trade Balance (Xuất khẩu FDI − Nhập khẩu FDI, lũy kế)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "derived",
+    "series": [
+      {
+        "period": "2026-08",
+        "value": 10.14,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
+      }
+    ],
+    "note": "= export_fdi_usd_bn − import_fdi_usd_bn (NSO, lũy kế từ đầu năm). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+    "impact": "Khu vực FDI xuất siêu lớn KHÔNG đồng nghĩa khu vực này cung USD thực tế vào hệ thống ngân hàng VN — DN FDI có thể tài trợ nhập khẩu bằng vốn công ty mẹ hoặc giữ doanh thu xuất khẩu ở tài khoản offshore. Chỉ nên đọc đây là cấu trúc thương mại, không phải dòng ngoại tệ thực."
+  },
+  "domestic_trade_balance": {
+    "group": "trade",
+    "label": "Domestic Trade Balance (Xuất khẩu − Nhập khẩu khu vực trong nước, lũy kế)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "derived",
+    "series": [
+      {
+        "period": "2026-08",
+        "value": -30.6,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/09/bao-cao-tinh-hinh-kinh-te-xa-hoi-thang-tam-va-8-thang-nam-2026/"
+      }
+    ],
+    "note": "= export_domestic_usd_bn − import_domestic_usd_bn (NSO, lũy kế từ đầu năm). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+    "impact": "Khu vực kinh tế trong nước thường nhập siêu — phản ánh đúng hơn áp lực cầu USD THỰC của doanh nghiệp Việt Nam (ít khả năng có nguồn vốn/doanh thu offshore như khu vực FDI)."
   }
 }

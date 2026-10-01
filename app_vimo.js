@@ -510,6 +510,16 @@ const FX_PRESSURE_LAYERS = [
         keys: ['forex_reserves_monthly', 'forex_reserves_sdr', 'omo_rate_7d', 'tin_phieu_outstanding_balance', 'tin_phieu_net_operation'],
         missing: [],
     },
+    {
+        // THEM (user 2026-10-01): FDI XNK tách Domestic/FDI — user NHẤN MẠNH đây là "TRADE
+        // STRUCTURE", KHÔNG PHẢI "FX flow" (DN FDI có thể dùng vốn/giữ doanh thu offshore, không
+        // chắc USD thực sự qua hệ thống NHTM VN) — cố tình KHÔNG gộp vào lớp ①②③ ở trên, tách
+        // thành lớp riêng để không bị đọc nhầm là 1 proxy cung/cầu USD.
+        id: 'trade_structure', title: '⑥ Cơ cấu Thương mại theo Khu vực DN (Trade Structure — KHÔNG phải dòng ngoại tệ thực)',
+        keys: ['export_domestic_usd_bn', 'export_fdi_usd_bn', 'import_domestic_usd_bn', 'import_fdi_usd_bn',
+               'fdi_trade_balance', 'domestic_trade_balance'],
+        missing: [],
+    },
 ];
 
 function renderFxPressureCard(indicators) {

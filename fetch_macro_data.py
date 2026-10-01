@@ -762,6 +762,41 @@ def fetch_nso_gdp_structure_report():
                 out["fdi_disbursed_period"] = f"{int(m_fdi.group(2)):04d}-{month:02d}"
                 out["fdi_disbursed_usd_bn"] = _vn_number(m_fdi.group(3))
 
+        # XNK tách khu vực TRONG NƯỚC vs FDI, lũy kế theo THÁNG (tỷ USD) — user (2026-10-01) muốn
+        # "FDI Trade Balance" riêng (KHÔNG dùng để suy ra USD supply/demand thực — chỉ là "trade
+        # structure" theo đúng khuyến nghị, xem _add_fdi_domestic_trade_derived nếu có). Câu xuất
+        # hiện HÀNG THÁNG trong báo cáo, dạng "Tính chung {N} tháng năm {YYYY}, kim ngạch xuất/
+        # nhập khẩu hàng hóa đạt {total} tỷ USD, tăng {total%}%..., Trong đó/trong đó, khu vực
+        # kinh tế trong nước đạt {domestic} tỷ USD, tăng {dom%}%...; khu vực có vốn đầu tư nước
+        # ngoài [(kể cả dầu thô)] đạt {fdi} tỷ USD, tăng {fdi%}%". Verify khớp CHÍNH XÁC báo cáo
+        # tháng 8/2026 (export: trong nước 74,47 / FDI 300,37 / tổng 374,84 tỷ USD; import: trong
+        # nước 105,07 / FDI 290,23 / tổng 395,3 tỷ USD).
+        m_exp_fdi = re.search(
+            r"Tính chung (\S+(?:\s+một)?) tháng năm (\d{4}), kim ngạch xuất khẩu hàng hóa đạt "
+            r"([\d.,]+) tỷ USD, tăng ([\d.,\-]+)% so với cùng kỳ năm trước\. [Tt]rong đó,? khu vực "
+            r"kinh tế trong nước đạt ([\d.,]+) tỷ USD, tăng ([\d.,\-]+)%[^;]*; khu vực có vốn đầu "
+            r"tư (?:trực tiếp )?nước ngoài[^đ]*đạt ([\d.,]+) tỷ USD, tăng ([\d.,\-]+)%", text)
+        if m_exp_fdi:
+            month = _VN_MONTH_COUNT_WORDS.get(m_exp_fdi.group(1).lower())
+            if month:
+                out["trade_fdi_split_period"] = f"{int(m_exp_fdi.group(2)):04d}-{month:02d}"
+                out["export_domestic_usd_bn"] = _vn_number(m_exp_fdi.group(5))
+                out["export_fdi_usd_bn"] = _vn_number(m_exp_fdi.group(7))
+
+        m_imp_fdi = re.search(
+            r"Tính chung (\S+(?:\s+một)?) tháng năm (\d{4}), kim ngạch nhập khẩu hàng hóa đạt "
+            r"([\d.,]+) tỷ USD, tăng ([\d.,\-]+)% so với cùng kỳ năm trước,? trong đó khu vực "
+            r"kinh tế trong nước đạt ([\d.,]+) tỷ USD, tăng ([\d.,\-]+)%[^;]*; khu vực có vốn đầu "
+            r"tư (?:trực tiếp )?nước ngoài[^đ]*đạt ([\d.,]+) tỷ USD, tăng ([\d.,\-]+)%", text)
+        if m_imp_fdi:
+            month = _VN_MONTH_COUNT_WORDS.get(m_imp_fdi.group(1).lower())
+            if month:
+                period = f"{int(m_imp_fdi.group(2)):04d}-{month:02d}"
+                if not out.get("trade_fdi_split_period"):
+                    out["trade_fdi_split_period"] = period
+                out["import_domestic_usd_bn"] = _vn_number(m_imp_fdi.group(5))
+                out["import_fdi_usd_bn"] = _vn_number(m_imp_fdi.group(7))
+
         # IIP (Chỉ số sản xuất công nghiệp) tăng trưởng YoY THEO THÁNG riêng lẻ — dự phòng/bổ sung
         # cho iip_growth (nguồn chính vẫn là fetch_nso_chart_embed("index-of-industrial-production"),
         # NHƯNG trang embed chỉ giữ cửa sổ ~13 tháng gần nhất, không lùi được xa hơn — câu này trong
@@ -2550,6 +2585,53 @@ def update_vimo_raw():
         _append_point(raw, "fdi_disbursed", gdp_struct["fdi_disbursed_period"],
                        gdp_struct["fdi_disbursed_usd_bn"], gdp_struct["source_url"])
         print(f"  -> FDI giải ngân lũy kế {gdp_struct['fdi_disbursed_period']}: {gdp_struct['fdi_disbursed_usd_bn']} tỷ USD")
+    # XNK tách khu vực trong nước/FDI, lũy kế theo THÁNG (user 2026-10-01, muốn "FDI Trade
+    # Balance" làm chỉ báo TRADE STRUCTURE — KHÔNG dùng suy diễn USD supply/demand thực, xem
+    # ghi chú tại chỗ trích trong fetch_nso_gdp_structure_report()). 4 series + 2 gap phái sinh
+    # (FDI/Domestic Trade Balance) tính NGAY ở đây (đơn giản, không cần hàm _add_* riêng).
+    if gdp_struct.get("trade_fdi_split_period"):
+        p = gdp_struct["trade_fdi_split_period"]
+        src = gdp_struct["source_url"]
+        _TRADE_SPLIT_META = {
+            "export_domestic_usd_bn": "Xuất khẩu — khu vực kinh tế trong nước (lũy kế, NSO)",
+            "export_fdi_usd_bn": "Xuất khẩu — khu vực FDI (lũy kế, NSO)",
+            "import_domestic_usd_bn": "Nhập khẩu — khu vực kinh tế trong nước (lũy kế, NSO)",
+            "import_fdi_usd_bn": "Nhập khẩu — khu vực FDI (lũy kế, NSO)",
+        }
+        for key, label in _TRADE_SPLIT_META.items():
+            if key not in gdp_struct:
+                continue
+            if key not in raw:
+                raw[key] = {
+                    "group": "trade", "label": label, "unit": "tỷ USD", "good_direction": "higher",
+                    "auto_source": "nso", "series": [],
+                    "note": ("Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), "
+                             "GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1), KHÔNG PHẢI số riêng 1 tháng."),
+                    "impact": "Thuộc nhóm 'trade structure' (cơ cấu XNK theo khu vực DN) — KHÔNG dùng để suy ra cung/cầu USD thực tế qua hệ thống ngân hàng (DN FDI có thể dùng vốn/giữ doanh thu ở nước ngoài, xem FDI_Trade_Balance/Domestic_Trade_Balance).",
+                }
+            _append_point(raw, key, p, gdp_struct[key], src)
+        if "export_domestic_usd_bn" in gdp_struct and "export_fdi_usd_bn" in gdp_struct:
+            if "fdi_trade_balance" not in raw:
+                raw["fdi_trade_balance"] = {
+                    "group": "trade", "label": "FDI Trade Balance (Xuất khẩu FDI − Nhập khẩu FDI, lũy kế)",
+                    "unit": "tỷ USD", "good_direction": "higher", "auto_source": "derived", "series": [],
+                    "note": "= export_fdi_usd_bn − import_fdi_usd_bn (NSO, lũy kế từ đầu năm). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+                    "impact": "Khu vực FDI xuất siêu lớn KHÔNG đồng nghĩa khu vực này cung USD thực tế vào hệ thống ngân hàng VN — DN FDI có thể tài trợ nhập khẩu bằng vốn công ty mẹ hoặc giữ doanh thu xuất khẩu ở tài khoản offshore. Chỉ nên đọc đây là cấu trúc thương mại, không phải dòng ngoại tệ thực.",
+                }
+            if "import_domestic_usd_bn" in gdp_struct and "import_fdi_usd_bn" in gdp_struct:
+                _append_point(raw, "fdi_trade_balance", p,
+                               round(gdp_struct["export_fdi_usd_bn"] - gdp_struct["import_fdi_usd_bn"], 2), src)
+                if "domestic_trade_balance" not in raw:
+                    raw["domestic_trade_balance"] = {
+                        "group": "trade", "label": "Domestic Trade Balance (Xuất khẩu − Nhập khẩu khu vực trong nước, lũy kế)",
+                        "unit": "tỷ USD", "good_direction": "higher", "auto_source": "derived", "series": [],
+                        "note": "= export_domestic_usd_bn − import_domestic_usd_bn (NSO, lũy kế từ đầu năm). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+                        "impact": "Khu vực kinh tế trong nước thường nhập siêu — phản ánh đúng hơn áp lực cầu USD THỰC của doanh nghiệp Việt Nam (ít khả năng có nguồn vốn/doanh thu offshore như khu vực FDI).",
+                    }
+                _append_point(raw, "domestic_trade_balance", p,
+                               round(gdp_struct["export_domestic_usd_bn"] - gdp_struct["import_domestic_usd_bn"], 2), src)
+        print(f"  -> XNK theo khu vực {p}: Xuất khẩu trong nước={gdp_struct.get('export_domestic_usd_bn')}/FDI={gdp_struct.get('export_fdi_usd_bn')} tỷ USD, "
+              f"Nhập khẩu trong nước={gdp_struct.get('import_domestic_usd_bn')}/FDI={gdp_struct.get('import_fdi_usd_bn')} tỷ USD")
     # IIP dự phòng/lấp khoảng trống (nguồn CHÍNH vẫn là fetch_nso_chart_embed bên dưới, gọi SAU nên
     # sẽ ghi đè lại đúng giá trị đáng tin hơn cho các kỳ nó phủ được — xem note tại chỗ trích).
     if gdp_struct.get("iip_growth_period"):
