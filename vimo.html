@@ -61,15 +61,28 @@
             border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08);
         }
         .vimo-decision-banner .decision-label { font-size: 1.15em; font-weight: 700; margin-bottom: 6px; }
-        .monitoring-table-scroll { overflow-x: auto; margin-top: 12px; }
+        .monitoring-table-scroll {
+            overflow-x: auto; margin-top: 12px;
+            /* Scrollbar LUÔN HIỆN RÕ (dày, có màu) — mặc định OS/trình duyệt thường ẩn/mảnh trên nền
+               tối, user không nhận ra bảng cuộn được dù overflow-x:auto đã hoạt động đúng. */
+            scrollbar-width: auto; scrollbar-color: #3b82f6 rgba(255,255,255,0.08);
+        }
+        .monitoring-table-scroll::-webkit-scrollbar { height: 10px; }
+        .monitoring-table-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); border-radius: 6px; }
+        .monitoring-table-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; }
+        .monitoring-table-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
         .monitoring-table { border-collapse: collapse; width: 100%; font-size: 0.82em; white-space: nowrap; }
         .monitoring-table th, .monitoring-table td { padding: 7px 10px; text-align: center; }
         .monitoring-table thead th {
-            position: sticky; top: 0; background: var(--bg-card, #111827); color: var(--text-muted, #9ca3af);
-            font-weight: 600; font-size: 0.9em; z-index: 1;
+            /* Nền ĐẶC (không dùng var(--bg-card) = rgba(...,0.75) bán trong suốt — user 2026-10-01:
+               cuộn ngang cột bị "lẹm" qua, thấy chữ/màu ô dữ liệu đè lên tên hàng, không đọc được).
+               #0c1224 = màu --bg-card khi phẳng hoá trên nền --bg-dark (#060912), khớp màu card khi
+               không cuộn, nhưng ĐẶC 100% để che hẳn nội dung phía dưới khi cuộn qua. */
+            position: sticky; top: 0; background: #0c1224; color: var(--text-muted, #9ca3af);
+            font-weight: 600; font-size: 0.9em; z-index: 2;
         }
         .monitoring-table tbody th {
-            position: sticky; left: 0; background: var(--bg-card, #111827); text-align: left;
+            position: sticky; left: 0; background: #0c1224; text-align: left;
             font-weight: 600; z-index: 1; padding-right: 16px;
         }
         .monitoring-table tbody td { font-weight: 600; color: #0b1220; }

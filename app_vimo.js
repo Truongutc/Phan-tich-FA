@@ -62,6 +62,18 @@ function _endpointDatalabelsConfig(decimals) {
 
 let chartInstances = [];
 
+// Cac bang heatmap (.monitoring-table-scroll, overflow-x:auto) chi cuon ngang duoc qua scrollbar/
+// Shift+wheel theo mac dinh trinh duyet - user (2026-10-01) khong nhan ra co the cuon vi scrollbar
+// OS/trinh duyet thuong rat manh/an tren nen toi. Doi lan cuon chuot DOC (deltaY) binh thuong thanh
+// cuon NGANG khi hover cac bang nay, giong UX chuan cua bang rong (vd Google Sheets/Notion).
+document.addEventListener('wheel', (e) => {
+    const scroller = e.target.closest('.monitoring-table-scroll');
+    if (!scroller || scroller.scrollWidth <= scroller.clientWidth) return;
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // da la cuon ngang (trackpad) -> de trinh duyet tu xu ly
+    e.preventDefault();
+    scroller.scrollLeft += e.deltaY;
+}, { passive: false });
+
 document.addEventListener('DOMContentLoaded', async () => {
     const data = await fetch('data/vimo.json').then(r => r.ok ? r.json() : null).catch(() => null);
     if (!data) {
