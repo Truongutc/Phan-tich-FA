@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-10-01 11:44",
+    "last_auto_update": "2026-10-01 15:16",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -41926,6 +41926,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": 4828.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 7494.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 13159.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 7654.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 2716.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": -11101.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -41941,6 +41966,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": 103232.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 116988.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 128521.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 126318.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 122928.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 143586.0,
@@ -41958,6 +42008,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": 94876.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 107203.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 113904.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 117183.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 120493.69,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": 149083.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -41973,6 +42048,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": 7633.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 6835.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 7579.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 8260.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 9101.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 8238.0,
@@ -41990,6 +42090,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": 9214.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 10113.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 10663.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 10547.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 10775.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": 11808.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42005,6 +42130,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": 1256.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 1320.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 1405.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 1407.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 1294.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 1327.0,
@@ -42022,6 +42172,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": 6943.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 4702.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 3760.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 4382.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 2525.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": 6983.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42037,6 +42212,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": 4794.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 5279.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 4892.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 4801.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 4017.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 4250.0,
@@ -42054,6 +42254,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": 1054.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 910.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 911.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 1020.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 830.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": 628.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42069,6 +42294,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": -4887.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": -5420.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -179.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 7076.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 893.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 1899.0,
@@ -42086,6 +42336,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": -155.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": -175.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -180.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": -190.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": -160.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": -190.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42101,6 +42376,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": 3950.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 5400.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 5600.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 7040.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 4340.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 6090.0,
@@ -42118,6 +42418,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": 81.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 22.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -112.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": -22.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 14.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": 13.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42133,6 +42458,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": -992.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": -714.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -2366.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": -828.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": -1413.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": -1518.0,
@@ -42150,6 +42500,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": -1518.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": -2271.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -1339.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": -235.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 534.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": -175.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42165,6 +42540,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()).",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": -1622.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": -586.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -11280.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": -12375.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": -4687.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": 9283.0,
@@ -42182,6 +42582,31 @@
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
       {
+        "period": "2025-Q1",
+        "value": -1681.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 1488.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 1700.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 2355.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": -1078.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
         "period": "2026-Q2",
         "value": 81.0,
         "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
@@ -42197,6 +42622,31 @@
     "note": "sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN (chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự tích lũy dần qua các lần Action chạy, không backfill được (xem fetch_sbv_bop_quarterly()). LƯU Ý QUY ƯỚC DẤU: NHNN trình bày dòng này theo quy ước \"Tài sản có\" — ÂM (-) nghĩa là Tài sản dự trữ TĂNG (tích lũy thêm dự trữ, giống dòng \"Đầu tư trực tiếp ra nước ngoài: Tài sản có\" cùng bảng — tăng tài sản ghi âm); DƯƠNG (+) nghĩa là dự trữ GIẢM.",
     "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
     "series": [
+      {
+        "period": "2025-Q1",
+        "value": 1681.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q2",
+        "value": -1488.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q3",
+        "value": -1700.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2025-Q4",
+        "value": -2355.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 1078.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+      },
       {
         "period": "2026-Q2",
         "value": -81.0,

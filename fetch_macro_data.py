@@ -1587,6 +1587,89 @@ _SBV_BOP_FIELD_MAP = [
 ]
 _ROMAN_TO_QUARTER = {"I": 1, "II": 2, "III": 3, "IV": 4}
 
+# Nhãn CHÍNH XÁC giống _SBV_BOP_FIELD_MAP (không có escape regex vì ở đây so KHỚP CHUỖI, không
+# phải regex) — dulieukinhte.com mirror lại số liệu NHNN, dùng Y HỆT tên chỉ tiêu gốc.
+_DULIEUKINHTE_BOP_LABEL_MAP = [
+    ("current_account", "A. Cán cân vãng lai"),
+    ("goods_export", "Hàng hóa: Xuất khẩu f.o.b"),
+    ("goods_import", "Hàng hóa: Nhập khẩu f.o.b"),
+    ("services_export", "Dịch vụ: Xuất khẩu"),
+    ("services_import", "Dịch vụ: Nhập khẩu"),
+    ("investment_income_received", "Thu nhập đầu tư (Thu nhập sơ cấp): Thu"),
+    ("investment_income_paid", "Thu nhập đầu tư (Thu nhập sơ cấp): Chi"),
+    ("secondary_income_received", "Chuyển giao vãng lai (Thu nhập thứ cấp): Thu"),
+    ("secondary_income_paid", "Chuyển giao vãng lai (Thu nhập thứ cấp): Chi"),
+    ("financial_account", "C. Cán cân tài chính"),
+    ("fdi_assets_bop", "Đầu tư trực tiếp ra nước ngoài: Tài sản có"),
+    ("fdi_liabilities_bop", "Đầu tư trực tiếp vào Việt Nam: Tài sản nợ"),
+    ("portfolio_assets_bop", "Đầu tư gián tiếp ra nước ngoài: Tài sản có"),
+    ("portfolio_liabilities_bop", "Đầu tư gián tiếp vào Việt Nam: Tài sản nợ"),
+    ("external_debt_net", "Vay, trả nợ nước ngoài"),
+    ("errors_omissions", "D. Lỗi và Sai sót"),
+    ("overall_balance", "E. Cán cân tổng thể"),
+    ("reserve_assets_change", "Tài sản dự trữ"),
+]
+
+
+def fetch_dulieukinhte_bop():
+    """dulieukinhte.com/du-lieu/can-can-thanh-toan-361 — MIRROR lại số liệu BOP quý của NHNN
+    (ghi rõ "Nguồn: Ngân hàng Nhà nước Việt Nam"), nhưng trình bày HTML TĨNH thường (KHÔNG WAF
+    chặn như trang NHNN gốc — user 2026-10-01: "để đỡ bị chặn" khi cần lấy gấp). Trang chỉ hiện
+    5 quý gần nhất (tại thời điểm viết: Q1/2025 → Q1/2026) — KHÔNG đủ xa để thay thế hoàn toàn
+    fetch_sbv_bop_quarterly() cho lịch sử sâu hơn (vd 2024), nhưng là NGUỒN ƯU TIÊN cho các quý
+    GẦN NHẤT vì ít rủi ro bị chặn hơn nguồn SBV trực tiếp.
+
+    Parse THEO TỪNG <tr> (không flatten hết trang thành 1 chuỗi text) để tránh nhầm với badge
+    "N mục con" (vd `<span class="kid-count">12</span>`) chỉ xuất hiện ở các dòng NHÓM (A/C/F) —
+    nếu flatten hết thành text, số badge này dễ bị hiểu nhầm là 1 giá trị kỳ thứ 6.
+
+    Trả {period ('YYYY-Qn'): {field_key: value_trieu_usd}} — rỗng nếu lỗi/đổi cấu trúc trang."""
+    url = "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        text = r.text
+
+        m_table = re.search(r'<table class="table-macro-data.*?</table>', text, re.S)
+        if not m_table:
+            print("  [WARN] dulieukinhte.com BOP: không tìm thấy bảng — có thể đổi cấu trúc trang.")
+            return {}
+        table_html = m_table.group(0)
+
+        periods_raw = re.findall(r'<th scope="col">(Q[1-4]-\d{4})</th>', table_html)
+        if not periods_raw:
+            print("  [WARN] dulieukinhte.com BOP: không tìm thấy header kỳ (Qn-YYYY).")
+            return {}
+        periods = []
+        for p in periods_raw:
+            pm = re.match(r"Q([1-4])-(\d{4})", p)
+            periods.append(f"{pm.group(2)}-Q{pm.group(1)}")
+
+        label_to_key = dict((label, key) for key, label in _DULIEUKINHTE_BOP_LABEL_MAP)
+        out = {p: {} for p in periods}
+        for row_html in re.findall(r"<tr[^>]*>(.*?)</tr>", table_html, re.S):
+            # class attribute CÓ THỂ là "row-link" (dòng có trang chi tiết riêng, thẻ <a>) HOẶC
+            # "row-link soft-link" (dòng không có trang chi tiết, thẻ <span>) — PHẢI match class
+            # bắt đầu bằng "row-link" (không yêu cầu đúng y nguyên), nếu không sẽ bỏ sót phần lớn
+            # dòng (đã gặp thực tế: chỉ bắt được 6/40+ dòng khi match chính xác "row-link">).
+            m_label = re.search(r'class="row-link[^"]*">([^<]+)<', row_html)
+            if not m_label:
+                continue
+            key = label_to_key.get(m_label.group(1).strip())
+            if not key:
+                continue
+            values = re.findall(r'<td class="">([^<]*)</td>', row_html)
+            if len(values) < len(periods):
+                continue
+            for period, val_str in zip(periods, values):
+                val_str = val_str.strip()
+                if val_str and val_str != "-":
+                    out[period][key] = _vn_number(val_str)
+        return {p: v for p, v in out.items() if v}
+    except Exception as e:
+        print(f"  [WARN] dulieukinhte.com BOP thất bại: {e}")
+        return {}
+
 
 def fetch_darvas_reer_neer_vietnam():
     """bruegel.org — bộ dữ liệu NEER/REER của Zsolt Darvas (cập nhật định kỳ, KHÔNG phải nguồn
@@ -3169,60 +3252,117 @@ def update_vimo_raw():
 
     # THEM (user 2026-10-01, phát hiện NHNN công bố BOP quý đầy đủ CHUẨN BPM6 — "không nhất thiết
     # phải chờ scraper IMF cho E&O/Overall Balance"): lấp 3 ô ⏳ quan trọng nhất của card "Áp lực
-    # Ngoại tệ" (Errors & Omissions, Overall Balance, Δ Dự trữ) TRỰC TIẾP từ nguồn chính thức duy
-    # nhất, cùng lúc lấy thêm ~13 dòng khác (Dịch vụ/Thu nhập đầu tư/Chuyển giao vãng lai/FDI/Đầu
-    # tư gián tiếp/Vay-trả nợ nước ngoài) phục vụ lớp Cầu/Cung — xem fetch_sbv_bop_quarterly().
-    print("[NHNN — Cán cân thanh toán quốc tế (BOP) theo quý]")
-    bop_period, bop_data = fetch_sbv_bop_quarterly()
-    if bop_period and bop_data:
-        # (label, good_direction) — "higher" là mặc định trung tính (KHÔNG hàm ý "tăng luôn tốt")
-        # cho hầu hết dòng — chi tiết tốt/xấu thực tế đã giải thích riêng ở "impact" từng chỉ báo.
-        # reserve_assets_change dùng "lower" vì NHNN trình bày theo quy ước "Tài sản có" (tăng ghi
-        # ÂM, giống dòng "Đầu tư trực tiếp ra nước ngoài: Tài sản có" cùng bảng) — xem note riêng.
-        _SBV_BOP_META = {
-            "current_account": ("Cán cân vãng lai (BOP, NHNN)", "higher"),
-            "goods_export": ("Hàng hóa: Xuất khẩu (BOP, NHNN)", "higher"),
-            "goods_import": ("Hàng hóa: Nhập khẩu (BOP, NHNN)", "higher"),
-            "services_export": ("Dịch vụ: Xuất khẩu (BOP, NHNN)", "higher"),
-            "services_import": ("Dịch vụ: Nhập khẩu (BOP, NHNN)", "higher"),
-            "investment_income_received": ("Thu nhập đầu tư: Thu (BOP, NHNN)", "higher"),
-            "investment_income_paid": ("Thu nhập đầu tư: Chi (BOP, NHNN)", "higher"),
-            "secondary_income_received": ("Chuyển giao vãng lai: Thu (BOP, NHNN)", "higher"),
-            "secondary_income_paid": ("Chuyển giao vãng lai: Chi (BOP, NHNN)", "higher"),
-            "financial_account": ("Cán cân tài chính (BOP, NHNN)", "higher"),
-            "fdi_assets_bop": ("Đầu tư trực tiếp ra nước ngoài — Tài sản có (BOP, NHNN)", "higher"),
-            "fdi_liabilities_bop": ("Đầu tư trực tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)", "higher"),
-            "portfolio_assets_bop": ("Đầu tư gián tiếp ra nước ngoài — Tài sản có (BOP, NHNN)", "higher"),
-            "portfolio_liabilities_bop": ("Đầu tư gián tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)", "higher"),
-            "external_debt_net": ("Vay, trả nợ nước ngoài — ròng (BOP, NHNN)", "higher"),
-            "errors_omissions": ("Lỗi và Sai sót (BOP, NHNN)", "higher"),
-            "overall_balance": ("Cán cân tổng thể (BOP, NHNN)", "higher"),
-            "reserve_assets_change": ("Δ Tài sản dự trữ trong kỳ (BOP, NHNN)", "lower"),
+    # Ngoại tệ" (Errors & Omissions, Overall Balance, Δ Dự trữ), cùng lúc lấy thêm ~13 dòng khác
+    # (Dịch vụ/Thu nhập đầu tư/Chuyển giao vãng lai/FDI/Đầu tư gián tiếp/Vay-trả nợ nước ngoài)
+    # phục vụ lớp Cầu/Cung.
+    # SỬA (user 2026-10-01, "các kì mới sẽ chủ động check xem nếu thiếu thì lấy ở sbv nhé, để đỡ
+    # bị chặn"): dulieukinhte.com/du-lieu/can-can-thanh-toan-361 MIRROR lại đúng số liệu NHNN, HTML
+    # tĩnh (không WAF) — dùng làm nguồn CHÍNH, backfill luôn được ~5 quý gần nhất mỗi lần chạy. Chỉ
+    # gọi trực tiếp sbv.gov.vn (rủi ro bị chặn) làm FALLBACK khi dulieukinhte CHƯA có quý mới hơn
+    # quý đã lưu trước đó (nghĩa là NHNN có thể vừa công bố quý mới mà dulieukinhte chưa kịp cập
+    # nhật) — xem fetch_dulieukinhte_bop() / fetch_sbv_bop_quarterly().
+    print("[Cán cân thanh toán quốc tế (BOP) theo quý — nguồn chính dulieukinhte.com, fallback SBV]")
+
+    # (label, good_direction) — "higher" là mặc định trung tính (KHÔNG hàm ý "tăng luôn tốt") cho
+    # hầu hết dòng — chi tiết tốt/xấu thực tế đã giải thích riêng ở "impact" từng chỉ báo.
+    # reserve_assets_change dùng "lower" vì NHNN trình bày theo quy ước "Tài sản có" (tăng ghi ÂM,
+    # giống dòng "Đầu tư trực tiếp ra nước ngoài: Tài sản có" cùng bảng) — xem note riêng.
+    _SBV_BOP_META = {
+        "current_account": ("Cán cân vãng lai (BOP, NHNN)", "higher"),
+        "goods_export": ("Hàng hóa: Xuất khẩu (BOP, NHNN)", "higher"),
+        "goods_import": ("Hàng hóa: Nhập khẩu (BOP, NHNN)", "higher"),
+        "services_export": ("Dịch vụ: Xuất khẩu (BOP, NHNN)", "higher"),
+        "services_import": ("Dịch vụ: Nhập khẩu (BOP, NHNN)", "higher"),
+        "investment_income_received": ("Thu nhập đầu tư: Thu (BOP, NHNN)", "higher"),
+        "investment_income_paid": ("Thu nhập đầu tư: Chi (BOP, NHNN)", "higher"),
+        "secondary_income_received": ("Chuyển giao vãng lai: Thu (BOP, NHNN)", "higher"),
+        "secondary_income_paid": ("Chuyển giao vãng lai: Chi (BOP, NHNN)", "higher"),
+        "financial_account": ("Cán cân tài chính (BOP, NHNN)", "higher"),
+        "fdi_assets_bop": ("Đầu tư trực tiếp ra nước ngoài — Tài sản có (BOP, NHNN)", "higher"),
+        "fdi_liabilities_bop": ("Đầu tư trực tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)", "higher"),
+        "portfolio_assets_bop": ("Đầu tư gián tiếp ra nước ngoài — Tài sản có (BOP, NHNN)", "higher"),
+        "portfolio_liabilities_bop": ("Đầu tư gián tiếp vào Việt Nam — Tài sản nợ (BOP, NHNN)", "higher"),
+        "external_debt_net": ("Vay, trả nợ nước ngoài — ròng (BOP, NHNN)", "higher"),
+        "errors_omissions": ("Lỗi và Sai sót (BOP, NHNN)", "higher"),
+        "overall_balance": ("Cán cân tổng thể (BOP, NHNN)", "higher"),
+        "reserve_assets_change": ("Δ Tài sản dự trữ trong kỳ (BOP, NHNN)", "lower"),
+    }
+
+    def _ensure_bop_raw_entry(key):
+        raw_key = f"bop_sbv_{key}"
+        if raw_key in raw:
+            return raw_key
+        label, good_dir = _SBV_BOP_META.get(key, (key, "higher"))
+        note = ("Cán cân thanh toán (BOP) quý, chuẩn BPM6, đơn vị Triệu USD. Nguồn chính: "
+                 "dulieukinhte.com (mirror lại số liệu NHNN, HTML tĩnh — ít rủi ro bị chặn hơn "
+                 "gọi trực tiếp sbv.gov.vn). Khi trang này CHƯA cập nhật quý mới nhất, hệ thống tự "
+                 "động kiểm tra trực tiếp sbv.gov.vn/vi/can-can-thanh-toan-quoc-te để lấp quý đó "
+                 "(fallback, chỉ gọi khi cần để tránh bị WAF chặn) — nguồn cụ thể của từng điểm dữ "
+                 "liệu xem ở link gắn kèm.")
+        if key == "reserve_assets_change":
+            note += (" LƯU Ý QUY ƯỚC DẤU: NHNN trình bày dòng này theo quy ước \"Tài sản có\" — ÂM "
+                      "(-) nghĩa là Tài sản dự trữ TĂNG (tích lũy thêm dự trữ, giống dòng \"Đầu tư "
+                      "trực tiếp ra nước ngoài: Tài sản có\" cùng bảng — tăng tài sản ghi âm); DƯƠNG "
+                      "(+) nghĩa là dự trữ GIẢM.")
+        raw[raw_key] = {
+            "group": "external", "label": label, "unit": "triệu USD",
+            "good_direction": good_dir, "auto_source": "sbv", "note": note,
+            "impact": "Một dòng trong bảng BOP quý — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
+            "series": [],
         }
-        for key, value in bop_data.items():
-            raw_key = f"bop_sbv_{key}"
-            label, good_dir = _SBV_BOP_META.get(key, (key, "higher"))
-            if raw_key not in raw:
-                note = ("sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng BOP quý CHÍNH THỨC của NHNN "
-                         "(chuẩn BPM6), đơn vị Triệu USD. Trang luôn hiện quý MỚI NHẤT — lịch sử tự "
-                         "tích lũy dần qua các lần Action chạy, không backfill được (xem "
-                         "fetch_sbv_bop_quarterly()).")
-                if key == "reserve_assets_change":
-                    note += (" LƯU Ý QUY ƯỚC DẤU: NHNN trình bày dòng này theo quy ước \"Tài sản có\" "
-                              "— ÂM (-) nghĩa là Tài sản dự trữ TĂNG (tích lũy thêm dự trữ, giống dòng "
-                              "\"Đầu tư trực tiếp ra nước ngoài: Tài sản có\" cùng bảng — tăng tài sản "
-                              "ghi âm); DƯƠNG (+) nghĩa là dự trữ GIẢM.")
-                raw[raw_key] = {
-                    "group": "external", "label": label, "unit": "triệu USD",
-                    "good_direction": good_dir, "auto_source": "sbv", "note": note,
-                    "impact": "Một dòng trong bảng BOP quý của NHNN — xem các dòng liên quan khác (current_account/financial_account/errors_omissions/overall_balance) để hiểu bối cảnh đầy đủ, không nên đọc 1 dòng riêng lẻ.",
-                    "series": [],
-                }
-            _merge_point_anywhere(raw, raw_key, bop_period, value,
-                                   "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te")
-        print(f"  -> {bop_period}: {len(bop_data)}/{len(_SBV_BOP_FIELD_MAP)} dòng BOP")
+        return raw_key
+
+    existing_bop_periods = [p["period"] for p in raw.get("bop_sbv_current_account", {}).get("series", [])]
+    existing_max_period = max(existing_bop_periods) if existing_bop_periods else None
+
+    dlkt_data = fetch_dulieukinhte_bop()
+    for period, period_data in dlkt_data.items():
+        for key, value in period_data.items():
+            raw_key = _ensure_bop_raw_entry(key)
+            _merge_point_anywhere(raw, raw_key, period, value,
+                                   "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361")
+    dlkt_max_period = max(dlkt_data) if dlkt_data else None
+    if dlkt_data:
+        n_points = sum(len(v) for v in dlkt_data.values())
+        print(f"  -> dulieukinhte.com: {len(dlkt_data)} quý ({min(dlkt_data)}..{dlkt_max_period}), {n_points} điểm dữ liệu")
     else:
-        print("  -> Không lấy được dữ liệu BOP (WAF chặn hoặc đổi cấu trúc trang)")
+        print("  -> dulieukinhte.com: không lấy được (đổi cấu trúc trang?)")
+
+    # Quý BOP luôn công bố trễ ~2 quý theo lịch (ví dụ: Q2-2026 được NHNN công bố cuối Q3-2026,
+    # xem dateCreated "2026-09-29" quan sát được khi test API Liferay trước đó) — dùng mốc này để
+    # suy ra "quý mới nhất LẼ RA đã có" tính tới hôm nay, rồi mới quyết có cần hỏi SBV không. Nếu
+    # so sánh thẳng dlkt_max_period với existing_max_period (đã lưu), một khi dulieukinhte ổn định
+    # ở 1 quý thì mọi lần chạy sau đều so "bằng" -> lúc nào cũng gọi SBV, mất hết tác dụng giảm rủi
+    # ro bị chặn mà user yêu cầu.
+    _today = datetime.date.today()
+    _q = (_today.month - 1) // 3 + 1 - 2
+    _y = _today.year
+    while _q < 1:
+        _q += 4
+        _y -= 1
+    expected_latest_bop_quarter = f"{_y}-Q{_q}"
+
+    need_sbv_fallback = (
+        (dlkt_max_period is None or dlkt_max_period < expected_latest_bop_quarter)
+        and (existing_max_period is None or existing_max_period < expected_latest_bop_quarter)
+    )
+    if need_sbv_fallback:
+        print(f"  -> Có thể thiếu quý {expected_latest_bop_quarter} (dulieukinhte mới nhất: {dlkt_max_period}, đã lưu: {existing_max_period}) — kiểm tra trực tiếp SBV (fallback)...")
+        bop_period, bop_data = fetch_sbv_bop_quarterly()
+        if bop_period and bop_data and bop_period not in dlkt_data:
+            for key, value in bop_data.items():
+                raw_key = _ensure_bop_raw_entry(key)
+                _merge_point_anywhere(raw, raw_key, bop_period, value,
+                                       "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te")
+            print(f"  -> SBV fallback: {bop_period} ({len(bop_data)}/{len(_SBV_BOP_FIELD_MAP)} dòng)")
+        elif bop_period and bop_period in dlkt_data:
+            print(f"  -> SBV fallback: {bop_period} đã có từ dulieukinhte.com, bỏ qua.")
+        else:
+            print("  -> SBV fallback: không lấy được (WAF chặn hoặc đổi cấu trúc trang) — sẽ thử lại lần sau.")
+    else:
+        print(f"  -> Quý kỳ vọng mới nhất ({expected_latest_bop_quarter}) đã có sẵn từ dulieukinhte "
+              f"({dlkt_max_period}) hoặc đã lưu từ lần chạy trước ({existing_max_period}) — không cần "
+              f"gọi SBV trực tiếp.")
 
     # THEM (user 2026-10-01): NEER/REER Việt Nam — BIS (WS_EER) và IMF.STA:EER đều KHÔNG có Việt
     # Nam (đã verify qua API thật), nhưng Darvas (Bruegel) CÓ, theo tháng, và chính IMF cũng dùng
