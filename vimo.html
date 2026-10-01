@@ -426,6 +426,20 @@
             <p class="ind-source-note" style="margin-top:8px">Tổng hợp CÓ TRỌNG SỐ theo quy mô (cộng tuyệt đối tỷ đồng rồi mới chia tỷ trọng) từ thuyết minh gap thanh khoản (OCR) của các ngân hàng có đủ dữ liệu mỗi quý — độ phủ thấp hơn hẳn card Tín dụng &amp; Huy động ở trên (nguồn Vietcap trực tiếp), xem số ngân hàng/quý ở dòng phụ đề phía trên. So 2 biểu đồ "Theo tỷ trọng" (Tài sản vs Nguồn vốn) cạnh nhau: nếu cột Tài sản nghiêng nhiều về "1-5 năm"/"&gt;5 năm" trong khi cột Nguồn vốn vẫn tập trung ở "Đến 1 tháng"/"1-3 tháng", đó là dấu hiệu lệch kỳ hạn (maturity mismatch) — ngân hàng phải liên tục tái huy động (rollover) tiền gửi ngắn hạn để tài trợ tài sản dài hạn, càng lệch nhiều thì áp lực rollover/lãi suất huy động càng lớn. 2 biểu đồ 3 nhóm kỳ hạn ở cuối gộp gọn: "Ngắn hạn" = Quá hạn + Đến 1 tháng + 1-3 tháng + 3-12 tháng (mọi kỳ hạn ≤12 tháng); "Trung hạn" = 1-5 năm; "Dài hạn" = &gt;5 năm.</p>
         </div>
 
+        <!-- THEM (user 2026-10-01): card "Áp lực Ngoại tệ" — curate cac chi bao macro DA CO SAN
+             (usdvnd/BOP/FDI/OMO/tin_phieu/lai_suat...) theo 5 lop Cau/Cung/Doi chieu BOP/Thi
+             truong/Phan ung NHNN, KHONG gop thanh 1 diem so duy nhat (user nhan manh: giu Cau-
+             Cung-Market-NHNN Response la 4 lop DOC LAP). Xem renderFxPressureCard trong
+             app_vimo.js — cac canvas dung prefix "fxchart-" (KHAC "chart-" cua nhom chung) vi
+             nhieu chi bao (usdvnd/fed_funds_rate/trade_balance...) DA render 1 lan trong nhom
+             "Tỷ giá & Dòng vốn ngoại"/"Thương mại & Hàng hóa" chung roi, tai dung o day can id
+             rieng de khong trung <canvas> id. -->
+        <div class="card margin-top-20" id="fx-pressure-card" style="display:none">
+            <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
+            <p class="vimo-chart-subtitle">Tổng hợp Cầu/Cung ngoại tệ, đối chiếu BOP, áp lực thị trường và phản ứng của NHNN — giữ 5 lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. Đọc bằng cách so chiều biến động giữa lớp Cầu và lớp Cung: Cầu↑/Cung ổn → áp lực tăng từ phía cầu; Cầu ổn/Cung↓ → áp lực tăng từ phía cung yếu đi; cả 2 cùng chiều xấu → áp lực kép; dữ liệu còn thiếu (xem từng lớp) thì chưa đủ cơ sở kết luận.</p>
+            <div id="fx-pressure-body"></div>
+        </div>
+
         <!-- Định giá thị trường -->
         <div class="card margin-top-20">
             <h3 class="border-blue">💎 Định giá Thị trường (VN-Index)</h3>

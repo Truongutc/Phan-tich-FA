@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderBankingSystemRiskSection(data.bankingSystemRisk, data.indicators);
     renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
+    renderFxPressureCard(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -463,6 +464,69 @@ function renderMaturityStructure(ms) {
     };
     _renderAreaCompositionChart('chart-maturity-assets-3buckets-pct', ms.periods, MATURITY_SERIES_3, _mergeTo3(ms.assetsByBucket), true);
     _renderAreaCompositionChart('chart-maturity-liab-3buckets-pct', ms.periods, MATURITY_SERIES_3, _mergeTo3(ms.liabilitiesByBucket), true);
+}
+
+// THEM (user 2026-10-01, "card Áp lực Ngoại tệ" — khung Cầu/Cung/Đối chiếu BOP/Thị trường/Phản
+// ứng NHNN, KHÔNG gộp thành 1 "FX stress score"): curate các chỉ báo macro ĐÃ CÓ SẴN (rải rác
+// trong các nhóm "trade"/"external"/"monetary" chung) vào 1 card riêng theo đúng 5 lớp user yêu
+// cầu — KHÔNG tính toán gì mới ở đây, chỉ tổ chức lại cách hiển thị những gì đã có + đánh dấu rõ
+// phần CHƯA CÓ dữ liệu (NEER/REER, Errors & Omissions/Overall Balance, kiều hối/du lịch, FDI
+// XNK tách riêng) để biết chính xác bổ sung vào ĐÚNG LỚP nào sau này, không phải thiết kế lại.
+const FX_PRESSURE_LAYERS = [
+    {
+        id: 'demand', title: '① Cầu ngoại tệ (Potential USD Demand)',
+        keys: ['import_growth_customs', 'import_growth_customs_mom'],
+        missing: ['Dịch vụ nhập/trả lợi nhuận FDI/trả nợ nước ngoài — hiện chỉ có số THUẦN ở lớp "Đối chiếu BOP" bên dưới, chưa tách riêng chiều "chi/trả" (cần nguồn SBV/IMF chi tiết hơn)'],
+    },
+    {
+        id: 'supply', title: '② Cung ngoại tệ (Potential USD Supply)',
+        keys: ['export_growth_customs', 'export_growth_customs_mom', 'fdi_disbursed', 'fdi_registered_usd_bn', 'trade_balance'],
+        missing: ['Kiều hối, doanh thu du lịch quốc tế — chưa có (nên lấy từ BOP/NSO theo đúng khuyến nghị, KHÔNG lấy số báo chí theo địa phương)'],
+    },
+    {
+        id: 'bop', title: '③ Đối chiếu BOP (Current Account + Financial Account)',
+        keys: ['bop_goods', 'bop_services', 'bop_primary_income', 'bop_secondary_income',
+               'finacc_fdi_assets', 'finacc_fdi_liabilities', 'finacc_portfolio_assets', 'finacc_portfolio_liabilities',
+               'finacc_other_assets', 'finacc_other_liabilities'],
+        missing: ['Errors & Omissions, Overall Balance, Δ Dự trữ (reconciliation) — CHƯA CÓ, nguồn hiện tại (40yo.vn) không có 2 dòng này cho Việt Nam; cần tích hợp mới IMF SDMX/BOP hoặc trang BOP quý của SBV'],
+    },
+    {
+        id: 'market', title: '④ Áp lực thị trường',
+        keys: ['usdvnd', 'usdvnd_monthly_avg', 'usdvnd_growth_mom', 'usdvnd_growth_yoy',
+               'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on'],
+        missing: ['NEER/REER (BIS, theo tháng) — CHƯA CÓ, cần scraper mới cho CSV effective exchange rate của BIS'],
+    },
+    {
+        id: 'response', title: '⑤ Phản ứng NHNN',
+        keys: ['forex_reserves_monthly', 'forex_reserves_sdr', 'omo_rate_7d', 'tin_phieu_outstanding_balance', 'tin_phieu_net_operation'],
+        missing: [],
+    },
+];
+
+function renderFxPressureCard(indicators) {
+    const card = document.getElementById('fx-pressure-card');
+    const body = document.getElementById('fx-pressure-body');
+    if (!card || !body) return;
+
+    const layersWithData = FX_PRESSURE_LAYERS.map(layer => ({
+        ...layer, validKeys: layer.keys.filter(k => indicators[k]),
+    }));
+    if (!layersWithData.some(l => l.validKeys.length)) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    body.innerHTML = layersWithData.map(layer => {
+        if (!layer.validKeys.length && !layer.missing.length) return '';
+        const missingHtml = layer.missing.length
+            ? `<p class="ind-source-note" style="margin:-4px 0 12px 4px">⏳ Chưa có dữ liệu: ${layer.missing.join(' · ')}</p>` : '';
+        return `<div class="vimo-group-header"><h3>${layer.title}</h3></div>
+            <div class="vimo-indicator-grid" id="fxgrid-${layer.id}"></div>${missingHtml}`;
+    }).join('');
+
+    layersWithData.forEach(layer => {
+        const grid = document.getElementById(`fxgrid-${layer.id}`);
+        if (!grid) return;
+        layer.validKeys.forEach(k => _renderGenericIndicatorCard(grid, k, indicators[k], 'fxchart-'));
+    });
 }
 
 // Tổng tín dụng vs Tổng huy động (2 miền, KHÔNG xếp lớp — 2 đại lượng độc lập so cạnh nhau, không
@@ -1012,7 +1076,7 @@ function drawOneValHistChart(canvasId, existingChart, points, bandData, unitLabe
 // Render 1 card chỉ báo GENERIC (giá trị mới nhất + đánh giá tốt/xấu + sparkline nếu ≥4 điểm) —
 // dùng chung cho cả nhóm chỉ báo Việt Nam (renderIndicatorGroups) VÀ cụm Dữ liệu Quốc tế
 // (renderInternationalSection) để không lặp lại logic.
-function _renderGenericIndicatorCard(grid, key, ind) {
+function _renderGenericIndicatorCard(grid, key, ind, idPrefix = 'chart-') {
     const card = document.createElement('div');
     card.className = 'vimo-indicator-card';
     const t = ind.trend || {};
@@ -1022,7 +1086,11 @@ function _renderGenericIndicatorCard(grid, key, ind) {
     // nhật gần nhất, không cần chờ tích lũy đủ 4 điểm mới hiện.
     const hasChart = nValid >= 2;
     const judgColor = t.judgment_color || '#94a3b8';
-    const canvasId = `chart-${key}`;
+    // idPrefix (user 2026-10-01, card "Áp lực Ngoại tệ"): chỉ báo như usdvnd/fed_funds_rate/
+    // trade_balance ĐÃ render 1 lần trong renderIndicatorGroups (nhóm "external"/"trade" riêng) —
+    // card mới tái dùng CÙNG indicator nhưng CẦN canvas id KHÁC, không thì 2 <canvas> trùng id
+    // trong DOM (Chart.js/getElementById chỉ thấy cái đầu tiên, cái sau vẽ lên canvas rỗng/lỗi).
+    const canvasId = `${idPrefix}${key}`;
 
     // Chuỗi nhiều điểm (vd lạm phát cơ bản backfill từ 2020 = ~78 điểm) khiến nhãn trục X xoay
     // 45° bị chật/tràn ra ngoài card 320px mặc định (user 2026-08-01: "biểu đồ hẹp quá... rộng

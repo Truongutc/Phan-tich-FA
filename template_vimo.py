@@ -3186,6 +3186,77 @@ def _add_vnd_usd_rate_spread(raw, trends):
     print(f"  -> Chenh lech lai suat VND-USD (O/N): {len(points)} diem")
 
 
+def _mom_growth_from_level_series(level_by_period):
+    """So với THÁNG LIỀN TRƯỚC (period/period, KHÔNG so cùng kỳ năm trước như _yoy_from_level_
+    series) — CHỈ tính khi 2 kỳ thực sự LIÊN TIẾP (cách đúng 1 tháng), tránh nhảy cụm sai nếu
+    thiếu dữ liệu 1 tháng giữa 2 điểm. Dùng chung cho usdvnd_monthly_avg/import_value_monthly/
+    export_value_monthly (user 2026-10-01, card "Áp lực Ngoại tệ" — muốn "% thay đổi USD/VND",
+    "tăng trưởng import MoM")."""
+    periods = sorted(level_by_period)
+    points = []
+    for i in range(1, len(periods)):
+        prev_p, cur_p = periods[i - 1], periods[i]
+        y0, m0 = (int(x) for x in prev_p.split("-"))
+        y1, m1 = (int(x) for x in cur_p.split("-"))
+        if (y1 * 12 + m1) - (y0 * 12 + m0) != 1:
+            continue
+        if not level_by_period[prev_p]:
+            continue
+        points.append({"period": cur_p, "value": round((level_by_period[cur_p] / level_by_period[prev_p] - 1) * 100, 3)})
+    return points
+
+
+def _add_fx_pressure_mom_indicators(raw, trends):
+    """3 chỉ báo MoM phục vụ card "Áp lực Ngoại tệ" (user 2026-10-01, lớp "Cầu"/"Thị trường"):
+    usdvnd_growth_mom/yoy (từ usdvnd_monthly_avg) + import_growth_customs_mom/export_growth_
+    customs_mom (từ import_value_monthly/export_value_monthly, cùng nguồn Hải quan đã dùng cho
+    bản YoY ở _add_customs_yoy_growth — chỉ thêm góc MoM, không thay thế). Phái sinh tính toán,
+    KHÔNG lưu vào vimo_raw.json."""
+    usdvnd = raw.get("usdvnd_monthly_avg")
+    if usdvnd:
+        by_period = {p["period"]: p["value"] for p in usdvnd["series"] if p.get("value") is not None}
+        mom_points = _mom_growth_from_level_series(by_period)
+        if mom_points:
+            raw["usdvnd_growth_mom"] = {
+                "group": "external", "label": "Tỷ giá USD/VND — % thay đổi so tháng trước (MoM)", "unit": "%",
+                "good_direction": "lower", "auto_source": "derived", "series": mom_points,
+                "note": "Suy ra từ usdvnd_monthly_avg (40yo.vn, bình quân tháng) — period/period liên tiếp. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+                "impact": "USD/VND tăng (MoM dương) nghĩa là VND mất giá so tháng trước — dấu hiệu áp lực tỷ giá tăng trong ngắn hạn.",
+            }
+            trends["usdvnd_growth_mom"] = calc_trend(mom_points, "lower")
+            print(f"  -> Ty gia USD/VND MoM: {len(mom_points)} diem")
+        yoy_points = _yoy_from_level_series(by_period, None)
+        if yoy_points:
+            raw["usdvnd_growth_yoy"] = {
+                "group": "external", "label": "Tỷ giá USD/VND — % thay đổi so cùng kỳ năm trước (YoY)", "unit": "%",
+                "good_direction": "lower", "auto_source": "derived", "series": yoy_points,
+                "note": "Suy ra từ usdvnd_monthly_avg (40yo.vn, bình quân tháng) — so CÙNG THÁNG năm trước. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+                "impact": "Cho biết mức mất giá/lên giá của VND trong 12 tháng qua, tránh bị nhiễu bởi biến động ngắn hạn 1 tháng.",
+            }
+            trends["usdvnd_growth_yoy"] = calc_trend(yoy_points, "lower")
+            print(f"  -> Ty gia USD/VND YoY: {len(yoy_points)} diem")
+
+    for src_key, new_key, label in [
+        ("import_value_monthly", "import_growth_customs_mom", "Nhập khẩu — % thay đổi so tháng trước (MoM, Hải quan)"),
+        ("export_value_monthly", "export_growth_customs_mom", "Xuất khẩu — % thay đổi so tháng trước (MoM, Hải quan)"),
+    ]:
+        src = raw.get(src_key)
+        if not src:
+            continue
+        by_period = {p["period"]: p["value"] for p in src["series"] if p.get("value") is not None}
+        points = _mom_growth_from_level_series(by_period)
+        if not points:
+            continue
+        raw[new_key] = {
+            "group": "trade", "label": label, "unit": "%", "good_direction": "higher", "auto_source": "derived",
+            "series": points,
+            "note": f"Suy ra từ {src_key} (Hải quan, xem load_customs_xnk_local() trong fetch_macro_data.py) — period/period liên tiếp. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+            "impact": "Góc nhìn ngắn hạn hơn (tháng liền trước) bổ sung cho bản YoY (export_growth_customs/import_growth_customs) đã có — nhạy với mùa vụ (Tết, cuối năm tài khóa) hơn YoY.",
+        }
+        trends[new_key] = calc_trend(points, "higher")
+        print(f"  -> {label}: {len(points)} diem")
+
+
 # Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
 # kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
 # Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
@@ -3606,6 +3677,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính chenh lech lai suat VND-USD (KHÔNG lưu vào vimo_raw.json)...")
     _add_vnd_usd_rate_spread(raw, trends)
+
+    print("[INFO] Tính cac chi bao MoM cho card Ap luc Ngoai te (KHÔNG lưu vào vimo_raw.json)...")
+    _add_fx_pressure_mom_indicators(raw, trends)
 
     print("[INFO] Tổng hợp rủi ro hệ thống ngân hàng (ALM) từ data/bank_alm/ (KHÔNG lưu vào vimo_raw.json)...")
     banking_system_risk = _add_bank_alm_derived_indicators(raw, trends)
