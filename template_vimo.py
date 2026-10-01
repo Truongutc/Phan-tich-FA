@@ -2320,6 +2320,84 @@ def _period_sort_key(period):
     return (9999,)  # định dạng lạ (sheet "Khac") — không parse được, giữ nguyên thứ tự gặp
 
 
+# Danh sách chỉ báo thuộc card "Áp lực Ngoại tệ" (user 2026-10-01: "đưa vào excel sheet riêng
+# khi cập nhật vĩ mô") — CÙNG danh sách key với FX_PRESSURE_LAYERS trong app_vimo.js, để Excel
+# và web luôn khớp nhau. Các chỉ báo này VẪN tiếp tục xuất hiện ở sheet chung (Theo tháng/Theo
+# quý/Theo ngày) như mọi chỉ báo khác qua update_excel_history_vimo() — đây là sheet THÊM, không
+# phải thay thế, để dễ tra cứu riêng không phải lọc giữa hàng trăm chỉ báo vĩ mô khác.
+_FX_PRESSURE_KEYS_BY_SHEET = {
+    "NgoaiTe_ThiTruong_Ngay": [
+        "usdvnd_vcb_sell_daily", "usd_cho_den_sell_daily", "usd_cho_den_vcb_gap",
+        "usd_cho_den_vcb_gap_pct", "interbank_rate_on",
+    ],
+    "NgoaiTe_ThiTruong_Thang": [
+        "usdvnd", "usdvnd_monthly_avg", "usdvnd_growth_mom", "usdvnd_growth_yoy",
+        "fed_funds_rate", "vnd_usd_rate_spread_on", "darvas_neer_vn", "darvas_reer_vn",
+        "import_growth_customs", "import_growth_customs_mom",
+        "export_growth_customs", "export_growth_customs_mom",
+        "fdi_disbursed", "fdi_registered_usd_bn", "trade_balance",
+        "export_domestic_usd_bn", "export_fdi_usd_bn", "import_domestic_usd_bn", "import_fdi_usd_bn",
+        "fdi_trade_balance", "domestic_trade_balance",
+        "forex_reserves_monthly", "forex_reserves_sdr", "omo_rate_7d",
+        "tin_phieu_outstanding_balance", "tin_phieu_net_operation",
+    ],
+    "NgoaiTe_BOP_Quy": [
+        "bop_sbv_current_account", "bop_sbv_goods_export", "bop_sbv_goods_import",
+        "bop_sbv_services_export", "bop_sbv_services_import",
+        "bop_sbv_investment_income_received", "bop_sbv_investment_income_paid",
+        "bop_sbv_secondary_income_received", "bop_sbv_secondary_income_paid",
+        "bop_sbv_financial_account", "bop_sbv_fdi_assets_bop", "bop_sbv_fdi_liabilities_bop",
+        "bop_sbv_portfolio_assets_bop", "bop_sbv_portfolio_liabilities_bop",
+        "bop_sbv_external_debt_net", "bop_sbv_errors_omissions", "bop_sbv_overall_balance",
+        "bop_sbv_reserve_assets_change",
+    ],
+}
+
+
+def update_fx_pressure_excel_sheet(raw, out_dir):
+    """3 sheet RIÊNG cho card "Áp lực Ngoại tệ" (NgoaiTe_ThiTruong_Ngay/Thang, NgoaiTe_BOP_Quy) —
+    dạng BẢNG RỘNG (1 hàng = 1 kỳ, 1 cột = 1 chỉ báo), GHI ĐÈ TOÀN BỘ mỗi lần chạy (đơn giản hơn
+    cơ chế "thêm cột mới, giữ cột cũ" của update_excel_history_vimo — dữ liệu FX ít kỳ, rebuild
+    từ đầu không tốn kém, xem cùng nguyên tắc update_bank_alm_excel_sheet/update_bank_ldr_excel_
+    sheet). Xem _FX_PRESSURE_KEYS_BY_SHEET để biết chỉ báo nào thuộc sheet nào (theo tần suất)."""
+    xlsx_path = os.path.join(out_dir, "VIMO_Lich_Su_Chi_So.xlsx")
+    if os.path.exists(xlsx_path):
+        wb = openpyxl.load_workbook(xlsx_path)
+    else:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+
+    for sheet_name, keys in _FX_PRESSURE_KEYS_BY_SHEET.items():
+        valid_keys = [k for k in keys if raw.get(k, {}).get("series")]
+        if not valid_keys:
+            continue
+        if sheet_name in wb.sheetnames:
+            wb.remove(wb[sheet_name])
+        ws = wb.create_sheet(title=sheet_name)
+
+        all_periods = sorted({str(p["period"]) for k in valid_keys for p in raw[k]["series"]
+                               if p.get("period") is not None}, key=_period_sort_key)
+        headers = ["Kỳ"] + [f"{raw[k]['label']} ({raw[k]['unit']})" for k in valid_keys]
+        for c, h in enumerate(headers, start=1):
+            ws.cell(row=1, column=c, value=h)
+
+        value_by_key_period = {k: {str(p["period"]): p.get("value") for p in raw[k]["series"]
+                                    if p.get("period") is not None} for k in valid_keys}
+        for r, period in enumerate(all_periods, start=2):
+            ws.cell(row=r, column=1, value=period)
+            for c, k in enumerate(valid_keys, start=2):
+                v = value_by_key_period[k].get(period)
+                if v is not None:
+                    ws.cell(row=r, column=c, value=v)
+        ws.column_dimensions["A"].width = 14
+        for c in range(2, len(headers) + 1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 22
+        print(f"  [OK] Sheet {sheet_name}: {len(all_periods)} kỳ x {len(valid_keys)} chỉ báo")
+
+    os.makedirs(out_dir, exist_ok=True)
+    wb.save(xlsx_path)
+
+
 def update_excel_history_vimo(raw, out_dir):
     xlsx_path = os.path.join(out_dir, "VIMO_Lich_Su_Chi_So.xlsx")
     indicator_keys = [k for k in raw.keys() if k != "_meta"]
@@ -3810,6 +3888,12 @@ def run_vimo_analysis():
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)
+
+    print("[INFO] Cập nhật sheet riêng cho Áp lực Ngoại tệ...")
+    try:
+        update_fx_pressure_excel_sheet(raw, out_dir)
+    except Exception as e:
+        print(f"  [WARN] Bo qua sheet Ap luc Ngoai te ({e})")
 
     print("[INFO] Cập nhật sheet dữ liệu thô ALM ngân hàng (data/bank_alm/ -> Excel)...")
     try:

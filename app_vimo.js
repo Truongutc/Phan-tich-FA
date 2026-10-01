@@ -91,6 +91,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
     renderFxPressureCard(data.indicators);
+    renderFxSupplyDemandChart(data.indicators);
+    renderFxRateGapChart(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -601,6 +603,113 @@ function _renderCreditFundingLdrChart(canvasId, periods, creditArr, fundingArr, 
                      title: { display: true, text: 'Tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: '%', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM (user 2026-10-01): "biểu đồ tỷ giá chợ đen bán ra và tỷ giá VCB bán ra cùng với gap tỷ
+// giá" — 2 đường mức (VND, trục trái) + 1 đường gap nét đứt (VND, trục phải, khác thang đo vì
+// gap nhỏ hơn mức tỷ giá rất nhiều lần). Khớp theo NGÀY có CẢ 2 nguồn (dùng chính periods của
+// usd_cho_den_vcb_gap làm trục X — gap chỉ tính được ở ngày có đủ cả 2 phía, xem fetch_chogia_
+// usd_cho_den/fetch_vcb_usd_sell_rate trong fetch_macro_data.py).
+function renderFxRateGapChart(indicators) {
+    const canvas = document.getElementById('chart-fx-vcb-cho-den-gap');
+    if (!canvas) return;
+    const gap = indicators['usd_cho_den_vcb_gap'];
+    const vcb = indicators['usdvnd_vcb_sell_daily'];
+    const choDen = indicators['usd_cho_den_sell_daily'];
+    const card = document.getElementById('fx-rate-gap-chart-card');
+    if (!gap || !vcb || !choDen || !gap.series.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = gap.series.map(p => p.period);
+    const vcbByPeriod = Object.fromEntries(vcb.series.map(p => [p.period, p.value]));
+    const choDenByPeriod = Object.fromEntries(choDen.series.map(p => [p.period, p.value]));
+    const vcbArr = periods.map(p => vcbByPeriod[p] ?? null);
+    const choDenArr = periods.map(p => choDenByPeriod[p] ?? null);
+    const gapArr = gap.series.map(p => p.value);
+
+    const levelDatalabels = (color) => ({
+        display: (ctx) => ctx.dataset.data.slice(ctx.dataIndex + 1).every(v => v === null || v === undefined)
+            && (ctx.dataset.data[ctx.dataIndex] !== null && ctx.dataset.data[ctx.dataIndex] !== undefined),
+        color, font: { size: 9, weight: '700' }, anchor: 'end', align: 'right', offset: 4, clip: false,
+        formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }),
+    });
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: periods,
+            datasets: [
+                { label: 'VCB — bán ra', data: vcbArr, yAxisID: 'y', borderColor: '#10b981', backgroundColor: '#10b98120',
+                  fill: false, tension: 0.2, pointRadius: 2, pointBackgroundColor: '#10b981', borderWidth: 2, spanGaps: true,
+                  datalabels: levelDatalabels('#10b981') },
+                { label: 'Chợ đen — bán ra', data: choDenArr, yAxisID: 'y', borderColor: '#ef4444', backgroundColor: '#ef444420',
+                  fill: false, tension: 0.2, pointRadius: 2, pointBackgroundColor: '#ef4444', borderWidth: 2, spanGaps: true,
+                  datalabels: levelDatalabels('#ef4444') },
+                { label: 'Gap (Chợ đen − VCB)', data: gapArr, yAxisID: 'y1', borderColor: '#f59e0b',
+                  borderDash: [6, 4], borderWidth: 2, pointRadius: 0, fill: false, tension: 0.25, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(0) },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 10 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'Gap (VND)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM (user 2026-10-01): "biểu đồ đo lường cung cầu ngoại tệ" — các cấu phần Cầu (đỏ)/Cung
+// (xanh) từ BOP quý NHNN, CÙNG đơn vị (triệu USD) nên so được trực tiếp — CHỈ vẽ nhiều đường
+// cạnh nhau (KHÔNG cộng dồn/trừ thành 1 điểm số, đúng yêu cầu giữ Cầu/Cung là 2 lớp ĐỘC LẬP).
+function renderFxSupplyDemandChart(indicators) {
+    const canvas = document.getElementById('chart-fx-supply-demand');
+    const card = document.getElementById('fx-supply-demand-chart-card');
+    if (!canvas) return;
+    const SERIES = [
+        { key: 'bop_sbv_goods_export', label: 'Hàng hóa — Xuất khẩu', color: '#10b981', isDemand: false },
+        { key: 'bop_sbv_services_export', label: 'Dịch vụ — Xuất khẩu', color: '#34d399', isDemand: false },
+        { key: 'bop_sbv_investment_income_received', label: 'Thu nhập đầu tư — Thu', color: '#6ee7b7', isDemand: false },
+        { key: 'bop_sbv_secondary_income_received', label: 'Chuyển giao vãng lai — Thu', color: '#a7f3d0', isDemand: false },
+        { key: 'bop_sbv_goods_import', label: 'Hàng hóa — Nhập khẩu', color: '#ef4444', isDemand: true },
+        { key: 'bop_sbv_services_import', label: 'Dịch vụ — Nhập khẩu', color: '#f87171', isDemand: true },
+        { key: 'bop_sbv_investment_income_paid', label: 'Thu nhập đầu tư — Chi', color: '#fca5a5', isDemand: true },
+        { key: 'bop_sbv_secondary_income_paid', label: 'Chuyển giao vãng lai — Chi', color: '#fecaca', isDemand: true },
+    ];
+    const validSeries = SERIES.filter(s => indicators[s.key] && indicators[s.key].series.length);
+    if (!validSeries.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = Array.from(new Set(validSeries.flatMap(s => indicators[s.key].series.map(p => p.period)))).sort();
+    const datasets = validSeries.map(s => {
+        const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
+        return {
+            label: s.label, data: periods.map(p => byPeriod[p] ?? null),
+            borderColor: s.color, backgroundColor: s.color + '15', fill: false,
+            borderDash: s.isDemand ? [6, 4] : [], borderWidth: 2, tension: 0.25,
+            pointRadius: 3, pointBackgroundColor: s.color, spanGaps: true,
+            datalabels: _endpointDatalabelsConfig(0),
+        };
+    });
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],

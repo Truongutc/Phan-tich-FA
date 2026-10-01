@@ -437,6 +437,22 @@
         <div class="card margin-top-20" id="fx-pressure-card" style="display:none">
             <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
             <p class="vimo-chart-subtitle">Tổng hợp Cầu/Cung ngoại tệ, đối chiếu BOP, áp lực thị trường và phản ứng của NHNN — giữ 5 lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. Đọc bằng cách so chiều biến động giữa lớp Cầu và lớp Cung: Cầu↑/Cung ổn → áp lực tăng từ phía cầu; Cầu ổn/Cung↓ → áp lực tăng từ phía cung yếu đi; cả 2 cùng chiều xấu → áp lực kép; dữ liệu còn thiếu (xem từng lớp) thì chưa đủ cơ sở kết luận.</p>
+
+            <!-- THEM (user 2026-10-01): "biểu đồ đo lường cung cầu ngoại tệ" + "biểu đồ tỷ giá
+                 chợ đen bán ra và tỷ giá VCB bán ra cùng với gap tỷ giá" — 2 biểu đồ TỔNG HỢP đặt
+                 ngay đầu card (trước khi đi vào chi tiết 6 lớp) vì đây là góc nhìn trực quan nhất
+                 cho câu hỏi "áp lực tỷ giá". Xem renderFxSupplyDemandChart/renderFxRateGapChart
+                 trong app_vimo.js — tự ẩn nếu thiếu dữ liệu nguồn. -->
+            <div class="vimo-chart-title">📊 Áp lực tỷ giá</div>
+            <div id="fx-supply-demand-chart-card" style="display:none">
+                <p class="vimo-chart-subtitle">Cung - Cầu ngoại tệ (BOP quý, NHNN) — nét liền = Cung (xanh), nét đứt = Cầu (đỏ), CÙNG đơn vị (triệu USD) nên so trực tiếp được, KHÔNG cộng/trừ thành 1 điểm số.</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand"></canvas></div>
+            </div>
+            <div id="fx-rate-gap-chart-card" style="display:none" class="margin-top-20">
+                <p class="vimo-chart-subtitle">Tỷ giá USD bán ra: Vietcombank vs Chợ đen + Gap (nét đứt, trục phải) — gap nới rộng/chuyển dương là dấu hiệu đầu cơ/nhu cầu USD ngoài hệ thống ngân hàng tăng.</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-vcb-cho-den-gap"></canvas></div>
+            </div>
+
             <div id="fx-pressure-body"></div>
         </div>
 
