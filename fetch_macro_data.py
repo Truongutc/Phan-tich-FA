@@ -179,6 +179,57 @@ def fetch_usdvnd_current():
         return None, None
 
 
+def fetch_vcb_usd_sell_rate(date_str):
+    """Vietcombank có API JSON thật theo NGÀY (tương tự fetch_vcb_deposit_rate_12m) — trả tỷ giá
+    bán ra NIÊM YẾT (cash/transfer/sell) cho mọi ngoại tệ. User (2026-10-01) muốn "chênh gap tỷ
+    giá chợ đen so với tỷ giá VCB bán ra" (đầu cơ/nhu cầu USD tăng nếu gap nới rộng) — lấy field
+    "sell" (bán ra cho KHÁCH HÀNG, KHÁC "transfer" là tỷ giá bán chuyển khoản liên ngân hàng, và
+    KHÁC "cash" là bán mặt tại quầy — "sell" mới đúng nghĩa "giá bán" so được với chợ đen, 2 bên
+    đều là giá người dân mua được thực tế). date_str dạng "YYYY-MM-DD". Trả (sell_rate, source_url)
+    hoặc (None, None) nếu lỗi/không có USD trong ngày đó (vd ngày nghỉ, VCB trả ngày gần nhất)."""
+    url = f"https://www.vietcombank.com.vn/api/exchangerates?date={date_str}"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        data = r.json()
+        usd = next((x for x in data.get("Data", []) if x.get("currencyCode") == "USD"), None)
+        if not usd or not usd.get("sell"):
+            return None, None
+        actual_date = (data.get("Date") or date_str)[:10]
+        return actual_date, round(float(usd["sell"]), 2)
+    except Exception as e:
+        print(f"  [WARN] VCB USD sell rate ({date_str}) thất bại: {e}")
+        return None, None
+
+
+def fetch_chogia_usd_cho_den():
+    """chogia.vn/ngoai-te/usd-cho-den/ — endpoint AJAX thật (WordPress admin-ajax, KHÔNG cần JS
+    render) cấp dữ liệu cho biểu đồ Highcharts trên trang, trả ~28 ngày gần nhất (gia_mua/gia_ban,
+    VND). User (2026-10-01) muốn đối chiếu "giá bán" (gia_ban) với tỷ giá VCB bán ra để tính gap
+    (đầu cơ/áp lực cầu USD tăng nếu gap nới rộng). Trả list[(date_iso, gia_ban)] (rỗng nếu lỗi) —
+    chỉ lấy gia_ban theo đúng yêu cầu user ("chỉ lấy theo giá bán ra thôi cho dễ so sánh"), gọi
+    MỖI LẦN chạy để tự tích lũy lịch sử qua _merge_point_anywhere() (nguồn chỉ trả cửa sổ ~28 ngày
+    gần nhất, không có tham số lấy sâu hơn)."""
+    url = "https://chogia.vn/wp-admin/admin-ajax.php"
+    try:
+        r = requests.post(url, data={"action": "load_gia_ngoai_te_cho_do_thi", "ma": "usd"},
+                           headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        j = r.json()
+        if not j.get("success"):
+            return []
+        out = []
+        for row in j.get("data", []):
+            ngay = row.get("ngay")
+            gia_ban = row.get("gia_ban")
+            if ngay and gia_ban:
+                out.append((ngay, round(float(gia_ban), 2)))
+        return out
+    except Exception as e:
+        print(f"  [WARN] chogia.vn USD chợ đen thất bại: {e}")
+        return []
+
+
 def fetch_fii_net_flow():
     """cafef.vn — endpoint Ajax nội bộ (KHÔNG public API chính thức, nhưng public/không cần key,
     xác nhận hoạt động qua test thủ công 2026-07-13) trả khối lượng/giá trị mua-bán của KHỐI NGOẠI
@@ -2148,6 +2199,49 @@ def update_vimo_raw():
     if v:
         _append_point(raw, "usdvnd", period_now, v, src)
         print(f"  -> {period_now}: {v}")
+
+    # THEM (user 2026-10-01): "gap tỷ giá chợ đen và tỷ giá VCB" (chỉ giá bán, dễ so sánh) — đầu
+    # cơ/nhu cầu USD tăng nếu gap nới rộng. VCB: backfill NHIỀU NGÀY gần đây (API hỗ trợ tham số
+    # date=YYYY-MM-DD, test ngược được tới cả 2023) — lần đầu chạy sẽ lấp đầy lịch sử, các lần
+    # sau chỉ thêm 1-2 ngày mới (merge theo period nên không trùng). chợ đen (chogia.vn) chỉ trả
+    # ~28 ngày gần nhất mỗi lần gọi — gọi 1 lần, merge toàn bộ, tự tích luỹ dần qua các lần chạy.
+    print("[Vietcombank — tỷ giá USD bán ra (backfill ~45 ngày gần nhất)]")
+    if "usdvnd_vcb_sell_daily" not in raw:
+        raw["usdvnd_vcb_sell_daily"] = {
+            "group": "external", "label": "Tỷ giá USD/VND — Vietcombank (bán ra)", "unit": "VND",
+            "good_direction": "lower", "auto_source": "vcb",
+            "note": "vietcombank.com.vn/api/exchangerates (API JSON thật, theo ngày) — field \"sell\" (bán ra cho khách hàng, KHÁC \"transfer\"/\"cash\").",
+            "impact": "Tỷ giá bán ra chính thức của NHTM lớn nhất — dùng làm mốc đối chiếu với tỷ giá chợ đen để tính gap.",
+            "series": [],
+        }
+    # Chỉ GỌI API cho ngày CHƯA CÓ sẵn (tránh 45 request thừa mỗi lần chạy sau khi đã backfill đủ —
+    # lần đầu chạy sẽ gọi đủ 45 lần để lấp lịch sử, các lần sau chỉ gọi cho (các) ngày mới).
+    existing_vcb_dates = {p["period"] for p in raw["usdvnd_vcb_sell_daily"]["series"]}
+    n_vcb = 0
+    for i in range(45):
+        d = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
+        if d in existing_vcb_dates:
+            continue
+        actual_date, sell = fetch_vcb_usd_sell_rate(d)
+        if actual_date and sell:
+            _merge_point_anywhere(raw, "usdvnd_vcb_sell_daily", actual_date, sell,
+                                   "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate")
+            n_vcb += 1
+    print(f"  -> {n_vcb} ngày mới (tổng {len(raw['usdvnd_vcb_sell_daily']['series'])} điểm)")
+
+    print("[chogia.vn — tỷ giá USD chợ đen (bán ra)]")
+    if "usd_cho_den_sell_daily" not in raw:
+        raw["usd_cho_den_sell_daily"] = {
+            "group": "external", "label": "Tỷ giá USD chợ đen (bán ra)", "unit": "VND",
+            "good_direction": "lower", "auto_source": "derived",
+            "note": "chogia.vn/ngoai-te/usd-cho-den/ (endpoint AJAX nội bộ, ~28 ngày gần nhất mỗi lần gọi — tích lũy dần qua các lần chạy).",
+            "impact": "Tỷ giá USD ngoài hệ thống ngân hàng — chênh lệch lớn với tỷ giá NHTM là dấu hiệu đầu cơ/nhu cầu USD ngoài luồng chính thức tăng.",
+            "series": [],
+        }
+    cho_den_pts = fetch_chogia_usd_cho_den()
+    for ngay, gia_ban in cho_den_pts:
+        _merge_point_anywhere(raw, "usd_cho_den_sell_daily", ngay, gia_ban, "https://chogia.vn/ngoai-te/usd-cho-den/")
+    print(f"  -> {len(cho_den_pts)} điểm từ nguồn (tổng {len(raw['usd_cho_den_sell_daily']['series'])} điểm)")
 
     print("[FII — khối ngoại mua/bán ròng HOSE]")
     net_ty_vnd, date_iso, src = fetch_fii_net_flow()

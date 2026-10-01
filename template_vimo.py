@@ -3257,6 +3257,48 @@ def _add_fx_pressure_mom_indicators(raw, trends):
         print(f"  -> {label}: {len(points)} diem")
 
 
+def _add_usd_cho_den_vcb_gap(raw, trends):
+    """Gap tỷ giá USD chợ đen vs Vietcombank, CHỈ tính trên giá BÁN RA cả 2 bên (user 2026-10-01:
+    "chỉ lấy theo giá bán ra thôi cho dễ so sánh" — usd_cho_den_sell_daily/usdvnd_vcb_sell_daily,
+    xem fetch_chogia_usd_cho_den()/fetch_vcb_usd_sell_rate() trong fetch_macro_data.py). Gap =
+    chợ đen − VCB (VND) — user: "chênh gap ... thể hiện có sự đầu cơ USD hoặc nhu cầu USD đang
+    tăng" khi gap NỚI RỘNG (chợ đen đắt hơn hẳn giá NHTM chính thức); gap thu hẹp/âm là bình
+    thường (NHNN/NHTM đủ nguồn cung, không ai cần tìm USD ngoài hệ thống). CHỈ khớp theo NGÀY có
+    CẢ 2 nguồn (chợ đen thường lag/thiếu vài ngày gần nhất so với VCB). Phái sinh tính toán,
+    KHÔNG lưu vào vimo_raw.json."""
+    cho_den = raw.get("usd_cho_den_sell_daily")
+    vcb = raw.get("usdvnd_vcb_sell_daily")
+    if not cho_den or not vcb:
+        return
+    vcb_by_date = {p["period"]: p["value"] for p in vcb["series"] if p.get("value") is not None}
+    points = []
+    pct_points = []
+    for p in cho_den["series"]:
+        if p.get("value") is None or p["period"] not in vcb_by_date:
+            continue
+        gap = round(p["value"] - vcb_by_date[p["period"]], 2)
+        points.append({"period": p["period"], "value": gap, "source_url": None})
+        pct_points.append({"period": p["period"], "value": round(gap / vcb_by_date[p["period"]] * 100, 3), "source_url": None})
+    if not points:
+        return
+    raw["usd_cho_den_vcb_gap"] = {
+        "group": "external", "label": "Gap tỷ giá USD chợ đen − Vietcombank (bán ra)", "unit": "VND",
+        "good_direction": "lower", "auto_source": "derived", "series": points,
+        "note": "= usd_cho_den_sell_daily (chogia.vn) − usdvnd_vcb_sell_daily (Vietcombank API), cùng khớp theo NGÀY, cả 2 đều là giá BÁN RA. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+        "impact": "Gap nới rộng (chợ đen đắt hơn hẳn VCB) là dấu hiệu đầu cơ/nhu cầu USD ngoài hệ thống ngân hàng chính thức đang tăng; gap hẹp/âm là bình thường khi nguồn cung USD chính thức đủ.",
+    }
+    trends["usd_cho_den_vcb_gap"] = calc_trend(points, "lower")
+    print(f"  -> Gap ty gia cho den - VCB: {len(points)} diem")
+    raw["usd_cho_den_vcb_gap_pct"] = {
+        "group": "external", "label": "Gap tỷ giá USD chợ đen − Vietcombank (% so VCB)", "unit": "%",
+        "good_direction": "lower", "auto_source": "derived", "series": pct_points,
+        "note": "= usd_cho_den_vcb_gap / usdvnd_vcb_sell_daily × 100 — góc nhìn tương đối (%), dễ so sánh qua các giai đoạn tỷ giá nền khác nhau hơn số tuyệt đối VND.",
+        "impact": "Cùng ý nghĩa với usd_cho_den_vcb_gap (số tuyệt đối) nhưng theo %, giúp so sánh mức độ căng qua các thời kỳ tỷ giá nền khác nhau.",
+    }
+    trends["usd_cho_den_vcb_gap_pct"] = calc_trend(pct_points, "lower")
+    print(f"  -> Gap ty gia cho den - VCB (%): {len(pct_points)} diem")
+
+
 # Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
 # kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
 # Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
@@ -3680,6 +3722,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính cac chi bao MoM cho card Ap luc Ngoai te (KHÔNG lưu vào vimo_raw.json)...")
     _add_fx_pressure_mom_indicators(raw, trends)
+
+    print("[INFO] Tính gap ty gia USD cho den vs Vietcombank (KHÔNG lưu vào vimo_raw.json)...")
+    _add_usd_cho_den_vcb_gap(raw, trends)
 
     print("[INFO] Tổng hợp rủi ro hệ thống ngân hàng (ALM) từ data/bank_alm/ (KHÔNG lưu vào vimo_raw.json)...")
     banking_system_risk = _add_bank_alm_derived_indicators(raw, trends)

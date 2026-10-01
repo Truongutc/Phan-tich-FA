@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-09-28 09:19",
+    "last_auto_update": "2026-10-01 10:11",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -151,7 +151,7 @@
       },
       {
         "date": "2026-10-01",
-        "total": 0,
+        "total": 1,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Tăng tỷ trọng vừa phải"
       }
@@ -934,11 +934,16 @@
       {
         "period": "2026-07",
         "value": 52.9,
-        "source_url": "https://data.vietnambiz.vn/macro-economic"
+        "source_url": "https://vbma.org.vn/vi/market-data/gdp-growth"
       },
       {
         "period": "2026-08",
         "value": 53.3,
+        "source_url": "https://data.vietnambiz.vn/macro-economic"
+      },
+      {
+        "period": "2026-09",
+        "value": 51.9,
         "source_url": "https://data.vietnambiz.vn/macro-economic"
       }
     ],
@@ -1948,7 +1953,7 @@
       },
       {
         "period": "2026-W40",
-        "value": 7.2,
+        "value": 6.9,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -2421,6 +2426,21 @@
         "period": "2026-09-24",
         "value": 1.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 0.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 0.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 7.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -2892,6 +2912,21 @@
         "period": "2026-09-24",
         "value": 5.1,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 6.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 6.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 7.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3363,6 +3398,21 @@
         "period": "2026-09-24",
         "value": 5.2,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 5.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 6.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 6.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3834,6 +3884,21 @@
         "period": "2026-09-24",
         "value": 6.15,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 6.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 6.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 6.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3903,7 +3968,7 @@
       },
       {
         "period": "2026-W40",
-        "value": 7.55,
+        "value": 7.48,
         "source_url": "https://www.sbv.gov.vn/vi/l%C3%A3i-su%E1%BA%A5t1"
       }
     ],
@@ -4452,6 +4517,11 @@
       },
       {
         "period": "2026-W32",
+        "value": 5.9,
+        "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
+      },
+      {
+        "period": "2026-W40",
         "value": 5.9,
         "source_url": "https://www.vietinbank.vn/lai-suat-khcn"
       }
@@ -5519,6 +5589,11 @@
         "period": "2026-09",
         "value": 25936.55,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
+      },
+      {
+        "period": "2026-10",
+        "value": 25935.27,
+        "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
     "note": "'lower=better' theo nghĩa VND ít mất giá hơn (áp lực tỷ giá giảm). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới sẽ tự APPEND mỗi lần Action chạy qua fetch_macro_data.py.",
@@ -6312,6 +6387,11 @@
         "period": "2026-09",
         "value": 10.622299852564261,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
+      },
+      {
+        "period": "2026-10",
+        "value": 10.549823490047551,
+        "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
     "note": "'lower=better' theo nghĩa ĐỊNH GIÁ rẻ hơn (không phải sức khỏe kinh tế). Chuỗi 'chỉ có giá trị hiện tại' — điểm mới tự APPEND mỗi lần Action chạy. NÂNG CẤP 2026-07-25 (theo yêu cầu user): nguồn CHÍNH chuyển sang fetch_vnindex_nonvin_data() — file Output/finance/VNINDEX_NONVIN.json từ repo GitHub public Truongutc/AIC---chart-nganh (dự án khác của user), là P/E VN-Index sau khi LOẠI BỎ họ VIN (VIC/VHM/VRE/VPL) — VIN chiếm tỷ trọng lớn + định giá bất thường làm méo mó P/E headline (xác nhận: 24/07/2026 ex-VIN 10.44x vs headline 12.38x, chênh ~2 điểm). 24hmoney.vn/indices/vn-index (CÓ VIN) giữ làm fallback nếu repo GitHub kia không truy cập được — điểm 2026-07=12.38 phía trên là từ fallback trước khi nâng cấp, các điểm mới sẽ là số ex-VIN.",
@@ -6337,6 +6417,11 @@
       {
         "period": "2026-09",
         "value": 1.6661504894798098,
+        "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
+      },
+      {
+        "period": "2026-10",
+        "value": 1.6547825059332473,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -7022,6 +7107,11 @@
         "period": "2026-09-25",
         "value": -273.21,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=28/09/2026"
+      },
+      {
+        "period": "2026-09-30",
+        "value": -890.44,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=01/10/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -7091,7 +7181,7 @@
       },
       {
         "period": "2026-W40",
-        "value": 333,
+        "value": 336,
         "source_url": "https://www.sbv.gov.vn/vi/web/sbv_portal/thong-tin-chao-ban-tin-phieu-nhnn"
       }
     ],
@@ -9746,6 +9836,11 @@
         "period": "2026-09",
         "value": 13.56,
         "source_url": "https://worldperatio.com/area/vietnam/"
+      },
+      {
+        "period": "2026-10",
+        "value": 12.05,
+        "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
     "note": "Chỉ báo mới 2026-07-25 — P/E VN-Index THẬT (bao gồm cả họ VIN: VIC/VHM/VRE/VPL), fetch SONG SONG với vnindex_pe (ex-VIN) để có 2 quyết định phân bổ vốn độc lập đối chiếu nhau (user 2026-07-25). Nguồn: 24hmoney.vn/indices/vn-index (khối keyStatistic{pe,pb} trong window.__NUXT__).",
@@ -9772,6 +9867,11 @@
         "period": "2026-09",
         "value": 1.99,
         "source_url": "https://24hmoney.vn/indices/vn-index"
+      },
+      {
+        "period": "2026-10",
+        "value": 1.97,
+        "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
     "note": "Chỉ báo mới 2026-07-25 — xem note vnindex_pe_headline (cùng lý do/nguồn, P/B thay vì P/E).",
@@ -9786,6 +9886,11 @@
     "series": [
       {
         "period": "2026-W28",
+        "value": 9.0,
+        "source_url": "https://www.tcbs.com.vn/ca-nhan/san-pham/ipower/"
+      },
+      {
+        "period": "2026-W40",
         "value": 9.0,
         "source_url": "https://www.tcbs.com.vn/ca-nhan/san-pham/ipower/"
       }
@@ -10259,6 +10364,21 @@
         "period": "2026-09-24",
         "value": 3.71,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 3.71,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 3.71,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 3.71,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -10730,6 +10850,21 @@
         "period": "2026-09-24",
         "value": 4.29,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 4.29,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 4.29,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 4.29,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11201,6 +11336,21 @@
         "period": "2026-09-24",
         "value": 4.33,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 4.33,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 4.33,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 4.33,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11672,6 +11822,21 @@
         "period": "2026-09-24",
         "value": 4.47,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -12143,6 +12308,21 @@
         "period": "2026-09-24",
         "value": 4.58,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -12594,6 +12774,21 @@
         "period": "2026-09-24",
         "value": -4518.46,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": -44793.22,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": -1564.97,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 10038.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
@@ -13697,6 +13892,21 @@
         "period": "2026-09-24",
         "value": 192118.93,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 142023.91,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 140458.94,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 150496.94,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ],
     "note": "Tổng khối lượng OMO (kênh cầm cố/mua kỳ hạn) đang LƯU HÀNH — TỒN KHO thanh khoản NHNN đã bơm ra thị trường qua kênh này TẠI THỜI ĐIỂM đó, khác omo_net_operation (DÒNG CHẢY ròng bơm/hút MỖI NGÀY — chênh lệch trúng thầu/đáo hạn). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). good_direction='lower' mang tính THAM KHẢO: số dư lưu hành cao kéo dài phản ánh NHNN phải bơm thanh khoản LIÊN TỤC để bù đắp thiếu hụt hệ thống (thanh khoản căng), KHÔNG có nghĩa số dư thấp luôn tốt hơn (có thể chỉ đơn giản là ít nhu cầu vay mượn hơn).",
@@ -19725,6 +19935,21 @@
         "period": "2026-09-24",
         "value": 0.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
       }
     ]
   },
@@ -41306,6 +41531,388 @@
         "period": "2026-W15",
         "value": 9.600000000000001,
         "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
+      }
+    ]
+  },
+  "usdvnd_vcb_sell_daily": {
+    "group": "external",
+    "label": "Tỷ giá USD/VND — Vietcombank (bán ra)",
+    "unit": "VND",
+    "good_direction": "lower",
+    "auto_source": "vcb",
+    "note": "vietcombank.com.vn/api/exchangerates (API JSON thật, theo ngày) — field \"sell\" (bán ra cho khách hàng, KHÁC \"transfer\"/\"cash\").",
+    "impact": "Tỷ giá bán ra chính thức của NHTM lớn nhất — dùng làm mốc đối chiếu với tỷ giá chợ đen để tính gap.",
+    "series": [
+      {
+        "period": "2026-08-18",
+        "value": 26380.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-19",
+        "value": 26370.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-20",
+        "value": 26310.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-21",
+        "value": 26280.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-22",
+        "value": 26310.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-23",
+        "value": 26310.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-24",
+        "value": 26360.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-25",
+        "value": 26310.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-26",
+        "value": 26300.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-27",
+        "value": 26270.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-28",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-29",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-30",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-08-31",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-01",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-02",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-03",
+        "value": 26260.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-04",
+        "value": 26255.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-05",
+        "value": 26255.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-06",
+        "value": 26255.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-07",
+        "value": 26210.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-08",
+        "value": 26160.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-09",
+        "value": 26090.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 26110.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 26110.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-12",
+        "value": 26110.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-13",
+        "value": 26110.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 26180.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 26130.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 26180.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 26205.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-18",
+        "value": 26210.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-19",
+        "value": 26210.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-20",
+        "value": 26210.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-21",
+        "value": 26200.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-22",
+        "value": 26210.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-23",
+        "value": 26190.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-24",
+        "value": 26180.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-25",
+        "value": 26170.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-26",
+        "value": 26170.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-27",
+        "value": 26170.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 26160.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 26160.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 26160.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-01",
+        "value": 26150.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      }
+    ]
+  },
+  "usd_cho_den_sell_daily": {
+    "group": "external",
+    "label": "Tỷ giá USD chợ đen (bán ra)",
+    "unit": "VND",
+    "good_direction": "lower",
+    "auto_source": "derived",
+    "note": "chogia.vn/ngoai-te/usd-cho-den/ (endpoint AJAX nội bộ, ~28 ngày gần nhất mỗi lần gọi — tích lũy dần qua các lần chạy).",
+    "impact": "Tỷ giá USD ngoài hệ thống ngân hàng — chênh lệch lớn với tỷ giá NHTM là dấu hiệu đầu cơ/nhu cầu USD ngoài luồng chính thức tăng.",
+    "series": [
+      {
+        "period": "2026-09-02",
+        "value": 26025.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-03",
+        "value": 26079.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-04",
+        "value": 26110.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-05",
+        "value": 26121.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-06",
+        "value": 26121.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-08",
+        "value": 25973.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-09",
+        "value": 25973.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 25949.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 25965.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-12",
+        "value": 25970.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-13",
+        "value": 25970.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 25984.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 26028.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 25987.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 26004.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-18",
+        "value": 26017.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-19",
+        "value": 26014.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-20",
+        "value": 26014.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-21",
+        "value": 26048.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-22",
+        "value": 26051.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-23",
+        "value": 26047.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-24",
+        "value": 26048.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-25",
+        "value": 26047.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-26",
+        "value": 26035.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-27",
+        "value": 26035.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 26083.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 26033.0,
+        "source_url": "https://chogia.vn/ngoai-te/usd-cho-den/"
       }
     ]
   }

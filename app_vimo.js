@@ -261,7 +261,12 @@ function _renderBankingRiskChartCard(grid, key, ind) {
     const t = ind.trend || {};
     const valid = (ind.series || []).filter(p => p.value !== null && p.value !== undefined);
     const hasChart = valid.length >= 2;
-    const canvasId = `chart-${key}`;
+    // SUA (user 2026-10-01, phat hien qua kiem tra duplicate canvas id khi them card FX): 4 key nay
+    // co group="bank_alm" (nam trong GROUP_ORDER) nen DA render 1 lan trong renderIndicatorGroups()
+    // generic, roi lai render THEM o day voi CUNG prefix "chart-" -> 2 <canvas> trung id trong DOM
+    // (HTML khong hop le, co the gay loi ngoai y muon cho code khac dung getElementById theo id nay).
+    // Doi prefix rieng, giong cach da sua cho card "Áp lực Ngoại tệ" (idPrefix 'fxchart-').
+    const canvasId = `bankriskchart-${key}`;
     const isHigherBad = ind.goodDirection === 'lower';
     const dirColor = isHigherBad ? '#ef4444' : '#10b981';
     const dirBadge = isHigherBad ? '▲ Cao hơn = rủi ro cao hơn' : '▲ Cao hơn = an toàn hơn';
@@ -493,6 +498,7 @@ const FX_PRESSURE_LAYERS = [
     {
         id: 'market', title: '④ Áp lực thị trường',
         keys: ['usdvnd', 'usdvnd_monthly_avg', 'usdvnd_growth_mom', 'usdvnd_growth_yoy',
+               'usdvnd_vcb_sell_daily', 'usd_cho_den_sell_daily', 'usd_cho_den_vcb_gap', 'usd_cho_den_vcb_gap_pct',
                'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on'],
         missing: ['NEER/REER (BIS, theo tháng) — CHƯA CÓ, cần scraper mới cho CSV effective exchange rate của BIS'],
     },
