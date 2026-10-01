@@ -3140,6 +3140,52 @@ def _add_tin_phieu_net_operation(raw, trends):
     print(f"  -> Bơm/hút ròng qua tín phiếu (riêng): {len(points)} điểm")
 
 
+def _add_vnd_usd_rate_spread(raw, trends):
+    """Chênh lệch lãi suất VND-USD (interbank_rate_on — O/N liên NH VND, nguồn VIRA, theo NGÀY —
+    trừ fed_funds_rate — Fed Funds, nguồn FRED, theo THÁNG) — user (2026-10-01) hỏi về khung theo
+    dõi áp lực ngoại tệ VN, trong đó nhấn mạnh "chênh lệch lãi suất VND-USD" là biến TRUNG TÂM để
+    trả lời câu hỏi cốt lõi: áp lực tỷ giá có đang CHUYỂN THÀNH áp lực lên lãi suất VND hay không
+    (VND kém hấp dẫn hơn tương đối → dễ bị rút ra tìm lợi suất USD → NHNN phải giữ lãi suất VND
+    cao hơn để giữ chân vốn). Spread thu hẹp/âm = cảnh báo sớm áp lực tỷ giá có thể BUỘC lãi suất
+    VND phải tăng; spread nới rộng = VND vẫn đủ hấp dẫn, áp lực dịu.
+
+    2 chuỗi gốc đã có sẵn từ trước (không cần scrape mới): interbank_rate_on (VIRA, theo ngày,
+    RẤT nhiễu — dao động vài điểm % giữa các ngày liên tiếp vì là lãi suất qua đêm thực tế) và
+    fed_funds_rate (FRED, theo tháng, mượt). Phải gộp interbank_rate_on về TRUNG BÌNH THEO THÁNG
+    trước khi trừ — trừ trực tiếp theo ngày sẽ cho spread nhiễu vô nghĩa, không phản ánh đúng mức
+    chênh lệch CHÍNH SÁCH/thị trường giữa 2 nước. Phái sinh tính toán, KHÔNG lưu vào
+    vimo_raw.json — nguồn thật nằm ở 2 chỉ báo gốc."""
+    vnd = raw.get("interbank_rate_on")
+    usd = raw.get("fed_funds_rate")
+    if not vnd or not usd:
+        return
+    vnd_by_month = {}
+    for p in vnd["series"]:
+        if p.get("value") is None:
+            continue
+        vnd_by_month.setdefault(p["period"][:7], []).append(p["value"])
+    usd_by_month = {p["period"][:7]: p["value"] for p in usd["series"] if p.get("value") is not None}
+    points = []
+    for ym in sorted(vnd_by_month):
+        if ym not in usd_by_month:
+            continue
+        vnd_avg = sum(vnd_by_month[ym]) / len(vnd_by_month[ym])
+        points.append({"period": ym, "value": round(vnd_avg - usd_by_month[ym], 2), "source_url": None})
+    if not points:
+        return
+    raw["vnd_usd_rate_spread_on"] = {
+        "group": "external", "label": "Chênh lệch lãi suất VND-USD (O/N liên NH VND − Fed Funds)",
+        "unit": "điểm %", "good_direction": "higher", "auto_source": "derived",
+        "series": points,
+        "note": ("= Trung bình THÁNG của interbank_rate_on (lãi suất liên ngân hàng VND qua đêm, "
+                 "nguồn VIRA, theo ngày) trừ fed_funds_rate (Fed Funds, nguồn FRED, theo tháng). "
+                 "Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."),
+        "impact": "Chênh lệch thu hẹp/âm là dấu hiệu VND kém hấp dẫn hơn tương đối so với USD — dễ kéo theo áp lực tỷ giá CHUYỂN THÀNH áp lực buộc lãi suất VND phải tăng để giữ chân vốn; chênh lệch nới rộng nghĩa là áp lực này đang dịu.",
+    }
+    trends["vnd_usd_rate_spread_on"] = calc_trend(points, "higher")
+    print(f"  -> Chenh lech lai suat VND-USD (O/N): {len(points)} diem")
+
+
 # Danh sách CỐ ĐỊNH chỉ báo THEO THÁNG cho bảng giám sát (user 2026-08-03, tham khảo trình bày
 # kiểu "Bảng giám sát các chỉ số vĩ mô hàng tháng" của báo cáo phân tích — heatmap màu theo hàng).
 # Chỉ chọn chỉ báo có period dạng "YYYY-MM" (không lấy fdi_disbursed dạng Q1/H1/9M/FY, không so
@@ -3557,6 +3603,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính bơm/hút ròng riêng kênh tín phiếu NHNN (KHÔNG lưu vào vimo_raw.json)...")
     _add_tin_phieu_net_operation(raw, trends)
+
+    print("[INFO] Tính chenh lech lai suat VND-USD (KHÔNG lưu vào vimo_raw.json)...")
+    _add_vnd_usd_rate_spread(raw, trends)
 
     print("[INFO] Tổng hợp rủi ro hệ thống ngân hàng (ALM) từ data/bank_alm/ (KHÔNG lưu vào vimo_raw.json)...")
     banking_system_risk = _add_bank_alm_derived_indicators(raw, trends)
