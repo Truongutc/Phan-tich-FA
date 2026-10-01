@@ -1671,6 +1671,54 @@ def fetch_dulieukinhte_bop():
         return {}
 
 
+def fetch_dulieukinhte_kieu_hoi_hcm():
+    """dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426 — Kiều hối ĐÚNG NGHĨA (personal
+    remittances) nhưng CHỈ PHẠM VI TP.HCM (nguồn: NHNN Chi nhánh Khu vực 2, trước 01/07/2025 là
+    NHNN chi nhánh TP.HCM). LƯU Ý: đây KHÔNG PHẢI kiều hối toàn quốc — TP.HCM lịch sử chiếm tỷ
+    trọng lớn nhưng không phải 100%, KHÔNG được tự suy ra số toàn quốc từ số này. Khác với
+    bop_sbv_secondary_income_received (toàn quốc nhưng RỘNG HƠN, gồm mọi chuyển giao vãng lai chứ
+    không riêng kiều hối cá nhân) — 2 chỉ báo bổ sung cho nhau, không thay thế nhau. HTML tĩnh,
+    không WAF. Trả {period ('YYYY-Qn'): value_trieu_usd} — rỗng nếu lỗi/đổi cấu trúc trang."""
+    url = "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+        r.raise_for_status()
+        text = r.text
+
+        m_table = re.search(r'<table class="table-macro-data.*?</table>', text, re.S)
+        if not m_table:
+            print("  [WARN] dulieukinhte.com kiều hối TP.HCM: không tìm thấy bảng — có thể đổi cấu trúc trang.")
+            return {}
+        table_html = m_table.group(0)
+
+        periods_raw = re.findall(r'<th scope="col">(Q[1-4]-\d{4})</th>', table_html)
+        if not periods_raw:
+            print("  [WARN] dulieukinhte.com kiều hối TP.HCM: không tìm thấy header kỳ (Qn-YYYY).")
+            return {}
+        periods = []
+        for p in periods_raw:
+            pm = re.match(r"Q([1-4])-(\d{4})", p)
+            periods.append(f"{pm.group(2)}-Q{pm.group(1)}")
+
+        out = {}
+        for row_html in re.findall(r"<tr[^>]*>(.*?)</tr>", table_html, re.S):
+            m_label = re.search(r'class="row-link[^"]*">([^<]+)<', row_html)
+            if not m_label or "Tổng kiều hối" not in m_label.group(1):
+                continue
+            values = re.findall(r'<td class="">([^<]*)</td>', row_html)
+            if len(values) < len(periods):
+                continue
+            for period, val_str in zip(periods, values):
+                val_str = val_str.strip()
+                if val_str and val_str != "-":
+                    out[period] = _vn_number(val_str)
+            break
+        return out
+    except Exception as e:
+        print(f"  [WARN] dulieukinhte.com kiều hối TP.HCM thất bại: {e}")
+        return {}
+
+
 def fetch_darvas_reer_neer_vietnam():
     """bruegel.org — bộ dữ liệu NEER/REER của Zsolt Darvas (cập nhật định kỳ, KHÔNG phải nguồn
     "chính thức" IMF/BIS nhưng user xác nhận IMF TỰ DÙNG Darvas làm nguồn NEER/REER cho Việt Nam
@@ -3363,6 +3411,37 @@ def update_vimo_raw():
         print(f"  -> Quý kỳ vọng mới nhất ({expected_latest_bop_quarter}) đã có sẵn từ dulieukinhte "
               f"({dlkt_max_period}) hoặc đã lưu từ lần chạy trước ({existing_max_period}) — không cần "
               f"gọi SBV trực tiếp.")
+
+    # THEM (user 2026-10-01, "kiều hối đây nhé, lấy cái về HCM là được rồi, lấy để tính vào cung
+    # ngoại tệ lúc nãy bị thiếu ấy"): lấp gap "Kiều hối ĐÚNG NGHĨA" ở lớp ② Cung ngoại tệ — xem
+    # fetch_dulieukinhte_kieu_hoi_hcm(). CHỈ PHẠM VI TP.HCM (không phải toàn quốc) — ghi rõ trong
+    # note, KHÔNG dùng để thay thế bop_sbv_secondary_income_received (toàn quốc nhưng rộng hơn).
+    print("[dulieukinhte.com — Kiều hối về TP.HCM theo quý (NHNN Chi nhánh Khu vực 2)]")
+    kieu_hoi_data = fetch_dulieukinhte_kieu_hoi_hcm()
+    if kieu_hoi_data:
+        if "kieu_hoi_hcm" not in raw:
+            raw["kieu_hoi_hcm"] = {
+                "group": "external", "label": "Kiều hối về TP.HCM (NHNN Chi nhánh Khu vực 2)",
+                "unit": "triệu USD", "good_direction": "higher", "auto_source": "sbv",
+                "note": ("dulieukinhte.com (mirror NHNN Chi nhánh Khu vực 2, trước 01/07/2025 là "
+                         "NHNN chi nhánh TP.HCM), HTML tĩnh — không WAF. LƯU Ý: đây là Kiều hối "
+                         "ĐÚNG NGHĨA (personal remittances) nhưng CHỈ PHẠM VI TP.HCM — KHÔNG PHẢI "
+                         "số toàn quốc (TP.HCM lịch sử chiếm tỷ trọng lớn nhưng không phải 100%, "
+                         "không được tự suy ra số toàn quốc từ số này). Khác với "
+                         "bop_sbv_secondary_income_received (toàn quốc nhưng RỘNG HƠN — gồm mọi "
+                         "chuyển giao vãng lai, không riêng kiều hối cá nhân) — 2 chỉ báo bổ sung "
+                         "cho nhau, không thay thế nhau."),
+                "impact": ("Kiều hối về TP.HCM tăng là nguồn cung USD thực vào hệ thống (qua kênh "
+                           "công ty kiều hối/ngân hàng) — tín hiệu TÍCH CỰC cho cung ngoại tệ, dù "
+                           "chỉ phản ánh 1 địa bàn, không đại diện toàn quốc."),
+                "series": [],
+            }
+        for period, value in kieu_hoi_data.items():
+            _merge_point_anywhere(raw, "kieu_hoi_hcm", period, value,
+                                   "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426")
+        print(f"  -> {len(kieu_hoi_data)} quý ({min(kieu_hoi_data)}..{max(kieu_hoi_data)})")
+    else:
+        print("  -> Không lấy được (đổi cấu trúc trang?)")
 
     # THEM (user 2026-10-01): NEER/REER Việt Nam — BIS (WS_EER) và IMF.STA:EER đều KHÔNG có Việt
     # Nam (đã verify qua API thật), nhưng Darvas (Bruegel) CÓ, theo tháng, và chính IMF cũng dùng

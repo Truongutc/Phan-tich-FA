@@ -2349,7 +2349,7 @@ _FX_PRESSURE_KEYS_BY_SHEET = {
         "bop_sbv_financial_account", "bop_sbv_fdi_assets_bop", "bop_sbv_fdi_liabilities_bop",
         "bop_sbv_portfolio_assets_bop", "bop_sbv_portfolio_liabilities_bop",
         "bop_sbv_external_debt_net", "bop_sbv_errors_omissions", "bop_sbv_overall_balance",
-        "bop_sbv_reserve_assets_change",
+        "bop_sbv_reserve_assets_change", "kieu_hoi_hcm",
     ],
 }
 

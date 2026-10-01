@@ -481,8 +481,9 @@ function renderMaturityStructure(ms) {
 // phần CHƯA CÓ dữ liệu để biết chính xác bổ sung vào ĐÚNG LỚP nào sau này, không phải thiết kế
 // lại — ĐÃ LẤP: NEER/REER (Darvas/Bruegel, BIS/IMF.STA:EER không có Việt Nam), Errors &
 // Omissions/Overall Balance/Δ Dự trữ (NHNN BOP quý), FDI XNK tách Domestic/FDI (lớp ⑥ riêng,
-// NSO). CÒN THIẾU: Kiều hối đúng nghĩa (personal remittances, cần IMF BOP SDMX — query thử
-// nghiệm trả 0 dữ liệu dù query đúng cú pháp, cần điều tra thêm), doanh thu du lịch quốc tế tách riêng.
+// NSO), Kiều hối đúng nghĩa — CHỈ PHẠM VI TP.HCM (kieu_hoi_hcm, dulieukinhte.com/NHNN Chi nhánh
+// Khu vực 2 — IMF BOP SDMX vẫn trả 0 dữ liệu nên dùng nguồn này thay thế). CÒN THIẾU: Kiều hối
+// toàn quốc, doanh thu du lịch quốc tế tách riêng.
 const FX_PRESSURE_LAYERS = [
     {
         id: 'demand', title: '① Cầu ngoại tệ (Potential USD Demand)',
@@ -495,8 +496,8 @@ const FX_PRESSURE_LAYERS = [
         id: 'supply', title: '② Cung ngoại tệ (Potential USD Supply)',
         keys: ['export_growth_customs', 'export_growth_customs_mom', 'fdi_disbursed', 'fdi_registered_usd_bn', 'trade_balance',
                'bop_sbv_services_export', 'bop_sbv_investment_income_received', 'bop_sbv_secondary_income_received',
-               'bop_sbv_fdi_liabilities_bop', 'bop_sbv_portfolio_liabilities_bop'],
-        missing: ['Kiều hối ĐÚNG NGHĨA (personal remittances) — bop_sbv_secondary_income_received là proxy RỘNG HƠN (toàn bộ chuyển giao vãng lai, không riêng kiều hối cá nhân), không nên gắn nhãn "kiều hối" cho nó; doanh thu du lịch quốc tế tách riêng — chưa có'],
+               'bop_sbv_fdi_liabilities_bop', 'bop_sbv_portfolio_liabilities_bop', 'kieu_hoi_hcm'],
+        missing: ['Kiều hối ĐÚNG NGHĨA chỉ lấp được PHẠM VI TP.HCM (kieu_hoi_hcm, NHNN Chi nhánh Khu vực 2) — chưa có số toàn quốc; doanh thu du lịch quốc tế tách riêng — chưa có'],
     },
     {
         id: 'bop', title: '③ Đối chiếu BOP (Current Account + Financial Account + Reconciliation)',
@@ -673,6 +674,11 @@ function renderFxRateGapChart(indicators) {
 // THEM (user 2026-10-01): "biểu đồ đo lường cung cầu ngoại tệ" — các cấu phần Cầu (đỏ)/Cung
 // (xanh) từ BOP quý NHNN, CÙNG đơn vị (triệu USD) nên so được trực tiếp — CHỈ vẽ nhiều đường
 // cạnh nhau (KHÔNG cộng dồn/trừ thành 1 điểm số, đúng yêu cầu giữ Cầu/Cung là 2 lớp ĐỘC LẬP).
+// kieu_hoi_hcm (thêm sau, nguồn NHNN Chi nhánh Khu vực 2 — CHỈ PHẠM VI TP.HCM) CỐ TÌNH không đưa
+// vào renderFxSupplyDemandTotalChart() bên dưới: quan hệ chính xác giữa nó và
+// bop_sbv_secondary_income_received (toàn quốc) chưa được NHNN đối chiếu công khai — có thể
+// trùng lặp 1 phần (kiều hối HCM vốn là 1 phần của chuyển giao vãng lai toàn quốc), cộng vào
+// Tổng Cung sẽ double-count mà không chắc mức độ — chỉ vẽ cạnh nhau ở đây để tham khảo/đối chiếu.
 function renderFxSupplyDemandChart(indicators) {
     const canvas = document.getElementById('chart-fx-supply-demand');
     const card = document.getElementById('fx-supply-demand-chart-card');
@@ -682,6 +688,7 @@ function renderFxSupplyDemandChart(indicators) {
         { key: 'bop_sbv_services_export', label: 'Dịch vụ — Xuất khẩu', color: '#34d399', isDemand: false },
         { key: 'bop_sbv_investment_income_received', label: 'Thu nhập đầu tư — Thu', color: '#6ee7b7', isDemand: false },
         { key: 'bop_sbv_secondary_income_received', label: 'Chuyển giao vãng lai — Thu', color: '#a7f3d0', isDemand: false },
+        { key: 'kieu_hoi_hcm', label: 'Kiều hối về TP.HCM', color: '#059669', isDemand: false },
         { key: 'bop_sbv_goods_import', label: 'Hàng hóa — Nhập khẩu', color: '#ef4444', isDemand: true },
         { key: 'bop_sbv_services_import', label: 'Dịch vụ — Nhập khẩu', color: '#f87171', isDemand: true },
         { key: 'bop_sbv_investment_income_paid', label: 'Thu nhập đầu tư — Chi', color: '#fca5a5', isDemand: true },

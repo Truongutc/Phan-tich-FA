@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-10-01 15:16",
+    "last_auto_update": "2026-10-01 16:29",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -46691,5 +46691,81 @@
     ],
     "note": "bruegel.org (Zsolt Darvas, 'Timely measurement of REER', cập nhật định kỳ) — KHÔNG phải nguồn chính thức BIS/IMF (methodology riêng: tỷ giá song phương + CPI + trọng số thương mại), nhưng Việt Nam KHÔNG có trong bộ BIS (WS_EER)/IMF (IMF.STA:EER) — đã verify qua gọi API thật, cả 2 đều 0 dữ liệu cho Việt Nam. IMF tự dùng Darvas làm nguồn NEER/REER Việt Nam trong phân tích Article IV (tương quan cao với EER chính thức của IMF). Basket 'Broad' (120 đối tác thương mại, KHÔNG dùng basket 'Narrow' 51 đối tác).",
     "impact": "NEER tăng = VND lên giá danh nghĩa so với rổ tiền tệ đối tác thương mại (KHÔNG chỉ riêng USD như USD/VND); REER tăng = VND lên giá THỰC (đã điều chỉnh lạm phát tương đối), nghĩa là hàng hóa VN kém cạnh tranh hơn về giá. USD/VND tăng nhưng NEER ổn định = áp lực chủ yếu từ riêng USD (DXY mạnh lên toàn cầu); USD/VND tăng VÀ NEER giảm = áp lực tỷ giá rộng hơn, không chỉ do USD."
+  },
+  "kieu_hoi_hcm": {
+    "group": "external",
+    "label": "Kiều hối về TP.HCM (NHNN Chi nhánh Khu vực 2)",
+    "unit": "triệu USD",
+    "good_direction": "higher",
+    "auto_source": "sbv",
+    "note": "dulieukinhte.com (mirror NHNN Chi nhánh Khu vực 2, trước 01/07/2025 là NHNN chi nhánh TP.HCM), HTML tĩnh — không WAF. LƯU Ý: đây là Kiều hối ĐÚNG NGHĨA (personal remittances) nhưng CHỈ PHẠM VI TP.HCM — KHÔNG PHẢI số toàn quốc (TP.HCM lịch sử chiếm tỷ trọng lớn nhưng không phải 100%, không được tự suy ra số toàn quốc từ số này). Khác với bop_sbv_secondary_income_received (toàn quốc nhưng RỘNG HƠN — gồm mọi chuyển giao vãng lai, không riêng kiều hối cá nhân) — 2 chỉ báo bổ sung cho nhau, không thay thế nhau.",
+    "impact": "Kiều hối về TP.HCM tăng là nguồn cung USD thực vào hệ thống (qua kênh công ty kiều hối/ngân hàng) — tín hiệu TÍCH CỰC cho cung ngoại tệ, dù chỉ phản ánh 1 địa bàn, không đại diện toàn quốc.",
+    "series": [
+      {
+        "period": "2023-Q2",
+        "value": 2215.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2023-Q3",
+        "value": 2353.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2023-Q4",
+        "value": 2773.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2024-Q1",
+        "value": 2869.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2024-Q2",
+        "value": 2309.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2024-Q3",
+        "value": 2214.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2024-Q4",
+        "value": 2155.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2025-Q1",
+        "value": 2412.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2025-Q2",
+        "value": 2820.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2025-Q3",
+        "value": 2737.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2025-Q4",
+        "value": 2374.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2026-Q1",
+        "value": 2005.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      },
+      {
+        "period": "2026-Q2",
+        "value": 2032.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/kieu-hoi-tp-ho-chi-minh-426"
+      }
+    ]
   }
 }
