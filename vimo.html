@@ -585,16 +585,24 @@
              rieng de khong trung <canvas> id. -->
         <div class="card margin-top-20" id="fx-pressure-card" style="display:none">
             <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
-            <p class="vimo-chart-subtitle">Tổng hợp Cầu/Cung ngoại tệ, đối chiếu BOP, áp lực thị trường và phản ứng của NHNN — giữ 5 lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. Đọc bằng cách so chiều biến động giữa lớp Cầu và lớp Cung: Cầu↑/Cung ổn → áp lực tăng từ phía cầu; Cầu ổn/Cung↓ → áp lực tăng từ phía cung yếu đi; cả 2 cùng chiều xấu → áp lực kép; dữ liệu còn thiếu (xem từng lớp) thì chưa đủ cơ sở kết luận.</p>
+            <p class="vimo-chart-subtitle">Tổng hợp đối chiếu BOP, áp lực thị trường, Cầu/Cung ngoại tệ và phản ứng của NHNN — giữ các lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. SỬA 2026-10-03: Cầu/Cung (dựa nhiều vào XNK hàng hóa) là proxy KÉM cho áp lực thực — nhiều dòng XNK không thực sự qua hệ thống NHTM VN (DN FDI thanh toán qua công ty mẹ/tài khoản offshore), và dòng VỐN có thể bù/đảo ngược hoàn toàn chiều vãng lai (ví dụ thật: Q2-2026 hàng hóa nhập siêu nhưng Cán cân tổng thể gần như cân bằng vì dòng vốn bù lại). Ưu tiên đọc biểu đồ "Tín hiệu Áp lực Tỷ giá Thực" bên dưới và lớp ① Đối chiếu BOP / ② Áp lực thị trường — đây là tín hiệu THỰC, không suy luận từ kế toán XNK.</p>
+
+            <!-- THEM (user 2026-10-03): "tạo biểu đồ để đánh giá mức độ áp lực tỷ giá" — SAU KHI
+                 user chỉ ra Cầu/Cung (XNK) là proxy kém. Đặt chart NÀY lên ĐẦU TIÊN (trước Tổng
+                 Cung/Cầu) vì đây là 2 tín hiệu THỰC (Cán cân tổng thể BOP + USD/VND thị trường) —
+                 xem renderFxPressureSignalsChart trong app_vimo.js, 2 đường ĐỘC LẬP không gộp điểm. -->
+            <div class="vimo-chart-title">🎯 Tín hiệu Áp lực Tỷ giá Thực</div>
+            <div id="fx-pressure-signals-chart-card" style="display:none">
+                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt, phải) — 2 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 CÙNG xấu (BOP âm VÀ USD/VND tăng mạnh) mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên).</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals"></canvas></div>
+            </div>
 
             <!-- THEM (user 2026-10-01): "biểu đồ đo lường cung cầu ngoại tệ" + "biểu đồ tỷ giá
-                 chợ đen bán ra và tỷ giá VCB bán ra cùng với gap tỷ giá" — 2 biểu đồ TỔNG HỢP đặt
-                 ngay đầu card (trước khi đi vào chi tiết 6 lớp) vì đây là góc nhìn trực quan nhất
-                 cho câu hỏi "áp lực tỷ giá". Xem renderFxSupplyDemandChart/renderFxRateGapChart
-                 trong app_vimo.js — tự ẩn nếu thiếu dữ liệu nguồn. -->
-            <div class="vimo-chart-title">📊 Áp lực tỷ giá</div>
+                 chợ đen bán ra và tỷ giá VCB bán ra cùng với gap tỷ giá" — xem renderFxSupplyDemand
+                 Chart/renderFxRateGapChart trong app_vimo.js — tự ẩn nếu thiếu dữ liệu nguồn. -->
+            <div class="vimo-chart-title margin-top-20">📊 Cơ cấu dòng vãng lai (Cầu/Cung — KHÔNG phải áp lực thực, xem ghi chú đầu trang)</div>
             <div id="fx-supply-demand-total-chart-card" style="display:none">
-                <p class="vimo-chart-subtitle">Tổng Cung vs Tổng Cầu ngoại tệ (BOP quý, NHNN) — cộng 4 cấu phần cùng chiều (Cung/Cầu) thành 2 đường, CÙNG đơn vị (triệu USD), KHÔNG trừ thành 1 điểm số áp lực duy nhất.</p>
+                <p class="vimo-chart-subtitle">Tổng Cung vs Tổng Cầu ngoại tệ (BOP quý, NHNN) — cộng 4 cấu phần cùng chiều (Cung/Cầu) thành 2 đường, CÙNG đơn vị (triệu USD), KHÔNG trừ thành 1 điểm số áp lực duy nhất. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand-total"></canvas></div>
             </div>
             <div id="fx-supply-demand-chart-card" style="display:none" class="margin-top-20">

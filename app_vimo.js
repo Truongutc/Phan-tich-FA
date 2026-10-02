@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
     renderFxPressureCard(data.indicators);
+    renderFxPressureSignalsChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -504,34 +505,44 @@ function renderMaturityStructure(ms) {
 // NSO), Kiều hối đúng nghĩa — CHỈ PHẠM VI TP.HCM (kieu_hoi_hcm, dulieukinhte.com/NHNN Chi nhánh
 // Khu vực 2 — IMF BOP SDMX vẫn trả 0 dữ liệu nên dùng nguồn này thay thế). CÒN THIẾU: Kiều hối
 // toàn quốc, doanh thu du lịch quốc tế tách riêng.
+// SUA 2026-10-03 (user: "nhập khẩu ròng mà có áp lực tỷ giá đâu... xuất khẩu ròng mà tỷ giá lên cao
+// kinh khủng" — chỉ ra Cầu/Cung dựa nhiều vào XNK hàng hóa là proxy KÉM cho áp lực thực, vì nhiều
+// dòng XNK FDI không thực sự "qua" hệ thống NHTM VN [thanh toán qua công ty mẹ/tài khoản offshore],
+// và dòng VỐN có thể bù/đảo ngược hoàn toàn chiều vãng lai — ví dụ thật Q2-2026: hàng hóa NHẬP SIÊU
+// -5.497tr USD nhưng Cán cân tổng thể CHỈ +81tr USD gần như cân bằng, vì Cán cân tài chính +1.899 +
+// Lỗi&Sai sót +9.283 bù hết). ĐỔI THỨ TỰ: đưa ③④ CŨ (Đối chiếu BOP/Áp lực thị trường — 2 tín hiệu
+// THỰC, không suy luận từ dòng kế toán XNK) lên ①② MỚI, đẩy Cầu/Cung (dựa XNK) xuống ③④ kèm cảnh
+// báo rõ KHÔNG phải áp lực thực — giống cách lớp ⑥ Trade Structure đã cảnh báo cho FDI trade.
 const FX_PRESSURE_LAYERS = [
     {
-        id: 'demand', title: '① Cầu ngoại tệ (Potential USD Demand)',
-        keys: ['import_growth_customs', 'import_growth_customs_mom',
-               'bop_sbv_services_import', 'bop_sbv_investment_income_paid', 'bop_sbv_secondary_income_paid',
-               'bop_sbv_fdi_assets_bop', 'bop_sbv_portfolio_assets_bop'],
-        missing: ['Trả nợ gốc nước ngoài TÁCH RIÊNG khỏi rút vốn mới — hiện chỉ có số RÒNG (external_debt_net ở lớp "Đối chiếu BOP"); lợi nhuận FDI chuyển ra TÁCH RIÊNG khỏi tổng Thu nhập đầu tư — NHNN BOP không tách, không nên tự gắn nhãn "FDI profit remittance" cho investment_income_paid (rộng hơn)'],
-    },
-    {
-        id: 'supply', title: '② Cung ngoại tệ (Potential USD Supply)',
-        keys: ['export_growth_customs', 'export_growth_customs_mom', 'fdi_disbursed', 'fdi_registered_usd_bn', 'trade_balance',
-               'bop_sbv_services_export', 'bop_sbv_investment_income_received', 'bop_sbv_secondary_income_received',
-               'bop_sbv_fdi_liabilities_bop', 'bop_sbv_portfolio_liabilities_bop', 'kieu_hoi_hcm'],
-        missing: ['Kiều hối ĐÚNG NGHĨA chỉ lấp được PHẠM VI TP.HCM (kieu_hoi_hcm, NHNN Chi nhánh Khu vực 2) — chưa có số toàn quốc; doanh thu du lịch quốc tế tách riêng — chưa có'],
-    },
-    {
-        id: 'bop', title: '③ Đối chiếu BOP (Current Account + Financial Account + Reconciliation)',
+        id: 'bop', title: '① Đối chiếu BOP — TÍN HIỆU THỰC (phần NHNN thực sự phải giải quyết bằng dự trữ)',
         keys: ['bop_sbv_current_account', 'bop_sbv_financial_account', 'bop_sbv_external_debt_net',
                'bop_sbv_errors_omissions', 'bop_sbv_overall_balance', 'bop_sbv_reserve_assets_change'],
         missing: [],
     },
     {
-        id: 'market', title: '④ Áp lực thị trường',
+        id: 'market', title: '② Áp lực thị trường — TÍN HIỆU THỰC (quan sát trực tiếp, không suy luận từ dòng kế toán)',
         keys: ['usdvnd', 'usdvnd_monthly_avg', 'usdvnd_growth_mom', 'usdvnd_growth_yoy',
                'usdvnd_vcb_sell_daily', 'usd_cho_den_sell_daily', 'usd_cho_den_vcb_gap', 'usd_cho_den_vcb_gap_pct',
                'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on',
                'darvas_neer_vn', 'darvas_reer_vn'],
         missing: [],
+    },
+    {
+        id: 'demand', title: '③ Cầu ngoại tệ (cơ cấu dòng vãng lai — KHÔNG phải áp lực tỷ giá thực, xem ghi chú)',
+        keys: ['import_growth_customs', 'import_growth_customs_mom',
+               'bop_sbv_services_import', 'bop_sbv_investment_income_paid', 'bop_sbv_secondary_income_paid',
+               'bop_sbv_fdi_assets_bop', 'bop_sbv_portfolio_assets_bop'],
+        warning: 'Đây là PHÂN RÃ cán cân vãng lai (kế toán ghi nhận khi hàng hóa/dịch vụ đổi chủ), KHÔNG PHẢI đo lường tiền USD thực sự chảy qua hệ thống ngân hàng VN — nhiều khoản NK (nhất là của DN FDI) thanh toán qua công ty mẹ/tài khoản nước ngoài, không cần mua USD trong nước. Xem lớp ① Đối chiếu BOP (Cán cân tổng thể) và ② Áp lực thị trường để có tín hiệu áp lực THỰC.',
+        missing: ['Trả nợ gốc nước ngoài TÁCH RIÊNG khỏi rút vốn mới — hiện chỉ có số RÒNG (external_debt_net ở lớp "Đối chiếu BOP"); lợi nhuận FDI chuyển ra TÁCH RIÊNG khỏi tổng Thu nhập đầu tư — NHNN BOP không tách, không nên tự gắn nhãn "FDI profit remittance" cho investment_income_paid (rộng hơn)'],
+    },
+    {
+        id: 'supply', title: '④ Cung ngoại tệ (cơ cấu dòng vãng lai — KHÔNG phải áp lực tỷ giá thực, xem ghi chú)',
+        keys: ['export_growth_customs', 'export_growth_customs_mom', 'fdi_disbursed', 'fdi_registered_usd_bn', 'trade_balance',
+               'bop_sbv_services_export', 'bop_sbv_investment_income_received', 'bop_sbv_secondary_income_received',
+               'bop_sbv_fdi_liabilities_bop', 'bop_sbv_portfolio_liabilities_bop', 'kieu_hoi_hcm'],
+        warning: 'Cùng lý do với lớp ③ Cầu — nhiều khoản XK (nhất là DN FDI) giữ ngoại tệ ở tài khoản nước ngoài/chuyển thẳng về công ty mẹ, không BÁN lại USD cho NHTM trong nước. Dòng VỐN (FDI, đầu tư gián tiếp, vay nợ — xem lớp ① Đối chiếu BOP) có thể LỚN HƠN và NGƯỢC HƯỚNG với cán cân vãng lai, nên vãng lai dương KHÔNG đồng nghĩa dư cung USD thực tế (ví dụ: xuất siêu nhưng tỷ giá vẫn tăng mạnh nếu dòng vốn rút ra đủ lớn).',
+        missing: ['Kiều hối ĐÚNG NGHĨA chỉ lấp được PHẠM VI TP.HCM (kieu_hoi_hcm, NHNN Chi nhánh Khu vực 2) — chưa có số toàn quốc; doanh thu du lịch quốc tế tách riêng — chưa có'],
     },
     {
         id: 'response', title: '⑤ Phản ứng NHNN',
@@ -565,9 +576,11 @@ function renderFxPressureCard(indicators) {
 
     body.innerHTML = layersWithData.map(layer => {
         if (!layer.validKeys.length && !layer.missing.length) return '';
+        const warningHtml = layer.warning
+            ? `<p class="ind-source-note" style="margin:4px 0 12px 4px;color:#f59e0b;font-weight:600">⚠️ ${layer.warning}</p>` : '';
         const missingHtml = layer.missing.length
             ? `<p class="ind-source-note" style="margin:-4px 0 12px 4px">⏳ Chưa có dữ liệu: ${layer.missing.join(' · ')}</p>` : '';
-        return `<div class="vimo-group-header"><h3>${layer.title}</h3></div>
+        return `<div class="vimo-group-header"><h3>${layer.title}</h3></div>${warningHtml}
             <div class="vimo-indicator-grid" id="fxgrid-${layer.id}"></div>${missingHtml}`;
     }).join('');
 
@@ -686,6 +699,66 @@ function renderFxRateGapChart(indicators) {
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'Gap (VND)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM (user 2026-10-03): "tạo biểu đồ để đánh giá mức độ áp lực tỷ giá" — SAU KHI user chỉ ra
+// Cầu/Cung (dựa nhiều vào XNK hàng hóa) là proxy KÉM cho áp lực thực (ví dụ thật Q2-2026: hàng hóa
+// NHẬP SIÊU -5.497tr USD nhưng Cán cân tổng thể chỉ +81tr USD gần như cân bằng — vì Cán cân tài
+// chính +1.899 và Lỗi&Sai sót +9.283 đã bù hết phần vãng lai âm). 2 TÍN HIỆU THỰC hơn: (a) Cán cân
+// tổng thể (BOP, phần NHNN thực sự phải giải quyết bằng dự trữ) và (b) USD/VND thị trường TĂNG/GIẢM
+// thật (không suy luận từ dòng kế toán). User đã CHỐT: dashboard nhiều đường ĐỘC LẬP, KHÔNG gộp
+// thành 1 điểm số/thang điểm (giữ đúng nguyên tắc đã có từ renderFxSupplyDemandChart bên dưới).
+function renderFxPressureSignalsChart(indicators) {
+    const canvas = document.getElementById('chart-fx-pressure-signals');
+    const card = document.getElementById('fx-pressure-signals-chart-card');
+    if (!canvas) return;
+    const ob = indicators['bop_sbv_overall_balance'];
+    const usdvndYoy = indicators['usdvnd_growth_yoy'];
+    if (!ob || !ob.series.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = ob.series.map(p => p.period);
+    const obArr = ob.series.map(p => p.value);
+    // Quy đổi USD/VND tăng trưởng YoY (theo THÁNG) về cuối mỗi quý (tháng 3/6/9/12) để so cùng
+    // trục X với BOP (theo QUÝ) — chỉ để VẼ CẠNH NHAU, không tính toán gộp gì cả.
+    const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
+    const usdvndByMonth = usdvndYoy ? Object.fromEntries(usdvndYoy.series.map(p => [p.period, p.value])) : {};
+    const usdvndArr = periods.map(period => {
+        const [year, q] = period.split('-Q');
+        return usdvndByMonth[`${year}-${QUARTER_END_MONTH[q]}`] ?? null;
+    });
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: periods,
+            datasets: [
+                { type: 'bar', label: 'Cán cân tổng thể (BOP, triệu USD)', data: obArr, yAxisID: 'y',
+                  backgroundColor: obArr.map(v => v >= 0 ? '#10b98180' : '#ef444480'),
+                  borderColor: obArr.map(v => v >= 0 ? '#10b981' : '#ef4444'), borderWidth: 1.5,
+                  datalabels: { color: '#e5e9f0', font: { size: 9, weight: '700' }, anchor: 'end',
+                                align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
+                                formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
+                { type: 'line', label: 'USD/VND tăng/giảm YoY tại cuối quý (%, thị trường thực)', data: usdvndArr,
+                  yAxisID: 'y1', borderColor: '#f59e0b', borderWidth: 2.5, borderDash: [6, 4],
+                  pointRadius: 3, pointBackgroundColor: '#f59e0b', fill: false, tension: 0.2, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(1) },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0 } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
