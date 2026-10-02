@@ -772,9 +772,9 @@
       "kbnn_dep": 7010.021,
       "kbnn_loan": 305.788,
       "nii": 528.878,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 3012.312,
+      "ky_quy": 95.41,
+      "von_cg": 43.279
     },
     "2018-Q2": {
       "total_assets": 129483.563,
@@ -791,9 +791,9 @@
       "kbnn_dep": 7047.317,
       "kbnn_loan": 296.372,
       "nii": 693.451,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 2909.722,
+      "ky_quy": 90.865,
+      "von_cg": 44.53
     },
     "2018-Q3": {
       "total_assets": 126371.67,
@@ -810,9 +810,9 @@
       "kbnn_dep": 7101.139,
       "kbnn_loan": 284.093,
       "nii": 404.232,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 120.515,
+      "von_cg": 3013.167
     },
     "2018-Q4": {
       "total_assets": 140487.188,
@@ -829,9 +829,9 @@
       "kbnn_dep": 6605.059,
       "kbnn_loan": 7282.152,
       "nii": 532.667,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 114.382,
+      "von_cg": 65.847
     },
     "2019-Q1": {
       "total_assets": 141297.812,
@@ -848,9 +848,9 @@
       "kbnn_dep": 7616.198,
       "kbnn_loan": 264.135,
       "nii": 657.415,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 119.984,
+      "von_cg": 633.697
     },
     "2019-Q2": {
       "total_assets": 149087.108,
@@ -867,9 +867,9 @@
       "kbnn_dep": 7017.235,
       "kbnn_loan": 254.687,
       "nii": 766.8,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 27842.247,
+      "ky_quy": 149.073,
+      "von_cg": 189.036
     },
     "2019-Q3": {
       "total_assets": 152558.612,
@@ -886,9 +886,9 @@
       "kbnn_dep": 7824.721,
       "kbnn_loan": 245.958,
       "nii": 831.25,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 166.636,
+      "von_cg": 427.634
     },
     "2019-Q4": {
       "total_assets": 157398.288,
@@ -905,9 +905,9 @@
       "kbnn_dep": 6908.897,
       "kbnn_loan": 238.592,
       "nii": 639.104,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 221.55,
+      "von_cg": 1918.52
     },
     "2020-Q1": {
       "total_assets": 148500.554,
@@ -924,9 +924,9 @@
       "kbnn_dep": 7441.249,
       "kbnn_loan": 232.86,
       "nii": 639.677,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 209.564,
+      "von_cg": 787.935
     },
     "2020-Q2": {
       "total_assets": 161540.016,
@@ -943,9 +943,9 @@
       "kbnn_dep": 7202.392,
       "kbnn_loan": 224.562,
       "nii": 698.389,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 4996.92,
+      "ky_quy": 194.196,
+      "von_cg": 229.186
     },
     "2020-Q3": {
       "total_assets": 167426.241,
@@ -962,9 +962,9 @@
       "kbnn_dep": 7289.971,
       "kbnn_loan": 215.202,
       "nii": 747.006,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 275.162,
+      "von_cg": 788.666
     },
     "2020-Q4": {
       "total_assets": 180207.288,
@@ -981,9 +981,9 @@
       "kbnn_dep": 6093.518,
       "kbnn_loan": 205.702,
       "nii": 976.644,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 287.895,
+      "von_cg": 359.074
     },
     "2021-Q1": {
       "total_assets": 184320.897,
@@ -1000,9 +1000,9 @@
       "kbnn_dep": 7971.11,
       "kbnn_loan": 198.527,
       "nii": 1105.391,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 277.839,
+      "von_cg": 513.996
     },
     "2021-Q2": {
       "total_assets": 186934.447,
@@ -1019,9 +1019,9 @@
       "kbnn_dep": 7308.378,
       "kbnn_loan": 190.419,
       "nii": 1325.011,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 4570.883,
+      "ky_quy": 327.228,
+      "von_cg": 351.904
     },
     "2021-Q3": {
       "total_assets": 197629.226,
@@ -1038,9 +1038,9 @@
       "kbnn_dep": 9002.834,
       "kbnn_loan": 1278.189,
       "nii": 1418.343,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 339.218,
+      "von_cg": 731.961
     },
     "2021-Q4": {
       "total_assets": 211663.515,
@@ -1057,9 +1057,9 @@
       "kbnn_dep": 6455.538,
       "kbnn_loan": 2172.763,
       "nii": 1337.348,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 883.788,
+      "von_cg": 350.625
     },
     "2022-Q1": {
       "total_assets": 231222.03,
@@ -1076,9 +1076,9 @@
       "kbnn_dep": 7317.685,
       "kbnn_loan": 2193.018,
       "nii": 1564.572,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 0.0,
+      "ky_quy": 566.511,
+      "von_cg": 583.808
     },
     "2022-Q2": {
       "total_assets": 229723.225,
@@ -1095,9 +1095,9 @@
       "kbnn_dep": 7471.283,
       "kbnn_loan": 2155.809,
       "nii": 1727.625,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 421.781,
+      "von_cg": 392.811
     },
     "2022-Q3": {
       "total_assets": 229145.802,
@@ -1114,9 +1114,9 @@
       "kbnn_dep": 8921.58,
       "kbnn_loan": 2148.33,
       "nii": 1784.555,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 2208.537,
+      "ky_quy": 403.112,
+      "von_cg": 351.859
     },
     "2022-Q4": {
       "total_assets": 231423.056,
@@ -1133,9 +1133,9 @@
       "kbnn_dep": 10127.923,
       "kbnn_loan": 3838.696,
       "nii": 1929.175,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 426.301,
+      "von_cg": 410.512
     },
     "2023-Q1": {
       "total_assets": 245169.088,
@@ -1152,9 +1152,9 @@
       "kbnn_dep": 12997.373,
       "kbnn_loan": 2131.646,
       "nii": 1796.093,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 478.868,
+      "von_cg": 301.28
     },
     "2023-Q2": {
       "total_assets": 245206.026,
@@ -1171,9 +1171,9 @@
       "kbnn_dep": 13921.666,
       "kbnn_loan": 2126.443,
       "nii": 1507.548,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 469.462,
+      "von_cg": 390.136
     },
     "2023-Q3": {
       "total_assets": 248810.092,
@@ -1190,9 +1190,9 @@
       "kbnn_dep": 14497.269,
       "kbnn_loan": 2119.375,
       "nii": 1638.021,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 440.868,
+      "von_cg": 320.794
     },
     "2023-Q4": {
       "total_assets": 266107.033,
@@ -1209,9 +1209,9 @@
       "kbnn_dep": 12891.742,
       "kbnn_loan": 2538.637,
       "nii": 2215.184,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 495.975,
+      "von_cg": 410.674
     },
     "2024-Q1": {
       "total_assets": 271613.578,
@@ -1228,9 +1228,9 @@
       "kbnn_dep": 13411.933,
       "kbnn_loan": 2093.996,
       "nii": 2001.719,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 501.604,
+      "von_cg": 360.596
     },
     "2024-Q2": {
       "total_assets": 280657.951,
@@ -1247,9 +1247,9 @@
       "kbnn_dep": 13691.584,
       "kbnn_loan": 2087.066,
       "nii": 2741.576,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 596.646,
+      "von_cg": 361.983
     },
     "2024-Q3": {
       "total_assets": 288517.8,
@@ -1266,9 +1266,9 @@
       "kbnn_dep": 10357.974,
       "kbnn_loan": 5477.553,
       "nii": 2797.217,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 250.0,
+      "ky_quy": 671.84,
+      "von_cg": 302.586
     },
     "2024-Q4": {
       "total_assets": 325698.848,
@@ -1285,9 +1285,9 @@
       "kbnn_dep": 7136.004,
       "kbnn_loan": 2064.483,
       "nii": 2425.898,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 3850.364,
+      "ky_quy": 714.913,
+      "von_cg": 379.872
     },
     "2025-Q1": {
       "total_assets": 333746.268,
@@ -1304,9 +1304,9 @@
       "kbnn_dep": 8153.314,
       "kbnn_loan": 4964.376,
       "nii": 2450.482,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 5194.726,
+      "ky_quy": 767.86,
+      "von_cg": 320.369
     },
     "2025-Q2": {
       "total_assets": 379013.742,
@@ -1323,9 +1323,9 @@
       "kbnn_dep": 9090.943,
       "kbnn_loan": 6597.412,
       "nii": 2464.389,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 5531.155,
+      "ky_quy": 869.0,
+      "von_cg": 392.638
     },
     "2025-Q3": {
       "total_assets": 380808.411,
@@ -1342,9 +1342,9 @@
       "kbnn_dep": 8250.581,
       "kbnn_loan": 6713.963,
       "nii": 2337.097,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 7364.238,
+      "ky_quy": 1553.617,
+      "von_cg": 320.857
     },
     "2025-Q4": {
       "total_assets": 396443.131,
@@ -1361,9 +1361,9 @@
       "kbnn_dep": 7190.01,
       "kbnn_loan": 20819.38,
       "nii": 2451.866,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 8413.092,
+      "ky_quy": 3006.172,
+      "von_cg": 365.197
     },
     "2026-Q1": {
       "total_assets": 403197.675,
@@ -1380,9 +1380,9 @@
       "kbnn_dep": 11251.871,
       "kbnn_loan": 10830.575,
       "nii": 2413.461,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 9145.81,
+      "ky_quy": 3312.927,
+      "von_cg": 271.761
     },
     "2026-Q2": {
       "total_assets": 427107.51,
@@ -1399,13 +1399,13 @@
       "kbnn_dep": 12024.554,
       "kbnn_loan": 14761.723,
       "nii": 2249.952,
-      "tpdn": null,
-      "ky_quy": null,
-      "von_cg": null
+      "tpdn": 9469.511,
+      "ky_quy": 4696.85,
+      "von_cg": 269.9
     }
   },
   "last_cheap_check": {
     "period_found": "2026-Q2",
-    "checked_at": "2026-10-01T10:43:15+07:00"
+    "checked_at": "2026-10-02T22:26:37+07:00"
   }
 }
