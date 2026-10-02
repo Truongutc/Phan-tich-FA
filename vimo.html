@@ -76,7 +76,7 @@
         .monitoring-table-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; }
         .monitoring-table-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
         .monitoring-table { border-collapse: collapse; width: 100%; font-size: 0.82em; }
-        .monitoring-table th, .monitoring-table td { padding: 7px 10px; text-align: center; }
+        .monitoring-table th, .monitoring-table td { padding: 5px 6px; text-align: center; }
         /* white-space:nowrap CHỈ áp cho ô dữ liệu (số không được xuống dòng) — KHÔNG áp cho cột
            tên hàng (xem .monitoring-table tbody th bên dưới): mobile fix 2026-10-02 (user báo ảnh
            chụp màn hình điện thoại: cột tên hàng đọc được nhưng cột dữ liệu chỉ thấy vạch màu mỏng,
@@ -100,9 +100,31 @@
         .monitoring-table tbody td { white-space: nowrap; }
         .monitoring-table thead th:first-child,
         .monitoring-table tbody th {
+            /* SUA 2026-10-02 (user: chữ hoa toàn bộ + ô quá to khó quan sát): bỏ text-transform:
+               uppercase (kế thừa từ rule "th" chung toàn site, style.css) — tên hàng giờ hiện
+               ĐÚNG NGUYÊN chữ hoa/thường gốc. Cỡ chữ nhỏ lại + line-height sát hơn để đỡ tốn hàng
+               dòng khi tên dài phải xuống dòng (bớt chiều cao từng hàng, dễ quan sát cả bảng hơn). */
             position: sticky; left: 0; background: #0c1224; text-align: left;
-            font-weight: 600; z-index: 3; padding-right: 10px;
-            white-space: normal; max-width: 128px;
+            font-weight: 600; z-index: 3; padding-right: 8px;
+            /* width/max-width KHÔNG ĐỦ — verify bằng Playwright 2026-10-02 cho thấy cả hai cùng đặt
+               (width:200px; max-width:200px) vẫn bị co xuống ~61px khi bảng có nhiều cột số nowrap:
+               thuật toán auto-table-layout của Chromium, khi tổng độ rộng "tối thiểu" cần thiết của
+               các cột (MCW) đã VỪA/VƯỢT khung chứa, chỉ phân bổ theo MCW từng cột — cột tên hàng này
+               cho phép xuống dòng (white-space:normal) nên MCW của nó rất nhỏ (~độ rộng 1 "chữ" dài
+               nhất không ngắt được), và ở chế độ này Chromium KHÔNG dùng width/max-width làm sàn tối
+               thiểu, chỉ dùng MCW thực tế — "width" chỉ là gợi ý, có hiệu lực khi bảng còn dư khoảng
+               trống để phân bổ, không có hiệu lực khi bảng đang ở mức tối thiểu theo nội dung. Cách
+               ép THỰC SỰ có hiệu lực (đã verify lại bằng Playwright, cột ra đúng 200px): thêm
+               min-width — min-width THAM GIA vào việc tính sàn tối thiểu của cột trong auto-layout,
+               khác với width/max-width. */
+            white-space: normal; min-width: 200px; width: 200px; max-width: 200px;
+            text-transform: none; font-size: 0.85em; line-height: 1.2;
+        }
+        /* min-width/width 200px (desktop, đỡ xuống dòng nhiều lần với tên mặt hàng dài) CHỈ thu lại
+           128px ở màn hẹp ≤760px (giữ nguyên fix mobile 2026-10-02 — chừa đủ chỗ cho cột dữ liệu lộ
+           ra) — nhớ thu cả min-width, không chỉ width/max-width (xem lý do ở rule phía trên). */
+        @media (max-width: 760px) {
+            .monitoring-table thead th:first-child, .monitoring-table tbody th { min-width: 128px; width: 128px; max-width: 128px; }
         }
         .monitoring-table thead th:first-child { z-index: 4; }
         .monitoring-table tbody td { font-weight: 600; color: #0b1220; }
