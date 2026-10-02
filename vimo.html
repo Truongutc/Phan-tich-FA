@@ -28,7 +28,11 @@
     <style>
         .vimo-score-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            /* minmax(min(Npx,100%),1fr) — chặn tràn ngang trên màn hẹp: minmax(Npx,1fr) thường
+               (không bọc min()) sẽ BUỘC mỗi cột tối thiểu Npx dù container hẹp hơn, đẩy
+               grid rộng hơn khung nhìn (đã thấy xảy ra thật với .vimo-indicator-grid ở mobile
+               390px — xem ghi chú tại .vimo-indicator-grid, mobile fix 2026-10-02). */
+            grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
             gap: 12px;
             margin-top: 14px;
         }
@@ -43,7 +47,7 @@
         .vimo-score-box .val { font-family: 'Outfit', sans-serif; font-size: 1.5em; font-weight: 800; }
         .vimo-verdict-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
             gap: 12px;
             margin-top: 14px;
         }
@@ -71,8 +75,19 @@
         .monitoring-table-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); border-radius: 6px; }
         .monitoring-table-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; }
         .monitoring-table-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
-        .monitoring-table { border-collapse: collapse; width: 100%; font-size: 0.82em; white-space: nowrap; }
+        .monitoring-table { border-collapse: collapse; width: 100%; font-size: 0.82em; }
         .monitoring-table th, .monitoring-table td { padding: 7px 10px; text-align: center; }
+        /* white-space:nowrap CHỈ áp cho ô dữ liệu (số không được xuống dòng) — KHÔNG áp cho cột
+           tên hàng (xem .monitoring-table tbody th bên dưới): mobile fix 2026-10-02 (user báo ảnh
+           chụp màn hình điện thoại: cột tên hàng đọc được nhưng cột dữ liệu chỉ thấy vạch màu mỏng,
+           không thấy số). Nguyên nhân: cột tên hàng dùng position:sticky;left:0 để luôn hiện khi
+           cuộn ngang, nhưng khi white-space:nowrap áp lên CẢ bảng, tên chỉ báo tiếng Việt dài (ví dụ
+           "Tỷ lệ giải ngân đầu tư công...") đẩy cột này rộng tới ~360px — RỘNG HƠN cả khung cuộn
+           hiển thị trên điện thoại (~336px clientWidth đo thực tế ở viewport 390px). Vì cột này
+           sticky-left, nó ĐÈ LÊN toàn bộ chiều rộng khung nhìn ở MỌI vị trí cuộn, khiến ô dữ liệu bị
+           che kín (chỉ còn lộ ra vài px viền màu = "vạch mỏng" user thấy). Fix: cho tên hàng xuống
+           dòng bình thường (white-space:normal) + giới hạn max-width để cột này không bao giờ vượt
+           quá khung nhìn mobile, chừa đủ chỗ cho ít nhất 1-2 cột dữ liệu lộ ra ngay từ đầu. */
         .monitoring-table thead th {
             /* Nền ĐẶC (không dùng var(--bg-card) = rgba(...,0.75) bán trong suốt — user 2026-10-01:
                cuộn ngang cột bị "lẹm" qua, thấy chữ/màu ô dữ liệu đè lên tên hàng, không đọc được).
@@ -81,14 +96,19 @@
             position: sticky; top: 0; background: #0c1224; color: var(--text-muted, #9ca3af);
             font-weight: 600; font-size: 0.9em; z-index: 2;
         }
+        .monitoring-table thead th:not(:first-child),
+        .monitoring-table tbody td { white-space: nowrap; }
+        .monitoring-table thead th:first-child,
         .monitoring-table tbody th {
             position: sticky; left: 0; background: #0c1224; text-align: left;
-            font-weight: 600; z-index: 1; padding-right: 16px;
+            font-weight: 600; z-index: 3; padding-right: 10px;
+            white-space: normal; max-width: 128px;
         }
+        .monitoring-table thead th:first-child { z-index: 4; }
         .monitoring-table tbody td { font-weight: 600; color: #0b1220; }
         .monitoring-table tbody td.na { color: var(--text-muted, #6b7280); background: transparent !important; font-weight: 400; }
         .bank-assess-overall { border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-weight: 700; }
-        .bank-assess-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .bank-assess-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 12px; margin-bottom: 12px; }
         .bank-assess-card { border-radius: 10px; padding: 10px 14px; border: 1px solid rgba(148,163,184,.25); background: rgba(15,23,42,.35); }
         .bank-assess-card h5 { margin: 0 0 6px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 0.95em; }
         .bank-assess-card .lvl { font-size: 0.75em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
@@ -101,9 +121,40 @@
         @media (max-width: 760px) { .bank-chart-grid-2 { grid-template-columns: 1fr; } }
         .vimo-indicator-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
             gap: 16px;
             margin-top: 14px;
+        }
+        /* FIX mobile 2026-10-02 (user báo ảnh chụp: nhiều card/chart "bé tí" dù lẽ ra full ngang
+           được): đo bằng Playwright viewport 390px — container thực của .vimo-indicator-grid chỉ
+           336-370px (< 320px), nhưng Chromium `repeat(auto-fit, minmax(320px,1fr))` lại tự tính ra
+           computed gridTemplateColumns = "320px 370px" (2 cột!) dù 2 cột rõ ràng KHÔNG thể vừa
+           trong 370px — bọc min(320px,100%) KHÔNG sửa được vì 320 < 336/370 nên min() không bao giờ
+           kích hoạt (min() chỉ hạ khi container < 320px). Đây là lỗi tính SỐ CỘT của auto-fit khi
+           grid nằm lồng trong .view{display:flex;flex-direction:column} — pass layout sớm (đo
+           intrinsic/max-content size) của Chromium xác định sai "available space" cho auto-fit khi
+           ancestor là flex item, khiến nó tưởng có nhiều hơn 1 cột vừa. Hệ quả: .vimo-indicator-card
+           bị kéo rộng ra tới 415-778px (đo thực tế window.innerWidth phình từ 390 lên 778!), khiến
+           các card khác trông "bé tí" một cách tương đối. Cách sửa CHẮC CHẮN (giống
+           .bank-chart-grid-2 ở trên, đã hoạt động đúng): BỎ QUA hoàn toàn phép tính auto-fit ở màn
+           hẹp, ép cứng 1 cột bằng media query — không phụ thuộc vào auto-fit/minmax nữa. */
+        @media (max-width: 760px) {
+            /* display:block (KHÔNG dùng grid-template-columns:1fr) — lý do: ngay cả với ĐÚNG 1 cột
+               EXPLICIT "1fr", đo thực tế vẫn thấy computed grid-template-columns trả về một số NHƯ
+               "415px" lớn hơn hẳn khung chứa (336px) ở một số grid cụ thể (vd #fxgrid-supply) — vì
+               khi grid này lồng trong .view{display:flex;flex-direction:column}, Chromium có lúc
+               coi kích thước container là "indefinite" ở pass đo kích thước sớm, khiến đơn vị `fr`
+               rơi về quy tắc fallback "dùng max-content của item" thay vì % khung chứa thật — một
+               lỗi/đặc thù render khó lường, không sửa được chỉ bằng đổi giá trị minmax/fr khác.
+               display:block loại bỏ hoàn toàn mọi tính toán track-sizing của Grid (không còn `fr`
+               nào để tính sai nữa) — con sẽ xếp theo flow dọc bình thường, luôn đúng 100% khung
+               chứa, không có cách nào tràn ngang được nữa. */
+            .vimo-indicator-grid { display: block; }
+            .vimo-indicator-grid > * { margin-bottom: 16px; }
+            .vimo-indicator-grid > *:last-child { margin-bottom: 0; }
+            /* Một số card được JS set INLINE style="grid-column:span 2" / "1/-1" (xem app_vimo.js)
+               để chiếm 2 cột hoặc full-bleed trên desktop — vô nghĩa với display:block nhưng để lại
+               cũng không hại gì (grid-column bị bỏ qua khi display không còn là grid). */
         }
         .vimo-indicator-card {
             background: var(--bg-card-hover, #1f2937);
@@ -155,11 +206,17 @@
         .vimo-chart-title { font-size: 0.92em; font-weight: 600; color: var(--text-main, #f3f4f6); margin: 18px 0 0; }
         .vimo-chart-title:first-child { margin-top: 0; }
         .vimo-chart-subtitle { font-size: 0.78em; color: var(--text-muted, #9ca3af); margin: 4px 0 6px; }
-        .vimo-macro-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 4px; }
+        .vimo-macro-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; margin-bottom: 4px; }
         .vimo-macro-kpi-card { border-left: 3px solid #64748b; border-radius: 8px; padding: 8px 12px; background: rgba(15,23,42,.35); border-top: 1px solid rgba(148,163,184,.15); border-right: 1px solid rgba(148,163,184,.15); border-bottom: 1px solid rgba(148,163,184,.15); }
         .vimo-macro-kpi-label { display: block; font-size: 0.72em; color: var(--text-muted, #9ca3af); margin-bottom: 2px; white-space: normal; }
         .vimo-macro-kpi-value { display: block; font-family: 'Outfit', sans-serif; font-size: 1.3em; font-weight: 800; }
         .vimo-macro-kpi-value small { font-size: 0.5em; font-weight: 600; margin-left: 2px; }
+        /* #vnindex-compare-table: bảng so sánh P/E/P/B dựng bằng innerHTML thô (không dùng class
+           .monitoring-table), KHÔNG có wrapper cuộn ngang — đo thực tế mobile 390px: bảng rộng
+           392px, tràn ~22px ra ngoài khung nhìn (368px) vì table-layout:auto không co nổi dưới
+           min-content của các cột "Đánh giá định giá"/"Khuyến nghị (đứng riêng)". Thêm overflow-x
+           để cuộn được thay vì tràn ra ngoài đẩy rộng cả trang (mobile fix 2026-10-02). */
+        #vnindex-compare-table { overflow-x: auto; max-width: 100%; }
         .vimo-macro-kpi-meta { display: block; font-size: 0.68em; color: var(--text-muted, #9ca3af); margin-top: 2px; }
     </style>
 </head>
