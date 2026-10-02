@@ -148,26 +148,63 @@ def _kbnn_counted_rate(year):
 
 
 def _ldr_components(snap, year):
-    """Tính Tổng tín dụng (mở rộng) / Tổng huy động / LDR theo đúng Thông tư 22/2019 +
-    26/2022/TT-NHNN — CÙNG công thức đã tham số hoá trong template_banking.py cho phân tích 1 mã
-    lẻ (KHÔNG phải Loans/Deposits đơn thuần — user đã chỉ ra công thức đơn thuần đó sai, không
-    phản ánh đúng khác biệt cơ cấu nguồn vốn giữa các ngân hàng). Bắt buộc phải có loans +
-    customer_deposits (2 trường luôn có ở mọi ngân hàng/quý); các trường chi tiết khác (tpdn,
-    bonds_issued, tctd_dep, kbnn_dep/loan, ky_quy, von_cg) coi là 0 nếu thiếu — không phải ngân
-    hàng nào cũng tách bạch đủ chi tiết ở phần thuyết minh. Trả (tong_tin_dung, tong_huy_dong, ldr)
-    — cả 3 None nếu thiếu loans/customer_deposits."""
+    """Tính Tổng dư nợ cho vay (L) / Tổng tiền gửi (D) / LDR theo Thông tư 50/2026/TT-NHNN, Mục 4
+    Điều 12 (user 2026-10-02, ảnh chụp văn bản — THAY HẲN công thức Thông tư 22/2019+26/2022 cũ,
+    "đã bỏ"). Công thức TT50 đổi CẢ 2 vế:
+
+    L (TT50, khoản 2-3): CHỈ "dư nợ cho vay" thuần — KHÔNG CÒN cộng TPDN (trái phiếu DN) như TT22
+    cũ (TT22 coi TPDN là 1 dạng "tín dụng mở rộng", TT50 KHÔNG). "loans" (Cho vay khách hàng) đã tự
+    nhiên loại trừ cho vay TCTD khác/vay tái cấp vốn NHNN (các khoản này nằm ở dòng BCTC khác,
+    không lẫn vào "Cho vay khách hàng") nên 2 khoản trừ ở khoản 3 TT50 không cần xử lý thêm.
+
+    D (TT50, khoản 4-5) — thay đổi GỐC RỄ so với TT22, dùng field BCTC công khai sẵn có XẤP XỈ (user
+    2026-10-02 xác nhận hướng xử lý — nhiều khoản TT50 yêu cầu KHÔNG tách bạch được từ BCTC công
+    khai, dùng field gần nhất thay thế, KHÔNG bỏ qua hẳn để tránh lệch quá xa):
+      + cust_dep − ky_quy − von_cg: tiền gửi KH (khoản 4a/4b) ĐÃ trừ ký quỹ/vốn chuyên dùng — giữ
+        nguyên logic cũ, TT50 yêu cầu đúng y vậy.
+      + kbnn_counted: tiền gửi KBNN theo tỷ lệ lộ trình (khoản 4a(iv), TT50 vẫn ghi "80% hoặc tỷ lệ
+        khác NHNN quyết định từng thời kỳ" — GIỮ NGUYÊN _kbnn_counted_rate() đã có, đang theo đúng
+        Thông tư 08/2026 là quy định MỚI NHẤT biết được, 20% từ 2025).
+      + bonds: XẤP XỈ cho khoản 4c (chỉ trái phiếu đủ điều kiện Vốn cấp 2) — BCTC công khai không
+        tách riêng phần "đủ điều kiện Vốn cấp 2", dùng TOÀN BỘ "Giấy tờ có giá" (bonds_issued) thay
+        thế, có thể CAO HƠN số thực.
+      + net_tctd = max(0, interbank_liab − bank_dep): vị thế liên ngân hàng RÒNG (khoản 4đ) — THAY
+        HẲN cách cũ (cộng GỘP tctd_dep, luôn dương). TT50 yêu cầu RÒNG: (tiền gửi+vay NHẬN từ TCTD
+        khác) trừ (tiền gửi+cho vay ĐẶT TẠI TCTD khác), CHỈ cộng vào D nếu RÒNG DƯƠNG (ngân hàng là
+        bên vay/nhận ròng từ thị trường liên NH) — nếu RÒNG ÂM (bên cho vay ròng, vd VCB) thì KHÔNG
+        cộng gì. interbank_liab (bsb112, "Tiền gửi và vay các TCTD khác" — LIABILITY, bao gồm CẢ vay
+        — RỘNG HƠN tctd_dep/bsb270 chỉ riêng tiền gửi) và bank_dep (bsb98, "Tiền gửi và cho vay các
+        TCTD khác" — ASSET) đã verify qua dữ liệu thật VCB 2026-Q2: bsb112=405.184 tỷ > bsb270=
+        389.128 tỷ (đúng hướng SIÊU TẬP), bank_dep=620.661 tỷ > interbank_liab (VCB là bên cho vay
+        RÒNG trên thị trường liên NH — net=0, hợp lý với 1 NHTM nhà nước lớn/thanh khoản dư).
+      + equity: XẤP XỈ cho khoản 4g/h/i (vốn điều lệ+quỹ+LNCPP−các khoản trừ chi tiết+chênh lệch tỷ
+        giá VCSH) — BCTC công khai không tách đủ chi tiết (cổ phiếu quỹ, chênh lệch tỷ giá đánh giá
+        lại...), dùng TOÀN BỘ "Vốn chủ sở hữu" (equity, bsa78) thay thế — về bản chất đã gần đúng vì
+        VCSH báo cáo CŨNG LÀ vốn điều lệ+quỹ+LNCPP+chênh lệch khác đã netting sẵn.
+      − tpdn: khoản 5b — TRỪ đầu tư TPDN khỏi D (ĐẢO HẲN so với TT22 cũ: TT22 CỘNG TPDN vào L, TT50
+        TRỪ TPDN khỏi D — cùng ý nghĩa "tiền đã dùng mua TPDN không còn sẵn cho vay", nhưng đổi vế).
+      KHÔNG có dữ liệu (coi = 0, chưa xử lý — vốn nhận ủy thác chịu rủi ro [4d], vay nước ngoài
+      [4e], tín dụng phi cho vay phải trừ [5a/5c] — các khoản này không có field BCTC công khai
+      tương ứng, ảnh hưởng ước tính nhỏ với đa số NH niêm yết).
+
+    Bắt buộc phải có loans + customer_deposits (2 trường luôn có ở mọi ngân hàng/quý); các trường
+    chi tiết khác coi là 0 nếu thiếu. Trả (tong_tin_dung, tong_huy_dong, ldr) — cả 3 None nếu thiếu
+    loans/customer_deposits."""
     loans = snap.get("loans")
     cust_dep = snap.get("customer_deposits")
     if not loans or not cust_dep:
         return None, None, None
     tpdn = snap.get("tpdn") or 0
     bonds = snap.get("bonds_issued") or 0
-    tctd_dep = snap.get("tctd_dep") or 0
+    interbank_liab = snap.get("interbank_liab") or 0
+    bank_dep = snap.get("bank_dep") or 0
+    net_tctd = max(0.0, interbank_liab - bank_dep)
+    equity = snap.get("equity") or 0
     kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
     ky_quy = snap.get("ky_quy") or 0
     von_cg = snap.get("von_cg") or 0
-    tong_tin_dung = loans + tpdn
-    tong_huy_dong = cust_dep + bonds + tctd_dep + kbnn_counted - ky_quy - von_cg
+    tong_tin_dung = loans
+    tong_huy_dong = (cust_dep - ky_quy - von_cg) + kbnn_counted + bonds + net_tctd + equity - tpdn
     ldr = (tong_tin_dung / tong_huy_dong * 100) if tong_huy_dong else None
     return tong_tin_dung, tong_huy_dong, ldr
 
@@ -263,8 +300,11 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     gửi khách hàng — KHÔNG gồm tiền gửi TCTD khác/trái phiếu như depositGrowthYoy/Ytd — để đối
     chiếu trực tiếp, cùng định nghĩa, với số liệu huy động quốc gia của VBMA/báo chí),
     "gap", "nBanks", "totalEquity", "equityGrowthYoy", "equityGrowthYtd",
-    "creditComposition": {"loans","tpdn"},
-    "depositComposition": {"customerDeposits","bonds","tctdDeposits","kbnnCounted","equity"}} — mỗi
+    "creditComposition": {"loans","tpdn"} (tpdn KHÔNG CÒN nằm trong totalCredit từ TT50 — xem SỬA
+    2026-10-02 bên dưới, giữ lại chỉ để biết quy mô TPDN đang nắm giữ, KHÔNG phải phân rã totalCredit),
+    "depositComposition": {"customerDeposits","bonds","netTctd","kbnnCounted","equity","tpdnDeduction"}
+    (SỬA 2026-10-02, TT50: netTctd THAY tctdDeposits gộp cũ — chỉ phần RÒNG DƯƠNG mỗi bank; thêm
+    tpdnDeduction ÂM — cộng ĐỦ 6 thành phần này = đúng totalDeposit, khác hẳn tctdDeposits/TT22 cũ)} — mỗi
     giá trị là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY/YTD). Đơn vị tỷ đồng,
     trừ ldrSystem/creditGrowthYoy/depositGrowthYoy/creditGrowthYtd/depositGrowthYtd/equityGrowthYoy/
     equityGrowthYtd/gap là %/điểm %. KHÔNG BAO GIỜ raise — trả dict với "periods": [] nếu chưa có
@@ -289,7 +329,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
              "depositGrowthYoyNarrow": [], "depositGrowthYtdNarrow": [],
              "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
              "creditComposition": {"loans": [], "tpdn": []},
-             "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": [], "equity": []}}
+             "depositComposition": {"customerDeposits": [], "bonds": [], "netTctd": [], "kbnnCounted": [], "equity": [], "tpdnDeduction": []}}
     try:
         stores = {}
         all_periods = set()
@@ -302,8 +342,13 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
         per_period = {}
         for period in sorted(all_periods):
             year = int(period.split("-")[0])
+            # netTctd/tpdn (SUA 2026-10-02, TT50): "tctdDeposits" GỘP cũ đổi thành "netTctd" = tổng
+            # CÁC max(0, interbank_liab-bank_dep) RIÊNG TỪNG NGÂN HÀNG (KHÔNG netting ở mức hệ
+            # thống — mỗi bank tự nhiên/vay ròng độc lập, 1 bank vay ròng không "bù" được cho 1 bank
+            # khác đang cho vay ròng) — khớp đúng cách _ldr_components() đã tính tong_huy_dong, nên
+            # tổng cột depositComposition vẫn CỘNG ĐÚNG RA totalDeposit (trừ đi tpdn, xem bên dưới).
             agg = {"totalCredit": 0.0, "totalDeposit": 0.0, "n": 0, "loans": 0.0, "tpdn": 0.0,
-                   "customerDeposits": 0.0, "bonds": 0.0, "tctdDeposits": 0.0, "kbnnCounted": 0.0,
+                   "customerDeposits": 0.0, "bonds": 0.0, "netTctd": 0.0, "kbnnCounted": 0.0,
                    "equity": 0.0}
             for ticker in sorted(BANKING_TICKERS):
                 snap = stores[ticker].get(period)
@@ -316,9 +361,9 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                 agg["totalDeposit"] += tong_huy_dong
                 agg["loans"] += snap.get("loans") or 0
                 agg["tpdn"] += snap.get("tpdn") or 0
-                agg["customerDeposits"] += snap.get("customer_deposits") or 0
+                agg["customerDeposits"] += (snap.get("customer_deposits") or 0) - (snap.get("ky_quy") or 0) - (snap.get("von_cg") or 0)
                 agg["bonds"] += snap.get("bonds_issued") or 0
-                agg["tctdDeposits"] += snap.get("tctd_dep") or 0
+                agg["netTctd"] += max(0.0, (snap.get("interbank_liab") or 0) - (snap.get("bank_dep") or 0))
                 agg["kbnnCounted"] += ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
                 agg["equity"] += snap.get("equity") or 0
                 agg["n"] += 1
@@ -347,7 +392,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                   "depositGrowthYoyNarrow": [], "depositGrowthYtdNarrow": [],
                   "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
                   "creditComposition": {"loans": [], "tpdn": []},
-                  "depositComposition": {"customerDeposits": [], "bonds": [], "tctdDeposits": [], "kbnnCounted": [], "equity": []}}
+                  "depositComposition": {"customerDeposits": [], "bonds": [], "netTctd": [], "kbnnCounted": [], "equity": [], "tpdnDeduction": []}}
         for p in out_periods:
             agg = per_period[p]
             result["totalCredit"].append(round(agg["totalCredit"], 1))
@@ -379,9 +424,13 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             result["creditComposition"]["tpdn"].append(round(agg["tpdn"], 1))
             result["depositComposition"]["customerDeposits"].append(round(agg["customerDeposits"], 1))
             result["depositComposition"]["bonds"].append(round(agg["bonds"], 1))
-            result["depositComposition"]["tctdDeposits"].append(round(agg["tctdDeposits"], 1))
+            result["depositComposition"]["netTctd"].append(round(agg["netTctd"], 1))
             result["depositComposition"]["kbnnCounted"].append(round(agg["kbnnCounted"], 1))
             result["depositComposition"]["equity"].append(round(agg["equity"], 1))
+            # Trừ TPDN (TT50 khoản 5b) — GHI ÂM để cộng dồn (stacked chart) vẫn RA ĐÚNG totalDeposit
+            # (customerDeposits đã trừ ký quỹ/vốn chuyên dùng + bonds + netTctd + kbnnCounted +
+            # equity − tpdnDeduction = totalDeposit, khớp chính xác công thức trong _ldr_components).
+            result["depositComposition"]["tpdnDeduction"].append(round(-agg["tpdn"], 1))
         return result
     except Exception as e:
         print(f"  [WARN] build_bank_credit_deposit_system_series: loi ({e})")
@@ -391,14 +440,20 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
 # ── Sheet Excel dữ liệu THÔ tín dụng/huy động/LDR từng ngân hàng (user 2026-09-28) ──────────────
 
 _LDR_SHEET_NAME = "LDR_NganHang_Raw"
+# SUA 2026-10-02 (Thong tu 50/2026/TT-NHNN thay Thong tu 22/2019 — xem _ldr_components()): them
+# "TG+vay NHAN tu TCTD khac" (interbank_liab, bsb112), "TG+cho vay DAT TAI TCTD khac" (bank_dep,
+# bsb98), "Vi the lien NH RONG" (= max(0, interbank_liab-bank_dep), phan cong vao mau so D) — giu
+# lai "Tien gui TCTD khac" (tctd_dep, bsb270) de doi chieu (chi la SUBSET cua interbank_liab, KHONG
+# con dung truc tiep trong cong thuc LDR moi).
 _LDR_SHEET_HEADERS = [
-    "Ma", "Ky", "Cho vay KH (ty)", "TPDN (ty)", "Tong tin dung (ty)",
-    "Tien gui KH (ty)", "GTCG phat hanh (ty)", "Tien gui TCTD khac (ty)",
+    "Ma", "Ky", "Cho vay KH (ty)", "TPDN (ty, TRU khoi mau so D - TT50)", "Tong tin dung L (ty, TT50)",
+    "Tien gui KH (ty)", "GTCG phat hanh (ty)", "Tien gui TCTD khac - subset (ty)",
+    "TG+vay NHAN tu TCTD khac (ty)", "TG+cho vay DAT TAI TCTD khac (ty)", "Vi the lien NH RONG (ty)",
     "KBNN tinh vao mau so (ty)", "Ky quy (ty)", "Von tai tro-uy thac (ty)",
-    "Tong huy dong (ty)", "LDR (%)",
+    "Tong huy dong D (ty, TT50)", "LDR (%, TT50 - tran 95%)",
     "GAP tin dung - huy dong (ty)",
     "Tang truong tin dung so cuoi nam truoc (%)", "Tang truong huy dong so cuoi nam truoc (%)",
-    "Von chu so huu - VCSH (ty)",
+    "Von chu so huu - VCSH (ty, CONG vao mau so D - TT50)",
 ]
 
 
@@ -414,8 +469,9 @@ def update_bank_ldr_excel_sheet(out_dir, start_period="2024-Q1"):
     - "GAP tín dụng - huy động (tỷ)" = Tổng tín dụng − Tổng huy động (GIÁ TRỊ TUYỆT ĐỐI, tỷ đồng —
       KHÔNG PHẢI chênh lệch % tăng trưởng) của TỪNG ngân hàng từng quý.
     - "Tăng trưởng ... so cuối năm trước (%)" = so với mốc 31/12 năm trước (reset mỗi tháng 1, giống
-      _ytd_from_level_series ở template_vimo.py) — tính từ chính Tổng tín dụng/Tổng huy động (đã
-      gồm TPDN/GTCG/TCTD/KBNN theo TT22/26), KHÔNG PHẢI Cho vay KH/Tiền gửi KH đơn thuần."""
+      _ytd_from_level_series ở template_vimo.py) — tính từ chính Tổng tín dụng/Tổng huy động (theo
+      Thông tư 50/2026/TT-NHNN — xem _ldr_components(), SỬA 2026-10-02, thay Thông tư 22/2019+
+      26/2022 đã hết hiệu lực), KHÔNG PHẢI Cho vay KH/Tiền gửi KH đơn thuần."""
     import openpyxl
     from bank_universe import BANKING_TICKERS
 
@@ -457,9 +513,13 @@ def update_bank_ldr_excel_sheet(out_dir, start_period="2024-Q1"):
             credit_ytd = round((tong_tin_dung / base[0] - 1) * 100, 2) if base and base[0] else None
             deposit_ytd = round((tong_huy_dong / base[1] - 1) * 100, 2) if base and base[1] else None
 
+            interbank_liab = snap.get("interbank_liab") or 0
+            bank_dep = snap.get("bank_dep") or 0
+            net_tctd = max(0.0, interbank_liab - bank_dep)
             row = [
                 ticker, period, snap.get("loans"), snap.get("tpdn"), round(tong_tin_dung, 1),
                 snap.get("customer_deposits"), snap.get("bonds_issued"), snap.get("tctd_dep"),
+                snap.get("interbank_liab"), snap.get("bank_dep"), round(net_tctd, 1),
                 round(kbnn_counted, 1), snap.get("ky_quy"), snap.get("von_cg"),
                 round(tong_huy_dong, 1), round(ldr, 2) if ldr is not None else None,
                 gap_abs, credit_ytd, deposit_ytd, snap.get("equity"),
@@ -1606,11 +1666,12 @@ def _grade_ltfc(x):
 def _grade_funding_balance(ldr_system_pct):
     """ldr_system_pct: LDR hệ thống dạng %, vd 86.9 (KHÔNG phải ratio 0-1, khác các hàm _grade_*
     khác trong file — LDR toàn hệ thống tính từ build_bank_credit_deposit_system_series() vốn đã
-    trả về dạng % sẵn). Trần 85% theo Thông tư 22/2019/TT-NHNN — sát/vượt trần = XẤU, còn cách
-    5 điểm % = CẦN THEO DÕI, còn dư địa rộng = TỐT."""
+    trả về dạng % sẵn). Trần 95% theo Thông tư 50/2026/TT-NHNN Điều 12 khoản 6 (SỬA 2026-10-02 —
+    thay trần 85% của Thông tư 22/2019 cũ, đã hết hiệu lực) — sát/vượt trần = XẤU, còn cách 5 điểm
+    % = CẦN THEO DÕI, còn dư địa rộng = TỐT."""
     if ldr_system_pct is None:
         return None
-    return 2 if ldr_system_pct >= 85 else (1 if ldr_system_pct >= 80 else 0)
+    return 2 if ldr_system_pct >= 95 else (1 if ldr_system_pct >= 90 else 0)
 
 
 def _history_trend_and_extremes(history, extract_fn, higher_is_worse, min_points=4):
@@ -1842,8 +1903,8 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
         lvl_fb = _grade_funding_balance(ldr_sys)
         if lvl_fb is not None:
             pts = [f"LDR toàn hệ thống (26 NH niêm yết/UPCoM, theo BCTC): {ldr_sys:.1f}%"
-                   + (" — đã sát/vượt trần 85% (Thông tư 22)." if ldr_sys >= 85
-                      else f" — còn cách trần 85% khoảng {85 - ldr_sys:.1f} điểm %.")]
+                   + (" — đã sát/vượt trần 95% (Thông tư 50/2026)." if ldr_sys >= 95
+                      else f" — còn cách trần 95% khoảng {95 - ldr_sys:.1f} điểm %.")]
             if cg is not None and dg is not None:
                 direction = ("tín dụng tăng NHANH HƠN huy động" if cg > dg else "huy động tăng nhanh hơn hoặc ngang tín dụng")
                 pts.append(f"Tăng trưởng tín dụng {cg:+.1f}% so huy động {dg:+.1f}% (YoY) — {direction}.")
@@ -1858,10 +1919,10 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
                     # SUA (2026-09-28, phat hien qua vi du that: LDR 87% "XAU" nhung gap tuyet doi
                     # van am - 2 con so KHONG mau thuan, chi la 2 goc nhin khac nhau): khi LDR da
                     # sat/vuot tran, dem tuyet doi con lai KHONG con nhieu y nghia thuc te vi bi
-                    # CHAN boi ty le quy dinh (85%), khong phai boi luong huy dong tuyet doi - phai
-                    # noi ro de tranh nghe mau thuan voi nhan "XAU"/"CAN THEO DOI" o tren.
+                    # CHAN boi ty le quy dinh (95%, Thong tu 50/2026), khong phai boi luong huy dong
+                    # tuyet doi - phai noi ro de tranh nghe mau thuan voi nhan "XAU"/"CAN THEO DOI".
                     pts.append(f"Tổng tín dụng đang thấp hơn Tổng huy động {abs(gap_abs):,.0f} tỷ đồng"
-                               + (" — nhưng tỷ lệ LDR đã sát/vượt trần 85% nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng."
+                               + (" — nhưng tỷ lệ LDR đã sát/vượt trần 95% (Thông tư 50/2026) nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng."
                                   if lvl_fb >= 1 else
                                   " — vẫn còn đệm vốn để cho vay thêm mà không cần huy động mới ngay."))
                 else:

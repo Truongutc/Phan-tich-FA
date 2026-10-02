@@ -424,20 +424,20 @@
             <h3 class="border-blue">🏦 Cơ cấu Tín dụng & Huy động toàn ngành Ngân hàng (theo BCTC)</h3>
             <div class="vimo-chart-title" id="credit-deposit-structure-title"></div>
             <div class="vimo-chart-title">Tăng trưởng tín dụng &amp; huy động (theo BCTC 26 ngân hàng)</div>
-            <p class="vimo-chart-subtitle">Nét liền = so cùng kỳ năm trước (YoY) · Nét đứt = so cuối năm trước (YTD, reset mỗi quý 1) · Huy động "rộng" (xanh lá, mẫu số LDR TT22/26 — gồm cả tiền gửi TCTD khác + trái phiếu) và "hẹp" (cam, chỉ tiền gửi khách hàng — cùng định nghĩa với số liệu VBMA/báo chí quốc gia) vẽ riêng để đối chiếu trực tiếp</p>
+            <p class="vimo-chart-subtitle">Nét liền = so cùng kỳ năm trước (YoY) · Nét đứt = so cuối năm trước (YTD, reset mỗi quý 1) · Huy động "rộng" (xanh lá, mẫu số LDR TT50/2026 — gồm cả vị thế liên NH ròng + trái phiếu + VCSH) và "hẹp" (cam, chỉ tiền gửi khách hàng — cùng định nghĩa với số liệu VBMA/báo chí quốc gia) vẽ riêng để đối chiếu trực tiếp</p>
             <div class="ind-chart" style="height:300px"><canvas id="chart-bank-credit-deposit-growth"></canvas></div>
             <div class="vimo-chart-title">Tổng tín dụng vs Tổng huy động &amp; LDR</div>
             <div class="bank-chart-grid-2">
                 <div>
-                    <p class="vimo-chart-subtitle">Huy động theo mẫu số LDR (Thông tư 22/26) — nét đứt: LDR (%)</p>
+                    <p class="vimo-chart-subtitle">Huy động theo mẫu số LDR (Thông tư 50/2026, ĐÃ gồm VCSH) — nét đứt: LDR (%)</p>
                     <div class="ind-chart" style="height:280px"><canvas id="chart-credit-structure-abs"></canvas></div>
                 </div>
                 <div>
-                    <p class="vimo-chart-subtitle">Huy động + Vốn chủ sở hữu (VCSH) — nét đứt: Tín dụng/(Huy động+VCSH) (%)</p>
+                    <p class="vimo-chart-subtitle">Huy động KHÔNG gồm VCSH (chỉ tham khảo) — nét đứt: Tín dụng/(Huy động−VCSH) (%)</p>
                     <div class="ind-chart" style="height:280px"><canvas id="chart-credit-structure-pct"></canvas></div>
                 </div>
             </div>
-            <div class="vimo-chart-title">Cơ cấu Nguồn vốn (huy động + VCSH)</div>
+            <div class="vimo-chart-title">Cơ cấu Nguồn vốn (mẫu số LDR theo Thông tư 50/2026)</div>
             <div class="bank-chart-grid-2">
                 <div>
                     <p class="vimo-chart-subtitle">Giá trị tuyệt đối (tỷ đồng)</p>
@@ -448,7 +448,7 @@
                     <div class="ind-chart" style="height:280px"><canvas id="chart-deposit-structure-pct"></canvas></div>
                 </div>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">Tổng hợp từ BCTC 26 ngân hàng niêm yết/UPCoM (Vietcap) — là TỔNG toàn ngành mỗi quý, không phải trung bình. "Tín dụng" = Cho vay khách hàng + TPDN đang nắm giữ; "Huy động" = Tiền gửi KH + Giấy tờ có giá + Tiền gửi TCTD khác + KBNN (tính theo tỷ lệ Thông tư 26/2022) — biểu đồ cơ cấu chỉ hiện các thành phần CỘNG DƯƠNG (không trừ ký quỹ/vốn ủy thác, 2 khoản trừ nhỏ nằm trong sheet Excel "LDR_NganHang_Raw"/"LDR_TongHop_HeThong" để xem đầy đủ). LƯU Ý: biểu đồ/cột bên phải (huy động + VCSH) KHÁC "Tổng huy động" dùng để tính LDR/GAP tín dụng-huy động ở sheet LDR_TongHop_HeThong (KHÔNG gồm VCSH, đúng định nghĩa pháp lý Thông tư 22/26) — 2 cách tính phục vụ 2 mục đích khác nhau, không phải sai số.</p>
+            <p class="ind-source-note" style="margin-top:8px">Tổng hợp từ BCTC 26 ngân hàng niêm yết/UPCoM (Vietcap) — là TỔNG toàn ngành mỗi quý, không phải trung bình. Tính theo Thông tư 50/2026/TT-NHNN Điều 12 (THAY Thông tư 22/2019+26/2022 đã hết hiệu lực, cập nhật 2026-10-02): "Tín dụng" (L) = Cho vay khách hàng (KHÔNG còn cộng TPDN như trước). "Huy động" (D) = (Tiền gửi KH − ký quỹ − vốn chuyên dùng) + Giấy tờ có giá + Vị thế liên NH RÒNG (chỉ tính nếu dương: tiền gửi+vay NHẬN từ TCTD khác TRỪ tiền gửi+cho vay ĐẶT TẠI TCTD khác) + KBNN (theo tỷ lệ lộ trình) + Vốn chủ sở hữu − Đầu tư TPDN (biểu đồ cơ cấu bên dưới KHÔNG vẽ phần trừ TPDN vì giá trị âm/nhỏ, nhưng vẫn trừ đúng trong số liệu LDR/Tổng huy động thật). XẤP XỈ cho vài khoản TT50 yêu cầu nhưng BCTC công khai không tách riêng được (trái phiếu chỉ tính phần đủ điều kiện Vốn cấp 2 — ở đây dùng TOÀN BỘ giấy tờ có giá; vốn nhận ủy thác chịu rủi ro/vay nước ngoài — chưa có dữ liệu, coi = 0) — xem chi tiết trong code (_ldr_components, bank_system_risk.py). Trần LDR theo TT50 là 95% (trước là 85% theo TT22).</p>
         </div>
 
         <!-- THEM (user 2026-09-30): "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo các kỳ hạn ...

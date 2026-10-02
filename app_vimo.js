@@ -350,27 +350,29 @@ function renderCreditDepositStructure(cds) {
         + (nMin === nMax ? `(${nMax}/26 ngân hàng có dữ liệu mọi quý)`
                           : `(số ngân hàng có dữ liệu mỗi quý: ${nMin}–${nMax}/26)`);
 
-    // THEM 'equity' (user 2026-09-30): VCSH la von KHONG co ky han (khong ai "rut" duoc nhu tien
-    // gui) - tang lon nghia la co them 1 lop dem von ben vung, xem duoc quy mo VCSH bien dong ra
-    // sao NGAY canh cac thanh phan huy dong khac. LUU Y: tu day chart nay la "Nguon von" (huy dong
-    // + VCSH), KHAC "Tong huy dong (mau so LDR theo TT22/26)" dung o cac cho khac (LDR/GAP tin
-    // dung-huy dong KHONG gom VCSH) - da sua tieu de + chu thich duoi chart de ro rang, tranh nham.
+    // SUA 2026-10-02 (Thông tư 50/2026/TT-NHNN THAY HẲN Thông tư 22/2019 — user chụp Điều 12 Mục 4):
+    // "Tổng tiền gửi" (D) ở TT50 đã TỰ GỘP VCSH vào công thức chính thức (khoản 4g/h/i) — khác TT22
+    // cũ (D KHÔNG gồm VCSH). 'tctdDeposits' (gộp thô) đổi thành 'netTctd' (chỉ phần RÒNG DƯƠNG mỗi
+    // bank — TT50 khoản 4đ) — xem _ldr_components() (bank_system_risk.py). KHÔNG đưa 'tpdnDeduction'
+    // (ÂM, TT50 khoản 5b trừ TPDN khỏi D) vào biểu đồ miền này — scale Y cố định min:0 (stacked)
+    // không vẽ được giá trị âm đúng cách; TPDN thường nhỏ so tổng huy động nên bỏ qua trên CHART,
+    // vẫn tính ĐÚNG trong totalDeposit/LDR thật (xem ghi chú dưới chart).
     const DEPOSIT_SERIES = [
-        { key: 'customerDeposits', label: 'Tiền gửi khách hàng', color: '#10b981' },
+        { key: 'customerDeposits', label: 'Tiền gửi khách hàng (đã trừ ký quỹ/vốn CD)', color: '#10b981' },
         { key: 'bonds', label: 'Giấy tờ có giá phát hành', color: '#a78bfa' },
-        { key: 'tctdDeposits', label: 'Tiền gửi TCTD khác', color: '#3b82f6' },
-        { key: 'kbnnCounted', label: 'KBNN (tính theo TT26)', color: '#f59e0b' },
+        { key: 'netTctd', label: 'Vị thế liên NH RÒNG (chỉ tính nếu dương)', color: '#3b82f6' },
+        { key: 'kbnnCounted', label: 'KBNN (tính theo tỷ lệ lộ trình)', color: '#f59e0b' },
         { key: 'equity', label: 'Vốn chủ sở hữu (VCSH)', color: '#ef4444' },
     ];
 
-    // SUA (user 2026-09-30): bỏ 2 biểu đồ "cơ cấu tín dụng" (Cho vay KH vs TPDN) — TPDN quá nhỏ so
-    // Cho vay KH nên chart gần như vô nghĩa (thấy 1 màu). Thay bằng 2 biểu đồ Tổng tín dụng vs
-    // Tổng huy động (+ 1 đường nét đứt LDR) — 1 bản huy động THƯỜNG (mẫu số LDR theo TT22/26),
-    // 1 bản CỘNG THÊM VCSH (đúng yêu cầu "tính VCSH vào tổng huy động thôi").
-    const totalDepositPlusEquity = cds.totalDeposit.map((v, i) => (v ?? 0) + (cds.totalEquity[i] ?? 0));
-    const ldrWithEquity = cds.totalCredit.map((v, i) => totalDepositPlusEquity[i] ? (v / totalDepositPlusEquity[i] * 100) : null);
-    _renderCreditFundingLdrChart('chart-credit-structure-abs', cds.periods, cds.totalCredit, cds.totalDeposit, cds.ldrSystem, 'Tổng huy động (theo TT22/26)');
-    _renderCreditFundingLdrChart('chart-credit-structure-pct', cds.periods, cds.totalCredit, totalDepositPlusEquity, ldrWithEquity, 'Tổng huy động + VCSH');
+    // SUA 2026-10-02: VCSH giờ đã NẰM SẴN trong cds.totalDeposit (TT50 khoản 4g/h/i) — biểu đồ bên
+    // phải TRƯỚC ĐÂY cộng thêm VCSH lần 2 (double-count). Đổi sang ĐẢO LẠI: bên trái = D CHÍNH THỨC
+    // theo TT50 (đã gồm VCSH), bên phải = D KHÔNG gồm VCSH (trừ ra, chỉ để tham khảo quy mô đệm vốn
+    // đang "gánh" bao nhiêu trong mẫu số, KHÔNG phải định nghĩa pháp lý).
+    const totalDepositExEquity = cds.totalDeposit.map((v, i) => (v ?? 0) - (cds.totalEquity[i] ?? 0));
+    const ldrExEquity = cds.totalCredit.map((v, i) => totalDepositExEquity[i] ? (v / totalDepositExEquity[i] * 100) : null);
+    _renderCreditFundingLdrChart('chart-credit-structure-abs', cds.periods, cds.totalCredit, cds.totalDeposit, cds.ldrSystem, 'Tổng huy động (TT50, đã gồm VCSH)');
+    _renderCreditFundingLdrChart('chart-credit-structure-pct', cds.periods, cds.totalCredit, totalDepositExEquity, ldrExEquity, 'Tổng huy động KHÔNG gồm VCSH (tham khảo)');
     _renderAreaCompositionChart('chart-deposit-structure-abs', cds.periods, DEPOSIT_SERIES, cds.depositComposition, false);
     _renderAreaCompositionChart('chart-deposit-structure-pct', cds.periods, DEPOSIT_SERIES, cds.depositComposition, true);
     // THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy động
@@ -385,10 +387,10 @@ function renderCreditDepositStructure(cds) {
     if (cds.creditGrowthYoy) {
         _renderGrowthComparisonChart('chart-bank-credit-deposit-growth', cds.periods, [
             { key: 'creditGrowthYoy', label: 'Tín dụng YoY', color: '#3b82f6', dash: false },
-            { key: 'depositGrowthYoy', label: 'Huy động YoY (rộng — TT22/26)', color: '#10b981', dash: false },
+            { key: 'depositGrowthYoy', label: 'Huy động YoY (rộng — TT50/2026)', color: '#10b981', dash: false },
             { key: 'depositGrowthYoyNarrow', label: 'Huy động YoY (hẹp — chỉ tiền gửi KH, khớp VBMA)', color: '#f59e0b', dash: false },
             { key: 'creditGrowthYtd', label: 'Tín dụng YTD (so cuối năm trước)', color: '#3b82f6', dash: true },
-            { key: 'depositGrowthYtd', label: 'Huy động YTD (rộng — TT22/26)', color: '#10b981', dash: true },
+            { key: 'depositGrowthYtd', label: 'Huy động YTD (rộng — TT50/2026)', color: '#10b981', dash: true },
             { key: 'depositGrowthYtdNarrow', label: 'Huy động YTD (hẹp — chỉ tiền gửi KH, khớp VBMA)', color: '#f59e0b', dash: true },
         ], cds);
     }
