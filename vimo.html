@@ -591,10 +591,22 @@
                  user chỉ ra Cầu/Cung (XNK) là proxy kém. Đặt chart NÀY lên ĐẦU TIÊN (trước Tổng
                  Cung/Cầu) vì đây là 2 tín hiệu THỰC (Cán cân tổng thể BOP + USD/VND thị trường) —
                  xem renderFxPressureSignalsChart trong app_vimo.js, 2 đường ĐỘC LẬP không gộp điểm. -->
-            <div class="vimo-chart-title">🎯 Tín hiệu Áp lực Tỷ giá Thực</div>
+            <div class="vimo-chart-title">🎯 Tín hiệu Áp lực Tỷ giá Thực (theo quý)</div>
             <div id="fx-pressure-signals-chart-card" style="display:none">
-                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt, phải) — 2 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 CÙNG xấu (BOP âm VÀ USD/VND tăng mạnh) mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên).</p>
+                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt, phải) — 2 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 CÙNG xấu (BOP âm VÀ USD/VND tăng mạnh) mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên). Dữ liệu BOP đã backfill xa hơn nhờ IMF (SDMX BOP, đủ từ 1996 trong file) — biểu đồ CHỈ hiện từ 2020 tới nay (đủ dùng, không vẽ dài quá).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals"></canvas></div>
+            </div>
+
+            <!-- THEM (user 2026-10-03): "chỉ vẽ thêm biểu đồ khác theo tháng nhé, chứ không chuyển
+                 từ biểu đồ quý kia sang tháng" — biểu đồ RIÊNG theo tháng, dùng NEER (Darvas) +
+                 USD/VND YoY (cả 2 CÓ SẴN THEO THÁNG THẬT, không resample từ quý) — xem
+                 renderFxPressureSignalsMonthlyChart trong app_vimo.js. KHÔNG dùng forex_reserves_
+                 monthly (phát hiện điểm mới nhất bị sai đơn vị ở nguồn gốc 40yo.vn, chưa xác minh
+                 lại được). -->
+            <div class="vimo-chart-title margin-top-20">🎯 Tín hiệu Áp lực Tỷ giá Thực (theo tháng)</div>
+            <div id="fx-pressure-signals-monthly-chart-card" style="display:none">
+                <p class="vimo-chart-subtitle">NEER Việt Nam (Darvas/Bruegel, trái — tỷ giá hiệu lực danh nghĩa so với CẢ RỔ đối tác thương mại, không chỉ riêng USD) vs USD/VND tăng/giảm thị trường thực YoY (phải) — cả 2 CÓ SẴN THEO THÁNG, không nội suy từ quý. NEER giảm (VND yếu đi trong rổ tiền tệ) CÙNG lúc USD/VND YoY tăng mạnh là tín hiệu áp lực tỷ giá rõ nhất, theo tháng.</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals-monthly"></canvas></div>
             </div>
 
             <!-- THEM (user 2026-10-01): "biểu đồ đo lường cung cầu ngoại tệ" + "biểu đồ tỷ giá

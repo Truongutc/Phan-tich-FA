@@ -1617,6 +1617,72 @@ _DULIEUKINHTE_BOP_LABEL_MAP = [
 ]
 
 
+_IMF_BOP_FIELD_MAP = [
+    # (field_key, BOP_ACCOUNTING_ENTRY, INDICATOR, sign) — sign=-1 nghia la IMF bao theo quy uoc
+    # NGUOC voi NHNN (vd "Tai san" ben IMF duong = tang, nhung NHNN trinh bay am = tang - xem note
+    # reserve_assets_change o cho goi). DA VERIFY tung field bang cach so khop GIA TRI THAT voi
+    # bop_sbv_* da co (NHNN/dulieukinhte) qua 6 quy chong lan (2025-Q1..2026-Q1) - khop CHINH XAC
+    # tung dong, tung quy (user 2026-10-03, phat hien IMF co BOP Viet Nam tu 1996-Q1 khi tim cach
+    # "ve bieu do tu 2021 toi nay" cho overall_balance/current_account).
+    ("current_account", "NETCD_T", "CAB", 1),
+    ("goods_export", "CD_T", "G", 1),
+    ("goods_import", "DB_T", "G", 1),
+    ("services_export", "CD_T", "S", 1),
+    ("services_import", "DB_T", "S", 1),
+    ("investment_income_received", "CD_T", "IN1", 1),
+    ("investment_income_paid", "DB_T", "IN1", 1),
+    ("secondary_income_received", "CD_T", "IN2", 1),
+    ("secondary_income_paid", "DB_T", "IN2", 1),
+    ("financial_account", "NNAFANIL_T", "FABXRRI", -1),
+    ("fdi_assets_bop", "A_NFA_T", "D_F", -1),
+    ("fdi_liabilities_bop", "L_NIL_T", "D_F", 1),
+    ("portfolio_assets_bop", "A_NFA_T", "P_F", -1),
+    ("portfolio_liabilities_bop", "L_NIL_T", "P_F", 1),
+    ("external_debt_net", "L_NIL_T", "O_F4", 1),
+    ("errors_omissions", "NETCD_T", "EO", 1),
+    ("overall_balance", "A_T", "R_F", 1),
+]
+
+
+def fetch_imf_bop_vietnam_history():
+    """api.imf.org (SDMX 2.1, dataflow IMF.STA:BOP(21.0.0), datastructure DSD_BOP) — BOP Việt Nam
+    ĐẦY ĐỦ từ 1996-Q1 tới hiện tại, KHÔNG CẦN đăng nhập (khác portal.api.imf.org cần sign-in —
+    endpoint data trực tiếp KHÔNG yêu cầu, đã verify qua gọi thật 2026-10-03). Dùng để BACKFILL
+    lịch sử xa hơn ~5 quý mà dulieukinhte.com/SBV trực tiếp có (user: "vẽ biểu đồ từ 2021 tới nay
+    thì hay quá"). CHỈ 1 lệnh gọi duy nhất (wildcard BOP_ACCOUNTING_ENTRY+INDICATOR) lấy về ~150
+    series, lọc đúng 17/18 field qua _IMF_BOP_FIELD_MAP (reserve_assets_change KHÔNG cần field
+    riêng — LUÔN = −overall_balance theo đúng definition BPM6, xem chỗ gọi). Đơn vị USD thô (SCALE
+    "6" là metadata của IMF, KHÔNG phải hệ số cần tự chia/nhân — giá trị OBS_VALUE đã là USD đầy
+    đủ), quy đổi /1e6 ra triệu USD khớp đơn vị đang dùng xuyên suốt (bop_sbv_*).
+    Trả {field_key: {period ('YYYY-Qn'): value_trieu_usd}} — rỗng nếu lỗi/đổi cấu trúc API."""
+    try:
+        url = "https://api.imf.org/external/sdmx/2.1/data/IMF.STA,BOP,21.0.0/VNM...USD.Q"
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=30)
+        r.raise_for_status()
+        text = r.text
+
+        out = {key: {} for key, _, _, _ in _IMF_BOP_FIELD_MAP}
+        for key, entry_code, indicator_code, sign in _IMF_BOP_FIELD_MAP:
+            m = re.search(
+                r'<Series [^>]*BOP_ACCOUNTING_ENTRY="' + re.escape(entry_code) + r'"[^>]*'
+                r'INDICATOR="' + re.escape(indicator_code) + r'"[^>]*>(.*?)</Series>', text, re.S)
+            if not m:
+                # Thu tim theo thu tu attribute nguoc lai (INDICATOR truoc BOP_ACCOUNTING_ENTRY) -
+                # XML SDMX khong dam bao thu tu attribute co dinh.
+                m = re.search(
+                    r'<Series [^>]*INDICATOR="' + re.escape(indicator_code) + r'"[^>]*'
+                    r'BOP_ACCOUNTING_ENTRY="' + re.escape(entry_code) + r'"[^>]*>(.*?)</Series>', text, re.S)
+            if not m:
+                continue
+            body = m.group(1)
+            for period, val in re.findall(r'TIME_PERIOD="(\d{4}-Q[1-4])" OBS_VALUE="(-?[\d.]+)"', body):
+                out[key][period] = round(sign * float(val) / 1e6, 2)
+        return {k: v for k, v in out.items() if v}
+    except Exception as e:
+        print(f"  [WARN] IMF BOP Việt Nam thất bại: {e}")
+        return {}
+
+
 def fetch_dulieukinhte_bop():
     """dulieukinhte.com/du-lieu/can-can-thanh-toan-361 — MIRROR lại số liệu BOP quý của NHNN
     (ghi rõ "Nguồn: Ngân hàng Nhà nước Việt Nam"), nhưng trình bày HTML TĨNH thường (KHÔNG WAF
@@ -3543,6 +3609,36 @@ def update_vimo_raw():
         print(f"  -> Quý kỳ vọng mới nhất ({expected_latest_bop_quarter}) đã có sẵn từ dulieukinhte "
               f"({dlkt_max_period}) hoặc đã lưu từ lần chạy trước ({existing_max_period}) — không cần "
               f"gọi SBV trực tiếp.")
+
+    # THEM (user 2026-10-03, "vẽ biểu đồ [áp lực tỷ giá] từ 2021 tới nay thì hay quá"): dulieukinhte/
+    # SBV chỉ có ~5-6 quý gần nhất — BACKFILL lịch sử xa hơn từ IMF SDMX (api.imf.org, dataflow
+    # IMF.STA:BOP, KHÔNG cần đăng nhập — khác hẳn IMF.STA:EER/BOP cho remittances đã thử TRƯỚC ĐÓ
+    # trong phiên này và THẤT BẠI, lần này dùng đúng indicator code BPM6 chuẩn, đã verify khớp
+    # CHÍNH XÁC 17/18 field qua 6 quý chồng lấp với NHNN/dulieukinhte — xem fetch_imf_bop_vietnam_
+    # history()). CHỈ fill các kỳ CHƯA CÓ (merge, không ghi đè dữ liệu mới hơn đã có từ NHNN/
+    # dulieukinhte — dù IMF cũng khớp chính xác các kỳ chồng lấp, ưu tiên nguồn trực tiếp cho kỳ
+    # mới nhất). reserve_assets_change KHÔNG có field riêng ở IMF — tự suy ra = −overall_balance
+    # (đúng định nghĩa BPM6, đã verify khớp 100% với dữ liệu NHNN đang có: mọi kỳ hiện có đều thấy
+    # reserve_assets_change = −overall_balance chính xác).
+    print("[IMF SDMX (BOP, DSD_BOP) — Backfill lịch sử BOP Việt Nam từ 1996-Q1]")
+    imf_bop = fetch_imf_bop_vietnam_history()
+    if imf_bop:
+        imf_bop["reserve_assets_change"] = {p: round(-v, 2) for p, v in imf_bop.get("overall_balance", {}).items()}
+        n_new = 0
+        for key, series in imf_bop.items():
+            raw_key = f"bop_sbv_{key}"
+            if raw_key not in raw:
+                continue  # field nay chua tung duoc _ensure_bop_raw_entry tao - bo qua, khong tu dung nhan/note
+            existing_periods = {p["period"] for p in raw[raw_key]["series"]}
+            for period, value in series.items():
+                if period in existing_periods:
+                    continue
+                _merge_point_anywhere(raw, raw_key, period, value,
+                                       "https://api.imf.org/external/sdmx/2.1 (IMF.STA:BOP)")
+                n_new += 1
+        print(f"  -> Backfill thêm {n_new} điểm (giữ nguyên các kỳ đã có từ NHNN/dulieukinhte)")
+    else:
+        print("  -> Không lấy được (API lỗi/đổi cấu trúc)")
 
     # THEM (user 2026-10-01, "kiều hối đây nhé, lấy cái về HCM là được rồi, lấy để tính vào cung
     # ngoại tệ lúc nãy bị thiếu ấy"): lấp gap "Kiều hối ĐÚNG NGHĨA" ở lớp ② Cung ngoại tệ — xem

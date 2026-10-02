@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
     renderFxPressureCard(data.indicators);
     renderFxPressureSignalsChart(data.indicators);
+    renderFxPressureSignalsMonthlyChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -722,8 +723,13 @@ function renderFxPressureSignalsChart(indicators) {
     if (!ob || !ob.series.length) { if (card) card.style.display = 'none'; return; }
     if (card) card.style.display = '';
 
-    const periods = ob.series.map(p => p.period);
-    const obArr = ob.series.map(p => p.value);
+    // SUA 2026-10-03 (user: "chỉ cần dữ liệu cảnh báo áp lực tỷ giá từ 2020 tới nay thôi, đừng cố
+    // vẽ nhiều quá làm gì cho lãng phí") — dữ liệu BOP đã backfill tới 1996 (xem fetch_imf_bop_
+    // vietnam_history, fetch_macro_data.py) vẫn GIỮ ĐẦY ĐỦ trong vimo_raw.json, CHỈ giới hạn PHẦN
+    // VẼ ở đây từ 2020 trở đi — đủ cho mục đích xem áp lực gần đây, không cần kéo dài tới 1996.
+    const obSeries = ob.series.filter(p => p.period >= '2020-Q1');
+    const periods = obSeries.map(p => p.period);
+    const obArr = obSeries.map(p => p.value);
     // Quy đổi USD/VND tăng trưởng YoY (theo THÁNG) về cuối mỗi quý (tháng 3/6/9/12) để so cùng
     // trục X với BOP (theo QUÝ) — chỉ để VẼ CẠNH NHAU, không tính toán gộp gì cả.
     const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
@@ -757,6 +763,63 @@ function renderFxPressureSignalsChart(indicators) {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0 } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
                      title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM (user 2026-10-03): "chỉ vẽ thêm biểu đồ khác theo tháng nhé, chứ không chuyển từ biểu đồ
+// quý kia sang tháng, sẽ dễ bị sai" — biểu đồ RIÊNG, KHÔNG đụng vào renderFxPressureSignalsChart ở
+// trên (vẫn giữ nguyên quý). Dùng 2 chỉ báo CÓ SẴN THEO THÁNG THẬT (không resample/nội suy từ quý
+// sang tháng): NEER Darvas (tỷ giá hiệu lực danh nghĩa, phản ánh VND so với CẢ RỔ đối tác thương
+// mại, không chỉ riêng USD) + USD/VND tăng/giảm YoY. CHỦ ĐỘNG KHÔNG dùng forex_reserves_monthly
+// (phát hiện 2026-10-03: điểm mới nhất 2026-06 = 86318 — SAI ĐƠN VỊ so với các điểm khác đều ~80-86
+// TỶ USD, lỗi nằm ở DỮ LIỆU GỐC 40yo.vn [JSON thô, không qua regex parse nào ở code mình] — không
+// tự đoán/sửa, chỉ loại khỏi chart này cho tới khi xác minh lại được).
+function renderFxPressureSignalsMonthlyChart(indicators) {
+    const canvas = document.getElementById('chart-fx-pressure-signals-monthly');
+    const card = document.getElementById('fx-pressure-signals-monthly-chart-card');
+    if (!canvas) return;
+    const neer = indicators['darvas_neer_vn'];
+    const usdvndYoy = indicators['usdvnd_growth_yoy'];
+    if (!neer || !neer.series.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    // SUA 2026-10-03 (user: "chỉ cần từ 2020 tới nay thôi, đừng vẽ nhiều quá") — NEER có từ 1993,
+    // giới hạn vẽ từ 2020 để thấy rõ giai đoạn 2021-2022 (tỷ giá lên cao kinh khủng cuối 2022) mà
+    // không kéo dài lãng phí.
+    const neerRecent = neer.series.filter(p => p.period >= '2020-01');
+    const periods = neerRecent.map(p => p.period);
+    const neerArr = neerRecent.map(p => p.value);
+    const usdvndByMonth = usdvndYoy ? Object.fromEntries(usdvndYoy.series.map(p => [p.period, p.value])) : {};
+    const usdvndArr = periods.map(p => usdvndByMonth[p] ?? null);
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: periods,
+            datasets: [
+                { label: 'NEER Việt Nam (Darvas/Bruegel, index)', data: neerArr, yAxisID: 'y',
+                  borderColor: '#60a5fa', backgroundColor: '#60a5fa15', fill: false,
+                  tension: 0.2, pointRadius: 0, borderWidth: 2, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(1) },
+                { label: 'USD/VND tăng/giảm YoY (%, thị trường thực)', data: usdvndArr, yAxisID: 'y1',
+                  borderColor: '#f59e0b', borderDash: [6, 4], borderWidth: 2.5, pointRadius: 0,
+                  fill: false, tension: 0.2, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(1) },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 18 } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'NEER (index)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
             },
