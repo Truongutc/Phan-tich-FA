@@ -2092,6 +2092,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # hẳn 1 sheet không rõ lý do — 2 tỷ lệ cơ cấu bảng cân đối (bank_bs_ratios) luôn có sẵn (không cần
     # OCR), phần gap/stress chỉ có khi bank_ir_metrics/bank_liq_metrics đọc được từ thuyết minh BCTC.
     try:
+        # FIX (2026-10-02, user phát hiện qua log "[Excel Warning] Failed to generate Sheet 16 (ALM):
+        # name 'INTEREST_RATE_BUCKETS' is not defined"): constant này ĐÃ có sẵn ở bank_risk_notes.py
+        # (8 kỳ hạn: qua_han, không_ảnh_hưởng_lãi_suất, đến 1 tháng... trên 5 năm) — chỉ thiếu import
+        # ở đây, không phải constant bị xoá/đổi tên. Lỗi khiến TOÀN BỘ sheet 16 (rủi ro lãi suất/
+        # thanh khoản theo kỳ hạn) bị bỏ qua mỗi lần chạy — chỉ ảnh hưởng độ rộng merge cell tiêu đề
+        # banner (cosmetic), không phải logic tính gap, nhưng bug làm except nuốt luôn cả sheet.
+        from bank_risk_notes import INTEREST_RATE_BUCKETS
         ws_alm = wb.create_sheet("16_ALM_LaiSuat_ThanhKhoan")
         ws_alm.column_dimensions['A'].width = 32
         for col_letter in "BCDEFGHIJ":
