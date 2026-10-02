@@ -148,14 +148,16 @@ def _kbnn_counted_rate(year):
 
 
 def _ldr_components(snap, year):
-    """Tính Tổng dư nợ cho vay (L) / Tổng tiền gửi (D) / LDR theo Thông tư 50/2026/TT-NHNN, Mục 4
-    Điều 12 (user 2026-10-02, ảnh chụp văn bản — THAY HẲN công thức Thông tư 22/2019+26/2022 cũ,
-    "đã bỏ"). Công thức TT50 đổi CẢ 2 vế:
+    """Tính Tổng dư nợ cho vay (L) / Tổng tiền gửi (D) / LDR — NỀN TẢNG theo Thông tư 50/2026/TT-
+    NHNN, Mục 4 Điều 12 (user 2026-10-02, ảnh chụp văn bản — THAY HẲN công thức Thông tư 22/2019+
+    26/2022 cũ, "đã bỏ"), nhưng CHỦ Ý khắt khe hơn TT50 chính thức ở phần TPDN theo yêu cầu riêng
+    của user (2026-10-02, lần sửa thứ 2: "sửa lại L vẫn tính TPDN nhé, tôi muốn hệ số của tôi chặt
+    chẽ hơn") — xem chi tiết TPDN ở cuối hàm.
 
-    L (TT50, khoản 2-3): CHỈ "dư nợ cho vay" thuần — KHÔNG CÒN cộng TPDN (trái phiếu DN) như TT22
-    cũ (TT22 coi TPDN là 1 dạng "tín dụng mở rộng", TT50 KHÔNG). "loans" (Cho vay khách hàng) đã tự
-    nhiên loại trừ cho vay TCTD khác/vay tái cấp vốn NHNN (các khoản này nằm ở dòng BCTC khác,
-    không lẫn vào "Cho vay khách hàng") nên 2 khoản trừ ở khoản 3 TT50 không cần xử lý thêm.
+    L: "loans" (Cho vay khách hàng) + TPDN (giữ nguyên như TT22 cũ, KHÔNG theo đúng TT50 khoản 2-3
+    — xem lý do ở cuối hàm). "loans" đã tự nhiên loại trừ cho vay TCTD khác/vay tái cấp vốn NHNN
+    (các khoản này nằm ở dòng BCTC khác, không lẫn vào "Cho vay khách hàng") nên 2 khoản trừ ở
+    khoản 3 TT50 không cần xử lý thêm.
 
     D (TT50, khoản 4-5) — thay đổi GỐC RỄ so với TT22, dùng field BCTC công khai sẵn có XẤP XỈ (user
     2026-10-02 xác nhận hướng xử lý — nhiều khoản TT50 yêu cầu KHÔNG tách bạch được từ BCTC công
@@ -181,8 +183,12 @@ def _ldr_components(snap, year):
         giá VCSH) — BCTC công khai không tách đủ chi tiết (cổ phiếu quỹ, chênh lệch tỷ giá đánh giá
         lại...), dùng TOÀN BỘ "Vốn chủ sở hữu" (equity, bsa78) thay thế — về bản chất đã gần đúng vì
         VCSH báo cáo CŨNG LÀ vốn điều lệ+quỹ+LNCPP+chênh lệch khác đã netting sẵn.
-      − tpdn: khoản 5b — TRỪ đầu tư TPDN khỏi D (ĐẢO HẲN so với TT22 cũ: TT22 CỘNG TPDN vào L, TT50
-        TRỪ TPDN khỏi D — cùng ý nghĩa "tiền đã dùng mua TPDN không còn sẵn cho vay", nhưng đổi vế).
+      − tpdn: khoản 5b — TRỪ đầu tư TPDN khỏi D (TT50 chính thức, thay vì CỘNG vào L như TT22 cũ —
+        cùng ý nghĩa "tiền đã dùng mua TPDN không còn sẵn cho vay", chỉ đổi vế). User (2026-10-02,
+        lần sửa thứ 2) yêu cầu GIỮ LUÔN tpdn ở CẢ L (xem tong_tin_dung ở cuối hàm) — chủ ý KHÔNG
+        theo đúng TT50 ở điểm này, muốn hệ số rủi ro CHẶT hơn quy định: TPDN vừa bị coi là "tín
+        dụng mở rộng" (tăng L, tăng LDR) vừa bị coi là "vốn không còn sẵn cho vay" (giảm D, tăng
+        LDR thêm lần nữa) — double-count CÓ CHỦ Ý, không phải lỗi.
       KHÔNG có dữ liệu (coi = 0, chưa xử lý — vốn nhận ủy thác chịu rủi ro [4d], vay nước ngoài
       [4e], tín dụng phi cho vay phải trừ [5a/5c] — các khoản này không có field BCTC công khai
       tương ứng, ảnh hưởng ước tính nhỏ với đa số NH niêm yết).
@@ -203,7 +209,11 @@ def _ldr_components(snap, year):
     kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
     ky_quy = snap.get("ky_quy") or 0
     von_cg = snap.get("von_cg") or 0
-    tong_tin_dung = loans
+    # SUA 2026-10-02 (user: "sửa lại L vẫn tính TPDN nhé, tôi muốn hệ số của tôi chặt chẽ hơn") —
+    # CHỦ Ý giữ TPDN ở CẢ 2 vế (L: TPDN = tín dụng mở rộng đã dùng, như TT22 cũ; D: TPDN = vốn đã
+    # "chôn" vào trái phiếu, không còn sẵn cho vay, như TT50 khoản 5b) — khắt khe hơn CẢ TT22 (chỉ
+    # cộng L) và TT50 chính thức (chỉ trừ D), đúng yêu cầu hệ số riêng của user CHẶT hơn quy định.
+    tong_tin_dung = loans + tpdn
     tong_huy_dong = (cust_dep - ky_quy - von_cg) + kbnn_counted + bonds + net_tctd + equity - tpdn
     ldr = (tong_tin_dung / tong_huy_dong * 100) if tong_huy_dong else None
     return tong_tin_dung, tong_huy_dong, ldr
@@ -446,7 +456,7 @@ _LDR_SHEET_NAME = "LDR_NganHang_Raw"
 # lai "Tien gui TCTD khac" (tctd_dep, bsb270) de doi chieu (chi la SUBSET cua interbank_liab, KHONG
 # con dung truc tiep trong cong thuc LDR moi).
 _LDR_SHEET_HEADERS = [
-    "Ma", "Ky", "Cho vay KH (ty)", "TPDN (ty, TRU khoi mau so D - TT50)", "Tong tin dung L (ty, TT50)",
+    "Ma", "Ky", "Cho vay KH (ty)", "TPDN (ty, CONG vao L va TRU khoi D - rieng user)", "Tong tin dung L (ty)",
     "Tien gui KH (ty)", "GTCG phat hanh (ty)", "Tien gui TCTD khac - subset (ty)",
     "TG+vay NHAN tu TCTD khac (ty)", "TG+cho vay DAT TAI TCTD khac (ty)", "Vi the lien NH RONG (ty)",
     "KBNN tinh vao mau so (ty)", "Ky quy (ty)", "Von tai tro-uy thac (ty)",
