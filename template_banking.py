@@ -553,11 +553,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # dung cho phan tich rieng tung ma NH): D doi GOC RE — CONG them VCSH (equity_hist), doi
     # tctd_dep_hist (GOP THO, cu) sang net_tctd (CHI tinh RONG DUONG: TG+vay NHAN tu TCTD khac
     # [interbank_hist, bsb112] TRU TG+cho vay DAT TAI TCTD khac [bank_dep_hist, bsb98]), VA TRU di
-    # TPDN khoi D (khoan 5b). L GIU NGUYEN = loans+tpdn (user yeu cau rieng, lan sua thu 2: "sua lai
-    # L van tinh TPDN nhe, toi muon he so cua toi chat che hon" — co chu y double-count TPDN ca 2
-    # ve, khac TT50 chinh thuc chi tru o D).
+    # TPDN khoi D (khoan 5b).
+    # SUA 2026-10-03 (user: "phan tinh nguon von la tru di trai phieu doanh nghiep roi, thi phan
+    # tu so thi chi tinh tong cho vay khach hang thoi nhe") - DAO LAI quyet dinh "chat che hon"
+    # 2026-10-02 (GIU tpdn o ca L va D): D da tru tpdn (khoan 5b) nen L KHONG cong lai, dung TT50
+    # khoan 2-3 (xem _ldr_components() trong bank_system_risk.py, CUNG sua).
     net_tctd_hist = [max(0.0, interbank_hist[i] - bank_dep_hist[i]) for i in range(len(years_hist))]
-    ldr_hist = [round((loans_hist[i] + tpdn_hist[i]) / max(cust_dep_hist[i] + bonds_hist[i] + net_tctd_hist[i] + (kbnn_hist[i] * kbnn_rates_hist[i]) + equity_hist[i] - tpdn_hist[i] - ky_quy_hist[i] - voncg_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
+    ldr_hist = [round(loans_hist[i] / max(cust_dep_hist[i] + bonds_hist[i] + net_tctd_hist[i] + (kbnn_hist[i] * kbnn_rates_hist[i]) + equity_hist[i] - tpdn_hist[i] - ky_quy_hist[i] - voncg_hist[i], 1) * 100, 2) for i in range(len(years_hist))]
 
     # Đánh giá tổng hợp ALM (build_risk_narrative_lines) cần LDR/CASA/NIM đã tính ở trên — LDR PHẢI
     # dùng ldr_hist này (đúng công thức tín dụng/huy động theo Thông tư 50/2026, KHÔNG phải Loans/
@@ -905,8 +907,10 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     net_tctd_fc = [net_tctd_hist[-1] for i in range(3)]
 
     # Under SBV Circular 26, from 2026 onwards KBNN deposit inclusion rate is 80% excluded → 20% counts
+    # SUA 2026-10-03 (user, xem ldr_hist o tren): L = loans_fc thoi, KHONG cong lai tpdn_fc (D da
+    # tru tpdn_fc).
     ldr_fc_calc = [
-        (loans_fc[i] + tpdn_fc[i]) / max(dep_fc[i] + bonds_fc_ends[i+1] + net_tctd_fc[i] + (kbnn_fc[i] * 0.2) + eq_fc_ends[i+1] - tpdn_fc[i] - ky_quy_fc[i] - voncg_fc[i], 1) * 100
+        loans_fc[i] / max(dep_fc[i] + bonds_fc_ends[i+1] + net_tctd_fc[i] + (kbnn_fc[i] * 0.2) + eq_fc_ends[i+1] - tpdn_fc[i] - ky_quy_fc[i] - voncg_fc[i], 1) * 100
         for i in range(3)
     ]
     
@@ -1559,7 +1563,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         ("Tiền gửi ký quỹ (trừ đi)", ky_quy_hist + [None]*3),                  # row 8
         ("Vốn chuyên dùng (trừ đi)", voncg_hist + [None]*3),                   # row 9
         ("Vốn chủ sở hữu (VCSH)", equity_hist + [None]*3),                     # row 10
-        ("Tổng tín dụng (tỷ)", [None]*8),                                      # row 11 = row3+row4
+        ("Tổng tín dụng (tỷ)", [None]*8),                                      # row 11 = row3 (Loans)
         ("Tổng huy động (tỷ)", [None]*8),                                      # row 12 = công thức TT50, xem bên dưới
         ("Tiền gửi của TCTD khác (tham khảo)", tctd_dep_hist + [None]*3),      # row 13 — KHÔNG dùng trong D (TT50)
         ("TG+cho vay ĐẶT TẠI TCTD khác", bank_dep_hist + [None]*3),            # row 14 (bsb98, tài sản)
@@ -1595,14 +1599,14 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     # 2025=20%) và Circular 08/2026/TT-NHNN khôi phục 20% từ 2026 trở đi.
     # SUA 2026-10-02 (Thông tư 50/2026/TT-NHNN, thay Circular 22/2019 cũ — xem ldr_hist ở trên cho
     # cùng công thức bản Python): Tổng huy động = Tiền gửi(5)+GTCG(6)+Vị thế liên NH RÒNG(16,
-    # =MAX(0,row15-row14))+KBNN(7)*tỷ lệ+VCSH(10)−TPDN(4)−Ký quỹ(8)−Vốn chuyên dùng(9). Tổng tín
-    # dụng GIỮ NGUYÊN = Loans(3)+TPDN(4) (user yêu cầu riêng, "chặt chẽ hơn" TT50 chính thức — xem
-    # ghi chú ldr_hist).
+    # =MAX(0,row15-row14))+KBNN(7)*tỷ lệ+VCSH(10)−TPDN(4)−Ký quỹ(8)−Vốn chuyên dùng(9).
+    # SUA 2026-10-03 (user, xem ldr_hist): Tổng tín dụng = Loans(3) THÔI — D đã trừ TPDN(4) rồi nên
+    # không cộng lại ở L nữa (đảo quyết định "chặt chẽ hơn" 2026-10-02).
     kbnn_rate_cols = {'B': kbnn_rates_hist[0], 'C': kbnn_rates_hist[1], 'D': kbnn_rates_hist[2],
                        'E': kbnn_rates_hist[3], 'F': kbnn_rates_hist[4],
                        'G': 0.2, 'H': 0.2, 'I': 0.2}
     for col in ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
-        ws_bs.cell(row=11, column=column_index_from_string(col), value=f"={col}3+{col}4").number_format = FMT_NUM1
+        ws_bs.cell(row=11, column=column_index_from_string(col), value=f"={col}3").number_format = FMT_NUM1
         ws_bs.cell(row=16, column=column_index_from_string(col), value=f"=MAX(0,{col}15-{col}14)").number_format = FMT_NUM1
         rate = kbnn_rate_cols[col]
         ws_bs.cell(row=12, column=column_index_from_string(col),
@@ -2420,14 +2424,13 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     nt_q_sorted = sorted(section_to_quarters(raw_data, "NOTE"),
                          key=lambda x: (x.get("yearReport",0), x.get("lengthReport",0)))[-n_q:]
     # LDR quý — Thông tư 50/2026/TT-NHNN (SUA 2026-10-02, thay Circular 22/2019+26/2022 cũ — xem
-    # ldr_hist/_ldr_components trong bank_system_risk.py, CÙNG công thức). L = Loans+TPDN (GIỮ TPDN
-    # theo yêu cầu riêng user — xem ghi chú ldr_hist). D = Deposits+Bonds+Vị thế liên NH RÒNG+KBNN*
-    # tỷ lệ+VCSH−TPDN−Ký quỹ−Vốn chuyên dùng (TT50 khoản 4-5, "TG TCTD khác" bsb270 GỘP cũ đổi thành
-    # RÒNG: TG+vay NHẬN từ TCTD khác [bsb112] trừ TG+cho vay ĐẶT TẠI TCTD khác [bsb98], chỉ cộng nếu
-    # dương; TPDN vừa cộng L vừa trừ D — double-count có chủ đích, chặt hơn TT50 chính thức).
-    # LƯU Ý: tử số CỘNG THÊM TPDN (nob184) vào bên cạnh dư nợ cho vay KH (bsb103) nên LDR ở đây CAO
-    # HƠN số LDR "thuần cho vay" ngân hàng công bố ra ngoài — không phải lỗi, trần quy định là 95%
-    # (Thông tư 50/2026, áp cho LDR thuần cho vay — khác định nghĩa mở rộng dùng trong model này).
+    # ldr_hist/_ldr_components trong bank_system_risk.py, CÙNG công thức). D = Deposits+Bonds+Vị
+    # thế liên NH RÒNG+KBNN*tỷ lệ+VCSH−TPDN−Ký quỹ−Vốn chuyên dùng (TT50 khoản 4-5, "TG TCTD khác"
+    # bsb270 GỘP cũ đổi thành RÒNG: TG+vay NHẬN từ TCTD khác [bsb112] trừ TG+cho vay ĐẶT TẠI TCTD
+    # khác [bsb98], chỉ cộng nếu dương).
+    # SUA 2026-10-03 (user: "phần tính nguồn vốn là trừ đi trái phiếu doanh nghiệp rồi, thì phần tử
+    # số thì chỉ tính tổng cho vay khách hàng thôi nhé") — L = Loans (bsb103) THÔI, KHÔNG cộng TPDN
+    # (D đã trừ TPDN rồi — đảo quyết định "chặt chẽ hơn" 2026-10-02).
     def _ldr_kbnn_rate(yr):
         if yr <= 2022: return 0.0
         if yr == 2023: return 0.50
@@ -2438,7 +2441,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
         rq = rq_sorted[i]
         nt = nt_q_sorted[i] if i < len(nt_q_sorted) else {}
         tpdn_q = (nt.get("nob184") or 0) / 1e9
-        credit_q = (rq.get("bsb103") or 0)/1e9 + tpdn_q
+        credit_q = (rq.get("bsb103") or 0)/1e9
         kbnn_q = ((rq.get("bsb110") or 0) + (rq.get("bsb111") or 0)) / 1e9
         # SUA 2026-09-30: nob69 (ky_quy) / nob70 (von chuyen dung) - khong phai nob73/75/bsb115
         ky_quy_q = (nt.get("nob69") or 0) / 1e9

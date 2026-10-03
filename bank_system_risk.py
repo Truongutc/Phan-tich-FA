@@ -150,14 +150,16 @@ def _kbnn_counted_rate(year):
 def _ldr_components(snap, year):
     """Tính Tổng dư nợ cho vay (L) / Tổng tiền gửi (D) / LDR — NỀN TẢNG theo Thông tư 50/2026/TT-
     NHNN, Mục 4 Điều 12 (user 2026-10-02, ảnh chụp văn bản — THAY HẲN công thức Thông tư 22/2019+
-    26/2022 cũ, "đã bỏ"), nhưng CHỦ Ý khắt khe hơn TT50 chính thức ở phần TPDN theo yêu cầu riêng
-    của user (2026-10-02, lần sửa thứ 2: "sửa lại L vẫn tính TPDN nhé, tôi muốn hệ số của tôi chặt
-    chẽ hơn") — xem chi tiết TPDN ở cuối hàm.
+    26/2022 cũ, "đã bỏ").
 
-    L: "loans" (Cho vay khách hàng) + TPDN (giữ nguyên như TT22 cũ, KHÔNG theo đúng TT50 khoản 2-3
-    — xem lý do ở cuối hàm). "loans" đã tự nhiên loại trừ cho vay TCTD khác/vay tái cấp vốn NHNN
-    (các khoản này nằm ở dòng BCTC khác, không lẫn vào "Cho vay khách hàng") nên 2 khoản trừ ở
-    khoản 3 TT50 không cần xử lý thêm.
+    SỬA 2026-10-03 (user: "phần tính nguồn vốn là trừ đi trái phiếu doanh nghiệp rồi, thì phần tử
+    số thì chỉ tính tổng cho vay khách hàng thôi nhé") — ĐẢO LẠI quyết định "chặt chẽ hơn" của lần
+    sửa trước (2026-10-02, lần 2: GIỮ tpdn ở CẢ L và D). D đã TRỪ tpdn (khoản 5b — xem cuối hàm),
+    nên CỘNG THÊM tpdn vào L nữa là double-count thật, không có cơ sở giữ.
+
+    L: CHỈ "loans" (Cho vay khách hàng), ĐÚNG TT50 khoản 2-3. "loans" đã tự nhiên loại trừ cho vay
+    TCTD khác/vay tái cấp vốn NHNN (các khoản này nằm ở dòng BCTC khác, không lẫn vào "Cho vay
+    khách hàng") nên 2 khoản trừ ở khoản 3 TT50 không cần xử lý thêm.
 
     D (TT50, khoản 4-5) — thay đổi GỐC RỄ so với TT22, dùng field BCTC công khai sẵn có XẤP XỈ (user
     2026-10-02 xác nhận hướng xử lý — nhiều khoản TT50 yêu cầu KHÔNG tách bạch được từ BCTC công
@@ -184,11 +186,8 @@ def _ldr_components(snap, year):
         lại...), dùng TOÀN BỘ "Vốn chủ sở hữu" (equity, bsa78) thay thế — về bản chất đã gần đúng vì
         VCSH báo cáo CŨNG LÀ vốn điều lệ+quỹ+LNCPP+chênh lệch khác đã netting sẵn.
       − tpdn: khoản 5b — TRỪ đầu tư TPDN khỏi D (TT50 chính thức, thay vì CỘNG vào L như TT22 cũ —
-        cùng ý nghĩa "tiền đã dùng mua TPDN không còn sẵn cho vay", chỉ đổi vế). User (2026-10-02,
-        lần sửa thứ 2) yêu cầu GIỮ LUÔN tpdn ở CẢ L (xem tong_tin_dung ở cuối hàm) — chủ ý KHÔNG
-        theo đúng TT50 ở điểm này, muốn hệ số rủi ro CHẶT hơn quy định: TPDN vừa bị coi là "tín
-        dụng mở rộng" (tăng L, tăng LDR) vừa bị coi là "vốn không còn sẵn cho vay" (giảm D, tăng
-        LDR thêm lần nữa) — double-count CÓ CHỦ Ý, không phải lỗi.
+        cùng ý nghĩa "tiền đã dùng mua TPDN không còn sẵn cho vay", chỉ đổi vế). KHÔNG cộng lại
+        tpdn vào L (xem SỬA 2026-10-03 ở đầu hàm) — TPDN chỉ xuất hiện 1 lần, ở D.
       KHÔNG có dữ liệu (coi = 0, chưa xử lý — vốn nhận ủy thác chịu rủi ro [4d], vay nước ngoài
       [4e], tín dụng phi cho vay phải trừ [5a/5c] — các khoản này không có field BCTC công khai
       tương ứng, ảnh hưởng ước tính nhỏ với đa số NH niêm yết).
@@ -209,11 +208,11 @@ def _ldr_components(snap, year):
     kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
     ky_quy = snap.get("ky_quy") or 0
     von_cg = snap.get("von_cg") or 0
-    # SUA 2026-10-02 (user: "sửa lại L vẫn tính TPDN nhé, tôi muốn hệ số của tôi chặt chẽ hơn") —
-    # CHỦ Ý giữ TPDN ở CẢ 2 vế (L: TPDN = tín dụng mở rộng đã dùng, như TT22 cũ; D: TPDN = vốn đã
-    # "chôn" vào trái phiếu, không còn sẵn cho vay, như TT50 khoản 5b) — khắt khe hơn CẢ TT22 (chỉ
-    # cộng L) và TT50 chính thức (chỉ trừ D), đúng yêu cầu hệ số riêng của user CHẶT hơn quy định.
-    tong_tin_dung = loans + tpdn
+    # SUA 2026-10-03 (user: "phần tính nguồn vốn là trừ đi trái phiếu doanh nghiệp rồi, thì phần
+    # tử số thì chỉ tính tổng cho vay khách hàng thôi nhé") — BỎ tpdn khỏi L (trước đó CỘNG CẢ 2 vế
+    # theo yêu cầu "chặt chẽ hơn" 2026-10-02, nay đảo lại: D đã trừ tpdn [khoản 5b] nên L không cộng
+    # lại nữa, đúng TT50 khoản 2-3, không double-count).
+    tong_tin_dung = loans
     tong_huy_dong = (cust_dep - ky_quy - von_cg) + kbnn_counted + bonds + net_tctd + equity - tpdn
     ldr = (tong_tin_dung / tong_huy_dong * 100) if tong_huy_dong else None
     return tong_tin_dung, tong_huy_dong, ldr
@@ -394,7 +393,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             # thống — mỗi bank tự nhiên/vay ròng độc lập, 1 bank vay ròng không "bù" được cho 1 bank
             # khác đang cho vay ròng) — khớp đúng cách _ldr_components() đã tính tong_huy_dong, nên
             # tổng cột depositComposition vẫn CỘNG ĐÚNG RA totalDeposit (trừ đi tpdn, xem bên dưới).
-            agg = {"totalCredit": 0.0, "totalDepositOld": 0.0, "n": 0,
+            agg = {"totalCredit": 0.0, "totalCreditOld": 0.0, "totalDepositOld": 0.0, "n": 0,
                    "loans": 0.0, "tpdn": 0.0,
                    "customerDeposits": 0.0, "bonds": 0.0, "kbnnCounted": 0.0,
                    "equity": 0.0, "interbankLiabRaw": 0.0, "bankDepRaw": 0.0}
@@ -409,8 +408,11 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                 # tôi so ngang được xem LDR như nào") — totalDepositOld dùng _ldr_components_old()
                 # (gộp thô TCTD, KHÔNG VCSH, KHÔNG trừ TPDN khỏi D) — CHỈ để đối chứng/so sánh, số
                 # chính thức vẫn là totalDeposit/ldrSystem (TT50, ròng dương + VCSH) ở trên.
-                _, tong_huy_dong_old, _ = _ldr_components_old(snap, year)
+                # totalCreditOld (= loans+tpdn, KHÁC totalCredit = loans thôi từ SỬA 2026-10-03) —
+                # công thức cũ KHÔNG trừ tpdn khỏi D nên L vẫn cộng tpdn, không double-count ở đây.
+                tong_tin_dung_old, tong_huy_dong_old, _ = _ldr_components_old(snap, year)
                 agg["totalCredit"] += tong_tin_dung
+                agg["totalCreditOld"] += tong_tin_dung_old or 0
                 agg["totalDepositOld"] += tong_huy_dong_old or 0
                 agg["loans"] += snap.get("loans") or 0
                 agg["tpdn"] += snap.get("tpdn") or 0
@@ -467,7 +469,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             result["totalDeposit"].append(round(agg["totalDeposit"], 1))
             result["ldrSystem"].append(round(agg["totalCredit"] / agg["totalDeposit"] * 100, 2) if agg["totalDeposit"] else None)
             result["totalDepositOld"].append(round(agg["totalDepositOld"], 1))
-            result["ldrSystemOld"].append(round(agg["totalCredit"] / agg["totalDepositOld"] * 100, 2) if agg["totalDepositOld"] else None)
+            result["ldrSystemOld"].append(round(agg["totalCreditOld"] / agg["totalDepositOld"] * 100, 2) if agg["totalDepositOld"] else None)
             cg, dg = _yoy(p, "totalCredit"), _yoy(p, "totalDeposit")
             result["creditGrowthYoy"].append(cg)
             result["depositGrowthYoy"].append(dg)
