@@ -219,6 +219,36 @@ def _ldr_components(snap, year):
     return tong_tin_dung, tong_huy_dong, ldr
 
 
+def _ldr_components_old(snap, year):
+    """Công thức LDR CŨ của user (2026-10-03: "cái tính theo TT50 thì tính đủ vẫn là ròng dương
+    nhé, còn biểu đồ trừ VCSH đi thì tính như cách cũ của tôi nhé, để tôi so ngang được") — PHÁT
+    HIỆN qua đối chiếu: khi đổi "Tiền gửi TCTD khác" từ GỘP THÔ sang RÒNG DƯƠNG (theo TT50), mẫu số
+    D giảm RẤT NHIỀU (vd Q2-2026 toàn hệ thống: gộp thô 2.875.874 tỷ vs ròng 376.575 tỷ — chênh
+    2.499.299 tỷ, vì các ngân hàng gửi/vay lẫn nhau rất nhiều nhưng trừ ròng gần như triệt tiêu
+    hết), khiến LDR "không VCSH" nhảy từ ~85% lên ~94,6% — user muốn giữ BẢN GỘP THÔ này làm đối
+    chứng riêng để so ngang với bản TT50 (ròng), KHÔNG lẫn vào số liệu TT50 chính thức
+    (_ldr_components ở trên — hàm đó GIỮ NGUYÊN, không đổi).
+
+    Khác _ldr_components(): D dùng tctd_dep GỘP THÔ (KHÔNG net_tctd), KHÔNG cộng equity (VCSH),
+    KHÔNG trừ tpdn khỏi D (TPDN chỉ cộng vào L như TT22 cũ, không double-count). Đây CHÍNH XÁC là
+    công thức _ldr_components() bản gốc TRƯỚC khi đổi sang TT50 (2026-10-02) — xem lịch sử git.
+    Trả (tong_tin_dung, tong_huy_dong_cu, ldr_cu) — cả 3 None nếu thiếu loans/customer_deposits."""
+    loans = snap.get("loans")
+    cust_dep = snap.get("customer_deposits")
+    if not loans or not cust_dep:
+        return None, None, None
+    tpdn = snap.get("tpdn") or 0
+    bonds = snap.get("bonds_issued") or 0
+    tctd_dep = snap.get("tctd_dep") or 0
+    kbnn_counted = ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
+    ky_quy = snap.get("ky_quy") or 0
+    von_cg = snap.get("von_cg") or 0
+    tong_tin_dung = loans + tpdn
+    tong_huy_dong = cust_dep + bonds + tctd_dep + kbnn_counted - ky_quy - von_cg
+    ldr = (tong_tin_dung / tong_huy_dong * 100) if tong_huy_dong else None
+    return tong_tin_dung, tong_huy_dong, ldr
+
+
 # ── Cập nhật bảng cân đối theo quý (KHÔNG cần OCR — Vietcap, đã cache sẵn) ─────────────────────
 
 def refresh_quarterly_balance_sheet_all_banks():
@@ -335,6 +365,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     bao nhiêu — nên tách riêng thành chỉ báo độc lập theo đúng yêu cầu."""
     from bank_universe import BANKING_TICKERS
     empty = {"periods": [], "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
+             "totalDepositOld": [], "ldrSystemOld": [],
              "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
              "depositGrowthYoyNarrow": [], "depositGrowthYtdNarrow": [],
              "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
@@ -357,7 +388,8 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             # thống — mỗi bank tự nhiên/vay ròng độc lập, 1 bank vay ròng không "bù" được cho 1 bank
             # khác đang cho vay ròng) — khớp đúng cách _ldr_components() đã tính tong_huy_dong, nên
             # tổng cột depositComposition vẫn CỘNG ĐÚNG RA totalDeposit (trừ đi tpdn, xem bên dưới).
-            agg = {"totalCredit": 0.0, "totalDeposit": 0.0, "n": 0, "loans": 0.0, "tpdn": 0.0,
+            agg = {"totalCredit": 0.0, "totalDeposit": 0.0, "totalDepositOld": 0.0, "n": 0,
+                   "loans": 0.0, "tpdn": 0.0,
                    "customerDeposits": 0.0, "bonds": 0.0, "netTctd": 0.0, "kbnnCounted": 0.0,
                    "equity": 0.0}
             for ticker in sorted(BANKING_TICKERS):
@@ -367,8 +399,14 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                 tong_tin_dung, tong_huy_dong, _ldr = _ldr_components(snap, year)
                 if tong_tin_dung is None:
                     continue
+                # SUA 2026-10-03 (user: "biểu đồ trừ VCSH đi thì tính như cách cũ của tôi nhé, để
+                # tôi so ngang được xem LDR như nào") — totalDepositOld dùng _ldr_components_old()
+                # (gộp thô TCTD, KHÔNG VCSH, KHÔNG trừ TPDN khỏi D) — CHỈ để đối chứng/so sánh, số
+                # chính thức vẫn là totalDeposit/ldrSystem (TT50, ròng dương + VCSH) ở trên.
+                _, tong_huy_dong_old, _ = _ldr_components_old(snap, year)
                 agg["totalCredit"] += tong_tin_dung
                 agg["totalDeposit"] += tong_huy_dong
+                agg["totalDepositOld"] += tong_huy_dong_old or 0
                 agg["loans"] += snap.get("loans") or 0
                 agg["tpdn"] += snap.get("tpdn") or 0
                 agg["customerDeposits"] += (snap.get("customer_deposits") or 0) - (snap.get("ky_quy") or 0) - (snap.get("von_cg") or 0)
@@ -398,6 +436,7 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
 
         out_periods = sorted(p for p in per_period if p >= start_period)
         result = {"periods": out_periods, "totalCredit": [], "totalDeposit": [], "ldrSystem": [],
+                  "totalDepositOld": [], "ldrSystemOld": [],
                   "creditGrowthYoy": [], "depositGrowthYoy": [], "creditGrowthYtd": [], "depositGrowthYtd": [],
                   "depositGrowthYoyNarrow": [], "depositGrowthYtdNarrow": [],
                   "gap": [], "nBanks": [], "totalEquity": [], "equityGrowthYoy": [], "equityGrowthYtd": [],
@@ -408,6 +447,8 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             result["totalCredit"].append(round(agg["totalCredit"], 1))
             result["totalDeposit"].append(round(agg["totalDeposit"], 1))
             result["ldrSystem"].append(round(agg["totalCredit"] / agg["totalDeposit"] * 100, 2) if agg["totalDeposit"] else None)
+            result["totalDepositOld"].append(round(agg["totalDepositOld"], 1))
+            result["ldrSystemOld"].append(round(agg["totalCredit"] / agg["totalDepositOld"] * 100, 2) if agg["totalDepositOld"] else None)
             cg, dg = _yoy(p, "totalCredit"), _yoy(p, "totalDeposit")
             result["creditGrowthYoy"].append(cg)
             result["depositGrowthYoy"].append(dg)

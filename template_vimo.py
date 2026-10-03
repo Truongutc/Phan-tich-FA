@@ -2991,6 +2991,11 @@ def _add_bank_alm_derived_indicators(raw, trends):
             # undefined" o app_vimo.js khi doc cds.totalCredit/totalDeposit/ldrSystem.
             "totalCredit": cd_series["totalCredit"], "totalDeposit": cd_series["totalDeposit"],
             "ldrSystem": cd_series["ldrSystem"],
+            # THEM (user 2026-10-03): "cái tính theo TT50 thì tính đủ vẫn là ròng dương nhé, còn
+            # biểu đồ trừ VCSH đi thì tính như cách cũ của tôi nhé, để tôi so ngang được xem LDR
+            # như nào" — cong thuc CU (gop tho TCTD, khong VCSH, xem _ldr_components_old) de doi
+            # chieu song song voi LDR chinh thuc TT50 o tren.
+            "totalDepositOld": cd_series["totalDepositOld"], "ldrSystemOld": cd_series["ldrSystemOld"],
             # THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy
             # động theo số liệu 26 bank" — gộp thẳng vào đây (đã có periods/nBanks dùng chung) để
             # web vẽ 1 chart riêng ngay trong card "Cơ cấu Tín dụng & Huy động", không cần đi tìm

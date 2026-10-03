@@ -512,7 +512,7 @@
                     <div class="ind-chart" style="height:280px"><canvas id="chart-credit-structure-abs"></canvas></div>
                 </div>
                 <div>
-                    <p class="vimo-chart-subtitle">Huy động KHÔNG gồm VCSH (chỉ tham khảo) — nét đứt: Tín dụng/(Huy động−VCSH) (%)</p>
+                    <p class="vimo-chart-subtitle">Huy động theo công thức CŨ (gộp thô TCTD, không VCSH) — nét đứt: LDR (%), để so ngang với bên trái</p>
                     <div class="ind-chart" style="height:280px"><canvas id="chart-credit-structure-pct"></canvas></div>
                 </div>
             </div>
@@ -527,7 +527,7 @@
                     <div class="ind-chart" style="height:280px"><canvas id="chart-deposit-structure-pct"></canvas></div>
                 </div>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">Tổng hợp từ BCTC 26 ngân hàng niêm yết/UPCoM (Vietcap) — là TỔNG toàn ngành mỗi quý, không phải trung bình. Tính theo Thông tư 50/2026/TT-NHNN Điều 12 (THAY Thông tư 22/2019+26/2022 đã hết hiệu lực, cập nhật 2026-10-02): "Tín dụng" (L) = Cho vay khách hàng (KHÔNG còn cộng TPDN như trước). "Huy động" (D) = (Tiền gửi KH − ký quỹ − vốn chuyên dùng) + Giấy tờ có giá + Vị thế liên NH RÒNG (chỉ tính nếu dương: tiền gửi+vay NHẬN từ TCTD khác TRỪ tiền gửi+cho vay ĐẶT TẠI TCTD khác) + KBNN (theo tỷ lệ lộ trình) + Vốn chủ sở hữu − Đầu tư TPDN (biểu đồ cơ cấu bên dưới KHÔNG vẽ phần trừ TPDN vì giá trị âm/nhỏ, nhưng vẫn trừ đúng trong số liệu LDR/Tổng huy động thật). XẤP XỈ cho vài khoản TT50 yêu cầu nhưng BCTC công khai không tách riêng được (trái phiếu chỉ tính phần đủ điều kiện Vốn cấp 2 — ở đây dùng TOÀN BỘ giấy tờ có giá; vốn nhận ủy thác chịu rủi ro/vay nước ngoài — chưa có dữ liệu, coi = 0) — xem chi tiết trong code (_ldr_components, bank_system_risk.py). Trần LDR theo TT50 là 95% (trước là 85% theo TT22).</p>
+            <p class="ind-source-note" style="margin-top:8px">Tổng hợp từ BCTC 26 ngân hàng niêm yết/UPCoM (Vietcap) — là TỔNG toàn ngành mỗi quý, không phải trung bình. Tính theo Thông tư 50/2026/TT-NHNN Điều 12 (THAY Thông tư 22/2019+26/2022 đã hết hiệu lực, cập nhật 2026-10-02): "Tín dụng" (L) = Cho vay khách hàng (KHÔNG còn cộng TPDN như trước). "Huy động" (D) = (Tiền gửi KH − ký quỹ − vốn chuyên dùng) + Giấy tờ có giá + Vị thế liên NH RÒNG (chỉ tính nếu dương: tiền gửi+vay NHẬN từ TCTD khác TRỪ tiền gửi+cho vay ĐẶT TẠI TCTD khác) + KBNN (theo tỷ lệ lộ trình) + Vốn chủ sở hữu − Đầu tư TPDN (biểu đồ cơ cấu bên dưới KHÔNG vẽ phần trừ TPDN vì giá trị âm/nhỏ, nhưng vẫn trừ đúng trong số liệu LDR/Tổng huy động thật). XẤP XỈ cho vài khoản TT50 yêu cầu nhưng BCTC công khai không tách riêng được (trái phiếu chỉ tính phần đủ điều kiện Vốn cấp 2 — ở đây dùng TOÀN BỘ giấy tờ có giá; vốn nhận ủy thác chịu rủi ro/vay nước ngoài — chưa có dữ liệu, coi = 0) — xem chi tiết trong code (_ldr_components, bank_system_risk.py). Trần LDR theo TT50 là 95% (trước là 85% theo TT22). Biểu đồ bên phải ("công thức CŨ") dùng ĐÚNG công thức LDR trước khi đổi sang TT50 (gộp thô "Tiền gửi TCTD khác", KHÔNG VCSH, KHÔNG trừ TPDN khỏi D — xem _ldr_components_old) để so ngang 2 cách tính — phát hiện 2026-10-03: phần lớn chênh lệch giữa 2 biểu đồ đến từ việc đổi "Tiền gửi TCTD khác" từ GỘP sang RÒNG DƯƠNG (TT50), KHÔNG phải từ VCSH.</p>
         </div>
 
         <!-- THEM (user 2026-09-30): "biểu đồ cơ cấu nguồn vốn và cơ cấu tài sản theo các kỳ hạn ...
@@ -593,7 +593,7 @@
                  xem renderFxPressureSignalsChart trong app_vimo.js, 2 đường ĐỘC LẬP không gộp điểm. -->
             <div class="vimo-chart-title">🎯 Tín hiệu Áp lực Tỷ giá Thực (theo quý)</div>
             <div id="fx-pressure-signals-chart-card" style="display:none">
-                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt, phải) — 2 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 CÙNG xấu (BOP âm VÀ USD/VND tăng mạnh) mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên). Dữ liệu BOP đã backfill xa hơn nhờ IMF (SDMX BOP, đủ từ 1996 trong file) — biểu đồ CHỈ hiện từ 2020 tới nay (đủ dùng, không vẽ dài quá).</p>
+                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt cam) vs MỨC tỷ giá thực tế (nét liền xanh, trục phải ngoài) — 3 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 (BOP VÀ USD/VND) CÙNG xấu mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên). Dữ liệu BOP đã backfill xa hơn nhờ IMF (SDMX BOP, đủ từ 1996 trong file) — biểu đồ CHỈ hiện từ 2020 tới nay (đủ dùng, không vẽ dài quá).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals"></canvas></div>
             </div>
 
@@ -605,7 +605,7 @@
                  lại được). -->
             <div class="vimo-chart-title margin-top-20">🎯 Tín hiệu Áp lực Tỷ giá Thực (theo tháng)</div>
             <div id="fx-pressure-signals-monthly-chart-card" style="display:none">
-                <p class="vimo-chart-subtitle">NEER Việt Nam (Darvas/Bruegel, trái — tỷ giá hiệu lực danh nghĩa so với CẢ RỔ đối tác thương mại, không chỉ riêng USD) vs USD/VND tăng/giảm thị trường thực YoY (phải) — cả 2 CÓ SẴN THEO THÁNG, không nội suy từ quý. NEER giảm (VND yếu đi trong rổ tiền tệ) CÙNG lúc USD/VND YoY tăng mạnh là tín hiệu áp lực tỷ giá rõ nhất, theo tháng.</p>
+                <p class="vimo-chart-subtitle">NEER Việt Nam (Darvas/Bruegel, trái — tỷ giá hiệu lực danh nghĩa so với CẢ RỔ đối tác thương mại, không chỉ riêng USD) vs USD/VND tăng/giảm thị trường thực YoY (nét đứt cam) vs MỨC tỷ giá thực tế (nét liền xanh lá, trục phải ngoài) — cả 3 CÓ SẴN THEO THÁNG, không nội suy từ quý. NEER giảm (VND yếu đi trong rổ tiền tệ) CÙNG lúc USD/VND YoY tăng mạnh là tín hiệu áp lực tỷ giá rõ nhất, theo tháng.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals-monthly"></canvas></div>
             </div>
 
@@ -618,7 +618,7 @@
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand-total"></canvas></div>
             </div>
             <div id="fx-supply-demand-chart-card" style="display:none" class="margin-top-20">
-                <p class="vimo-chart-subtitle">Chi tiết 8 cấu phần Cung - Cầu ngoại tệ — nét liền = Cung (xanh), nét đứt = Cầu (đỏ), CÙNG đơn vị (triệu USD) nên so trực tiếp được, KHÔNG cộng/trừ thành 1 điểm số.</p>
+                <p class="vimo-chart-subtitle">Cán cân vãng lai theo 4 cấu phần RÒNG (hàng hóa/dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — mỗi đường đã là Xuất-Nhập, không phải số gộp) + đường tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN (xem ghi chú đầu trang).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand"></canvas></div>
             </div>
             <div id="fx-rate-gap-chart-card" style="display:none" class="margin-top-20">

@@ -367,14 +367,16 @@ function renderCreditDepositStructure(cds) {
         { key: 'equity', label: 'Vốn chủ sở hữu (VCSH)', color: '#ef4444' },
     ];
 
-    // SUA 2026-10-02: VCSH giờ đã NẰM SẴN trong cds.totalDeposit (TT50 khoản 4g/h/i) — biểu đồ bên
-    // phải TRƯỚC ĐÂY cộng thêm VCSH lần 2 (double-count). Đổi sang ĐẢO LẠI: bên trái = D CHÍNH THỨC
-    // theo TT50 (đã gồm VCSH), bên phải = D KHÔNG gồm VCSH (trừ ra, chỉ để tham khảo quy mô đệm vốn
-    // đang "gánh" bao nhiêu trong mẫu số, KHÔNG phải định nghĩa pháp lý).
-    const totalDepositExEquity = cds.totalDeposit.map((v, i) => (v ?? 0) - (cds.totalEquity[i] ?? 0));
-    const ldrExEquity = cds.totalCredit.map((v, i) => totalDepositExEquity[i] ? (v / totalDepositExEquity[i] * 100) : null);
+    // SUA 2026-10-03 (user: "cái tính theo TT50 thì tính đủ vẫn là ròng dương nhé, còn biểu đồ trừ
+    // VCSH đi thì tính như cách cũ của tôi nhé, để tôi so ngang được xem LDR như nào") — phát hiện
+    // "KHÔNG gồm VCSH" (bản cũ: TT50 trừ thẳng equity ra) làm LDR nhảy từ ~85% lên ~94,6%, chủ yếu
+    // do đổi "Tiền gửi TCTD khác" từ GỘP THÔ sang RÒNG DƯƠNG (TT50) làm mẫu số giảm RẤT NHIỀU (vd
+    // Q2-2026 toàn hệ thống: gộp thô 2.875.874 tỷ vs ròng 376.575 tỷ, chênh 2.499.299 tỷ) — KHÔNG
+    // phải do VCSH. User muốn bên phải dùng ĐÚNG công thức CŨ của họ (_ldr_components_old trong
+    // bank_system_risk.py: gộp thô TCTD, KHÔNG VCSH, KHÔNG trừ TPDN khỏi D) để so ngang 2 công thức,
+    // bên trái GIỮ NGUYÊN TT50 (ròng dương + VCSH, không đổi).
     _renderCreditFundingLdrChart('chart-credit-structure-abs', cds.periods, cds.totalCredit, cds.totalDeposit, cds.ldrSystem, 'Tổng huy động (TT50, đã gồm VCSH)');
-    _renderCreditFundingLdrChart('chart-credit-structure-pct', cds.periods, cds.totalCredit, totalDepositExEquity, ldrExEquity, 'Tổng huy động KHÔNG gồm VCSH (tham khảo)');
+    _renderCreditFundingLdrChart('chart-credit-structure-pct', cds.periods, cds.totalCredit, cds.totalDepositOld, cds.ldrSystemOld, 'Tổng huy động (công thức cũ — gộp TCTD, không VCSH)');
     _renderAreaCompositionChart('chart-deposit-structure-abs', cds.periods, DEPOSIT_SERIES, cds.depositComposition, false);
     _renderAreaCompositionChart('chart-deposit-structure-pct', cds.periods, DEPOSIT_SERIES, cds.depositComposition, true);
     // THEM (user 2026-09-28): "vẽ thêm cái biểu đồ tăng trưởng tín dụng và tăng trưởng huy động
@@ -720,6 +722,7 @@ function renderFxPressureSignalsChart(indicators) {
     if (!canvas) return;
     const ob = indicators['bop_sbv_overall_balance'];
     const usdvndYoy = indicators['usdvnd_growth_yoy'];
+    const usdvndLevel = indicators['usdvnd_monthly_avg'];
     if (!ob || !ob.series.length) { if (card) card.style.display = 'none'; return; }
     if (card) card.style.display = '';
 
@@ -730,13 +733,21 @@ function renderFxPressureSignalsChart(indicators) {
     const obSeries = ob.series.filter(p => p.period >= '2020-Q1');
     const periods = obSeries.map(p => p.period);
     const obArr = obSeries.map(p => p.value);
-    // Quy đổi USD/VND tăng trưởng YoY (theo THÁNG) về cuối mỗi quý (tháng 3/6/9/12) để so cùng
-    // trục X với BOP (theo QUÝ) — chỉ để VẼ CẠNH NHAU, không tính toán gộp gì cả.
+    // Quy đổi USD/VND tăng trưởng YoY + MỨC thực tế (theo THÁNG) về cuối mỗi quý (tháng 3/6/9/12)
+    // để so cùng trục X với BOP (theo QUÝ) — chỉ để VẼ CẠNH NHAU, không tính toán gộp gì cả.
     const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
     const usdvndByMonth = usdvndYoy ? Object.fromEntries(usdvndYoy.series.map(p => [p.period, p.value])) : {};
+    const usdvndLevelByMonth = usdvndLevel ? Object.fromEntries(usdvndLevel.series.map(p => [p.period, p.value])) : {};
     const usdvndArr = periods.map(period => {
         const [year, q] = period.split('-Q');
         return usdvndByMonth[`${year}-${QUARTER_END_MONTH[q]}`] ?? null;
+    });
+    // THEM (user 2026-10-03): "áp thêm cho tôi đường tỷ giá thực USD/VND nhé" — MỨC tỷ giá thực tế
+    // (VND), KHÁC hẳn đường %YoY đã có — cần TRỤC RIÊNG thứ 3 (y2) vì đơn vị/độ lớn khác hoàn toàn
+    // (VND ~24.000-27.000 vs %YoY vài điểm % vs BOP vài nghìn-chục nghìn triệu USD).
+    const usdvndLevelArr = periods.map(period => {
+        const [year, q] = period.split('-Q');
+        return usdvndLevelByMonth[`${year}-${QUARTER_END_MONTH[q]}`] ?? null;
     });
 
     const chart = new Chart(canvas, {
@@ -754,6 +765,10 @@ function renderFxPressureSignalsChart(indicators) {
                   yAxisID: 'y1', borderColor: '#f59e0b', borderWidth: 2.5, borderDash: [6, 4],
                   pointRadius: 3, pointBackgroundColor: '#f59e0b', fill: false, tension: 0.2, spanGaps: true,
                   datalabels: _endpointDatalabelsConfig(1) },
+                { type: 'line', label: 'USD/VND mức thực tế tại cuối quý (VND, bình quân tháng)', data: usdvndLevelArr,
+                  yAxisID: 'y2', borderColor: '#60a5fa', borderWidth: 2, pointRadius: 2,
+                  pointBackgroundColor: '#60a5fa', fill: false, tension: 0.2, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(0) },
             ],
         },
         options: {
@@ -765,6 +780,8 @@ function renderFxPressureSignalsChart(indicators) {
                      title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
+                y2: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
@@ -786,6 +803,7 @@ function renderFxPressureSignalsMonthlyChart(indicators) {
     if (!canvas) return;
     const neer = indicators['darvas_neer_vn'];
     const usdvndYoy = indicators['usdvnd_growth_yoy'];
+    const usdvndLevel = indicators['usdvnd_monthly_avg'];
     if (!neer || !neer.series.length) { if (card) card.style.display = 'none'; return; }
     if (card) card.style.display = '';
 
@@ -797,6 +815,10 @@ function renderFxPressureSignalsMonthlyChart(indicators) {
     const neerArr = neerRecent.map(p => p.value);
     const usdvndByMonth = usdvndYoy ? Object.fromEntries(usdvndYoy.series.map(p => [p.period, p.value])) : {};
     const usdvndArr = periods.map(p => usdvndByMonth[p] ?? null);
+    // THEM (user 2026-10-03): "áp thêm cho tôi đường tỷ giá thực USD/VND nhé" — MỨC thực tế (VND),
+    // trục RIÊNG thứ 3 (y2) vì đơn vị khác hẳn NEER (index) và %YoY.
+    const usdvndLevelByMonth = usdvndLevel ? Object.fromEntries(usdvndLevel.series.map(p => [p.period, p.value])) : {};
+    const usdvndLevelArr = periods.map(p => usdvndLevelByMonth[p] ?? null);
 
     const chart = new Chart(canvas, {
         type: 'line',
@@ -811,6 +833,10 @@ function renderFxPressureSignalsMonthlyChart(indicators) {
                   borderColor: '#f59e0b', borderDash: [6, 4], borderWidth: 2.5, pointRadius: 0,
                   fill: false, tension: 0.2, spanGaps: true,
                   datalabels: _endpointDatalabelsConfig(1) },
+                { label: 'USD/VND mức thực tế (VND, bình quân tháng)', data: usdvndLevelArr, yAxisID: 'y2',
+                  borderColor: '#10b981', borderWidth: 2, pointRadius: 0,
+                  fill: false, tension: 0.2, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(0) },
             ],
         },
         options: {
@@ -822,6 +848,8 @@ function renderFxPressureSignalsMonthlyChart(indicators) {
                      title: { display: true, text: 'NEER (index)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
+                y2: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
@@ -837,36 +865,68 @@ function renderFxPressureSignalsMonthlyChart(indicators) {
 // bop_sbv_secondary_income_received (toàn quốc) chưa được NHNN đối chiếu công khai — có thể
 // trùng lặp 1 phần (kiều hối HCM vốn là 1 phần của chuyển giao vãng lai toàn quốc), cộng vào
 // Tổng Cung sẽ double-count mà không chắc mức độ — chỉ vẽ cạnh nhau ở đây để tham khảo/đối chiếu.
+// SUA 2026-10-03 (user: "phần chỗ này theo tôi tính ròng đi... vì NXK lớn quá nhưng tính ròng ra
+// thì khéo cũng chỉ ngang với các phần khác thôi thì sẽ dễ nhìn hơn. thêm cho tôi đường line tỷ
+// giá thực tế usd/vnd nữa để xem trực quan") — ĐỔI từ 8-9 đường GỘP (xuất/nhập riêng, hàng hóa gộp
+// quá lớn so dịch vụ/thu nhập đầu tư/chuyển giao vãng lai, lệch thang nhìn không rõ) sang 4 đường
+// RÒNG (Xuất-Nhập mỗi cặp) — CÙNG LÀ 4 "cán cân con" CHUẨN của Cán cân vãng lai (hàng hóa+dịch
+// vụ+thu nhập đầu tư+chuyển giao vãng lai = Current Account, giống cách NHNN tự trình bày), KHÔNG
+// VI PHẠM nguyên tắc "không gộp thành 1 điểm áp lực" (vẫn 4 đường ĐỘC LẬP, chỉ đổi cách tính TỪNG
+// đường từ gộp sang ròng, không cộng 4 đường lại). Thêm USD/VND thực tế (đường tham chiếu, trục
+// phải) để so trực quan biến động tỷ giá với các cán cân ròng — bỏ kieu_hoi_hcm khỏi chart NÀY (số
+// CHỈ CÓ phía cung, không có cặp để tính ròng, xem card riêng ở lớp ④ Cung ngoại tệ).
 function renderFxSupplyDemandChart(indicators) {
     const canvas = document.getElementById('chart-fx-supply-demand');
     const card = document.getElementById('fx-supply-demand-chart-card');
     if (!canvas) return;
-    const SERIES = [
-        { key: 'bop_sbv_goods_export', label: 'Hàng hóa — Xuất khẩu', color: '#10b981', isDemand: false },
-        { key: 'bop_sbv_services_export', label: 'Dịch vụ — Xuất khẩu', color: '#34d399', isDemand: false },
-        { key: 'bop_sbv_investment_income_received', label: 'Thu nhập đầu tư — Thu', color: '#6ee7b7', isDemand: false },
-        { key: 'bop_sbv_secondary_income_received', label: 'Chuyển giao vãng lai — Thu', color: '#a7f3d0', isDemand: false },
-        { key: 'kieu_hoi_hcm', label: 'Kiều hối về TP.HCM', color: '#059669', isDemand: false },
-        { key: 'bop_sbv_goods_import', label: 'Hàng hóa — Nhập khẩu', color: '#ef4444', isDemand: true },
-        { key: 'bop_sbv_services_import', label: 'Dịch vụ — Nhập khẩu', color: '#f87171', isDemand: true },
-        { key: 'bop_sbv_investment_income_paid', label: 'Thu nhập đầu tư — Chi', color: '#fca5a5', isDemand: true },
-        { key: 'bop_sbv_secondary_income_paid', label: 'Chuyển giao vãng lai — Chi', color: '#fecaca', isDemand: true },
+    const NET_SERIES = [
+        { exportKey: 'bop_sbv_goods_export', importKey: 'bop_sbv_goods_import', label: 'Cán cân hàng hóa (ròng)', color: '#10b981' },
+        { exportKey: 'bop_sbv_services_export', importKey: 'bop_sbv_services_import', label: 'Cán cân dịch vụ (ròng)', color: '#60a5fa' },
+        { exportKey: 'bop_sbv_investment_income_received', importKey: 'bop_sbv_investment_income_paid', label: 'Cán cân thu nhập đầu tư (ròng)', color: '#f59e0b' },
+        { exportKey: 'bop_sbv_secondary_income_received', importKey: 'bop_sbv_secondary_income_paid', label: 'Cán cân chuyển giao vãng lai (ròng)', color: '#a78bfa' },
     ];
-    const validSeries = SERIES.filter(s => indicators[s.key] && indicators[s.key].series.length);
+    const validSeries = NET_SERIES.filter(s => indicators[s.exportKey] && indicators[s.importKey]
+        && indicators[s.exportKey].series.length && indicators[s.importKey].series.length);
     if (!validSeries.length) { if (card) card.style.display = 'none'; return; }
     if (card) card.style.display = '';
 
-    const periods = Array.from(new Set(validSeries.flatMap(s => indicators[s.key].series.map(p => p.period)))).sort();
+    // Gioi han hien thi tu 2020 (nhu renderFxPressureSignalsChart) - BOP da duoc backfill tu IMF
+    // ve 1996-Q1 nen neu khong gioi han, nhan truc X se qua nhieu (>100 ky) gay chong chat/roi mat.
+    const periods = Array.from(new Set(validSeries.flatMap(s =>
+        indicators[s.exportKey].series.map(p => p.period)))).filter(p => p >= '2020-Q1').sort();
     const datasets = validSeries.map(s => {
-        const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
+        const expByPeriod = Object.fromEntries(indicators[s.exportKey].series.map(p => [p.period, p.value]));
+        const impByPeriod = Object.fromEntries(indicators[s.importKey].series.map(p => [p.period, p.value]));
+        const data = periods.map(p => {
+            const e = expByPeriod[p], i = impByPeriod[p];
+            return (e === null || e === undefined || i === null || i === undefined) ? null : e - i;
+        });
         return {
-            label: s.label, data: periods.map(p => byPeriod[p] ?? null),
+            label: s.label, data, yAxisID: 'y',
             borderColor: s.color, backgroundColor: s.color + '15', fill: false,
-            borderDash: s.isDemand ? [6, 4] : [], borderWidth: 2, tension: 0.25,
-            pointRadius: 3, pointBackgroundColor: s.color, spanGaps: true,
+            borderWidth: 2, tension: 0.25, pointRadius: 3, pointBackgroundColor: s.color, spanGaps: true,
             datalabels: _endpointDatalabelsConfig(0),
         };
     });
+    // USD/VND thực tế (tham chiếu, trục phải) — quy về cuối quý để so cùng trục X với BOP (quý).
+    const usdvnd = indicators['usdvnd_monthly_avg'];
+    if (usdvnd && usdvnd.series.length) {
+        const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
+        const usdvndByMonth = Object.fromEntries(usdvnd.series.map(p => [p.period, p.value]));
+        const usdvndArr = periods.map(period => {
+            const [year, q] = period.split('-Q');
+            if (!q) return null;
+            return usdvndByMonth[`${year}-${QUARTER_END_MONTH[q]}`] ?? null;
+        });
+        if (usdvndArr.some(v => v !== null)) {
+            datasets.push({
+                label: 'USD/VND thực tế (bình quân tháng, cuối quý)', data: usdvndArr, yAxisID: 'y1',
+                borderColor: '#ef4444', borderDash: [6, 4], borderWidth: 2.5, pointRadius: 0,
+                fill: false, tension: 0.2, spanGaps: true,
+                datalabels: _endpointDatalabelsConfig(0),
+            });
+        }
+    }
     const chart = new Chart(canvas, {
         type: 'line',
         data: { labels: periods, datasets },
@@ -875,7 +935,10 @@ function renderFxSupplyDemandChart(indicators) {
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
-                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Triệu USD (ròng)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
@@ -899,7 +962,9 @@ function renderFxSupplyDemandTotalChart(indicators) {
     if (!allKeys.some(k => indicators[k] && indicators[k].series.length)) { if (card) card.style.display = 'none'; return; }
     if (card) card.style.display = '';
 
-    const periods = Array.from(new Set(allKeys.flatMap(k => (indicators[k]?.series || []).map(p => p.period)))).sort();
+    // Gioi han hien thi tu 2020 (nhu renderFxPressureSignalsChart) - BOP da duoc backfill tu IMF
+    // ve 1996-Q1 nen neu khong gioi han, nhan truc X se qua nhieu (>100 ky) gay chong chat/roi mat.
+    const periods = Array.from(new Set(allKeys.flatMap(k => (indicators[k]?.series || []).map(p => p.period)))).filter(p => p >= '2020-Q1').sort();
     const sumByPeriod = (keys) => periods.map(p => {
         let sum = null;
         keys.forEach(k => {
