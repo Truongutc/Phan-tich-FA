@@ -343,8 +343,14 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
     "creditComposition": {"loans","tpdn"} (tpdn KHÔNG CÒN nằm trong totalCredit từ TT50 — xem SỬA
     2026-10-02 bên dưới, giữ lại chỉ để biết quy mô TPDN đang nắm giữ, KHÔNG phải phân rã totalCredit),
     "depositComposition": {"customerDeposits","bonds","netTctd","kbnnCounted","equity","tpdnDeduction"}
-    (SỬA 2026-10-02, TT50: netTctd THAY tctdDeposits gộp cũ — chỉ phần RÒNG DƯƠNG mỗi bank; thêm
-    tpdnDeduction ÂM — cộng ĐỦ 6 thành phần này = đúng totalDeposit, khác hẳn tctdDeposits/TT22 cũ)} — mỗi
+    (SỬA 2026-10-02, TT50: netTctd THAY tctdDeposits gộp cũ — RÒNG DƯƠNG; thêm tpdnDeduction ÂM —
+    cộng ĐỦ 6 thành phần này = đúng totalDeposit, khác hẳn tctdDeposits/TT22 cũ. SỬA TIẾP 2026-10-03,
+    user: netTctd ở ĐÂY là RÒNG Ở MỨC HỆ THỐNG — max(0, tổng interbank_liab 26 bank − tổng bank_dep
+    26 bank) — KHÔNG PHẢI tổng của từng max(0, ...) riêng mỗi bank (cách đó vứt bỏ phần "âm" của các
+    bank cho vay ròng như VCB/BID/CTG mà không cho bù lại phần "dương" của bank vay ròng, thổi phồng
+    netTctd lên rất nhiều so với thực tế gần-triệt-tiêu ở mức toàn hệ thống). Per-bank LDR (Excel
+    LDR_NganHang_Raw, template_banking.py) GIỮ NGUYÊN cách floor-từng-bank, chỉ bản tổng hợp HỆ
+    THỐNG này đổi)} — mỗi
     giá trị là list CÙNG ĐỘ DÀI với "periods" (None cho quý thiếu dữ liệu YoY/YTD). Đơn vị tỷ đồng,
     trừ ldrSystem/creditGrowthYoy/depositGrowthYoy/creditGrowthYtd/depositGrowthYtd/equityGrowthYoy/
     equityGrowthYtd/gap là %/điểm %. KHÔNG BAO GIỜ raise — trả dict với "periods": [] nếu chưa có
@@ -388,15 +394,15 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
             # thống — mỗi bank tự nhiên/vay ròng độc lập, 1 bank vay ròng không "bù" được cho 1 bank
             # khác đang cho vay ròng) — khớp đúng cách _ldr_components() đã tính tong_huy_dong, nên
             # tổng cột depositComposition vẫn CỘNG ĐÚNG RA totalDeposit (trừ đi tpdn, xem bên dưới).
-            agg = {"totalCredit": 0.0, "totalDeposit": 0.0, "totalDepositOld": 0.0, "n": 0,
+            agg = {"totalCredit": 0.0, "totalDepositOld": 0.0, "n": 0,
                    "loans": 0.0, "tpdn": 0.0,
-                   "customerDeposits": 0.0, "bonds": 0.0, "netTctd": 0.0, "kbnnCounted": 0.0,
-                   "equity": 0.0}
+                   "customerDeposits": 0.0, "bonds": 0.0, "kbnnCounted": 0.0,
+                   "equity": 0.0, "interbankLiabRaw": 0.0, "bankDepRaw": 0.0}
             for ticker in sorted(BANKING_TICKERS):
                 snap = stores[ticker].get(period)
                 if not snap:
                     continue
-                tong_tin_dung, tong_huy_dong, _ldr = _ldr_components(snap, year)
+                tong_tin_dung, _tong_huy_dong_per_bank, _ldr = _ldr_components(snap, year)
                 if tong_tin_dung is None:
                     continue
                 # SUA 2026-10-03 (user: "biểu đồ trừ VCSH đi thì tính như cách cũ của tôi nhé, để
@@ -405,17 +411,30 @@ def build_bank_credit_deposit_system_series(start_period="2024-Q1"):
                 # chính thức vẫn là totalDeposit/ldrSystem (TT50, ròng dương + VCSH) ở trên.
                 _, tong_huy_dong_old, _ = _ldr_components_old(snap, year)
                 agg["totalCredit"] += tong_tin_dung
-                agg["totalDeposit"] += tong_huy_dong
                 agg["totalDepositOld"] += tong_huy_dong_old or 0
                 agg["loans"] += snap.get("loans") or 0
                 agg["tpdn"] += snap.get("tpdn") or 0
                 agg["customerDeposits"] += (snap.get("customer_deposits") or 0) - (snap.get("ky_quy") or 0) - (snap.get("von_cg") or 0)
                 agg["bonds"] += snap.get("bonds_issued") or 0
-                agg["netTctd"] += max(0.0, (snap.get("interbank_liab") or 0) - (snap.get("bank_dep") or 0))
+                # SUA 2026-10-03 (user: "tổng lượng nguồn vốn TCTD trừ đi tổng lượng tài sản gửi/
+                # cho vay TCTD" ở MỨC HỆ THỐNG, không cộng dồn từng bank đã floor riêng — "cả làng
+                # vay nhau" thì tổng liab/tổng dep gần triệt tiêu nhau (raw ≈ -87.544 tỷ ở Q2-2026,
+                # lệch nhỏ vì 26 bank niêm yết còn vay/gửi với SBV+NH ngoại+NH chưa niêm yết ngoài
+                # universe này). Floor TỪNG BANK rồi mới cộng (cách cũ) vứt bỏ hết phần "âm" của các
+                # bank cho vay ròng (VCB/BID/CTG/STB...) mà KHÔNG cho bù lại phần "dương" của bank
+                # vay ròng (MBB/TCB/MSB...) → thổi phồng netTctd từ ~0 lên +376.575 tỷ. Cộng RAW
+                # (chưa floor) ở đây, floor MỘT LẦN ở mức hệ thống ngay dưới vòng lặp. _ldr_components()
+                # (per-bank floor) GIỮ NGUYÊN cho phân tích TỪNG ngân hàng (Excel LDR_NganHang_Raw,
+                # template_banking.py) — CHỈ đổi cách netting ở bản tổng hợp HỆ THỐNG này.
+                agg["interbankLiabRaw"] += snap.get("interbank_liab") or 0
+                agg["bankDepRaw"] += snap.get("bank_dep") or 0
                 agg["kbnnCounted"] += ((snap.get("kbnn_dep") or 0) + (snap.get("kbnn_loan") or 0)) * _kbnn_counted_rate(year)
                 agg["equity"] += snap.get("equity") or 0
                 agg["n"] += 1
             if agg["n"] > 0:
+                agg["netTctd"] = max(0.0, agg["interbankLiabRaw"] - agg["bankDepRaw"])
+                agg["totalDeposit"] = (agg["customerDeposits"] + agg["bonds"] + agg["netTctd"]
+                                        + agg["kbnnCounted"] + agg["equity"] - agg["tpdn"])
                 per_period[period] = agg
 
         def _yoy(period, key):
