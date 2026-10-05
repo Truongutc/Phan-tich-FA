@@ -522,7 +522,7 @@ _LDR_SHEET_HEADERS = [
     "Tien gui KH (ty)", "GTCG phat hanh (ty)", "Tien gui TCTD khac - subset (ty)",
     "TG+vay NHAN tu TCTD khac (ty)", "TG+cho vay DAT TAI TCTD khac (ty)", "Vi the lien NH RONG (ty)",
     "KBNN tinh vao mau so (ty)", "Ky quy (ty)", "Von tai tro-uy thac (ty)",
-    "Tong huy dong D (ty, TT50)", "LDR (%, TT50 - tran 95%)",
+    "Tong huy dong D (ty, TT50)", "LDR (%, TT50 - tran 85% hien hanh)",
     "GAP tin dung - huy dong (ty)",
     "Tang truong tin dung so cuoi nam truoc (%)", "Tang truong huy dong so cuoi nam truoc (%)",
     "Von chu so huu - VCSH (ty, CONG vao mau so D - TT50)",
@@ -1735,15 +1735,20 @@ def _grade_ltfc(x):
     return 0 if x >= 0.80 else (1 if x >= 0.50 else 2)
 
 
+# Trần LDR áp dụng HIỆN HÀNH (user 2026-10-05): 85% (TT22) cho toàn hệ thống. Thông tư 50/2026 áp
+# dụng THỬ từ 1-12-2026 chỉ với NH tự nguyện xin áp dụng trước; NH đó được nới trần lên 95% nếu
+# LCR và NSFR đạt tối thiểu (100%), và được gỡ hẳn trần nếu cả hai đều trên 100%. Các NH còn lại vẫn
+# 85% đến hết 2028. Ngưỡng 95% ở đây KHÔNG áp cho cả hệ thống — chỉ là trần của NH đủ điều kiện.
+LDR_CAP_PCT = 85.0
+LDR_CAP_TT50_OPTIN_PCT = 95.0
+
+
 def _grade_funding_balance(ldr_system_pct):
-    """ldr_system_pct: LDR hệ thống dạng %, vd 86.9 (KHÔNG phải ratio 0-1, khác các hàm _grade_*
-    khác trong file — LDR toàn hệ thống tính từ build_bank_credit_deposit_system_series() vốn đã
-    trả về dạng % sẵn). Trần 95% theo Thông tư 50/2026/TT-NHNN Điều 12 khoản 6 (SỬA 2026-10-02 —
-    thay trần 85% của Thông tư 22/2019 cũ, đã hết hiệu lực) — sát/vượt trần = XẤU, còn cách 5 điểm
-    % = CẦN THEO DÕI, còn dư địa rộng = TỐT."""
+    """ldr_system_pct: LDR hệ thống dạng %, vd 86.9 (KHÔNG phải ratio 0-1). Trần hiện hành 85%
+    (LDR_CAP_PCT) — sát/vượt trần = XẤU, cách trần dưới 5 điểm % = CẦN THEO DÕI, còn dư địa = TỐT."""
     if ldr_system_pct is None:
         return None
-    return 2 if ldr_system_pct >= 95 else (1 if ldr_system_pct >= 90 else 0)
+    return 2 if ldr_system_pct >= LDR_CAP_PCT else (1 if ldr_system_pct >= LDR_CAP_PCT - 5 else 0)
 
 
 def _history_trend_and_extremes(history, extract_fn, higher_is_worse, min_points=4):
@@ -1975,8 +1980,8 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
         lvl_fb = _grade_funding_balance(ldr_sys)
         if lvl_fb is not None:
             pts = [f"LDR toàn hệ thống (26 NH niêm yết/UPCoM, theo BCTC): {ldr_sys:.1f}%"
-                   + (" — đã sát/vượt trần 95% (Thông tư 50/2026)." if ldr_sys >= 95
-                      else f" — còn cách trần 95% khoảng {95 - ldr_sys:.1f} điểm %.")]
+                   + (f" — đã sát/vượt trần {LDR_CAP_PCT:.0f}% hiện hành." if ldr_sys >= LDR_CAP_PCT
+                      else f" — còn cách trần {LDR_CAP_PCT:.0f}% hiện hành khoảng {LDR_CAP_PCT - ldr_sys:.1f} điểm %.")]
             if cg is not None and dg is not None:
                 direction = ("tín dụng tăng NHANH HƠN huy động" if cg > dg else "huy động tăng nhanh hơn hoặc ngang tín dụng")
                 pts.append(f"Tăng trưởng tín dụng {cg:+.1f}% so huy động {dg:+.1f}% (YoY) — {direction}.")
@@ -1991,10 +1996,10 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
                     # SUA (2026-09-28, phat hien qua vi du that: LDR 87% "XAU" nhung gap tuyet doi
                     # van am - 2 con so KHONG mau thuan, chi la 2 goc nhin khac nhau): khi LDR da
                     # sat/vuot tran, dem tuyet doi con lai KHONG con nhieu y nghia thuc te vi bi
-                    # CHAN boi ty le quy dinh (95%, Thong tu 50/2026), khong phai boi luong huy dong
+                    # CHAN boi ty le quy dinh (85% hien hanh), khong phai boi luong huy dong
                     # tuyet doi - phai noi ro de tranh nghe mau thuan voi nhan "XAU"/"CAN THEO DOI".
                     pts.append(f"Tổng tín dụng đang thấp hơn Tổng huy động {abs(gap_abs):,.0f} tỷ đồng"
-                               + (" — nhưng tỷ lệ LDR đã sát/vượt trần 95% (Thông tư 50/2026) nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng."
+                               + (f" — nhưng tỷ lệ LDR đã sát/vượt trần {LDR_CAP_PCT:.0f}% hiện hành nên KHÔNG còn nhiều dư địa cho vay thêm theo quy định, dù về số tuyệt đối huy động vẫn nhiều hơn tín dụng."
                                   if lvl_fb >= 1 else
                                   " — vẫn còn đệm vốn để cho vay thêm mà không cần huy động mới ngay."))
                 else:

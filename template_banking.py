@@ -3542,7 +3542,7 @@ def run_banking_analysis(ticker: str, raw_data: dict) -> bool:
     story.append(Spacer(1, 5))
     story.append(Paragraph("Tiền gửi KH & CASA & Tín dụng/Huy động (LDR) theo Quý:", h2_style))
     story.append(Image(chart_pDCL, width=175*mm, height=73*mm))
-    story.append(Paragraph("CASA cao giúp giảm chi phí vốn (COF); LDR gần ngưỡng trần pháp lý (95% theo Thông tư 50/2026/TT-NHNN) cho thấy dư địa tăng trưởng tín dụng phụ thuộc nhiều vào huy động mới. "
+    story.append(Paragraph("CASA cao giúp giảm chi phí vốn (COF); LDR so với trần pháp lý hiện hành (85%; Thông tư 50/2026 áp dụng thử từ 1-12-2026 cho NH tự nguyện, nới 95% nếu LCR và NSFR đạt, gỡ trần nếu cả hai trên 100%) cho thấy dư địa tăng trưởng tín dụng phụ thuộc nhiều vào huy động mới. "
                             "Lưu ý: LDR (TT50) = Dư nợ cho vay KH / (Tiền gửi KH + GTCG + Vị thế liên NH RÒNG + KBNN×tỷ lệ + VCSH − TPDN − Ký quỹ − Vốn chuyên dùng). LDR (công thức cũ, trước Thông tư 50/2026) = (Dư nợ cho vay KH + TPDN) / (Tiền gửi KH + GTCG + Tiền gửi TCTD khác GỘP THÔ + KBNN×tỷ lệ − Ký quỹ − Vốn chuyên dùng) — giữ song song 2 cách tính để so ngang, KHÔNG phải 1 trong 2 là lỗi.", bullet_style))
 
     # Add Kết cấu Thu nhập ngoài lãi (NonII) quarterly chart + đánh giá chi tiết
