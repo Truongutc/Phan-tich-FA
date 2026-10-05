@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxPressureCard(data.indicators);
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
+    renderDepositRateChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -817,6 +818,59 @@ function renderFxPressureSignalsChart(indicators) {
 // (phát hiện 2026-10-03: điểm mới nhất 2026-06 = 86318 — SAI ĐƠN VỊ so với các điểm khác đều ~80-86
 // TỶ USD, lỗi nằm ở DỮ LIỆU GỐC 40yo.vn [JSON thô, không qua regex parse nào ở code mình] — không
 // tự đoán/sửa, chỉ loại khỏi chart này cho tới khi xác minh lại được).
+// THEM 2026-10-05 (user: "thêm biểu đồ lãi suất của Cake để xem lãi suất xu hướng thực") — mức lãi suất 12
+// tháng theo kênh (snapshot mới nhất) + chuỗi thị trường cao nhất/bình quân. Kênh Cake và TCBS iPower chỉ
+// có 1-2 điểm vì nguồn chỉ ghi khi giá đổi, nên không vẽ xu hướng cho 2 kênh này.
+function renderDepositRateChart(indicators) {
+    const card = document.getElementById('deposit-rate-card');
+    const cLevels = document.getElementById('chart-deposit-rate-levels');
+    const cTrend = document.getElementById('chart-deposit-rate-trend');
+    if (!cLevels || !cTrend) return;
+    const KEYS = [
+        ['deposit_rate_12m_vcb', 'Vietcombank'], ['deposit_rate_12m_ctg', 'VietinBank'], ['deposit_rate_12m_nab', 'Nam A Bank'],
+        ['deposit_rate_12m_market_avg', 'Thị trường (bình quân)'], ['deposit_rate_12m_market_max', 'Thị trường (cao nhất)'],
+        ['deposit_rate_tcbs_ipower_max', 'TCBS iPower (kênh số)'], ['deposit_rate_cake_max', 'Cake (cơ bản + ưu đãi)'],
+    ];
+    const latest = KEYS.map(([k, lbl]) => {
+        const sr = indicators[k] && indicators[k].series;
+        return sr && sr.length ? { label: lbl, value: sr[sr.length - 1].value } : null;
+    }).filter(Boolean);
+    if (!latest.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    chartInstances.push(new Chart(cLevels, {
+        type: 'bar',
+        data: { labels: latest.map(x => x.label),
+                datasets: [{ label: 'Lãi suất 12 tháng (%)', data: latest.map(x => x.value),
+                             backgroundColor: latest.map(x => x.label.startsWith('Cake') || x.label.startsWith('TCBS') ? 'rgba(249,115,22,0.75)' : 'rgba(96,165,250,0.7)'),
+                             borderWidth: 0 }] },
+        options: { ...CHART_DEFAULTS,
+                   plugins: { legend: { display: false } },
+                   scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 25, autoSkip: false } },
+                             y: { ...CHART_DEFAULTS.scales.y, beginAtZero: true } } },
+        plugins: [ChartDataLabels],
+    }));
+
+    const mx = indicators['deposit_rate_12m_market_max'], av = indicators['deposit_rate_12m_market_avg'];
+    const periods = mx ? mx.series.map(p => p.period) : [];
+    const avBy = av ? Object.fromEntries(av.series.map(p => [p.period, p.value])) : {};
+    chartInstances.push(new Chart(cTrend, {
+        type: 'line',
+        data: { labels: periods,
+                datasets: [
+                    { label: 'Thị trường — cao nhất', data: mx.series.map(p => p.value), borderColor: '#f97316', backgroundColor: '#f97316',
+                      borderWidth: 2, pointRadius: 3, tension: 0.2, datalabels: _endpointDatalabelsConfig(2) },
+                    { label: 'Thị trường — bình quân', data: periods.map(p => avBy[p] ?? null), borderColor: '#60a5fa', backgroundColor: '#60a5fa',
+                      borderWidth: 2, pointRadius: 3, tension: 0.2, spanGaps: true, datalabels: _endpointDatalabelsConfig(2) },
+                ] },
+        options: { ...CHART_DEFAULTS,
+                   plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+                   scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+                             y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '%/năm', color: '#9aa5bd', font: { size: 9 } } } } },
+        plugins: [ChartDataLabels],
+    }));
+}
+
 function renderFxPressureSignalsMonthlyChart(indicators) {
     const canvas = document.getElementById('chart-fx-pressure-signals-monthly');
     const card = document.getElementById('fx-pressure-signals-monthly-chart-card');
