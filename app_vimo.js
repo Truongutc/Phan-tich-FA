@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxPressureCard(data.indicators);
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
+    renderFxInterventionChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -797,6 +798,57 @@ function renderFxPressureSignalsChart(indicators) {
 // (phát hiện 2026-10-03: điểm mới nhất 2026-06 = 86318 — SAI ĐƠN VỊ so với các điểm khác đều ~80-86
 // TỶ USD, lỗi nằm ở DỮ LIỆU GỐC 40yo.vn [JSON thô, không qua regex parse nào ở code mình] — không
 // tự đoán/sửa, chỉ loại khỏi chart này cho tới khi xác minh lại được).
+// THEM 2026-10-05 (user: "theo dõi can thiệp của NHNN qua BOP, lồng tỷ giá thực tế") — cán cân tổng
+// thể BOP (= −thay đổi dự trữ ngoại hối) là dấu vết trực tiếp NHNN mua/bán USD ròng; lồng mức USD/VND
+// thực tế cuối quý cùng trục X để thấy can thiệp xảy ra lúc nào và tỷ giá phản ứng ra sao.
+function renderFxInterventionChart(indicators) {
+    const canvas = document.getElementById('chart-fx-intervention');
+    const card = document.getElementById('fx-intervention-card');
+    if (!canvas) return;
+    const bal = indicators['bop_sbv_overall_balance'];
+    const usd = indicators['usdvnd_monthly_avg'];
+    if (!bal || !bal.series.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = bal.series.map(p => p.period).filter(p => p >= '2020-Q1').sort();
+    const balByQ = Object.fromEntries(bal.series.map(p => [p.period, p.value]));
+    const usdByM = usd ? Object.fromEntries(usd.series.map(p => [p.period, p.value])) : {};
+    const QEND = { '1': '03', '2': '06', '3': '09', '4': '12' };
+    const balArr = periods.map(p => balByQ[p] ?? null);
+    const usdArr = periods.map(p => {
+        const [y, q] = p.split('-Q');
+        return usdByM[`${y}-${QEND[q]}`] ?? null;
+    });
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: periods,
+            datasets: [
+                { type: 'bar', label: 'Cán cân tổng thể BOP (triệu USD; âm = NHNN bán ròng)', data: balArr, yAxisID: 'y',
+                  backgroundColor: balArr.map(v => (v ?? 0) < 0 ? 'rgba(239,68,68,0.7)' : 'rgba(16,185,129,0.7)'),
+                  borderWidth: 0 },
+                { type: 'line', label: 'USD/VND thực tế (VND/USD, bình quân tháng cuối quý)', data: usdArr, yAxisID: 'y1',
+                  borderColor: '#60a5fa', backgroundColor: '#60a5fa', borderWidth: 2, pointRadius: 2, tension: 0.2, spanGaps: true,
+                  datalabels: _endpointDatalabelsConfig(0) },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 14 } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
 function renderFxPressureSignalsMonthlyChart(indicators) {
     const canvas = document.getElementById('chart-fx-pressure-signals-monthly');
     const card = document.getElementById('fx-pressure-signals-monthly-chart-card');

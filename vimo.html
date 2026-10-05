@@ -587,6 +587,14 @@
             <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
             <p class="vimo-chart-subtitle">Tổng hợp đối chiếu BOP, áp lực thị trường, Cầu/Cung ngoại tệ và phản ứng của NHNN — giữ các lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. SỬA 2026-10-03: Cầu/Cung (dựa nhiều vào XNK hàng hóa) là proxy KÉM cho áp lực thực — nhiều dòng XNK không thực sự qua hệ thống NHTM VN (DN FDI thanh toán qua công ty mẹ/tài khoản offshore), và dòng VỐN có thể bù/đảo ngược hoàn toàn chiều vãng lai (ví dụ thật: Q2-2026 hàng hóa nhập siêu nhưng Cán cân tổng thể gần như cân bằng vì dòng vốn bù lại). Ưu tiên đọc biểu đồ "Tín hiệu Áp lực Tỷ giá Thực" bên dưới và lớp ① Đối chiếu BOP / ② Áp lực thị trường — đây là tín hiệu THỰC, không suy luận từ kế toán XNK.</p>
 
+            <!-- THEM (user 2026-10-05): theo dõi can thiệp của NHNN qua cán cân tổng thể BOP, lồng tỷ
+                 giá thực tế cùng quý — xem renderFxInterventionChart trong app_vimo.js. -->
+            <div class="vimo-chart-title">🏛️ Can thiệp của NHNN (cán cân tổng thể BOP) vs Tỷ giá thực tế (theo quý)</div>
+            <div id="fx-intervention-card" style="display:none">
+                <p class="vimo-chart-subtitle">Cột: cán cân tổng thể BOP (triệu USD) — dương = dự trữ tăng (NHNN mua USD ròng), ÂM = dự trữ giảm (NHNN bán USD ròng để giữ tỷ giá); cột đỏ là các quý NHNN bán ròng. Đường: tỷ giá USD/VND thực tế bình quân tháng cuối quý (VND/USD, trục phải). Dùng để xem NHNN can thiệp vào lúc nào và tỷ giá phản ứng ra sao ngay sau đó.</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-intervention"></canvas></div>
+            </div>
+
             <!-- THEM (user 2026-10-03): "tạo biểu đồ để đánh giá mức độ áp lực tỷ giá" — SAU KHI
                  user chỉ ra Cầu/Cung (XNK) là proxy kém. Đặt chart NÀY lên ĐẦU TIÊN (trước Tổng
                  Cung/Cầu) vì đây là 2 tín hiệu THỰC (Cán cân tổng thể BOP + USD/VND thị trường) —
