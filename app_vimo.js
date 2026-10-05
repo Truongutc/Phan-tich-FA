@@ -819,6 +819,17 @@ function renderFxPressureSignalsChart(indicators) {
 // (phát hiện 2026-10-03: điểm mới nhất 2026-06 = 86318 — SAI ĐƠN VỊ so với các điểm khác đều ~80-86
 // TỶ USD, lỗi nằm ở DỮ LIỆU GỐC 40yo.vn [JSON thô, không qua regex parse nào ở code mình] — không
 // tự đoán/sửa, chỉ loại khỏi chart này cho tới khi xác minh lại được).
+// Chuỗi kỳ theo tuần ISO ('2026-W40') -> ngày thứ Sáu của tuần đó (ngày chạy cập nhật), để hiển thị theo ngày.
+function _weekPeriodToDate(p) {
+    const m = /^(\d{4})-W(\d{2})$/.exec(p);
+    if (!m) return p;
+    const year = +m[1], week = +m[2];
+    const jan4 = new Date(Date.UTC(year, 0, 4));
+    const mondayW1 = new Date(jan4); mondayW1.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() + 6) % 7));
+    const friday = new Date(mondayW1); friday.setUTCDate(mondayW1.getUTCDate() + (week - 1) * 7 + 4);
+    return friday.toISOString().slice(0, 10);
+}
+
 // THEM 2026-10-05 (user: "thêm biểu đồ lãi suất của Cake để xem lãi suất xu hướng thực") — mức lãi suất 12
 // tháng theo kênh (snapshot mới nhất) + chuỗi thị trường cao nhất/bình quân. Kênh Cake và TCBS iPower chỉ
 // có 1-2 điểm vì nguồn chỉ ghi khi giá đổi, nên không vẽ xu hướng cho 2 kênh này.
@@ -855,9 +866,10 @@ function renderDepositRateChart(indicators) {
     const mx = indicators['deposit_rate_12m_market_max'], av = indicators['deposit_rate_12m_market_avg'];
     const periods = mx ? mx.series.map(p => p.period) : [];
     const avBy = av ? Object.fromEntries(av.series.map(p => [p.period, p.value])) : {};
+    const labels = periods.map(_weekPeriodToDate);
     chartInstances.push(new Chart(cTrend, {
         type: 'line',
-        data: { labels: periods,
+        data: { labels,
                 datasets: [
                     { label: 'Thị trường — cao nhất', data: mx.series.map(p => p.value), borderColor: '#f97316', backgroundColor: '#f97316',
                       borderWidth: 2, pointRadius: 3, tension: 0.2, datalabels: _endpointDatalabelsConfig(2) },
