@@ -240,7 +240,13 @@
            để cuộn được thay vì tràn ra ngoài đẩy rộng cả trang (mobile fix 2026-10-02). */
         #vnindex-compare-table { overflow-x: auto; max-width: 100%; }
         .vimo-macro-kpi-meta { display: block; font-size: 0.68em; color: var(--text-muted, #9ca3af); margin-top: 2px; }
-    </style>
+            .vimo-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:16px 0 4px; }
+        .vimo-tab { background:transparent; border:1px solid rgba(255,255,255,0.12); color:var(--text-muted,#9aa5bd);
+                    padding:7px 14px; border-radius:999px; cursor:pointer; font-size:0.9em; }
+        .vimo-tab:hover { color:#f0f2f8; border-color:rgba(255,255,255,0.3); }
+        .vimo-tab.active { background:#0ea5e9; border-color:#0ea5e9; color:#fff; font-weight:600; }
+        [data-tab].vimo-tab-hidden { display:none !important; }
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -283,6 +289,15 @@
             </div>
         </div>
 
+        <nav class="vimo-tabs" id="vimo-tabs" role="tablist">
+            <button class="vimo-tab" data-tab-btn="overview">Tổng quan</button>
+            <button class="vimo-tab" data-tab-btn="monitor">Giám sát chỉ số</button>
+            <button class="vimo-tab" data-tab-btn="sector">Sản xuất &amp; Giá</button>
+            <button class="vimo-tab" data-tab-btn="fx">Tiền tệ &amp; Tỷ giá</button>
+            <button class="vimo-tab" data-tab-btn="bank">Ngân hàng</button>
+            <button class="vimo-tab" data-tab-btn="valuation">Định giá VN-Index</button>
+        </nav>
+
         <!-- Biểu đồ tổng quan Vĩ mô: IIP/CPI/XNK (%) + FDI giải ngân & Giải ngân đầu tư công (lũy kế),
              đặt NGAY TRÊN ĐẦU trang để thấy diễn biến chung mà không phải kéo xem nhiều chart bên
              dưới (user 2026-08-08, kèm ảnh mẫu dashboard "VĨ MÔ VIỆT NAM THÁNG 7/2026") — 2 cặp biểu
@@ -293,7 +308,7 @@
              (trước dồn chung 1 biểu đồ 3 trục gây rối), có nhãn giá trị tại từng điểm + đường nét
              đứt "bình quân lũy kế từ đầu năm" giống ảnh mẫu — xem _renderMacroOverviewKpiStrip/
              _renderMacroPctChart/_renderMacroAbsChart trong app_vimo.js. -->
-        <div class="card margin-top-20" id="macro-overview-card" style="display:none">
+        <div data-tab="overview" class="card margin-top-20" id="macro-overview-card" style="display:none">
             <h3 class="border-blue">📈 Diễn biến Vĩ mô Tổng quan</h3>
             <div class="vimo-macro-kpi-grid" id="macro-overview-kpi-current"></div>
             <div class="vimo-chart-title" id="macro-overview-title-current"></div>
@@ -322,7 +337,7 @@
         </div>
 
         <!-- Đánh giá Tổng thể — trả lời trực tiếp: đang tốt lên/xấu đi, rõ ràng/xám, phù hợp đầu tư không -->
-        <div class="card margin-top-20" id="verdict-card">
+        <div data-tab="overview" class="card margin-top-20" id="verdict-card">
             <h3 class="border-blue">🧭 Đánh giá Tổng thể</h3>
             <div class="vimo-verdict-grid">
                 <div class="vimo-verdict-box">
@@ -346,7 +361,7 @@
         </div>
 
         <!-- Scorecard tổng hợp -->
-        <div class="card val-snapshot-card margin-top-20">
+        <div data-tab="overview" class="card val-snapshot-card margin-top-20">
             <h3 class="border-blue">📊 Scorecard Vĩ Mô (6 nhóm chỉ số)</h3>
             <div class="vimo-score-grid" id="scorecard-grid"></div>
             <div class="vimo-decision-banner" id="decision-banner" style="display:none">
@@ -356,7 +371,7 @@
         </div>
 
         <!-- Bảng giám sát chỉ số vĩ mô hàng tháng (heatmap) -->
-        <div class="card margin-top-20" id="monitoring-table-card" style="display:none">
+        <div data-tab="monitor" class="card margin-top-20" id="monitoring-table-card" style="display:none">
             <h3 class="border-blue">🗓️ Bảng giám sát các chỉ số vĩ mô hàng tháng</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="monitoring-table"></table>
@@ -366,7 +381,7 @@
 
         <!-- Bảng GDP theo ngành (YoY, tự tính từ MỨC giá so sánh — NSO qua dulieukinhte.com), heatmap
              màu để thấy ngay ngành nào đang tốt lên/xấu đi (user 2026-10-01) -->
-        <div class="card margin-top-20" id="gdp-sector-table-card" style="display:none">
+        <div data-tab="sector" class="card margin-top-20" id="gdp-sector-table-card" style="display:none">
             <h3 class="border-blue">🏭 GDP theo ngành (YoY)</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="gdp-sector-table"></table>
@@ -376,7 +391,7 @@
 
         <!-- Bảng CPI theo nhóm hàng (YoY, tự tính từ chỉ số giá — NSO qua dulieukinhte.com), heatmap
              màu để thấy ngay nhóm hàng nào đang "nhức nhối" (tăng giá mạnh) (user 2026-10-01) -->
-        <div class="card margin-top-20" id="cpi-group-table-card" style="display:none">
+        <div data-tab="sector" class="card margin-top-20" id="cpi-group-table-card" style="display:none">
             <h3 class="border-blue">🛒 CPI theo nhóm hàng (YoY)</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="cpi-group-table"></table>
@@ -385,7 +400,7 @@
         </div>
 
         <!-- Bảng XK theo mặt hàng (YoY, user 2026-10-01: "mặt hàng nào đang xuất khẩu tốt lên") -->
-        <div class="card margin-top-20" id="export-commodity-table-card" style="display:none">
+        <div data-tab="sector" class="card margin-top-20" id="export-commodity-table-card" style="display:none">
             <h3 class="border-blue">📦 Xuất khẩu theo mặt hàng (YoY)</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="export-commodity-table"></table>
@@ -394,7 +409,7 @@
         </div>
 
         <!-- Bảng NK theo mặt hàng (YoY) -->
-        <div class="card margin-top-20" id="import-commodity-table-card" style="display:none">
+        <div data-tab="sector" class="card margin-top-20" id="import-commodity-table-card" style="display:none">
             <h3 class="border-blue">📦 Nhập khẩu theo mặt hàng (YoY)</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="import-commodity-table"></table>
@@ -404,7 +419,7 @@
 
         <!-- Bảng giá XK bình quân theo mặt hàng (YoY, màu phân kỳ, user 2026-10-01: "giá đang căng
              không, giá tăng màu đỏ còn thấp thì trắng rồi xanh lá") -->
-        <div class="card margin-top-20" id="export-price-table-card" style="display:none">
+        <div data-tab="sector" class="card margin-top-20" id="export-price-table-card" style="display:none">
             <h3 class="border-blue">💹 Giá xuất khẩu bình quân theo mặt hàng (YoY)</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="export-price-table"></table>
@@ -413,7 +428,7 @@
         </div>
 
         <!-- Bảng giá NK bình quân theo mặt hàng (YoY, màu phân kỳ) -->
-        <div class="card margin-top-20" id="import-price-table-card" style="display:none">
+        <div data-tab="sector" class="card margin-top-20" id="import-price-table-card" style="display:none">
             <h3 class="border-blue">💹 Giá nhập khẩu bình quân theo mặt hàng (YoY)</h3>
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="import-price-table"></table>
@@ -422,7 +437,7 @@
         </div>
 
         <!-- So sánh 2 quyết định: VN-Index headline (có VIN) vs ex-VIN -->
-        <div class="card margin-top-20" id="vnindex-compare-card" style="display:none">
+        <div data-tab="valuation" class="card margin-top-20" id="vnindex-compare-card" style="display:none">
             <h3 class="border-blue">🔍 So sánh 2 góc nhìn định giá — có/không VIN</h3>
             <div id="vnindex-compare-table"></div>
             <p id="vnindex-compare-warning" style="display:none;color:#f59e0b;font-size:0.85em;margin-top:8px"></p>
@@ -430,7 +445,7 @@
 
         <!-- Định giá VN-Index theo thời gian: P/E, P/B lịch sử ~17 năm vs dải thống kê/ngưỡng hấp dẫn —
              4 biểu đồ riêng: headline/ex-VIN x P/E/P/B (user 2026-07-25) -->
-        <div class="card margin-top-20" id="vnindex-valhist-card" style="display:none">
+        <div data-tab="valuation" class="card margin-top-20" id="vnindex-valhist-card" style="display:none">
             <div class="vimo-valhist-header">
                 <h3 class="border-blue" style="margin:0">📐 Định giá VN-Index theo thời gian (P/E &amp; P/B)</h3>
                 <div class="vimo-range-btns" id="vnindex-valhist-range-btns"></div>
@@ -459,7 +474,7 @@
         </div>
 
         <!-- Tổng hợp phân tích đa chỉ số -->
-        <div class="card margin-top-20" id="synthesis-card">
+        <div data-tab="overview" class="card margin-top-20" id="synthesis-card">
             <h3 class="border-blue">🧭 Tổng hợp Phân tích Đa Chỉ số — Bức tranh Tổng thể</h3>
             <div class="vimo-synthesis-section">
                 <h4>Tổng quan bức tranh vĩ mô</h4>
@@ -499,7 +514,7 @@
              tín dụng" (Cho vay KH vs TPDN — TPDN quá nhỏ, chart gần như vô nghĩa), thay bằng 2
              biểu đồ Tổng tín dụng vs Tổng huy động + đường LDR nét đứt (1 bản huy động thường,
              1 bản CỘNG THÊM VCSH). -->
-        <div class="card margin-top-20" id="credit-deposit-structure-card" style="display:none">
+        <div data-tab="bank" class="card margin-top-20" id="credit-deposit-structure-card" style="display:none">
             <h3 class="border-blue">🏦 Cơ cấu Tín dụng & Huy động toàn ngành Ngân hàng (theo BCTC)</h3>
             <div class="vimo-chart-title" id="credit-deposit-structure-title"></div>
             <div class="vimo-chart-title">Tăng trưởng tín dụng &amp; huy động (theo BCTC 26 ngân hàng)</div>
@@ -536,7 +551,7 @@
              quarterly_balance_sheet, Vietcap trực tiếp, đủ 26/26 mọi quý); card NÀY dùng
              liquidity_gap/liabilities_by_bucket (OCR thuyết minh gap thanh khoản), độ phủ THẤP hơn
              hẳn — xem renderMaturityStructure trong app_vimo.js. -->
-        <div class="card margin-top-20" id="maturity-structure-card" style="display:none">
+        <div data-tab="bank" class="card margin-top-20" id="maturity-structure-card" style="display:none">
             <h3 class="border-blue">⏳ Cơ cấu Tài sản &amp; Nguồn vốn theo Kỳ hạn toàn ngành Ngân hàng</h3>
             <div class="vimo-chart-title" id="maturity-structure-title"></div>
             <div class="vimo-chart-title">Cơ cấu Tài sản theo kỳ hạn</div>
@@ -583,7 +598,7 @@
              nhieu chi bao (usdvnd/fed_funds_rate/trade_balance...) DA render 1 lan trong nhom
              "Tỷ giá & Dòng vốn ngoại"/"Thương mại & Hàng hóa" chung roi, tai dung o day can id
              rieng de khong trung <canvas> id. -->
-        <div class="card margin-top-20" id="fx-pressure-card" style="display:none">
+        <div data-tab="fx" class="card margin-top-20" id="fx-pressure-card" style="display:none">
             <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
             <p class="vimo-chart-subtitle">Tổng hợp đối chiếu BOP, áp lực thị trường, Cầu/Cung ngoại tệ và phản ứng của NHNN — giữ các lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. SỬA 2026-10-03: Cầu/Cung (dựa nhiều vào XNK hàng hóa) là proxy KÉM cho áp lực thực — nhiều dòng XNK không thực sự qua hệ thống NHTM VN (DN FDI thanh toán qua công ty mẹ/tài khoản offshore), và dòng VỐN có thể bù/đảo ngược hoàn toàn chiều vãng lai (ví dụ thật: Q2-2026 hàng hóa nhập siêu nhưng Cán cân tổng thể gần như cân bằng vì dòng vốn bù lại). Ưu tiên đọc biểu đồ "Tín hiệu Áp lực Tỷ giá Thực" bên dưới và lớp ① Đối chiếu BOP / ② Áp lực thị trường — đây là tín hiệu THỰC, không suy luận từ kế toán XNK.</p>
 
@@ -630,7 +645,7 @@
         </div>
 
         <!-- Định giá thị trường -->
-        <div class="card margin-top-20">
+        <div data-tab="valuation" class="card margin-top-20">
             <h3 class="border-blue">💎 Định giá Thị trường (VN-Index)</h3>
             <div class="val-snapshot-grid">
                 <div class="val-snap-box">
@@ -662,10 +677,10 @@
         </div>
 
         <!-- Các nhóm chỉ báo -->
-        <div id="indicator-groups-container"></div>
+        <div data-tab="monitor" id="indicator-groups-container"></div>
 
         <!-- Dữ liệu Quốc tế — Mỹ/Eurozone/Trung Quốc, mỗi thị trường 1 cụm riêng -->
-        <div id="international-section-container"></div>
+        <div data-tab="monitor" id="international-section-container"></div>
 
         <div class="card margin-top-20">
             <p style="font-size:0.82em;color:var(--text-muted)">

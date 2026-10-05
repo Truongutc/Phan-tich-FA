@@ -74,7 +74,27 @@ document.addEventListener('wheel', (e) => {
     scroller.scrollLeft += e.deltaY;
 }, { passive: false });
 
+// THEM 2026-10-05 (user: "làm dạng tab này để dễ xem và bấm vào cái nào cần") — gom 19 khối trang
+// thành 6 tab theo chủ đề (xem data-tab trong vimo.html). Tab nằm trên hash (#tab=...) để chia sẻ được.
+function initVimoTabs() {
+    const buttons = document.querySelectorAll('[data-tab-btn]');
+    if (!buttons.length) return;
+    const show = (tab) => {
+        const valid = [...buttons].some(b => b.dataset.tabBtn === tab) ? tab : 'overview';
+        buttons.forEach(b => b.classList.toggle('active', b.dataset.tabBtn === valid));
+        document.querySelectorAll('[data-tab]').forEach(el => {
+            el.classList.toggle('vimo-tab-hidden', el.dataset.tab !== valid);
+        });
+        history.replaceState(null, '', '#tab=' + valid);
+        setTimeout(() => chartInstances.forEach(c => c.resize()), 0);
+    };
+    buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.tabBtn)));
+    const fromHash = (location.hash.match(/tab=([a-z]+)/) || [])[1];
+    show(fromHash || 'overview');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+    initVimoTabs();
     const data = await fetch('data/vimo.json').then(r => r.ok ? r.json() : null).catch(() => null);
     if (!data) {
         document.getElementById('indicator-groups-container').innerHTML =
