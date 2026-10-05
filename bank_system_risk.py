@@ -1974,14 +1974,20 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
     cds = credit_deposit_series
     if cds and cds.get("periods") and agg["period"] in cds["periods"]:
         idx = cds["periods"].index(agg["period"])
-        ldr_sys = cds["ldrSystem"][idx]
+        # SUA 2026-10-05 (user: trần 85% hiện hành áp cho CÔNG THỨC CŨ, không phải TT50 — LDR TT50 chỉ là
+        # tham chiếu tới 1-12-2026 và ngưỡng 95% của TT50 chỉ áp cho NH xin áp dụng sớm). Đánh giá theo
+        # ldrSystemOld; LDR TT50 được ghi như số tham chiếu bên dưới.
+        ldr_sys = cds["ldrSystemOld"][idx]
+        ldr_tt50 = cds["ldrSystem"][idx]
         cg, dg, gap_abs = cds["creditGrowthYoy"][idx], cds["depositGrowthYoy"][idx], cds["gap"][idx]
         cg_ytd, dg_ytd = cds.get("creditGrowthYtd", [None] * len(cds["periods"]))[idx], cds.get("depositGrowthYtd", [None] * len(cds["periods"]))[idx]
         lvl_fb = _grade_funding_balance(ldr_sys)
         if lvl_fb is not None:
-            pts = [f"LDR toàn hệ thống (26 NH niêm yết/UPCoM, theo BCTC): {ldr_sys:.1f}%"
+            pts = [f"LDR toàn hệ thống theo công thức cũ (trần {LDR_CAP_PCT:.0f}% hiện hành, 26 NH niêm yết/UPCoM): {ldr_sys:.1f}%"
                    + (f" — đã sát/vượt trần {LDR_CAP_PCT:.0f}% hiện hành." if ldr_sys >= LDR_CAP_PCT
                       else f" — còn cách trần {LDR_CAP_PCT:.0f}% hiện hành khoảng {LDR_CAP_PCT - ldr_sys:.1f} điểm %.")]
+            if ldr_tt50 is not None:
+                pts.append(f"Tham chiếu LDR theo TT50 (áp dụng thử từ 1-12-2026 cho NH tự nguyện, trần 95%): {ldr_tt50:.1f}%.")
             if cg is not None and dg is not None:
                 direction = ("tín dụng tăng NHANH HƠN huy động" if cg > dg else "huy động tăng nhanh hơn hoặc ngang tín dụng")
                 pts.append(f"Tăng trưởng tín dụng {cg:+.1f}% so huy động {dg:+.1f}% (YoY) — {direction}.")
@@ -2019,7 +2025,7 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
                 pts.append("Chưa thấy trùng lặp giữa áp lực LDR và áp lực đáo hạn nguồn vốn ngắn hạn ở kỳ này.")
             # THEM (user 2026-09-28): xu huong + dinh/day - cds da la CA CHUOI lich su (khac agg
             # chi co 1 ky), nen tinh THANG tu mang, khong can qua _history_trend_and_extremes.
-            ldr_hist_pts = [(p, v) for p, v in zip(cds["periods"], cds["ldrSystem"]) if v is not None]
+            ldr_hist_pts = [(p, v) for p, v in zip(cds["periods"], cds["ldrSystemOld"]) if v is not None]
             if len(ldr_hist_pts) >= 2 and ldr_hist_pts[-1][0] == agg["period"]:
                 prev_p, prev_v = ldr_hist_pts[-2]
                 if abs(ldr_sys - prev_v) > 1e-9:
@@ -2039,7 +2045,7 @@ def build_system_assessment(agg, phase_info=None, history=None, credit_deposit_s
             pts.append(conclusion)
             areas.append({"key": "funding_balance", "icon": "💰", "title": "Cân đối nguồn vốn (tín dụng – huy động)",
                           "level": lvl_fb, "label": _LEVEL_LABEL[lvl_fb], "points": pts})
-            takeaways.append(f"Cân đối nguồn vốn {_LEVEL_LABEL[lvl_fb].lower()}: LDR hệ thống {ldr_sys:.1f}%"
+            takeaways.append(f"Cân đối nguồn vốn {_LEVEL_LABEL[lvl_fb].lower()}: LDR hệ thống (công thức cũ) {ldr_sys:.1f}%"
                              + (f", tín dụng {cg:+.1f}% vs huy động {dg:+.1f}% (YoY)." if cg is not None and dg is not None else "."))
 
     if not areas:
