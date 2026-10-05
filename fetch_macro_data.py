@@ -3484,12 +3484,11 @@ def update_vimo_raw():
                            "căng thẳng huy động đang lan rộng."),
                 "series": [],
             }
-        # THEM 2026-10-05 (user: "số liệu Cake sẽ cập nhật hàng tuần") — ghi theo TUẦN CHẠY (không theo
-        # ngày áp dụng trên trang, vì trang không đổi nên sẽ không có điểm mới). Ngày áp dụng vẫn
-        # nằm trong fetch_cake_max_rate() để tham chiếu.
-        cake_week = _current_period_weekly()
-        _append_point(raw, "deposit_rate_cake_max", cake_week, cake_rate, cake_src)
-        print(f"  -> {cake_week}: {cake_rate}% (áp dụng từ {cake_period})")
+        # THEM 2026-10-05 (user: "số liệu Cake sẽ cập nhật hàng tuần") — ghi theo NGÀY CHẠY (không theo
+        # ngày áp dụng trên trang, vì trang không đổi nên sẽ không có điểm mới).
+        cake_day = datetime.date.today().isoformat()
+        _append_point(raw, "deposit_rate_cake_max", cake_day, cake_rate, cake_src)
+        print(f"  -> {cake_day}: {cake_rate}% (áp dụng từ {cake_period})")
 
     print("[RSS tin tức — lãi suất huy động THỎA THUẬN (quét CafeF/VietStock, chỉ ghi khi có tin mới khớp)]")
     hit = fetch_negotiated_deposit_rate_news()

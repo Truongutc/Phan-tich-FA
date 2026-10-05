@@ -41616,12 +41616,12 @@
     "impact": "Cake hạ lãi suất 12 tháng + ưu đãi đồng nghĩa áp lực huy động/thanh khoản bên ngoài hệ thống ngân hàng truyền thống đã dịu bớt. Ngược lại, mức này tăng lên (niêm yết tăng hoặc khuyến mãi tăng) là tín hiệu SỚM cho thấy căng thẳng huy động đang lan rộng.",
     "series": [
       {
-        "period": "2026-W15",
+        "period": "2026-04-10",
         "value": 9.600000000000001,
         "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
       },
       {
-        "period": "2026-W41",
+        "period": "2026-10-05",
         "value": 9.600000000000001,
         "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
       }

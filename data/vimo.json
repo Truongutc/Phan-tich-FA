@@ -52780,23 +52780,23 @@
       "autoSource": "cake_scrape",
       "series": [
         {
-          "period": "2026-W15",
+          "period": "2026-04-10",
           "value": 9.600000000000001,
           "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
         },
         {
-          "period": "2026-W41",
+          "period": "2026-10-05",
           "value": 9.600000000000001,
           "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
         }
       ],
       "trend": {
         "latest": 9.600000000000001,
-        "latest_period": "2026-W41",
+        "latest_period": "2026-10-05",
         "latest_source": "https://cake.vn/tien-gui/tien-gui-tieu-chuan",
         "n_points": 2,
         "prior": 9.600000000000001,
-        "prior_period": "2026-W15",
+        "prior_period": "2026-04-10",
         "delta": 0.0,
         "direction": "flat",
         "value_arrow": "→",
