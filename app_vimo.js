@@ -132,6 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
     renderDepositRateChart(data.indicators);
+    renderDepositRateCakeChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -863,6 +864,27 @@ function renderDepositRateChart(indicators) {
                     { label: 'Thị trường — bình quân', data: periods.map(p => avBy[p] ?? null), borderColor: '#60a5fa', backgroundColor: '#60a5fa',
                       borderWidth: 2, pointRadius: 3, tension: 0.2, spanGaps: true, datalabels: _endpointDatalabelsConfig(2) },
                 ] },
+        options: { ...CHART_DEFAULTS,
+                   plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+                   scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+                             y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '%/năm', color: '#9aa5bd', font: { size: 9 } } } } },
+        plugins: [ChartDataLabels],
+    }));
+}
+
+// THEM 2026-10-05 (user): biểu đồ riêng chỉ có lãi suất Cake 12 tháng + ưu đãi, ghi theo tuần.
+function renderDepositRateCakeChart(indicators) {
+    const card = document.getElementById('deposit-rate-cake-card');
+    const canvas = document.getElementById('chart-deposit-rate-cake');
+    const sr = indicators['deposit_rate_cake_max'] && indicators['deposit_rate_cake_max'].series;
+    if (!canvas || !sr || !sr.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+    chartInstances.push(new Chart(canvas, {
+        type: 'line',
+        data: { labels: sr.map(p => p.period),
+                datasets: [{ label: 'Cake: lãi 12 tháng + ưu đãi cao nhất (%/năm)', data: sr.map(p => p.value),
+                             borderColor: '#f97316', backgroundColor: '#f97316', borderWidth: 2.5, pointRadius: 4,
+                             tension: 0, stepped: true, datalabels: _endpointDatalabelsConfig(2) }] },
         options: { ...CHART_DEFAULTS,
                    plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
                    scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },

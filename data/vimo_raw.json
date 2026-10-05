@@ -41619,6 +41619,11 @@
         "period": "2026-W15",
         "value": 9.600000000000001,
         "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
+      },
+      {
+        "period": "2026-W41",
+        "value": 9.600000000000001,
+        "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
       }
     ]
   },
