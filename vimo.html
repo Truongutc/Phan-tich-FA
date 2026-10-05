@@ -587,14 +587,6 @@
             <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
             <p class="vimo-chart-subtitle">Tổng hợp đối chiếu BOP, áp lực thị trường, Cầu/Cung ngoại tệ và phản ứng của NHNN — giữ các lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. SỬA 2026-10-03: Cầu/Cung (dựa nhiều vào XNK hàng hóa) là proxy KÉM cho áp lực thực — nhiều dòng XNK không thực sự qua hệ thống NHTM VN (DN FDI thanh toán qua công ty mẹ/tài khoản offshore), và dòng VỐN có thể bù/đảo ngược hoàn toàn chiều vãng lai (ví dụ thật: Q2-2026 hàng hóa nhập siêu nhưng Cán cân tổng thể gần như cân bằng vì dòng vốn bù lại). Ưu tiên đọc biểu đồ "Tín hiệu Áp lực Tỷ giá Thực" bên dưới và lớp ① Đối chiếu BOP / ② Áp lực thị trường — đây là tín hiệu THỰC, không suy luận từ kế toán XNK.</p>
 
-            <!-- THEM (user 2026-10-05): chỉ báo áp lực tỷ giá DUY NHẤT, cùng pha với tỷ giá thực tế
-                 (cùng trục thời gian tháng). Xem renderFxPressureSingleChart trong app_vimo.js. -->
-            <div class="vimo-chart-title">🎯 Áp lực Tỷ giá USD/VND (theo tháng)</div>
-            <div id="fx-pressure-single-card" style="display:none">
-                <p class="vimo-chart-subtitle">Áp lực = mức tăng/giảm USD/VND thị trường so cùng tháng năm trước (cột: đỏ = VND yếu đi, xanh = VND mạnh lên; trục trái, %). Đường liền = mức tỷ giá thực tế bình quân tháng (VND/USD, trục phải) để thấy trực tiếp giai đoạn nào tỷ giá đang lên/xuống nhanh. Cùng một trục thời gian, cùng tháng — không cộng gộp với chỉ báo nào khác.</p>
-                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-single"></canvas></div>
-            </div>
-
             <!-- THEM (user 2026-10-03): "tạo biểu đồ để đánh giá mức độ áp lực tỷ giá" — SAU KHI
                  user chỉ ra Cầu/Cung (XNK) là proxy kém. Đặt chart NÀY lên ĐẦU TIÊN (trước Tổng
                  Cung/Cầu) vì đây là 2 tín hiệu THỰC (Cán cân tổng thể BOP + USD/VND thị trường) —

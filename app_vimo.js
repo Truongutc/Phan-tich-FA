@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxPressureCard(data.indicators);
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
-    renderFxPressureSingleChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -798,51 +797,6 @@ function renderFxPressureSignalsChart(indicators) {
 // (phát hiện 2026-10-03: điểm mới nhất 2026-06 = 86318 — SAI ĐƠN VỊ so với các điểm khác đều ~80-86
 // TỶ USD, lỗi nằm ở DỮ LIỆU GỐC 40yo.vn [JSON thô, không qua regex parse nào ở code mình] — không
 // tự đoán/sửa, chỉ loại khỏi chart này cho tới khi xác minh lại được).
-// THEM 2026-10-05 (user: "chỉ cần đưa ra cái chỉ báo về áp lực tỷ giá thôi") — chỉ báo DUY NHẤT:
-// áp lực = %YoY USD/VND thị trường theo tháng (đo trực tiếp từ thị trường, không qua cán cân), cùng
-// tháng với mức tỷ giá thực tế để đọc đồng pha. Không gộp điểm số với chỉ báo nào khác.
-function renderFxPressureSingleChart(indicators) {
-    const canvas = document.getElementById('chart-fx-pressure-single');
-    const card = document.getElementById('fx-pressure-single-card');
-    if (!canvas) return;
-    const yoy = indicators['usdvnd_growth_yoy'];
-    const level = indicators['usdvnd_monthly_avg'];
-    if (!yoy || !yoy.series.length) { if (card) card.style.display = 'none'; return; }
-    if (card) card.style.display = '';
-
-    const periods = yoy.series.map(p => p.period).filter(p => p >= '2020-01').sort();
-    const yoyByM = Object.fromEntries(yoy.series.map(p => [p.period, p.value]));
-    const levelByM = level ? Object.fromEntries(level.series.map(p => [p.period, p.value])) : {};
-    const yoyArr = periods.map(p => yoyByM[p] ?? null);
-    const levelArr = periods.map(p => levelByM[p] ?? null);
-
-    const chart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: periods,
-            datasets: [
-                { type: 'bar', label: 'Áp lực: USD/VND YoY (%, + = VND yếu đi)', data: yoyArr, yAxisID: 'y',
-                  backgroundColor: yoyArr.map(v => (v ?? 0) >= 0 ? 'rgba(239,68,68,0.65)' : 'rgba(16,185,129,0.65)'),
-                  borderWidth: 0 },
-                { type: 'line', label: 'USD/VND thực tế (VND/USD, bình quân tháng)', data: levelArr, yAxisID: 'y1',
-                  borderColor: '#60a5fa', backgroundColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
-            ],
-        },
-        options: {
-            ...CHART_DEFAULTS,
-            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
-            scales: {
-                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 14 } },
-                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
-                     title: { display: true, text: 'YoY (%)', color: '#9aa5bd', font: { size: 9 } } },
-                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
-                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
-            },
-        },
-    });
-    chartInstances.push(chart);
-}
-
 function renderFxPressureSignalsMonthlyChart(indicators) {
     const canvas = document.getElementById('chart-fx-pressure-signals-monthly');
     const card = document.getElementById('fx-pressure-signals-monthly-chart-card');
