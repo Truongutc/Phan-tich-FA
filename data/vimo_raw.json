@@ -59904,7 +59904,8 @@
         "value": 334.131,
         "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_core_cpi": {
     "group": "us_macro",
@@ -60607,7 +60608,8 @@
         "value": 337.765,
         "source_url": "https://fred.stlouisfed.org/series/CPILFESL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_food": {
     "group": "us_macro",
@@ -61310,7 +61312,8 @@
         "value": 350.309,
         "source_url": "https://fred.stlouisfed.org/series/CPIUFDSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_energy": {
     "group": "us_macro",
@@ -62013,7 +62016,8 @@
         "value": 321.148,
         "source_url": "https://fred.stlouisfed.org/series/CPIENGSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_shelter": {
     "group": "us_macro",
@@ -62716,7 +62720,8 @@
         "value": 430.227,
         "source_url": "https://fred.stlouisfed.org/series/CUSR0000SAH1"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_transport": {
     "group": "us_macro",
@@ -63419,7 +63424,8 @@
         "value": 287.804,
         "source_url": "https://fred.stlouisfed.org/series/CPITRNSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_medical": {
     "group": "us_macro",
@@ -64122,7 +64128,8 @@
         "value": 592.934,
         "source_url": "https://fred.stlouisfed.org/series/CPIMEDSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_apparel": {
     "group": "us_macro",
@@ -64825,7 +64832,8 @@
         "value": 136.457,
         "source_url": "https://fred.stlouisfed.org/series/CPIAPPSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_recreation": {
     "group": "us_macro",
@@ -65528,7 +65536,8 @@
         "value": 145.196,
         "source_url": "https://fred.stlouisfed.org/series/CPIRECSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_education_comm": {
     "group": "us_macro",
@@ -66231,7 +66240,8 @@
         "value": 150.072,
         "source_url": "https://fred.stlouisfed.org/series/CPIEDUSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_other": {
     "group": "us_macro",
@@ -66934,7 +66944,8 @@
         "value": 608.013,
         "source_url": "https://fred.stlouisfed.org/series/CPIOGSSL"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_goods": {
     "group": "us_macro",
@@ -67637,7 +67648,8 @@
         "value": 233.896,
         "source_url": "https://fred.stlouisfed.org/series/CUSR0000SAC"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_cpi_services": {
     "group": "us_macro",
@@ -68340,7 +68352,8 @@
         "value": 433.15,
         "source_url": "https://fred.stlouisfed.org/series/CUSR0000SAS"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_ppi_final_demand": {
     "group": "us_macro",
@@ -69048,7 +69061,8 @@
         "value": 157.411,
         "source_url": "https://fred.stlouisfed.org/series/PPIFIS"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_ppi_all_commodities": {
     "group": "us_macro",
@@ -69756,7 +69770,8 @@
         "value": 287.928,
         "source_url": "https://fred.stlouisfed.org/series/PPIACO"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_ppi_industrial_commodities": {
     "group": "us_macro",
@@ -70464,7 +70479,8 @@
         "value": 293.207,
         "source_url": "https://fred.stlouisfed.org/series/PPIIDC"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_import_price": {
     "group": "us_macro",
@@ -71167,7 +71183,8 @@
         "value": 150.8,
         "source_url": "https://fred.stlouisfed.org/series/IR"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_export_price": {
     "group": "us_macro",
@@ -71870,7 +71887,8 @@
         "value": 166.2,
         "source_url": "https://fred.stlouisfed.org/series/IQ"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_retail_sales": {
     "group": "us_macro",
@@ -72578,7 +72596,8 @@
         "value": 737763.0,
         "source_url": "https://fred.stlouisfed.org/series/RSAFS"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_pce_nominal": {
     "group": "us_macro",
@@ -73286,7 +73305,8 @@
         "value": 22308.5,
         "source_url": "https://fred.stlouisfed.org/series/PCE"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_pce_real": {
     "group": "us_macro",
@@ -73994,7 +74014,8 @@
         "value": 16955.3,
         "source_url": "https://fred.stlouisfed.org/series/PCEC96"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_pce_price": {
     "group": "us_macro",
@@ -74702,7 +74723,8 @@
         "value": 131.579,
         "source_url": "https://fred.stlouisfed.org/series/PCEPI"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_oil_wti": {
     "group": "us_macro",
@@ -89365,7 +89387,8 @@
         "value": 96.16,
         "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_gasoline": {
     "group": "us_macro",
@@ -92443,7 +92466,8 @@
         "value": 4.354,
         "source_url": "https://fred.stlouisfed.org/series/GASREGW"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_unemployment": {
     "group": "us_macro",
@@ -93151,7 +93175,8 @@
         "value": 4.2,
         "source_url": "https://fred.stlouisfed.org/series/UNRATE"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_fed_funds": {
     "group": "us_macro",
@@ -93864,7 +93889,8 @@
         "value": 3.75,
         "source_url": "https://fred.stlouisfed.org/series/FEDFUNDS"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_yield_10y": {
     "group": "us_macro",
@@ -108577,7 +108603,8 @@
         "value": 5.31,
         "source_url": "https://fred.stlouisfed.org/series/DGS10"
       }
-    ]
+    ],
+    "good_direction": "none"
   },
   "usm_spread_10y_2y": {
     "group": "us_macro",
@@ -123295,6 +123322,7 @@
         "value": 0.48,
         "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
       }
-    ]
+    ],
+    "good_direction": "none"
   }
 }

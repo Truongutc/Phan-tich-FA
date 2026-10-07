@@ -2261,7 +2261,7 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         "indicators": {},
     }
     for key, ind in raw.items():
-        if key == "_meta":
+        if key == "_meta" or key.startswith("usm_"):
             continue
         t = trends.get(key, {})
         out["indicators"][key] = {
@@ -2270,6 +2270,8 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
             "series": ind["series"], "trend": t, "note": ind.get("note"),
             "impact": ind.get("impact"),
         }
+    import us_macro_analysis
+    out["usMacro"] = us_macro_analysis.build_us_macro(raw)
     json_path = os.path.join(PROJECT_ROOT, "data", "vimo.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
@@ -2348,6 +2350,15 @@ def _period_sort_key(period):
 # quý/Theo ngày) như mọi chỉ báo khác qua update_excel_history_vimo() — đây là sheet THÊM, không
 # phải thay thế, để dễ tra cứu riêng không phải lọc giữa hàng trăm chỉ báo vĩ mô khác.
 _FX_PRESSURE_KEYS_BY_SHEET = {
+    # Dữ liệu vĩ mô Mỹ (FRED, từ 2015 tới nay) — 1 sheet riêng, không trộn vào sheet chung của VN.
+    "US_MACRO_RAW": [
+        "usm_cpi", "usm_core_cpi", "usm_cpi_goods", "usm_cpi_services", "usm_cpi_food", "usm_cpi_energy",
+        "usm_cpi_shelter", "usm_cpi_transport", "usm_cpi_medical", "usm_cpi_apparel", "usm_cpi_recreation",
+        "usm_cpi_education_comm", "usm_cpi_other", "usm_ppi_final_demand", "usm_ppi_all_commodities",
+        "usm_ppi_industrial_commodities", "usm_import_price", "usm_export_price", "usm_retail_sales",
+        "usm_pce_nominal", "usm_pce_real", "usm_pce_price", "usm_oil_wti", "usm_gasoline",
+        "usm_unemployment", "usm_fed_funds", "usm_yield_10y", "usm_spread_10y_2y",
+    ],
     "NgoaiTe_ThiTruong_Ngay": [
         "usdvnd_vcb_sell_daily", "usd_cho_den_sell_daily", "usd_cho_den_vcb_gap",
         "usd_cho_den_vcb_gap_pct", "interbank_rate_on",
@@ -2424,7 +2435,7 @@ def update_fx_pressure_excel_sheet(raw, out_dir):
 
 def update_excel_history_vimo(raw, out_dir):
     xlsx_path = os.path.join(out_dir, "VIMO_Lich_Su_Chi_So.xlsx")
-    indicator_keys = [k for k in raw.keys() if k != "_meta"]
+    indicator_keys = [k for k in raw.keys() if k != "_meta" and not k.startswith("usm_")]
 
     if os.path.exists(xlsx_path):
         wb = openpyxl.load_workbook(xlsx_path)

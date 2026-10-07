@@ -2961,7 +2961,8 @@ def update_vimo_raw():
             print(f"  [WARN] FRED CSV {sid}: không tải được.")
             continue
         raw[key] = {
-            "group": "us_macro", "label": label, "unit": unit, "auto_source": "fred_csv",
+            "group": "us_macro", "label": label, "unit": unit, "auto_source": "fred_api",
+            "good_direction": "none",
             "series": [{"period": d[:7], "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
                        for d, v in pts],
         }

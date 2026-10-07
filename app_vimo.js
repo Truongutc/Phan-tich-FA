@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxPressureSignalsMonthlyChart(data.indicators);
     renderDepositRateChart(data.indicators);
     renderDepositRateCakeChart(data.indicators);
+    renderUsMacro(data.usMacro);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -903,6 +904,86 @@ function renderDepositRateCakeChart(indicators) {
                              y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '%/năm', color: '#9aa5bd', font: { size: 9 } } } } },
         plugins: [ChartDataLabels],
     }));
+}
+
+// THEM 2026-10-07: tab "Kinh tế Mỹ" — theo mô-tuýp cắt lớp: (1) headline, (2) composition,
+// (3) breadth, (4) hàng hóa vs dịch vụ, (5) pipeline PPI/nhập khẩu → CPI, (6) tiêu dùng thực.
+// Dữ liệu đã tính sẵn trong vimo.json → usMacro (us_macro_analysis.py), không tính lại ở web.
+function renderUsMacro(usm) {
+    const box = document.getElementById('us-macro-container');
+    if (!box || !usm) return;
+    box.style.display = '';
+    const f = (v, d = 2) => (v === null || v === undefined) ? '—' : Number(v).toFixed(d);
+    const h = usm.headline, rc = usm.real_consumption, rates = usm.rates;
+    const card = (title, body) => `<div class="card margin-top-20"><h3 class="border-blue" style="margin:0">${title}</h3>${body}</div>`;
+    const kpi = (lbl, val) => `<div class="us-kpi-tile"><div class="us-kpi-label">${lbl}</div><div class="us-kpi-value">${val}</div></div>`;
+    const kpis = [
+        kpi('CPI YoY (%)', f(h.cpi_yoy)), kpi('CPI lõi YoY (%)', f(h.core_yoy)),
+        kpi('CPI 3 tháng, năm hóa (%)', f(h.cpi_3m_ann)), kpi('CPI 6 tháng, năm hóa (%)', f(h.cpi_6m_ann)),
+        kpi('CPI hàng hóa YoY (%)', f(h.goods_yoy)), kpi('CPI dịch vụ YoY (%)', f(h.services_yoy)),
+        kpi('Bán lẻ danh nghĩa YoY (%)', f(rc.retail_nominal_yoy)), kpi('Chi tiêu thực PCE YoY (%)', f(rc.pce_real_yoy)),
+        kpi('Lãi suất quỹ liên bang (%)', f(rates.usm_fed_funds && rates.usm_fed_funds.latest)),
+        kpi('Lợi suất 10 năm (%)', f(rates.usm_yield_10y && rates.usm_yield_10y.latest)),
+        kpi('Thất nghiệp (%)', f(rates.usm_unemployment && rates.usm_unemployment.latest)),
+    ].join('');
+    box.innerHTML = `
+      ${card('🇺🇸 Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
+            <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ.</p>`)}
+      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
+      ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
+            <p class="ind-source-note">Chưa tính đóng góp (contribution) vào CPI tổng: FRED không cung cấp trọng số tương đối ổn định theo kỳ nên không tự ghép đoán.</p>`)}
+      ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
+            <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
+      ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
+      ${card('5. Pipeline — giá sản xuất, nhập khẩu, dầu → CPI', `<div class="bank-chart-grid-2">
+            <div class="ind-chart" style="height:280px"><canvas id="chart-us-pipeline"></canvas></div>
+            <div class="ind-chart" style="height:280px"><canvas id="chart-us-leadlag"></canvas></div></div>
+            <p class="ind-source-note">Trái: PPI cầu cuối cùng, giá nhập khẩu, dầu WTI (YoY). Phải: tương quan MoM giữa PPI (hoặc giá nhập khẩu) ở tháng t−L và CPI hàng hóa ở tháng t. Tương quan KHÔNG phải nhân quả.</p>`)}
+      ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
+            <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
+      ${card('Lãi suất & việc làm', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
+    `;
+
+    const hist = usm.history, ph = usm.pipeline;
+    const line = (label, data, color, dash) => ({ label, data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, borderDash: dash || [] });
+    const mk = (id, cfg) => { const c = document.getElementById(id); if (c) chartInstances.push(new Chart(c, cfg)); };
+    const legend = { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } };
+    const ax = { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } };
+
+    mk('chart-us-headline', { type: 'line', data: { labels: hist.periods, datasets: [
+        line('CPI toàn phần YoY (%)', hist.cpi_yoy, '#60a5fa'),
+        line('CPI lõi YoY (%)', hist.core_yoy, '#f59e0b', [5, 4])] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+
+    const gl = usm.groups.filter(g => g.yoy !== null).sort((a, b) => b.yoy - a.yoy);
+    mk('chart-us-groups', { type: 'bar', data: { labels: gl.map(g => g.label), datasets: [{
+        label: 'YoY (%)', data: gl.map(g => g.yoy), backgroundColor: gl.map(g => g.yoy > 3 ? 'rgba(239,68,68,0.75)' : 'rgba(96,165,250,0.7)') }] },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, autoSkip: false, maxRotation: 30 } }, y: CHART_DEFAULTS.scales.y } } });
+
+    mk('chart-us-breadth', { type: 'line', data: { labels: hist.periods, datasets: [
+        line('% nhóm CPI có YoY > 3%', hist.breadth_gt3_pct, '#a78bfa')] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, min: 0, max: 100 } } } });
+
+    mk('chart-us-goods-services', { type: 'line', data: { labels: hist.periods, datasets: [
+        line('CPI hàng hóa YoY (%)', hist.goods_yoy, '#10b981'),
+        line('CPI dịch vụ YoY (%)', hist.services_yoy, '#60a5fa')] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+
+    mk('chart-us-pipeline', { type: 'line', data: { labels: ph.ppi_hist.periods, datasets: [
+        line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy, '#f97316'),
+        line('Giá nhập khẩu YoY (%)', ph.ppi_hist.import_yoy, '#60a5fa'),
+        { ...line('Dầu WTI YoY (%, trục phải)', ph.ppi_hist.oil_yoy, '#a78bfa', [4, 3]), yAxisID: 'y1' }] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
+
+    mk('chart-us-leadlag', { type: 'bar', data: { labels: ph.ppi_to_cpi_goods_corr.map(x => 'trễ ' + x.lag_months + ' tháng'), datasets: [
+        { label: 'PPI → CPI hàng hóa (tương quan MoM)', data: ph.ppi_to_cpi_goods_corr.map(x => x.corr), backgroundColor: 'rgba(249,115,22,0.75)' },
+        { label: 'Giá nhập khẩu → CPI hàng hóa', data: ph.import_to_cpi_goods_corr.map(x => x.corr), backgroundColor: 'rgba(96,165,250,0.75)' }] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: CHART_DEFAULTS.scales.x, y: { ...CHART_DEFAULTS.scales.y, min: -1, max: 1 } } } });
+
+    mk('chart-us-real', { type: 'line', data: { labels: rc.hist.periods, datasets: [
+        line('Bán lẻ danh nghĩa YoY (%)', rc.hist.retail_nominal_yoy, '#60a5fa'),
+        line('CPI YoY (%)', rc.hist.cpi_yoy, '#f59e0b', [5, 4])] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 }
 
 function renderFxPressureSignalsMonthlyChart(indicators) {

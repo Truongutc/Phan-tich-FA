@@ -246,6 +246,10 @@
         .vimo-tab:hover { color:#f0f2f8; border-color:rgba(255,255,255,0.3); }
         .vimo-tab.active { background:#0ea5e9; border-color:#0ea5e9; color:#fff; font-weight:600; }
         [data-tab].vimo-tab-hidden { display:none !important; }
+        .us-kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin:10px 0; }
+        .us-kpi-tile { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:8px 10px; }
+        .us-kpi-label { font-size:0.75em; color:var(--text-muted,#9aa5bd); }
+        .us-kpi-value { font-size:1.2em; font-weight:700; color:#f0f2f8; margin-top:2px; }
 </style>
 </head>
 <body>
@@ -296,6 +300,7 @@
             <button class="vimo-tab" data-tab-btn="fx">Tiền tệ &amp; Tỷ giá</button>
             <button class="vimo-tab" data-tab-btn="bank">Ngân hàng</button>
             <button class="vimo-tab" data-tab-btn="valuation">Định giá VN-Index</button>
+            <button class="vimo-tab" data-tab-btn="us">Kinh tế Mỹ</button>
         </nav>
 
         <!-- Biểu đồ tổng quan Vĩ mô: IIP/CPI/XNK (%) + FDI giải ngân & Giải ngân đầu tư công (lũy kế),
@@ -700,6 +705,9 @@
 
         <!-- Dữ liệu Quốc tế — Mỹ/Eurozone/Trung Quốc, mỗi thị trường 1 cụm riêng -->
         <div data-tab="monitor" id="international-section-container"></div>
+
+        <!-- THEM 2026-10-07: tab "Kinh tế Mỹ" (xem renderUsMacro). -->
+        <div id="us-macro-container" data-tab="us" style="display:none"></div>
 
         <div class="card margin-top-20">
             <p style="font-size:0.82em;color:var(--text-muted)">
