@@ -356,6 +356,69 @@ def fetch_vnindex_pb_current():
 # ══════════════════════════════════════════════════════════════════════════
 # NGUỒN 2: FRED (cần API key — tự skip nếu thiếu)
 # ══════════════════════════════════════════════════════════════════════════
+US_MACRO_SERIES = [
+    ("usm_cpi", "CPIAUCSL", "CPI toàn phần (SA, 1982-84=100)", "index"),
+    ("usm_core_cpi", "CPILFESL", "CPI lõi (ex food & energy, SA)", "index"),
+    ("usm_cpi_food", "CPIUFDSL", "CPI nhóm Thực phẩm (SA)", "index"),
+    ("usm_cpi_energy", "CPIENGSL", "CPI nhóm Năng lượng (SA)", "index"),
+    ("usm_cpi_shelter", "CUSR0000SAH1", "CPI nhóm Nhà ở/Shelter (SA)", "index"),
+    ("usm_cpi_transport", "CPITRNSL", "CPI nhóm Giao thông (SA)", "index"),
+    ("usm_cpi_medical", "CPIMEDSL", "CPI nhóm Y tế (SA)", "index"),
+    ("usm_cpi_apparel", "CPIAPPSL", "CPI nhóm May mặc (SA)", "index"),
+    ("usm_cpi_recreation", "CPIRECSL", "CPI nhóm Giải trí (SA)", "index"),
+    ("usm_cpi_education_comm", "CPIEDUSL", "CPI nhóm Giáo dục & Truyền thông (SA)", "index"),
+    ("usm_cpi_other", "CPIOGSSL", "CPI nhóm Hàng hóa & dịch vụ khác (SA)", "index"),
+    ("usm_cpi_goods", "CUSR0000SAC", "CPI Hàng hóa (commodities, SA)", "index"),
+    ("usm_cpi_services", "CUSR0000SAS", "CPI Dịch vụ (services, SA)", "index"),
+    ("usm_ppi_final_demand", "PPIFIS", "PPI cầu cuối cùng (Final demand, SA)", "index"),
+    ("usm_ppi_all_commodities", "PPIACO", "PPI tất cả hàng hóa (NSA)", "index"),
+    ("usm_ppi_industrial_commodities", "PPIIDC", "PPI hàng hóa công nghiệp (NSA, proxy chi phí đầu vào)", "index"),
+    ("usm_import_price", "IR", "Chỉ số giá nhập khẩu (all)", "index"),
+    ("usm_export_price", "IQ", "Chỉ số giá xuất khẩu (all)", "index"),
+    ("usm_retail_sales", "RSAFS", "Doanh số bán lẻ & dịch vụ ăn uống (triệu USD, SA)", "million_usd"),
+    ("usm_pce_nominal", "PCE", "Chi tiêu tiêu dùng cá nhân danh nghĩa (tỷ USD)", "billion_usd"),
+    ("usm_pce_real", "PCEC96", "Chi tiêu tiêu dùng thực (tỷ USD 2017, SAAR)", "billion_usd_2017"),
+    ("usm_pce_price", "PCEPI", "Chỉ số giá PCE", "index"),
+    ("usm_oil_wti", "DCOILWTICO", "Giá dầu WTI (USD/thùng, daily)", "usd_per_barrel"),
+    ("usm_gasoline", "GASREGW", "Giá xăng thường (USD/gallon, weekly)", "usd_per_gallon"),
+    ("usm_unemployment", "UNRATE", "Tỷ lệ thất nghiệp (%)", "pct"),
+    ("usm_fed_funds", "FEDFUNDS", "Lãi suất quỹ liên bang (%)", "pct"),
+    ("usm_yield_10y", "DGS10", "Lợi suất trái phiếu 10 năm (%)", "pct"),
+    ("usm_spread_10y_2y", "T10Y2Y", "Chênh lệch 10Y-2Y (%)", "pct"),
+]
+
+
+def fetch_fred_csv(series_id, start="2015-01-01"):
+    """Tải chuỗi FRED qua fredgraph.csv (công khai, không cần API key). Trả [(YYYY-MM-DD, float)]
+    đã bỏ các ô rỗng/'.' ; chỉ giữ từ ngày start. Lỗi mạng trả []."""
+    api_key = os.environ.get("FRED_API_KEY")
+    try:
+        if api_key:
+            r = requests.get("https://api.stlouisfed.org/fred/series/observations",
+                             params={"series_id": series_id, "api_key": api_key, "file_type": "json",
+                                     "observation_start": start, "sort_order": "asc"},
+                             headers={"User-Agent": UA}, timeout=60)
+            r.raise_for_status()
+            return [(o["date"], float(o["value"])) for o in r.json().get("observations", [])
+                    if o.get("value") not in ("", ".", None)]
+        r = requests.get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}",
+                         headers={"User-Agent": UA}, timeout=60)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [WARN] FRED {series_id}: {e}")
+        return []
+    out = []
+    for line in r.text.strip().split(chr(10))[1:]:
+        parts = line.split(",")
+        if len(parts) < 2 or parts[1] in ("", ".") or parts[0] < start:
+            continue
+        try:
+            out.append((parts[0], float(parts[1])))
+        except ValueError:
+            continue
+    return out
+
+
 def fetch_fred(series_id, n=12, units=None):
     """units=None -> giá trị gốc. units="pc1" -> %YoY (FRED tự tính "Percent Change from Year
     Ago"). units="chg" -> thay đổi tuyệt đối so kỳ liền trước ("Change"). Dùng để lấy thẳng
@@ -2887,6 +2950,22 @@ def update_vimo_raw():
                 for d, v in sorted(pts)
             ]
             print(f"  -> {key}: {len(pts)} điểm")
+
+    # THEM 2026-10-07 (user: tab "Kinh tế Mỹ" theo mô-tuýp phân tích lạm phát: CPI cắt lớp, PPI →
+    # CPI, giá nhập khẩu, bán lẻ/tiêu dùng thực). Dùng FRED CSV công khai (fredgraph.csv, KHÔNG cần
+    # API key nên chạy được cả local lẫn CI), lưu từ 2015 tới nay theo tháng, giữ cả giá trị gốc.
+    print("[FRED CSV — Kinh tế Mỹ chuyên sâu (CPI cắt lớp, PPI, giá nhập khẩu, bán lẻ, PCE, lãi suất)]")
+    for key, sid, label, unit in US_MACRO_SERIES:
+        pts = fetch_fred_csv(sid, start="2015-01-01")
+        if not pts:
+            print(f"  [WARN] FRED CSV {sid}: không tải được.")
+            continue
+        raw[key] = {
+            "group": "us_macro", "label": label, "unit": unit, "auto_source": "fred_csv",
+            "series": [{"period": d[:7], "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
+                       for d, v in pts],
+        }
+        print(f"  -> {key} ({sid}): {len(pts)} điểm")
 
     print("[FRED — Quốc tế: Eurozone (thất nghiệp, CPI, GDP, sản xuất CN, ECB, lợi suất Đức)]")
     # eu_core_cpi_yoy ĐÃ BỎ (2026-08-01, theo yêu cầu user "dữ liệu cũ không còn hoạt động thì bỏ,
