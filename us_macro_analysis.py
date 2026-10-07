@@ -164,7 +164,32 @@ def build_us_macro(raw):
             last = max(s)
             rates[key] = {"label": label, "latest": s[last], "period": last}
 
-    return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist,
+    heatmap = _quarterly_heatmap(raw, latest)
+
+    return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap,
             "pipeline": pipeline, "real_consumption": real, "rates": rates,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
+
+
+def _quarterly_heatmap(raw, latest):
+    """YoY trung bình theo quý của từng nhóm CPI (+ CPI tổng để đối chiếu). Quý cuối có thể chưa đủ
+    3 tháng — ghi rõ số tháng thực có để không đọc nhầm."""
+    rows = [("CPI tổng", "usm_cpi")] + [(label, key) for key, label in US_GROUPS]
+    series = {key: _series(raw, key) for _, key in rows}
+    months = sorted({m for s in series.values() for m in s})
+    quarters = sorted({f"{m[:4]}-Q{(int(m[5:7]) - 1) // 3 + 1}" for m in months})
+    out_rows = []
+    for label, key in rows:
+        s = series[key]
+        vals = []
+        for q in quarters:
+            y, qq = int(q[:4]), int(q[-1])
+            ms = [f"{y}-{mm:02d}" for mm in range(3 * qq - 2, 3 * qq + 1)]
+            yoys = [_yoy(s, m) for m in ms if m <= latest]
+            yoys = [v for v in yoys if v is not None]
+            vals.append(round(sum(yoys) / len(yoys), 2) if yoys else None)
+        out_rows.append({"label": label, "values": vals})
+    last_q = quarters[-1]
+    last_months = sum(1 for m in months if f"{m[:4]}-Q{(int(m[5:7]) - 1) // 3 + 1}" == last_q)
+    return {"quarters": quarters, "rows": out_rows, "last_quarter_months": last_months}

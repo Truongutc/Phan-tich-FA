@@ -909,6 +909,24 @@ function renderDepositRateCakeChart(indicators) {
 // THEM 2026-10-07: tab "Kinh tế Mỹ" — theo mô-tuýp cắt lớp: (1) headline, (2) composition,
 // (3) breadth, (4) hàng hóa vs dịch vụ, (5) pipeline PPI/nhập khẩu → CPI, (6) tiêu dùng thực.
 // Dữ liệu đã tính sẵn trong vimo.json → usMacro (us_macro_analysis.py), không tính lại ở web.
+// Bản đồ nhiệt: màu theo YoY (đỏ = tăng nhanh, xanh = thấp/giảm). Quý cuối có thể chưa đủ 3 tháng.
+function usMacroHeatmap(hm) {
+    if (!hm || !hm.quarters) return '';
+    const color = v => {
+        if (v === null || v === undefined) return 'transparent';
+        if (v >= 6) return 'rgba(220,38,38,0.85)';
+        if (v >= 3) return 'rgba(239,68,68,0.55)';
+        if (v >= 1) return 'rgba(251,146,60,0.35)';
+        if (v >= 0) return 'rgba(148,163,184,0.12)';
+        return 'rgba(59,130,246,0.55)';
+    };
+    const head = hm.quarters.map(q => `<th>${q}</th>`).join('');
+    const body = hm.rows.map(r => `<tr><th style="text-align:left;white-space:nowrap">${r.label}</th>` +
+        r.values.map(v => `<td style="background:${color(v)};text-align:center;min-width:44px">${v === null || v === undefined ? '—' : v.toFixed(1)}</td>`).join('') + '</tr>').join('');
+    return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr><th style="text-align:left">Nhóm</th>${head}</tr></thead><tbody>${body}</tbody></table></div>
+            <p class="ind-source-note">Quý ${hm.quarters[hm.quarters.length - 1]} mới có ${hm.last_quarter_months} tháng dữ liệu. Cột là quý, hàng là nhóm; màu đậm = YoY cao. Trọng số đóng góp chưa có nên không cộng các ô thành CPI.</p>`;
+}
+
 function renderUsMacro(usm) {
     const box = document.getElementById('us-macro-container');
     if (!box || !usm) return;
@@ -932,6 +950,7 @@ function renderUsMacro(usm) {
       ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Chưa tính đóng góp (contribution) vào CPI tổng: FRED không cung cấp trọng số tương đối ổn định theo kỳ nên không tự ghép đoán.</p>`)}
+      ${card('2b. Bản đồ nhiệt theo quý — cơ cấu CPI biến động thế nào (YoY trung bình quý, %)', usMacroHeatmap(usm.heatmap))}
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
             <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
       ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
