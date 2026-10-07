@@ -250,8 +250,22 @@ LEVEL_VOTE_FUNCS = {"cpi_yoy": _cpi_level_vote}
 DEPOSIT_RATE_GAP_CEILING = 2.0
 
 
+def _negotiated_market_proxy(raw):
+    """Lãi suất huy động THỎA THUẬN đại diện = mức cao hơn giữa Cake (lãi 12 tháng + ưu đãi) và
+    iPower TCBS (user 2026-10-07: 2 kênh này đại diện thỏa thuận tốt hơn tin tức thưa — thay cho
+    deposit_rate_negotiated_max). Trả (value, period, label) hoặc None nếu chưa có dữ liệu."""
+    best = None
+    for key, label in [("deposit_rate_cake_max", "Cake (12 tháng + ưu đãi)"),
+                       ("deposit_rate_tcbs_ipower_max", "iPower TCBS")]:
+        sr = raw.get(key, {}).get("series", [])
+        if sr and (best is None or sr[-1]["value"] > best[0]):
+            best = (sr[-1]["value"], sr[-1]["period"], label)
+    return best
+
+
 def _deposit_rate_gap_level_vote(raw, trends):
-    actual = trends.get("deposit_rate_negotiated_max", {}).get("latest")
+    proxy = _negotiated_market_proxy(raw)
+    actual = proxy[0] if proxy else None
     listed = trends.get("deposit_rate_12m_vcb", {}).get("latest")
     if actual is None or listed is None:
         return None
@@ -1411,23 +1425,22 @@ def _build_economy_impact(raw, trends):
         sections.append({"heading": "Thanh khoản hệ thống & Lãi suất chính thức (OMO/VNIBOR/niêm yết Big4)",
                           "text": txt2.strip()})
 
-        neg_series = raw.get("deposit_rate_negotiated_max", {}).get("series", [])
+        proxy = _negotiated_market_proxy(raw)
         market_max_series = raw.get("deposit_rate_12m_market_max", {}).get("series", [])
         market_avg_series = raw.get("deposit_rate_12m_market_avg", {}).get("series", [])
         txt3 = "Không nên chỉ nhìn biểu lãi suất niêm yết để kết luận thanh khoản ổn định. "
-        if neg_series:
-            p = neg_series[-1]
-            txt3 += (f"Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, "
-                     f"tín dụng vượt huy động khoảng 1,48 lần) và báo chí tài chính (bài gần nhất ghi nhận, "
-                     f"{p['period']}): một số ngân hàng đã phải chào lãi suất huy động THỎA THUẬN (ngoài biểu niêm yết) "
-                     f"lên tới {p['value']:.1f}%/năm cho khoản tiền gửi lớn (200 triệu - 1 tỷ đồng trở lên) để bù đắp "
-                     "khoảng cách này. ")
+        txt3 += ("Theo NSO (tính đến 26/6/2026: huy động toàn hệ thống +5,02% YTD trong khi tín dụng +7,41% YTD, "
+                 "tín dụng vượt huy động khoảng 1,48 lần). ")
+        if proxy:
+            txt3 += (f"Lãi suất huy động THỎA THUẬN đại diện (kênh gửi tiền thay thế ngoài biểu niêm yết, {proxy[2]}, "
+                     f"{proxy[1]}): tới {proxy[0]:.1f}%/năm cho kỳ hạn 12 tháng — mức đáng tin hơn các tin báo chí "
+                     "rời rạc về lãi suất thỏa thuận vì công bố công khai theo ngày. ")
         if market_max_series and market_avg_series:
             mm, ma = market_max_series[-1], market_avg_series[-1]
             txt3 += (f"Bảng lãi suất ONLINE công khai đa ngân hàng ({mm['period']}, 24hmoney.vn) cũng cho thấy mặt "
                      f"bằng thị trường rộng hơn nhiều: mức cao nhất {mm['value']:.2f}%/năm, trung bình "
                      f"{ma['value']:.2f}%/năm kỳ hạn 12 tháng — cao hơn hẳn mức ~5,9% của riêng nhóm Big4 nêu trên. ")
-        if neg_series or market_max_series:
+        if proxy or market_max_series:
             txt3 += ("Đây là dấu hiệu hệ thống ngân hàng đang THỰC SỰ CĂNG THẲNG thanh khoản để đáp ứng nhu cầu tín "
                      "dụng, khác hẳn ấn tượng ổn định nếu chỉ nhìn lãi suất niêm yết Big4.")
             sections.append({"heading": "⚠️ Lãi suất THỰC TẾ thị trường (khác biểu niêm yết)", "text": txt3.strip()})
@@ -1488,12 +1501,12 @@ def _build_market_impact(raw, trends, scorecard_total, valuation, decision_label
         else:
             p2 += ("Biên độ này vẫn còn dư địa, cổ phiếu vẫn giữ được sức hấp dẫn tương đối so với kênh tiền gửi/trái "
                    "phiếu ở mức lãi suất hiện tại.")
-        neg_series = raw.get("deposit_rate_negotiated_max", {}).get("series", [])
-        if neg_series and valuation.get("rf") is not None:
-            real_gap = neg_series[-1]["value"] / 100 - valuation["rf"]
+        proxy = _negotiated_market_proxy(raw)
+        if proxy and valuation.get("rf") is not None:
+            real_gap = proxy[0] / 100 - valuation["rf"]
             if real_gap > 0:
                 p2 += (f" LƯU Ý: Rf tham chiếu ở trên lấy từ lợi suất TPCP — thấp hơn đáng kể lãi suất huy động THỰC TẾ "
-                       f"cao nhất đang ghi nhận trên thị trường ({neg_series[-1]['value']:.1f}%/năm, xem chi tiết ở mục "
+                       f"cao nhất đang ghi nhận trên thị trường ({proxy[0]:.1f}%/năm, {proxy[2]}, xem chi tiết ở mục "
                        f"tác động kinh tế). Nếu dùng mức lãi suất thực tế này làm chuẩn so sánh chi phí vốn thay vì Rf "
                        f"trái phiếu, sức hấp dẫn tương đối của cổ phiếu sẽ THẤP HƠN NHIỀU so với con số ERP nêu trên — "
                        "không nên chỉ dựa vào ERP tính theo Rf trái phiếu để kết luận định giá đang hấp dẫn.")
