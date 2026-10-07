@@ -381,6 +381,9 @@ US_MACRO_SERIES = [
     ("usm_pce_price", "PCEPI", "Chỉ số giá PCE", "index"),
     ("usm_oil_wti", "DCOILWTICO", "Giá dầu WTI (USD/thùng, daily)", "usd_per_barrel"),
     ("usm_gasoline", "GASREGW", "Giá xăng thường (USD/gallon, weekly)", "usd_per_gallon"),
+    ("usm_diesel_gulf", "DDFUELUSGULF", "Giá ULSD diesel Vịnh Mexico (USD/gallon, daily, EIA)", "usd_per_gallon"),
+    ("usm_gasoline_gulf", "DGASUSGULF", "Giá xăng Vịnh Mexico (USD/gallon, daily, EIA)", "usd_per_gallon"),
+    ("usm_brent", "DCOILBRENTEU", "Giá dầu Brent (USD/thùng, daily)", "usd_per_barrel"),
     ("usm_unemployment", "UNRATE", "Tỷ lệ thất nghiệp (%)", "pct"),
     ("usm_fed_funds", "FEDFUNDS", "Lãi suất quỹ liên bang (%)", "pct"),
     ("usm_yield_10y", "DGS10", "Lợi suất trái phiếu 10 năm (%)", "pct"),
@@ -2960,11 +2963,15 @@ def update_vimo_raw():
         if not pts:
             print(f"  [WARN] FRED CSV {sid}: không tải được.")
             continue
+        monthly = {}
+        for d, v in pts:
+            monthly.setdefault(d[:7], []).append(v)
         raw[key] = {
             "group": "us_macro", "label": label, "unit": unit, "auto_source": "fred_api",
             "good_direction": "none",
-            "series": [{"period": d[:7], "value": v, "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
-                       for d, v in pts],
+            "series": [{"period": m, "value": round(sum(vs) / len(vs), 4),
+                        "source_url": f"https://fred.stlouisfed.org/series/{sid}"}
+                       for m, vs in sorted(monthly.items())],
         }
         print(f"  -> {key} ({sid}): {len(pts)} điểm")
 

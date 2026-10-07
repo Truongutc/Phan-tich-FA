@@ -958,6 +958,8 @@ function renderUsMacro(usm) {
             <div class="ind-chart" style="height:280px"><canvas id="chart-us-pipeline"></canvas></div>
             <div class="ind-chart" style="height:280px"><canvas id="chart-us-leadlag"></canvas></div></div>
             <p class="ind-source-note">Trái: PPI cầu cuối cùng, giá nhập khẩu, dầu WTI (YoY). Phải: tương quan MoM giữa PPI (hoặc giá nhập khẩu) ở tháng t−L và CPI hàng hóa ở tháng t. Tương quan KHÔNG phải nhân quả.</p>`)}
+      ${card('5b. Crack spread — biên lọc dầu: diesel, xăng, 3-2-1 ($/thùng)', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-crack"></canvas></div>
+            <p class="ind-source-note">Crack = giá sản phẩm (Vịnh Mexico, EIA) × 42 − WTI. Crack 3-2-1 = (2 × xăng + diesel)/3 − WTI. Hiện: diesel ${f(usm.cracks.latest.diesel_crack, 1)} $/thùng, 3-2-1 ${f(usm.cracks.latest.crack_321, 1)} $/thùng (${usm.cracks.latest.period}). Crack cao cho thấy lọc dầu đang bán sản phẩm đắt hơn nhiều so với giá dầu thô — đúng kiểu cú sốc diesel mà bài viết nêu.</p>`)}
       ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
             <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
       ${card('Lãi suất & việc làm', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
@@ -999,6 +1001,11 @@ function renderUsMacro(usm) {
         { label: 'Giá nhập khẩu → CPI hàng hóa', data: ph.import_to_cpi_goods_corr.map(x => x.corr), backgroundColor: 'rgba(96,165,250,0.75)' }] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: CHART_DEFAULTS.scales.x, y: { ...CHART_DEFAULTS.scales.y, min: -1, max: 1 } } } });
 
+    mk('chart-us-crack', { type: 'line', data: { labels: usm.cracks.periods, datasets: [
+        line('Crack diesel ($/thùng)', usm.cracks.diesel_crack, '#f97316'),
+        line('Crack xăng ($/thùng)', usm.cracks.gasoline_crack, '#60a5fa'),
+        line('Crack 3-2-1 ($/thùng)', usm.cracks.crack_321, '#10b981', [5, 4])] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
     mk('chart-us-real', { type: 'line', data: { labels: rc.hist.periods, datasets: [
         line('Bán lẻ danh nghĩa YoY (%)', rc.hist.retail_nominal_yoy, '#60a5fa'),
         line('CPI YoY (%)', rc.hist.cpi_yoy, '#f59e0b', [5, 4])] },

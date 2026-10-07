@@ -165,8 +165,9 @@ def build_us_macro(raw):
             rates[key] = {"label": label, "latest": s[last], "period": last}
 
     heatmap = _quarterly_heatmap(raw, latest)
+    cracks = _crack_spreads(raw)
 
-    return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap,
+    return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks,
             "pipeline": pipeline, "real_consumption": real, "rates": rates,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
@@ -193,3 +194,22 @@ def _quarterly_heatmap(raw, latest):
     last_q = quarters[-1]
     last_months = sum(1 for m in months if f"{m[:4]}-Q{(int(m[5:7]) - 1) // 3 + 1}" == last_q)
     return {"quarters": quarters, "rows": out_rows, "last_quarter_months": last_months}
+
+
+def _crack_spreads(raw):
+    """Crack spread theo tháng ($/thùng) từ EIA qua FRED: diesel ULSD & xăng Vịnh Mexico (USD/gallon × 42)
+    trừ WTI. Crack 3-2-1 = (2 × xăng + 1 × diesel)/3 − WTI — chuẩn lọc dầu Mỹ (3 thùng dầu → 2 xăng + 1 diesel)."""
+    diesel = _series(raw, "usm_diesel_gulf")
+    gas = _series(raw, "usm_gasoline_gulf")
+    wti = _series(raw, "usm_oil_wti")
+    periods = sorted(p for p in diesel if p in gas and p in wti)
+    d_crack, g_crack, c321 = [], [], []
+    for p in periods:
+        dsl, gsl, w = diesel[p] * 42, gas[p] * 42, wti[p]
+        d_crack.append(round(dsl - w, 2))
+        g_crack.append(round(gsl - w, 2))
+        c321.append(round((2 * gsl + dsl) / 3 - w, 2))
+    return {"periods": periods, "diesel_crack": d_crack, "gasoline_crack": g_crack, "crack_321": c321,
+            "latest": {"period": periods[-1] if periods else None,
+                       "diesel_crack": d_crack[-1] if periods else None,
+                       "crack_321": c321[-1] if periods else None}}
