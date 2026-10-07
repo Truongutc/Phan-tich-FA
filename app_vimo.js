@@ -1003,9 +1003,13 @@ function renderUsMacro(usm) {
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Chưa tính đóng góp (contribution) vào CPI tổng: FRED không cung cấp trọng số tương đối ổn định theo kỳ nên không tự ghép đoán.</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
-      ${card('2c. Tại tháng ' + usm.contributions.snapshot_period + ' — cái gì khiến CPI đổi, bao nhiêu điểm % mỗi cái', `<div class="ind-chart" style="height:320px"><canvas id="chart-us-contrib-bar"></canvas></div>
+      ${card('2c. Tại tháng ' + usm.contributions.snapshot_period + ' — cái gì khiến CPI đổi, bao nhiêu điểm % mỗi cái', `
+            <p style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.4);border-radius:8px;padding:8px 12px;font-size:0.85em;margin:0 0 10px">
+                ⚠ <b>"Năng lượng" ở BẢNG NÀY khác "Năng lượng" ở bảng nhiệt 2b phía trên.</b> Ở đây chỉ tính điện+gas (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_energy') || {}).yoy)}%). Xăng dầu — phần tăng mạnh nhất (YoY ~${f(usm.groups.find(g => g.key === 'usm_cpi_energy').yoy)}% ở bảng nhiệt) — đã gộp vào "Giao thông" (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_transport') || {}).yoy)}%) để không đếm trùng khi cộng thành đóng góp.
+            </p>
+            <div class="ind-chart" style="height:320px"><canvas id="chart-us-contrib-bar"></canvas></div>
             ${usContribSnapshotTable(usm.contributions)}
-            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch. "Năng lượng" ở đây CHỈ tính điện+gas (xăng dầu đã tính trong "Giao thông") để không đếm trùng.</p>`)}
+            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch.</p>`)}
       ${card('2d. Đóng góp theo thời gian (biểu đồ miền, 2016 tới nay)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-contrib"></canvas></div>
             <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Xem mục 2c để đọc rõ ràng hơn cho 1 kỳ cụ thể.</p>`)}
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>

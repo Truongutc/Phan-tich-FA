@@ -255,7 +255,13 @@ def _crack_spreads(raw):
 # điện+gas (ex xăng dầu, tránh đếm trùng với "Giao thông"), nếu dùng chung nhãn "Năng lượng" với
 # bảng nhiệt (ở đó là NĂNG LƯỢNG ĐỦ, gồm xăng dầu) thì 2 số % khác hẳn nhau dưới CÙNG 1 tên —
 # đúng điều user phản ánh "nhìn chả hiểu gì" (Năng lượng heatmap +16% nhưng bảng đóng góp +4%).
-CONTRIB_LABEL_OVERRIDE = {"usm_cpi_energy": "Năng lượng (điện & gas — xăng dầu đã tính trong Giao thông)"}
+# SUA 2026-10-07 (user vẫn hỏi lại "năng lượng tăng có 3% thôi á, có sai không" — nhãn dài bị cắt
+# trên biểu đồ cột, không thấy được chú thích) — RÚT NGẮN nhãn, đưa lời giải thích đầy đủ vào
+# ind-source-note (văn bản dưới chart, không bị cắt) thay vì nhét hết vào label trục X.
+CONTRIB_LABEL_OVERRIDE = {
+    "usm_cpi_energy": "Năng lượng (chỉ điện/gas)",
+    "usm_cpi_transport": "Giao thông (gồm xăng dầu)",
+}
 
 
 def _cpi_contributions(raw, periods):

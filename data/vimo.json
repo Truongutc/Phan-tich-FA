@@ -80940,7 +80940,7 @@
         },
         {
           "key": "usm_cpi_energy",
-          "label": "Năng lượng (điện & gas — xăng dầu đã tính trong Giao thông)",
+          "label": "Năng lượng (chỉ điện/gas)",
           "weight_pct": 3.303,
           "values": [
             null,
@@ -81232,7 +81232,7 @@
         },
         {
           "key": "usm_cpi_transport",
-          "label": "Giao thông",
+          "label": "Giao thông (gồm xăng dầu)",
           "weight_pct": 17.06,
           "values": [
             null,
@@ -82265,7 +82265,7 @@
         },
         {
           "key": "usm_cpi_transport",
-          "label": "Giao thông",
+          "label": "Giao thông (gồm xăng dầu)",
           "weight_pct": 17.06,
           "yoy": 5.97,
           "contribution": 1.018
@@ -82293,7 +82293,7 @@
         },
         {
           "key": "usm_cpi_energy",
-          "label": "Năng lượng (điện & gas — xăng dầu đã tính trong Giao thông)",
+          "label": "Năng lượng (chỉ điện/gas)",
           "weight_pct": 3.303,
           "yoy": 3.98,
           "contribution": 0.131
