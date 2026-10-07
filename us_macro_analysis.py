@@ -3,6 +3,27 @@ persistence → pipeline). Đọc các chuỗi usm_* đã tải từ FRED vào d
 """
 import statistics
 
+
+# Trọng số tương đối (relative importance, %) của BLS — Table 2 trong news release CPI, cột
+# "Relative importance Jul. 2026" (công bố cùng số liệu tháng 8/2026). KHÔNG lấy được qua
+# api.bls.gov (bảng báo cáo, không phải time series) và www.bls.gov/download.bls.gov đều chặn
+# fetch tự động (403) — lấy TAY qua WebFetch ngày 2026-10-07, 1 lần, KHÔNG tự cập nhật theo lịch.
+# Trọng số thật thay đổi chậm theo năm nên dùng xấp xỉ cho cả lịch sử là chấp nhận được, nhưng
+# cần làm lại thủ công (nhờ fetch lại cpi.t02.htm) khi muốn cập nhật vintage mới.
+#
+# CHỈ dùng đúng 3 cấp BLS tự công bố CỘNG CHÍNH XÁC 100% (Food + Energy + "All items less food
+# and energy"/Core = 100.001, không chồng chéo) — KHÔNG tự ghép lại 9 nhóm major-group kiểu cũ vì
+# phát hiện bug: "Giao thông" (CPITRNSL) chứa Motor fuel, mà Motor fuel ĐÃ nằm trong "Energy" —
+# cộng cả 2 vào contribution sẽ đếm trùng giá xăng, làm residual bị thổi phồng rất lớn (thử tính
+# ra residual ~-0,9 điểm %, quá to để là "sai số xấp xỉ"). Tách tiếp Core thành Shelter (35,343,
+# có series riêng usm_cpi_shelter) + "Core trừ Shelter" (suy ra bằng trừ trọng số, xem
+# _cpi_contributions) — vẫn cộng ĐÚNG 100%, không chồng chéo.
+US_GROUP_WEIGHTS_VINTAGE = "2026-07 (BLS CPI news release Table 2, công bố 2026-08)"
+US_GROUP_WEIGHTS_SOURCE = "https://www.bls.gov/news.release/cpi.t02.htm"
+US_GROUP_WEIGHTS_FOOD_ENERGY_CORE = {
+    "food": 13.540, "energy": 7.347, "shelter": 35.343, "core": 79.114,
+}
+
 US_GROUPS = [
     ("usm_cpi_food", "Thực phẩm"), ("usm_cpi_energy", "Năng lượng"), ("usm_cpi_shelter", "Nhà ở"),
     ("usm_cpi_transport", "Giao thông"), ("usm_cpi_medical", "Y tế"), ("usm_cpi_apparel", "May mặc"),
@@ -166,8 +187,9 @@ def build_us_macro(raw):
 
     heatmap = _quarterly_heatmap(raw, latest)
     cracks = _crack_spreads(raw)
+    contributions = _cpi_contributions(raw, periods)
 
-    return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks,
+    return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks, "contributions": contributions,
             "pipeline": pipeline, "real_consumption": real, "rates": rates,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
@@ -213,3 +235,41 @@ def _crack_spreads(raw):
             "latest": {"period": periods[-1] if periods else None,
                        "diesel_crack": d_crack[-1] if periods else None,
                        "crack_321": c321[-1] if periods else None}}
+
+
+def _cpi_contributions(raw, periods):
+    """Đóng góp (contribution, điểm %) vào CPI YoY — CÁCH SẠCH, không chồng chéo: BLS tự công bố
+    CPI = Food (trọng số 13,540) + Energy (7,347) + "All items less food and energy"/Core (79,114)
+    — 3 phần CỘNG ĐÚNG 100% theo đúng cấu trúc chính thức (US_GROUP_WEIGHTS_FOOD_ENERGY_CORE).
+    Tách tiếp Core thành Shelter (35,343) + "Core trừ nhà ở" (43,771, SUY RA bằng phép trừ trọng
+    số — KHÔNG có series riêng, vì "Core trừ Shelter" không phải 1 chỉ số BLS công bố thẳng) để
+    thấy nhà ở tách khỏi phần lõi còn lại, như 2 bài phân tích tham khảo. "residual" = headline
+    YoY thật trừ tổng 4 phần — CHỈ còn sai số xấp xỉ do compounding (thường < 0,2 điểm %), không
+    còn lỗi chồng trọng số như bản cũ (Motor fuel vừa trong Energy vừa trong Transportation)."""
+    cpi, food, energy, shelter, core = (_series(raw, k) for k in
+        ("usm_cpi", "usm_cpi_food", "usm_cpi_energy", "usm_cpi_shelter", "usm_core_cpi"))
+    wF = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["food"]
+    wE = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["energy"]
+    wS = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["shelter"]
+    wCore = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["core"]
+
+    food_c, energy_c, shelter_c, core_ex_c, residual = [], [], [], [], []
+    for p in periods:
+        fy, ey, sy, cy, hy = (_yoy(food, p), _yoy(energy, p), _yoy(shelter, p), _yoy(core, p), _yoy(cpi, p))
+        fc = round(wF / 100 * fy, 3) if fy is not None else None
+        ec = round(wE / 100 * ey, 3) if ey is not None else None
+        sc = round(wS / 100 * sy, 3) if sy is not None else None
+        cec = round((wCore * cy - wS * sy) / 100, 3) if (cy is not None and sy is not None) else None
+        food_c.append(fc); energy_c.append(ec); shelter_c.append(sc); core_ex_c.append(cec)
+        known = sum(v for v in (fc, ec, sc, cec) if v is not None)
+        residual.append(round(hy - known, 3) if hy is not None else None)
+
+    rows = [
+        {"key": "usm_cpi_food", "label": "Thực phẩm", "weight_pct": wF, "values": food_c},
+        {"key": "usm_cpi_energy", "label": "Năng lượng", "weight_pct": wE, "values": energy_c},
+        {"key": "usm_cpi_shelter", "label": "Nhà ở (Shelter)", "weight_pct": wS, "values": shelter_c},
+        {"key": "core_ex_shelter", "label": "Lõi, trừ nhà ở (suy ra)", "weight_pct": round(wCore - wS, 2), "values": core_ex_c},
+        {"key": "residual", "label": "Phần dư (sai số xấp xỉ, do compounding)", "weight_pct": None, "values": residual},
+    ]
+    return {"periods": periods, "rows": rows, "weights_vintage": US_GROUP_WEIGHTS_VINTAGE,
+            "weights_source": US_GROUP_WEIGHTS_SOURCE}

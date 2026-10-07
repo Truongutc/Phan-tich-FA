@@ -951,6 +951,8 @@ function renderUsMacro(usm) {
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Chưa tính đóng góp (contribution) vào CPI tổng: FRED không cung cấp trọng số tương đối ổn định theo kỳ nên không tự ghép đoán.</p>`)}
       ${card('2b. Bản đồ nhiệt theo quý — cơ cấu CPI biến động thế nào (YoY trung bình quý, %)', usMacroHeatmap(usm.heatmap))}
+      ${card('2c. Đóng góp vào CPI YoY — biểu đồ miền (trọng số BLS, vintage ' + usm.contributions.weights_vintage + ')', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-contrib"></canvas></div>
+            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch, áp trọng số cố định này vào lịch sử (xấp xỉ, trọng số thực đổi chậm theo năm). Thực phẩm + Năng lượng + Nhà ở + Core (đã trừ Shelter) = ĐÚNG CPI YoY (phần dư chỉ còn sai số xấp xỉ do compounding, không còn đếm trùng).</p>`)}
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
             <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
       ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
@@ -981,6 +983,16 @@ function renderUsMacro(usm) {
         label: 'YoY (%)', data: gl.map(g => g.yoy), backgroundColor: gl.map(g => g.yoy > 3 ? 'rgba(239,68,68,0.75)' : 'rgba(96,165,250,0.7)') }] },
         options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, autoSkip: false, maxRotation: 30 } }, y: CHART_DEFAULTS.scales.y } } });
 
+    (function () {
+        const ct = usm.contributions;
+        const colors = { usm_cpi_food: '#60a5fa', usm_cpi_energy: '#f97316', usm_cpi_shelter: '#a78bfa', core_ex_shelter: '#10b981', residual: 'rgba(148,163,184,0.5)' };
+        mk('chart-us-contrib', { type: 'line', data: { labels: ct.periods, datasets: ct.rows.map(r => ({
+            label: r.label + (r.weight_pct !== null ? ` (${r.weight_pct.toFixed(1)}%)` : ''),
+            data: r.values, borderColor: colors[r.key] || '#999', backgroundColor: (colors[r.key] || '#999') + (r.key === 'residual' ? '' : '55'),
+            fill: true, borderWidth: 1.5, pointRadius: 0, tension: 0.15, spanGaps: true })) },
+            options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' },
+                       scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } } });
+    })();
     mk('chart-us-breadth', { type: 'line', data: { labels: hist.periods, datasets: [
         line('% nhóm CPI có YoY > 3%', hist.breadth_gt3_pct, '#a78bfa')] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, min: 0, max: 100 } } } });

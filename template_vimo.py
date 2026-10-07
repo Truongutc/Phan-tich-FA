@@ -2430,6 +2430,35 @@ def update_fx_pressure_excel_sheet(raw, out_dir):
             ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 22
         print(f"  [OK] Sheet {sheet_name}: {len(all_periods)} kỳ x {len(valid_keys)} chỉ báo")
 
+    # THEM 2026-10-07 (user: lấy trọng số CPI Mỹ để tính đóng góp) — sheet trọng số BLS 1 vintage
+    # (xem us_macro_analysis.py — www.bls.gov chặn fetch tự động nên đây là số lấy TAY, không tự
+    # cập nhật theo lịch). Ghi rõ vintage + nguồn ngay trong sheet để không ai nhầm là tự động.
+    import us_macro_analysis as _usm
+    w = _usm.US_GROUP_WEIGHTS_FOOD_ENERGY_CORE
+    if "US_CPI_WEIGHTS" in wb.sheetnames:
+        wb.remove(wb["US_CPI_WEIGHTS"])
+    ws_w = wb.create_sheet(title="US_CPI_WEIGHTS")
+    ws_w.cell(row=1, column=1, value="Nhóm")
+    ws_w.cell(row=1, column=2, value="Trọng số (%)")
+    ws_w.cell(row=1, column=3, value="Ghi chú")
+    weight_rows = [
+        ("Food", w["food"], "Khớp trực tiếp usm_cpi_food"),
+        ("Energy", w["energy"], "Khớp trực tiếp usm_cpi_energy"),
+        ("All items less food and energy (Core)", w["core"], "Khớp trực tiếp usm_core_cpi"),
+        ("  trong đó Shelter", w["shelter"], "Khớp trực tiếp usm_cpi_shelter"),
+        ("  Core trừ Shelter", round(w["core"] - w["shelter"], 3), "SUY RA = Core − Shelter, không có series riêng"),
+        ("Tổng Food+Energy+Core", round(w["food"] + w["energy"] + w["core"], 3), "Phải ≈ 100 — kiểm tra không chồng chéo"),
+    ]
+    for i, (lbl, pct, note) in enumerate(weight_rows, start=2):
+        ws_w.cell(row=i, column=1, value=lbl)
+        ws_w.cell(row=i, column=2, value=pct)
+        ws_w.cell(row=i, column=3, value=note)
+    ws_w.cell(row=len(weight_rows) + 3, column=1,
+               value=f"Vintage: {_usm.US_GROUP_WEIGHTS_VINTAGE} — Nguồn: {_usm.US_GROUP_WEIGHTS_SOURCE} (lấy tay, KHÔNG tự cập nhật — www.bls.gov chặn fetch tự động)")
+    ws_w.column_dimensions["A"].width = 40
+    ws_w.column_dimensions["C"].width = 55
+    print("  [OK] Sheet US_CPI_WEIGHTS: trọng số BLS (vintage cố định, lấy tay)")
+
     os.makedirs(out_dir, exist_ok=True)
     wb.save(xlsx_path)
 
