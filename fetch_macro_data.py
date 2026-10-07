@@ -361,6 +361,7 @@ US_MACRO_SERIES = [
     ("usm_core_cpi", "CPILFESL", "CPI lõi (ex food & energy, SA)", "index"),
     ("usm_cpi_food", "CPIUFDSL", "CPI nhóm Thực phẩm (SA)", "index"),
     ("usm_cpi_energy", "CPIENGSL", "CPI nhóm Năng lượng (SA)", "index"),
+    ("usm_cpi_energy_services", "CUSR0000SEHF", "CPI Năng lượng — CHỈ dịch vụ (điện+gas, KHÔNG xăng dầu, SA)", "index"),
     ("usm_cpi_shelter", "CUSR0000SAH1", "CPI nhóm Nhà ở/Shelter (SA)", "index"),
     ("usm_cpi_transport", "CPITRNSL", "CPI nhóm Giao thông (SA)", "index"),
     ("usm_cpi_medical", "CPIMEDSL", "CPI nhóm Y tế (SA)", "index"),

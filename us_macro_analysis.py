@@ -11,13 +11,15 @@ import statistics
 # Trọng số thật thay đổi chậm theo năm nên dùng xấp xỉ cho cả lịch sử là chấp nhận được, nhưng
 # cần làm lại thủ công (nhờ fetch lại cpi.t02.htm) khi muốn cập nhật vintage mới.
 #
-# CHỈ dùng đúng 3 cấp BLS tự công bố CỘNG CHÍNH XÁC 100% (Food + Energy + "All items less food
-# and energy"/Core = 100.001, không chồng chéo) — KHÔNG tự ghép lại 9 nhóm major-group kiểu cũ vì
-# phát hiện bug: "Giao thông" (CPITRNSL) chứa Motor fuel, mà Motor fuel ĐÃ nằm trong "Energy" —
-# cộng cả 2 vào contribution sẽ đếm trùng giá xăng, làm residual bị thổi phồng rất lớn (thử tính
-# ra residual ~-0,9 điểm %, quá to để là "sai số xấp xỉ"). Tách tiếp Core thành Shelter (35,343,
-# có series riêng usm_cpi_shelter) + "Core trừ Shelter" (suy ra bằng trừ trọng số, xem
-# _cpi_contributions) — vẫn cộng ĐÚNG 100%, không chồng chéo.
+# SUA 2026-10-07 (user: "CPI tăng 3% thì food +1 điểm, nhiên liệu +2 điểm, y tế -1 điểm... kiểu
+# kiểu vậy" — cần đủ 9 nhóm như bảng nhiệt 2b, không phải rút gọn 4 phần) — quay lại 9 nhóm
+# major-group, nhưng SỬA ĐÚNG lỗi đếm trùng đã phát hiện: "Giao thông" (CPITRNSL) chứa Motor fuel
+# (xăng dầu), mà Motor fuel GỐC đã nằm trong "Energy" (CPIENGSL). Thay vì bỏ hẳn 9 nhóm (bản
+# trước), giữ Transportation NGUYÊN (đủ xăng dầu, khớp CPITRNSL + weight 17,060) và đổi "Năng
+# lượng" trong PHẦN ĐÓNG GÓP này sang "Energy services" (CUSR0000SEHF = điện+gas, KHÔNG xăng dầu,
+# weight 3,303, xem usm_cpi_energy_services) — xăng dầu chỉ còn tính 1 lần, trong Transportation.
+# LƯU Ý: bảng nhiệt 2b vẫn hiện YoY của "Năng lượng" ĐẦY ĐỦ (usm_cpi_energy/CPIENGSL, gồm xăng
+# dầu) vì đó chỉ là %, không cộng — không có vấn đề đếm trùng ở biểu đồ đó.
 US_GROUP_WEIGHTS_VINTAGE = "2026-07 (BLS CPI news release Table 2, công bố 2026-08)"
 US_GROUP_WEIGHTS_SOURCE = "https://www.bls.gov/news.release/cpi.t02.htm"
 US_GROUP_WEIGHTS_FOOD_ENERGY_CORE = {
@@ -30,6 +32,17 @@ US_GROUPS = [
     ("usm_cpi_recreation", "Giải trí"), ("usm_cpi_education_comm", "Giáo dục & Truyền thông"),
     ("usm_cpi_other", "Hàng hóa & dịch vụ khác"),
 ]
+
+# Trọng số (%) + series DÙNG RIÊNG cho phần đóng góp (contribution) — key khớp US_GROUPS, nhưng
+# "usm_cpi_energy" ở đây trỏ sang series_key="usm_cpi_energy_services" (KHÔNG xăng dầu) để tránh
+# đếm trùng với Transportation (đã có xăng dầu). Tổng trọng số ~94,45% (phần dư ~5,55%, chủ yếu
+# là "Fuel oil" 0,162 không nằm trong nhóm nào + các mục nhỏ chưa gán — xem residual khi tính).
+US_GROUP9_WEIGHTS = {
+    "usm_cpi_food": 13.540, "usm_cpi_energy": 3.303, "usm_cpi_shelter": 35.343,
+    "usm_cpi_transport": 17.060, "usm_cpi_medical": 8.267, "usm_cpi_apparel": 2.406,
+    "usm_cpi_recreation": 5.081, "usm_cpi_education_comm": 5.716, "usm_cpi_other": 3.732,
+}
+US_GROUP9_SERIES_OVERRIDE = {"usm_cpi_energy": "usm_cpi_energy_services"}
 
 
 def _series(raw, key):
@@ -185,7 +198,7 @@ def build_us_macro(raw):
             last = max(s)
             rates[key] = {"label": label, "latest": s[last], "period": last}
 
-    heatmap = _quarterly_heatmap(raw, latest)
+    heatmap = _monthly_heatmap(raw, latest)
     cracks = _crack_spreads(raw)
     contributions = _cpi_contributions(raw, periods)
 
@@ -195,27 +208,20 @@ def build_us_macro(raw):
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
 
 
-def _quarterly_heatmap(raw, latest):
-    """YoY trung bình theo quý của từng nhóm CPI (+ CPI tổng để đối chiếu). Quý cuối có thể chưa đủ
-    3 tháng — ghi rõ số tháng thực có để không đọc nhầm."""
+def _monthly_heatmap(raw, latest):
+    """YoY theo THÁNG của từng nhóm CPI (+ CPI tổng để đối chiếu) — SUA 2026-10-07 (user: "Mỹ công
+    bố CPI theo tháng, chỉnh lại được không") — bỏ gộp quý (bản cũ _quarterly_heatmap), dùng đúng
+    tần suất gốc BLS công bố. KHÔNG cần ghi chú "kỳ cuối thiếu dữ liệu" như bản quý vì mỗi tháng
+    đã là 1 kỳ công bố đầy đủ."""
     rows = [("CPI tổng", "usm_cpi")] + [(label, key) for key, label in US_GROUPS]
     series = {key: _series(raw, key) for _, key in rows}
-    months = sorted({m for s in series.values() for m in s})
-    quarters = sorted({f"{m[:4]}-Q{(int(m[5:7]) - 1) // 3 + 1}" for m in months})
+    months = sorted({m for s in series.values() for m in s if m <= latest})
     out_rows = []
     for label, key in rows:
         s = series[key]
-        vals = []
-        for q in quarters:
-            y, qq = int(q[:4]), int(q[-1])
-            ms = [f"{y}-{mm:02d}" for mm in range(3 * qq - 2, 3 * qq + 1)]
-            yoys = [_yoy(s, m) for m in ms if m <= latest]
-            yoys = [v for v in yoys if v is not None]
-            vals.append(round(sum(yoys) / len(yoys), 2) if yoys else None)
+        vals = [round(_yoy(s, m), 2) if _yoy(s, m) is not None else None for m in months]
         out_rows.append({"label": label, "values": vals})
-    last_q = quarters[-1]
-    last_months = sum(1 for m in months if f"{m[:4]}-Q{(int(m[5:7]) - 1) // 3 + 1}" == last_q)
-    return {"quarters": quarters, "rows": out_rows, "last_quarter_months": last_months}
+    return {"months": months, "rows": out_rows}
 
 
 def _crack_spreads(raw):
@@ -238,38 +244,48 @@ def _crack_spreads(raw):
 
 
 def _cpi_contributions(raw, periods):
-    """Đóng góp (contribution, điểm %) vào CPI YoY — CÁCH SẠCH, không chồng chéo: BLS tự công bố
-    CPI = Food (trọng số 13,540) + Energy (7,347) + "All items less food and energy"/Core (79,114)
-    — 3 phần CỘNG ĐÚNG 100% theo đúng cấu trúc chính thức (US_GROUP_WEIGHTS_FOOD_ENERGY_CORE).
-    Tách tiếp Core thành Shelter (35,343) + "Core trừ nhà ở" (43,771, SUY RA bằng phép trừ trọng
-    số — KHÔNG có series riêng, vì "Core trừ Shelter" không phải 1 chỉ số BLS công bố thẳng) để
-    thấy nhà ở tách khỏi phần lõi còn lại, như 2 bài phân tích tham khảo. "residual" = headline
-    YoY thật trừ tổng 4 phần — CHỈ còn sai số xấp xỉ do compounding (thường < 0,2 điểm %), không
-    còn lỗi chồng trọng số như bản cũ (Motor fuel vừa trong Energy vừa trong Transportation)."""
-    cpi, food, energy, shelter, core = (_series(raw, k) for k in
-        ("usm_cpi", "usm_cpi_food", "usm_cpi_energy", "usm_cpi_shelter", "usm_core_cpi"))
-    wF = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["food"]
-    wE = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["energy"]
-    wS = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["shelter"]
-    wCore = US_GROUP_WEIGHTS_FOOD_ENERGY_CORE["core"]
+    """Đóng góp (contribution, điểm %) vào CPI YoY — ĐỦ 9 NHÓM giống bảng nhiệt 2b (user 2026-10-07:
+    "CPI tăng 3% thì food +1 điểm, nhiên liệu +2 điểm, y tế -1 điểm... kiểu kiểu vậy"), KHÔNG rút
+    gọn còn 4 phần nữa. SỬA lỗi đếm trùng xăng dầu: "Năng lượng" ở đây dùng series
+    usm_cpi_energy_services (CUSR0000SEHF — điện+gas, KHÔNG xăng dầu) + trọng số 3,303, vì xăng
+    dầu đã tính trong "Giao thông" (CPITRNSL, ĐỦ xăng dầu, trọng số 17,060) — xem US_GROUP9_WEIGHTS/
+    US_GROUP9_SERIES_OVERRIDE. 9 nhóm cộng ~94,45% (residual ~5,55% là "Fuel oil" 0,162 + vài mục
+    nhỏ chưa gán, KHÔNG phải lỗi đếm trùng như bản cũ)."""
+    cpi = _series(raw, "usm_cpi")
+    group_series = {key: _series(raw, US_GROUP9_SERIES_OVERRIDE.get(key, key)) for key, _ in US_GROUPS}
 
-    food_c, energy_c, shelter_c, core_ex_c, residual = [], [], [], [], []
-    for p in periods:
-        fy, ey, sy, cy, hy = (_yoy(food, p), _yoy(energy, p), _yoy(shelter, p), _yoy(core, p), _yoy(cpi, p))
-        fc = round(wF / 100 * fy, 3) if fy is not None else None
-        ec = round(wE / 100 * ey, 3) if ey is not None else None
-        sc = round(wS / 100 * sy, 3) if sy is not None else None
-        cec = round((wCore * cy - wS * sy) / 100, 3) if (cy is not None and sy is not None) else None
-        food_c.append(fc); energy_c.append(ec); shelter_c.append(sc); core_ex_c.append(cec)
-        known = sum(v for v in (fc, ec, sc, cec) if v is not None)
-        residual.append(round(hy - known, 3) if hy is not None else None)
+    rows = []
+    for key, label in US_GROUPS:
+        w = US_GROUP9_WEIGHTS[key]
+        s = group_series[key]
+        rows.append({"key": key, "label": label, "weight_pct": w,
+                     "values": [round(w / 100 * _yoy(s, p), 3) if _yoy(s, p) is not None else None for p in periods]})
+    residual = []
+    for i, p in enumerate(periods):
+        hy = _yoy(cpi, p)
+        if hy is None:
+            residual.append(None)
+            continue
+        known = sum(r["values"][i] for r in rows if r["values"][i] is not None)
+        residual.append(round(hy - known, 3))
+    rows.append({"key": "residual", "label": "Phần dư (Fuel oil + mục nhỏ chưa gán)", "weight_pct": None, "values": residual})
 
-    rows = [
-        {"key": "usm_cpi_food", "label": "Thực phẩm", "weight_pct": wF, "values": food_c},
-        {"key": "usm_cpi_energy", "label": "Năng lượng", "weight_pct": wE, "values": energy_c},
-        {"key": "usm_cpi_shelter", "label": "Nhà ở (Shelter)", "weight_pct": wS, "values": shelter_c},
-        {"key": "core_ex_shelter", "label": "Lõi, trừ nhà ở (suy ra)", "weight_pct": round(wCore - wS, 2), "values": core_ex_c},
-        {"key": "residual", "label": "Phần dư (sai số xấp xỉ, do compounding)", "weight_pct": None, "values": residual},
-    ]
+    # THEM 2026-10-07 (theo bài phân tích tham khảo, mục "Momentum"/"CPI Pressure") — bảng snapshot
+    # kỳ gần nhất: Weight / YoY / Contribution (= weight×YoY, NHÌN LỊCH SỬ) / 3M-6M năm hóa /
+    # Pressure (= weight×3M năm hóa, NHÌN VỀ PHÍA TRƯỚC — nếu Pressure << Contribution, áp lực
+    # nhóm đó đang NGUỘI dù YoY còn cao vì nền cũ; ngược lại Pressure >> Contribution là áp lực
+    # đang NÓNG LÊN mà YoY [nhìn gương chiếu hậu] chưa phản ánh hết).
+    latest = periods[-1]
+    snapshot = []
+    for key, label in US_GROUPS:
+        w = US_GROUP9_WEIGHTS[key]
+        s = group_series[key]
+        yoy = _yoy(s, latest)
+        ann3 = _annualized(s, latest, 3)
+        snapshot.append({"key": key, "label": label, "weight_pct": w, "yoy": yoy,
+                          "ann_3m": ann3, "ann_6m": _annualized(s, latest, 6),
+                          "contribution": round(w / 100 * yoy, 3) if yoy is not None else None,
+                          "pressure": round(w / 100 * ann3, 3) if ann3 is not None else None})
+
     return {"periods": periods, "rows": rows, "weights_vintage": US_GROUP_WEIGHTS_VINTAGE,
-            "weights_source": US_GROUP_WEIGHTS_SOURCE}
+            "weights_source": US_GROUP_WEIGHTS_SOURCE, "snapshot": snapshot, "snapshot_period": latest}

@@ -81161,5 +81161,709 @@
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
       }
     ]
+  },
+  "usm_cpi_energy_services": {
+    "group": "us_macro",
+    "label": "CPI Năng lượng — CHỈ dịch vụ (điện+gas, KHÔNG xăng dầu, SA)",
+    "unit": "index",
+    "auto_source": "fred_api",
+    "good_direction": "none",
+    "series": [
+      {
+        "period": "2015-01",
+        "value": 203.197,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-02",
+        "value": 202.869,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-03",
+        "value": 200.887,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-04",
+        "value": 199.886,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-05",
+        "value": 198.157,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-06",
+        "value": 199.148,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-07",
+        "value": 197.974,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-08",
+        "value": 197.905,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-09",
+        "value": 197.46,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-10",
+        "value": 196.686,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-11",
+        "value": 195.996,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2015-12",
+        "value": 194.266,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-01",
+        "value": 193.63,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-02",
+        "value": 193.118,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-03",
+        "value": 193.472,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-04",
+        "value": 193.632,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-05",
+        "value": 194.328,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-06",
+        "value": 194.521,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-07",
+        "value": 196.697,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-08",
+        "value": 197.788,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-09",
+        "value": 199.183,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-10",
+        "value": 199.164,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-11",
+        "value": 198.706,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2016-12",
+        "value": 198.373,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-01",
+        "value": 199.114,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-02",
+        "value": 200.293,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-03",
+        "value": 199.95,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-04",
+        "value": 201.997,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-05",
+        "value": 203.43,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-06",
+        "value": 204.171,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-07",
+        "value": 204.338,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-08",
+        "value": 204.067,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-09",
+        "value": 203.857,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-10",
+        "value": 203.244,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-11",
+        "value": 203.556,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2017-12",
+        "value": 204.239,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-01",
+        "value": 203.096,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-02",
+        "value": 205.629,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-03",
+        "value": 205.143,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-04",
+        "value": 204.32,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-05",
+        "value": 204.491,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-06",
+        "value": 203.353,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-07",
+        "value": 202.745,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-08",
+        "value": 203.52,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-09",
+        "value": 201.561,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-10",
+        "value": 202.668,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-11",
+        "value": 202.723,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2018-12",
+        "value": 206.85,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-01",
+        "value": 204.732,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-02",
+        "value": 203.768,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-03",
+        "value": 204.757,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-04",
+        "value": 204.187,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-05",
+        "value": 203.189,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-06",
+        "value": 202.915,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-07",
+        "value": 203.089,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-08",
+        "value": 202.758,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-09",
+        "value": 202.62,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-10",
+        "value": 203.306,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-11",
+        "value": 203.128,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2019-12",
+        "value": 203.046,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-01",
+        "value": 203.305,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-02",
+        "value": 203.411,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-03",
+        "value": 203.448,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-04",
+        "value": 203.861,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-05",
+        "value": 203.344,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-06",
+        "value": 203.539,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-07",
+        "value": 203.359,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-08",
+        "value": 202.937,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-09",
+        "value": 205.55,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-10",
+        "value": 206.141,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-11",
+        "value": 207.489,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2020-12",
+        "value": 208.056,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-01",
+        "value": 207.129,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-02",
+        "value": 209.402,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-03",
+        "value": 211.098,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-04",
+        "value": 214.458,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-05",
+        "value": 216.12,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-06",
+        "value": 216.643,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-07",
+        "value": 218.522,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-08",
+        "value": 220.84,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-09",
+        "value": 223.609,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-10",
+        "value": 229.562,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-11",
+        "value": 229.48,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2021-12",
+        "value": 229.673,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-01",
+        "value": 235.089,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-02",
+        "value": 234.974,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-03",
+        "value": 239.377,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-04",
+        "value": 243.868,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-05",
+        "value": 251.298,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-06",
+        "value": 259.062,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-07",
+        "value": 259.868,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-08",
+        "value": 264.956,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-09",
+        "value": 268.116,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-10",
+        "value": 265.48,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-11",
+        "value": 261.955,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2022-12",
+        "value": 265.371,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-01",
+        "value": 271.694,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-02",
+        "value": 266.24,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-03",
+        "value": 261.234,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-04",
+        "value": 258.29,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-05",
+        "value": 255.295,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-06",
+        "value": 256.091,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-07",
+        "value": 256.599,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-08",
+        "value": 257.789,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-09",
+        "value": 258.962,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-10",
+        "value": 259.458,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-11",
+        "value": 262.128,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2023-12",
+        "value": 263.033,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-01",
+        "value": 266.613,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-02",
+        "value": 267.597,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-03",
+        "value": 269.189,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-04",
+        "value": 267.394,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-05",
+        "value": 267.157,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-06",
+        "value": 266.961,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-07",
+        "value": 267.237,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-08",
+        "value": 265.675,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-09",
+        "value": 267.716,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-10",
+        "value": 269.861,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-11",
+        "value": 269.587,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2024-12",
+        "value": 271.721,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-01",
+        "value": 273.151,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-02",
+        "value": 276.05,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-03",
+        "value": 280.42,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-04",
+        "value": 284.048,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-05",
+        "value": 285.364,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-06",
+        "value": 287.302,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-07",
+        "value": 286.844,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-08",
+        "value": 286.395,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-09",
+        "value": 285.115,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-11",
+        "value": 289.398,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2025-12",
+        "value": 292.263,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-01",
+        "value": 292.829,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-02",
+        "value": 293.326,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-03",
+        "value": 294.541,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-04",
+        "value": 299.312,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-05",
+        "value": 300.381,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-06",
+        "value": 298.297,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-07",
+        "value": 299.068,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      },
+      {
+        "period": "2026-08",
+        "value": 297.786,
+        "source_url": "https://fred.stlouisfed.org/series/CUSR0000SEHF"
+      }
+    ]
   }
 }
