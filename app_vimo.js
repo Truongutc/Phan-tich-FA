@@ -910,21 +910,27 @@ function renderDepositRateCakeChart(indicators) {
 // (3) breadth, (4) hàng hóa vs dịch vụ, (5) pipeline PPI/nhập khẩu → CPI, (6) tiêu dùng thực.
 // Dữ liệu đã tính sẵn trong vimo.json → usMacro (us_macro_analysis.py), không tính lại ở web.
 // Bản đồ nhiệt: màu theo YoY (đỏ = tăng nhanh, xanh = thấp/giảm). Quý cuối có thể chưa đủ 3 tháng.
+// SUA 2026-10-07 (user: "cái nào tăng mạnh thì đỏ, giảm thì xanh dương nhạt, tăng thấp thì
+// trắng, chuyển màu mượt từ đỏ sang trắng sang xanh dương") — thang PHÂN KỲ liên tục quanh 0%,
+// không chia bậc cố định (bậc cũ 0/1/3/6 làm 2 giá trị gần nhau nhảy màu đột ngột). Mốc bão hoà
+// ±US_HEATMAP_SCALE_PCT (giá trị vượt mốc vẫn giữ màu đậm nhất, không đậm hơn).
+const US_HEATMAP_SCALE_PCT = 15;
+function _usHeatmapColor(v) {
+    if (v === null || v === undefined) return 'transparent';
+    const white = [255, 255, 255];
+    const red = [239, 68, 68], blue = [59, 130, 246];
+    const target = v >= 0 ? red : blue;
+    const t = Math.min(Math.abs(v) / US_HEATMAP_SCALE_PCT, 1);
+    const mix = (w, c) => Math.round(w + (c - w) * t);
+    return `rgba(${mix(white[0], target[0])},${mix(white[1], target[1])},${mix(white[2], target[2])},1)`;
+}
 function usMacroHeatmap(hm) {
     if (!hm || !hm.quarters) return '';
-    const color = v => {
-        if (v === null || v === undefined) return 'transparent';
-        if (v >= 6) return 'rgba(220,38,38,0.85)';
-        if (v >= 3) return 'rgba(239,68,68,0.55)';
-        if (v >= 1) return 'rgba(251,146,60,0.35)';
-        if (v >= 0) return 'rgba(148,163,184,0.12)';
-        return 'rgba(59,130,246,0.55)';
-    };
     const head = hm.quarters.map(q => `<th>${q}</th>`).join('');
     const body = hm.rows.map(r => `<tr><th style="text-align:left;white-space:nowrap">${r.label}</th>` +
-        r.values.map(v => `<td style="background:${color(v)};text-align:center;min-width:44px">${v === null || v === undefined ? '—' : v.toFixed(1)}</td>`).join('') + '</tr>').join('');
+        r.values.map(v => `<td style="background:${_usHeatmapColor(v)};color:#0b1220;text-align:center;min-width:44px">${v === null || v === undefined ? '—' : v.toFixed(1)}</td>`).join('') + '</tr>').join('');
     return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr><th style="text-align:left">Nhóm</th>${head}</tr></thead><tbody>${body}</tbody></table></div>
-            <p class="ind-source-note">Quý ${hm.quarters[hm.quarters.length - 1]} mới có ${hm.last_quarter_months} tháng dữ liệu. Cột là quý, hàng là nhóm; màu đậm = YoY cao. Trọng số đóng góp chưa có nên không cộng các ô thành CPI.</p>`;
+            <p class="ind-source-note">Quý ${hm.quarters[hm.quarters.length - 1]} mới có ${hm.last_quarter_months} tháng dữ liệu. Cột là quý, hàng là nhóm; đỏ = YoY tăng mạnh, trắng = quanh 0%, xanh dương = giảm (màu bão hoà ở ±${US_HEATMAP_SCALE_PCT}%). Trọng số đóng góp chưa có nên không cộng các ô thành CPI.</p>`;
 }
 
 function renderUsMacro(usm) {
@@ -1018,9 +1024,13 @@ function renderUsMacro(usm) {
         line('Crack xăng ($/thùng)', usm.cracks.gasoline_crack, '#60a5fa'),
         line('Crack 3-2-1 ($/thùng)', usm.cracks.crack_321, '#10b981', [5, 4])] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
-    mk('chart-us-real', { type: 'line', data: { labels: rc.hist.periods, datasets: [
-        line('Bán lẻ danh nghĩa YoY (%)', rc.hist.retail_nominal_yoy, '#60a5fa'),
-        line('CPI YoY (%)', rc.hist.cpi_yoy, '#f59e0b', [5, 4])] },
+    // SUA 2026-10-07 (user: "biểu đồ này nhiễu giai đoạn covid quá") — cú sốc bán lẻ 2020-2021 (đáy
+    // -20%, đỉnh +51%) kéo giãn trục Y làm phần 2023+ bị dẹt khó đọc; giới hạn hiển thị từ 2023-Q1.
+    const rcIdx0 = rc.hist.periods.findIndex(p => p >= '2023-01');
+    const rcPeriods = rc.hist.periods.slice(rcIdx0);
+    mk('chart-us-real', { type: 'line', data: { labels: rcPeriods, datasets: [
+        line('Bán lẻ danh nghĩa YoY (%)', rc.hist.retail_nominal_yoy.slice(rcIdx0), '#60a5fa'),
+        line('CPI YoY (%)', rc.hist.cpi_yoy.slice(rcIdx0), '#f59e0b', [5, 4])] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 }
 
