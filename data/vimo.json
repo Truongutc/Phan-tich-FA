@@ -78619,18 +78619,6 @@
     },
     "heatmap": {
       "months": [
-        "2015-01",
-        "2015-02",
-        "2015-03",
-        "2015-04",
-        "2015-05",
-        "2015-06",
-        "2015-07",
-        "2015-08",
-        "2015-09",
-        "2015-10",
-        "2015-11",
-        "2015-12",
         "2016-01",
         "2016-02",
         "2016-03",
@@ -78763,18 +78751,6 @@
         {
           "label": "CPI tổng",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             1.24,
             0.85,
             0.89,
@@ -78907,18 +78883,6 @@
         {
           "label": "Thực phẩm",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             0.88,
             0.86,
             0.8,
@@ -79051,18 +79015,6 @@
         {
           "label": "Năng lượng",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             -7.35,
             -13.11,
             -11.43,
@@ -79195,18 +79147,6 @@
         {
           "label": "Nhà ở",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             3.26,
             3.28,
             3.21,
@@ -79339,18 +79279,6 @@
         {
           "label": "Giao thông",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             -1.13,
             -4.21,
             -3.78,
@@ -79483,18 +79411,6 @@
         {
           "label": "Y tế",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             2.91,
             3.59,
             3.34,
@@ -79627,18 +79543,6 @@
         {
           "label": "May mặc",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             -0.9,
             -0.05,
             -0.62,
@@ -79771,18 +79675,6 @@
         {
           "label": "Giải trí",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             0.61,
             0.88,
             1.03,
@@ -79915,18 +79807,6 @@
         {
           "label": "Giáo dục & Truyền thông",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             1.33,
             1.22,
             1.27,
@@ -80059,18 +79939,6 @@
         {
           "label": "Hàng hóa & dịch vụ khác",
           "values": [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
             1.64,
             1.88,
             1.96,
@@ -81072,7 +80940,7 @@
         },
         {
           "key": "usm_cpi_energy",
-          "label": "Năng lượng",
+          "label": "Năng lượng (điện & gas — xăng dầu đã tính trong Giao thông)",
           "weight_pct": 3.303,
           "values": [
             null,
@@ -82389,94 +82257,67 @@
       "weights_source": "https://www.bls.gov/news.release/cpi.t02.htm",
       "snapshot": [
         {
-          "key": "usm_cpi_food",
-          "label": "Thực phẩm",
-          "weight_pct": 13.54,
-          "yoy": 2.63,
-          "ann_3m": 1.63,
-          "ann_6m": 2.14,
-          "contribution": 0.356,
-          "pressure": 0.221
-        },
-        {
-          "key": "usm_cpi_energy",
-          "label": "Năng lượng",
-          "weight_pct": 3.303,
-          "yoy": 3.98,
-          "ann_3m": -3.41,
-          "ann_6m": 3.06,
-          "contribution": 0.131,
-          "pressure": -0.113
-        },
-        {
           "key": "usm_cpi_shelter",
           "label": "Nhà ở",
           "weight_pct": 35.343,
           "yoy": 3.03,
-          "ann_3m": 2.1,
-          "ann_6m": 3.47,
-          "contribution": 1.071,
-          "pressure": 0.742
+          "contribution": 1.071
         },
         {
           "key": "usm_cpi_transport",
           "label": "Giao thông",
           "weight_pct": 17.06,
           "yoy": 5.97,
-          "ann_3m": -7.01,
-          "ann_6m": 10.52,
-          "contribution": 1.018,
-          "pressure": -1.196
+          "contribution": 1.018
         },
         {
-          "key": "usm_cpi_medical",
-          "label": "Y tế",
-          "weight_pct": 8.267,
-          "yoy": 1.56,
-          "ann_3m": -0.08,
-          "ann_6m": 0.13,
-          "contribution": 0.129,
-          "pressure": -0.007
-        },
-        {
-          "key": "usm_cpi_apparel",
-          "label": "May mặc",
-          "weight_pct": 2.406,
-          "yoy": 3.62,
-          "ann_3m": -1.77,
-          "ann_6m": 3.06,
-          "contribution": 0.087,
-          "pressure": -0.043
-        },
-        {
-          "key": "usm_cpi_recreation",
-          "label": "Giải trí",
-          "weight_pct": 5.081,
-          "yoy": 2.68,
-          "ann_3m": 3.04,
-          "ann_6m": 2.18,
-          "contribution": 0.136,
-          "pressure": 0.154
-        },
-        {
-          "key": "usm_cpi_education_comm",
-          "label": "Giáo dục & Truyền thông",
-          "weight_pct": 5.716,
-          "yoy": 2.15,
-          "ann_3m": 5.7,
-          "ann_6m": 4.78,
-          "contribution": 0.123,
-          "pressure": 0.326
+          "key": "usm_cpi_food",
+          "label": "Thực phẩm",
+          "weight_pct": 13.54,
+          "yoy": 2.63,
+          "contribution": 0.356
         },
         {
           "key": "usm_cpi_other",
           "label": "Hàng hóa & dịch vụ khác",
           "weight_pct": 3.732,
           "yoy": 4.23,
-          "ann_3m": 1.43,
-          "ann_6m": 3.32,
-          "contribution": 0.158,
-          "pressure": 0.053
+          "contribution": 0.158
+        },
+        {
+          "key": "usm_cpi_recreation",
+          "label": "Giải trí",
+          "weight_pct": 5.081,
+          "yoy": 2.68,
+          "contribution": 0.136
+        },
+        {
+          "key": "usm_cpi_energy",
+          "label": "Năng lượng (điện & gas — xăng dầu đã tính trong Giao thông)",
+          "weight_pct": 3.303,
+          "yoy": 3.98,
+          "contribution": 0.131
+        },
+        {
+          "key": "usm_cpi_medical",
+          "label": "Y tế",
+          "weight_pct": 8.267,
+          "yoy": 1.56,
+          "contribution": 0.129
+        },
+        {
+          "key": "usm_cpi_education_comm",
+          "label": "Giáo dục & Truyền thông",
+          "weight_pct": 5.716,
+          "yoy": 2.15,
+          "contribution": 0.123
+        },
+        {
+          "key": "usm_cpi_apparel",
+          "label": "May mặc",
+          "weight_pct": 2.406,
+          "yoy": 3.62,
+          "contribution": 0.087
         }
       ],
       "snapshot_period": "2026-08"

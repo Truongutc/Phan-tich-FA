@@ -221,6 +221,14 @@ def _monthly_heatmap(raw, latest):
         s = series[key]
         vals = [round(_yoy(s, m), 2) if _yoy(s, m) is not None else None for m in months]
         out_rows.append({"label": label, "values": vals})
+    # SUA 2026-10-07 (user: "xóa bớt đi, tôi cần hiện từ T1-2016 thôi, đằng trước có dữ liệu đâu")
+    # — 2015 chưa có YoY (chuỗi gốc chỉ có từ 2015-01, cần 12 tháng trước nên YoY sớm nhất là
+    # 2016-01) — cắt bỏ các tháng đầu mà CPI tổng (và do đó hầu hết nhóm) toàn None.
+    cpi_row = out_rows[0]["values"]
+    start_idx = next((i for i, v in enumerate(cpi_row) if v is not None), 0)
+    months = months[start_idx:]
+    for r in out_rows:
+        r["values"] = r["values"][start_idx:]
     return {"months": months, "rows": out_rows}
 
 
@@ -243,14 +251,21 @@ def _crack_spreads(raw):
                        "crack_321": c321[-1] if periods else None}}
 
 
+# Nhãn RIÊNG cho phần đóng góp (khác nhãn dùng ở bảng nhiệt 2b) — vì "Năng lượng" ở ĐÂY là
+# điện+gas (ex xăng dầu, tránh đếm trùng với "Giao thông"), nếu dùng chung nhãn "Năng lượng" với
+# bảng nhiệt (ở đó là NĂNG LƯỢNG ĐỦ, gồm xăng dầu) thì 2 số % khác hẳn nhau dưới CÙNG 1 tên —
+# đúng điều user phản ánh "nhìn chả hiểu gì" (Năng lượng heatmap +16% nhưng bảng đóng góp +4%).
+CONTRIB_LABEL_OVERRIDE = {"usm_cpi_energy": "Năng lượng (điện & gas — xăng dầu đã tính trong Giao thông)"}
+
+
 def _cpi_contributions(raw, periods):
     """Đóng góp (contribution, điểm %) vào CPI YoY — ĐỦ 9 NHÓM giống bảng nhiệt 2b (user 2026-10-07:
-    "CPI tăng 3% thì food +1 điểm, nhiên liệu +2 điểm, y tế -1 điểm... kiểu kiểu vậy"), KHÔNG rút
-    gọn còn 4 phần nữa. SỬA lỗi đếm trùng xăng dầu: "Năng lượng" ở đây dùng series
-    usm_cpi_energy_services (CUSR0000SEHF — điện+gas, KHÔNG xăng dầu) + trọng số 3,303, vì xăng
-    dầu đã tính trong "Giao thông" (CPITRNSL, ĐỦ xăng dầu, trọng số 17,060) — xem US_GROUP9_WEIGHTS/
-    US_GROUP9_SERIES_OVERRIDE. 9 nhóm cộng ~94,45% (residual ~5,55% là "Fuel oil" 0,162 + vài mục
-    nhỏ chưa gán, KHÔNG phải lỗi đếm trùng như bản cũ)."""
+    "CPI tăng 3% thì food +1 điểm, nhiên liệu +2 điểm, y tế -1 điểm... kiểu kiểu vậy"). SỬA lỗi
+    đếm trùng xăng dầu: "Năng lượng" ở đây dùng series usm_cpi_energy_services (CUSR0000SEHF —
+    điện+gas, KHÔNG xăng dầu) + trọng số 3,303, vì xăng dầu đã tính trong "Giao thông" (CPITRNSL,
+    ĐỦ xăng dầu, trọng số 17,060) — xem US_GROUP9_WEIGHTS/US_GROUP9_SERIES_OVERRIDE và
+    CONTRIB_LABEL_OVERRIDE (đổi nhãn hiển thị để không nhầm với "Năng lượng" ĐỦ ở bảng nhiệt).
+    9 nhóm cộng ~94,45% (residual ~5,55% là "Fuel oil" + vài mục nhỏ chưa gán)."""
     cpi = _series(raw, "usm_cpi")
     group_series = {key: _series(raw, US_GROUP9_SERIES_OVERRIDE.get(key, key)) for key, _ in US_GROUPS}
 
@@ -258,7 +273,7 @@ def _cpi_contributions(raw, periods):
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
         s = group_series[key]
-        rows.append({"key": key, "label": label, "weight_pct": w,
+        rows.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w,
                      "values": [round(w / 100 * _yoy(s, p), 3) if _yoy(s, p) is not None else None for p in periods]})
     residual = []
     for i, p in enumerate(periods):
@@ -270,22 +285,20 @@ def _cpi_contributions(raw, periods):
         residual.append(round(hy - known, 3))
     rows.append({"key": "residual", "label": "Phần dư (Fuel oil + mục nhỏ chưa gán)", "weight_pct": None, "values": residual})
 
-    # THEM 2026-10-07 (theo bài phân tích tham khảo, mục "Momentum"/"CPI Pressure") — bảng snapshot
-    # kỳ gần nhất: Weight / YoY / Contribution (= weight×YoY, NHÌN LỊCH SỬ) / 3M-6M năm hóa /
-    # Pressure (= weight×3M năm hóa, NHÌN VỀ PHÍA TRƯỚC — nếu Pressure << Contribution, áp lực
-    # nhóm đó đang NGUỘI dù YoY còn cao vì nền cũ; ngược lại Pressure >> Contribution là áp lực
-    # đang NÓNG LÊN mà YoY [nhìn gương chiếu hậu] chưa phản ánh hết).
+    # Snapshot kỳ gần nhất — CHỈ Weight/YoY/Contribution (user 2026-10-07: "nhìn chả hiểu gì" với
+    # bảng cũ có thêm 3M/6M/Pressure — bỏ bớt, giữ đúng 3 cái user cần: "food làm CPI tăng bao
+    # nhiêu điểm, bản thân food tăng bao nhiêu %"). Sắp theo |đóng góp| giảm dần để thấy ngay cái
+    # gì đang "gánh" CPI nhiều nhất lên đầu, khớp ví dụ user: "học phí tăng rất cao nhưng đóng góp
+    # ít vì tiêu dùng ít, năng lượng tăng nhẹ nhưng đóng góp nhiều vì tiêu dùng nhiều".
     latest = periods[-1]
     snapshot = []
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
         s = group_series[key]
         yoy = _yoy(s, latest)
-        ann3 = _annualized(s, latest, 3)
-        snapshot.append({"key": key, "label": label, "weight_pct": w, "yoy": yoy,
-                          "ann_3m": ann3, "ann_6m": _annualized(s, latest, 6),
-                          "contribution": round(w / 100 * yoy, 3) if yoy is not None else None,
-                          "pressure": round(w / 100 * ann3, 3) if ann3 is not None else None})
+        snapshot.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w, "yoy": yoy,
+                          "contribution": round(w / 100 * yoy, 3) if yoy is not None else None})
+    snapshot.sort(key=lambda r: abs(r["contribution"]) if r["contribution"] is not None else -1, reverse=True)
 
     return {"periods": periods, "rows": rows, "weights_vintage": US_GROUP_WEIGHTS_VINTAGE,
             "weights_source": US_GROUP_WEIGHTS_SOURCE, "snapshot": snapshot, "snapshot_period": latest}

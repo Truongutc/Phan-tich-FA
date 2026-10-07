@@ -936,10 +936,11 @@ function usMacroHeatmap(hm) {
             <p class="ind-source-note">Cột là tháng (đúng tần suất BLS công bố), hàng là nhóm; đỏ = YoY tăng mạnh, trắng = quanh 0%, xanh dương = giảm (màu bão hoà ở ±${US_HEATMAP_SCALE_PCT}%). Kéo/lăn chuột ngang để xem lịch sử. Trọng số đóng góp chưa có ở bảng này nên không cộng các ô thành CPI (xem mục 2c cho phần đóng góp theo trọng số).</p>`;
 }
 
-// THEM 2026-10-07 (theo bài phân tích tham khảo) — bảng Trọng số / YoY / 3M-6M năm hóa / Đóng góp /
-// Pressure cho kỳ gần nhất, CÙNG 9 nhóm với biểu đồ miền 2c. Đóng góp = nhìn lịch sử (weight×YoY);
-// Pressure = nhìn về phía trước (weight×3M năm hóa) — lệch nhiều giữa 2 cột nghĩa là YoY đang
-// phản ánh TRỄ so với áp lực thực tế hiện tại (nền cũ/mới khác đà tăng gần đây).
+// SUA 2026-10-07 (user: "nhìn chả hiểu gì... tôi muốn food làm CPI tăng bao nhiêu %, học phí tăng
+// rất cao nhưng đóng góp ít vì tiêu dùng ít, năng lượng tăng nhẹ nhưng đóng góp nhiều vì tiêu dùng
+// nhiều") — bỏ 3M/6M/Pressure (gây rối, không phải điều user hỏi), CHỈ giữ đúng 3 cái cần: Trọng
+// số (đại diện "tiêu dùng bao nhiêu"), YoY (bản thân nhóm tự tăng bao nhiêu), Đóng góp (nhóm đó
+// LÀM CPI đổi bao nhiêu điểm %) — 2 cột YoY và Đóng góp đặt CẠNH NHAU để thấy ngay sự khác biệt.
 function usContribSnapshotTable(ct) {
     if (!ct || !ct.snapshot) return '';
     const f = (v, d = 2) => (v === null || v === undefined) ? '—' : Number(v).toFixed(d);
@@ -947,17 +948,35 @@ function usContribSnapshotTable(ct) {
     const rows = ct.snapshot.map(r => `<tr>
         <th style="text-align:left;white-space:nowrap">${r.label}</th>
         <td style="color:#e5e7eb">${f(r.weight_pct, 1)}%</td>
-        <td style="${sign(r.yoy)}">${f(r.yoy)}%</td>
-        <td style="${sign(r.ann_3m)}">${f(r.ann_3m)}%</td>
-        <td style="${sign(r.ann_6m)}">${f(r.ann_6m)}%</td>
-        <td style="${sign(r.contribution)};font-weight:600">${f(r.contribution)}pp</td>
-        <td style="${sign(r.pressure)};font-weight:600">${f(r.pressure)}pp</td>
+        <td style="${sign(r.yoy)}">${f(r.yoy)}% <span class="ind-source-note">(bản thân nhóm tự tăng)</span></td>
+        <td style="${sign(r.contribution)};font-weight:700">${f(r.contribution)}pp <span class="ind-source-note">(làm CPI đổi)</span></td>
     </tr>`).join('');
     return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
-        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số</th><th>YoY</th>
-        <th>3T năm hóa</th><th>6T năm hóa</th><th>Đóng góp (pp)</th><th>Pressure (pp)</th>
+        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số<br>(tiêu dùng chiếm)</th><th>YoY</th><th>Đóng góp</th>
     </tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="ind-source-note">Đóng góp = trọng số × YoY (nhìn lịch sử 12 tháng qua). Pressure = trọng số × 3 tháng năm hóa (nhìn gần nhất, báo hiệu xu hướng tới trước YoY). Pressure lệch xa Đóng góp = áp lực nhóm đó đang đổi hướng mà YoY chưa phản ánh hết.</p>`;
+    <p class="ind-source-note">Đóng góp = Trọng số × YoY. Nhóm trọng số lớn (vd Nhà ở ~35%) chỉ cần tăng nhẹ đã đóng góp nhiều; nhóm trọng số nhỏ (vd Giáo dục ~5,7%) dù tự tăng rất cao vẫn đóng góp ít — vì phần chi tiêu của người Mỹ dành cho nhóm đó nhỏ.</p>`;
+}
+
+// SUA 2026-10-07 — biểu đồ cột NGANG cho 1 kỳ gần nhất, sắp theo |đóng góp| giảm dần, trả lời
+// trực tiếp câu hỏi "CPI tăng X% tháng này thì cái gì gây ra, bao nhiêu điểm mỗi cái" — rõ hơn
+// biểu đồ miền 10 năm (quá nhiều đường chồng lên nhau, khó đọc cho 1 kỳ cụ thể).
+function usContribBarChart(ct) {
+    const canvas = document.getElementById('chart-us-contrib-bar');
+    if (!canvas || !ct || !ct.snapshot) return;
+    const rows = ct.snapshot.filter(r => r.contribution !== null);
+    const colors = rows.map(r => r.contribution >= 0 ? 'rgba(239,68,68,0.8)' : 'rgba(96,165,250,0.8)');
+    chartInstances.push(new Chart(canvas, {
+        type: 'bar',
+        data: { labels: rows.map(r => `${r.label}\n(YoY ${r.yoy >= 0 ? '+' : ''}${r.yoy.toFixed(1)}%)`),
+                datasets: [{ label: 'Đóng góp vào CPI YoY (điểm %)', data: rows.map(r => r.contribution), backgroundColor: colors,
+                             datalabels: { color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
+                                           formatter: v => (v >= 0 ? '+' : '') + v.toFixed(2) + 'pp', font: { size: 10, weight: '600' } } }] },
+        options: { ...CHART_DEFAULTS,
+                   plugins: { legend: { display: false } },
+                   scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, autoSkip: false, maxRotation: 30, font: { size: 8 } } },
+                             y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } },
+        plugins: [ChartDataLabels],
+    }));
 }
 
 function renderUsMacro(usm) {
@@ -984,9 +1003,11 @@ function renderUsMacro(usm) {
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Chưa tính đóng góp (contribution) vào CPI tổng: FRED không cung cấp trọng số tương đối ổn định theo kỳ nên không tự ghép đoán.</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
-      ${card('2c. Đóng góp vào CPI YoY — biểu đồ miền (trọng số BLS, vintage ' + usm.contributions.weights_vintage + ')', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-contrib"></canvas></div>
-            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch, áp trọng số cố định này vào lịch sử (xấp xỉ, trọng số thực đổi chậm theo năm). Đủ 9 nhóm như bảng nhiệt 2b — "Năng lượng" ở đây CHỈ tính điện+gas (không xăng dầu, vì xăng dầu đã tính trong "Giao thông") để không đếm trùng. Cộng 9 nhóm + phần dư = ĐÚNG CPI YoY.</p>
-            ${usContribSnapshotTable(usm.contributions)}`)}
+      ${card('2c. Tại tháng ' + usm.contributions.snapshot_period + ' — cái gì khiến CPI đổi, bao nhiêu điểm % mỗi cái', `<div class="ind-chart" style="height:320px"><canvas id="chart-us-contrib-bar"></canvas></div>
+            ${usContribSnapshotTable(usm.contributions)}
+            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch. "Năng lượng" ở đây CHỈ tính điện+gas (xăng dầu đã tính trong "Giao thông") để không đếm trùng.</p>`)}
+      ${card('2d. Đóng góp theo thời gian (biểu đồ miền, 2016 tới nay)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-contrib"></canvas></div>
+            <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Xem mục 2c để đọc rõ ràng hơn cho 1 kỳ cụ thể.</p>`)}
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
             <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
       ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
@@ -1000,6 +1021,13 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
       ${card('Lãi suất & việc làm', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
     `;
+
+    // SUA 2026-10-07 (user: "tôi bật lên là sẽ hiện luôn ở dữ liệu tháng gần nhất, đỡ phải kéo
+    // tít từ 2016 tới nay") — mặc định cuộn các bảng cuộn-ngang (bảng nhiệt 2b, raw...) sang tận
+    // phải (tháng/kỳ mới nhất) ngay khi vừa render, không bắt người xem tự kéo.
+    requestAnimationFrame(() => {
+        box.querySelectorAll('.monitoring-table-scroll').forEach(el => { el.scrollLeft = el.scrollWidth; });
+    });
 
     const hist = usm.history, ph = usm.pipeline;
     const line = (label, data, color, dash) => ({ label, data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, borderDash: dash || [] });
@@ -1019,6 +1047,7 @@ function renderUsMacro(usm) {
 
     (function () {
         const ct = usm.contributions;
+        usContribBarChart(ct);
         const colors = { usm_cpi_food: '#60a5fa', usm_cpi_energy: '#f97316', usm_cpi_shelter: '#a78bfa',
             usm_cpi_transport: '#ef4444', usm_cpi_medical: '#10b981', usm_cpi_apparel: '#eab308',
             usm_cpi_recreation: '#ec4899', usm_cpi_education_comm: '#14b8a6', usm_cpi_other: '#94a3b8',
