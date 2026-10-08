@@ -626,8 +626,28 @@ def _build_synthesis(states):
         overall_label, overall_color = "KHÓ KHĂN TRÊN NHIỀU MẶT", "bad"
         overall_text = "Có ít nhất 1 trong 3 mặt (kinh tế/tiền tệ/tài chính) đang xấu RÕ RỆT (tất cả chỉ báo trong nhóm đều warn/bad) — môi trường hiện tại chưa thuận lợi cho tài sản rủi ro."
     else:
-        overall_label, overall_color = "HỖN HỢP — CẦN CHỌN LỌC", "neutral"
-        overall_text = "Các mặt đang cho tín hiệu pha trộn (vừa có điểm tích cực vừa có điểm tiêu cực), chưa nghiêng rõ hẳn về 1 phía — nên chọn lọc theo từng tài sản/ngành cụ thể hơn là đặt cược theo xu hướng chung."
+        # THEM 2026-10-08 (user: "tôi chỉ muốn biết là dữ liệu vĩ mô này có đang ngược chiều cho
+        # đầu tư không, hay là vẫn đang ok" — nhánh "mixed" gốc gộp chung 2 tình huống RẤT khác
+        # nhau: (a) thực sự cân bằng (có cả tốt lẫn xấu rải đều) và (b) KHÔNG nhóm nào tốt rõ ràng
+        # nhưng cũng chưa đồng loạt xấu hẳn — (b) đáng báo cẩn trọng hơn (a) nhiều, không nên gọi
+        # chung "hỗn hợp" nghe trung tính 50/50) — đếm trực tiếp số "good" trong TẤT CẢ 9 chỉ báo
+        # (không qua tilt) để tách 2 case này.
+        good_count = sum(1 for s in states.values() if s.get("color") == "good")
+        warn_bad_count = sum(1 for s in states.values() if s.get("color") in ("warn", "bad"))
+        total = len(states)
+        # Nếu KHÔNG có nhóm nào "tốt" (good_count=0) thì về định nghĩa không thể có tình trạng
+        # "pha trộn tốt-xấu" thực sự — chỉ có thể là "toàn trung tính" hoặc "trung tính + cảnh báo",
+        # cả 2 đều nghiêng cẩn trọng hơn, KHÔNG nên gọi là "hỗn hợp" (nghe như 50/50 cân bằng).
+        if good_count == 0 and warn_bad_count > 0:
+            overall_label, overall_color = "NGHIÊNG CẢNH GIÁC — chưa có điểm tựa tích cực rõ ràng", "warn"
+            overall_text = (f"KHÔNG có nhóm nào đang ở trạng thái tích cực rõ ràng (0/{total} 'tốt'), trong khi {warn_bad_count}/{total} nhóm đang ở mức cảnh báo trở lên. "
+                             "Chưa đủ để gọi là 'ngược chiều' toàn diện (không phải tất cả đều xấu), nhưng RÕ RÀNG CHƯA THUẬN LỢI — nên ưu tiên phòng thủ/chọn lọc hơn là risk-on.")
+        elif good_count == 0:
+            overall_label, overall_color = "TRUNG TÍNH — chưa rõ xu hướng", "neutral"
+            overall_text = "Toàn bộ chỉ báo đang ở mức trung tính, chưa có nhóm nào rõ rệt tốt hay xấu — chưa đủ cơ sở để nghiêng về hướng nào."
+        else:
+            overall_label, overall_color = "HỖN HỢP — CẦN CHỌN LỌC", "neutral"
+            overall_text = "Các mặt đang cho tín hiệu pha trộn (vừa có điểm tích cực vừa có điểm tiêu cực), chưa nghiêng rõ hẳn về 1 phía — nên chọn lọc theo từng tài sản/ngành cụ thể hơn là đặt cược theo xu hướng chung."
 
     overall = {"label": overall_label, "color": overall_color,
                "text": (f"{overall_text} (Kinh tế: {econ_tilt or 'n/a'}; Tiền tệ: {mon_tilt or 'n/a'}; Tài chính: {inv_tilt or 'n/a'} — "

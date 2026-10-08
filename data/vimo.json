@@ -89523,9 +89523,9 @@
       "monetary": "Độ dai dẳng lạm phát: trung bình — có dấu hiệu lan truyền một phần, chính sách lãi suất: thắt chặt nhẹ, bảng cân đối: mở rộng nhẹ — có thể là quản lý dự trữ (reserve management), chưa chắc qe kích thích. Điều kiện tiền tệ nhìn chung đang THẮT CHẶT hơn là nới lỏng — không nên mặc định Fed sắp dovish chỉ vì lạm phát hạ nhiệt một phần.",
       "investment": "Lợi suất/tín dụng: đường cong bình thường (dốc lên), USD dao động trong biên hẹp, dòng vốn nước ngoài vào Treasury: khối chính thức/nhtw ổn định. Điều kiện tài chính đang pha trộn — vừa có yếu tố thuận lợi vừa có yếu tố bất lợi.",
       "overall": {
-        "label": "HỖN HỢP — CẦN CHỌN LỌC",
-        "color": "neutral",
-        "text": "Các mặt đang cho tín hiệu pha trộn (vừa có điểm tích cực vừa có điểm tiêu cực), chưa nghiêng rõ hẳn về 1 phía — nên chọn lọc theo từng tài sản/ngành cụ thể hơn là đặt cược theo xu hướng chung. (Kinh tế: mixed; Tiền tệ: mixed; Tài chính: mixed — đây là ĐỌC TỔNG HỢP có chủ đích từ 3 nhóm độc lập ở trên, KHÔNG phải cộng điểm số.)"
+        "label": "NGHIÊNG CẢNH GIÁC — chưa có điểm tựa tích cực rõ ràng",
+        "color": "warn",
+        "text": "KHÔNG có nhóm nào đang ở trạng thái tích cực rõ ràng (0/9 'tốt'), trong khi 4/9 nhóm đang ở mức cảnh báo trở lên. Chưa đủ để gọi là 'ngược chiều' toàn diện (không phải tất cả đều xấu), nhưng RÕ RÀNG CHƯA THUẬN LỢI — nên ưu tiên phòng thủ/chọn lọc hơn là risk-on. (Kinh tế: mixed; Tiền tệ: mixed; Tài chính: mixed — đây là ĐỌC TỔNG HỢP có chủ đích từ 3 nhóm độc lập ở trên, KHÔNG phải cộng điểm số.)"
       }
     },
     "note": "Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò."
