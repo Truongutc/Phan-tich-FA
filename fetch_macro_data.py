@@ -385,6 +385,15 @@ US_MACRO_SERIES = [
     ("usm_diesel_gulf", "DDFUELUSGULF", "Giá ULSD diesel Vịnh Mexico (USD/gallon, daily, EIA)", "usd_per_gallon"),
     ("usm_gasoline_gulf", "DGASUSGULF", "Giá xăng Vịnh Mexico (USD/gallon, daily, EIA)", "usd_per_gallon"),
     ("usm_brent", "DCOILBRENTEU", "Giá dầu Brent (USD/thùng, daily)", "usd_per_barrel"),
+    # THEM 2026-10-08 (user: "lấy dữ liệu bảng cân đối Fed — QE/QT, thu hẹp/mở rộng") — H.4.1, FRED
+    # mirror trực tiếp từ Fed, hàng tuần (As of/Ending Wednesday). Đơn vị GỐC triệu USD.
+    ("usm_fed_assets", "WALCL", "Fed — Tổng tài sản (triệu USD)", "million_usd"),
+    ("usm_fed_treasury", "TREAST", "Fed — Trái phiếu Chính phủ Mỹ nắm giữ (triệu USD)", "million_usd"),
+    ("usm_fed_mbs", "WSHOMCB", "Fed — MBS nắm giữ (triệu USD)", "million_usd"),
+    ("usm_fed_reserves", "WRESBAL", "Fed — Dự trữ ngân hàng tại Fed (triệu USD)", "million_usd"),
+    ("usm_fed_rrp", "WLRRAL", "Fed — Reverse Repo (RRP, triệu USD)", "million_usd"),
+    ("usm_fed_tga", "WTREGEN", "Fed — Tài khoản Treasury (TGA, triệu USD)", "million_usd"),
+    ("usm_ecb_assets", "ECBASSETSW", "ECB — Tổng tài sản (triệu EUR)", "million_eur"),
     ("usm_unemployment", "UNRATE", "Tỷ lệ thất nghiệp (%)", "pct"),
     ("usm_fed_funds", "FEDFUNDS", "Lãi suất quỹ liên bang (%)", "pct"),
     ("usm_yield_10y", "DGS10", "Lợi suất trái phiếu 10 năm (%)", "pct"),

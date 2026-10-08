@@ -221,11 +221,74 @@ def build_us_macro(raw):
     heatmap = _monthly_heatmap(raw, latest)
     cracks = _crack_spreads(raw)
     contributions = _cpi_contributions(raw, periods)
+    liquidity = _fed_liquidity(raw)
 
     return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks, "contributions": contributions,
-            "pipeline": pipeline, "real_consumption": real, "rates": rates,
+            "pipeline": pipeline, "real_consumption": real, "rates": rates, "liquidity": liquidity,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
+
+
+def _fed_liquidity(raw):
+    """Bảng cân đối Fed (H.4.1, FRED mirror trực tiếp) — user 2026-10-08: "QE/QT, thu hẹp/mở rộng
+    bảng cân đối". KHÔNG tự chấm điểm "nới/thắt" — chỉ đưa số liệu thật + % thay đổi 6 tháng/12
+    tháng để người đọc tự kết luận (đúng nguyên tắc không gộp nhiều tín hiệu thành 1 điểm số đã
+    chốt ở phần vĩ mô VN).
+    Net Liquidity (cách giới phân tích thị trường hay dùng, KHÔNG phải định nghĩa chính thức của
+    Fed) = Tổng tài sản − RRP − TGA — phần tiền "sẵn sàng" lưu thông trong hệ thống ngân hàng/thị
+    trường, sau khi trừ 2 "bể chứa" hút tiền ra khỏi hệ thống (RRP: tiền gửi vào Fed qua repo
+    ngược; TGA: tiền Chính phủ gửi tại Fed, chưa chi ra)."""
+    keys = ["usm_fed_assets", "usm_fed_treasury", "usm_fed_mbs", "usm_fed_reserves", "usm_fed_rrp", "usm_fed_tga"]
+    series = {k: _series(raw, k) for k in keys}
+    if not series["usm_fed_assets"]:
+        return None
+    periods = sorted(series["usm_fed_assets"])
+    net_liq = {}
+    for p in periods:
+        a, r, t = series["usm_fed_assets"].get(p), series["usm_fed_rrp"].get(p), series["usm_fed_tga"].get(p)
+        if a is not None and r is not None and t is not None:
+            net_liq[p] = a - r - t
+    latest = periods[-1]
+
+    def _chg(s, months):
+        cur, prev = s.get(latest), s.get(_shift(latest, -months))
+        return round(cur - prev, 0) if cur is not None and prev is not None else None
+
+    def _chg_pct(s, months):
+        cur, prev = s.get(latest), s.get(_shift(latest, -months))
+        return round((cur / prev - 1) * 100, 2) if cur is not None and prev else None
+
+    latest_vals = {k: series[k].get(latest) for k in keys}
+    latest_vals["usm_fed_net_liquidity"] = net_liq.get(latest)
+    chg = {k: {"chg_6m": _chg(series[k], 6), "chg_12m": _chg(series[k], 12),
+               "chg_pct_6m": _chg_pct(series[k], 6), "chg_pct_12m": _chg_pct(series[k], 12)} for k in keys}
+    chg["usm_fed_net_liquidity"] = {"chg_6m": _chg(net_liq, 6), "chg_12m": _chg(net_liq, 12),
+                                     "chg_pct_6m": _chg_pct(net_liq, 6), "chg_pct_12m": _chg_pct(net_liq, 12)}
+
+    ecb = _series(raw, "usm_ecb_assets")
+    ecb_latest = max(ecb) if ecb else None
+
+    # Xu hướng QE/QT — SỰ KIỆN (tăng/giảm liên tục), KHÔNG phải điểm số: so tổng tài sản hiện tại
+    # với đỉnh gần nhất (all-time high trong dữ liệu có) để biết đang ở pha thu hẹp (QT) bao lâu.
+    peak_period = max(series["usm_fed_assets"], key=lambda p: series["usm_fed_assets"][p])
+    assets_vs_peak_pct = round((latest_vals["usm_fed_assets"] / series["usm_fed_assets"][peak_period] - 1) * 100, 2)
+
+    return {
+        "periods": periods, "latest": latest, "latest_values": latest_vals, "changes": chg,
+        "peak_period": peak_period, "peak_value": series["usm_fed_assets"][peak_period],
+        "assets_vs_peak_pct": assets_vs_peak_pct,
+        "ecb_latest": {"period": ecb_latest, "value": ecb.get(ecb_latest)} if ecb_latest else None,
+        "history": {
+            "periods": periods,
+            "assets": [series["usm_fed_assets"].get(p) for p in periods],
+            "treasury": [series["usm_fed_treasury"].get(p) for p in periods],
+            "mbs": [series["usm_fed_mbs"].get(p) for p in periods],
+            "reserves": [series["usm_fed_reserves"].get(p) for p in periods],
+            "rrp": [series["usm_fed_rrp"].get(p) for p in periods],
+            "tga": [series["usm_fed_tga"].get(p) for p in periods],
+            "net_liquidity": [net_liq.get(p) for p in periods],
+        },
+    }
 
 
 def _monthly_heatmap(raw, latest):

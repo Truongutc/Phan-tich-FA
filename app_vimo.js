@@ -986,6 +986,48 @@ function usContribBarChart(ct) {
     }));
 }
 
+// THEM 2026-10-08 (user: "lấy dữ liệu bảng cân đối Fed, QE/QT, thu hẹp/mở rộng bảng cân đối") —
+// bảng cân đối Fed (H.4.1, FRED mirror) KHÔNG chấm điểm "nới/thắt" — chỉ liệt kê số liệu thật +
+// % thay đổi 6/12 tháng, đúng nguyên tắc không gộp nhiều tín hiệu thành 1 điểm số (đã chốt ở
+// phần vĩ mô VN) — người đọc tự kết luận QE hay QT từ số liệu, không bị áp đặt.
+function usFedLiquidityCard(liq, f) {
+    const T = v => (v === null || v === undefined) ? '—' : (v / 1e6).toFixed(2) + 'T'; // triệu USD -> nghìn tỷ USD
+    const pct = v => (v === null || v === undefined) ? '—' : (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+    const sign = v => (v === null || v === undefined) ? 'color:#e5e7eb' : (v >= 0 ? 'color:#ef4444' : 'color:#60a5fa');
+    const rows = [
+        ['usm_fed_assets', 'Tổng tài sản'], ['usm_fed_treasury', '— Trái phiếu Chính phủ (Treasury)'],
+        ['usm_fed_mbs', '— MBS (trái phiếu BĐS)'], ['usm_fed_reserves', 'Dự trữ ngân hàng tại Fed'],
+        ['usm_fed_rrp', 'Reverse Repo (RRP)'], ['usm_fed_tga', 'Tài khoản Treasury (TGA)'],
+        ['usm_fed_net_liquidity', 'Net Liquidity (= Tài sản − RRP − TGA)'],
+    ];
+    const body = rows.map(([k, lbl]) => `<tr>
+        <th style="text-align:left;white-space:nowrap">${lbl}</th>
+        <td style="color:#e5e7eb;font-weight:600">${T(liq.latest_values[k])}</td>
+        <td style="${sign(liq.changes[k].chg_pct_6m)}">${pct(liq.changes[k].chg_pct_6m)}</td>
+        <td style="${sign(liq.changes[k].chg_pct_12m)}">${pct(liq.changes[k].chg_pct_12m)}</td>
+    </tr>`).join('');
+    return `
+        <div class="us-kpi-grid">
+            <div class="us-kpi-tile"><div class="us-kpi-label">Tổng tài sản Fed</div><div class="us-kpi-value">${T(liq.latest_values.usm_fed_assets)}</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">So với đỉnh (${liq.peak_period})</div><div class="us-kpi-value">${pct(liq.assets_vs_peak_pct)}</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">Net Liquidity</div><div class="us-kpi-value">${T(liq.latest_values.usm_fed_net_liquidity)}</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">ECB tổng tài sản</div><div class="us-kpi-value">${liq.ecb_latest ? (liq.ecb_latest.value / 1e6).toFixed(2) + 'T€' : '—'}</div></div>
+        </div>
+        <div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+            <th style="text-align:left">Hạng mục (kỳ ${liq.latest})</th><th>Giá trị</th><th>6 tháng</th><th>12 tháng</th>
+        </tr></thead><tbody>${body}</tbody></table></div>
+        <div class="monitoring-table-scroll" style="overflow-x:auto">
+            <div style="width:${Math.max(1100, liq.periods.length * 10)}px">
+                <div class="bank-chart-grid-2">
+                    <div class="ind-chart" style="height:300px"><canvas id="chart-us-fed-assets"></canvas></div>
+                    <div class="ind-chart" style="height:300px"><canvas id="chart-us-fed-drains"></canvas></div>
+                </div>
+                <div class="ind-chart" style="height:280px;margin-top:10px"><canvas id="chart-us-fed-netliq"></canvas></div>
+            </div>
+        </div>
+        <p class="ind-source-note">Nguồn: Fed H.4.1 qua FRED (cập nhật hàng tuần, lấy trung bình tháng). "Net Liquidity" là cách giới phân tích thị trường hay dùng (Tổng tài sản − RRP − TGA), KHÔNG phải định nghĩa chính thức của Fed — RRP và TGA là 2 "bể chứa" hút tiền ra khỏi hệ thống ngân hàng, dù Fed không đổi tổng tài sản. Treasury holdings đang TĂNG trong khi MBS vẫn giảm — không phải thuần QE hay thuần QT.</p>`;
+}
+
 function renderUsMacro(usm) {
     const box = document.getElementById('us-macro-container');
     if (!box || !usm) return;
@@ -1033,6 +1075,7 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Crack = giá sản phẩm (Vịnh Mexico, EIA) × 42 − WTI. Crack 3-2-1 = (2 × xăng + diesel)/3 − WTI. Hiện: diesel ${f(usm.cracks.latest.diesel_crack, 1)} $/thùng, 3-2-1 ${f(usm.cracks.latest.crack_321, 1)} $/thùng (${usm.cracks.latest.period}). Crack cao cho thấy lọc dầu đang bán sản phẩm đắt hơn nhiều so với giá dầu thô — đúng kiểu cú sốc diesel mà bài viết nêu.</p>`)}
       ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
             <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
+      ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usFedLiquidityCard(usm.liquidity, f)) : ''}
       ${card('Lãi suất & việc làm', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
     `;
 
@@ -1112,6 +1155,26 @@ function renderUsMacro(usm) {
         line('Bán lẻ danh nghĩa YoY (%)', rc.hist.retail_nominal_yoy.slice(rcIdx0), '#60a5fa'),
         line('CPI YoY (%)', rc.hist.cpi_yoy.slice(rcIdx0), '#f59e0b', [5, 4])] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+
+    if (usm.liquidity) (function () {
+        const liq = usm.liquidity, h = liq.history;
+        const T = arr => arr.map(v => v === null ? null : v / 1e6); // trieu USD -> nghin ty USD
+        mk('chart-us-fed-assets', { type: 'line', data: { labels: h.periods, datasets: [
+            line('Tổng tài sản Fed (T$)', T(h.assets), '#60a5fa'),
+            line('— Treasury (T$)', T(h.treasury), '#10b981'),
+            line('— MBS (T$)', T(h.mbs), '#f59e0b', [5, 4])] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Nghìn tỷ USD', color: '#9aa5bd', font: { size: 9 } } } } } });
+
+        mk('chart-us-fed-drains', { type: 'line', data: { labels: h.periods, datasets: [
+            line('Dự trữ ngân hàng (T$)', T(h.reserves), '#a78bfa'),
+            line('RRP (T$)', T(h.rrp), '#ef4444'),
+            line('TGA (T$)', T(h.tga), '#f97316', [5, 4])] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Nghìn tỷ USD', color: '#9aa5bd', font: { size: 9 } } } } } });
+
+        mk('chart-us-fed-netliq', { type: 'line', data: { labels: h.periods, datasets: [
+            line('Net Liquidity Fed (T$, trục trái)', T(h.net_liquidity), '#60a5fa')] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Nghìn tỷ USD', color: '#9aa5bd', font: { size: 9 } } } } } });
+    })();
 }
 
 function renderFxPressureSignalsMonthlyChart(indicators) {
