@@ -33,16 +33,32 @@ US_GROUPS = [
     ("usm_cpi_other", "Hàng hóa & dịch vụ khác"),
 ]
 
-# Trọng số (%) + series DÙNG RIÊNG cho phần đóng góp (contribution) — key khớp US_GROUPS, nhưng
-# "usm_cpi_energy" ở đây trỏ sang series_key="usm_cpi_energy_services" (KHÔNG xăng dầu) để tránh
-# đếm trùng với Transportation (đã có xăng dầu). Tổng trọng số ~94,45% (phần dư ~5,55%, chủ yếu
-# là "Fuel oil" 0,162 không nằm trong nhóm nào + các mục nhỏ chưa gán — xem residual khi tính).
+# SUA 2026-10-08 (user: "tách cho đồng nhất với 2b, hoặc 2c đưa về đúng như 2b" — tức MUỐN
+# "Năng lượng" ở 2c khớp Y HỆT "Năng lượng" ở bảng nhiệt 2b, ĐỦ xăng dầu) — đảo hướng xử lý: giữ
+# "Năng lượng" = CPIENGSL ĐỦ (7,347%, khớp 100% với 2b, KHÔNG override series nữa), và trừ xăng
+# dầu ra khỏi "Giao thông" thay vì ra khỏi "Năng lượng" như bản trước. Trọng số Giao thông giảm
+# từ 17,060 xuống 13,178 (= 17,060 − Motor fuel 3,882). "Giao thông" ở ĐÂY dùng series SUY RA
+# (xem _transport_ex_fuel_yoy) vì KHÔNG có sẵn 1 chỉ số FRED bó gọn "Transportation trừ motor
+# fuel" — suy ra bằng trừ trọng số, dùng Gasoline (usm_gasoline, CUSR0000SETB01, 3,770/3,882 =
+# 97% trọng số Motor fuel) làm proxy cho Motor fuel (thiếu phần nhỏ "Other motor fuels" 0,112%,
+# ảnh hưởng không đáng kể). Tổng trọng số ~94,45% không đổi (phần dư vẫn ~5,55%).
 US_GROUP9_WEIGHTS = {
-    "usm_cpi_food": 13.540, "usm_cpi_energy": 3.303, "usm_cpi_shelter": 35.343,
-    "usm_cpi_transport": 17.060, "usm_cpi_medical": 8.267, "usm_cpi_apparel": 2.406,
+    "usm_cpi_food": 13.540, "usm_cpi_energy": 7.347, "usm_cpi_shelter": 35.343,
+    "usm_cpi_transport": 13.178, "usm_cpi_medical": 8.267, "usm_cpi_apparel": 2.406,
     "usm_cpi_recreation": 5.081, "usm_cpi_education_comm": 5.716, "usm_cpi_other": 3.732,
 }
-US_GROUP9_SERIES_OVERRIDE = {"usm_cpi_energy": "usm_cpi_energy_services"}
+_TRANSPORT_FULL_WEIGHT = 17.060
+_MOTOR_FUEL_WEIGHT = 3.882
+
+
+def _transport_ex_fuel_yoy(raw, p):
+    """YoY SUY RA của "Giao thông trừ xăng dầu" = (TransportĐủ×YoY − MotorFuel×YoY) / TrọngSốCòn
+    lại — xem ghi chú US_GROUP9_WEIGHTS."""
+    trn_y = _yoy(_series(raw, "usm_cpi_transport"), p)
+    gas_y = _yoy(_series(raw, "usm_gasoline"), p)
+    if trn_y is None or gas_y is None:
+        return None
+    return (_TRANSPORT_FULL_WEIGHT * trn_y - _MOTOR_FUEL_WEIGHT * gas_y) / US_GROUP9_WEIGHTS["usm_cpi_transport"]
 
 
 def _series(raw, key):
@@ -99,7 +115,11 @@ def build_us_macro(raw):
     pce_n = _series(raw, "usm_pce_nominal")
     pce_r = _series(raw, "usm_pce_real")
     latest = max(cpi)
+    # SUA 2026-10-08 (user: "vẽ từ T1-2016 tới nay" — chuỗi gốc có từ 2015-01 nhưng YoY cần 12
+    # tháng trước nên 2015 toàn None, vẽ ra khoảng trống vô nghĩa đầu mọi biểu đồ theo tháng) —
+    # cắt bỏ các tháng đầu chưa có YoY, khớp cách đã sửa cho bảng nhiệt _monthly_heatmap.
     periods = sorted(cpi)
+    periods = [p for p in periods if _yoy(cpi, p) is not None]
 
     headline = {
         "latest": latest,
@@ -251,36 +271,29 @@ def _crack_spreads(raw):
                        "crack_321": c321[-1] if periods else None}}
 
 
-# Nhãn RIÊNG cho phần đóng góp (khác nhãn dùng ở bảng nhiệt 2b) — vì "Năng lượng" ở ĐÂY là
-# điện+gas (ex xăng dầu, tránh đếm trùng với "Giao thông"), nếu dùng chung nhãn "Năng lượng" với
-# bảng nhiệt (ở đó là NĂNG LƯỢNG ĐỦ, gồm xăng dầu) thì 2 số % khác hẳn nhau dưới CÙNG 1 tên —
-# đúng điều user phản ánh "nhìn chả hiểu gì" (Năng lượng heatmap +16% nhưng bảng đóng góp +4%).
-# SUA 2026-10-07 (user vẫn hỏi lại "năng lượng tăng có 3% thôi á, có sai không" — nhãn dài bị cắt
-# trên biểu đồ cột, không thấy được chú thích) — RÚT NGẮN nhãn, đưa lời giải thích đầy đủ vào
-# ind-source-note (văn bản dưới chart, không bị cắt) thay vì nhét hết vào label trục X.
-CONTRIB_LABEL_OVERRIDE = {
-    "usm_cpi_energy": "Năng lượng (chỉ điện/gas)",
-    "usm_cpi_transport": "Giao thông (gồm xăng dầu)",
-}
+# SUA 2026-10-08 (user: "tách cho đồng nhất với 2b, hoặc 2c đưa về đúng như 2b" — Năng lượng ở
+# đây giờ khớp Y HỆT bảng nhiệt 2b nên KHÔNG cần đổi nhãn nữa) — chỉ còn Giao thông cần ghi chú vì
+# đã trừ xăng dầu ra (khác CPITRNSL thô dùng ở bảng nhiệt 2b).
+CONTRIB_LABEL_OVERRIDE = {"usm_cpi_transport": "Giao thông (trừ xăng dầu — xem Năng lượng)"}
 
 
 def _cpi_contributions(raw, periods):
-    """Đóng góp (contribution, điểm %) vào CPI YoY — ĐỦ 9 NHÓM giống bảng nhiệt 2b (user 2026-10-07:
-    "CPI tăng 3% thì food +1 điểm, nhiên liệu +2 điểm, y tế -1 điểm... kiểu kiểu vậy"). SỬA lỗi
-    đếm trùng xăng dầu: "Năng lượng" ở đây dùng series usm_cpi_energy_services (CUSR0000SEHF —
-    điện+gas, KHÔNG xăng dầu) + trọng số 3,303, vì xăng dầu đã tính trong "Giao thông" (CPITRNSL,
-    ĐỦ xăng dầu, trọng số 17,060) — xem US_GROUP9_WEIGHTS/US_GROUP9_SERIES_OVERRIDE và
-    CONTRIB_LABEL_OVERRIDE (đổi nhãn hiển thị để không nhầm với "Năng lượng" ĐỦ ở bảng nhiệt).
-    9 nhóm cộng ~94,45% (residual ~5,55% là "Fuel oil" + vài mục nhỏ chưa gán)."""
+    """Đóng góp (contribution, điểm %) vào CPI YoY — ĐỦ 9 NHÓM, "Năng lượng" khớp Y HỆT bảng nhiệt
+    2b (CPIENGSL đủ xăng dầu). SỬA lỗi đếm trùng xăng dầu bằng cách trừ xăng dầu khỏi "Giao
+    thông" (xem _transport_ex_fuel_yoy) THAY VÌ trừ khỏi "Năng lượng" như bản trước — user
+    2026-10-08: "muốn Năng lượng ở 2c khớp 2b". 9 nhóm cộng ~94,45% (residual ~5,55% là "Fuel
+    oil" + vài mục nhỏ chưa gán)."""
     cpi = _series(raw, "usm_cpi")
-    group_series = {key: _series(raw, US_GROUP9_SERIES_OVERRIDE.get(key, key)) for key, _ in US_GROUPS}
+    group_series = {key: _series(raw, key) for key, _ in US_GROUPS}
+
+    def _group_yoy(key, p):
+        return _transport_ex_fuel_yoy(raw, p) if key == "usm_cpi_transport" else _yoy(group_series[key], p)
 
     rows = []
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
-        s = group_series[key]
         rows.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w,
-                     "values": [round(w / 100 * _yoy(s, p), 3) if _yoy(s, p) is not None else None for p in periods]})
+                     "values": [round(w / 100 * _group_yoy(key, p), 3) if _group_yoy(key, p) is not None else None for p in periods]})
     residual = []
     for i, p in enumerate(periods):
         hy = _yoy(cpi, p)
@@ -300,8 +313,7 @@ def _cpi_contributions(raw, periods):
     snapshot = []
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
-        s = group_series[key]
-        yoy = _yoy(s, latest)
+        yoy = _group_yoy(key, latest)
         snapshot.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w, "yoy": yoy,
                           "contribution": round(w / 100 * yoy, 3) if yoy is not None else None})
     snapshot.sort(key=lambda r: abs(r["contribution"]) if r["contribution"] is not None else -1, reverse=True)

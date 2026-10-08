@@ -86,7 +86,14 @@ function initVimoTabs() {
             el.classList.toggle('vimo-tab-hidden', el.dataset.tab !== valid);
         });
         history.replaceState(null, '', '#tab=' + valid);
-        setTimeout(() => chartInstances.forEach(c => c.resize()), 0);
+        setTimeout(() => {
+            chartInstances.forEach(c => c.resize());
+            // SUA 2026-10-08 (user: "tôi mở biểu đồ đỡ phải cuộn lại") — khi vừa chuyển sang tab
+            // này, các bảng/chart cuộn-ngang (.monitoring-table-scroll) ĐANG ẨN lúc trang load lần
+            // đầu nên scrollLeft=scrollWidth lúc đó là no-op (phần tử display:none, scrollWidth=0).
+            // Chạy lại NGAY KHI tab thật sự hiện ra (sau resize, DOM đã có kích thước thật).
+            document.querySelectorAll(`[data-tab="${valid}"] .monitoring-table-scroll`).forEach(el => { el.scrollLeft = el.scrollWidth; });
+        }, 0);
     };
     buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.tabBtn)));
     const fromHash = (location.hash.match(/tab=([a-z]+)/) || [])[1];
@@ -969,7 +976,7 @@ function usContribBarChart(ct) {
         type: 'bar',
         data: { labels: rows.map(r => `${r.label}\n(YoY ${r.yoy >= 0 ? '+' : ''}${r.yoy.toFixed(1)}%)`),
                 datasets: [{ label: 'Đóng góp vào CPI YoY (điểm %)', data: rows.map(r => r.contribution), backgroundColor: colors,
-                             datalabels: { color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
+                             datalabels: { display: true, color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
                                            formatter: v => (v >= 0 ? '+' : '') + v.toFixed(2) + 'pp', font: { size: 10, weight: '600' } } }] },
         options: { ...CHART_DEFAULTS,
                    plugins: { legend: { display: false } },
@@ -1001,17 +1008,20 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ.</p>`)}
       ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
-            <p class="ind-source-note">Chưa tính đóng góp (contribution) vào CPI tổng: FRED không cung cấp trọng số tương đối ổn định theo kỳ nên không tự ghép đoán.</p>`)}
+            <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
       ${card('2c. Tại tháng ' + usm.contributions.snapshot_period + ' — cái gì khiến CPI đổi, bao nhiêu điểm % mỗi cái', `
             <p style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.4);border-radius:8px;padding:8px 12px;font-size:0.85em;margin:0 0 10px">
-                ⚠ <b>"Năng lượng" ở BẢNG NÀY khác "Năng lượng" ở bảng nhiệt 2b phía trên.</b> Ở đây chỉ tính điện+gas (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_energy') || {}).yoy)}%). Xăng dầu — phần tăng mạnh nhất (YoY ~${f(usm.groups.find(g => g.key === 'usm_cpi_energy').yoy)}% ở bảng nhiệt) — đã gộp vào "Giao thông" (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_transport') || {}).yoy)}%) để không đếm trùng khi cộng thành đóng góp.
+                ⚠ <b>"Giao thông" ở BẢNG NÀY khác "Giao thông" ở bảng nhiệt 2b phía trên</b> (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_transport') || {}).yoy)}% ở đây so với ~${f(usm.groups.find(g => g.key === 'usm_cpi_transport').yoy)}% ở bảng nhiệt) — xăng dầu đã TÁCH RA, cộng gộp vào "Năng lượng" (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_energy') || {}).yoy)}%, nay KHỚP ĐÚNG bảng nhiệt 2b) để không đếm trùng khi cộng thành đóng góp.
             </p>
             <div class="ind-chart" style="height:320px"><canvas id="chart-us-contrib-bar"></canvas></div>
             ${usContribSnapshotTable(usm.contributions)}
             <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch.</p>`)}
-      ${card('2d. Đóng góp theo thời gian (biểu đồ cột chồng, 2016 tới nay)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-contrib"></canvas></div>
-            <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Xem mục 2c để đọc rõ ràng hơn cho 1 kỳ cụ thể.</p>`)}
+      ${card('2d. Đóng góp theo thời gian (biểu đồ cột chồng, 2016 tới nay)', `
+            <div class="monitoring-table-scroll" style="overflow-x:auto">
+                <div style="width:${Math.max(1100, usm.contributions.periods.length * 14)}px"><div class="ind-chart" style="height:420px"><canvas id="chart-us-contrib"></canvas></div></div>
+            </div>
+            <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Kéo/lăn chuột ngang để xem lịch sử — mặc định hiện tháng gần nhất. Xem mục 2c để đọc rõ ràng hơn cho 1 kỳ cụ thể.</p>`)}
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
             <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
       ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
@@ -1026,12 +1036,9 @@ function renderUsMacro(usm) {
       ${card('Lãi suất & việc làm', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
     `;
 
-    // SUA 2026-10-07 (user: "tôi bật lên là sẽ hiện luôn ở dữ liệu tháng gần nhất, đỡ phải kéo
-    // tít từ 2016 tới nay") — mặc định cuộn các bảng cuộn-ngang (bảng nhiệt 2b, raw...) sang tận
-    // phải (tháng/kỳ mới nhất) ngay khi vừa render, không bắt người xem tự kéo.
-    requestAnimationFrame(() => {
-        box.querySelectorAll('.monitoring-table-scroll').forEach(el => { el.scrollLeft = el.scrollWidth; });
-    });
+    // Cuộn-sang-phải cho các bảng .monitoring-table-scroll trong tab này được xử lý ở
+    // initVimoTabs() (chạy ĐÚNG lúc tab hiện ra — ở đây container còn display:none lúc trang mới
+    // load lần đầu nên scrollWidth đọc ra 0, gán lúc này vô nghĩa).
 
     const hist = usm.history, ph = usm.pipeline;
     const line = (label, data, color, dash) => ({ label, data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, borderDash: dash || [] });
@@ -1045,9 +1052,15 @@ function renderUsMacro(usm) {
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 
     const gl = usm.groups.filter(g => g.yoy !== null).sort((a, b) => b.yoy - a.yoy);
+    // SUA 2026-10-08 (user: "thêm con số vào để tôi nhìn giá trị cho rõ") — thêm datalabels (đặt ở
+    // DATASET, không phải options.plugins — đặt ở plugins global từng không hiện, xem bài học ở
+    // usContribBarChart).
     mk('chart-us-groups', { type: 'bar', data: { labels: gl.map(g => g.label), datasets: [{
-        label: 'YoY (%)', data: gl.map(g => g.yoy), backgroundColor: gl.map(g => g.yoy > 3 ? 'rgba(239,68,68,0.75)' : 'rgba(96,165,250,0.7)') }] },
-        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, autoSkip: false, maxRotation: 30 } }, y: CHART_DEFAULTS.scales.y } } });
+        label: 'YoY (%)', data: gl.map(g => g.yoy), backgroundColor: gl.map(g => g.yoy > 3 ? 'rgba(239,68,68,0.75)' : 'rgba(96,165,250,0.7)'),
+        datalabels: { display: true, color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
+                      formatter: v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%', font: { size: 10, weight: '600' } } }] },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, autoSkip: false, maxRotation: 30 } }, y: CHART_DEFAULTS.scales.y } },
+        plugins: [ChartDataLabels] });
 
     (function () {
         const ct = usm.contributions;
