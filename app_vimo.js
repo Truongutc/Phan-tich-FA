@@ -993,6 +993,13 @@ function usContribSnapshotTable(ct) {
 // SUA 2026-10-07 — biểu đồ cột NGANG cho 1 kỳ gần nhất, sắp theo |đóng góp| giảm dần, trả lời
 // trực tiếp câu hỏi "CPI tăng X% tháng này thì cái gì gây ra, bao nhiêu điểm mỗi cái" — rõ hơn
 // biểu đồ miền 10 năm (quá nhiều đường chồng lên nhau, khó đọc cho 1 kỳ cụ thể).
+// SUA 2026-10-08 (user: "sao lại có cái này nhỉ tự nhiên nó lệch hẳn dòng nhìn xấu thế" — nhãn
+// trục X ghép CẢ tên nhóm DÀI (vd "Giao thông (trừ xăng dầu — xem Năng lượng)") lẫn số liệu, với
+// maxRotation:30 + autoSkip:false thì 2 nhãn dài liền kề cùng phải xuống 3 dòng, dòng cuối tràn ra
+// ngoài khung canvas, đè lên bảng bên dưới — rút ngắn CHỈ nhãn trên trục X (bảng dưới vẫn giữ tên
+// đầy đủ, đã có ô cảnh báo giải thích "Giao thông" ở trên rồi nên không cần lặp lại hết trên biểu đồ).
+const _shortChartLabel = l => l.length > 16 ? l.slice(0, 14) + '…' : l;
+
 function usContribBarChart(ct) {
     const canvas = document.getElementById('chart-us-contrib-bar');
     if (!canvas || !ct || !ct.snapshot) return;
@@ -1000,7 +1007,7 @@ function usContribBarChart(ct) {
     const colors = rows.map(r => r.contribution >= 0 ? 'rgba(239,68,68,0.8)' : 'rgba(96,165,250,0.8)');
     chartInstances.push(new Chart(canvas, {
         type: 'bar',
-        data: { labels: rows.map(r => `${r.label}\n(YoY ${r.yoy >= 0 ? '+' : ''}${r.yoy.toFixed(1)}%)`),
+        data: { labels: rows.map(r => `${_shortChartLabel(r.label)}\n(YoY ${r.yoy >= 0 ? '+' : ''}${r.yoy.toFixed(1)}%)`),
                 datasets: [{ label: 'Đóng góp vào CPI YoY (điểm %)', data: rows.map(r => r.contribution), backgroundColor: colors,
                              datalabels: { display: true, color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
                                            formatter: v => (v >= 0 ? '+' : '') + v.toFixed(2) + 'pp', font: { size: 10, weight: '600' } } }] },
@@ -1037,7 +1044,7 @@ function usContribMomBarChart(ct) {
     const colors = rows.map(r => r.contribution >= 0 ? 'rgba(239,68,68,0.8)' : 'rgba(96,165,250,0.8)');
     chartInstances.push(new Chart(canvas, {
         type: 'bar',
-        data: { labels: rows.map(r => r.mom !== null ? `${r.label}\n(MoM ${r.mom >= 0 ? '+' : ''}${r.mom.toFixed(2)}%)` : r.label),
+        data: { labels: rows.map(r => r.mom !== null ? `${_shortChartLabel(r.label)}\n(MoM ${r.mom >= 0 ? '+' : ''}${r.mom.toFixed(2)}%)` : _shortChartLabel(r.label)),
                 datasets: [{ label: 'Đóng góp vào CPI MoM (điểm %)', data: rows.map(r => r.contribution), backgroundColor: colors,
                              datalabels: { display: true, color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
                                            formatter: v => (v >= 0 ? '+' : '') + v.toFixed(3) + 'pp', font: { size: 10, weight: '600' } } }] },
@@ -1222,13 +1229,26 @@ function usOverviewSection(usm, f) {
     // đoạn văn NGẮN, ĐỘC LẬP (us_macro_analysis.py:_build_synthesis — ghép câu rule-based từ các
     // state đã có, KHÔNG phải điểm số), để RIÊNG, KHÔNG gộp lại thành 1 kết luận chung.
     const synth = usm.synthesis;
+    // THEM 2026-10-08 (user: "tạo cho tôi 1 vị trí để đánh giá tổng quát lại toàn bộ các chỉ số vĩ
+    // mô đang nói lên xấu hay tốt, và câu kết luận là có thuận cho đầu tư hay không" — KHÁC "chấm
+    // điểm gộp" đã từ chối: đây là 1 ĐOẠN VĂN kết luận rule-based (us_macro_analysis.py:
+    // _build_synthesis -> "overall"), chỉ xem 3 nhóm A/B/C bên dưới đang nghiêng tốt/xấu/hỗn hợp
+    // rồi viết câu kết luận tương ứng — KHÔNG cộng điểm số nào. Đặt NỔI BẬT ở đầu, A/B/C bên dưới
+    // giải thích "vì sao" ra kết luận đó.
+    const overallHtml = synth && synth.overall ? `
+        <div style="background:${colors[synth.overall.color]}1a;border:2px solid ${colors[synth.overall.color]};border-radius:10px;padding:14px 16px;margin-bottom:16px">
+            <div style="font-size:0.75em;color:#9aa5bd;text-transform:uppercase;letter-spacing:0.5px">Kết luận tổng quát — có thuận lợi cho đầu tư không?</div>
+            <div style="color:${colors[synth.overall.color]};font-weight:800;font-size:1.25em;margin-top:4px">${synth.overall.label}</div>
+            <div style="color:#e5e7eb;font-size:0.88em;margin-top:6px;line-height:1.5">${synth.overall.text}</div>
+        </div>` : '';
     const synthHtml = synth ? `
+        ${overallHtml}
         <div class="us-kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
             <div class="us-kpi-tile" style="text-align:left"><div class="us-kpi-label">A. Nền kinh tế đang khỏe hay yếu?</div><div style="color:#e5e7eb;font-size:0.88em;margin-top:4px;line-height:1.5">${synth.economic}</div></div>
             <div class="us-kpi-tile" style="text-align:left"><div class="us-kpi-label">B. Chính sách tiền tệ đang nới hay thắt?</div><div style="color:#e5e7eb;font-size:0.88em;margin-top:4px;line-height:1.5">${synth.monetary}</div></div>
             <div class="us-kpi-tile" style="text-align:left"><div class="us-kpi-label">C. Môi trường có thuận lợi cho tài sản rủi ro?</div><div style="color:#e5e7eb;font-size:0.88em;margin-top:4px;line-height:1.5">${synth.investment}</div></div>
         </div>
-        <p class="ind-source-note">3 câu hỏi để RIÊNG vì có thể cho 3 kết quả khác nhau — vd kinh tế vẫn khỏe nhưng Fed vẫn phải thắt chặt vì lạm phát, không có nghĩa "tốt" ở câu A thì "tốt" luôn ở câu B/C.</p>` : '';
+        <p class="ind-source-note">3 câu hỏi để RIÊNG vì có thể cho 3 kết quả khác nhau — vd kinh tế vẫn khỏe nhưng Fed vẫn phải thắt chặt vì lạm phát, không có nghĩa "tốt" ở câu A thì "tốt" luôn ở câu B/C. "Kết luận tổng quát" ở trên là ĐỌC TỔNG HỢP có chủ đích từ 3 câu này, KHÔNG phải cộng điểm số.</p>` : '';
     const body = rows.map(r => {
         const s = usm.states && usm.states[r.key];
         const c = s ? (colors[s.color] || '#9aa5bd') : '#9aa5bd';

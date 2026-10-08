@@ -589,7 +589,51 @@ def _build_synthesis(states):
         "Điều kiện tài chính đang pha trộn — vừa có yếu tố thuận lợi vừa có yếu tố bất lợi.",
         "Điều kiện tài chính đang có yếu tố bất lợi rõ cho tài sản rủi ro — nên chọn lọc/phòng thủ hơn là risk-on toàn diện.")
 
-    return {"economic": economic, "monetary": monetary, "investment": investment}
+    # THEM 2026-10-08 (user: "tạo cho tôi 1 vị trí để đánh giá tổng quát lại toàn bộ các chỉ số vĩ
+    # mô đang nói lên xấu hay tốt, và câu kết luận là có thuận cho đầu tư hay không" — khác "chấm
+    # điểm gộp" đã từ chối trước đó: ĐÂY LÀ 1 ĐOẠN VĂN KẾT LUẬN rule-based, KHÔNG phải cộng điểm
+    # thành 1 số — chỉ xem 3 nhóm A/B/C ở trên đang NGHIÊNG về hướng nào (tốt/hỗn hợp/xấu) rồi viết
+    # ra câu kết luận tương ứng, đúng tinh thần tài liệu user gửi: "Economy=GOOD, Monetary=BAD,
+    # Investment=BAD" phải tách biệt đọc, và case đặc biệt "kinh tế yếu NHƯNG tiền tệ nới lỏng" phải
+    # gọi là Liquidity Bull, KHÔNG được báo xấu chung.
+    def _tilt(keys):
+        colors = [states[k]["color"] for k in keys if k in states]
+        if not colors:
+            return None
+        bad_warn = sum(c in ("warn", "bad") for c in colors)
+        if bad_warn == 0:
+            return "good"
+        if bad_warn == len(colors):
+            return "bad"
+        return "mixed"
+
+    econ_tilt = _tilt(["growth", "labor"])
+    mon_tilt = _tilt(["inflation_persistence", "fed_policy", "fed_balance_sheet"])
+    inv_tilt = _tilt(["treasury_credit", "usd", "capital_flows"])
+
+    if econ_tilt == "bad" and mon_tilt == "good":
+        overall_label, overall_color = "THANH KHOẢN THUẬN LỢI (dù kinh tế đang yếu)", "good"
+        overall_text = ("Kinh tế (tăng trưởng/lao động) đang yếu, NHƯNG điều kiện tiền tệ đang nới lỏng rõ — đây là kiểu 'liquidity bull' "
+                         "(thanh khoản dễ thường hỗ trợ giá tài sản ngay cả khi kinh tế thực chưa khỏe) — KHÔNG nên mặc định 'kinh tế yếu = xấu cho đầu tư'.")
+    elif econ_tilt == "good" and mon_tilt in ("bad", "mixed") and inv_tilt in ("bad", "mixed"):
+        overall_label, overall_color = "KINH TẾ VỮNG NHƯNG ĐIỀU KIỆN TIỀN TỆ/TÀI CHÍNH THẮT CHẶT", "warn"
+        overall_text = ("Tăng trưởng/lao động còn ổn, nhưng lạm phát/Fed/lợi suất thực đang nghiêng về hướng thắt chặt — "
+                         "KHÔNG nên kết luận 'kinh tế tốt → thuận lợi đầu tư' chỉ vì tăng trưởng còn khỏe. Môi trường hiện tại thiên về cần CHỌN LỌC/PHÒNG THỦ hơn là risk-on toàn diện.")
+    elif econ_tilt == "good" and mon_tilt == "good" and inv_tilt == "good":
+        overall_label, overall_color = "THUẬN LỢI CHO TÀI SẢN RỦI RO", "good"
+        overall_text = "Cả 3 mặt (kinh tế, tiền tệ, tài chính) đều đang nghiêng tích cực hoặc trung tính — môi trường tương đối thuận lợi cho tài sản rủi ro."
+    elif "bad" in (econ_tilt, mon_tilt, inv_tilt):
+        overall_label, overall_color = "KHÓ KHĂN TRÊN NHIỀU MẶT", "bad"
+        overall_text = "Có ít nhất 1 trong 3 mặt (kinh tế/tiền tệ/tài chính) đang xấu RÕ RỆT (tất cả chỉ báo trong nhóm đều warn/bad) — môi trường hiện tại chưa thuận lợi cho tài sản rủi ro."
+    else:
+        overall_label, overall_color = "HỖN HỢP — CẦN CHỌN LỌC", "neutral"
+        overall_text = "Các mặt đang cho tín hiệu pha trộn (vừa có điểm tích cực vừa có điểm tiêu cực), chưa nghiêng rõ hẳn về 1 phía — nên chọn lọc theo từng tài sản/ngành cụ thể hơn là đặt cược theo xu hướng chung."
+
+    overall = {"label": overall_label, "color": overall_color,
+               "text": (f"{overall_text} (Kinh tế: {econ_tilt or 'n/a'}; Tiền tệ: {mon_tilt or 'n/a'}; Tài chính: {inv_tilt or 'n/a'} — "
+                         "đây là ĐỌC TỔNG HỢP có chủ đích từ 3 nhóm độc lập ở trên, KHÔNG phải cộng điểm số.)")}
+
+    return {"economic": economic, "monetary": monetary, "investment": investment, "overall": overall}
 
 
 def _fed_liquidity(raw):
