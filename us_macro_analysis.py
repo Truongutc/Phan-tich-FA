@@ -237,12 +237,133 @@ def build_us_macro(raw):
     treasury_credit = _treasury_credit(raw)
     usd = _usd(raw)
     capital_flows = _capital_flows(raw)
+    states = _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, usd, capital_flows)
 
     return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks, "contributions": contributions,
             "pipeline": pipeline, "real_consumption": real, "rates": rates, "liquidity": liquidity,
-            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd, "capital_flows": capital_flows,
+            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd, "capital_flows": capital_flows, "states": states,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
+
+
+# THEM 2026-10-08 (user: "không nên làm chấm điểm gộp, vì cùng 1 mức điểm nhưng nói lên nhiều
+# trạng thái, thay vì đó thì bạn có thể làm đánh giá từng chỉ tiêu để đánh giá trạng thái") — mỗi
+# NHÓM trong ma trận có 1 đánh giá trạng thái RULE-BASED riêng (ngưỡng số thực tế, không AI, giống
+# cách build_synthesis_vimo() đã làm cho vĩ mô VN) — label + màu (good/neutral/warn/bad) + 1 câu
+# giải thích TỪ SỐ LIỆU THẬT. KHÔNG cộng dồn các label này thành điểm tổng — mỗi nhóm đứng độc lập,
+# người đọc tự tổng hợp bức tranh chung từ nhiều trạng thái khác nhau.
+def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, usd, capital_flows):
+    states = {}
+
+    if headline.get("cpi_3m_ann") is not None:
+        m = headline["cpi_3m_ann"]
+        if m < 2:
+            label, color = "Đang về mục tiêu (~2%)", "good"
+        elif m < 3.5:
+            label, color = "Hạ nhiệt nhưng còn trên mục tiêu", "neutral"
+        elif m < 5:
+            label, color = "Dai dẳng, chưa hạ nhiệt rõ", "warn"
+        else:
+            label, color = "Nóng trở lại", "bad"
+        states["inflation"] = {"label": label, "color": color,
+            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (so mục tiêu Fed ~2%)."}
+
+    if growth and growth.get("gdp"):
+        g = growth["gdp"]["qoq_annualized"]
+        if g is None:
+            pass
+        elif g < 0:
+            label, color = "Suy giảm", "bad"
+        elif g < 1.5:
+            label, color = "Tăng trưởng yếu", "warn"
+        elif g < 3:
+            label, color = "Tăng trưởng vừa phải", "neutral"
+        else:
+            label, color = "Tăng trưởng mạnh", "good"
+        if g is not None:
+            ip_note = f", sản xuất công nghiệp YoY {growth['indpro']['yoy']}%" if growth.get("indpro") else ""
+            states["growth"] = {"label": label, "color": color,
+                "detail": f"GDP thực quý {growth['gdp']['latest']} tăng {g}%/năm (QoQ năm hóa), YoY {growth['gdp']['yoy']}%{ip_note}."}
+
+    if labor:
+        avg3 = labor.get("payrolls_mom_3m_avg")
+        if avg3 is not None:
+            if avg3 < 0:
+                label, color = "Suy yếu — mất việc làm ròng", "bad"
+            elif avg3 < 100:
+                label, color = "Hạ nhiệt rõ rệt", "warn"
+            elif avg3 < 200:
+                label, color = "Tăng trưởng vừa phải", "neutral"
+            else:
+                label, color = "Tăng trưởng mạnh", "good"
+            rw = labor.get("real_wage_yoy")
+            rw_note = f", lương thực YoY {rw}%" if rw is not None else ""
+            states["labor"] = {"label": label, "color": color,
+                "detail": f"Việc làm phi NN thêm TB 3 tháng {avg3}k/tháng (tháng gần nhất {labor.get('payrolls_mom')}k), thất nghiệp {labor.get('unemployment_latest')}%{rw_note}."}
+
+    fed_funds = rates.get("usm_fed_funds", {}).get("latest")
+    cpi_yoy = headline.get("cpi_yoy")
+    if fed_funds is not None and cpi_yoy is not None:
+        real_rate = round(fed_funds - cpi_yoy, 2)
+        if real_rate > 1.5:
+            policy_label, policy_color = "Thắt chặt rõ rệt", "warn"
+        elif real_rate > 0:
+            policy_label, policy_color = "Thắt chặt nhẹ", "neutral"
+        else:
+            policy_label, policy_color = "Nới lỏng thực (lãi suất thực âm)", "good"
+        bs_note = ""
+        if liquidity:
+            chg6 = liquidity["changes"]["usm_fed_assets"]["chg_pct_6m"]
+            if chg6 is not None:
+                if chg6 > 0.5:
+                    bs_note = "; bảng cân đối đang MỞ RỘNG trở lại (QE)"
+                elif chg6 < -0.5:
+                    bs_note = "; bảng cân đối đang THU HẸP (QT)"
+                else:
+                    bs_note = "; bảng cân đối đi ngang"
+        states["fed_policy"] = {"label": policy_label, "color": policy_color,
+            "detail": f"Lãi suất quỹ liên bang {fed_funds}% − CPI YoY {cpi_yoy}% = lãi suất thực ~{real_rate}%{bs_note}."}
+
+    if treasury_credit:
+        v, c = treasury_credit["latest_values"], treasury_credit["changes"]
+        spread = v.get("usm_spread_10y_2y")
+        curve_label = "Đường cong ĐẢO NGƯỢC — tín hiệu cảnh báo suy thoái kinh điển" if (spread is not None and spread < 0) else "Đường cong bình thường (dốc lên)"
+        curve_color = "bad" if (spread is not None and spread < 0) else "good"
+        hy_chg6 = c.get("usm_hy_oas", {}).get("chg_6m")
+        credit_note = ""
+        if hy_chg6 is not None:
+            if hy_chg6 > 0.3:
+                credit_note = "; chênh lệch tín dụng High Yield NỚI RỘNG rõ — khẩu vị rủi ro đang giảm"
+            elif hy_chg6 < -0.3:
+                credit_note = "; chênh lệch tín dụng High Yield THU HẸP — khẩu vị rủi ro đang cao (cẩn trọng nếu quá chủ quan)"
+        states["treasury_credit"] = {"label": curve_label, "color": curve_color,
+            "detail": f"10Y-2Y = {spread}%, HY OAS {v.get('usm_hy_oas')}%{credit_note}."}
+
+    if usd:
+        c12 = usd.get("chg_pct_12m")
+        if c12 is not None:
+            if c12 > 3:
+                label, color = "USD mạnh lên rõ rệt", "neutral"
+            elif c12 < -3:
+                label, color = "USD yếu đi rõ rệt", "neutral"
+            else:
+                label, color = "USD dao động trong biên hẹp", "neutral"
+            states["usd"] = {"label": label, "color": color,
+                "detail": f"Chỉ số USD Broad {usd.get('latest_value')} ({usd.get('latest')}), thay đổi {c12}%/12 tháng — ảnh hưởng ngược chiều giá hàng hóa USD và dòng vốn vào thị trường mới nổi."}
+
+    if capital_flows:
+        oc12 = capital_flows.get("official_chg_pct_12m")
+        if oc12 is not None:
+            if oc12 < -3:
+                label, color = "Khối chính thức/NHTW đang RÚT rõ rệt khỏi Treasury Mỹ", "warn"
+            elif oc12 > 3:
+                label, color = "Khối chính thức/NHTW đang TĂNG mua Treasury Mỹ", "good"
+            else:
+                label, color = "Khối chính thức/NHTW ổn định", "neutral"
+            states["capital_flows"] = {"label": label, "color": color,
+                "detail": f"Tổng nước ngoài nắm giữ thay đổi {capital_flows.get('total_chg_pct_12m')}%/12 tháng; khối chính thức {oc12}%/12 tháng."}
+
+    return states
 
 
 def _fed_liquidity(raw):

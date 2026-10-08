@@ -1117,6 +1117,19 @@ function usUsdCard(u, f) {
         <p class="ind-source-note">Nguồn: FRED — DTWEXBGS (Trade Weighted US Dollar Index: Broad, Goods and Services, 2006=100). USD mạnh lên thường gây áp lực giảm giá hàng hóa định giá bằng USD (dầu, vàng) và hút vốn khỏi thị trường mới nổi (ảnh hưởng tỷ giá VND gián tiếp).</p>`;
 }
 
+// THEM 2026-10-08 (user: "không nên làm chấm điểm gộp... làm đánh giá từng chỉ tiêu để đánh giá
+// trạng thái") — badge trạng thái RULE-BASED (us_macro_analysis.py:_assess_states), ĐỘC LẬP theo
+// từng nhóm, KHÔNG cộng dồn thành điểm tổng. Màu chỉ phản ánh trạng thái CỦA RIÊNG nhóm đó.
+function usStateBadge(s) {
+    if (!s) return '';
+    const colors = { good: '#10b981', neutral: '#f59e0b', warn: '#f97316', bad: '#ef4444' };
+    const c = colors[s.color] || '#9aa5bd';
+    return `<div style="background:${c}1a;border:1px solid ${c};border-radius:8px;padding:8px 12px;margin-bottom:12px">
+        <span style="color:${c};font-weight:700">● ${s.label}</span>
+        <div style="color:#cbd5e1;font-size:0.85em;margin-top:3px">${s.detail}</div>
+    </div>`;
+}
+
 function renderUsMacro(usm) {
     const box = document.getElementById('us-macro-container');
     if (!box || !usm) return;
@@ -1137,7 +1150,7 @@ function renderUsMacro(usm) {
     box.innerHTML = `
       ${card('🇺🇸 Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
             <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ.</p>`)}
-      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
+      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
@@ -1152,7 +1165,10 @@ function renderUsMacro(usm) {
             <div class="monitoring-table-scroll" style="overflow-x:auto">
                 <div style="width:${Math.max(1100, usm.contributions.periods.length * 14)}px"><div class="ind-chart" style="height:420px"><canvas id="chart-us-contrib"></canvas></div></div>
             </div>
-            <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Kéo/lăn chuột ngang để xem lịch sử — mặc định hiện tháng gần nhất. Xem mục 2c để đọc rõ ràng hơn cho 1 kỳ cụ thể.</p>`)}
+            <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Kéo/lăn chuột ngang để xem lịch sử — mặc định hiện tháng gần nhất. Trục Y dùng CHUNG cho cả giai đoạn (kể cả đỉnh lạm phát 2021-2022) nên các tháng gần đây (CPI thấp hơn nhiều) nhìn cột bị "lùn" đi — xem biểu đồ 2e bên dưới để phóng to riêng giai đoạn gần nhất.</p>`)}
+      ${card('2e. Đóng góp 24 tháng gần nhất (phóng to, trục Y riêng)', `
+            <div class="ind-chart" style="height:380px"><canvas id="chart-us-contrib-recent"></canvas></div>
+            <p class="ind-source-note">Giống hệt dữ liệu ở mục 2d, chỉ CẮT RIÊNG 24 tháng gần nhất và để Chart.js tự giãn trục Y theo đúng biên độ của riêng giai đoạn này — dễ đọc độ cao từng cấu phần hơn khi không bị đỉnh lạm phát 2021-2022 "đè" cho thấp xuống.</p>`)}
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
             <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
       ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
@@ -1164,12 +1180,12 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Crack = giá sản phẩm (Vịnh Mexico, EIA) × 42 − WTI. Crack 3-2-1 = (2 × xăng + diesel)/3 − WTI. Hiện: diesel ${f(usm.cracks.latest.diesel_crack, 1)} $/thùng, 3-2-1 ${f(usm.cracks.latest.crack_321, 1)} $/thùng (${usm.cracks.latest.period}). Crack cao cho thấy lọc dầu đang bán sản phẩm đắt hơn nhiều so với giá dầu thô — đúng kiểu cú sốc diesel mà bài viết nêu.</p>`)}
       ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
             <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
-      ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usFedLiquidityCard(usm.liquidity, f)) : ''}
-      ${usm.growth ? card('8. Tăng trưởng — GDP thực & sản xuất công nghiệp', usGrowthCard(usm.growth, f)) : ''}
-      ${usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usLaborCard(usm.labor, f)) : ''}
-      ${usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usTreasuryCreditCard(usm.treasury_credit, f)) : ''}
-      ${usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usUsdCard(usm.usd, f)) : ''}
-      ${usm.capital_flows ? card('12. Capital Flows — nước ngoài nắm giữ Treasury Mỹ (TIC)', usCapitalFlowsCard(usm.capital_flows, f)) : ''}
+      ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usStateBadge(usm.states && usm.states.fed_policy) + usFedLiquidityCard(usm.liquidity, f)) : ''}
+      ${usm.growth ? card('8. Tăng trưởng — GDP thực & sản xuất công nghiệp', usStateBadge(usm.states && usm.states.growth) + usGrowthCard(usm.growth, f)) : ''}
+      ${usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usStateBadge(usm.states && usm.states.labor) + usLaborCard(usm.labor, f)) : ''}
+      ${usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usStateBadge(usm.states && usm.states.treasury_credit) + usTreasuryCreditCard(usm.treasury_credit, f)) : ''}
+      ${usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usStateBadge(usm.states && usm.states.usd) + usUsdCard(usm.usd, f)) : ''}
+      ${usm.capital_flows ? card('12. Capital Flows — nước ngoài nắm giữ Treasury Mỹ (TIC)', usStateBadge(usm.states && usm.states.capital_flows) + usCapitalFlowsCard(usm.capital_flows, f)) : ''}
       ${card('Lãi suất & việc làm (tóm tắt nhanh)', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
     `;
 
@@ -1215,6 +1231,17 @@ function renderUsMacro(usm) {
             data: r.values, backgroundColor: colors[r.key] || '#999', borderWidth: 0 })) },
             options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' },
                        scales: { x: { ...ax, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } } });
+
+        // THEM 2026-10-08 (user: "số tháng gần nhất bị bé quá, cột không rộng như bình thường nên
+        // khó nhìn") — cùng dữ liệu, cắt 24 tháng gần nhất, để Chart.js tự giãn trục Y RIÊNG cho
+        // đoạn này (không bị đỉnh lạm phát 2021-2022 kéo giãn trục chung làm cột gần đây bị "lùn").
+        const n24 = Math.min(24, ct.periods.length);
+        mk('chart-us-contrib-recent', { type: 'bar', data: { labels: ct.periods.slice(-n24), datasets: ct.rows.map(r => ({
+            label: r.label + (r.weight_pct !== null ? ` (${r.weight_pct.toFixed(1)}%)` : ''),
+            data: r.values.slice(-n24), backgroundColor: colors[r.key] || '#999', borderWidth: 0 })) },
+            options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' },
+                       scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false }, stacked: true },
+                                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } } });
     })();
     mk('chart-us-breadth', { type: 'line', data: { labels: hist.periods, datasets: [
         line('% nhóm CPI có YoY > 3%', hist.breadth_gt3_pct, '#a78bfa')] },
