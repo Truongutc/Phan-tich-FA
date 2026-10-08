@@ -1212,18 +1212,41 @@ function usOverviewSection(usm, f) {
     // mức lạm phát/độ dai dẳng) — 9 dòng thay vì 7, khớp us_macro_analysis.py:_assess_states bản
     // mới (fed_policy và fed_balance_sheet giờ là 2 state riêng; inflation_persistence tách khỏi
     // inflation).
+    // THEM 2026-10-08 (user gửi tài liệu "Turning point": "không chỉ hỏi hiện tại tốt/xấu, mà hỏi
+    // đang tốt lên hay xấu đi" — mỗi dòng thêm `trendData` = ĐÚNG mảng dữ liệu dùng cho sparkline
+    // (xem mkSpark bên dưới), so giá trị mới nhất với 3 kỳ trước để ra mũi tên ↑/↓/→. CHỈ LÀ MŨI
+    // TÊN MÔ TẢ (số đang tăng/giảm), KHÔNG tự gán "tăng = tốt" hay "giảm = xấu" — vì nhiều chỉ số
+    // (USD, lợi suất, dòng vốn...) không có 1 chiều "tốt/xấu" cố định, tùy bối cảnh — người đọc tự
+    // kết hợp với badge trạng thái (đã có) để luận ra tốt lên hay xấu đi.
     const rows = [
-        { key: 'growth', label: 'Tăng trưởng (GDP)', metric: usm.growth && usm.growth.gdp ? `GDP QoQ năm hóa: ${f(usm.growth.gdp.qoq_annualized)}%` : '—', spark: 'spark-growth' },
-        { key: 'labor', label: 'Lao động', metric: usm.labor ? `Việc làm thêm TB 3T: ${f(usm.labor.payrolls_mom_3m_avg, 0)}k` : '—', spark: 'spark-labor' },
-        { key: 'inflation', label: 'Lạm phát — mức độ (CPI)', metric: `CPI YoY: ${f(usm.headline.cpi_yoy)}%`, spark: 'spark-inflation' },
-        { key: 'inflation_persistence', label: 'Lạm phát — độ dai dẳng/lan truyền', metric: usm.breadth ? `${f(usm.breadth.pct_gt_3, 0)}% nhóm CPI tăng &gt;3%` : '—', spark: 'spark-persistence' },
-        { key: 'fed_policy', label: 'Fed — chính sách lãi suất', metric: usm.rates.usm_fed_funds ? `Lãi suất quỹ LB: ${f(usm.rates.usm_fed_funds.latest)}%` : '—', spark: 'spark-fed' },
-        { key: 'fed_balance_sheet', label: 'Fed — bảng cân đối (QE/QT)', metric: usm.liquidity ? `Liquidity Impulse: ${f(usm.liquidity.liquidity_impulse_latest / 1000, 1)} tỷ$` : '—', spark: 'spark-fedbs' },
-        { key: 'treasury_credit', label: 'Lợi suất & tín dụng', metric: usm.treasury_credit ? `10Y-2Y: ${f(usm.treasury_credit.latest_values.usm_spread_10y_2y)}%` : '—', spark: 'spark-credit' },
-        { key: 'usd', label: 'USD', metric: usm.usd ? `Chỉ số Broad: ${f(usm.usd.latest_value)}` : '—', spark: 'spark-usd' },
-        { key: 'capital_flows', label: 'Capital Flows (TIC)', metric: usm.capital_flows ? `Tổng NN nắm giữ: ${f(usm.capital_flows.total_latest / 1000, 2)}T$` : '—', spark: 'spark-capflows' },
+        { key: 'growth', label: 'Tăng trưởng (GDP)', metric: usm.growth && usm.growth.gdp ? `GDP QoQ năm hóa: ${f(usm.growth.gdp.qoq_annualized)}%` : '—', spark: 'spark-growth',
+          trendData: usm.growth && usm.growth.gdp ? usm.growth.history.gdp.qoq_ann : null },
+        { key: 'labor', label: 'Lao động', metric: usm.labor ? `Việc làm thêm TB 3T: ${f(usm.labor.payrolls_mom_3m_avg, 0)}k` : '—', spark: 'spark-labor',
+          trendData: usm.labor ? usm.labor.history.payrolls_mom_3m_avg : null },
+        { key: 'inflation', label: 'Lạm phát — mức độ (CPI)', metric: `CPI YoY: ${f(usm.headline.cpi_yoy)}%`, spark: 'spark-inflation',
+          trendData: usm.history.cpi_yoy },
+        { key: 'inflation_persistence', label: 'Lạm phát — độ dai dẳng/lan truyền', metric: usm.breadth ? `${f(usm.breadth.pct_gt_3, 0)}% nhóm CPI tăng &gt;3%` : '—', spark: 'spark-persistence',
+          trendData: usm.history.breadth_gt3_pct },
+        { key: 'fed_policy', label: 'Fed — chính sách lãi suất', metric: usm.rates.usm_fed_funds ? `Lãi suất quỹ LB: ${f(usm.rates.usm_fed_funds.latest)}%` : '—', spark: 'spark-fed',
+          trendData: usm.rates.usm_fed_funds && usm.rates.usm_fed_funds.history ? usm.rates.usm_fed_funds.history.values : null },
+        { key: 'fed_balance_sheet', label: 'Fed — bảng cân đối (QE/QT)', metric: usm.liquidity ? `Liquidity Impulse: ${f(usm.liquidity.liquidity_impulse_latest / 1000, 1)} tỷ$` : '—', spark: 'spark-fedbs',
+          trendData: usm.liquidity ? usm.liquidity.history.liquidity_impulse : null },
+        { key: 'treasury_credit', label: 'Lợi suất & tín dụng', metric: usm.treasury_credit ? `10Y-2Y: ${f(usm.treasury_credit.latest_values.usm_spread_10y_2y)}%` : '—', spark: 'spark-credit',
+          trendData: usm.treasury_credit ? usm.treasury_credit.history.spread_10y_2y : null },
+        { key: 'usd', label: 'USD', metric: usm.usd ? `Chỉ số Broad: ${f(usm.usd.latest_value)}` : '—', spark: 'spark-usd',
+          trendData: usm.usd ? usm.usd.history.values : null },
+        { key: 'capital_flows', label: 'Capital Flows (TIC)', metric: usm.capital_flows ? `Tổng NN nắm giữ: ${f(usm.capital_flows.total_latest / 1000, 2)}T$` : '—', spark: 'spark-capflows',
+          trendData: usm.capital_flows ? usm.capital_flows.history.total : null },
     ];
     const colors = { good: '#10b981', neutral: '#9aa5bd', warn: '#f97316', bad: '#ef4444' };
+    const trendArrow = (arr, n = 4) => {
+        if (!arr || arr.length < n) return '';
+        const last = arr[arr.length - 1], prev = arr[arr.length - n];
+        if (last === null || last === undefined || prev === null || prev === undefined) return '';
+        const diff = last - prev;
+        if (Math.abs(diff) < Math.abs(last || 1) * 0.005) return '→';
+        return diff > 0 ? '↑' : '↓';
+    };
     // THEM 2026-10-08 (user: "3 câu hỏi độc lập: A. Kinh tế khỏe/yếu? B. Tiền tệ nới/thắt? C. Môi
     // trường có thuận lợi cho tài sản rủi ro không? — 3 cái có thể cho 3 kết quả khác nhau") — 3
     // đoạn văn NGẮN, ĐỘC LẬP (us_macro_analysis.py:_build_synthesis — ghép câu rule-based từ các
@@ -1252,10 +1275,11 @@ function usOverviewSection(usm, f) {
     const body = rows.map(r => {
         const s = usm.states && usm.states[r.key];
         const c = s ? (colors[s.color] || '#9aa5bd') : '#9aa5bd';
+        const arrow = trendArrow(r.trendData);
         return `<tr>
             <th style="text-align:left;white-space:nowrap">${r.label}</th>
             <td style="color:${c};font-weight:700;white-space:nowrap">● ${s ? s.label : '—'}</td>
-            <td style="color:#e5e7eb;white-space:nowrap">${r.metric}</td>
+            <td style="color:#e5e7eb;white-space:nowrap">${r.metric}${arrow ? ` <span style="color:#9aa5bd;font-weight:700" title="So với ~3 kỳ gần nhất trước đó">${arrow}</span>` : ''}</td>
             <td style="width:110px"><div style="width:100px;height:32px"><canvas id="${r.spark}"></canvas></div></td>
         </tr>`;
     }).join('');
@@ -1270,7 +1294,7 @@ function usOverviewSection(usm, f) {
             <th style="text-align:left">Nhóm</th><th>Trạng thái</th><th>Chỉ số chính</th><th>Xu hướng gần đây</th>
         </tr></thead><tbody>${body}</tbody></table></div>
         ${watchHtml}
-        <p class="ind-source-note">Bảng là LIỆT KÊ lại ${rows.length} trạng thái độc lập đã đánh giá chi tiết ở các mục bên dưới — KHÔNG cộng dồn/tính điểm tổng. Mỗi nhóm đứng riêng, tự đọc theo đúng bối cảnh của nó (vd USD mạnh không "tốt" hay "xấu" per se, chỉ là 1 sự kiện cần biết).</p>`;
+        <p class="ind-source-note">Bảng là LIỆT KÊ lại ${rows.length} trạng thái độc lập đã đánh giá chi tiết ở các mục bên dưới — KHÔNG cộng dồn/tính điểm tổng. Mỗi nhóm đứng riêng, tự đọc theo đúng bối cảnh của nó (vd USD mạnh không "tốt" hay "xấu" per se, chỉ là 1 sự kiện cần biết). Mũi tên cạnh "Chỉ số chính" chỉ MÔ TẢ số liệu đang tăng (↑)/giảm (↓)/đi ngang (→) so ~3 kỳ gần nhất trước đó — KHÔNG tự gán tăng=tốt hay giảm=xấu, vì nhiều chỉ số (USD, lợi suất...) không có 1 chiều tốt/xấu cố định.</p>`;
 }
 
 function renderUsMacro(usm) {
