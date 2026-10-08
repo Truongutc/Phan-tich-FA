@@ -91,6 +91,16 @@ def _annualized(s, period, months):
     return round((ratio ** (12 / months) - 1) * 100, 2)
 
 
+def _chg_abs(s, latest, months):
+    cur, prev = s.get(latest), s.get(_shift(latest, -months))
+    return round(cur - prev, 4) if cur is not None and prev is not None else None
+
+
+def _chg_pct(s, latest, months):
+    cur, prev = s.get(latest), s.get(_shift(latest, -months))
+    return round((cur / prev - 1) * 100, 2) if cur is not None and prev else None
+
+
 def _corr(a, b):
     if len(a) < 24:
         return None
@@ -222,9 +232,14 @@ def build_us_macro(raw):
     cracks = _crack_spreads(raw)
     contributions = _cpi_contributions(raw, periods)
     liquidity = _fed_liquidity(raw)
+    growth = _growth(raw)
+    labor = _labor(raw)
+    treasury_credit = _treasury_credit(raw)
+    usd = _usd(raw)
 
     return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks, "contributions": contributions,
             "pipeline": pipeline, "real_consumption": real, "rates": rates, "liquidity": liquidity,
+            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
 
@@ -288,6 +303,123 @@ def _fed_liquidity(raw):
             "tga": [series["usm_fed_tga"].get(p) for p in periods],
             "net_liquidity": [net_liq.get(p) for p in periods],
         },
+    }
+
+
+# THEM 2026-10-08 (user: "tiếp tục triển khai theo ma trận đã bàn" — "US Macro Liquidity Matrix"
+# user gửi: Growth/Labor/Treasury&Credit/USD. KHÔNG chấm điểm gộp Macro Score/Liquidity Score như
+# bản gốc đề xuất — giữ đúng nguyên tắc đã chốt: chỉ đưa số liệu thô độc lập, người đọc tự kết
+# luận. "Capital Flows" (TIC — nước ngoài nắm giữ Treasury) KHÔNG có trên FRED, cần nguồn riêng từ
+# treasury.gov/tic (giống tình trạng EIA dầu mỏ/OPEC+ trước đây) — CHƯA làm, bỏ qua tạm.
+def _growth(raw):
+    """GDP thực (quý) + sản xuất công nghiệp (tháng). Không có Leading Index (USSLIND đã bị FRB
+    Philadelphia ngừng công bố từ 2020-02, xem ghi chú ở US_MACRO_SERIES)."""
+    gdp = _series(raw, "usm_gdp_real")
+    indpro = _series(raw, "usm_indpro")
+    if not gdp and not indpro:
+        return None
+
+    def _qoq_ann(s, period):
+        cur, prev = s.get(period), s.get(_shift(period, -3))
+        return round(((cur / prev) ** 4 - 1) * 100, 2) if cur is not None and prev else None
+
+    gdp_periods = sorted(gdp) if gdp else []
+    ip_periods = sorted(p for p in indpro if _yoy(indpro, p) is not None) if indpro else []
+    gdp_latest = gdp_periods[-1] if gdp_periods else None
+    ip_latest = ip_periods[-1] if ip_periods else None
+
+    return {
+        "gdp": {"latest": gdp_latest, "yoy": _yoy(gdp, gdp_latest), "qoq_annualized": _qoq_ann(gdp, gdp_latest)} if gdp_latest else None,
+        "indpro": {"latest": ip_latest, "yoy": _yoy(indpro, ip_latest), "mom_3m_ann": _annualized(indpro, ip_latest, 3)} if ip_latest else None,
+        "history": {
+            "gdp": {"periods": gdp_periods, "yoy": [_yoy(gdp, p) for p in gdp_periods], "qoq_ann": [_qoq_ann(gdp, p) for p in gdp_periods]},
+            "indpro": {"periods": ip_periods, "yoy": [_yoy(indpro, p) for p in ip_periods]},
+        },
+    }
+
+
+def _labor(raw):
+    """Việc làm phi NN (thay đổi MoM, nghìn người — số được theo dõi nhiều nhất mỗi báo cáo BLS),
+    trợ cấp thất nghiệp lần đầu, JOLTS job openings, tỷ lệ tham gia LLLĐ, thu nhập bình quân giờ
+    (so YoY với CPI YoY ra "lương thực" — cùng kiểu real-vs-nominal đã làm ở mục tiêu dùng)."""
+    payrolls = _series(raw, "usm_payrolls")
+    if not payrolls:
+        return None
+    claims = _series(raw, "usm_claims")
+    openings = _series(raw, "usm_job_openings")
+    participation = _series(raw, "usm_participation")
+    earnings = _series(raw, "usm_avg_earnings")
+    unemployment = _series(raw, "usm_unemployment")
+    cpi = _series(raw, "usm_cpi")
+
+    periods = sorted(p for p in payrolls if _shift(p, -1) in payrolls)
+    mom = {p: round(payrolls[p] - payrolls[_shift(p, -1)], 1) for p in periods}
+
+    def _avg3(p):
+        i = periods.index(p)
+        return round(sum(mom[x] for x in periods[i - 2:i + 1]) / 3, 1) if i >= 2 else None
+
+    latest = periods[-1]
+    openings_latest = max(openings) if openings else None
+    participation_latest = max(participation) if participation else None
+    earnings_latest = max(earnings) if earnings else None
+    unemployment_latest = max(unemployment) if unemployment else None
+
+    def _real_wage(p):
+        ey, cy = _yoy(earnings, p), _yoy(cpi, p)
+        return round(ey - cy, 2) if ey is not None and cy is not None else None
+
+    return {
+        "latest_period": latest, "payrolls_mom": mom[latest], "payrolls_mom_3m_avg": _avg3(latest),
+        "claims": {"period": max(claims), "latest": claims[max(claims)]} if claims else None,
+        "openings": {"period": openings_latest, "latest": openings.get(openings_latest), "yoy": _yoy(openings, openings_latest)} if openings_latest else None,
+        "participation": {"period": participation_latest, "latest": participation.get(participation_latest), "chg_12m_pp": _chg_abs(participation, participation_latest, 12)} if participation_latest else None,
+        "earnings_yoy": _yoy(earnings, earnings_latest) if earnings_latest else None,
+        "real_wage_yoy": _real_wage(earnings_latest) if earnings_latest else None,
+        "unemployment_latest": unemployment.get(unemployment_latest) if unemployment_latest else None,
+        "history": {
+            "periods": periods,
+            "payrolls_mom": [mom[p] for p in periods],
+            "payrolls_mom_3m_avg": [_avg3(p) for p in periods],
+            "unemployment": [unemployment.get(p) for p in periods] if unemployment else None,
+            "claims": [claims.get(p) for p in periods] if claims else None,
+            "real_wage_yoy": [_real_wage(p) for p in periods],
+        },
+    }
+
+
+def _treasury_credit(raw):
+    """Đường cong lợi suất (2Y/10Y), lợi suất thực TIPS 10Y, lạm phát kỳ vọng hòa vốn (breakeven),
+    chênh lệch tín dụng High Yield & Investment Grade (OAS) — tất cả từ FRED, daily, lấy TB tháng."""
+    y2, y10 = _series(raw, "usm_yield_2y"), _series(raw, "usm_yield_10y")
+    spread, real10 = _series(raw, "usm_spread_10y_2y"), _series(raw, "usm_real_yield_10y")
+    breakeven, hy, ig = _series(raw, "usm_breakeven_10y"), _series(raw, "usm_hy_oas"), _series(raw, "usm_ig_oas")
+    if not y10:
+        return None
+    series_map = {"usm_yield_2y": y2, "usm_yield_10y": y10, "usm_spread_10y_2y": spread,
+                  "usm_real_yield_10y": real10, "usm_breakeven_10y": breakeven, "usm_hy_oas": hy, "usm_ig_oas": ig}
+    latest = max(y10)
+    periods = sorted(y10)
+    latest_values = {k: s.get(latest) for k, s in series_map.items()}
+    changes = {k: {"chg_6m": _chg_abs(s, latest, 6), "chg_12m": _chg_abs(s, latest, 12)} for k, s in series_map.items()}
+    return {
+        "latest": latest, "latest_values": latest_values, "changes": changes,
+        "history": {"periods": periods, **{k.replace("usm_", ""): [s.get(p) for p in periods] for k, s in series_map.items()}},
+    }
+
+
+def _usd(raw):
+    """Chỉ số USD trọng số thương mại rộng (DTWEXBGS, FRED) — USD mạnh/yếu ảnh hưởng ngược chiều
+    tới hàng hóa định giá bằng USD (dầu, vàng...) và dòng vốn vào thị trường mới nổi (VN)."""
+    dxy = _series(raw, "usm_dxy_broad")
+    if not dxy:
+        return None
+    latest = max(dxy)
+    periods = sorted(dxy)
+    return {
+        "latest": latest, "latest_value": dxy[latest],
+        "chg_pct_6m": _chg_pct(dxy, latest, 6), "chg_pct_12m": _chg_pct(dxy, latest, 12),
+        "history": {"periods": periods, "values": [dxy.get(p) for p in periods]},
     }
 
 

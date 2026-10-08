@@ -2353,12 +2353,21 @@ _FX_PRESSURE_KEYS_BY_SHEET = {
     # Dữ liệu vĩ mô Mỹ (FRED, từ 2015 tới nay) — 1 sheet riêng, không trộn vào sheet chung của VN.
     "US_MACRO_RAW": [
         "usm_cpi", "usm_core_cpi", "usm_cpi_goods", "usm_cpi_services", "usm_cpi_food", "usm_cpi_energy",
-        "usm_cpi_shelter", "usm_cpi_transport", "usm_cpi_medical", "usm_cpi_apparel", "usm_cpi_recreation",
-        "usm_cpi_education_comm", "usm_cpi_other", "usm_ppi_final_demand", "usm_ppi_all_commodities",
+        "usm_cpi_energy_services", "usm_cpi_shelter", "usm_cpi_transport", "usm_cpi_medical", "usm_cpi_apparel",
+        "usm_cpi_recreation", "usm_cpi_education_comm", "usm_cpi_other", "usm_ppi_final_demand", "usm_ppi_all_commodities",
         "usm_ppi_industrial_commodities", "usm_import_price", "usm_export_price", "usm_retail_sales",
         "usm_pce_nominal", "usm_pce_real", "usm_pce_price", "usm_oil_wti", "usm_gasoline",
         "usm_brent", "usm_diesel_gulf", "usm_gasoline_gulf",
         "usm_unemployment", "usm_fed_funds", "usm_yield_10y", "usm_spread_10y_2y",
+        # THEM 2026-10-08: cac nhom con lai trong "US Macro Liquidity Matrix" (Fed/ECB balance
+        # sheet da fetch truoc, Growth/Labor/Treasury&Credit/USD them lan nay) - sheet nay truoc
+        # do thieu ca nhom Fed/ECB (sot tu luc them o buoi truoc, chua ghi vao list nay).
+        "usm_fed_assets", "usm_fed_treasury", "usm_fed_mbs", "usm_fed_reserves", "usm_fed_rrp",
+        "usm_fed_tga", "usm_ecb_assets",
+        "usm_gdp_real", "usm_indpro",
+        "usm_payrolls", "usm_claims", "usm_job_openings", "usm_participation", "usm_avg_earnings",
+        "usm_yield_2y", "usm_real_yield_10y", "usm_breakeven_10y", "usm_hy_oas", "usm_ig_oas",
+        "usm_dxy_broad",
     ],
     "NgoaiTe_ThiTruong_Ngay": [
         "usdvnd_vcb_sell_daily", "usd_cho_den_sell_daily", "usd_cho_den_vcb_gap",

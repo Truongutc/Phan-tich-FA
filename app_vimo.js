@@ -1028,6 +1028,82 @@ function usFedLiquidityCard(liq, f) {
         <p class="ind-source-note">Nguồn: Fed H.4.1 qua FRED (cập nhật hàng tuần, lấy trung bình tháng). "Net Liquidity" là cách giới phân tích thị trường hay dùng (Tổng tài sản − RRP − TGA), KHÔNG phải định nghĩa chính thức của Fed — RRP và TGA là 2 "bể chứa" hút tiền ra khỏi hệ thống ngân hàng, dù Fed không đổi tổng tài sản. Treasury holdings đang TĂNG trong khi MBS vẫn giảm — không phải thuần QE hay thuần QT.</p>`;
 }
 
+// THEM 2026-10-08 (user: "tiếp tục triển khai theo ma trận đã bàn" — Growth/Labor/Treasury&Credit/
+// USD trong "US Macro Liquidity Matrix" user gửi). KHÔNG chấm điểm gộp — chỉ bảng/biểu đồ số liệu
+// thô độc lập, giống cách làm card Fed liquidity ở trên. "Capital Flows" (TIC) không có trên FRED
+// nên bỏ qua, xem ghi chú cuối renderUsMacro.
+function usGrowthCard(g, f) {
+    const gdp = g.gdp, ip = g.indpro;
+    return `
+        <div class="us-kpi-grid">
+            ${gdp ? `<div class="us-kpi-tile"><div class="us-kpi-label">GDP thực YoY (${gdp.latest})</div><div class="us-kpi-value">${f(gdp.yoy)}%</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">GDP thực QoQ năm hóa</div><div class="us-kpi-value">${f(gdp.qoq_annualized)}%</div></div>` : ''}
+            ${ip ? `<div class="us-kpi-tile"><div class="us-kpi-label">SX công nghiệp YoY (${ip.latest})</div><div class="us-kpi-value">${f(ip.yoy)}%</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">SX công nghiệp 3M năm hóa</div><div class="us-kpi-value">${f(ip.mom_3m_ann)}%</div></div>` : ''}
+        </div>
+        <div class="bank-chart-grid-2">
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-gdp"></canvas></div>
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-indpro"></canvas></div>
+        </div>
+        <p class="ind-source-note">Nguồn: FRED — GDPC1 (GDP thực, theo quý, SAAR), INDPRO (sản xuất công nghiệp, theo tháng). QoQ năm hóa = tăng trưởng quý so quý trước, quy ra tốc độ năm (cách BEA công bố GDP Mỹ chính thức).</p>`;
+}
+
+function usLaborCard(l, f) {
+    return `
+        <div class="us-kpi-grid">
+            <div class="us-kpi-tile"><div class="us-kpi-label">Việc làm phi NN thêm (${l.latest_period})</div><div class="us-kpi-value">${f(l.payrolls_mom, 0)}k</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">— TB 3 tháng</div><div class="us-kpi-value">${f(l.payrolls_mom_3m_avg, 0)}k</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">Thất nghiệp</div><div class="us-kpi-value">${f(l.unemployment_latest)}%</div></div>
+            ${l.openings ? `<div class="us-kpi-tile"><div class="us-kpi-label">JOLTS vị trí tuyển (${l.openings.period})</div><div class="us-kpi-value">${f(l.openings.latest / 1000, 2)}tr</div></div>` : ''}
+            ${l.participation ? `<div class="us-kpi-tile"><div class="us-kpi-label">Tỷ lệ tham gia LLLĐ</div><div class="us-kpi-value">${f(l.participation.latest)}%</div></div>` : ''}
+            <div class="us-kpi-tile"><div class="us-kpi-label">Lương bình quân giờ YoY</div><div class="us-kpi-value">${f(l.earnings_yoy)}%</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">— Lương THỰC YoY (trừ CPI)</div><div class="us-kpi-value">${l.real_wage_yoy === null ? '—' : f(l.real_wage_yoy) + '%'}</div></div>
+            ${l.claims ? `<div class="us-kpi-tile"><div class="us-kpi-label">Trợ cấp TN lần đầu/tuần (TB ${l.claims.period})</div><div class="us-kpi-value">${f(l.claims.latest / 1000, 0)}k</div></div>` : ''}
+        </div>
+        <div class="bank-chart-grid-2">
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-payrolls"></canvas></div>
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-labor-other"></canvas></div>
+        </div>
+        <p class="ind-source-note">Nguồn: FRED — PAYEMS (việc làm phi NN), ICSA (trợ cấp TN lần đầu, TB tuần→tháng), JTSJOL (JOLTS), CIVPART, CES0500000003 (lương bình quân giờ), UNRATE. "Lương thực" = lương bình quân giờ YoY trừ CPI YoY — lương danh nghĩa tăng nhưng nếu thấp hơn lạm phát thì sức mua thực vẫn giảm.</p>`;
+}
+
+function usTreasuryCreditCard(tc, f) {
+    const v = tc.latest_values, c = tc.changes;
+    const bp = x => (x === null || x === undefined) ? '—' : (x >= 0 ? '+' : '') + Math.round(x * 100) + 'bp';
+    const rows = [
+        ['usm_yield_2y', 'Lợi suất 2 năm'], ['usm_yield_10y', 'Lợi suất 10 năm'],
+        ['usm_spread_10y_2y', 'Chênh lệch 10Y-2Y'], ['usm_real_yield_10y', 'Lợi suất thực TIPS 10 năm'],
+        ['usm_breakeven_10y', 'Lạm phát kỳ vọng hòa vốn 10 năm'],
+        ['usm_hy_oas', 'Chênh lệch tín dụng High Yield (OAS)'], ['usm_ig_oas', 'Chênh lệch tín dụng Investment Grade (OAS)'],
+    ];
+    const body = rows.map(([k, lbl]) => `<tr>
+        <th style="text-align:left;white-space:nowrap">${lbl}</th>
+        <td style="color:#e5e7eb;font-weight:600">${f(v[k])}%</td>
+        <td style="color:${c[k].chg_6m >= 0 ? '#ef4444' : '#60a5fa'}">${bp(c[k].chg_6m)}</td>
+        <td style="color:${c[k].chg_12m >= 0 ? '#ef4444' : '#60a5fa'}">${bp(c[k].chg_12m)}</td>
+    </tr>`).join('');
+    return `
+        <div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+            <th style="text-align:left">Hạng mục (kỳ ${tc.latest})</th><th>Giá trị</th><th>6 tháng</th><th>12 tháng</th>
+        </tr></thead><tbody>${body}</tbody></table></div>
+        <div class="bank-chart-grid-2" style="margin-top:10px">
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-curve"></canvas></div>
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-credit"></canvas></div>
+        </div>
+        <p class="ind-source-note">Nguồn: FRED — DGS2/DGS10 (lợi suất danh nghĩa), T10Y2Y (đường cong đảo khi &lt;0 — tín hiệu suy thoái kinh điển), DFII10 (lợi suất thực TIPS), T10YIE (breakeven = kỳ vọng lạm phát thị trường trái phiếu định giá), BAMLH0A0HYM2/BAMLC0A0CM (OAS — spread tín dụng rộng ra khi thị trường lo ngại rủi ro vỡ nợ doanh nghiệp). ⚠ 2 chuỗi OAS chỉ có từ 2023-10 trên FRED — do ICE giới hạn cấp phép, FRED tự ghi rõ "chỉ giữ 3 năm dữ liệu gần nhất", KHÔNG phải lỗi tải.</p>`;
+}
+
+function usUsdCard(u, f) {
+    return `
+        <div class="us-kpi-grid">
+            <div class="us-kpi-tile"><div class="us-kpi-label">Chỉ số USD Broad (${u.latest})</div><div class="us-kpi-value">${f(u.latest_value)}</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">6 tháng</div><div class="us-kpi-value">${f(u.chg_pct_6m)}%</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">12 tháng</div><div class="us-kpi-value">${f(u.chg_pct_12m)}%</div></div>
+        </div>
+        <div class="ind-chart" style="height:260px"><canvas id="chart-us-dxy"></canvas></div>
+        <p class="ind-source-note">Nguồn: FRED — DTWEXBGS (Trade Weighted US Dollar Index: Broad, Goods and Services, 2006=100). USD mạnh lên thường gây áp lực giảm giá hàng hóa định giá bằng USD (dầu, vàng) và hút vốn khỏi thị trường mới nổi (ảnh hưởng tỷ giá VND gián tiếp).</p>`;
+}
+
 function renderUsMacro(usm) {
     const box = document.getElementById('us-macro-container');
     if (!box || !usm) return;
@@ -1076,7 +1152,12 @@ function renderUsMacro(usm) {
       ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
             <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
       ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usFedLiquidityCard(usm.liquidity, f)) : ''}
-      ${card('Lãi suất & việc làm', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
+      ${usm.growth ? card('8. Tăng trưởng — GDP thực & sản xuất công nghiệp', usGrowthCard(usm.growth, f)) : ''}
+      ${usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usLaborCard(usm.labor, f)) : ''}
+      ${usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usTreasuryCreditCard(usm.treasury_credit, f)) : ''}
+      ${usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usUsdCard(usm.usd, f)) : ''}
+      ${card('Lãi suất & việc làm (tóm tắt nhanh)', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>
+            <p class="ind-source-note">⚠ "Capital Flows" (nước ngoài nắm giữ trái phiếu Chính phủ Mỹ — TIC data) trong ma trận gốc CHƯA làm — dữ liệu này KHÔNG có trên FRED, cần nguồn riêng từ treasury.gov/tic (giống tình trạng EIA dầu mỏ/OPEC+ trước đây).</p>`)}
     `;
 
     // Cuộn-sang-phải cho các bảng .monitoring-table-scroll trong tab này được xử lý ở
@@ -1175,6 +1256,53 @@ function renderUsMacro(usm) {
             line('Net Liquidity Fed (T$, trục trái)', T(h.net_liquidity), '#60a5fa')] },
             options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Nghìn tỷ USD', color: '#9aa5bd', font: { size: 9 } } } } } });
     })();
+
+    // SUA 2026-10-08 (cùng pattern đã sửa cho biểu đồ bán lẻ/tiêu dùng thực: "biểu đồ này nhiễu
+    // giai đoạn covid quá") — cú sốc 2020 (GDP QoQ năm hóa -30%/+35%, thất nghiệp 14,8%) kéo giãn
+    // trục Y làm cả 5 năm gần nhất bị dẹt khó đọc; cắt hiển thị từ 2021-01, giữ nguyên dữ liệu gốc.
+    const cov0 = arr => { const i = arr.findIndex(p => p >= '2021-01'); return i < 0 ? 0 : i; };
+    if (usm.growth) (function () {
+        const gh = usm.growth.history;
+        const gi = cov0(gh.gdp.periods), ii = cov0(gh.indpro.periods);
+        mk('chart-us-gdp', { type: 'line', data: { labels: gh.gdp.periods.slice(gi), datasets: [
+            line('GDP thực YoY (%)', gh.gdp.yoy.slice(gi), '#60a5fa'),
+            line('GDP thực QoQ năm hóa (%)', gh.gdp.qoq_ann.slice(gi), '#f59e0b', [5, 4])] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+        mk('chart-us-indpro', { type: 'line', data: { labels: gh.indpro.periods.slice(ii), datasets: [
+            line('Sản xuất công nghiệp YoY (%)', gh.indpro.yoy.slice(ii), '#10b981')] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+    })();
+
+    if (usm.labor) (function () {
+        const lh = usm.labor.history;
+        const li = cov0(lh.periods);
+        const periods = lh.periods.slice(li);
+        mk('chart-us-payrolls', { type: 'bar', data: { labels: periods, datasets: [
+            { label: 'Việc làm phi NN thêm/tháng (nghìn)', data: lh.payrolls_mom.slice(li), backgroundColor: lh.payrolls_mom.slice(li).map(v => v >= 0 ? 'rgba(16,185,129,0.75)' : 'rgba(239,68,68,0.75)') },
+            { ...line('TB 3 tháng (nghìn)', lh.payrolls_mom_3m_avg.slice(li), '#f59e0b'), type: 'line' }] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+        mk('chart-us-labor-other', { type: 'line', data: { labels: periods, datasets: [
+            line('Thất nghiệp (%)', lh.unemployment.slice(li), '#a78bfa'),
+            { ...line('Lương THỰC YoY (%, trục phải)', lh.real_wage_yoy.slice(li), '#60a5fa', [4, 3]), yAxisID: 'y1' }] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
+    })();
+
+    if (usm.treasury_credit) (function () {
+        const th = usm.treasury_credit.history;
+        mk('chart-us-curve', { type: 'line', data: { labels: th.periods, datasets: [
+            line('Lợi suất 2 năm (%)', th.yield_2y, '#60a5fa'),
+            line('Lợi suất 10 năm (%)', th.yield_10y, '#f59e0b'),
+            { ...line('10Y-2Y (%, trục phải)', th.spread_10y_2y, '#10b981', [4, 3]), yAxisID: 'y1' }] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
+        mk('chart-us-credit', { type: 'line', data: { labels: th.periods, datasets: [
+            line('High Yield OAS (%)', th.hy_oas, '#ef4444'),
+            { ...line('Investment Grade OAS (%, trục phải)', th.ig_oas, '#60a5fa', [4, 3]), yAxisID: 'y1' }] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
+    })();
+
+    if (usm.usd) mk('chart-us-dxy', { type: 'line', data: { labels: usm.usd.history.periods, datasets: [
+        line('Chỉ số USD Broad (DTWEXBGS)', usm.usd.history.values, '#60a5fa')] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 }
 
 function renderFxPressureSignalsMonthlyChart(indicators) {

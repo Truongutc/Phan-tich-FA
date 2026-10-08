@@ -398,6 +398,25 @@ US_MACRO_SERIES = [
     ("usm_fed_funds", "FEDFUNDS", "Lãi suất quỹ liên bang (%)", "pct"),
     ("usm_yield_10y", "DGS10", "Lợi suất trái phiếu 10 năm (%)", "pct"),
     ("usm_spread_10y_2y", "T10Y2Y", "Chênh lệch 10Y-2Y (%)", "pct"),
+    # THEM 2026-10-08 (user: "tiếp tục triển khai theo ma trận đã bàn" — Growth/Labor/
+    # Treasury&Credit/USD trong "US Macro Liquidity Matrix" người dùng gửi; KHÔNG chấm điểm gộp,
+    # chỉ lấy thêm số liệu thô qua FRED, giữ nguyên nguyên tắc không gộp tín hiệu thành 1 điểm số).
+    ("usm_gdp_real", "GDPC1", "GDP thực (tỷ USD 2017, SAAR, theo quý)", "billion_usd_2017"),
+    ("usm_indpro", "INDPRO", "Chỉ số sản xuất công nghiệp (SA, 2017=100)", "index"),
+    # BỎ "usm_leading_index"/USSLIND (Leading Index, FRB Philadelphia) — kiểm tra FRED metadata
+    # 2026-10-08 thấy observation_end=2020-02-01, last_updated=2020-04-14 — CHUỖI ĐÃ BỊ NGỪNG CÔNG
+    # BỐ hơn 6 năm, không phải lỗi tải. Không dùng được cho tín hiệu hiện tại.
+    ("usm_payrolls", "PAYEMS", "Tổng việc làm phi nông nghiệp (nghìn người, SA)", "thousand_persons"),
+    ("usm_claims", "ICSA", "Trợ cấp thất nghiệp lần đầu (người/tuần, SA)", "persons"),
+    ("usm_job_openings", "JTSJOL", "Số vị trí tuyển dụng — JOLTS (nghìn, SA)", "thousand"),
+    ("usm_participation", "CIVPART", "Tỷ lệ tham gia lực lượng lao động (%)", "pct"),
+    ("usm_avg_earnings", "CES0500000003", "Thu nhập bình quân giờ — toàn bộ nhân viên tư nhân (USD/giờ, SA)", "usd_per_hour"),
+    ("usm_yield_2y", "DGS2", "Lợi suất trái phiếu 2 năm (%)", "pct"),
+    ("usm_real_yield_10y", "DFII10", "Lợi suất thực TIPS 10 năm (%)", "pct"),
+    ("usm_breakeven_10y", "T10YIE", "Lạm phát kỳ vọng hòa vốn 10 năm (breakeven, %)", "pct"),
+    ("usm_hy_oas", "BAMLH0A0HYM2", "Chênh lệch tín dụng High Yield (OAS, điểm %)", "pct"),
+    ("usm_ig_oas", "BAMLC0A0CM", "Chênh lệch tín dụng Investment Grade (OAS, điểm %)", "pct"),
+    ("usm_dxy_broad", "DTWEXBGS", "Chỉ số USD trọng số thương mại (Broad, 2006=100)", "index"),
 ]
 
 
