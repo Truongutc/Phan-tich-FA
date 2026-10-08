@@ -1122,12 +1122,52 @@ function usUsdCard(u, f) {
 // từng nhóm, KHÔNG cộng dồn thành điểm tổng. Màu chỉ phản ánh trạng thái CỦA RIÊNG nhóm đó.
 function usStateBadge(s) {
     if (!s) return '';
-    const colors = { good: '#10b981', neutral: '#f59e0b', warn: '#f97316', bad: '#ef4444' };
+    const colors = { good: '#10b981', neutral: '#9aa5bd', warn: '#f97316', bad: '#ef4444' };
     const c = colors[s.color] || '#9aa5bd';
     return `<div style="background:${c}1a;border:1px solid ${c};border-radius:8px;padding:8px 12px;margin-bottom:12px">
         <span style="color:${c};font-weight:700">● ${s.label}</span>
         <div style="color:#cbd5e1;font-size:0.85em;margin-top:3px">${s.detail}</div>
     </div>`;
+}
+
+// THEM 2026-10-08 (user: "có phần 1 khu vực để đánh giá tổng quan chưa, tôi muốn có phần đó để
+// đọc xem vĩ mô đang có vấn đề gì, trạng thái ra sao, tôi cũng không thấy bổ sung thêm các chart
+// minh họa, hoặc bảng dữ liệu minh họa") — 1 bảng tổng quan Ở ĐẦU tab, liệt kê lại 7 trạng thái
+// (usm.states, đã có sẵn ở từng thẻ chi tiết bên dưới) CẠNH NHAU để quét nhanh toàn cảnh + 1
+// sparkline nhỏ minh họa xu hướng gần đây mỗi nhóm. CHỈ LIỆT KÊ/LỌC lại các trạng thái ĐỘC LẬP đã
+// có — KHÔNG tính thêm bất kỳ con số tổng hợp/điểm số mới nào (đúng nguyên tắc đã chốt).
+function usOverviewSection(usm, f) {
+    const rows = [
+        { key: 'growth', label: 'Tăng trưởng (GDP)', metric: usm.growth && usm.growth.gdp ? `GDP QoQ năm hóa: ${f(usm.growth.gdp.qoq_annualized)}%` : '—', spark: 'spark-growth' },
+        { key: 'labor', label: 'Lao động', metric: usm.labor ? `Việc làm thêm TB 3T: ${f(usm.labor.payrolls_mom_3m_avg, 0)}k` : '—', spark: 'spark-labor' },
+        { key: 'inflation', label: 'Lạm phát (CPI)', metric: `CPI YoY: ${f(usm.headline.cpi_yoy)}%`, spark: 'spark-inflation' },
+        { key: 'fed_policy', label: 'Fed — lãi suất & bảng cân đối', metric: usm.rates.usm_fed_funds ? `Lãi suất quỹ LB: ${f(usm.rates.usm_fed_funds.latest)}%` : '—', spark: 'spark-fed' },
+        { key: 'treasury_credit', label: 'Lợi suất & tín dụng', metric: usm.treasury_credit ? `10Y-2Y: ${f(usm.treasury_credit.latest_values.usm_spread_10y_2y)}%` : '—', spark: 'spark-credit' },
+        { key: 'usd', label: 'USD', metric: usm.usd ? `Chỉ số Broad: ${f(usm.usd.latest_value)}` : '—', spark: 'spark-usd' },
+        { key: 'capital_flows', label: 'Capital Flows (TIC)', metric: usm.capital_flows ? `Tổng NN nắm giữ: ${f(usm.capital_flows.total_latest / 1000, 2)}T$` : '—', spark: 'spark-capflows' },
+    ];
+    const colors = { good: '#10b981', neutral: '#9aa5bd', warn: '#f97316', bad: '#ef4444' };
+    const body = rows.map(r => {
+        const s = usm.states && usm.states[r.key];
+        const c = s ? (colors[s.color] || '#9aa5bd') : '#9aa5bd';
+        return `<tr>
+            <th style="text-align:left;white-space:nowrap">${r.label}</th>
+            <td style="color:${c};font-weight:700;white-space:nowrap">● ${s ? s.label : '—'}</td>
+            <td style="color:#e5e7eb;white-space:nowrap">${r.metric}</td>
+            <td style="width:110px"><div style="width:100px;height:32px"><canvas id="${r.spark}"></canvas></div></td>
+        </tr>`;
+    }).join('');
+    const watch = rows.filter(r => usm.states && usm.states[r.key] && ['warn', 'bad'].includes(usm.states[r.key].color));
+    const watchHtml = watch.length ? `
+        <p style="margin-top:14px;margin-bottom:4px;font-weight:600;color:#f97316">⚠ Cần chú ý (${watch.length}/${rows.length} nhóm):</p>
+        <ul class="ind-source-note" style="line-height:1.8">${watch.map(r => `<li><b>${r.label}</b>: ${usm.states[r.key].label} — ${usm.states[r.key].detail}</li>`).join('')}</ul>`
+        : `<p style="margin-top:14px;color:#10b981">✓ Không nhóm nào đang ở trạng thái cảnh báo theo ngưỡng rule-based hiện tại.</p>`;
+    return `
+        <div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+            <th style="text-align:left">Nhóm</th><th>Trạng thái</th><th>Chỉ số chính</th><th>Xu hướng gần đây</th>
+        </tr></thead><tbody>${body}</tbody></table></div>
+        ${watchHtml}
+        <p class="ind-source-note">Đây là LIỆT KÊ lại 7 trạng thái độc lập đã đánh giá chi tiết ở các mục bên dưới (1,7-12) — KHÔNG cộng dồn/tính điểm tổng. Mỗi nhóm đứng riêng, tự đọc theo đúng bối cảnh của nó (vd USD mạnh không "tốt" hay "xấu" per se, chỉ là 1 sự kiện cần biết).</p>`;
 }
 
 function renderUsMacro(usm) {
@@ -1148,6 +1188,7 @@ function renderUsMacro(usm) {
         kpi('Thất nghiệp (%)', f(rates.usm_unemployment && rates.usm_unemployment.latest)),
     ].join('');
     box.innerHTML = `
+      ${card('📊 Tổng quan — toàn bộ ma trận vĩ mô Mỹ (9 nhóm)', usOverviewSection(usm, f))}
       ${card('🇺🇸 Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
             <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ.</p>`)}
       ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
@@ -1196,6 +1237,20 @@ function renderUsMacro(usm) {
     const hist = usm.history, ph = usm.pipeline;
     const line = (label, data, color, dash) => ({ label, data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, borderDash: dash || [] });
     const mk = (id, cfg) => { const c = document.getElementById(id); if (c) chartInstances.push(new Chart(c, cfg)); };
+    // Sparkline nhỏ cho bảng tổng quan — không trục, không legend, chỉ minh họa xu hướng gần đây.
+    const mkSpark = (id, data, color) => mk(id, { type: 'line', data: { labels: data.map((_, i) => i), datasets: [
+        { data, borderColor: color, borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: false }] },
+        options: { responsive: true, maintainAspectRatio: false, animation: false,
+                   plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                   scales: { x: { display: false }, y: { display: false } } } });
+
+    if (usm.growth && usm.growth.gdp) mkSpark('spark-growth', usm.growth.history.gdp.qoq_ann.slice(-24), '#60a5fa');
+    if (usm.labor) mkSpark('spark-labor', usm.labor.history.payrolls_mom.slice(-24), '#a78bfa');
+    mkSpark('spark-inflation', hist.cpi_yoy.slice(-24), '#f59e0b');
+    if (usm.liquidity) mkSpark('spark-fed', usm.liquidity.history.net_liquidity.slice(-24), '#10b981');
+    if (usm.treasury_credit) mkSpark('spark-credit', usm.treasury_credit.history.spread_10y_2y.slice(-24), '#ef4444');
+    if (usm.usd) mkSpark('spark-usd', usm.usd.history.values.slice(-24), '#60a5fa');
+    if (usm.capital_flows) mkSpark('spark-capflows', usm.capital_flows.history.total.slice(-24), '#10b981');
     const legend = { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } };
     const ax = { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } };
 
