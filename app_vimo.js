@@ -1394,7 +1394,11 @@ function renderUsMacro(usm) {
             data: r.values, backgroundColor: colors[r.key] || '#999', borderWidth: 0 })) },
             options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' }, layout: { padding: { right: 16 } },
                        scales: { x: { ...ax, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } },
-            plugins: [widenLastBar(10)] });
+            // SUA 2026-10-08 (user: "vẽ số tháng 7 và tháng 8 liền nhau à, tôi thấy dính vào nhau
+            // thế... co nhỏ cái cột tháng gần nhất lại" — +10px (nửa mỗi bên +5px) trên khoảng cách
+            // tâm cột chỉ ~14px (127 cột / 1818px) khiến rìa cột cuối ĐÈ qua rìa cột liền trước —
+            // giảm xuống +4 để đủ rộng hơn rõ rệt nhưng không chạm cột bên cạnh.
+            plugins: [widenLastBar(4)] });
 
         // THEM 2026-10-08 (user: "số tháng gần nhất bị bé quá, cột không rộng như bình thường nên
         // khó nhìn") — cùng dữ liệu, cắt 24 tháng gần nhất, để Chart.js tự giãn trục Y RIÊNG cho
