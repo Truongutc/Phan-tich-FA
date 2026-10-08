@@ -2367,7 +2367,7 @@ _FX_PRESSURE_KEYS_BY_SHEET = {
         "usm_gdp_real", "usm_indpro",
         "usm_payrolls", "usm_claims", "usm_job_openings", "usm_participation", "usm_avg_earnings",
         "usm_yield_2y", "usm_real_yield_10y", "usm_breakeven_10y", "usm_hy_oas", "usm_ig_oas",
-        "usm_dxy_broad",
+        "usm_dxy_broad", "usm_tic_total", "usm_tic_official",
     ],
     "NgoaiTe_ThiTruong_Ngay": [
         "usdvnd_vcb_sell_daily", "usd_cho_den_sell_daily", "usd_cho_den_vcb_gap",

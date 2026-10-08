@@ -236,10 +236,11 @@ def build_us_macro(raw):
     labor = _labor(raw)
     treasury_credit = _treasury_credit(raw)
     usd = _usd(raw)
+    capital_flows = _capital_flows(raw)
 
     return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks, "contributions": contributions,
             "pipeline": pipeline, "real_consumption": real, "rates": rates, "liquidity": liquidity,
-            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd,
+            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd, "capital_flows": capital_flows,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
 
@@ -405,6 +406,30 @@ def _treasury_credit(raw):
     return {
         "latest": latest, "latest_values": latest_values, "changes": changes,
         "history": {"periods": periods, **{k.replace("usm_", ""): [s.get(p) for p in periods] for k, s in series_map.items()}},
+    }
+
+
+def _capital_flows(raw):
+    """Nước ngoài nắm giữ Treasury Mỹ (TIC — Treasury International Capital System, Bộ Tài chính
+    Mỹ, ticdata.treasury.gov) — KHÔNG có trên FRED, lấy riêng qua fetch_tic_major_foreign_holders().
+    Tách khối "chính thức" (NHTW/chính phủ nước ngoài — phản ánh hành vi dự trữ ngoại hối quốc gia)
+    và khối "tư nhân" (= Tổng − Chính thức, quỹ đầu tư/doanh nghiệp/cá nhân, đầu cơ/lợi suất nhiều
+    hơn). KHÔNG chấm điểm — chỉ số liệu + % thay đổi."""
+    total = _series(raw, "usm_tic_total")
+    if not total:
+        return None
+    official = _series(raw, "usm_tic_official")
+    latest = max(total)
+    periods = sorted(total)
+    private = {p: round(total[p] - official[p], 1) for p in periods if p in official}
+    return {
+        "latest": latest, "total_latest": total[latest],
+        "official_latest": official.get(latest), "private_latest": private.get(latest),
+        "total_chg_pct_6m": _chg_pct(total, latest, 6), "total_chg_pct_12m": _chg_pct(total, latest, 12),
+        "official_chg_pct_6m": _chg_pct(official, latest, 6) if official else None,
+        "official_chg_pct_12m": _chg_pct(official, latest, 12) if official else None,
+        "history": {"periods": periods, "total": [total.get(p) for p in periods],
+                    "official": [official.get(p) for p in periods], "private": [private.get(p) for p in periods]},
     }
 
 

@@ -1093,6 +1093,19 @@ function usTreasuryCreditCard(tc, f) {
         <p class="ind-source-note">Nguồn: FRED — DGS2/DGS10 (lợi suất danh nghĩa), T10Y2Y (đường cong đảo khi &lt;0 — tín hiệu suy thoái kinh điển), DFII10 (lợi suất thực TIPS), T10YIE (breakeven = kỳ vọng lạm phát thị trường trái phiếu định giá), BAMLH0A0HYM2/BAMLC0A0CM (OAS — spread tín dụng rộng ra khi thị trường lo ngại rủi ro vỡ nợ doanh nghiệp). ⚠ 2 chuỗi OAS chỉ có từ 2023-10 trên FRED — do ICE giới hạn cấp phép, FRED tự ghi rõ "chỉ giữ 3 năm dữ liệu gần nhất", KHÔNG phải lỗi tải.</p>`;
 }
 
+function usCapitalFlowsCard(cf, f) {
+    return `
+        <div class="us-kpi-grid">
+            <div class="us-kpi-tile"><div class="us-kpi-label">Tổng nước ngoài nắm giữ (${cf.latest})</div><div class="us-kpi-value">${f(cf.total_latest / 1000, 2)}T$</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">— 6 tháng</div><div class="us-kpi-value">${f(cf.total_chg_pct_6m)}%</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">— 12 tháng</div><div class="us-kpi-value">${f(cf.total_chg_pct_12m)}%</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">Khối chính thức/NHTW</div><div class="us-kpi-value">${cf.official_latest === null || cf.official_latest === undefined ? '—' : f(cf.official_latest / 1000, 2) + 'T$'}</div></div>
+            <div class="us-kpi-tile"><div class="us-kpi-label">Khối tư nhân (= Tổng − Chính thức)</div><div class="us-kpi-value">${cf.private_latest === null || cf.private_latest === undefined ? '—' : f(cf.private_latest / 1000, 2) + 'T$'}</div></div>
+        </div>
+        <div class="ind-chart" style="height:280px"><canvas id="chart-us-tic"></canvas></div>
+        <p class="ind-source-note">Nguồn: Bộ Tài chính Mỹ — TIC (Treasury International Capital System), báo cáo "Major Foreign Holders of Treasury Securities" (ticdata.treasury.gov) — KHÔNG có trên FRED, độ trễ công bố ~2 tháng. "Khối chính thức" = NHTW/chính phủ nước ngoài (phản ánh hành vi dự trữ ngoại hối quốc gia — Trung Quốc/Nhật giảm nắm giữ thường được đọc là tín hiệu địa chính trị/đa dạng hóa dự trữ); "Khối tư nhân" = quỹ đầu tư/doanh nghiệp/cá nhân nước ngoài, mang tính đầu cơ/tìm lợi suất nhiều hơn.</p>`;
+}
+
 function usUsdCard(u, f) {
     return `
         <div class="us-kpi-grid">
@@ -1156,8 +1169,8 @@ function renderUsMacro(usm) {
       ${usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usLaborCard(usm.labor, f)) : ''}
       ${usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usTreasuryCreditCard(usm.treasury_credit, f)) : ''}
       ${usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usUsdCard(usm.usd, f)) : ''}
-      ${card('Lãi suất & việc làm (tóm tắt nhanh)', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>
-            <p class="ind-source-note">⚠ "Capital Flows" (nước ngoài nắm giữ trái phiếu Chính phủ Mỹ — TIC data) trong ma trận gốc CHƯA làm — dữ liệu này KHÔNG có trên FRED, cần nguồn riêng từ treasury.gov/tic (giống tình trạng EIA dầu mỏ/OPEC+ trước đây).</p>`)}
+      ${usm.capital_flows ? card('12. Capital Flows — nước ngoài nắm giữ Treasury Mỹ (TIC)', usCapitalFlowsCard(usm.capital_flows, f)) : ''}
+      ${card('Lãi suất & việc làm (tóm tắt nhanh)', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
     `;
 
     // Cuộn-sang-phải cho các bảng .monitoring-table-scroll trong tab này được xử lý ở
@@ -1302,6 +1315,12 @@ function renderUsMacro(usm) {
 
     if (usm.usd) mk('chart-us-dxy', { type: 'line', data: { labels: usm.usd.history.periods, datasets: [
         line('Chỉ số USD Broad (DTWEXBGS)', usm.usd.history.values, '#60a5fa')] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+
+    if (usm.capital_flows) mk('chart-us-tic', { type: 'line', data: { labels: usm.capital_flows.history.periods, datasets: [
+        line('Tổng nước ngoài nắm giữ (tỷ $)', usm.capital_flows.history.total, '#60a5fa'),
+        line('Khối chính thức/NHTW (tỷ $)', usm.capital_flows.history.official, '#f59e0b'),
+        line('Khối tư nhân (tỷ $)', usm.capital_flows.history.private, '#10b981')] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 }
 

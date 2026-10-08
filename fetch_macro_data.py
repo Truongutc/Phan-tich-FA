@@ -20,6 +20,8 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import re
+import csv
+import io
 import glob
 import json
 import time
@@ -449,6 +451,60 @@ def fetch_fred_csv(series_id, start="2015-01-01"):
         except ValueError:
             continue
     return out
+
+
+# THEM 2026-10-08 (user: "Capital Flows (TIC) chưa làm vì không có trên FRED" — tìm nguồn riêng).
+# ticdata.treasury.gov CÔNG KHAI, không cần đăng ký/API key (khác bls.gov/eia.gov — đã kiểm tra
+# curl trực tiếp trả 200 OK). File "mfhhis01.csv" là báo cáo "Major Foreign Holders of Treasury
+# Securities" — dữ liệu THÔ dạng bảng rộng, mỗi "khối" 1 năm (12 cột Dec→Jan), nhiều khối xếp dọc
+# từ năm mới nhất lùi về ~2000. Lấy 2 dòng: "Grand Total" (tổng toàn bộ nước ngoài nắm giữ) và
+# "For. Official" (chỉ khối NHTW/chính phủ nước ngoài — tín hiệu "official capital flows" rõ hơn
+# vì khối tư nhân mua/bán mang tính đầu cơ nhiều, khối official phản ánh dự trữ ngoại hối quốc gia).
+def fetch_tic_major_foreign_holders():
+    """Trả (total_dict, official_dict): {period "YYYY-MM": value tỷ USD}. Lỗi mạng trả ({}, {})."""
+    MONTHS = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
+              "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+    url = "https://ticdata.treasury.gov/resource-center/data-chart-center/tic/Documents/mfhhis01.csv"
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=60)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [WARN] TIC mfhhis01.csv: {e}")
+        return {}, {}
+    rows = list(csv.reader(io.StringIO(r.text)))
+    total, official = {}, {}
+    i, n = 0, len(rows)
+    while i < n:
+        row = rows[i]
+        if len(row) > 1 and row[0] == "" and row[1] in MONTHS and i + 1 < n and rows[i + 1] and rows[i + 1][0] == "Country":
+            month_cols, year_cols = row[1:13], rows[i + 1][1:13]
+            periods = [f"{y.strip()}-{MONTHS[m]:02d}" if m in MONTHS and y.strip().isdigit() else None
+                       for m, y in zip(month_cols, year_cols)]
+            j = i + 3  # bỏ qua dòng gạch "------"
+            while j < n and not (len(rows[j]) > 1 and rows[j][0] == "" and rows[j][1] in MONTHS):
+                r2 = rows[j]
+                # Nhãn "For. Official" đổi thụt đầu dòng qua các năm (vd "For. Official" ở khối
+                # 2023-2025 nhưng "  For. Official" thụt 2 khoảng trắng ở khối cũ hơn) — strip().
+                label = r2[0].strip() if r2 else ""
+                if label == "Grand Total":
+                    for p, v in zip(periods, r2[1:13]):
+                        if p:
+                            try:
+                                total[p] = float(v)
+                            except ValueError:
+                                pass
+                elif label == "For. Official":
+                    for p, v in zip(periods, r2[1:13]):
+                        if p:
+                            try:
+                                official[p] = float(v)
+                            except ValueError:
+                                pass
+                j += 1
+            i = j
+            continue
+        i += 1
+    return total, official
 
 
 def fetch_fred(series_id, n=12, units=None):
@@ -3003,6 +3059,24 @@ def update_vimo_raw():
                        for m, vs in sorted(monthly.items())],
         }
         print(f"  -> {key} ({sid}): {len(pts)} điểm")
+
+    print("[Treasury TIC — Nước ngoài nắm giữ Treasury Mỹ (Major Foreign Holders, KHÔNG có trên FRED)]")
+    tic_total, tic_official = fetch_tic_major_foreign_holders()
+    tic_url = "https://ticdata.treasury.gov/resource-center/data-chart-center/tic/Documents/mfhhis01.csv"
+    if tic_total:
+        raw["usm_tic_total"] = {
+            "group": "us_macro", "label": "Nước ngoài nắm giữ Treasury Mỹ — Tổng (tỷ USD)", "unit": "billion_usd",
+            "auto_source": "treasury_tic", "good_direction": "none",
+            "series": [{"period": p, "value": v, "source_url": tic_url} for p, v in sorted(tic_total.items())],
+        }
+        print(f"  -> usm_tic_total: {len(tic_total)} điểm")
+    if tic_official:
+        raw["usm_tic_official"] = {
+            "group": "us_macro", "label": "Nước ngoài nắm giữ Treasury Mỹ — Khối chính thức/NHTW (tỷ USD)", "unit": "billion_usd",
+            "auto_source": "treasury_tic", "good_direction": "none",
+            "series": [{"period": p, "value": v, "source_url": tic_url} for p, v in sorted(tic_official.items())],
+        }
+        print(f"  -> usm_tic_official: {len(tic_official)} điểm")
 
     print("[FRED — Quốc tế: Eurozone (thất nghiệp, CPI, GDP, sản xuất CN, ECB, lợi suất Đức)]")
     # eu_core_cpi_yoy ĐÃ BỎ (2026-08-01, theo yêu cầu user "dữ liệu cũ không còn hoạt động thì bỏ,
