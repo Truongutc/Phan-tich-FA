@@ -952,16 +952,20 @@ function usContribSnapshotTable(ct) {
     if (!ct || !ct.snapshot) return '';
     const f = (v, d = 2) => (v === null || v === undefined) ? '—' : Number(v).toFixed(d);
     const sign = v => (v === null || v === undefined) ? '' : (v >= 0 ? 'color:#ef4444' : 'color:#60a5fa');
+    // THEM 2026-10-08 (user gửi tài liệu "Contribution change": "Energy contribution +0.3pp →
+    // +0.8pp => đỏ; Shelter +1.2pp → +1.0pp => xanh" — biết nhóm nào đang TĂNG áp lực, không chỉ
+    // mức đóng góp hiện tại) — cột so với ĐÚNG 3 tháng trước, cùng công thức Trọng số × YoY.
     const rows = ct.snapshot.map(r => `<tr>
         <th style="text-align:left;white-space:nowrap">${r.label}</th>
         <td style="color:#e5e7eb">${f(r.weight_pct, 1)}%</td>
         <td style="${sign(r.yoy)}">${f(r.yoy)}% <span class="ind-source-note">(bản thân nhóm tự tăng)</span></td>
         <td style="${sign(r.contribution)};font-weight:700">${f(r.contribution)}pp <span class="ind-source-note">(làm CPI đổi)</span></td>
+        <td style="${sign(r.contribution_chg_3m)}">${r.contribution_chg_3m === null ? '—' : (r.contribution_chg_3m >= 0 ? '+' : '') + f(r.contribution_chg_3m) + 'pp'} <span class="ind-source-note">(so 3T trước: ${f(r.contribution_3m_ago)}pp)</span></td>
     </tr>`).join('');
     return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
-        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số<br>(tiêu dùng chiếm)</th><th>YoY</th><th>Đóng góp</th>
+        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số<br>(tiêu dùng chiếm)</th><th>YoY</th><th>Đóng góp</th><th>Thay đổi vs 3T trước</th>
     </tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="ind-source-note">Đóng góp = Trọng số × YoY. Nhóm trọng số lớn (vd Nhà ở ~35%) chỉ cần tăng nhẹ đã đóng góp nhiều; nhóm trọng số nhỏ (vd Giáo dục ~5,7%) dù tự tăng rất cao vẫn đóng góp ít — vì phần chi tiêu của người Mỹ dành cho nhóm đó nhỏ.</p>`;
+    <p class="ind-source-note">Đóng góp = Trọng số × YoY. Nhóm trọng số lớn (vd Nhà ở ~35%) chỉ cần tăng nhẹ đã đóng góp nhiều; nhóm trọng số nhỏ (vd Giáo dục ~5,7%) dù tự tăng rất cao vẫn đóng góp ít — vì phần chi tiêu của người Mỹ dành cho nhóm đó nhỏ. Cột cuối: đóng góp đang TĂNG (đỏ, áp lực lên CPI từ nhóm này đang nặng thêm) hay GIẢM (xanh, đang hạ nhiệt) so với 3 tháng trước.</p>`;
 }
 
 // SUA 2026-10-07 — biểu đồ cột NGANG cho 1 kỳ gần nhất, sắp theo |đóng góp| giảm dần, trả lời
@@ -1023,9 +1027,10 @@ function usFedLiquidityCard(liq, f) {
                     <div class="ind-chart" style="height:300px"><canvas id="chart-us-fed-drains"></canvas></div>
                 </div>
                 <div class="ind-chart" style="height:280px;margin-top:10px"><canvas id="chart-us-fed-netliq"></canvas></div>
+                <div class="ind-chart" style="height:260px;margin-top:10px"><canvas id="chart-us-fed-impulse"></canvas></div>
             </div>
         </div>
-        <p class="ind-source-note">Nguồn: Fed H.4.1 qua FRED (cập nhật hàng tuần, lấy trung bình tháng). "Net Liquidity" là cách giới phân tích thị trường hay dùng (Tổng tài sản − RRP − TGA), KHÔNG phải định nghĩa chính thức của Fed — RRP và TGA là 2 "bể chứa" hút tiền ra khỏi hệ thống ngân hàng, dù Fed không đổi tổng tài sản. Treasury holdings đang TĂNG trong khi MBS vẫn giảm — không phải thuần QE hay thuần QT.</p>`;
+        <p class="ind-source-note">Nguồn: Fed H.4.1 qua FRED (cập nhật hàng tuần, lấy trung bình tháng). "Net Liquidity" là cách giới phân tích thị trường hay dùng (Tổng tài sản − RRP − TGA), KHÔNG phải định nghĩa chính thức của Fed — RRP và TGA là 2 "bể chứa" hút tiền ra khỏi hệ thống ngân hàng, dù Fed không đổi tổng tài sản. Treasury holdings đang TĂNG trong khi MBS vẫn giảm — không phải thuần QE hay thuần QT. "Liquidity Impulse" (biểu đồ cuối) = thay đổi HÀNG THÁNG của (Dự trữ ngân hàng − RRP − TGA) — khác Net Liquidity ở chỗ dùng Dự trữ (tiền thực sự nằm trong hệ thống ngân hàng) thay vì Tổng tài sản Fed, và nhìn vào TỐC ĐỘ thay đổi (dương = đang bơm ròng vào hệ thống tháng đó, âm = đang rút ròng) thay vì MỨC tuyệt đối.</p>`;
 }
 
 // THEM 2026-10-08 (user: "tiếp tục triển khai theo ma trận đã bàn" — Growth/Labor/Treasury&Credit/
@@ -1137,16 +1142,34 @@ function usStateBadge(s) {
 // sparkline nhỏ minh họa xu hướng gần đây mỗi nhóm. CHỈ LIỆT KÊ/LỌC lại các trạng thái ĐỘC LẬP đã
 // có — KHÔNG tính thêm bất kỳ con số tổng hợp/điểm số mới nào (đúng nguyên tắc đã chốt).
 function usOverviewSection(usm, f) {
+    // SUA 2026-10-08 (user gửi tài liệu "3 câu hỏi độc lập" + tách Fed Policy/Balance Sheet, tách
+    // mức lạm phát/độ dai dẳng) — 9 dòng thay vì 7, khớp us_macro_analysis.py:_assess_states bản
+    // mới (fed_policy và fed_balance_sheet giờ là 2 state riêng; inflation_persistence tách khỏi
+    // inflation).
     const rows = [
         { key: 'growth', label: 'Tăng trưởng (GDP)', metric: usm.growth && usm.growth.gdp ? `GDP QoQ năm hóa: ${f(usm.growth.gdp.qoq_annualized)}%` : '—', spark: 'spark-growth' },
         { key: 'labor', label: 'Lao động', metric: usm.labor ? `Việc làm thêm TB 3T: ${f(usm.labor.payrolls_mom_3m_avg, 0)}k` : '—', spark: 'spark-labor' },
-        { key: 'inflation', label: 'Lạm phát (CPI)', metric: `CPI YoY: ${f(usm.headline.cpi_yoy)}%`, spark: 'spark-inflation' },
-        { key: 'fed_policy', label: 'Fed — lãi suất & bảng cân đối', metric: usm.rates.usm_fed_funds ? `Lãi suất quỹ LB: ${f(usm.rates.usm_fed_funds.latest)}%` : '—', spark: 'spark-fed' },
+        { key: 'inflation', label: 'Lạm phát — mức độ (CPI)', metric: `CPI YoY: ${f(usm.headline.cpi_yoy)}%`, spark: 'spark-inflation' },
+        { key: 'inflation_persistence', label: 'Lạm phát — độ dai dẳng/lan truyền', metric: usm.breadth ? `${f(usm.breadth.pct_gt_3, 0)}% nhóm CPI tăng &gt;3%` : '—', spark: 'spark-persistence' },
+        { key: 'fed_policy', label: 'Fed — chính sách lãi suất', metric: usm.rates.usm_fed_funds ? `Lãi suất quỹ LB: ${f(usm.rates.usm_fed_funds.latest)}%` : '—', spark: 'spark-fed' },
+        { key: 'fed_balance_sheet', label: 'Fed — bảng cân đối (QE/QT)', metric: usm.liquidity ? `Liquidity Impulse: ${f(usm.liquidity.liquidity_impulse_latest / 1000, 1)} tỷ$` : '—', spark: 'spark-fedbs' },
         { key: 'treasury_credit', label: 'Lợi suất & tín dụng', metric: usm.treasury_credit ? `10Y-2Y: ${f(usm.treasury_credit.latest_values.usm_spread_10y_2y)}%` : '—', spark: 'spark-credit' },
         { key: 'usd', label: 'USD', metric: usm.usd ? `Chỉ số Broad: ${f(usm.usd.latest_value)}` : '—', spark: 'spark-usd' },
         { key: 'capital_flows', label: 'Capital Flows (TIC)', metric: usm.capital_flows ? `Tổng NN nắm giữ: ${f(usm.capital_flows.total_latest / 1000, 2)}T$` : '—', spark: 'spark-capflows' },
     ];
     const colors = { good: '#10b981', neutral: '#9aa5bd', warn: '#f97316', bad: '#ef4444' };
+    // THEM 2026-10-08 (user: "3 câu hỏi độc lập: A. Kinh tế khỏe/yếu? B. Tiền tệ nới/thắt? C. Môi
+    // trường có thuận lợi cho tài sản rủi ro không? — 3 cái có thể cho 3 kết quả khác nhau") — 3
+    // đoạn văn NGẮN, ĐỘC LẬP (us_macro_analysis.py:_build_synthesis — ghép câu rule-based từ các
+    // state đã có, KHÔNG phải điểm số), để RIÊNG, KHÔNG gộp lại thành 1 kết luận chung.
+    const synth = usm.synthesis;
+    const synthHtml = synth ? `
+        <div class="us-kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+            <div class="us-kpi-tile" style="text-align:left"><div class="us-kpi-label">A. Nền kinh tế đang khỏe hay yếu?</div><div style="color:#e5e7eb;font-size:0.88em;margin-top:4px;line-height:1.5">${synth.economic}</div></div>
+            <div class="us-kpi-tile" style="text-align:left"><div class="us-kpi-label">B. Chính sách tiền tệ đang nới hay thắt?</div><div style="color:#e5e7eb;font-size:0.88em;margin-top:4px;line-height:1.5">${synth.monetary}</div></div>
+            <div class="us-kpi-tile" style="text-align:left"><div class="us-kpi-label">C. Môi trường có thuận lợi cho tài sản rủi ro?</div><div style="color:#e5e7eb;font-size:0.88em;margin-top:4px;line-height:1.5">${synth.investment}</div></div>
+        </div>
+        <p class="ind-source-note">3 câu hỏi để RIÊNG vì có thể cho 3 kết quả khác nhau — vd kinh tế vẫn khỏe nhưng Fed vẫn phải thắt chặt vì lạm phát, không có nghĩa "tốt" ở câu A thì "tốt" luôn ở câu B/C.</p>` : '';
     const body = rows.map(r => {
         const s = usm.states && usm.states[r.key];
         const c = s ? (colors[s.color] || '#9aa5bd') : '#9aa5bd';
@@ -1163,11 +1186,12 @@ function usOverviewSection(usm, f) {
         <ul class="ind-source-note" style="line-height:1.8">${watch.map(r => `<li><b>${r.label}</b>: ${usm.states[r.key].label} — ${usm.states[r.key].detail}</li>`).join('')}</ul>`
         : `<p style="margin-top:14px;color:#10b981">✓ Không nhóm nào đang ở trạng thái cảnh báo theo ngưỡng rule-based hiện tại.</p>`;
     return `
-        <div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+        ${synthHtml}
+        <div style="overflow-x:auto;margin-top:14px"><table class="monitoring-table"><thead><tr>
             <th style="text-align:left">Nhóm</th><th>Trạng thái</th><th>Chỉ số chính</th><th>Xu hướng gần đây</th>
         </tr></thead><tbody>${body}</tbody></table></div>
         ${watchHtml}
-        <p class="ind-source-note">Đây là LIỆT KÊ lại 7 trạng thái độc lập đã đánh giá chi tiết ở các mục bên dưới (1,7-12) — KHÔNG cộng dồn/tính điểm tổng. Mỗi nhóm đứng riêng, tự đọc theo đúng bối cảnh của nó (vd USD mạnh không "tốt" hay "xấu" per se, chỉ là 1 sự kiện cần biết).</p>`;
+        <p class="ind-source-note">Bảng là LIỆT KÊ lại ${rows.length} trạng thái độc lập đã đánh giá chi tiết ở các mục bên dưới — KHÔNG cộng dồn/tính điểm tổng. Mỗi nhóm đứng riêng, tự đọc theo đúng bối cảnh của nó (vd USD mạnh không "tốt" hay "xấu" per se, chỉ là 1 sự kiện cần biết).</p>`;
 }
 
 function renderUsMacro(usm) {
@@ -1191,7 +1215,7 @@ function renderUsMacro(usm) {
       ${card('📊 Tổng quan — toàn bộ ma trận vĩ mô Mỹ (9 nhóm)', usOverviewSection(usm, f))}
       ${card('🇺🇸 Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
             <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ.</p>`)}
-      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
+      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}${usStateBadge(usm.states && usm.states.inflation_persistence)}<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
@@ -1219,15 +1243,19 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Trái: PPI cầu cuối cùng, giá nhập khẩu, dầu WTI (YoY). Phải: tương quan MoM giữa PPI (hoặc giá nhập khẩu) ở tháng t−L và CPI hàng hóa ở tháng t. Tương quan KHÔNG phải nhân quả.</p>`)}
       ${card('5b. Crack spread — biên lọc dầu: diesel, xăng, 3-2-1 ($/thùng)', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-crack"></canvas></div>
             <p class="ind-source-note">Crack = giá sản phẩm (Vịnh Mexico, EIA) × 42 − WTI. Crack 3-2-1 = (2 × xăng + diesel)/3 − WTI. Hiện: diesel ${f(usm.cracks.latest.diesel_crack, 1)} $/thùng, 3-2-1 ${f(usm.cracks.latest.crack_321, 1)} $/thùng (${usm.cracks.latest.period}). Crack cao cho thấy lọc dầu đang bán sản phẩm đắt hơn nhiều so với giá dầu thô — đúng kiểu cú sốc diesel mà bài viết nêu.</p>`)}
+      ${card('5c. Lan truyền lạm phát — cú sốc đang cô lập hay đang truyền đi?', `<div class="bank-chart-grid-2">
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-transmission-oil"></canvas></div>
+            <div class="ind-chart" style="height:260px"><canvas id="chart-us-transmission-wage"></canvas></div></div>
+            <p class="ind-source-note">Trái: tương quan MoM giữa giá dầu WTI ở tháng t−L và PPI cầu cuối ở tháng t (tầng ĐẦU chuỗi truyền dẫn, trước khi vào PPI/CPI). Phải: tương quan MoM giữa lương bình quân giờ ở tháng t−L và CPI dịch vụ ở tháng t (tín hiệu "wage-price spiral" nếu có — lưu ý CPI dịch vụ ở đây gồm cả Nhà ở, vốn chiếm tỷ trọng rất lớn). Tương quan KHÔNG phải nhân quả — chỉ cho thấy độ trễ/độ mạnh liên hệ giữa các tầng để tự đánh giá cú sốc có đang lan rộng không (xem thêm badge "Lạm phát — độ dai dẳng" ở mục 1).</p>`)}
       ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
             <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
-      ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usStateBadge(usm.states && usm.states.fed_policy) + usFedLiquidityCard(usm.liquidity, f)) : ''}
+      ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usStateBadge(usm.states && usm.states.fed_balance_sheet) + usFedLiquidityCard(usm.liquidity, f)) : ''}
       ${usm.growth ? card('8. Tăng trưởng — GDP thực & sản xuất công nghiệp', usStateBadge(usm.states && usm.states.growth) + usGrowthCard(usm.growth, f)) : ''}
       ${usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usStateBadge(usm.states && usm.states.labor) + usLaborCard(usm.labor, f)) : ''}
       ${usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usStateBadge(usm.states && usm.states.treasury_credit) + usTreasuryCreditCard(usm.treasury_credit, f)) : ''}
       ${usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usStateBadge(usm.states && usm.states.usd) + usUsdCard(usm.usd, f)) : ''}
       ${usm.capital_flows ? card('12. Capital Flows — nước ngoài nắm giữ Treasury Mỹ (TIC)', usStateBadge(usm.states && usm.states.capital_flows) + usCapitalFlowsCard(usm.capital_flows, f)) : ''}
-      ${card('Lãi suất & việc làm (tóm tắt nhanh)', `<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
+      ${card('Lãi suất & việc làm (tóm tắt nhanh)', `${usStateBadge(usm.states && usm.states.fed_policy)}<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
     `;
 
     // Cuộn-sang-phải cho các bảng .monitoring-table-scroll trong tab này được xử lý ở
@@ -1247,7 +1275,9 @@ function renderUsMacro(usm) {
     if (usm.growth && usm.growth.gdp) mkSpark('spark-growth', usm.growth.history.gdp.qoq_ann.slice(-24), '#60a5fa');
     if (usm.labor) mkSpark('spark-labor', usm.labor.history.payrolls_mom.slice(-24), '#a78bfa');
     mkSpark('spark-inflation', hist.cpi_yoy.slice(-24), '#f59e0b');
-    if (usm.liquidity) mkSpark('spark-fed', usm.liquidity.history.net_liquidity.slice(-24), '#10b981');
+    mkSpark('spark-persistence', hist.breadth_gt3_pct.slice(-24), '#f97316');
+    if (usm.rates.usm_fed_funds && usm.rates.usm_fed_funds.history) mkSpark('spark-fed', usm.rates.usm_fed_funds.history.values.slice(-24), '#10b981');
+    if (usm.liquidity) mkSpark('spark-fedbs', usm.liquidity.history.liquidity_impulse.slice(-24), '#a78bfa');
     if (usm.treasury_credit) mkSpark('spark-credit', usm.treasury_credit.history.spread_10y_2y.slice(-24), '#ef4444');
     if (usm.usd) mkSpark('spark-usd', usm.usd.history.values.slice(-24), '#60a5fa');
     if (usm.capital_flows) mkSpark('spark-capflows', usm.capital_flows.history.total.slice(-24), '#10b981');
@@ -1318,6 +1348,16 @@ function renderUsMacro(usm) {
         { label: 'Giá nhập khẩu → CPI hàng hóa', data: ph.import_to_cpi_goods_corr.map(x => x.corr), backgroundColor: 'rgba(96,165,250,0.75)' }] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: CHART_DEFAULTS.scales.x, y: { ...CHART_DEFAULTS.scales.y, min: -1, max: 1 } } } });
 
+    // THEM 2026-10-08 (user gửi tài liệu "Inflation Transmission" — thêm 2 tầng truyền dẫn SỚM/
+    // MUỘN hơn tầng PPI→CPI hàng hóa đã có ở trên).
+    if (ph.oil_to_ppi_corr) mk('chart-us-transmission-oil', { type: 'bar', data: { labels: ph.oil_to_ppi_corr.map(x => 'trễ ' + x.lag_months + ' tháng'), datasets: [
+        { label: 'Dầu WTI → PPI cầu cuối (tương quan MoM)', data: ph.oil_to_ppi_corr.map(x => x.corr), backgroundColor: 'rgba(167,139,250,0.75)' }] },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: CHART_DEFAULTS.scales.x, y: { ...CHART_DEFAULTS.scales.y, min: -1, max: 1 } } } });
+
+    if (ph.wage_to_services_corr) mk('chart-us-transmission-wage', { type: 'bar', data: { labels: ph.wage_to_services_corr.map(x => 'trễ ' + x.lag_months + ' tháng'), datasets: [
+        { label: 'Lương → CPI dịch vụ (tương quan MoM)', data: ph.wage_to_services_corr.map(x => x.corr), backgroundColor: 'rgba(236,72,153,0.75)' }] },
+        options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: CHART_DEFAULTS.scales.x, y: { ...CHART_DEFAULTS.scales.y, min: -1, max: 1 } } } });
+
     mk('chart-us-crack', { type: 'line', data: { labels: usm.cracks.periods, datasets: [
         line('Crack diesel ($/thùng)', usm.cracks.diesel_crack, '#f97316'),
         line('Crack xăng ($/thùng)', usm.cracks.gasoline_crack, '#60a5fa'),
@@ -1350,6 +1390,14 @@ function renderUsMacro(usm) {
         mk('chart-us-fed-netliq', { type: 'line', data: { labels: h.periods, datasets: [
             line('Net Liquidity Fed (T$, trục trái)', T(h.net_liquidity), '#60a5fa')] },
             options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Nghìn tỷ USD', color: '#9aa5bd', font: { size: 9 } } } } } });
+
+        // THEM 2026-10-08 (user gửi tài liệu "Liquidity Impulse = ΔReserves−ΔTGA−ΔRRP") — biểu đồ
+        // cột MoM, dương (bơm ròng) = xanh, âm (rút ròng) = đỏ.
+        const Bn = v => v === null ? null : v / 1000; // trieu USD -> ty USD
+        mk('chart-us-fed-impulse', { type: 'bar', data: { labels: h.periods, datasets: [
+            { label: 'Liquidity Impulse (tỷ$/tháng)', data: h.liquidity_impulse.map(Bn),
+              backgroundColor: h.liquidity_impulse.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(16,185,129,0.75)' : 'rgba(239,68,68,0.75)')) }] },
+            options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } }, scales: { x: ax, y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD/tháng', color: '#9aa5bd', font: { size: 9 } } } } } });
     })();
 
     // SUA 2026-10-08 (cùng pattern đã sửa cho biểu đồ bán lẻ/tiêu dùng thực: "biểu đồ này nhiễu

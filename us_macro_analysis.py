@@ -196,10 +196,40 @@ def build_us_macro(raw):
                 ys.append(b)
         imp_lead.append({"lag_months": lag, "corr": _corr(xs, ys), "n": len(xs)})
 
+    # THEM 2026-10-08 (user gửi tài liệu "Inflation Transmission" — "CPI tăng từ đâu và shock đó
+    # có đang truyền sang các nhóm khác không?") — thêm 2 tầng truyền dẫn SỚM/MUỘN hơn tầng PPI→CPI
+    # hàng hóa đã có: (1) Dầu → PPI (tầng ĐẦU chuỗi, trước khi vào PPI), (2) Lương → CPI dịch vụ
+    # (tầng dịch vụ — "wage-price spiral" nếu có). Dùng MoM + lag correlation giống cách đã làm,
+    # KHÔNG chấm điểm — chỉ cho thấy độ trễ/độ mạnh tương quan ở TỪNG tầng để người đọc tự đánh giá
+    # cú sốc đang "cô lập" hay "lan truyền".
+    earnings = _series(raw, "usm_avg_earnings")
+    oil_lead = []
+    common_o = [p for p in periods if p in ppi and p in wti]
+    for lag in range(0, 7):
+        xs, ys = [], []
+        for p in common_o:
+            a, b = _mom(wti, _shift(p, -lag)), _mom(ppi, p)
+            if a is not None and b is not None:
+                xs.append(a)
+                ys.append(b)
+        oil_lead.append({"lag_months": lag, "corr": _corr(xs, ys), "n": len(xs)})
+
+    wage_lead = []
+    common_w = [p for p in periods if p in services and p in earnings] if earnings else []
+    for lag in range(0, 7):
+        xs, ys = [], []
+        for p in common_w:
+            a, b = _mom(earnings, _shift(p, -lag)), _mom(services, p)
+            if a is not None and b is not None:
+                xs.append(a)
+                ys.append(b)
+        wage_lead.append({"lag_months": lag, "corr": _corr(xs, ys), "n": len(xs)})
+
     pipeline = {
         "ppi_final_yoy": _yoy(ppi, latest), "import_price_yoy": _yoy(imp, latest),
         "oil_yoy": _yoy(wti, latest),
         "ppi_to_cpi_goods_corr": lead, "import_to_cpi_goods_corr": imp_lead,
+        "oil_to_ppi_corr": oil_lead, "wage_to_services_corr": wage_lead,
         "ppi_hist": {"periods": periods, "ppi_yoy": [_yoy(ppi, p) for p in periods],
                      "import_yoy": [_yoy(imp, p) for p in periods],
                      "oil_yoy": [_yoy(wti, p) for p in periods]},
@@ -226,7 +256,9 @@ def build_us_macro(raw):
         s = _series(raw, key)
         if s:
             last = max(s)
-            rates[key] = {"label": label, "latest": s[last], "period": last}
+            rp = sorted(p for p in s if p >= "2021-01")
+            rates[key] = {"label": label, "latest": s[last], "period": last,
+                          "history": {"periods": rp, "values": [s.get(p) for p in rp]}}
 
     heatmap = _monthly_heatmap(raw, latest)
     cracks = _crack_spreads(raw)
@@ -237,11 +269,12 @@ def build_us_macro(raw):
     treasury_credit = _treasury_credit(raw)
     usd = _usd(raw)
     capital_flows = _capital_flows(raw)
-    states = _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, usd, capital_flows)
+    states = _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, usd, capital_flows, breadth, contributions)
+    synthesis = _build_synthesis(states)
 
     return {"headline": headline, "groups": groups, "breadth": breadth, "history": hist, "heatmap": heatmap, "cracks": cracks, "contributions": contributions,
             "pipeline": pipeline, "real_consumption": real, "rates": rates, "liquidity": liquidity,
-            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd, "capital_flows": capital_flows, "states": states,
+            "growth": growth, "labor": labor, "treasury_credit": treasury_credit, "usd": usd, "capital_flows": capital_flows, "states": states, "synthesis": synthesis,
             "note": ("Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số "
                      "tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò.")}
 
@@ -252,7 +285,7 @@ def build_us_macro(raw):
 # cách build_synthesis_vimo() đã làm cho vĩ mô VN) — label + màu (good/neutral/warn/bad) + 1 câu
 # giải thích TỪ SỐ LIỆU THẬT. KHÔNG cộng dồn các label này thành điểm tổng — mỗi nhóm đứng độc lập,
 # người đọc tự tổng hợp bức tranh chung từ nhiều trạng thái khác nhau.
-def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, usd, capital_flows):
+def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, usd, capital_flows, breadth, contributions):
     states = {}
 
     if headline.get("cpi_3m_ann") is not None:
@@ -265,8 +298,30 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             label, color = "Dai dẳng, chưa hạ nhiệt rõ", "warn"
         else:
             label, color = "Nóng trở lại", "bad"
+        top2 = (contributions or {}).get("snapshot", [])[:2]
+        source_note = ""
+        if top2:
+            source_note = "; nhóm đóng góp nhiều nhất: " + ", ".join(
+                f"{r['label']} ({r['contribution']:+.2f}pp)" for r in top2 if r.get("contribution") is not None)
         states["inflation"] = {"label": label, "color": color,
-            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (so mục tiêu Fed ~2%)."}
+            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (so mục tiêu Fed ~2%){source_note}."}
+
+    # THEM 2026-10-08 (user gửi tài liệu "Inflation Persistence" — "CPI tăng từ đâu và có đang lan
+    # truyền sang nhóm khác không, hay chỉ là 1 cú sốc đơn lẻ (energy) Fed có thể 'nhìn xuyên
+    # qua'?") — tách RIÊNG khỏi "mức độ lạm phát" ở trên. Rule dùng ĐÚNG số liệu đã có, không thêm
+    # nguồn mới: độ lan tỏa (breadth, % trong 9 nhóm có YoY>3%) + CPI lõi có cao hay không (lõi cao
+    # = áp lực không chỉ tới từ năng lượng/thực phẩm dễ biến động).
+    pct_gt_3 = (breadth or {}).get("pct_gt_3")
+    core_yoy = headline.get("core_yoy")
+    if pct_gt_3 is not None and core_yoy is not None:
+        if pct_gt_3 > 60 and core_yoy > 3:
+            label, color = "Cao — lan rộng, không chỉ 1 cú sốc đơn lẻ", "bad"
+        elif pct_gt_3 > 40 or core_yoy > 2.5:
+            label, color = "Trung bình — có dấu hiệu lan truyền một phần", "warn"
+        else:
+            label, color = "Thấp — tương đối cô lập, Fed có thể 'nhìn xuyên qua'", "good"
+        states["inflation_persistence"] = {"label": label, "color": color,
+            "detail": f"{pct_gt_3}% trong 9 nhóm CPI có YoY &gt; 3% (độ lan tỏa); CPI lõi {core_yoy}% so CPI toàn phần {headline.get('cpi_yoy')}% (lõi cao = không chỉ do năng lượng/thực phẩm)."}
 
     if growth and growth.get("gdp"):
         g = growth["gdp"]["qoq_annualized"]
@@ -301,6 +356,11 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             states["labor"] = {"label": label, "color": color,
                 "detail": f"Việc làm phi NN thêm TB 3 tháng {avg3}k/tháng (tháng gần nhất {labor.get('payrolls_mom')}k), thất nghiệp {labor.get('unemployment_latest')}%{rw_note}."}
 
+    # THEM 2026-10-08 (user gửi tài liệu "Fed reaction function" — "không nên viết CPI tăng → Fed
+    # hawkish [trực tiếp]; phải nhìn Inflation → Persistence → Labor → Demand/GDP → Fed reaction")
+    # — ghép chuỗi NHÂN QUẢ từ các trạng thái ĐÃ TÍNH Ở TRÊN (inflation_persistence/labor/growth)
+    # vào câu giải thích TRƯỚC KHI nêu sự kiện/số liệu thực (lãi suất thực) — không tạo điểm số Fed
+    # Hawkish Pressure nào, chỉ liệt kê nhãn qua dấu "+".
     fed_funds = rates.get("usm_fed_funds", {}).get("latest")
     cpi_yoy = headline.get("cpi_yoy")
     if fed_funds is not None and cpi_yoy is not None:
@@ -311,18 +371,38 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             policy_label, policy_color = "Thắt chặt nhẹ", "neutral"
         else:
             policy_label, policy_color = "Nới lỏng thực (lãi suất thực âm)", "good"
-        bs_note = ""
-        if liquidity:
-            chg6 = liquidity["changes"]["usm_fed_assets"]["chg_pct_6m"]
-            if chg6 is not None:
-                if chg6 > 0.5:
-                    bs_note = "; bảng cân đối đang MỞ RỘNG trở lại (QE)"
-                elif chg6 < -0.5:
-                    bs_note = "; bảng cân đối đang THU HẸP (QT)"
-                else:
-                    bs_note = "; bảng cân đối đi ngang"
+        pressure_bits = []
+        if states.get("inflation_persistence"):
+            pressure_bits.append(f"độ dai dẳng lạm phát '{states['inflation_persistence']['label']}'")
+        if states.get("labor"):
+            pressure_bits.append(f"lao động '{states['labor']['label']}'")
+        if states.get("growth"):
+            pressure_bits.append(f"tăng trưởng '{states['growth']['label']}'")
+        pressure_text = (" + ".join(pressure_bits) + " → ") if pressure_bits else ""
         states["fed_policy"] = {"label": policy_label, "color": policy_color,
-            "detail": f"Lãi suất quỹ liên bang {fed_funds}% − CPI YoY {cpi_yoy}% = lãi suất thực ~{real_rate}%{bs_note}."}
+            "detail": f"{pressure_text}lãi suất thực hiện tại {real_rate}% (Fed funds {fed_funds}% − CPI YoY {cpi_yoy}%)."}
+
+    # Tách RIÊNG "bảng cân đối" khỏi "lãi suất" (user: "không thể chỉ có Fed Funds Rate... phải
+    # phân biệt QT thật với reserve management") — dùng Liquidity Impulse (ΔReserves−ΔRRP−ΔTGA,
+    # xem _fed_liquidity) thay vì chỉ % thay đổi tổng tài sản, vì tổng tài sản có thể đi ngang do
+    # cơ cấu kỳ hạn trong khi thanh khoản ròng NGÂN HÀNG vẫn đang thay đổi.
+    if liquidity:
+        chg6 = liquidity["changes"]["usm_fed_assets"]["chg_pct_6m"]
+        impulse = liquidity.get("liquidity_impulse_latest")
+        if chg6 is not None:
+            if chg6 > 0.5:
+                bs_label, bs_color = "Mở rộng trở lại (QE)", "good"
+            elif chg6 < -0.5:
+                bs_label, bs_color = "Thu hẹp (QT)", "warn"
+            else:
+                bs_label, bs_color = "Đi ngang", "neutral"
+            impulse_note = ""
+            if impulse is not None:
+                impulse_bn = round(impulse / 1000, 1)
+                impulse_note = (f"; Liquidity Impulse (ΔReserves−ΔRRP−ΔTGA) tháng gần nhất {'+' if impulse_bn >= 0 else ''}{impulse_bn} tỷ$ "
+                                 + ("(bơm ròng vào hệ thống ngân hàng)" if impulse_bn >= 0 else "(rút ròng khỏi hệ thống ngân hàng)"))
+            states["fed_balance_sheet"] = {"label": bs_label, "color": bs_color,
+                "detail": f"Tổng tài sản Fed thay đổi {chg6}%/6 tháng{impulse_note}."}
 
     if treasury_credit:
         v, c = treasury_credit["latest_values"], treasury_credit["changes"]
@@ -364,6 +444,57 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
                 "detail": f"Tổng nước ngoài nắm giữ thay đổi {capital_flows.get('total_chg_pct_12m')}%/12 tháng; khối chính thức {oc12}%/12 tháng."}
 
     return states
+
+
+# THEM 2026-10-08 (user gửi tài liệu "3 câu hỏi độc lập": "A. Nền kinh tế đang khỏe hay yếu? B.
+# Chính sách tiền tệ đang nới hay thắt? C. Môi trường có thuận lợi cho tài sản rủi ro không? Ba cái
+# này có thể cho ba kết quả hoàn toàn khác nhau" — vd Economy=GOOD, Monetary=BAD, Investment=BAD
+# khi GDP khỏe nhưng Fed phải tăng lãi suất vì lạm phát) — gộp các "states" ĐỘC LẬP đã có thành 3
+# ĐOẠN VĂN BẢN ngắn riêng biệt theo 3 câu hỏi trên. Đây CHỈ LÀ GHÉP CÂU rule-based (if/else trên
+# color đã có, giống build_synthesis_vimo() cho vĩ mô VN) — KHÔNG tính thêm bất kỳ con số/điểm nào,
+# và KHÔNG gộp 3 đoạn này lại thành 1 kết luận chung — để riêng vì 3 câu hỏi có thể trả lời khác
+# nhau (đúng tinh thần "Economy tốt nhưng Monetary xấu" mà user nêu).
+def _build_synthesis(states):
+    def _combine(parts, colors, good_text, mixed_text, bad_text):
+        if not colors:
+            return ""
+        if all(c in ("good", "neutral") for c in colors):
+            verdict = good_text
+        elif any(c == "bad" for c in colors):
+            verdict = bad_text
+        else:
+            verdict = mixed_text
+        return (", ".join(parts) + ". " + verdict).strip()
+
+    g, l = states.get("growth"), states.get("labor")
+    economic = _combine(
+        [f"Tăng trưởng: {g['label'].lower()}" for g in [g] if g] + [f"lao động: {l['label'].lower()}" for l in [l] if l],
+        [s["color"] for s in (g, l) if s],
+        "Nhìn chung nền kinh tế vẫn trụ vững, chưa có dấu hiệu suy thoái rõ rệt.",
+        "Nền kinh tế đang hạ nhiệt nhưng chưa tới mức báo động.",
+        "Nền kinh tế đang có dấu hiệu suy yếu rõ rệt ở ít nhất 1 trụ cột (tăng trưởng hoặc lao động).")
+
+    ip, fp, fb = states.get("inflation_persistence"), states.get("fed_policy"), states.get("fed_balance_sheet")
+    monetary = _combine(
+        [f"Độ dai dẳng lạm phát: {s['label'].lower()}" for s in [ip] if s]
+        + [f"chính sách lãi suất: {s['label'].lower()}" for s in [fp] if s]
+        + [f"bảng cân đối: {s['label'].lower()}" for s in [fb] if s],
+        [s["color"] for s in (ip, fp, fb) if s],
+        "Điều kiện tiền tệ nhìn chung đang khá thuận lợi/nới lỏng.",
+        "Điều kiện tiền tệ ở trạng thái trung tính, chưa nghiêng rõ về nới hay thắt.",
+        "Điều kiện tiền tệ nhìn chung đang THẮT CHẶT hơn là nới lỏng — không nên mặc định Fed sắp dovish chỉ vì lạm phát hạ nhiệt một phần.")
+
+    tc, u, cf = states.get("treasury_credit"), states.get("usd"), states.get("capital_flows")
+    investment = _combine(
+        [f"Lợi suất/tín dụng: {s['label'].lower()}" for s in [tc] if s]
+        + [f"{s['label']}" for s in [u] if s]
+        + [f"dòng vốn nước ngoài vào Treasury: {s['label'].lower()}" for s in [cf] if s],
+        [s["color"] for s in (tc, u, cf) if s],
+        "Điều kiện tài chính (financial conditions) nhìn chung chưa gây cản trở lớn cho tài sản rủi ro.",
+        "Điều kiện tài chính đang pha trộn — vừa có yếu tố thuận lợi vừa có yếu tố bất lợi.",
+        "Điều kiện tài chính đang có yếu tố bất lợi rõ cho tài sản rủi ro — nên chọn lọc/phòng thủ hơn là risk-on toàn diện.")
+
+    return {"economic": economic, "monetary": monetary, "investment": investment}
 
 
 def _fed_liquidity(raw):
@@ -410,11 +541,26 @@ def _fed_liquidity(raw):
     peak_period = max(series["usm_fed_assets"], key=lambda p: series["usm_fed_assets"][p])
     assets_vs_peak_pct = round((latest_vals["usm_fed_assets"] / series["usm_fed_assets"][peak_period] - 1) * 100, 2)
 
+    # THEM 2026-10-08 (user gửi tài liệu đề xuất "Liquidity Impulse = ΔReserves − ΔTGA − ΔRRP +
+    # ΔFed Lending") — dùng DỰ TRỮ NGÂN HÀNG (Reserves) thay vì Tổng tài sản làm gốc (khác "Net
+    # Liquidity" ở trên dùng Assets) vì Reserves là tiền THỰC SỰ nằm trong hệ thống ngân hàng, không
+    # bị nhiễu bởi thay đổi kỳ hạn/cơ cấu danh mục SOMA. Bỏ "ΔFed Lending" (không có chuỗi discount
+    # window riêng). Impulse = thay đổi MoM của (Reserves − RRP − TGA) — dương = bơm thanh khoản
+    # ròng vào hệ thống tháng đó, âm = rút ròng.
+    reserves_liq = {}
+    for p in periods:
+        r, rrp, t = series["usm_fed_reserves"].get(p), series["usm_fed_rrp"].get(p), series["usm_fed_tga"].get(p)
+        if r is not None and rrp is not None and t is not None:
+            reserves_liq[p] = r - rrp - t
+    impulse = {periods[i]: round(reserves_liq[periods[i]] - reserves_liq[periods[i - 1]], 0)
+               for i in range(1, len(periods)) if periods[i] in reserves_liq and periods[i - 1] in reserves_liq}
+
     return {
         "periods": periods, "latest": latest, "latest_values": latest_vals, "changes": chg,
         "peak_period": peak_period, "peak_value": series["usm_fed_assets"][peak_period],
         "assets_vs_peak_pct": assets_vs_peak_pct,
         "ecb_latest": {"period": ecb_latest, "value": ecb.get(ecb_latest)} if ecb_latest else None,
+        "liquidity_impulse_latest": impulse.get(latest),
         "history": {
             "periods": periods,
             "assets": [series["usm_fed_assets"].get(p) for p in periods],
@@ -424,6 +570,7 @@ def _fed_liquidity(raw):
             "rrp": [series["usm_fed_rrp"].get(p) for p in periods],
             "tga": [series["usm_fed_tga"].get(p) for p in periods],
             "net_liquidity": [net_liq.get(p) for p in periods],
+            "liquidity_impulse": [impulse.get(p) for p in periods],
         },
     }
 
@@ -650,13 +797,22 @@ def _cpi_contributions(raw, periods):
     # nhiêu điểm, bản thân food tăng bao nhiêu %"). Sắp theo |đóng góp| giảm dần để thấy ngay cái
     # gì đang "gánh" CPI nhiều nhất lên đầu, khớp ví dụ user: "học phí tăng rất cao nhưng đóng góp
     # ít vì tiêu dùng ít, năng lượng tăng nhẹ nhưng đóng góp nhiều vì tiêu dùng nhiều".
+    # THEM 2026-10-08 (user gửi tài liệu đề xuất "Contribution change": "Energy contribution +0.3pp
+    # → +0.8pp => đỏ; Shelter +1.2pp → +1.0pp => xanh" — biết nhóm nào đang TĂNG áp lực lên CPI,
+    # không chỉ mức đóng góp hiện tại) — so đóng góp kỳ này với đúng 3 tháng trước, CÙNG công thức.
     latest = periods[-1]
+    latest_3m_ago = _shift(latest, -3)
     snapshot = []
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
         yoy = _group_yoy(key, latest)
+        contribution = round(w / 100 * yoy, 3) if yoy is not None else None
+        yoy_3m = _group_yoy(key, latest_3m_ago) if latest_3m_ago in periods else None
+        contribution_3m_ago = round(w / 100 * yoy_3m, 3) if yoy_3m is not None else None
+        contribution_chg_3m = round(contribution - contribution_3m_ago, 3) if contribution is not None and contribution_3m_ago is not None else None
         snapshot.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w, "yoy": yoy,
-                          "contribution": round(w / 100 * yoy, 3) if yoy is not None else None})
+                          "contribution": contribution, "contribution_3m_ago": contribution_3m_ago,
+                          "contribution_chg_3m": contribution_chg_3m})
     snapshot.sort(key=lambda r: abs(r["contribution"]) if r["contribution"] is not None else -1, reverse=True)
 
     return {"periods": periods, "rows": rows, "weights_vintage": US_GROUP_WEIGHTS_VINTAGE,
