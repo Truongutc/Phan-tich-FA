@@ -61,6 +61,18 @@ def _transport_ex_fuel_yoy(raw, p):
     return (_TRANSPORT_FULL_WEIGHT * trn_y - _MOTOR_FUEL_WEIGHT * gas_y) / US_GROUP9_WEIGHTS["usm_cpi_transport"]
 
 
+# THEM 2026-10-08 (user gửi tài liệu đối chiếu BLS Table 6 "1-month analysis": "contribution lớn
+# [YoY] không đồng nghĩa đang tăng mạnh [MoM] — Nhà ở contribution YoY lớn chủ yếu vì TRỌNG SỐ,
+# bản thân chỉ +0.3% MoM; Energy/gasoline mới là cú kéo MoM mạnh nhất tháng 8") — bản MoM song song
+# với _transport_ex_fuel_yoy, CÙNG công thức trừ trọng số, chỉ đổi YoY→MoM.
+def _transport_ex_fuel_mom(raw, p):
+    trn_m = _mom(_series(raw, "usm_cpi_transport"), p)
+    gas_m = _mom(_series(raw, "usm_gasoline"), p)
+    if trn_m is None or gas_m is None:
+        return None
+    return (_TRANSPORT_FULL_WEIGHT * trn_m - _MOTOR_FUEL_WEIGHT * gas_m) / US_GROUP9_WEIGHTS["usm_cpi_transport"]
+
+
 def _series(raw, key):
     return {p["period"]: p["value"] for p in raw.get(key, {}).get("series", [])}
 
@@ -339,10 +351,18 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
         top2 = (contributions or {}).get("snapshot", [])[:2]
         source_note = ""
         if top2:
-            source_note = "; nhóm đóng góp nhiều nhất: " + ", ".join(
+            source_note = "; nhóm đóng góp nhiều nhất vào MỨC HIỆN TẠI (YoY, tích lũy 12 tháng): " + ", ".join(
                 f"{r['label']} ({r['contribution']:+.2f}pp)" for r in top2 if r.get("contribution") is not None)
+        # THEM 2026-10-08 (user gửi tài liệu: "đóng góp YoY lớn (vd Nhà ở) không đồng nghĩa đang là
+        # động lực tăng tốc — đó chỉ là do TRỌNG SỐ, phải phân biệt với MoM mới bắt được cú kéo MỚI
+        # NHẤT") — thêm top-1 theo MoM (xem mục 2c-mom) để câu này tự nói rõ 2 câu hỏi khác nhau,
+        # tránh lặp lại đúng lỗi đọc nhầm mà tài liệu chỉ ra.
+        mom_top = ((contributions or {}).get("mom_snapshot") or [None])[0]
+        mom_note = ""
+        if mom_top and mom_top.get("contribution") is not None and mom_top.get("key") != "residual":
+            mom_note = f" Riêng THÁNG NÀY (MoM), cú kéo mạnh nhất là {mom_top['label']} ({mom_top['contribution']:+.3f}pp) — xem mục 2c-mom, có thể KHÁC nhóm đóng góp YoY lớn nhất ở trên."
         states["inflation"] = {"label": label, "color": color,
-            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp){source_note}.{reaccel_note}"}
+            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp){source_note}.{reaccel_note}{mom_note}"}
 
     # THEM 2026-10-08 (user gửi tài liệu "Inflation Persistence" — "CPI tăng từ đâu và có đang lan
     # truyền sang nhóm khác không, hay chỉ là 1 cú sốc đơn lẻ (energy) Fed có thể 'nhìn xuyên
@@ -861,6 +881,9 @@ def _cpi_contributions(raw, periods):
     def _group_yoy(key, p):
         return _transport_ex_fuel_yoy(raw, p) if key == "usm_cpi_transport" else _yoy(group_series[key], p)
 
+    def _group_mom(key, p):
+        return _transport_ex_fuel_mom(raw, p) if key == "usm_cpi_transport" else _mom(group_series[key], p)
+
     rows = []
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
@@ -903,5 +926,27 @@ def _cpi_contributions(raw, periods):
                           "contribution_chg_1m": contribution_chg_1m})
     snapshot.sort(key=lambda r: abs(r["contribution"]) if r["contribution"] is not None else -1, reverse=True)
 
+    # THEM 2026-10-08 (user gửi tài liệu đối chiếu BLS Table 6 "1-month analysis": "contribution
+    # [YoY] lớn KHÔNG đồng nghĩa đang tăng mạnh — Nhà ở contribution YoY lớn (+1.07pp) chủ yếu vì
+    # TRỌNG SỐ 35%, bản thân chỉ +0.3% MoM; Energy/gasoline mới là cú kéo MoM mạnh nhất tháng 8
+    # (+0.15pp) dù trọng số Energy chỉ 7,3%" — bảng YoY ở trên trả lời "CPI ĐANG Ở MỨC NÀO" (tích
+    # lũy 12 tháng, câu hỏi STOCK); bảng MoM này trả lời "CPI VỪA TĂNG VÌ GÌ" (câu hỏi FLOW, bắt
+    # turning point) — 2 câu hỏi khác nhau, dễ nhầm "đóng góp YoY lớn" = "đang là động lực tăng tốc"
+    # (vd Nhà ở: đóng góp lớn nhưng ĐANG HẠ NHIỆT, không phải energy: đóng góp YoY thấp hơn nhưng
+    # MoM đang là cú kéo mạnh nhất). Weight × MoM, CÙNG 9 nhóm + phần dư để cộng đúng ra CPI MoM.
+    mom_snapshot = []
+    for key, label in US_GROUPS:
+        w = US_GROUP9_WEIGHTS[key]
+        mom = _group_mom(key, latest)
+        mom_contribution = round(w / 100 * mom, 3) if mom is not None else None
+        mom_snapshot.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w,
+                              "mom": round(mom, 2) if mom is not None else None, "contribution": mom_contribution})
+    cpi_mom_actual = _mom(cpi, latest)
+    known_mom = sum(r["contribution"] for r in mom_snapshot if r["contribution"] is not None)
+    mom_snapshot.append({"key": "residual", "label": "Phần dư (Fuel oil + mục nhỏ chưa gán)", "weight_pct": None,
+                          "mom": None, "contribution": round(cpi_mom_actual - known_mom, 3) if cpi_mom_actual is not None else None})
+    mom_snapshot.sort(key=lambda r: abs(r["contribution"]) if r["contribution"] is not None else -1, reverse=True)
+
     return {"periods": periods, "rows": rows, "weights_vintage": US_GROUP_WEIGHTS_VINTAGE,
-            "weights_source": US_GROUP_WEIGHTS_SOURCE, "snapshot": snapshot, "snapshot_period": latest}
+            "weights_source": US_GROUP_WEIGHTS_SOURCE, "snapshot": snapshot, "snapshot_period": latest,
+            "mom_snapshot": mom_snapshot, "cpi_mom_actual": round(cpi_mom_actual, 2) if cpi_mom_actual is not None else None}

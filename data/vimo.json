@@ -82182,7 +82182,80 @@
           "contribution_chg_1m": -0.006
         }
       ],
-      "snapshot_period": "2026-08"
+      "snapshot_period": "2026-08",
+      "mom_snapshot": [
+        {
+          "key": "usm_cpi_energy",
+          "label": "Năng lượng",
+          "weight_pct": 7.347,
+          "mom": 2.1,
+          "contribution": 0.154
+        },
+        {
+          "key": "usm_cpi_shelter",
+          "label": "Nhà ở",
+          "weight_pct": 35.343,
+          "mom": 0.26,
+          "contribution": 0.093
+        },
+        {
+          "key": "usm_cpi_education_comm",
+          "label": "Giáo dục & Truyền thông",
+          "weight_pct": 5.716,
+          "mom": 1.61,
+          "contribution": 0.092
+        },
+        {
+          "key": "usm_cpi_transport",
+          "label": "Giao thông (trừ xăng dầu — xem Năng lượng)",
+          "weight_pct": 13.178,
+          "mom": 0.6,
+          "contribution": 0.079
+        },
+        {
+          "key": "residual",
+          "label": "Phần dư (Fuel oil + mục nhỏ chưa gán)",
+          "weight_pct": null,
+          "mom": null,
+          "contribution": -0.027
+        },
+        {
+          "key": "usm_cpi_medical",
+          "label": "Y tế",
+          "weight_pct": 8.267,
+          "mom": -0.25,
+          "contribution": -0.02
+        },
+        {
+          "key": "usm_cpi_food",
+          "label": "Thực phẩm",
+          "weight_pct": 13.54,
+          "mom": 0.12,
+          "contribution": 0.017
+        },
+        {
+          "key": "usm_cpi_other",
+          "label": "Hàng hóa & dịch vụ khác",
+          "weight_pct": 3.732,
+          "mom": 0.22,
+          "contribution": 0.008
+        },
+        {
+          "key": "usm_cpi_apparel",
+          "label": "May mặc",
+          "weight_pct": 2.406,
+          "mom": 0.02,
+          "contribution": 0.0
+        },
+        {
+          "key": "usm_cpi_recreation",
+          "label": "Giải trí",
+          "weight_pct": 5.081,
+          "mom": 0.0,
+          "contribution": 0.0
+        }
+      ],
+      "cpi_mom_actual": 0.4
     },
     "pipeline": {
       "ppi_final_yoy": 5.41,
@@ -89402,7 +89475,7 @@
       "inflation": {
         "label": "Vừa chạm đáy rồi tăng tốc trở lại",
         "color": "warn",
-        "detail": "CPI YoY 3.35%, lõi 2.45%, momentum 3 tháng năm hóa 0.18% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp); nhóm đóng góp nhiều nhất: Năng lượng (+1.18pp), Nhà ở (+1.07pp). ⚠ Riêng tháng 2026-08: MoM 0.4% (~4.8%/năm nếu duy trì nguyên tháng này) — CAO HƠN RÕ RỆT momentum 3 tháng (0.18%) — cửa sổ 3 tháng đã gộp qua pha đáy (vd 1 tháng giảm bất thường) nên MẤT tín hiệu đảo chiều mới nhất. Xem bảng MoM theo tháng ở mục 1 để tự đánh giá xu hướng gần nhất."
+        "detail": "CPI YoY 3.35%, lõi 2.45%, momentum 3 tháng năm hóa 0.18% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp); nhóm đóng góp nhiều nhất vào MỨC HIỆN TẠI (YoY, tích lũy 12 tháng): Năng lượng (+1.18pp), Nhà ở (+1.07pp). ⚠ Riêng tháng 2026-08: MoM 0.4% (~4.8%/năm nếu duy trì nguyên tháng này) — CAO HƠN RÕ RỆT momentum 3 tháng (0.18%) — cửa sổ 3 tháng đã gộp qua pha đáy (vd 1 tháng giảm bất thường) nên MẤT tín hiệu đảo chiều mới nhất. Xem bảng MoM theo tháng ở mục 1 để tự đánh giá xu hướng gần nhất. Riêng THÁNG NÀY (MoM), cú kéo mạnh nhất là Năng lượng (+0.154pp) — xem mục 2c-mom, có thể KHÁC nhóm đóng góp YoY lớn nhất ở trên."
       },
       "inflation_persistence": {
         "label": "Trung bình — có dấu hiệu lan truyền một phần",

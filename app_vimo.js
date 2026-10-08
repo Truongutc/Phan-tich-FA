@@ -1012,6 +1012,43 @@ function usContribBarChart(ct) {
     }));
 }
 
+// THEM 2026-10-08 (user gửi tài liệu đối chiếu BLS Table 6: "contribution YoY lớn không đồng
+// nghĩa đang tăng mạnh — Nhà ở lớn chủ yếu vì trọng số, Energy/gasoline mới là cú kéo MoM mạnh
+// nhất") — bảng SONG SONG với usContribSnapshotTable nhưng dùng MoM thay YoY, trả lời câu hỏi
+// KHÁC: "CPI vừa tăng/giảm vì gì" (flow, bắt turning point) thay vì "CPI đang ở mức nào" (stock).
+function usContribMomTable(ct, f) {
+    if (!ct || !ct.mom_snapshot) return '';
+    const sign = v => (v === null || v === undefined) ? '' : (v >= 0 ? 'color:#ef4444' : 'color:#60a5fa');
+    const rows = ct.mom_snapshot.map(r => `<tr>
+        <th style="text-align:left;white-space:nowrap">${r.label}</th>
+        <td style="color:#e5e7eb">${r.weight_pct === null ? '—' : f(r.weight_pct, 1) + '%'}</td>
+        <td style="${sign(r.mom)}">${r.mom === null ? '—' : (r.mom >= 0 ? '+' : '') + f(r.mom) + '%'} <span class="ind-source-note">(bản thân nhóm tự tăng/giảm tháng này)</span></td>
+        <td style="${sign(r.contribution)};font-weight:700">${r.contribution === null ? '—' : (r.contribution >= 0 ? '+' : '') + f(r.contribution) + 'pp'} <span class="ind-source-note">(làm CPI đổi tháng này)</span></td>
+    </tr>`).join('');
+    return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số</th><th>MoM</th><th>Đóng góp MoM</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function usContribMomBarChart(ct) {
+    const canvas = document.getElementById('chart-us-contrib-mom-bar');
+    if (!canvas || !ct || !ct.mom_snapshot) return;
+    const rows = ct.mom_snapshot.filter(r => r.contribution !== null);
+    const colors = rows.map(r => r.contribution >= 0 ? 'rgba(239,68,68,0.8)' : 'rgba(96,165,250,0.8)');
+    chartInstances.push(new Chart(canvas, {
+        type: 'bar',
+        data: { labels: rows.map(r => r.mom !== null ? `${r.label}\n(MoM ${r.mom >= 0 ? '+' : ''}${r.mom.toFixed(2)}%)` : r.label),
+                datasets: [{ label: 'Đóng góp vào CPI MoM (điểm %)', data: rows.map(r => r.contribution), backgroundColor: colors,
+                             datalabels: { display: true, color: '#fff', anchor: 'end', align: 'top', offset: 2, clip: false,
+                                           formatter: v => (v >= 0 ? '+' : '') + v.toFixed(3) + 'pp', font: { size: 10, weight: '600' } } }] },
+        options: { ...CHART_DEFAULTS,
+                   plugins: { legend: { display: false } },
+                   scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, autoSkip: false, maxRotation: 30, font: { size: 8 } } },
+                             y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Điểm % đóng góp vào CPI MoM', color: '#9aa5bd', font: { size: 9 } } } } },
+        plugins: [ChartDataLabels],
+    }));
+}
+
 // THEM 2026-10-08 (user: "lấy dữ liệu bảng cân đối Fed, QE/QT, thu hẹp/mở rộng bảng cân đối") —
 // bảng cân đối Fed (H.4.1, FRED mirror) KHÔNG chấm điểm "nới/thắt" — chỉ liệt kê số liệu thật +
 // % thay đổi 6/12 tháng, đúng nguyên tắc không gộp nhiều tín hiệu thành 1 điểm số (đã chốt ở
@@ -1251,13 +1288,20 @@ function renderUsMacro(usm) {
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
-      ${card('2c. Tại tháng ' + usm.contributions.snapshot_period + ' — cái gì khiến CPI đổi, bao nhiêu điểm % mỗi cái', `
+      ${card('2c. CPI ĐANG Ở MỨC NÀO (YoY, tích lũy 12 tháng) — tại tháng ' + usm.contributions.snapshot_period, `
             <p style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.4);border-radius:8px;padding:8px 12px;font-size:0.85em;margin:0 0 10px">
                 ⚠ <b>"Giao thông" ở BẢNG NÀY khác "Giao thông" ở bảng nhiệt 2b phía trên</b> (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_transport') || {}).yoy)}% ở đây so với ~${f(usm.groups.find(g => g.key === 'usm_cpi_transport').yoy)}% ở bảng nhiệt) — xăng dầu đã TÁCH RA, cộng gộp vào "Năng lượng" (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_energy') || {}).yoy)}%, nay KHỚP ĐÚNG bảng nhiệt 2b) để không đếm trùng khi cộng thành đóng góp.
             </p>
             <div class="ind-chart" style="height:320px"><canvas id="chart-us-contrib-bar"></canvas></div>
             ${usContribSnapshotTable(usm.contributions)}
-            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch.</p>`)}
+            <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch. ⚠ Bảng này trả lời "CPI 3,4% hiện tại được TẠO NÊN từ đâu" (cộng dồn 12 tháng) — KHÔNG phải "CPI tháng này vừa tăng/giảm vì gì". Đóng góp YoY lớn (vd Nhà ở) có thể chỉ do TRỌNG SỐ lớn, không có nghĩa nhóm đó đang là động lực tăng tốc — xem mục 2c-mom bên dưới.</p>`)}
+      ${card('2c-mom. CPI VỪA TĂNG/GIẢM VÌ GÌ (MoM, chỉ 1 tháng) — tháng ' + usm.contributions.snapshot_period, `
+            <p style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.4);border-radius:8px;padding:8px 12px;font-size:0.85em;margin:0 0 10px">
+                💡 Khác câu hỏi ở mục 2c (CPI đang ở mức nào, cộng dồn 12 tháng) — bảng này trả lời "cú tăng/giảm MỚI NHẤT của CPI đến từ đâu", dùng để bắt turning point. Vd thực tế: Nhà ở đóng góp YoY lớn nhất (2c) nhưng ở ĐÂY lại không phải động lực MoM mạnh nhất — vì bản thân Nhà ở chỉ tăng nhẹ, đóng góp lớn chủ yếu do trọng số ~35%; Năng lượng/xăng dầu mới là cú kéo MoM mạnh nhất tháng này dù trọng số nhỏ hơn nhiều.
+            </p>
+            <div class="ind-chart" style="height:320px"><canvas id="chart-us-contrib-mom-bar"></canvas></div>
+            ${usContribMomTable(usm.contributions, f)}
+            <p class="ind-source-note">Đóng góp MoM = Trọng số × MoM. Cộng đủ 9 nhóm + phần dư = ĐÚNG CPI MoM ${f(usm.contributions.cpi_mom_actual)}% tháng ${usm.contributions.snapshot_period}.</p>`)}
       ${card('2d. Đóng góp theo thời gian (biểu đồ cột chồng, 2016 tới nay)', `
             <div class="monitoring-table-scroll" style="overflow-x:auto">
                 <div style="width:${Math.max(1100, usm.contributions.periods.length * 14 + 40)}px"><div class="ind-chart" style="height:420px"><canvas id="chart-us-contrib"></canvas></div></div>
@@ -1348,6 +1392,7 @@ function renderUsMacro(usm) {
     (function () {
         const ct = usm.contributions;
         usContribBarChart(ct);
+        usContribMomBarChart(ct);
         const colors = { usm_cpi_food: '#60a5fa', usm_cpi_energy: '#f97316', usm_cpi_shelter: '#a78bfa',
             usm_cpi_transport: '#ef4444', usm_cpi_medical: '#10b981', usm_cpi_apparel: '#eab308',
             usm_cpi_recreation: '#ec4899', usm_cpi_education_comm: '#14b8a6', usm_cpi_other: '#94a3b8',
