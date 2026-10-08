@@ -97659,5 +97659,714 @@
         "source_url": "https://ticdata.treasury.gov/resource-center/data-chart-center/tic/Documents/mfhhis01.csv"
       }
     ]
+  },
+  "usm_pce_core": {
+    "group": "us_macro",
+    "label": "Chỉ số giá PCE lõi (ex food & energy) — thước đo Fed ưu tiên",
+    "unit": "index",
+    "auto_source": "fred_api",
+    "good_direction": "none",
+    "series": [
+      {
+        "period": "2015-01",
+        "value": 96.214,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-02",
+        "value": 96.324,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-03",
+        "value": 96.47,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-04",
+        "value": 96.648,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-05",
+        "value": 96.766,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-06",
+        "value": 96.882,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-07",
+        "value": 96.978,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-08",
+        "value": 97.056,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-09",
+        "value": 97.196,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-10",
+        "value": 97.228,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-11",
+        "value": 97.332,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2015-12",
+        "value": 97.396,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-01",
+        "value": 97.567,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-02",
+        "value": 97.736,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-03",
+        "value": 97.876,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-04",
+        "value": 98.117,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-05",
+        "value": 98.284,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-06",
+        "value": 98.386,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-07",
+        "value": 98.529,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-08",
+        "value": 98.703,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-09",
+        "value": 98.834,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-10",
+        "value": 98.961,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-11",
+        "value": 99.005,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2016-12",
+        "value": 99.12,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-01",
+        "value": 99.385,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-02",
+        "value": 99.561,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-03",
+        "value": 99.519,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-04",
+        "value": 99.723,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-05",
+        "value": 99.803,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-06",
+        "value": 99.937,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-07",
+        "value": 100.01,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-08",
+        "value": 100.118,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-09",
+        "value": 100.24,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-10",
+        "value": 100.486,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-11",
+        "value": 100.535,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2017-12",
+        "value": 100.683,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-01",
+        "value": 101.007,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-02",
+        "value": 101.198,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-03",
+        "value": 101.419,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-04",
+        "value": 101.602,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-05",
+        "value": 101.78,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-06",
+        "value": 101.872,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-07",
+        "value": 102.006,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-08",
+        "value": 102.016,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-09",
+        "value": 102.205,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-10",
+        "value": 102.366,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-11",
+        "value": 102.556,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2018-12",
+        "value": 102.735,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-01",
+        "value": 102.87,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-02",
+        "value": 102.963,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-03",
+        "value": 103.058,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-04",
+        "value": 103.265,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-05",
+        "value": 103.371,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-06",
+        "value": 103.56,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-07",
+        "value": 103.678,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-08",
+        "value": 103.797,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-09",
+        "value": 103.873,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-10",
+        "value": 104.028,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-11",
+        "value": 104.092,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2019-12",
+        "value": 104.322,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-01",
+        "value": 104.507,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-02",
+        "value": 104.711,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-03",
+        "value": 104.632,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-04",
+        "value": 104.293,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-05",
+        "value": 104.402,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-06",
+        "value": 104.565,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-07",
+        "value": 104.937,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-08",
+        "value": 105.243,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-09",
+        "value": 105.41,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-10",
+        "value": 105.507,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-11",
+        "value": 105.605,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2020-12",
+        "value": 105.896,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-01",
+        "value": 106.168,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-02",
+        "value": 106.435,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-03",
+        "value": 106.865,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-04",
+        "value": 107.493,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-05",
+        "value": 107.989,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-06",
+        "value": 108.522,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-07",
+        "value": 108.971,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-08",
+        "value": 109.34,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-09",
+        "value": 109.548,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-10",
+        "value": 110.119,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-11",
+        "value": 110.671,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2021-12",
+        "value": 111.28,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-01",
+        "value": 111.822,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-02",
+        "value": 112.362,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-03",
+        "value": 112.807,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-04",
+        "value": 113.178,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-05",
+        "value": 113.571,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-06",
+        "value": 114.273,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-07",
+        "value": 114.658,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-08",
+        "value": 115.248,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-09",
+        "value": 115.727,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-10",
+        "value": 116.186,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-11",
+        "value": 116.52,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2022-12",
+        "value": 116.923,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-01",
+        "value": 117.415,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-02",
+        "value": 117.825,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-03",
+        "value": 118.295,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-04",
+        "value": 118.671,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-05",
+        "value": 119.061,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-06",
+        "value": 119.35,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-07",
+        "value": 119.515,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-08",
+        "value": 119.662,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-09",
+        "value": 120.053,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-10",
+        "value": 120.321,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-11",
+        "value": 120.525,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2023-12",
+        "value": 120.694,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-01",
+        "value": 121.201,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-02",
+        "value": 121.57,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-03",
+        "value": 122.016,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-04",
+        "value": 122.252,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-05",
+        "value": 122.406,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-06",
+        "value": 122.667,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-07",
+        "value": 122.872,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-08",
+        "value": 123.135,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-09",
+        "value": 123.462,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-10",
+        "value": 123.816,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-11",
+        "value": 123.989,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2024-12",
+        "value": 124.198,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-01",
+        "value": 124.609,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-02",
+        "value": 125.002,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-03",
+        "value": 125.144,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-04",
+        "value": 125.524,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-05",
+        "value": 125.818,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-06",
+        "value": 126.133,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-07",
+        "value": 126.363,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-08",
+        "value": 126.646,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-09",
+        "value": 126.94,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-10",
+        "value": 127.165,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-11",
+        "value": 127.363,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2025-12",
+        "value": 127.765,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-01",
+        "value": 128.27,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-02",
+        "value": 128.701,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-03",
+        "value": 129.03,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-04",
+        "value": 129.395,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-05",
+        "value": 129.796,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-06",
+        "value": 129.969,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-07",
+        "value": 130.133,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-08",
+        "value": 130.455,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      }
+    ]
   }
 }

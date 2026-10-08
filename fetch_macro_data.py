@@ -382,6 +382,10 @@ US_MACRO_SERIES = [
     ("usm_pce_nominal", "PCE", "Chi tiêu tiêu dùng cá nhân danh nghĩa (tỷ USD)", "billion_usd"),
     ("usm_pce_real", "PCEC96", "Chi tiêu tiêu dùng thực (tỷ USD 2017, SAAR)", "billion_usd_2017"),
     ("usm_pce_price", "PCEPI", "Chỉ số giá PCE", "index"),
+    # THEM 2026-10-08 (user gửi tài liệu: "Fed không điều hành theo CPI 2%, Fed nhắm mục tiêu lạm
+    # phát 2% theo PCE" — Core PCE là thước đo Fed ưu tiên, trước đây CHỈ fetch usm_pce_price (PCE
+    # TOÀN PHẦN) mà KHÔNG có bản lõi, cũng chưa tính YoY/hiển thị ở đâu cả) — PCEPILFE = PCE lõi.
+    ("usm_pce_core", "PCEPILFE", "Chỉ số giá PCE lõi (ex food & energy) — thước đo Fed ưu tiên", "index"),
     ("usm_oil_wti", "DCOILWTICO", "Giá dầu WTI (USD/thùng, daily)", "usd_per_barrel"),
     ("usm_gasoline", "GASREGW", "Giá xăng thường (USD/gallon, weekly)", "usd_per_gallon"),
     ("usm_diesel_gulf", "DDFUELUSGULF", "Giá ULSD diesel Vịnh Mexico (USD/gallon, daily, EIA)", "usd_per_gallon"),

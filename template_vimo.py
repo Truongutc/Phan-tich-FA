@@ -2356,7 +2356,7 @@ _FX_PRESSURE_KEYS_BY_SHEET = {
         "usm_cpi_energy_services", "usm_cpi_shelter", "usm_cpi_transport", "usm_cpi_medical", "usm_cpi_apparel",
         "usm_cpi_recreation", "usm_cpi_education_comm", "usm_cpi_other", "usm_ppi_final_demand", "usm_ppi_all_commodities",
         "usm_ppi_industrial_commodities", "usm_import_price", "usm_export_price", "usm_retail_sales",
-        "usm_pce_nominal", "usm_pce_real", "usm_pce_price", "usm_oil_wti", "usm_gasoline",
+        "usm_pce_nominal", "usm_pce_real", "usm_pce_price", "usm_pce_core", "usm_oil_wti", "usm_gasoline",
         "usm_brent", "usm_diesel_gulf", "usm_gasoline_gulf",
         "usm_unemployment", "usm_fed_funds", "usm_yield_10y", "usm_spread_10y_2y",
         # THEM 2026-10-08: cac nhom con lai trong "US Macro Liquidity Matrix" (Fed/ECB balance

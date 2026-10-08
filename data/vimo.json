@@ -77711,10 +77711,58 @@
       "cpi_3m_ann": 0.18,
       "cpi_6m_ann": 4.12,
       "core_yoy": 2.45,
+      "core_mom": 0.29,
       "core_3m_ann": 1.97,
       "core_6m_ann": 2.57,
       "goods_yoy": 3.86,
-      "services_yoy": 3.06
+      "services_yoy": 3.06,
+      "pce_latest": "2026-08",
+      "pce_yoy": 3.42,
+      "pce_core_yoy": 3.01,
+      "mom_history": {
+        "periods": [
+          "2025-08",
+          "2025-09",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ],
+        "cpi_mom": [
+          0.35,
+          0.3,
+          null,
+          0.3,
+          0.17,
+          0.27,
+          0.87,
+          0.64,
+          0.47,
+          -0.42,
+          0.07,
+          0.4
+        ],
+        "core_mom": [
+          0.31,
+          0.22,
+          null,
+          0.23,
+          0.3,
+          0.22,
+          0.2,
+          0.38,
+          0.21,
+          -0.02,
+          0.22,
+          0.29
+        ]
+      }
     },
     "groups": [
       {
@@ -89351,8 +89399,8 @@
     "states": {
       "inflation": {
         "label": "Đang về mục tiêu (~2%)",
-        "color": "good",
-        "detail": "CPI YoY 3.35%, lõi 2.45%, momentum 3 tháng năm hóa 0.18% (so mục tiêu Fed ~2%); nhóm đóng góp nhiều nhất: Năng lượng (+1.18pp), Nhà ở (+1.07pp)."
+        "color": "neutral",
+        "detail": "CPI YoY 3.35%, lõi 2.45%, momentum 3 tháng năm hóa 0.18% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp); nhóm đóng góp nhiều nhất: Năng lượng (+1.18pp), Nhà ở (+1.07pp). ⚠ Riêng tháng 2026-08: MoM 0.4% (~4.8%/năm nếu duy trì nguyên tháng này) — CAO HƠN RÕ RỆT momentum 3 tháng (0.18%), có thể đang đảo chiều tăng tốc mà cửa sổ 3 tháng chưa bắt kịp — xem bảng MoM theo tháng để tự đánh giá xu hướng gần nhất."
       },
       "inflation_persistence": {
         "label": "Trung bình — có dấu hiệu lan truyền một phần",

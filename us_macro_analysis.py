@@ -124,20 +124,42 @@ def build_us_macro(raw):
     retail = _series(raw, "usm_retail_sales")
     pce_n = _series(raw, "usm_pce_nominal")
     pce_r = _series(raw, "usm_pce_real")
+    # THEM 2026-10-08 (user gửi tài liệu: "Fed không điều hành theo CPI 2%, Fed nhắm mục tiêu lạm
+    # phát 2% theo PCE — Core PCE mới là thước đo Fed ưu tiên" — usm_pce_price đã fetch từ lâu
+    # nhưng CHƯA BAO GIỜ tính YoY/hiển thị; usm_pce_core (PCEPILFE) mới thêm) — PCE_price_yoy khác
+    # HẲN pce_nominal_yoy ở trên (pce_nominal_yoy = tăng trưởng CHI TIÊU USD danh nghĩa, không phải
+    # thước đo lạm phát).
+    pce_p = _series(raw, "usm_pce_price")
+    pce_core = _series(raw, "usm_pce_core")
     latest = max(cpi)
+    pce_latest = max(pce_p) if pce_p else None
     # SUA 2026-10-08 (user: "vẽ từ T1-2016 tới nay" — chuỗi gốc có từ 2015-01 nhưng YoY cần 12
     # tháng trước nên 2015 toàn None, vẽ ra khoảng trống vô nghĩa đầu mọi biểu đồ theo tháng) —
     # cắt bỏ các tháng đầu chưa có YoY, khớp cách đã sửa cho bảng nhiệt _monthly_heatmap.
     periods = sorted(cpi)
     periods = [p for p in periods if _yoy(cpi, p) is not None]
 
+    # THEM 2026-10-08 (user gửi tài liệu + user tự chốt: "quan trọng nhất là so sánh CPI với tháng
+    # liền trước để xem biến động ngắn xu hướng như nào" — YoY/3M-ann/6M-ann đều là chỉ số ĐÃ SAN
+    # PHẲNG, có thể che mất 1 tháng vừa đảo chiều. Vd thực tế dữ liệu: CPI MoM Jun -0.42% (bất
+    # thường) kéo cpi_3m_ann xuống 0.18% dù Jul/Aug đã tăng tốc trở lại +0.07%→+0.4% — nhìn
+    # 3m_ann KHÔNG BẮT ĐƯỢC pha đảo chiều này) — thêm lịch sử MoM 12 tháng gần nhất để tự nhìn
+    # thấy xu hướng, KHÔNG chỉ tin vào 1 con số đã gộp.
+    mom_periods = periods[-12:]
+    mom_history = {"periods": mom_periods,
+                   "cpi_mom": [round(_mom(cpi, p), 2) if _mom(cpi, p) is not None else None for p in mom_periods],
+                   "core_mom": [round(_mom(core, p), 2) if _mom(core, p) is not None else None for p in mom_periods]}
+
     headline = {
         "latest": latest,
         "cpi_yoy": _yoy(cpi, latest), "cpi_mom": round(_mom(cpi, latest) or 0, 2),
         "cpi_3m_ann": _annualized(cpi, latest, 3), "cpi_6m_ann": _annualized(cpi, latest, 6),
-        "core_yoy": _yoy(core, latest), "core_3m_ann": _annualized(core, latest, 3),
-        "core_6m_ann": _annualized(core, latest, 6),
+        "core_yoy": _yoy(core, latest), "core_mom": round(_mom(core, latest) or 0, 2),
+        "core_3m_ann": _annualized(core, latest, 3), "core_6m_ann": _annualized(core, latest, 6),
         "goods_yoy": _yoy(goods, latest), "services_yoy": _yoy(services, latest),
+        "pce_latest": pce_latest, "pce_yoy": _yoy(pce_p, pce_latest) if pce_latest else None,
+        "pce_core_yoy": _yoy(pce_core, pce_latest) if pce_latest and pce_core else None,
+        "mom_history": mom_history,
     }
 
     groups = []
@@ -298,13 +320,27 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             label, color = "Dai dẳng, chưa hạ nhiệt rõ", "warn"
         else:
             label, color = "Nóng trở lại", "bad"
+        # THEM 2026-10-08 (user gửi tài liệu + tự kiểm chứng bằng số liệu thật: CPI MoM Jun -0.42%
+        # (bất thường) kéo cpi_3m_ann xuống 0.18% dù Jul/Aug đã tăng tốc trở lại +0.07%→+0.4% — cửa
+        # sổ 3 tháng "san phẳng" làm MẤT tín hiệu đảo chiều mới nhất) — nếu tháng gần nhất (quy năm
+        # thô, MoM×12) NÓNG HƠN RÕ RỆT momentum 3 tháng, hạ 1 bậc "good"→"neutral" + ghi rõ cảnh báo,
+        # KHÔNG tự tin báo "đang về mục tiêu" chỉ dựa 1 con số đã gộp 3 tháng.
+        reaccel_note = ""
+        latest_mom = headline.get("cpi_mom")
+        if latest_mom is not None:
+            latest_mom_ann = round(latest_mom * 12, 2)
+            if latest_mom_ann - m > 2:
+                reaccel_note = (f" ⚠ Riêng tháng {headline.get('latest')}: MoM {latest_mom}% (~{latest_mom_ann}%/năm nếu duy trì nguyên tháng này) — "
+                                 f"CAO HƠN RÕ RỆT momentum 3 tháng ({m}%), có thể đang đảo chiều tăng tốc mà cửa sổ 3 tháng chưa bắt kịp — xem bảng MoM theo tháng để tự đánh giá xu hướng gần nhất.")
+                if color == "good":
+                    color = "neutral"
         top2 = (contributions or {}).get("snapshot", [])[:2]
         source_note = ""
         if top2:
             source_note = "; nhóm đóng góp nhiều nhất: " + ", ".join(
                 f"{r['label']} ({r['contribution']:+.2f}pp)" for r in top2 if r.get("contribution") is not None)
         states["inflation"] = {"label": label, "color": color,
-            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (so mục tiêu Fed ~2%){source_note}."}
+            "detail": f"CPI YoY {headline.get('cpi_yoy')}%, lõi {headline.get('core_yoy')}%, momentum 3 tháng năm hóa {m}% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp){source_note}.{reaccel_note}"}
 
     # THEM 2026-10-08 (user gửi tài liệu "Inflation Persistence" — "CPI tăng từ đâu và có đang lan
     # truyền sang nhóm khác không, hay chỉ là 1 cú sốc đơn lẻ (energy) Fed có thể 'nhìn xuyên

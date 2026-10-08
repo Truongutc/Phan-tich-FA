@@ -943,6 +943,25 @@ function usMacroHeatmap(hm) {
             <p class="ind-source-note">Cột là tháng (đúng tần suất BLS công bố), hàng là nhóm; đỏ = YoY tăng mạnh, trắng = quanh 0%, xanh dương = giảm (màu bão hoà ở ±${US_HEATMAP_SCALE_PCT}%). Kéo/lăn chuột ngang để xem lịch sử. Trọng số đóng góp chưa có ở bảng này nên không cộng các ô thành CPI (xem mục 2c cho phần đóng góp theo trọng số).</p>`;
 }
 
+// THEM 2026-10-08 (user: "quan trọng nhất là mục so sánh CPI này thì so với tháng liền trước để
+// xem biến động ngắn xu hướng như nào sẽ đúng hơn" — kiểm chứng bằng số liệu thật: CPI MoM Jun
+// -0.42% kéo momentum 3 tháng xuống 0.18% dù Jul/Aug đã tăng tốc lại +0.07%→+0.4%, YoY/3M/6M năm
+// hóa đều "san phẳng" nên KHÔNG bắt được pha đảo chiều này) — bảng + biểu đồ MoM từng tháng riêng,
+// để tự nhìn xu hướng ngắn hạn thay vì chỉ tin 1 con số đã gộp.
+function usMomTable(mh, f) {
+    if (!mh || !mh.periods || !mh.periods.length) return '';
+    const sign = v => (v === null || v === undefined) ? '' : (v >= 0 ? 'color:#ef4444' : 'color:#60a5fa');
+    const cols = mh.periods.map((p, i) => `<th style="text-align:center">${p}</th>`).join('');
+    const cpiRow = mh.cpi_mom.map(v => `<td style="text-align:center;${sign(v)}">${v === null ? '—' : (v >= 0 ? '+' : '') + f(v) + '%'}</td>`).join('');
+    const coreRow = mh.core_mom.map(v => `<td style="text-align:center;${sign(v)}">${v === null ? '—' : (v >= 0 ? '+' : '') + f(v) + '%'}</td>`).join('');
+    return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+        <th style="text-align:left">MoM (SA)</th>${cols}
+    </tr></thead><tbody>
+        <tr><th style="text-align:left">CPI toàn phần</th>${cpiRow}</tr>
+        <tr><th style="text-align:left">CPI lõi</th>${coreRow}</tr>
+    </tbody></table></div>`;
+}
+
 // SUA 2026-10-07 (user: "nhìn chả hiểu gì... tôi muốn food làm CPI tăng bao nhiêu %, học phí tăng
 // rất cao nhưng đóng góp ít vì tiêu dùng ít, năng lượng tăng nhẹ nhưng đóng góp nhiều vì tiêu dùng
 // nhiều") — bỏ 3M/6M/Pressure (gây rối, không phải điều user hỏi), CHỈ giữ đúng 3 cái cần: Trọng
@@ -1202,9 +1221,15 @@ function renderUsMacro(usm) {
     const h = usm.headline, rc = usm.real_consumption, rates = usm.rates;
     const card = (title, body) => `<div class="card margin-top-20"><h3 class="border-blue" style="margin:0">${title}</h3>${body}</div>`;
     const kpi = (lbl, val) => `<div class="us-kpi-tile"><div class="us-kpi-label">${lbl}</div><div class="us-kpi-value">${val}</div></div>`;
+    // SUA 2026-10-08 (user gửi tài liệu: "Fed không điều hành theo CPI 2%, Fed nhắm mục tiêu PCE" —
+    // thêm PCE/PCE lõi YoY, trước đây usm_pce_price đã fetch nhưng CHƯA từng tính YoY/hiển thị ở
+    // đâu; cũng thêm CPI MoM/lõi MoM — trước đây chỉ có YoY/3M/6M năm hóa, thiếu đúng "biến động
+    // mới nhất so tháng liền trước" mà user yêu cầu).
     const kpis = [
-        kpi('CPI YoY (%)', f(h.cpi_yoy)), kpi('CPI lõi YoY (%)', f(h.core_yoy)),
+        kpi('CPI YoY (%)', f(h.cpi_yoy)), kpi('CPI MoM (%)', f(h.cpi_mom)),
+        kpi('CPI lõi YoY (%)', f(h.core_yoy)), kpi('CPI lõi MoM (%)', f(h.core_mom)),
         kpi('CPI 3 tháng, năm hóa (%)', f(h.cpi_3m_ann)), kpi('CPI 6 tháng, năm hóa (%)', f(h.cpi_6m_ann)),
+        kpi('PCE YoY (%, Fed ưu tiên)', f(h.pce_yoy)), kpi('PCE lõi YoY (%, Fed ưu tiên)', f(h.pce_core_yoy)),
         kpi('CPI hàng hóa YoY (%)', f(h.goods_yoy)), kpi('CPI dịch vụ YoY (%)', f(h.services_yoy)),
         kpi('Bán lẻ danh nghĩa YoY (%)', f(rc.retail_nominal_yoy)), kpi('Chi tiêu thực PCE YoY (%)', f(rc.pce_real_yoy)),
         kpi('Lãi suất quỹ liên bang (%)', f(rates.usm_fed_funds && rates.usm_fed_funds.latest)),
@@ -1214,8 +1239,12 @@ function renderUsMacro(usm) {
     box.innerHTML = `
       ${card('📊 Tổng quan — toàn bộ ma trận vĩ mô Mỹ (9 nhóm)', usOverviewSection(usm, f))}
       ${card('🇺🇸 Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
-            <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ.</p>`)}
-      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}${usStateBadge(usm.states && usm.states.inflation_persistence)}<div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
+            <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ. ⚠ Fed KHÔNG điều hành theo CPI — mục tiêu lạm phát 2% chính thức của Fed tính theo PCE (ưu tiên PCE lõi), CPI chỉ là thước đo tham chiếu phổ biến hơn với công chúng. Dữ liệu PCE công bố TRỄ hơn CPI ~2-4 tuần (kỳ PCE mới nhất: ${h.pce_latest || '—'}).</p>`)}
+      ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}${usStateBadge(usm.states && usm.states.inflation_persistence)}
+            <p style="font-weight:600;margin:4px 0 8px">MoM theo từng tháng — xem xu hướng NGẮN HẠN (YoY/năm hóa có thể "san phẳng" 1 tháng vừa đảo chiều)</p>
+            <div class="ind-chart" style="height:220px"><canvas id="chart-us-mom"></canvas></div>
+            ${usMomTable(h.mom_history, f)}
+            <div class="ind-chart" style="height:300px;margin-top:14px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
@@ -1288,6 +1317,14 @@ function renderUsMacro(usm) {
         line('CPI toàn phần YoY (%)', hist.cpi_yoy, '#60a5fa'),
         line('CPI lõi YoY (%)', hist.core_yoy, '#f59e0b', [5, 4])] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+
+    // THEM 2026-10-08 (user: "so với tháng liền trước để xem biến động ngắn xu hướng") — cột MoM
+    // từng tháng, tách màu rõ: CPI toàn phần (cột), lõi (đường) để thấy ngay 2 tháng gần nhất có
+    // đang tăng tốc trở lại hay không (vd case thực tế: Jun -0.42% → Jul +0.07% → Aug +0.4%).
+    if (h.mom_history) mk('chart-us-mom', { type: 'bar', data: { labels: h.mom_history.periods, datasets: [
+        { label: 'CPI MoM (%)', data: h.mom_history.cpi_mom, backgroundColor: h.mom_history.cpi_mom.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(239,68,68,0.75)' : 'rgba(96,165,250,0.75)')) },
+        { ...line('CPI lõi MoM (%)', h.mom_history.core_mom, '#f59e0b'), type: 'line' }] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } }, y: CHART_DEFAULTS.scales.y } } });
 
     const gl = usm.groups.filter(g => g.yoy !== null).sort((a, b) => b.yoy - a.yoy);
     // SUA 2026-10-08 (user: "thêm con số vào để tôi nhìn giá trị cho rõ") — thêm datalabels (đặt ở
