@@ -973,18 +973,21 @@ function usContribSnapshotTable(ct) {
     const sign = v => (v === null || v === undefined) ? '' : (v >= 0 ? 'color:#ef4444' : 'color:#60a5fa');
     // THEM 2026-10-08 (user gửi tài liệu "Contribution change": "Energy contribution +0.3pp →
     // +0.8pp => đỏ; Shelter +1.2pp → +1.0pp => xanh" — biết nhóm nào đang TĂNG áp lực, không chỉ
-    // mức đóng góp hiện tại) — cột so với ĐÚNG 3 tháng trước, cùng công thức Trọng số × YoY.
+    // mức đóng góp hiện tại).
+    // SUA 2026-10-08 (user: "đã bảo phần này là thay đổi so với tháng trước, cứ đi so 3 tháng
+    // trước thì sao mà đúng được" — đổi mốc so sánh từ 3 tháng xuống ĐÚNG 1 THÁNG TRƯỚC, khớp
+    // us_macro_analysis.py:_cpi_contributions bản mới (contribution_chg_1m/contribution_1m_ago).
     const rows = ct.snapshot.map(r => `<tr>
         <th style="text-align:left;white-space:nowrap">${r.label}</th>
         <td style="color:#e5e7eb">${f(r.weight_pct, 1)}%</td>
         <td style="${sign(r.yoy)}">${f(r.yoy)}% <span class="ind-source-note">(bản thân nhóm tự tăng)</span></td>
         <td style="${sign(r.contribution)};font-weight:700">${f(r.contribution)}pp <span class="ind-source-note">(làm CPI đổi)</span></td>
-        <td style="${sign(r.contribution_chg_3m)}">${r.contribution_chg_3m === null ? '—' : (r.contribution_chg_3m >= 0 ? '+' : '') + f(r.contribution_chg_3m) + 'pp'} <span class="ind-source-note">(so 3T trước: ${f(r.contribution_3m_ago)}pp)</span></td>
+        <td style="${sign(r.contribution_chg_1m)}">${r.contribution_chg_1m === null ? '—' : (r.contribution_chg_1m >= 0 ? '+' : '') + f(r.contribution_chg_1m) + 'pp'} <span class="ind-source-note">(tháng trước: ${f(r.contribution_1m_ago)}pp)</span></td>
     </tr>`).join('');
     return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
-        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số<br>(tiêu dùng chiếm)</th><th>YoY</th><th>Đóng góp</th><th>Thay đổi vs 3T trước</th>
+        <th style="text-align:left">Nhóm (kỳ ${ct.snapshot_period})</th><th>Trọng số<br>(tiêu dùng chiếm)</th><th>YoY</th><th>Đóng góp</th><th>Thay đổi vs tháng trước</th>
     </tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="ind-source-note">Đóng góp = Trọng số × YoY. Nhóm trọng số lớn (vd Nhà ở ~35%) chỉ cần tăng nhẹ đã đóng góp nhiều; nhóm trọng số nhỏ (vd Giáo dục ~5,7%) dù tự tăng rất cao vẫn đóng góp ít — vì phần chi tiêu của người Mỹ dành cho nhóm đó nhỏ. Cột cuối: đóng góp đang TĂNG (đỏ, áp lực lên CPI từ nhóm này đang nặng thêm) hay GIẢM (xanh, đang hạ nhiệt) so với 3 tháng trước.</p>`;
+    <p class="ind-source-note">Đóng góp = Trọng số × YoY. Nhóm trọng số lớn (vd Nhà ở ~35%) chỉ cần tăng nhẹ đã đóng góp nhiều; nhóm trọng số nhỏ (vd Giáo dục ~5,7%) dù tự tăng rất cao vẫn đóng góp ít — vì phần chi tiêu của người Mỹ dành cho nhóm đó nhỏ. Cột cuối: đóng góp đang TĂNG (đỏ, áp lực lên CPI từ nhóm này đang nặng thêm) hay GIẢM (xanh, đang hạ nhiệt) so với ĐÚNG 1 tháng trước — cửa sổ ngắn nhất để bắt biến động mới nhất.</p>`;
 }
 
 // SUA 2026-10-07 — biểu đồ cột NGANG cho 1 kỳ gần nhất, sắp theo |đóng góp| giảm dần, trả lời
@@ -1257,7 +1260,7 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Trọng số lấy 1 lần từ BLS (${usm.contributions.weights_source}) — www.bls.gov chặn fetch tự động (403) nên KHÔNG tự cập nhật theo lịch.</p>`)}
       ${card('2d. Đóng góp theo thời gian (biểu đồ cột chồng, 2016 tới nay)', `
             <div class="monitoring-table-scroll" style="overflow-x:auto">
-                <div style="width:${Math.max(1100, usm.contributions.periods.length * 14)}px"><div class="ind-chart" style="height:420px"><canvas id="chart-us-contrib"></canvas></div></div>
+                <div style="width:${Math.max(1100, usm.contributions.periods.length * 14 + 40)}px"><div class="ind-chart" style="height:420px"><canvas id="chart-us-contrib"></canvas></div></div>
             </div>
             <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Kéo/lăn chuột ngang để xem lịch sử — mặc định hiện tháng gần nhất. Trục Y dùng CHUNG cho cả giai đoạn (kể cả đỉnh lạm phát 2021-2022) nên các tháng gần đây (CPI thấp hơn nhiều) nhìn cột bị "lùn" đi — xem biểu đồ 2e bên dưới để phóng to riêng giai đoạn gần nhất.</p>`)}
       ${card('2e. Đóng góp 24 tháng gần nhất (phóng to, trục Y riêng)', `
@@ -1313,17 +1316,22 @@ function renderUsMacro(usm) {
     const legend = { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } };
     const ax = { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } };
 
+    // SUA 2026-10-08 (user: "thêm đường line PPI đi, để xem có dẫn truyền sang chi phí sản xuất
+    // không" — ph.ppi_hist dùng CHUNG mảng periods với hist (cùng biến `periods` gốc bên Python)
+    // nên ghép thẳng được, không lệch trục thời gian).
     mk('chart-us-headline', { type: 'line', data: { labels: hist.periods, datasets: [
         line('CPI toàn phần YoY (%)', hist.cpi_yoy, '#60a5fa'),
-        line('CPI lõi YoY (%)', hist.core_yoy, '#f59e0b', [5, 4])] },
+        line('CPI lõi YoY (%)', hist.core_yoy, '#f59e0b', [5, 4]),
+        line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy, '#a78bfa', [2, 2])] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 
-    // THEM 2026-10-08 (user: "so với tháng liền trước để xem biến động ngắn xu hướng") — cột MoM
-    // từng tháng, tách màu rõ: CPI toàn phần (cột), lõi (đường) để thấy ngay 2 tháng gần nhất có
-    // đang tăng tốc trở lại hay không (vd case thực tế: Jun -0.42% → Jul +0.07% → Aug +0.4%).
-    if (h.mom_history) mk('chart-us-mom', { type: 'bar', data: { labels: h.mom_history.periods, datasets: [
-        { label: 'CPI MoM (%)', data: h.mom_history.cpi_mom, backgroundColor: h.mom_history.cpi_mom.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(239,68,68,0.75)' : 'rgba(96,165,250,0.75)')) },
-        { ...line('CPI lõi MoM (%)', h.mom_history.core_mom, '#f59e0b'), type: 'line' }] },
+    // SUA 2026-10-08 (user: "làm dạng 2 line đi, nhìn [cột+đường] này sao rõ được" — cột đỏ/xanh
+    // lẫn với đường lõi khó so sánh xu hướng) — đổi cả 2 sang line để so trực tiếp CPI toàn phần
+    // vs lõi, thấy ngay 2 tháng gần nhất có đang tăng tốc trở lại hay không (vd case thực tế: Jun
+    // -0.42% → Jul +0.07% → Aug +0.4%).
+    if (h.mom_history) mk('chart-us-mom', { type: 'line', data: { labels: h.mom_history.periods, datasets: [
+        { ...line('CPI MoM (%)', h.mom_history.cpi_mom, '#60a5fa'), pointRadius: 3 },
+        { ...line('CPI lõi MoM (%)', h.mom_history.core_mom, '#f59e0b', [5, 4]), pointRadius: 3 }] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } }, y: CHART_DEFAULTS.scales.y } } });
 
     const gl = usm.groups.filter(g => g.yoy !== null).sort((a, b) => b.yoy - a.yoy);
@@ -1348,11 +1356,45 @@ function renderUsMacro(usm) {
         // thì 3% đó do từng cấu phần làm tăng bao nhiêu điểm") — đổi line/area-stack sang bar
         // stack: mỗi cột 1 tháng, tổng chiều cao cột = ĐÚNG CPI YoY tháng đó, rõ ràng hơn kiểu
         // miền/đường (dễ đọc nhầm thành YoY riêng từng nhóm, không phải phần đóng góp).
+        // SUA 2026-10-08 (user: "cột tháng gần nhất nhìn mảnh, khó nhìn, có vẻ khung biểu đồ che
+        // khuất 1 phần, hãy làm cột tháng gần nhất to x2" — ĐÃ THỬ 3 CÁCH trước khi ra cách này:
+        // (1) barThickness dạng hàm scriptable, (2) barThickness dạng mảng theo index — CẢ 2 đều
+        // KHÔNG hoạt động (Chart.js chỉ tính barThickness 1 LẦN cho cả category scale lúc layout).
+        // (3) ghi đè el.width trong hook afterDatasetsUpdate — hoạt động lúc tạo biểu đồ, nhưng bị
+        // GHI ĐÈ LẠI mỗi khi chart.resize() chạy (initVimoTabs() gọi resize() khi chuyển tab active,
+        // resize() update() lại layout nên tính lại width đồng đều, mất hiệu lực ghi đè trước đó —
+        // kiểm chứng bằng Playwright thấy width TĂNG đồng đều ở MỌI cột, không chỉ cột cuối).
+        // CÁCH DÙNG: vẽ ĐÈ trực tiếp lên canvas ở hook afterDatasetsDraw (chạy SAU MỖI lần Chart.js
+        // tự vẽ, kể cả sau resize) — tô 1 hình chữ nhật rộng hơn tại ĐÚNG vị trí Y đã tính (el.y/
+        // el.base đã đúng theo stacking, chỉ cần vẽ RỘNG hơn theo X) — không phụ thuộc Chart.js có
+        // cho ghi đè width hay không.
+        const widenLastBar = (extra) => ({
+            id: 'widenLastBar',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const lastIdx = chart.data.labels.length - 1;
+                chart.data.datasets.forEach((ds, dsIdx) => {
+                    const meta = chart.getDatasetMeta(dsIdx);
+                    if (meta.hidden) return;
+                    const el = meta.data[lastIdx];
+                    if (!el || el.width === undefined) return;
+                    const w = el.width + extra;
+                    const top = Math.min(el.y, el.base);
+                    const h = Math.abs(el.base - el.y);
+                    if (h <= 0) return;
+                    ctx.save();
+                    ctx.fillStyle = ds.backgroundColor;
+                    ctx.fillRect(el.x - w / 2, top, w, h);
+                    ctx.restore();
+                });
+            },
+        });
         mk('chart-us-contrib', { type: 'bar', data: { labels: ct.periods, datasets: ct.rows.map(r => ({
             label: r.label + (r.weight_pct !== null ? ` (${r.weight_pct.toFixed(1)}%)` : ''),
             data: r.values, backgroundColor: colors[r.key] || '#999', borderWidth: 0 })) },
-            options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' },
-                       scales: { x: { ...ax, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } } });
+            options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' }, layout: { padding: { right: 16 } },
+                       scales: { x: { ...ax, stacked: true }, y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } },
+            plugins: [widenLastBar(10)] });
 
         // THEM 2026-10-08 (user: "số tháng gần nhất bị bé quá, cột không rộng như bình thường nên
         // khó nhìn") — cùng dữ liệu, cắt 24 tháng gần nhất, để Chart.js tự giãn trục Y RIÊNG cho
@@ -1361,9 +1403,10 @@ function renderUsMacro(usm) {
         mk('chart-us-contrib-recent', { type: 'bar', data: { labels: ct.periods.slice(-n24), datasets: ct.rows.map(r => ({
             label: r.label + (r.weight_pct !== null ? ` (${r.weight_pct.toFixed(1)}%)` : ''),
             data: r.values.slice(-n24), backgroundColor: colors[r.key] || '#999', borderWidth: 0 })) },
-            options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' },
+            options: { ...CHART_DEFAULTS, plugins: legend, interaction: { mode: 'index' }, layout: { padding: { right: 16 } },
                        scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false }, stacked: true },
-                                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } } });
+                                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp vào CPI YoY', color: '#9aa5bd', font: { size: 9 } } } } },
+            plugins: [widenLastBar(24)] });
     })();
     mk('chart-us-breadth', { type: 'line', data: { labels: hist.periods, datasets: [
         line('% nhóm CPI có YoY > 3%', hist.breadth_gt3_pct, '#a78bfa')] },
@@ -1474,10 +1517,17 @@ function renderUsMacro(usm) {
             line('Lợi suất 10 năm (%)', th.yield_10y, '#f59e0b'),
             { ...line('10Y-2Y (%, trục phải)', th.spread_10y_2y, '#10b981', [4, 3]), yAxisID: 'y1' }] },
             options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
-        mk('chart-us-credit', { type: 'line', data: { labels: th.periods, datasets: [
-            line('High Yield OAS (%)', th.hy_oas, '#ef4444'),
-            { ...line('Investment Grade OAS (%, trục phải)', th.ig_oas, '#60a5fa', [4, 3]), yAxisID: 'y1' }] },
-            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
+        // SUA 2026-10-08 (user: "đây là dữ liệu gì, không hiểu nó nói lên điều gì, vẽ lại chỉ từ
+        // thời điểm có dữ liệu, biểu đồ có nhiều vị trí trống quá" — 2 chuỗi OAS chỉ có từ 2023-10
+        // trên FRED (ICE giới hạn cấp phép, xem ind-source-note bên dưới) nhưng trục X dùng chung
+        // th.periods bắt đầu 2015-01 của 2Y/10Y nên 2/3 biểu đồ trống) — cắt riêng từ index đầu
+        // tiên hy_oas có giá trị, không dùng chung trục với biểu đồ lợi suất ở trên.
+        const hyIdx0 = th.hy_oas.findIndex(v => v !== null);
+        const creditPeriods = hyIdx0 >= 0 ? th.periods.slice(hyIdx0) : th.periods;
+        mk('chart-us-credit', { type: 'line', data: { labels: creditPeriods, datasets: [
+            line('High Yield OAS (%) — spread tín dụng rác, rộng ra khi lo ngại vỡ nợ DN', hyIdx0 >= 0 ? th.hy_oas.slice(hyIdx0) : th.hy_oas, '#ef4444'),
+            { ...line('Investment Grade OAS (%, trục phải) — spread tín dụng DN xếp hạng cao', hyIdx0 >= 0 ? th.ig_oas.slice(hyIdx0) : th.ig_oas, '#60a5fa', [4, 3]), yAxisID: 'y1' }] },
+            options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } }, y: CHART_DEFAULTS.scales.y, y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false } } } } });
     })();
 
     if (usm.usd) mk('chart-us-dxy', { type: 'line', data: { labels: usm.usd.history.periods, datasets: [

@@ -82106,8 +82106,8 @@
           "weight_pct": 7.347,
           "yoy": 16.05,
           "contribution": 1.179,
-          "contribution_3m_ago": 1.688,
-          "contribution_chg_3m": -0.509
+          "contribution_1m_ago": 1.062,
+          "contribution_chg_1m": 0.117
         },
         {
           "key": "usm_cpi_shelter",
@@ -82115,8 +82115,8 @@
           "weight_pct": 35.343,
           "yoy": 3.03,
           "contribution": 1.071,
-          "contribution_3m_ago": 1.184,
-          "contribution_chg_3m": -0.113
+          "contribution_1m_ago": 1.117,
+          "contribution_chg_1m": -0.046
         },
         {
           "key": "usm_cpi_food",
@@ -82124,8 +82124,8 @@
           "weight_pct": 13.54,
           "yoy": 2.63,
           "contribution": 0.356,
-          "contribution_3m_ago": 0.417,
-          "contribution_chg_3m": -0.061
+          "contribution_1m_ago": 0.398,
+          "contribution_chg_1m": -0.042
         },
         {
           "key": "usm_cpi_other",
@@ -82133,8 +82133,8 @@
           "weight_pct": 3.732,
           "yoy": 4.23,
           "contribution": 0.158,
-          "contribution_3m_ago": 0.183,
-          "contribution_chg_3m": -0.025
+          "contribution_1m_ago": 0.16,
+          "contribution_chg_1m": -0.002
         },
         {
           "key": "usm_cpi_recreation",
@@ -82142,8 +82142,8 @@
           "weight_pct": 5.081,
           "yoy": 2.68,
           "contribution": 0.136,
-          "contribution_3m_ago": 0.134,
-          "contribution_chg_3m": 0.002
+          "contribution_1m_ago": 0.131,
+          "contribution_chg_1m": 0.005
         },
         {
           "key": "usm_cpi_transport",
@@ -82151,8 +82151,8 @@
           "weight_pct": 13.178,
           "yoy": -0.9762407042039778,
           "contribution": -0.129,
-          "contribution_3m_ago": -0.111,
-          "contribution_chg_3m": -0.018
+          "contribution_1m_ago": -0.051,
+          "contribution_chg_1m": -0.078
         },
         {
           "key": "usm_cpi_medical",
@@ -82160,8 +82160,8 @@
           "weight_pct": 8.267,
           "yoy": 1.56,
           "contribution": 0.129,
-          "contribution_3m_ago": 0.214,
-          "contribution_chg_3m": -0.085
+          "contribution_1m_ago": 0.141,
+          "contribution_chg_1m": -0.012
         },
         {
           "key": "usm_cpi_education_comm",
@@ -82169,8 +82169,8 @@
           "weight_pct": 5.716,
           "yoy": 2.15,
           "contribution": 0.123,
-          "contribution_3m_ago": 0.048,
-          "contribution_chg_3m": 0.075
+          "contribution_1m_ago": 0.031,
+          "contribution_chg_1m": 0.092
         },
         {
           "key": "usm_cpi_apparel",
@@ -82178,8 +82178,8 @@
           "weight_pct": 2.406,
           "yoy": 3.62,
           "contribution": 0.087,
-          "contribution_3m_ago": 0.116,
-          "contribution_chg_3m": -0.029
+          "contribution_1m_ago": 0.093,
+          "contribution_chg_1m": -0.006
         }
       ],
       "snapshot_period": "2026-08"
@@ -84096,6 +84096,8 @@
         "value": 5904788.5
       },
       "liquidity_impulse_latest": 28339.0,
+      "liquidity_impulse_3m_sum": -133241.0,
+      "liquidity_impulse_6m_sum": -157822.0,
       "history": {
         "periods": [
           "2015-01",
@@ -89398,14 +89400,14 @@
     },
     "states": {
       "inflation": {
-        "label": "Đang về mục tiêu (~2%)",
-        "color": "neutral",
-        "detail": "CPI YoY 3.35%, lõi 2.45%, momentum 3 tháng năm hóa 0.18% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp); nhóm đóng góp nhiều nhất: Năng lượng (+1.18pp), Nhà ở (+1.07pp). ⚠ Riêng tháng 2026-08: MoM 0.4% (~4.8%/năm nếu duy trì nguyên tháng này) — CAO HƠN RÕ RỆT momentum 3 tháng (0.18%), có thể đang đảo chiều tăng tốc mà cửa sổ 3 tháng chưa bắt kịp — xem bảng MoM theo tháng để tự đánh giá xu hướng gần nhất."
+        "label": "Vừa chạm đáy rồi tăng tốc trở lại",
+        "color": "warn",
+        "detail": "CPI YoY 3.35%, lõi 2.45%, momentum 3 tháng năm hóa 0.18% (tham chiếu mục tiêu Fed ~2% theo PCE, KHÔNG phải CPI trực tiếp); nhóm đóng góp nhiều nhất: Năng lượng (+1.18pp), Nhà ở (+1.07pp). ⚠ Riêng tháng 2026-08: MoM 0.4% (~4.8%/năm nếu duy trì nguyên tháng này) — CAO HƠN RÕ RỆT momentum 3 tháng (0.18%) — cửa sổ 3 tháng đã gộp qua pha đáy (vd 1 tháng giảm bất thường) nên MẤT tín hiệu đảo chiều mới nhất. Xem bảng MoM theo tháng ở mục 1 để tự đánh giá xu hướng gần nhất."
       },
       "inflation_persistence": {
         "label": "Trung bình — có dấu hiệu lan truyền một phần",
-        "color": "warn",
-        "detail": "55.6% trong 9 nhóm CPI có YoY &gt; 3% (độ lan tỏa); CPI lõi 2.45% so CPI toàn phần 3.35% (lõi cao = không chỉ do năng lượng/thực phẩm)."
+        "color": "bad",
+        "detail": "55.6% trong 9 nhóm CPI có YoY &gt; 3% (độ lan tỏa); CPI lõi 2.45% so CPI toàn phần 3.35% (lõi cao = không chỉ do năng lượng/thực phẩm). ⚠ CPI lõi MoM đang TĂNG TỐC liên tục 3 tháng gần nhất (-0.02%→0.22%→0.29%) — dấu hiệu lan truyền SÂU hơn, không chỉ do năng lượng/giá dễ biến động."
       },
       "growth": {
         "label": "Tăng trưởng vừa phải",
@@ -89423,14 +89425,14 @@
         "detail": "độ dai dẳng lạm phát 'Trung bình — có dấu hiệu lan truyền một phần' + lao động 'Hạ nhiệt rõ rệt' + tăng trưởng 'Tăng trưởng vừa phải' → lãi suất thực hiện tại 0.4% (Fed funds 3.75% − CPI YoY 3.35%)."
       },
       "fed_balance_sheet": {
-        "label": "Mở rộng trở lại (QE)",
-        "color": "good",
-        "detail": "Tổng tài sản Fed thay đổi 1.44%/6 tháng; Liquidity Impulse (ΔReserves−ΔRRP−ΔTGA) tháng gần nhất +28.3 tỷ$ (bơm ròng vào hệ thống ngân hàng)."
+        "label": "Mở rộng nhẹ — có thể là quản lý dự trữ (reserve management), chưa chắc QE kích thích",
+        "color": "neutral",
+        "detail": "Tổng tài sản Fed thay đổi 1.44%/6 tháng; Liquidity Impulse (ΔReserves−ΔRRP−ΔTGA) tháng gần nhất +28.3 tỷ$ — 1 tháng KHÔNG đủ kết luận xu hướng, cộng dồn 3 tháng -133.2 tỷ$, 6 tháng -157.8 tỷ$. Fed (FOMC 16/9) nói đang duy trì 'ample reserves', sẵn sàng mua Treasury bills để quản lý dự trữ — không hẳn là chính sách QE kích thích kinh điển."
       },
       "treasury_credit": {
         "label": "Đường cong bình thường (dốc lên)",
-        "color": "good",
-        "detail": "10Y-2Y = 0.465%, HY OAS 3.1225%."
+        "color": "warn",
+        "detail": "10Y-2Y = 0.465%, HY OAS 3.1225%. Lợi suất THỰC 10 năm 2.915% — cao, chi phí vốn thực tế đắt, là lực cản cho cổ phiếu tăng trưởng/tài sản dài hạn/EM/vàng dù đường cong danh nghĩa không đảo."
       },
       "usd": {
         "label": "USD dao động trong biên hẹp",
@@ -89445,8 +89447,8 @@
     },
     "synthesis": {
       "economic": "Tăng trưởng: tăng trưởng vừa phải, lao động: hạ nhiệt rõ rệt. Nền kinh tế đang hạ nhiệt nhưng chưa tới mức báo động.",
-      "monetary": "Độ dai dẳng lạm phát: trung bình — có dấu hiệu lan truyền một phần, chính sách lãi suất: thắt chặt nhẹ, bảng cân đối: mở rộng trở lại (qe). Điều kiện tiền tệ ở trạng thái trung tính, chưa nghiêng rõ về nới hay thắt.",
-      "investment": "Lợi suất/tín dụng: đường cong bình thường (dốc lên), USD dao động trong biên hẹp, dòng vốn nước ngoài vào Treasury: khối chính thức/nhtw ổn định. Điều kiện tài chính (financial conditions) nhìn chung chưa gây cản trở lớn cho tài sản rủi ro."
+      "monetary": "Độ dai dẳng lạm phát: trung bình — có dấu hiệu lan truyền một phần, chính sách lãi suất: thắt chặt nhẹ, bảng cân đối: mở rộng nhẹ — có thể là quản lý dự trữ (reserve management), chưa chắc qe kích thích. Điều kiện tiền tệ nhìn chung đang THẮT CHẶT hơn là nới lỏng — không nên mặc định Fed sắp dovish chỉ vì lạm phát hạ nhiệt một phần.",
+      "investment": "Lợi suất/tín dụng: đường cong bình thường (dốc lên), USD dao động trong biên hẹp, dòng vốn nước ngoài vào Treasury: khối chính thức/nhtw ổn định. Điều kiện tài chính đang pha trộn — vừa có yếu tố thuận lợi vừa có yếu tố bất lợi."
     },
     "note": "Đóng góp (contribution) từng nhóm vào CPI chưa tính: FRED không cung cấp trọng số tương đối (relative importance) ổn định theo kỳ, không tự ghép trọng số đoán mò."
   }

@@ -320,20 +320,22 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             label, color = "Dai dẳng, chưa hạ nhiệt rõ", "warn"
         else:
             label, color = "Nóng trở lại", "bad"
-        # THEM 2026-10-08 (user gửi tài liệu + tự kiểm chứng bằng số liệu thật: CPI MoM Jun -0.42%
-        # (bất thường) kéo cpi_3m_ann xuống 0.18% dù Jul/Aug đã tăng tốc trở lại +0.07%→+0.4% — cửa
-        # sổ 3 tháng "san phẳng" làm MẤT tín hiệu đảo chiều mới nhất) — nếu tháng gần nhất (quy năm
-        # thô, MoM×12) NÓNG HƠN RÕ RỆT momentum 3 tháng, hạ 1 bậc "good"→"neutral" + ghi rõ cảnh báo,
-        # KHÔNG tự tin báo "đang về mục tiêu" chỉ dựa 1 con số đã gộp 3 tháng.
+        # SUA 2026-10-08 (user: "CPI gần đây tôi thấy đang tăng mà, tại sao lại vẫn cứ là đang về
+        # mục tiêu 2%" — bảng Tổng quan CHỈ hiện "label", KHÔNG hiện "detail" — bản trước chỉ đổi
+        # MÀU (good→neutral) mà GIỮ NGUYÊN chữ "Đang về mục tiêu", nhìn bảng tổng quan vẫn gây hiểu
+        # lầm dù click vào xem chi tiết thì đúng. Phải đổi CHÍNH CÁI LABEL khi phát hiện tái tăng
+        # tốc, không chỉ đổi màu) — kiểm tra bằng số liệu thật: CPI MoM Jun -0.42% (bất thường) kéo
+        # cpi_3m_ann xuống 0.18% dù Jul/Aug đã tăng tốc trở lại +0.07%→+0.4%, cửa sổ 3 tháng "san
+        # phẳng" làm MẤT tín hiệu đảo chiều mới nhất.
         reaccel_note = ""
         latest_mom = headline.get("cpi_mom")
         if latest_mom is not None:
             latest_mom_ann = round(latest_mom * 12, 2)
             if latest_mom_ann - m > 2:
+                label = "Vừa chạm đáy rồi tăng tốc trở lại"
+                color = "warn" if color == "good" else color
                 reaccel_note = (f" ⚠ Riêng tháng {headline.get('latest')}: MoM {latest_mom}% (~{latest_mom_ann}%/năm nếu duy trì nguyên tháng này) — "
-                                 f"CAO HƠN RÕ RỆT momentum 3 tháng ({m}%), có thể đang đảo chiều tăng tốc mà cửa sổ 3 tháng chưa bắt kịp — xem bảng MoM theo tháng để tự đánh giá xu hướng gần nhất.")
-                if color == "good":
-                    color = "neutral"
+                                 f"CAO HƠN RÕ RỆT momentum 3 tháng ({m}%) — cửa sổ 3 tháng đã gộp qua pha đáy (vd 1 tháng giảm bất thường) nên MẤT tín hiệu đảo chiều mới nhất. Xem bảng MoM theo tháng ở mục 1 để tự đánh giá xu hướng gần nhất.")
         top2 = (contributions or {}).get("snapshot", [])[:2]
         source_note = ""
         if top2:
@@ -356,8 +358,21 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             label, color = "Trung bình — có dấu hiệu lan truyền một phần", "warn"
         else:
             label, color = "Thấp — tương đối cô lập, Fed có thể 'nhìn xuyên qua'", "good"
+        # THEM 2026-10-08 (user gửi tài liệu "Core có tăng tốc không? Core MoM 0.2→0.3→0.4 → nguy
+        # hiểm hơn" — kiểm tra bằng đúng số liệu thật: core_mom 3 tháng gần nhất -0.02%→0.22%→0.29%,
+        # TĂNG LIÊN TỤC 2 bước — đây là dấu hiệu lan truyền SÂU hơn chỉ nhìn breadth/core YoY tĩnh,
+        # vì core YoY là số đã gộp 12 tháng, không bắt được việc core MỚI ĐANG tăng tốc) — nếu core
+        # MoM 3 tháng gần nhất tăng liên tục, nâng 1 bậc "warn"→"bad" (ngưỡng "có thể nhìn xuyên
+        # qua" không áp dụng khi chính lõi cũng đang tăng tốc, không chỉ năng lượng).
+        core_accel_note = ""
+        core_mom_hist = (headline.get("mom_history") or {}).get("core_mom", [])
+        last3 = [v for v in core_mom_hist[-3:] if v is not None]
+        if len(last3) == 3 and last3[0] < last3[1] < last3[2]:
+            core_accel_note = f" ⚠ CPI lõi MoM đang TĂNG TỐC liên tục 3 tháng gần nhất ({last3[0]}%→{last3[1]}%→{last3[2]}%) — dấu hiệu lan truyền SÂU hơn, không chỉ do năng lượng/giá dễ biến động."
+            if color == "warn":
+                color = "bad"
         states["inflation_persistence"] = {"label": label, "color": color,
-            "detail": f"{pct_gt_3}% trong 9 nhóm CPI có YoY &gt; 3% (độ lan tỏa); CPI lõi {core_yoy}% so CPI toàn phần {headline.get('cpi_yoy')}% (lõi cao = không chỉ do năng lượng/thực phẩm)."}
+            "detail": f"{pct_gt_3}% trong 9 nhóm CPI có YoY &gt; 3% (độ lan tỏa); CPI lõi {core_yoy}% so CPI toàn phần {headline.get('cpi_yoy')}% (lõi cao = không chỉ do năng lượng/thực phẩm).{core_accel_note}"}
 
     if growth and growth.get("gdp"):
         g = growth["gdp"]["qoq_annualized"]
@@ -422,12 +437,22 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
     # phân biệt QT thật với reserve management") — dùng Liquidity Impulse (ΔReserves−ΔRRP−ΔTGA,
     # xem _fed_liquidity) thay vì chỉ % thay đổi tổng tài sản, vì tổng tài sản có thể đi ngang do
     # cơ cấu kỳ hạn trong khi thanh khoản ròng NGÂN HÀNG vẫn đang thay đổi.
+    # SUA 2026-10-08 (user gửi tài liệu: "không nên gọi là QE — FOMC 16/9 nói rõ Fed đang duy trì
+    # ample reserves và có thể mua T-bills để quản lý reserves, đây là reserve management/balance-
+    # sheet normalization transition, KHÁC QE kích thích tiền tệ" — +1.44%/6 tháng là mức tăng NHẸ,
+    # không đủ để khẳng định Fed đang bơm tiền kích thích) — chỉ gọi "QE rõ rệt" khi mức tăng LỚN
+    # (>5%/6 tháng); mức tăng nhẹ/vừa gọi thận trọng hơn là "có thể là quản lý dự trữ", màu neutral
+    # (không phải "good" — tăng nhẹ không đồng nghĩa nới lỏng rõ ràng có lợi cho rủi ro tài sản).
     if liquidity:
         chg6 = liquidity["changes"]["usm_fed_assets"]["chg_pct_6m"]
         impulse = liquidity.get("liquidity_impulse_latest")
+        impulse_3m = liquidity.get("liquidity_impulse_3m_sum")
+        impulse_6m = liquidity.get("liquidity_impulse_6m_sum")
         if chg6 is not None:
-            if chg6 > 0.5:
-                bs_label, bs_color = "Mở rộng trở lại (QE)", "good"
+            if chg6 > 5:
+                bs_label, bs_color = "Mở rộng rõ rệt (QE)", "good"
+            elif chg6 > 0.5:
+                bs_label, bs_color = "Mở rộng nhẹ — có thể là quản lý dự trữ (reserve management), chưa chắc QE kích thích", "neutral"
             elif chg6 < -0.5:
                 bs_label, bs_color = "Thu hẹp (QT)", "warn"
             else:
@@ -435,10 +460,12 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
             impulse_note = ""
             if impulse is not None:
                 impulse_bn = round(impulse / 1000, 1)
+                i3 = round(impulse_3m / 1000, 1) if impulse_3m is not None else None
+                i6 = round(impulse_6m / 1000, 1) if impulse_6m is not None else None
                 impulse_note = (f"; Liquidity Impulse (ΔReserves−ΔRRP−ΔTGA) tháng gần nhất {'+' if impulse_bn >= 0 else ''}{impulse_bn} tỷ$ "
-                                 + ("(bơm ròng vào hệ thống ngân hàng)" if impulse_bn >= 0 else "(rút ròng khỏi hệ thống ngân hàng)"))
+                                 f"— 1 tháng KHÔNG đủ kết luận xu hướng, cộng dồn 3 tháng {'+' if (i3 or 0) >= 0 else ''}{i3} tỷ$, 6 tháng {'+' if (i6 or 0) >= 0 else ''}{i6} tỷ$")
             states["fed_balance_sheet"] = {"label": bs_label, "color": bs_color,
-                "detail": f"Tổng tài sản Fed thay đổi {chg6}%/6 tháng{impulse_note}."}
+                "detail": f"Tổng tài sản Fed thay đổi {chg6}%/6 tháng{impulse_note}. Fed (FOMC 16/9) nói đang duy trì 'ample reserves', sẵn sàng mua Treasury bills để quản lý dự trữ — không hẳn là chính sách QE kích thích kinh điển."}
 
     if treasury_credit:
         v, c = treasury_credit["latest_values"], treasury_credit["changes"]
@@ -452,8 +479,20 @@ def _assess_states(headline, rates, liquidity, growth, labor, treasury_credit, u
                 credit_note = "; chênh lệch tín dụng High Yield NỚI RỘNG rõ — khẩu vị rủi ro đang giảm"
             elif hy_chg6 < -0.3:
                 credit_note = "; chênh lệch tín dụng High Yield THU HẸP — khẩu vị rủi ro đang cao (cẩn trọng nếu quá chủ quan)"
+        # THEM 2026-10-08 (user gửi tài liệu: "'đường cong bình thường → không cản trở risk assets'
+        # là quá đơn giản — lợi suất THỰC 10 năm mới quan trọng hơn, là chi phí cơ hội thực của vốn
+        # USD, headwind cho growth stocks/EM/vàng/crypto DÙ đường cong đã dốc lên") — nếu lợi suất
+        # thực cao (>2%, mức lịch sử được coi là thắt chặt rõ), đổi màu "good"→"warn" dù đường cong
+        # bình thường, KHÔNG để đường cong 1 mình quyết định toàn bộ trạng thái.
+        real_yield = v.get("usm_real_yield_10y")
+        real_yield_note = ""
+        if real_yield is not None and real_yield > 2:
+            real_yield_note = (f" Lợi suất THỰC 10 năm {real_yield}% — cao, chi phí vốn thực tế đắt, là lực cản cho cổ phiếu tăng trưởng/tài sản dài hạn/EM/vàng "
+                                f"dù đường cong danh nghĩa không đảo.")
+            if curve_color == "good":
+                curve_color = "warn"
         states["treasury_credit"] = {"label": curve_label, "color": curve_color,
-            "detail": f"10Y-2Y = {spread}%, HY OAS {v.get('usm_hy_oas')}%{credit_note}."}
+            "detail": f"10Y-2Y = {spread}%, HY OAS {v.get('usm_hy_oas')}%{credit_note}.{real_yield_note}"}
 
     if usd:
         c12 = usd.get("chg_pct_12m")
@@ -591,12 +630,21 @@ def _fed_liquidity(raw):
     impulse = {periods[i]: round(reserves_liq[periods[i]] - reserves_liq[periods[i - 1]], 0)
                for i in range(1, len(periods)) if periods[i] in reserves_liq and periods[i - 1] in reserves_liq}
 
+    # THEM 2026-10-08 (user gửi tài liệu: "+28.3B trong 1 tháng không đủ để kết luận Fed đang nới
+    # lỏng — phải xem 1/3/6 tháng") — tổng Liquidity Impulse 3/6 tháng gần nhất (KHÔNG phải %, cộng
+    # dồn số tuyệt đối — đúng ý nghĩa "impulse" tích lũy qua nhiều tháng thay vì đọc 1 tháng đơn lẻ.
+    impulse_periods = sorted(impulse)
+    imp_3m = sum(impulse[p] for p in impulse_periods[-3:]) if len(impulse_periods) >= 3 else None
+    imp_6m = sum(impulse[p] for p in impulse_periods[-6:]) if len(impulse_periods) >= 6 else None
+
     return {
         "periods": periods, "latest": latest, "latest_values": latest_vals, "changes": chg,
         "peak_period": peak_period, "peak_value": series["usm_fed_assets"][peak_period],
         "assets_vs_peak_pct": assets_vs_peak_pct,
         "ecb_latest": {"period": ecb_latest, "value": ecb.get(ecb_latest)} if ecb_latest else None,
         "liquidity_impulse_latest": impulse.get(latest),
+        "liquidity_impulse_3m_sum": round(imp_3m, 0) if imp_3m is not None else None,
+        "liquidity_impulse_6m_sum": round(imp_6m, 0) if imp_6m is not None else None,
         "history": {
             "periods": periods,
             "assets": [series["usm_fed_assets"].get(p) for p in periods],
@@ -835,20 +883,24 @@ def _cpi_contributions(raw, periods):
     # ít vì tiêu dùng ít, năng lượng tăng nhẹ nhưng đóng góp nhiều vì tiêu dùng nhiều".
     # THEM 2026-10-08 (user gửi tài liệu đề xuất "Contribution change": "Energy contribution +0.3pp
     # → +0.8pp => đỏ; Shelter +1.2pp → +1.0pp => xanh" — biết nhóm nào đang TĂNG áp lực lên CPI,
-    # không chỉ mức đóng góp hiện tại) — so đóng góp kỳ này với đúng 3 tháng trước, CÙNG công thức.
+    # không chỉ mức đóng góp hiện tại).
+    # SUA 2026-10-08 (user: "đã bảo phần này là thay đổi SO VỚI THÁNG TRƯỚC, cứ đi so 3 tháng trước
+    # thì sao mà đúng được" — ban đầu hiểu nhầm thành so 3 tháng, ĐÚNG Ý user là so 1 THÁNG TRƯỚC để
+    # bắt được biến động ngắn hạn mới nhất, không bị san phẳng như cửa sổ dài hơn) — đổi mốc so sánh
+    # từ -3 xuống -1 tháng.
     latest = periods[-1]
-    latest_3m_ago = _shift(latest, -3)
+    latest_1m_ago = _shift(latest, -1)
     snapshot = []
     for key, label in US_GROUPS:
         w = US_GROUP9_WEIGHTS[key]
         yoy = _group_yoy(key, latest)
         contribution = round(w / 100 * yoy, 3) if yoy is not None else None
-        yoy_3m = _group_yoy(key, latest_3m_ago) if latest_3m_ago in periods else None
-        contribution_3m_ago = round(w / 100 * yoy_3m, 3) if yoy_3m is not None else None
-        contribution_chg_3m = round(contribution - contribution_3m_ago, 3) if contribution is not None and contribution_3m_ago is not None else None
+        yoy_1m = _group_yoy(key, latest_1m_ago) if latest_1m_ago in periods else None
+        contribution_1m_ago = round(w / 100 * yoy_1m, 3) if yoy_1m is not None else None
+        contribution_chg_1m = round(contribution - contribution_1m_ago, 3) if contribution is not None and contribution_1m_ago is not None else None
         snapshot.append({"key": key, "label": CONTRIB_LABEL_OVERRIDE.get(key, label), "weight_pct": w, "yoy": yoy,
-                          "contribution": contribution, "contribution_3m_ago": contribution_3m_ago,
-                          "contribution_chg_3m": contribution_chg_3m})
+                          "contribution": contribution, "contribution_1m_ago": contribution_1m_ago,
+                          "contribution_chg_1m": contribution_chg_1m})
     snapshot.sort(key=lambda r: abs(r["contribution"]) if r["contribution"] is not None else -1, reverse=True)
 
     return {"periods": periods, "rows": rows, "weights_vintage": US_GROUP_WEIGHTS_VINTAGE,
