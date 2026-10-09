@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderPositionsTable(data.positions);
     renderCurrentAspectsTable(data.currentAspects);
     renderHousesTable(data.positions, data.houses);
-    renderVerdictBanner(data.marketVerdict);
+    renderVerdictBanner(data.marketVerdict, data.dailyPressure);
     renderPressureChart(data.dailyPressure);
     renderBacktestChart(data.backtest);
     renderBacktestNoVinChart(data.backtest);
@@ -50,14 +50,70 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCycleTool();
 });
 
-function renderVerdictBanner(verdict) {
+// SUA 2026-10-09 (user: "ví dụ dự báo 12-10 sẽ tạo đỉnh mà 11-10 báo đang thuận lợi thì không hay
+// lắm — 4 phiên tới mới tới đỉnh thì ghi đang thuận lợi được, nhưng 3 phiên tới là tạo đỉnh thì ghi
+// chuẩn bị giảm; tương tự 3 phiên tới tạo đáy thì ghi chuẩn bị tăng, 4 phiên trở lên mới tới đáy
+// thì ghi đang không thuận lợi") — verdict CŨ (Python, build_market_verdict) chỉ nhìn ĐIỂM hôm nay
+// so trung bình 10 ngày tới, KHÔNG biết đỉnh/đáy SẮP TỚI gần hay xa nên có thể báo "thuận lợi"
+// ngay sát trước 1 đỉnh — đổi sang dựa vào SỐ PHIÊN GIAO DỊCH còn lại tới điểm đảo chiều (đỉnh/đáy)
+// GẦN NHẤT phía trước, đúng ý user. Tính ở client (không phải Python) vì thuật toán xác định đỉnh/
+// đáy (_findPressureTurningPoints) vốn đã chạy ở đây cho biểu đồ bên dưới — tính lại ở Python sẽ
+// phải chép y hệt thuật toán zigzag này sang 2 ngôn ngữ, dễ lệch nhau về sau.
+function _tradingSessionsUntil(series, targetIdx) {
+    let n = 0;
+    for (let i = 1; i <= targetIdx; i++) {
+        if (_isTradingDay(series[i].date)) n++;
+    }
+    return n;
+}
+
+function _computeTurningPoints(series) {
+    const officialLen = Math.min(series.length, PRESSURE_DISPLAY_DAYS + 1);
+    const officialScores = series.slice(0, officialLen).map(p => p.score);
+    const officialRange = (Math.max(...officialScores, 0) - Math.min(...officialScores, 0)) || 1;
+    const threshold = Math.max(officialRange * 0.15, 0.5);
+    const allTurningPoints = _findPressureTurningPoints(series.map(p => p.score), threshold)
+        .map(tp => ({ idx: _nearestTradingDayIdx(series, tp.idx, tp.type === 'peak'), type: tp.type }));
+    return { officialLen, allTurningPoints };
+}
+
+const NEAR_TURN_SESSIONS = 3; // <=3 phien = "sap toi", >=4 phien = con "an toan"
+
+function renderVerdictBanner(verdict, series) {
     const banner = document.getElementById('verdict-banner');
     if (!banner || !verdict) return;
-    banner.className = `astro-verdict-banner ${verdict.colorKey}`;
     const labelEl = document.getElementById('verdict-label');
     const detailEl = document.getElementById('verdict-detail');
-    if (labelEl) labelEl.textContent = verdict.label;
-    if (detailEl) detailEl.textContent = verdict.detail;
+
+    let label = verdict.label, colorKey = verdict.colorKey, prefix = '';
+    if (series && series.length > 1) {
+        const { allTurningPoints } = _computeTurningPoints(series);
+        const nextTp = allTurningPoints.find(tp => tp.idx > 0);
+        if (nextTp) {
+            const sessions = _tradingSessionsUntil(series, nextTp.idx);
+            const dateLabel = _fmtDate(series[nextTp.idx].date);
+            const near = sessions <= NEAR_TURN_SESSIONS;
+            if (nextTp.type === 'peak') {
+                if (near) {
+                    label = '🔻 CHUẨN BỊ GIẢM (sắp tạo đỉnh)'; colorKey = 'reversal_down';
+                } else {
+                    label = '✅ Đang THUẬN LỢI'; colorKey = 'favorable';
+                }
+                prefix = `Dự kiến tạo ĐỈNH vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
+            } else {
+                if (near) {
+                    label = '🔺 CHUẨN BỊ TĂNG (sắp tạo đáy)'; colorKey = 'reversal_up';
+                } else {
+                    label = '⚠️ Đang KHÔNG THUẬN LỢI'; colorKey = 'risk';
+                }
+                prefix = `Dự kiến tạo ĐÁY vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
+            }
+        }
+    }
+
+    banner.className = `astro-verdict-banner ${colorKey}`;
+    if (labelEl) labelEl.textContent = label;
+    if (detailEl) detailEl.textContent = prefix + verdict.detail;
 }
 
 function _isTradingDay(dateStr) {
@@ -156,12 +212,7 @@ function renderPressureChart(series) {
     const container = document.getElementById('astro-pressure-chart-container');
     if (!container || !series || !series.length) return;
 
-    const officialLen = Math.min(series.length, PRESSURE_DISPLAY_DAYS + 1);
-    const officialScores = series.slice(0, officialLen).map(p => p.score);
-    const officialRange = (Math.max(...officialScores, 0) - Math.min(...officialScores, 0)) || 1;
-    const threshold = Math.max(officialRange * 0.15, 0.5);
-    const allTurningPoints = _findPressureTurningPoints(series.map(p => p.score), threshold)
-        .map(tp => ({ idx: _nearestTradingDayIdx(series, tp.idx, tp.type === 'peak'), type: tp.type }));
+    const { officialLen, allTurningPoints } = _computeTurningPoints(series);
 
     let displayLen = officialLen;
     const firstBeyond = allTurningPoints.find(tp => tp.idx >= officialLen);
