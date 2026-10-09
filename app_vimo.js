@@ -3864,18 +3864,32 @@ function renderVnReport(report) {
     const box = document.getElementById('vn-report-container');
     if (!box || !report) return;
     box.style.display = '';
-    const card = (title, body) => `<div class="card margin-top-20"><h3 class="border-blue" style="margin:0">${title}</h3>${body}</div>`;
+    // SUA 2026-10-09 (user: "vẫn mờ lắm, chả nhìn thấy gì luôn, chia thành các cụm đi cho đỡ vỡ
+    // điểm ảnh" — 1 ảnh DUY NHẤT gộp cả 5 mục cao ~9500px (tỷ lệ cạnh quá dị dạng) bị các nơi hiển
+    // thị/nén ảnh (chat, mạng xã hội...) tự thu nhỏ rất mạnh để fit khung xem, nhìn mờ dù dữ liệu
+    // gốc đã nét — đổi sang MỖI THẺ (card) có nút chụp RIÊNG, ảnh nhỏ gọn đúng tỷ lệ bình thường,
+    // không bị nén khi hiển thị. Nút chụp gắn class "vn-report-no-capture" để saveVnReportSection()
+    // LOẠI nó ra khỏi ảnh chụp (xem filter trong htmlToImage.toBlob).
+    let sectionSeq = 0;
+    const card = (title, body) => {
+        sectionSeq += 1;
+        const id = `vn-report-section-${sectionSeq}`;
+        return `<div class="card margin-top-20" id="${id}">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <h3 class="border-blue" style="margin:0">${title}</h3>
+                <button class="vn-report-no-capture" onclick="saveVnReportSection('${id}', this)"
+                    title="Lưu/Copy riêng mục này thành ảnh"
+                    style="flex-shrink:0;background:#0ea5e9;border:none;color:#fff;font-weight:600;font-size:0.78em;padding:6px 10px;border-radius:7px;cursor:pointer">
+                    📷 Copy ảnh mục này
+                </button>
+            </div>
+            ${body}
+        </div>`;
+    };
     const para = txt => `<p style="margin:6px 0;line-height:1.6">${txt}</p>`;
 
     const cons = report.consumption, prod = report.production, inv = report.investment;
     box.innerHTML = `
-      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
-          <button id="vn-report-save-btn" onclick="saveVnReportAsImage()"
-              style="background:#0ea5e9;border:none;color:#fff;font-weight:600;font-size:0.85em;padding:8px 14px;border-radius:8px;cursor:pointer">
-              📷 Lưu/Copy toàn bộ báo cáo thành ảnh
-          </button>
-      </div>
-      <div id="vn-report-capture-area">
       ${card('📋 Tóm tắt tháng ' + report.asOf, para(report.summaryText)
           + '<p class="ind-source-note">Toàn bộ số liệu lấy từ các nguồn tự động đã dùng trong các tab khác (GSO/NSO, Hải quan qua dulieukinhte.com, VBMA, vietnambiz) — xem từng chỉ báo ở tab "Giám sát chỉ số" để tra nguồn gốc chi tiết.</p>')}
       ${card('1. Bảng chỉ số kinh tế tháng (13 tháng gần nhất)', vnMonthlyTable(report.monthlyTable)
@@ -3917,7 +3931,6 @@ function renderVnReport(report) {
           <div class="ind-chart" style="height:280px;margin-top:14px"><canvas id="chart-vn-fdi-breakdown"></canvas></div>
           ${para(inv.paragraphs[2])}
           <p class="ind-source-note">FDI đăng ký tách theo loại hình (cấp mới/điều chỉnh) — nguồn dulieukinhte.com (Bộ KH&amp;ĐT/Hải quan), lũy kế từ đầu năm. Tổng 2 cột XẤP XỈ fdi_registered_usd_bn (còn thiếu phần "góp vốn, mua cổ phần" không có ở nguồn này).</p>`)}
-      </div>
     `;
 
     vnRetailChart(cons.retailChart);
@@ -3936,32 +3949,38 @@ function renderVnReport(report) {
 }
 
 // THEM 2026-10-09 (user: "toàn bộ phần tab báo cáo này tôi muốn lưu được dưới dạng ảnh, bấm vào là
-// copy được nó như 1 tấm ảnh" — chụp #vn-report-capture-area (KHÔNG gồm nút bấm này, xem wrapper
-// ở renderVnReport), rồi thử COPY vào clipboard trước; nếu trình duyệt không hỗ trợ/bị chặn quyền
-// thì TỰ ĐỘNG TẢI FILE xuống thay thế.
+// copy được nó như 1 tấm ảnh" — chụp DOM thành ảnh, thử COPY vào clipboard trước; nếu trình duyệt
+// không hỗ trợ/bị chặn quyền thì TỰ ĐỘNG TẢI FILE xuống thay thế.
 // SUA 2026-10-09 (user: "ảnh copy lại chất lượng thấp, không có chữ, mờ lắm" — html2canvas (thử
 // trước) tự VIẼ LẠI layout bằng JS nên xử lý SAI với các kiểu CSS hiện đại dự án đang dùng nhiều:
-// màu chữ qua CSS custom property (--text-main/--text-muted ở style.css) và nền card bán trong
-// suốt (rgba) — 2 lỗi html2canvas nổi tiếng (chữ biến mất, nền sai). Đổi sang html-to-image: lấy
-// toàn bộ DOM làm <foreignObject> trong SVG rồi để CHÍNH TRÌNH DUYỆT vẽ (không tự vẽ lại), nên mọi
-// CSS (biến, trong suốt, web font) đều ĐÚNG như hiển thị thật. pixelRatio:2 cho ảnh nét hơn.
-async function saveVnReportAsImage() {
-    const area = document.getElementById('vn-report-capture-area');
-    const btn = document.getElementById('vn-report-save-btn');
+// màu chữ qua CSS custom property và nền card bán trong suốt (rgba) — 2 lỗi html2canvas nổi
+// tiếng. Đổi sang html-to-image: lấy toàn bộ DOM làm <foreignObject> trong SVG rồi để CHÍNH TRÌNH
+// DUYỆT vẽ, mọi CSS đều ĐÚNG như hiển thị thật.
+// SUA 2026-10-09 lần 2 (user: "vẫn mờ lắm, chả nhìn thấy gì luôn, chia thành các cụm đi cho đỡ vỡ
+// điểm ảnh" — 1 ảnh DUY NHẤT gộp toàn bộ tab cao ~9500px bị các nơi hiển thị/nén ảnh thu nhỏ rất
+// mạnh để fit khung xem, nhìn mờ dù dữ liệu gốc đã nét) — đổi từ 1 nút "chụp toàn bộ" sang MỖI THẺ
+// (card) có nút chụp RIÊNG (xem card() trong renderVnReport) — ảnh nhỏ gọn, tỷ lệ cạnh hợp lý,
+// không bị nén khi hiển thị trên chat/mạng xã hội. filter loại nút bấm (.vn-report-no-capture) ra
+// khỏi ảnh chụp, vì nó là UI điều khiển, không phải nội dung báo cáo.
+async function saveVnReportSection(sectionId, btnEl) {
+    const area = document.getElementById(sectionId);
     if (!area || typeof htmlToImage === 'undefined') {
         alert('Không tải được công cụ xuất ảnh (html-to-image) — kiểm tra kết nối mạng rồi thử lại.');
         return;
     }
-    const prevText = btn ? btn.innerHTML : '';
-    if (btn) { btn.innerHTML = '⏳ Đang tạo ảnh...'; btn.disabled = true; }
+    const prevText = btnEl ? btnEl.innerHTML : '';
+    if (btnEl) { btnEl.innerHTML = '⏳ Đang tạo...'; btnEl.disabled = true; }
     try {
         if (document.fonts && document.fonts.ready) await document.fonts.ready;
         // skipFonts:true — tránh html-to-image cố INLINE font Google Fonts (bị CORS chặn đọc
         // cssRules của stylesheet cross-origin, chỉ log lỗi vô hại nhưng gây chậm/ồn console) —
         // không cần nhúng font vào ảnh, trình duyệt đã render chữ đúng font trước khi chụp rồi.
-        const blob = await htmlToImage.toBlob(area, { backgroundColor: '#0b1220', pixelRatio: 2, skipFonts: true });
+        const blob = await htmlToImage.toBlob(area, {
+            backgroundColor: '#0b1220', pixelRatio: 2, skipFonts: true,
+            filter: (node) => !(node.classList && node.classList.contains('vn-report-no-capture')),
+        });
         if (!blob) {
-            if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+            if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
             return;
         }
         let copied = false;
@@ -3975,19 +3994,19 @@ async function saveVnReportAsImage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `bao-cao-vi-mo-${new Date().toISOString().slice(0, 10)}.png`;
+            a.download = `bao-cao-vi-mo-${sectionId}-${new Date().toISOString().slice(0, 10)}.png`;
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
         }
-        if (btn) {
-            btn.innerHTML = copied ? '✅ Đã copy ảnh vào clipboard!' : '✅ Trình duyệt không hỗ trợ copy — đã tự tải file ảnh!';
-            setTimeout(() => { btn.innerHTML = prevText; btn.disabled = false; }, 2500);
+        if (btnEl) {
+            btnEl.innerHTML = copied ? '✅ Đã copy ảnh!' : '✅ Đã tải ảnh!';
+            setTimeout(() => { btnEl.innerHTML = prevText; btnEl.disabled = false; }, 2200);
         }
     } catch (e) {
         console.error('Lỗi xuất ảnh báo cáo:', e);
-        if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
-        alert('Không tạo được ảnh báo cáo, thử lại sau.');
+        if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
+        alert('Không tạo được ảnh, thử lại sau.');
     }
 }
