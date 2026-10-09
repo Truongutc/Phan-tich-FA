@@ -3725,15 +3725,27 @@ function vnRetailChart(c) {
 // nhiều lần CPI thật (không có trọng số để giảm tỷ trọng trước khi cộng), cột luôn vọt cao hẳn so
 // với đường CPI — REVERT HẲN về nguồn VBMA gốc (ĐÃ nhân trọng số, cộng đúng ra CPI, cân đối như
 // bản user khen đẹp). Xem _build_consumption (vn_report_tab.py) — ưu tiên ĐÚNG TỶ LỆ hơn tươi hơn.
+// SUA 2026-10-09 lần 3 (user: "dữ liệu thô kia không tính ra được à, dựa theo cả dữ liệu thô và tỷ
+// trọng CPI các kỳ trong quá khứ để tính ra trọng số rồi nhân vào ra tạm số của tháng gần nhất đi
+// chứ, để tôi còn tham khảo" — xem _add_provisional_contrib trong vn_report_tab.py: suy ngược
+// trọng số từ các kỳ VBMA đã có + %YoY thô cùng kỳ, áp vào %YoY thô mới nhất để ước tính TẠM cột
+// còn thiếu. c.provisionalPeriod đánh dấu kỳ đó — vẽ viền NÉT ĐỨT cho CẢ 5 cột của kỳ này để biết
+// là số TẠM TÍNH, không phải số VBMA chính thức.
 function vnCpiGroupChart(c) {
     const canvas = document.getElementById('chart-vn-cpi-group');
     if (!canvas || !c || !c.periods.length) return;
     const meta = [['food', 'Thực phẩm', '#f59e0b'], ['housing_utilities', 'Nhà, điện, nước', '#60a5fa'],
                   ['healthcare', 'Y tế', '#10b981'], ['transport', 'Vận tải', '#ef4444'], ['other', 'Khác', '#94a3b8']];
+    const provIdx = c.provisionalPeriod ? c.periods.indexOf(c.provisionalPeriod) : -1;
     chartInstances.push(new Chart(canvas, {
         type: 'bar',
         data: { labels: c.periods, datasets: [
-            ...meta.map(([k, label, color]) => ({ label, data: c[k], backgroundColor: color, stack: 'cpi', order: 2 })),
+            ...meta.map(([k, label, color]) => ({
+                label, data: c[k], backgroundColor: color, stack: 'cpi', order: 2,
+                borderColor: '#fff',
+                borderWidth: (ctx) => ctx.dataIndex === provIdx ? 2 : 0,
+                borderDash: (ctx) => ctx.dataIndex === provIdx ? [4, 2] : [],
+            })),
             { type: 'line', label: 'CPI YoY (tổng, %)', data: c.cpi_yoy, order: 1,
               borderColor: '#22d3ee', backgroundColor: '#22d3ee', borderWidth: 3, pointRadius: 3,
               pointBackgroundColor: '#22d3ee', pointBorderColor: '#1a1f2e', pointBorderWidth: 1.5,
@@ -3950,7 +3962,7 @@ function renderVnReport(report) {
           <div class="ind-chart" style="height:320px;margin-top:14px"><canvas id="chart-vn-cpi-group"></canvas></div>
           ${para(cons.paragraphs[1])}
           ${para(cons.paragraphs[2])}
-          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo nhóm: Hải quan/GSO qua dulieukinhte.com và VBMA (đóng góp điểm % đã có trọng số thật). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ). VBMA (cột đóng góp theo nhóm) có thể công bố TRỄ hơn 1 tháng so với CPI tổng (đường line) — tháng mới nhất có thể chỉ thấy đường line, chưa có cột, sẽ tự lấp đầy khi VBMA cập nhật.</p>`)}
+          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo nhóm: Hải quan/GSO qua dulieukinhte.com và VBMA (đóng góp điểm % đã có trọng số thật). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ). VBMA (cột đóng góp theo nhóm) có thể công bố TRỄ hơn 1 tháng so với CPI tổng (đường line) — khi đó, cột viền NÉT ĐỨT là số TẠM TÍNH (suy ngược trọng số từ các kỳ VBMA đã có + %YoY thô mới nhất của NSO qua dulieukinhte.com), chỉ để tham khảo, sẽ tự thay bằng số chính thức khi VBMA cập nhật.</p>`)}
       ${card('3. Sản xuất & Thương mại', `
           <div class="ind-chart" style="height:320px"><canvas id="chart-vn-trade"></canvas></div>
           ${para(prod.paragraphs[0])}

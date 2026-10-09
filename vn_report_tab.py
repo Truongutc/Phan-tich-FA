@@ -164,8 +164,53 @@ def _build_monthly_table(latest, export_m, import_m, fdi_disb, pub_inv_rate, pmi
 # dù số đúng — REVERT HẲN về nguồn VBMA cpi_contrib_* gốc (ĐÃ nhân trọng số, cộng đúng ra CPI, nhìn
 # cân đối như bản user khen đẹp) — ưu tiên ĐÚNG TỶ LỆ HÌNH ẢNH hơn tươi hơn 1 tháng, vì chỉ báo này
 # vốn chỉ để XEM CƠ CẤU, không phải để bắt kịp tháng mới nhất.
+# THEM 2026-10-09 (user: "dữ liệu thô kia không tính ra được à, dựa theo cả dữ liệu thô và tỷ
+# trọng CPI các kỳ trong quá khứ để tính ra trọng số rồi nhân vào ra tạm số của tháng gần nhất đi
+# chứ, để tôi còn tham khảo" — cpi_contrib_* (VBMA) = trọng_số × %YoY, và ta có %YoY THÔ tươi hơn
+# (cpi_yoy_group_*, dulieukinhte.com) cho CÙNG kỳ — SUY NGƯỢC trọng_số ≈ contrib(t) / %YoY(t) tại
+# các kỳ CÓ CẢ 2 (lấy TRUNG VỊ 12 kỳ gần nhất cho ổn định, tránh lệch do 1 kỳ bất thường), rồi áp
+# trọng số đó vào %YoY mới nhất (kỳ VBMA CHƯA公 bố) để ước tính TẠM — CHỈ dùng khi contrib thật còn
+# thiếu, không ghi đè số thật đã có.
+def _estimate_weight_median(contrib, proxy_yoy, window=12):
+    """Trả trọng số ước lượng (trung vị contrib(t)/proxy_yoy(t) trên tối đa `window` kỳ gần nhất có
+    cả 2, bỏ qua kỳ proxy_yoy≈0 để tránh chia gần 0), hoặc None nếu không đủ dữ liệu."""
+    common = sorted(set(contrib) & set(proxy_yoy))
+    ratios = [contrib[t] / proxy_yoy[t] for t in common[-window:] if abs(proxy_yoy.get(t, 0)) > 0.05]
+    if not ratios:
+        return None
+    ratios.sort()
+    n = len(ratios)
+    return (ratios[n // 2] if n % 2 == 1 else (ratios[n // 2 - 1] + ratios[n // 2]) / 2)
+
+
+def _average_series(series_list):
+    """Trung bình ĐƠN GIẢN (không trọng số) nhiều series {period: value} tại các kỳ CÓ ĐỦ tất cả —
+    dùng làm proxy %YoY cho nhóm 'Khác' (gộp nhiều nhóm cấp-1 lẻ không có mã riêng trong VBMA)."""
+    if not series_list:
+        return {}
+    common = set(series_list[0])
+    for s in series_list[1:]:
+        common &= set(s)
+    return {t: sum(s[t] for s in series_list) / len(series_list) for t in common}
+
+
+def _add_provisional_contrib(contrib, proxy_yoy, target_period):
+    """Nếu contrib[target_period] CHƯA có nhưng proxy_yoy[target_period] đã có, ước tính TẠM bằng
+    trọng số suy ngược (xem _estimate_weight_median) rồi trả (merged_dict, True) — ĐÁNH DẤU đã
+    chèn số tạm; nếu không cần/không ước được thì trả (contrib nguyên vẹn, False)."""
+    if target_period in contrib or target_period not in proxy_yoy:
+        return contrib, False
+    weight = _estimate_weight_median(contrib, proxy_yoy)
+    if weight is None:
+        return contrib, False
+    merged = dict(contrib)
+    merged[target_period] = round(weight * proxy_yoy[target_period], 3)
+    return merged, True
+
+
 def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_travel, retail_other,
-                         cpi_yoy, cpi_mom, cpi_food, cpi_housing, cpi_health, cpi_transport, cpi_other):
+                         cpi_yoy, cpi_mom, cpi_food, cpi_housing, cpi_health, cpi_transport, cpi_other,
+                         cpi_proxy_yoy_groups):
     periods = sorted(retail_total)
 
     def scaled(s):
@@ -191,10 +236,25 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
     # Nối thêm kỳ MỚI NHẤT của cpi_yoy nếu nó mới hơn các nhóm (VBMA đôi khi trễ 1 tháng so CPI
     # tổng) — đường CPI tổng (line) vẫn phản ánh đúng kỳ mới nhất NGAY CẢ KHI breakdown theo nhóm
     # (cột) của kỳ đó chưa công bố (cột kỳ đó để trống, đường line vẫn hiện đủ).
-    if cpi_yoy and (not cpi_periods or max(cpi_yoy) > cpi_periods[-1]):
-        latest_cpi_period = max(cpi_yoy)
+    latest_cpi_period = max(cpi_yoy) if cpi_yoy else None
+    if latest_cpi_period and (not cpi_periods or latest_cpi_period > cpi_periods[-1]):
         if latest_cpi_period not in cpi_periods:
             cpi_periods = cpi_periods + [latest_cpi_period]
+
+    # Ước tính TẠM cho kỳ mới nhất nếu VBMA chưa công bố — xem _add_provisional_contrib() ở trên.
+    provisional_period = None
+    if latest_cpi_period:
+        cpi_food, is_prov = _add_provisional_contrib(cpi_food, cpi_proxy_yoy_groups.get("food", {}), latest_cpi_period)
+        provisional_period = provisional_period or (latest_cpi_period if is_prov else None)
+        cpi_housing, is_prov = _add_provisional_contrib(cpi_housing, cpi_proxy_yoy_groups.get("housing_utilities", {}), latest_cpi_period)
+        provisional_period = provisional_period or (latest_cpi_period if is_prov else None)
+        cpi_health, is_prov = _add_provisional_contrib(cpi_health, cpi_proxy_yoy_groups.get("healthcare", {}), latest_cpi_period)
+        provisional_period = provisional_period or (latest_cpi_period if is_prov else None)
+        cpi_transport, is_prov = _add_provisional_contrib(cpi_transport, cpi_proxy_yoy_groups.get("transport", {}), latest_cpi_period)
+        provisional_period = provisional_period or (latest_cpi_period if is_prov else None)
+        cpi_other, is_prov = _add_provisional_contrib(cpi_other, cpi_proxy_yoy_groups.get("other", {}), latest_cpi_period)
+        provisional_period = provisional_period or (latest_cpi_period if is_prov else None)
+
     cpi_chart = {
         "periods": cpi_periods,
         "food": [cpi_food.get(p) for p in cpi_periods],
@@ -203,6 +263,7 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
         "transport": [cpi_transport.get(p) for p in cpi_periods],
         "other": [cpi_other.get(p) for p in cpi_periods],
         "cpi_yoy": [cpi_yoy.get(p) for p in cpi_periods],
+        "provisionalPeriod": provisional_period,
     }
 
     rt_latest, rt_mom, rt_yoy = retail_total.get(latest), _mom(retail_total, latest), _yoy(retail_total, latest)
@@ -466,6 +527,22 @@ def build_vn_report(raw):
     cpi_health = _series(raw, "cpi_contrib_healthcare")
     cpi_transport = _series(raw, "cpi_contrib_transport")
     cpi_other = _series(raw, "cpi_contrib_other")
+    # THEM 2026-10-09: %YoY THÔ tươi hơn (dulieukinhte.com/NSO, 11 nhóm cấp 1) dùng làm PROXY để
+    # suy ngược trọng số + ước tính TẠM cho kỳ VBMA chưa công bố (xem _add_provisional_contrib()).
+    # Ánh xạ gần nhất 5 nhóm VBMA -> 11 nhóm NSO: "Khác" = trung bình đơn giản 7 nhóm nhỏ còn lại
+    # (không có mã riêng tương ứng trong VBMA).
+    cpi_proxy_yoy_groups = {
+        "food": _series(raw, "cpi_yoy_group_food_catering"),
+        "housing_utilities": _series(raw, "cpi_yoy_group_housing_construction"),
+        "healthcare": _series(raw, "cpi_yoy_group_healthcare"),
+        "transport": _series(raw, "cpi_yoy_group_transport"),
+        "other": _average_series([
+            _series(raw, "cpi_yoy_group_beverages_tobacco"), _series(raw, "cpi_yoy_group_apparel"),
+            _series(raw, "cpi_yoy_group_household_equipment"), _series(raw, "cpi_yoy_group_post_telecom"),
+            _series(raw, "cpi_yoy_group_education"), _series(raw, "cpi_yoy_group_culture_recreation"),
+            _series(raw, "cpi_yoy_group_other_goods_services"),
+        ]),
+    }
     iip_manuf = _series(raw, "iip_manufacturing_ytd_yoy")
     iip_elec = _series(raw, "iip_electricity_ytd_yoy")
     iip_water = _series(raw, "iip_water_waste_ytd_yoy")
@@ -486,7 +563,7 @@ def build_vn_report(raw):
                                                 retail_total, visitors_m, credit_ytd, cpi_yoy, cpi_mom),
         "consumption": _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_travel,
                                              retail_other, cpi_yoy, cpi_mom, cpi_food, cpi_housing, cpi_health,
-                                             cpi_transport, cpi_other),
+                                             cpi_transport, cpi_other, cpi_proxy_yoy_groups),
         "production": _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water,
                                            iip_mining, pmi, export_fdi, export_dom, import_fdi, import_dom),
         "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb,

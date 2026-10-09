@@ -95206,7 +95206,7 @@
           1.64,
           1.56,
           1.57,
-          null
+          1.489
         ],
         "housing_utilities": [
           0.82,
@@ -95233,7 +95233,7 @@
           1.35,
           1.26,
           1.24,
-          null
+          1.216
         ],
         "healthcare": [
           0.45,
@@ -95260,7 +95260,7 @@
           0.06,
           0.07,
           0.07,
-          null
+          0.079
         ],
         "transport": [
           -0.52,
@@ -95287,7 +95287,7 @@
           0.51,
           0.35,
           0.78,
-          null
+          1.127
         ],
         "other": [
           0.56,
@@ -95314,7 +95314,7 @@
           1.12,
           1.21,
           1.24,
-          null
+          1.103
         ],
         "cpi_yoy": [
           2.63,
@@ -95342,11 +95342,12 @@
           4.45,
           4.89,
           5.08
-        ]
+        ],
+        "provisionalPeriod": "2026-09"
       },
       "paragraphs": [
         "Tổng mức bán lẻ hàng hóa & doanh thu dịch vụ tiêu dùng tháng 2026-09 đạt 690.6 nghìn tỷ đồng, tăng 1.7% so với tháng trước và tăng 17.6% so với cùng kỳ năm trước. Trong 4 phân khúc, dịch vụ lưu trú, ăn uống dẫn đầu mức tăng trưởng với +24.3% YoY.",
-        "CPI tháng 2026-09 tăng 5.08% so với cùng kỳ năm trước và tăng 0.62% so với tháng trước.",
+        "CPI tháng 2026-09 tăng 5.08% so với cùng kỳ năm trước và tăng 0.62% so với tháng trước. Nhóm Thực phẩm đóng góp nhiều nhất vào mức tăng CPI chung, với +1.49 điểm %.",
         "Sau khi trừ lạm phát (CPI +5.08% YoY), tăng trưởng THỰC của tiêu dùng bán lẻ ước đạt +11.95% — sức mua thực vẫn đang tăng."
       ]
     },
