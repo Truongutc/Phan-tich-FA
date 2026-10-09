@@ -3648,7 +3648,12 @@ function vnRetailChart(c) {
             layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                // SUA 2026-10-09 (user: "cột tháng gần nhất hẹp quá, kéo dịch sang chút" — đo thực
+                // tế bằng Chart.getChart().getDatasetMeta() thấy TÂM cột cuối NẰM ĐÚNG TẠI mép phải
+                // vùng vẽ (el.x === chartArea.right), nghĩa là NỬA cột cuối bị khuất ra ngoài —
+                // category scale của biểu đồ TRỘN bar+line không tự nhận offset:true như bar
+                // thường, phải khai báo TƯỜNG MINH mới có khoảng đệm nửa-cột ở 2 đầu trục X).
+                x: { ...CHART_DEFAULTS.scales.x, offset: true, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Nghìn tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: '% YoY (thực)', color: '#9aa5bd', font: { size: 9 } } },
             },
@@ -3680,7 +3685,9 @@ function vnCpiGroupChart(c) {
             layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                // SUA 2026-10-09 (xem ghi chú offset:true ở vnRetailChart — cùng lỗi cột cuối bị
+                // "hẹp" do tâm cột nằm đúng mép phải vùng vẽ).
+                x: { ...CHART_DEFAULTS.scales.x, offset: true, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp / CPI YoY', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
@@ -3707,7 +3714,8 @@ function vnTradeChart(c) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                // SUA 2026-10-09 (xem ghi chú offset:true ở vnRetailChart).
+                x: { ...CHART_DEFAULTS.scales.x, offset: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD (xuất/nhập khẩu)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: 'Tỷ USD (cán cân)', color: '#9aa5bd', font: { size: 9 } } },
             },
@@ -3836,7 +3844,7 @@ function vnFdiBreakdownChart(c) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                x: { ...CHART_DEFAULTS.scales.x, offset: true, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Tỷ USD (lũy kế)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
@@ -3862,7 +3870,7 @@ function renderVnReport(report) {
           <div class="ind-chart" style="height:320px;margin-top:14px"><canvas id="chart-vn-cpi-group"></canvas></div>
           ${para(cons.paragraphs[1])}
           ${para(cons.paragraphs[2])}
-          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo nhóm: Hải quan/GSO qua dulieukinhte.com và VBMA (đóng góp điểm % đã có trọng số thật). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ).</p>`)}
+          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo nhóm: Hải quan/GSO qua dulieukinhte.com và VBMA (đóng góp điểm % đã có trọng số thật). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ). VBMA (cột đóng góp theo nhóm) có thể công bố TRỄ hơn 1 tháng so với CPI tổng (đường line) — tháng mới nhất có thể chỉ thấy đường line, chưa có cột, sẽ tự lấp đầy khi VBMA cập nhật.</p>`)}
       ${card('3. Sản xuất & Thương mại', `
           <div class="ind-chart" style="height:320px"><canvas id="chart-vn-trade"></canvas></div>
           ${para(prod.paragraphs[0])}

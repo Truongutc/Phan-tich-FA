@@ -180,6 +180,15 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
 
     cpi_periods = sorted(set(cpi_food) | set(cpi_housing) | set(cpi_health)
                           | set(cpi_transport) | set(cpi_other))[-24:]
+    # THEM 2026-10-09 (user: "thực tế có CPI tháng 9 rồi mà chưa có cột cập nhật à" — cpi_contrib_*
+    # (VBMA, đóng góp theo nhóm) TRỄ hơn cpi_yoy (vietnambiz, tổng) 1 tháng tại thời điểm user hỏi —
+    # KHÔNG phải lỗi, chỉ là 2 nguồn khác nhịp cập nhật) — luôn nối thêm kỳ MỚI NHẤT của cpi_yoy nếu
+    # nó mới hơn các nhóm, để đường CPI tổng (line) phản ánh đúng kỳ mới nhất NGAY CẢ KHI breakdown
+    # theo nhóm (cột) của kỳ đó chưa công bố (cột kỳ đó sẽ trống, đường line vẫn hiện đủ).
+    if cpi_yoy and (not cpi_periods or max(cpi_yoy) > cpi_periods[-1]):
+        latest_cpi_period = max(cpi_yoy)
+        if latest_cpi_period not in cpi_periods:
+            cpi_periods = cpi_periods + [latest_cpi_period]
     cpi_chart = {
         "periods": cpi_periods,
         "food": [cpi_food.get(p) for p in cpi_periods],
