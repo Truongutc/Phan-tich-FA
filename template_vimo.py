@@ -3343,6 +3343,50 @@ def _add_vnd_usd_rate_spread(raw, trends):
     print(f"  -> Chenh lech lai suat VND-USD (O/N): {len(points)} diem")
 
 
+def _add_vnd_usd_swap_proxy_gap(raw, trends):
+    """Chênh lệch lãi suất liên ngân hàng VND-USD theo NGÀY, CÙNG nguồn VIRA, 4 kỳ hạn ON/1W/2W/1M
+    — user (2026-10-09) hỏi về "Swap Interest Rate Curve" dùng làm bằng chứng vì sao lãi suất VN
+    khó hạ (thấy trên 1 bài Facebook, đối chiếu lời bài viết xác định đây là lãi suất NGỤ Ý TỪ
+    SWAP USD/VND — nguồn thật là VBMA FX Swap Curve, vbma.org.vn/vi/market-data/fx-swap-curve,
+    nhưng bị redirect thẳng về /vi/login — khóa sau hội viên, KHÔNG có CSV công khai như các trang
+    CPI/GDP/tín dụng khác của VBMA đã dùng. User chọn PROXY thay vì bỏ qua hoàn toàn).
+
+    KHÔNG PHẢI đường cong swap thật (thiếu forward/swap points — chỉ có ở Bloomberg/Refinitiv hoặc
+    VBMA hội viên) — CHỈ LÀ PROXY từ chênh lệch lãi suất THỊ TRƯỜNG liên ngân hàng 2 đồng tiền,
+    CÙNG ngày, CÙNG nguồn VIRA. Khác chỉ báo CŨ vnd_usd_rate_spread_on (dùng Fed Funds — lãi suất
+    CHÍNH SÁCH Mỹ, theo THÁNG) — ở đây dùng lãi suất liên ngân hàng USD THỊ TRƯỜNG thực tế theo
+    NGÀY, khớp đúng tần suất và ý nghĩa "kỳ hạn ngắn" mà đường cong swap gốc thể hiện. Khi VND rẻ
+    hơn USD ở kỳ hạn ngắn (gap âm) — giống hiện tượng "lãi suất swap-implied thấp/âm" bài viết gốc
+    mô tả (SBV bán mạnh USD → dư VND ngắn hạn → lãi suất swap-implied bị kéo xuống)."""
+    TENORS = [("on", "ON"), ("1w", "1 tuần"), ("2w", "2 tuần"), ("1m", "1 tháng")]
+    for suffix, label in TENORS:
+        vnd = raw.get(f"interbank_rate_{suffix}")
+        usd = raw.get(f"interbank_usd_{suffix}")
+        if not vnd or not usd:
+            continue
+        usd_by_date = {p["period"]: p["value"] for p in usd["series"] if p.get("value") is not None}
+        points = []
+        for p in vnd["series"]:
+            if p.get("value") is None or p["period"] not in usd_by_date:
+                continue
+            points.append({"period": p["period"], "value": round(p["value"] - usd_by_date[p["period"]], 2), "source_url": None})
+        if not points:
+            continue
+        key = f"interbank_vnd_usd_gap_{suffix}"
+        raw[key] = {
+            "group": "external", "label": f"Chênh lệch LNH VND-USD kỳ hạn {label} (proxy lãi suất swap-implied)",
+            "unit": "điểm %", "good_direction": "higher", "auto_source": "derived",
+            "series": points,
+            "note": (f"= interbank_rate_{suffix} (VND, VIRA) − interbank_usd_{suffix} (USD, VIRA), CÙNG ngày. "
+                     "PROXY cho lãi suất ngụ ý từ swap USD/VND (đường cong swap thật — VBMA FX Swap Curve — bị khóa sau "
+                     "login hội viên, KHÔNG có nguồn công khai, xem ghi chú user 2026-10-09). Gap âm/thu hẹp mạnh ở kỳ "
+                     "hạn ngắn giống hiện tượng 'lãi suất swap-implied thấp/âm' — VND rẻ hơn qua kênh swap từ USD."),
+            "impact": "Gap âm hoặc thu hẹp mạnh (đặc biệt kỳ hạn ngắn ON/1W) là tín hiệu tương tự lãi suất ngụ ý từ swap thấp/âm — có thể tạo động cơ carry trade bất lợi cho VND, hạn chế dư địa NHNN hạ lãi suất chính sách dù không phải đo trực tiếp đường cong swap thật.",
+        }
+        trends[key] = calc_trend(points, "higher")
+        print(f"  -> Chenh lech LNH VND-USD proxy swap ({label}): {len(points)} diem")
+
+
 def _mom_growth_from_level_series(level_by_period):
     """So với THÁNG LIỀN TRƯỚC (period/period, KHÔNG so cùng kỳ năm trước như _yoy_from_level_
     series) — CHỈ tính khi 2 kỳ thực sự LIÊN TIẾP (cách đúng 1 tháng), tránh nhảy cụm sai nếu
@@ -4121,6 +4165,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính chenh lech lai suat VND-USD (KHÔNG lưu vào vimo_raw.json)...")
     _add_vnd_usd_rate_spread(raw, trends)
+
+    print("[INFO] Tính chenh lech lai suat LNH VND-USD theo ngay, proxy swap-implied (KHÔNG lưu vào vimo_raw.json)...")
+    _add_vnd_usd_swap_proxy_gap(raw, trends)
 
     print("[INFO] Tính cac chi bao MoM cho card Ap luc Ngoai te (KHÔNG lưu vào vimo_raw.json)...")
     _add_fx_pressure_mom_indicators(raw, trends)

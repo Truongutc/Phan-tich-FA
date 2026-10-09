@@ -2220,10 +2220,16 @@ def fetch_vira_bulletin(lookback_days=10):
     suất OMO kỳ hạn 7 ngày (thay thế snapshot tuần từ SBV, cùng lý do (1)); (5) số dư OMO đang LƯU
     HÀNH trên kênh cầm cố (tỷ đồng, chỉ báo MỚI — user 2026-07-30 chỉ ra bản tin có luôn số này,
     khác omo_net_operation là DÒNG CHẢY ròng/ngày, đây là TỒN KHO lũy kế tại thời điểm đó).
+    (6) THEM 2026-10-09 (user hỏi về "Swap Interest Rate Curve" làm bằng chứng tại sao lãi suất
+    VN khó hạ — tìm nguồn thật là VBMA FX Swap Curve nhưng bị khóa sau login hội viên, KHÔNG có
+    API công khai) — bản tin VIRA CŨNG có lãi suất liên ngân hàng USD (ON/1W/2W/1M, song song VND)
+    mà trước giờ chưa bắt — dùng làm PROXY cho chênh lệch lãi suất ngụ ý từ swap (không phải đúng
+    đường cong swap thật, nhưng CÙNG bản chất kinh tế + có dữ liệu NGÀY thật, khác chỉ báo cũ
+    vnd_usd_rate_spread_on dùng Fed Funds theo THÁNG).
     Trả list[dict] mỗi phần tử {"date": "YYYY-MM-DD", "source_url": ..., rồi các field nào tìm
-    được trong: interbank_on/1w/2w/1m, bond_3y/5y/7y/10y/15y, omo_net, omo_rate, omo_outstanding}
-    — field nào không tìm thấy (bản tin đổi cấu trúc/thiếu đoạn) thì bị bỏ qua, không lỗi. Bản tin
-    nào không tồn tại (404/302, ngày nghỉ) cũng bỏ qua lặng lẽ."""
+    được trong: interbank_on/1w/2w/1m, interbank_usd_on/1w/2w/1m, bond_3y/5y/7y/10y/15y, omo_net,
+    omo_rate, omo_outstanding} — field nào không tìm thấy (bản tin đổi cấu trúc/thiếu đoạn) thì bị
+    bỏ qua, không lỗi. Bản tin nào không tồn tại (404/302, ngày nghỉ) cũng bỏ qua lặng lẽ."""
     import html as htmlmod
     results = []
     today = datetime.date.today()
@@ -2259,6 +2265,21 @@ def fetch_vira_bulletin(lookback_days=10):
                 entry["interbank_1w"] = float(m_rates.group(2).replace(",", "."))
                 entry["interbank_2w"] = float(m_rates.group(3).replace(",", "."))
                 entry["interbank_1m"] = float(m_rates.group(4).replace(",", "."))
+
+            # THEM 2026-10-09 (user hỏi về "Swap Interest Rate Curve" — tìm được bản tin VIRA CŨNG
+            # có lãi suất liên ngân hàng USD (song song VND ở trên) nhưng trước giờ CHƯA bắt — đây
+            # là nguyên liệu để tính chênh lệch VND-USD CÙNG TẦN SUẤT NGÀY, CÙNG NGUỒN VIRA — khớp
+            # đúng ý nghĩa "lãi suất ngụ ý từ swap" hơn chỉ báo cũ vnd_usd_rate_spread_on (dùng Fed
+            # Funds — lãi suất CHÍNH SÁCH Mỹ theo THÁNG, không phải lãi suất THỊ TRƯỜNG USD thực tế
+            # theo ngày). Dấu phẩy/chấm phẩy trước "1M" KHÔNG đồng nhất giữa các bản tin (vd mẫu
+            # 08/10 dùng ",", bản VND ở trên dùng "và") — chấp nhận cả 3 dạng cho chắc.
+            m_usd_rates = re.search(
+                r"LNH USD.*?giao d[ịi]ch t[ạa]i:\s*ON\s*([\d,]+)%;\s*1W\s*([\d,]+)%;\s*2W\s*([\d,]+)%(?:,|;|\s*v[àa])\s*1M\s*([\d,]+)", text)
+            if m_usd_rates:
+                entry["interbank_usd_on"] = float(m_usd_rates.group(1).replace(",", "."))
+                entry["interbank_usd_1w"] = float(m_usd_rates.group(2).replace(",", "."))
+                entry["interbank_usd_2w"] = float(m_usd_rates.group(3).replace(",", "."))
+                entry["interbank_usd_1m"] = float(m_usd_rates.group(4).replace(",", "."))
 
             m_bond = re.search(
                 r"3Y\s*([\d,]+)%;\s*5Y\s*([\d,]+)%;\s*7Y\s*([\d,]+)%;\s*10Y\s*([\d,]+)%;\s*15Y\s*([\d,]+)%", text)
@@ -3570,12 +3591,31 @@ def update_vimo_raw():
     # fetch_sbv_omo_rate() không còn được gọi ở đây nữa (giữ nguyên hàm để tham khảo/dự phòng).
 
     print("[VIRA — lãi suất liên ngân hàng ON/1W/2W/1M + lợi suất TPCP thứ cấp + OMO bơm/hút ròng (tích lũy theo NGÀY thật)]")
+    # THEM 2026-10-09: lãi suất liên ngân hàng USD (ON/1W/2W/1M, cùng bản tin VIRA, CÙNG ngày với
+    # VND) — pre-init như tin_phieu_outstanding_balance ở trên vì key MỚI, chưa từng có trong
+    # vimo_raw.json (vòng lặp bên dưới giả định raw[raw_key]["series"] đã tồn tại).
+    for _k, _lbl in [("interbank_usd_on", "ON"), ("interbank_usd_1w", "1 tuần"),
+                      ("interbank_usd_2w", "2 tuần"), ("interbank_usd_1m", "1 tháng")]:
+        if _k not in raw:
+            raw[_k] = {
+                "group": "external", "label": f"Lãi suất liên ngân hàng USD kỳ hạn {_lbl} (VIRA)",
+                "unit": "%/năm", "good_direction": "none", "auto_source": "vira",
+                "note": ("vira.org.vn, bản tin ngày — lãi suất bình quân liên ngân hàng USD tại "
+                         "Việt Nam (KHÁC Fed Funds — đây là lãi suất THỊ TRƯỜNG thực tế, không "
+                         "phải lãi suất CHÍNH SÁCH). Dùng cùng interbank_rate_on/1w/2w/1m (VND) để "
+                         "tính chênh lệch VND-USD theo NGÀY — proxy cho áp lực lãi suất ngụ ý từ "
+                         "swap USD/VND (đường cong swap thật bị khóa sau login hội viên VBMA, "
+                         "KHÔNG có nguồn công khai — xem user 2026-10-09)."),
+                "series": [],
+            }
     # sort tăng dần theo ngày TRƯỚC khi append — fetch_vira_bulletin() quét lùi (mới nhất trước),
     # trong khi _append_point() chỉ nối vào CUỐI series (không tự sort như _merge_vbma_points).
     vira_entries = sorted(fetch_vira_bulletin(), key=lambda e: e["date"])
     VIRA_KEY_MAP = {
         "interbank_on": "interbank_rate_on", "interbank_1w": "interbank_rate_1w",
         "interbank_2w": "interbank_rate_2w", "interbank_1m": "interbank_rate_1m",
+        "interbank_usd_on": "interbank_usd_on", "interbank_usd_1w": "interbank_usd_1w",
+        "interbank_usd_2w": "interbank_usd_2w", "interbank_usd_1m": "interbank_usd_1m",
         "bond_3y": "govt_bond_yield_3y", "bond_5y": "govt_bond_yield_5y",
         "bond_7y": "govt_bond_yield_7y", "bond_10y": "govt_bond_yield_10y",
         "bond_15y": "govt_bond_yield_15y", "omo_net": "omo_net_operation",

@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxPressureCard(data.indicators);
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
+    renderFxYieldDiffChart(data.indicators, data.usMacro);
     renderDepositRateChart(data.indicators);
     renderDepositRateCakeChart(data.indicators);
     renderUsMacro(data.usMacro);
@@ -558,6 +559,13 @@ const FX_PRESSURE_LAYERS = [
         keys: ['usdvnd', 'usdvnd_monthly_avg', 'usdvnd_growth_mom', 'usdvnd_growth_yoy',
                'usdvnd_vcb_sell_daily', 'usd_cho_den_sell_daily', 'usd_cho_den_vcb_gap', 'usd_cho_den_vcb_gap_pct',
                'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on',
+               // THEM 2026-10-09 (user hỏi về "Swap Interest Rate Curve" làm bằng chứng lãi suất
+               // VN khó hạ — nguồn thật VBMA FX Swap Curve bị khóa sau login hội viên, KHÔNG có
+               // API công khai — xem ghi chú _add_vnd_usd_swap_proxy_gap trong template_vimo.py)
+               // — PROXY từ chênh lệch lãi suất liên ngân hàng VND-USD CÙNG ngày, CÙNG nguồn VIRA,
+               // 4 kỳ hạn ngắn khớp đúng phần đầu đường cong swap gốc (ON/1W/2W/1M).
+               'interbank_usd_on', 'interbank_usd_1w', 'interbank_usd_2w', 'interbank_usd_1m',
+               'interbank_vnd_usd_gap_on', 'interbank_vnd_usd_gap_1w', 'interbank_vnd_usd_gap_2w', 'interbank_vnd_usd_gap_1m',
                'darvas_neer_vn', 'darvas_reer_vn'],
         missing: [],
     },
@@ -1690,6 +1698,65 @@ function renderFxPressureSignalsMonthlyChart(indicators) {
             },
         },
         plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM (user 2026-10-09): "biểu đồ tương quan lợi suất và tỷ giá: lợi suất TPCP 10 năm VN và Mỹ
+// theo line, chênh lệch VN-Mỹ theo cột, tỷ giá USD/VND theo line nét đứt" — 3 nguồn TẦN SUẤT khác
+// nhau (VN bond: NGÀY từ VIRA, chỉ từ ~2026-04; US bond: THÁNG từ usMacro/FRED; USD/VND: THÁNG) —
+// gộp VN về THÁNG (trung bình) để ghép chung 1 trục X, lấy PERIODS của VN bond làm trục (ngắn nhất,
+// chỉ có từ khi VIRA được thêm) thay vì nội suy ngược cho giai đoạn không có dữ liệu VN.
+function renderFxYieldDiffChart(indicators, usm) {
+    const canvas = document.getElementById('chart-fx-yield-diff');
+    const card = document.getElementById('fx-yield-diff-chart-card');
+    if (!canvas) return;
+    const vnBond = indicators['govt_bond_yield_10y'];
+    const usHist = usm && usm.treasury_credit && usm.treasury_credit.history;
+    const usdvnd = indicators['usdvnd_monthly_avg'];
+    if (!vnBond || !vnBond.series.length || !usHist || !usdvnd || !usdvnd.series.length) {
+        if (card) card.style.display = 'none';
+        return;
+    }
+    if (card) card.style.display = '';
+
+    const vnMonthly = {};
+    vnBond.series.forEach(p => { (vnMonthly[p.period.slice(0, 7)] = vnMonthly[p.period.slice(0, 7)] || []).push(p.value); });
+    const vnByMonth = Object.fromEntries(Object.entries(vnMonthly).map(([m, vs]) => [m, vs.reduce((a, b) => a + b, 0) / vs.length]));
+    const usByMonth = Object.fromEntries(usHist.periods.map((p, i) => [p, usHist.yield_10y[i]]));
+    const usdvndByMonth = Object.fromEntries(usdvnd.series.map(p => [p.period, p.value]));
+
+    const periods = Object.keys(vnByMonth).sort();
+    const vnArr = periods.map(p => Math.round(vnByMonth[p] * 100) / 100);
+    const usArr = periods.map(p => usByMonth[p] ?? null);
+    const diffArr = periods.map((p, i) => (vnArr[i] !== null && usArr[i] !== null) ? Math.round((vnArr[i] - usArr[i]) * 100) / 100 : null);
+    const usdvndArr = periods.map(p => usdvndByMonth[p] ?? null);
+
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: periods,
+            datasets: [
+                { label: 'Chênh lệch VN − Mỹ (điểm %, trục phải trong)', data: diffArr, yAxisID: 'y1',
+                  backgroundColor: diffArr.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(239,68,68,0.55)' : 'rgba(96,165,250,0.55)')), order: 3 },
+                { type: 'line', label: 'Lợi suất TPCP 10 năm Việt Nam (%)', data: vnArr, yAxisID: 'y',
+                  borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
+                { type: 'line', label: 'Lợi suất TPCP 10 năm Mỹ (%)', data: usArr, yAxisID: 'y',
+                  borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
+                { type: 'line', label: 'USD/VND (trục phải ngoài)', data: usdvndArr, yAxisID: 'y2',
+                  borderColor: '#10b981', borderWidth: 2, borderDash: [6, 4], pointRadius: 0, tension: 0.2, spanGaps: true, order: 2 },
+            ],
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: '% (lợi suất 10 năm)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: 'Điểm % chênh lệch', color: '#9aa5bd', font: { size: 9 } } },
+                y2: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
     });
     chartInstances.push(chart);
 }

@@ -184,6 +184,12 @@
         "total": 0,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Duy trì, chọn lọc"
+      },
+      {
+        "date": "2026-10-09",
+        "total": 0,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Duy trì, chọn lọc"
       }
     ]
   },
@@ -2476,6 +2482,21 @@
         "period": "2026-10-01",
         "value": 4.3,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 2.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 1.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 0.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -2967,6 +2988,21 @@
         "period": "2026-10-01",
         "value": 7.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 3.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 2.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 2.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3458,6 +3494,21 @@
         "period": "2026-10-01",
         "value": 5.4,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 4.15,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 4.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 3.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3949,6 +4000,21 @@
         "period": "2026-10-01",
         "value": 6.3,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 5.8,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 5.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 5.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -10444,6 +10510,21 @@
         "period": "2026-10-01",
         "value": 3.71,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -10935,6 +11016,21 @@
         "period": "2026-10-01",
         "value": 4.29,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 4.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 4.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 4.29,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11426,6 +11522,21 @@
         "period": "2026-10-01",
         "value": 4.33,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11917,6 +12028,21 @@
         "period": "2026-10-01",
         "value": 4.47,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -12408,6 +12534,21 @@
         "period": "2026-10-01",
         "value": 4.58,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 4.58,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -12879,6 +13020,21 @@
         "period": "2026-10-01",
         "value": -584.43,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": -18377.37,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": -11555.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": -9195.95,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
@@ -14002,6 +14158,21 @@
         "period": "2026-10-01",
         "value": 149912.51,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 114964.56,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 103409.22,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 94213.27,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ],
     "note": "Tổng khối lượng OMO (kênh cầm cố/mua kỳ hạn) đang LƯU HÀNH — TỒN KHO thanh khoản NHNN đã bơm ra thị trường qua kênh này TẠI THỜI ĐIỂM đó, khác omo_net_operation (DÒNG CHẢY ròng bơm/hút MỖI NGÀY — chênh lệch trúng thầu/đáo hạn). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). good_direction='lower' mang tính THAM KHẢO: số dư lưu hành cao kéo dài phản ánh NHNN phải bơm thanh khoản LIÊN TỤC để bù đắp thiếu hụt hệ thống (thanh khoản căng), KHÔNG có nghĩa số dư thấp luôn tốt hơn (có thể chỉ đơn giản là ít nhu cầu vay mượn hơn).",
@@ -20050,6 +20221,21 @@
         "period": "2026-10-01",
         "value": 0.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ]
   },
@@ -98366,6 +98552,206 @@
         "period": "2026-08",
         "value": 130.455,
         "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      }
+    ]
+  },
+  "interbank_usd_on": {
+    "group": "external",
+    "label": "Lãi suất liên ngân hàng USD kỳ hạn ON (VIRA)",
+    "unit": "%/năm",
+    "good_direction": "none",
+    "auto_source": "vira",
+    "note": "vira.org.vn, bản tin ngày — lãi suất bình quân liên ngân hàng USD tại Việt Nam (KHÁC Fed Funds — đây là lãi suất THỊ TRƯỜNG thực tế, không phải lãi suất CHÍNH SÁCH). Dùng cùng interbank_rate_on/1w/2w/1m (VND) để tính chênh lệch VND-USD theo NGÀY — proxy cho áp lực lãi suất ngụ ý từ swap USD/VND (đường cong swap thật bị khóa sau login hội viên VBMA, KHÔNG có nguồn công khai — xem user 2026-10-09).",
+    "series": [
+      {
+        "period": "2026-09-24",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 3.84,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
+      },
+      {
+        "period": "2026-10-01",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
+      }
+    ]
+  },
+  "interbank_usd_1w": {
+    "group": "external",
+    "label": "Lãi suất liên ngân hàng USD kỳ hạn 1 tuần (VIRA)",
+    "unit": "%/năm",
+    "good_direction": "none",
+    "auto_source": "vira",
+    "note": "vira.org.vn, bản tin ngày — lãi suất bình quân liên ngân hàng USD tại Việt Nam (KHÁC Fed Funds — đây là lãi suất THỊ TRƯỜNG thực tế, không phải lãi suất CHÍNH SÁCH). Dùng cùng interbank_rate_on/1w/2w/1m (VND) để tính chênh lệch VND-USD theo NGÀY — proxy cho áp lực lãi suất ngụ ý từ swap USD/VND (đường cong swap thật bị khóa sau login hội viên VBMA, KHÔNG có nguồn công khai — xem user 2026-10-09).",
+    "series": [
+      {
+        "period": "2026-09-24",
+        "value": 3.89,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 3.88,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 3.89,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 3.89,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
+      },
+      {
+        "period": "2026-10-01",
+        "value": 3.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 3.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 3.89,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 3.89,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
+      }
+    ]
+  },
+  "interbank_usd_2w": {
+    "group": "external",
+    "label": "Lãi suất liên ngân hàng USD kỳ hạn 2 tuần (VIRA)",
+    "unit": "%/năm",
+    "good_direction": "none",
+    "auto_source": "vira",
+    "note": "vira.org.vn, bản tin ngày — lãi suất bình quân liên ngân hàng USD tại Việt Nam (KHÁC Fed Funds — đây là lãi suất THỊ TRƯỜNG thực tế, không phải lãi suất CHÍNH SÁCH). Dùng cùng interbank_rate_on/1w/2w/1m (VND) để tính chênh lệch VND-USD theo NGÀY — proxy cho áp lực lãi suất ngụ ý từ swap USD/VND (đường cong swap thật bị khóa sau login hội viên VBMA, KHÔNG có nguồn công khai — xem user 2026-10-09).",
+    "series": [
+      {
+        "period": "2026-09-24",
+        "value": 3.93,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 3.92,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 3.91,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 3.94,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
+      },
+      {
+        "period": "2026-10-01",
+        "value": 3.95,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 3.91,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 3.92,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 3.92,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
+      }
+    ]
+  },
+  "interbank_usd_1m": {
+    "group": "external",
+    "label": "Lãi suất liên ngân hàng USD kỳ hạn 1 tháng (VIRA)",
+    "unit": "%/năm",
+    "good_direction": "none",
+    "auto_source": "vira",
+    "note": "vira.org.vn, bản tin ngày — lãi suất bình quân liên ngân hàng USD tại Việt Nam (KHÁC Fed Funds — đây là lãi suất THỊ TRƯỜNG thực tế, không phải lãi suất CHÍNH SÁCH). Dùng cùng interbank_rate_on/1w/2w/1m (VND) để tính chênh lệch VND-USD theo NGÀY — proxy cho áp lực lãi suất ngụ ý từ swap USD/VND (đường cong swap thật bị khóa sau login hội viên VBMA, KHÔNG có nguồn công khai — xem user 2026-10-09).",
+    "series": [
+      {
+        "period": "2026-09-24",
+        "value": 4.02,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-25-09-2026-.html"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 4.02,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-09-2026-.html"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 4.01,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-09-2026-.html"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 4.01,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-01-10-2026-.html"
+      },
+      {
+        "period": "2026-10-01",
+        "value": 4.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-02-10-2026-.html"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 4.01,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-06-10-2026-.html"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 4.03,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-07-10-2026-.html"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 4.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ]
   }

@@ -648,6 +648,18 @@
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals-monthly"></canvas></div>
             </div>
 
+            <!-- THEM (user 2026-10-09): "biểu đồ tương quan lợi suất và tỷ giá: lợi suất TPCP 10
+                 năm VN và Mỹ theo line, chênh lệch VN-Mỹ theo cột, tỷ giá USD/VND theo line nét
+                 đứt" — lợi suất VN lấy từ VIRA (govt_bond_yield_10y, theo NGÀY, chỉ có từ ~2026-04
+                 tới nay), lợi suất Mỹ lấy từ usMacro.treasury_credit (FRED DGS10, theo tháng),
+                 USD/VND lấy từ usdvnd_monthly_avg — gộp về THÁNG để ghép chung trục X 3 nguồn tần
+                 suất khác nhau. Xem renderFxYieldDiffChart trong app_vimo.js. -->
+            <div class="vimo-chart-title margin-top-20">📐 Tương quan lợi suất TPCP 10 năm VN-Mỹ & tỷ giá</div>
+            <div id="fx-yield-diff-chart-card" style="display:none">
+                <p class="vimo-chart-subtitle">Lợi suất TPCP 10 năm Việt Nam (cam) và Mỹ (xanh dương) theo đường; chênh lệch VN trừ Mỹ (cột, đỏ = VN cao hơn/thu hút carry trade, xanh = Mỹ cao hơn) theo trục phải trong; USD/VND (nét đứt xanh lá) theo trục phải ngoài. Chênh lệch thu hẹp (lợi suất Mỹ tăng nhanh hơn VN, hoặc VN giảm) thường đi kèm áp lực tỷ giá tăng — vốn tìm lợi suất cao hơn ở Mỹ, rút khỏi VND. Lợi suất VN chỉ có dữ liệu từ ~04/2026 (nguồn VIRA mới thêm).</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-yield-diff"></canvas></div>
+            </div>
+
             <!-- THEM (user 2026-10-01): "biểu đồ đo lường cung cầu ngoại tệ" + "biểu đồ tỷ giá
                  chợ đen bán ra và tỷ giá VCB bán ra cùng với gap tỷ giá" — xem renderFxSupplyDemand
                  Chart/renderFxRateGapChart trong app_vimo.js — tự ẩn nếu thiếu dữ liệu nguồn. -->
