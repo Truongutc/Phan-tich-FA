@@ -2696,16 +2696,25 @@ def _add_derived_indicators(raw, trends):
 
 
 def _add_customs_yoy_growth(raw, trends):
-    """Tính export_growth_customs/import_growth_customs (YoY %) từ export_value_monthly/
-    import_value_monthly (Hải quan, theo tháng — xem load_customs_xnk_local() trong
-    fetch_macro_data.py) — CHỈ tính được cho tháng nào có ĐỦ CẢ tháng hiện tại VÀ CÙNG THÁNG năm
-    trước (vd 2026-01 cần có 2025-01). Đặt tên KHÁC export_growth/import_growth (nguồn vietnambiz,
-    chỉ 1 điểm, vẫn giữ nguyên cho Scorecard) để không đụng vào wiring SCORECARD_GROUPS đang dùng
-    key đó — chỉ là chỉ báo THAM KHẢO thêm, tần suất dày hơn nhiều. Phái sinh tính toán, KHÔNG lưu
-    vào vimo_raw.json."""
+    """Tính export_growth_customs/import_growth_customs (YoY %) — xem ghi chú nguồn bên dưới.
+    CHỈ tính được cho tháng nào có ĐỦ CẢ tháng hiện tại VÀ CÙNG THÁNG năm trước (vd 2026-01 cần có
+    2025-01). Đặt tên KHÁC export_growth/import_growth (nguồn vietnambiz, chỉ 1 điểm, vẫn giữ
+    nguyên cho Scorecard) để không đụng vào wiring SCORECARD_GROUPS đang dùng key đó — chỉ là chỉ
+    báo THAM KHẢO thêm, tần suất dày hơn nhiều. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.
+
+    SUA 2026-10-09 (user: "dữ liệu xuất khẩu nhập khẩu bị dừng r à, tôi thấy nó dừng từ tháng 6
+    rồi kìa" — ĐÚNG, kiểm chứng bằng dữ liệu thật) — ĐỔI nguồn từ export_value_monthly/
+    import_value_monthly (Hải quan, xem load_customs_xnk_local() trong fetch_macro_data.py) sang
+    export_monthly_total/import_monthly_total (dulieukinhte.com, tự động). Nguyên nhân: nguồn CŨ
+    đọc file Excel THỦ CÔNG (V01-*.xls/V02-*.xls) mà user phải tự tải về đặt ở CUSTOMS_XNK_FOLDER —
+    file mới nhất ở đó chỉ có dữ liệu tới tháng 6 vì không ai tải file mới hơn, nên chuỗi dừng lại
+    đúng ở đó dù nguồn MỚI đã có tới tháng 9. Đối chiếu 2 nguồn ở các tháng trùng nhau: lệch <0.6%,
+    cùng đo 1 đại lượng (chỉ khác đơn vị tỷ USD vs triệu USD — không ảnh hưởng vì hàm này chỉ tính
+    TỶ LỆ cùng kỳ, không dùng mức tuyệt đối) — an toàn để thay, đồng thời HẾT PHỤ THUỘC thao tác
+    tải file Hải quan thủ công cho riêng phần tăng trưởng này."""
     for src_key, new_key, label in [
-        ("export_value_monthly", "export_growth_customs", "Xuất khẩu YoY (Hải quan, theo tháng)"),
-        ("import_value_monthly", "import_growth_customs", "Nhập khẩu YoY (Hải quan, theo tháng)"),
+        ("export_monthly_total", "export_growth_customs", "Xuất khẩu YoY (Hải quan, theo tháng)"),
+        ("import_monthly_total", "import_growth_customs", "Nhập khẩu YoY (Hải quan, theo tháng)"),
     ]:
         src = raw.get(src_key)
         if not src:
@@ -2725,10 +2734,10 @@ def _add_customs_yoy_growth(raw, trends):
             "group": "trade", "label": label, "unit": "%", "good_direction": "higher",
             "auto_source": "derived",
             "series": points,
-            "note": (f"Suy ra từ {src_key} (Hải quan, xem load_customs_xnk_local() trong "
-                     f"fetch_macro_data.py) bằng cách so cùng tháng năm trước (YoY) — CHỈ tính được "
-                     f"khi có đủ dữ liệu 2 năm liên tiếp cho cùng tháng đó. Phái sinh tính toán, "
-                     f"KHÔNG lưu vào vimo_raw.json — KHÔNG dùng để tính Scorecard (khác "
+            "note": (f"Suy ra từ {src_key} (dulieukinhte.com, tự động, theo tháng) bằng cách so "
+                     f"cùng tháng năm trước (YoY) — CHỈ tính được khi có đủ dữ liệu 2 năm liên "
+                     f"tiếp cho cùng tháng đó. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — "
+                     f"KHÔNG dùng để tính Scorecard (khác "
                      f"{src_key.split('_')[0]}_growth đang dùng cho Scorecard, nguồn vietnambiz)."),
             "impact": "Đối chiếu tần suất dày hơn (theo tháng, có đủ lịch sử) với chỉ báo cùng tên nguồn vietnambiz (thưa hơn).",
         }
@@ -3410,9 +3419,9 @@ def _mom_growth_from_level_series(level_by_period):
 def _add_fx_pressure_mom_indicators(raw, trends):
     """3 chỉ báo MoM phục vụ card "Áp lực Ngoại tệ" (user 2026-10-01, lớp "Cầu"/"Thị trường"):
     usdvnd_growth_mom/yoy (từ usdvnd_monthly_avg) + import_growth_customs_mom/export_growth_
-    customs_mom (từ import_value_monthly/export_value_monthly, cùng nguồn Hải quan đã dùng cho
-    bản YoY ở _add_customs_yoy_growth — chỉ thêm góc MoM, không thay thế). Phái sinh tính toán,
-    KHÔNG lưu vào vimo_raw.json."""
+    customs_mom (từ import_monthly_total/export_monthly_total, CÙNG nguồn dulieukinhte.com đã
+    đổi sang dùng cho bản YoY ở _add_customs_yoy_growth — xem ghi chú SUA 2026-10-09 ở đó — chỉ
+    thêm góc MoM, không thay thế). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."""
     usdvnd = raw.get("usdvnd_monthly_avg")
     if usdvnd:
         by_period = {p["period"]: p["value"] for p in usdvnd["series"] if p.get("value") is not None}
@@ -3438,8 +3447,8 @@ def _add_fx_pressure_mom_indicators(raw, trends):
             print(f"  -> Ty gia USD/VND YoY: {len(yoy_points)} diem")
 
     for src_key, new_key, label in [
-        ("import_value_monthly", "import_growth_customs_mom", "Nhập khẩu — % thay đổi so tháng trước (MoM, Hải quan)"),
-        ("export_value_monthly", "export_growth_customs_mom", "Xuất khẩu — % thay đổi so tháng trước (MoM, Hải quan)"),
+        ("import_monthly_total", "import_growth_customs_mom", "Nhập khẩu — % thay đổi so tháng trước (MoM, Hải quan)"),
+        ("export_monthly_total", "export_growth_customs_mom", "Xuất khẩu — % thay đổi so tháng trước (MoM, Hải quan)"),
     ]:
         src = raw.get(src_key)
         if not src:
@@ -3451,7 +3460,7 @@ def _add_fx_pressure_mom_indicators(raw, trends):
         raw[new_key] = {
             "group": "trade", "label": label, "unit": "%", "good_direction": "higher", "auto_source": "derived",
             "series": points,
-            "note": f"Suy ra từ {src_key} (Hải quan, xem load_customs_xnk_local() trong fetch_macro_data.py) — period/period liên tiếp. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+            "note": f"Suy ra từ {src_key} (dulieukinhte.com, tự động, theo tháng) — period/period liên tiếp. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
             "impact": "Góc nhìn ngắn hạn hơn (tháng liền trước) bổ sung cho bản YoY (export_growth_customs/import_growth_customs) đã có — nhạy với mùa vụ (Tết, cuối năm tài khóa) hơn YoY.",
         }
         trends[new_key] = calc_trend(points, "higher")
