@@ -3890,9 +3890,10 @@ function renderVnReport(report) {
 
     const cons = report.consumption, prod = report.production, inv = report.investment;
     box.innerHTML = `
-      ${card('📋 Tóm tắt tháng ' + report.asOf, para(report.summaryText)
-          + '<p class="ind-source-note">Toàn bộ số liệu lấy từ các nguồn tự động đã dùng trong các tab khác (GSO/NSO, Hải quan qua dulieukinhte.com, VBMA, vietnambiz) — xem từng chỉ báo ở tab "Giám sát chỉ số" để tra nguồn gốc chi tiết.</p>')}
-      ${card('1. Bảng chỉ số kinh tế tháng (13 tháng gần nhất)', vnMonthlyTable(report.monthlyTable)
+      ${card('📋 Tóm tắt & Bảng chỉ số kinh tế tháng ' + report.asOf, para(report.summaryText)
+          + '<p class="ind-source-note">Toàn bộ số liệu lấy từ các nguồn tự động đã dùng trong các tab khác (GSO/NSO, Hải quan qua dulieukinhte.com, VBMA, vietnambiz) — xem từng chỉ báo ở tab "Giám sát chỉ số" để tra nguồn gốc chi tiết.</p>'
+          + '<h4 style="margin:14px 0 6px">1. Bảng chỉ số kinh tế tháng (13 tháng gần nhất)</h4>'
+          + vnMonthlyTable(report.monthlyTable)
           + '<p class="ind-source-note">Giải ngân đầu tư công chỉ công bố ở báo cáo DẠNG THÁNG — các kỳ báo cáo quý (3 lần/năm) không có số này, ô sẽ để trống. Khách quốc tế/CPI MoM/IIP theo ngành là chỉ báo MỚI, chuỗi sẽ dài dần theo mỗi lần cập nhật.</p>')}
       ${card('2. Tiêu dùng & Dịch vụ', `
           <div class="ind-chart" style="height:320px"><canvas id="chart-vn-retail"></canvas></div>
