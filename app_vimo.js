@@ -3927,48 +3927,55 @@ function renderVnReport(report) {
 }
 
 // THEM 2026-10-09 (user: "toàn bộ phần tab báo cáo này tôi muốn lưu được dưới dạng ảnh, bấm vào là
-// copy được nó như 1 tấm ảnh" — dùng html2canvas chụp #vn-report-capture-area (KHÔNG gồm nút bấm
-// này, xem wrapper ở renderVnReport) thành 1 canvas, rồi thử COPY vào clipboard trước (Clipboard
-// API ClipboardItem, Chrome/Edge hỗ trợ tốt); nếu trình duyệt không hỗ trợ/bị chặn quyền thì TỰ
-// ĐỘNG TẢI FILE xuống thay thế, để người dùng vẫn lấy được ảnh bằng cách nào đó.
+// copy được nó như 1 tấm ảnh" — chụp #vn-report-capture-area (KHÔNG gồm nút bấm này, xem wrapper
+// ở renderVnReport), rồi thử COPY vào clipboard trước; nếu trình duyệt không hỗ trợ/bị chặn quyền
+// thì TỰ ĐỘNG TẢI FILE xuống thay thế.
+// SUA 2026-10-09 (user: "ảnh copy lại chất lượng thấp, không có chữ, mờ lắm" — html2canvas (thử
+// trước) tự VIẼ LẠI layout bằng JS nên xử lý SAI với các kiểu CSS hiện đại dự án đang dùng nhiều:
+// màu chữ qua CSS custom property (--text-main/--text-muted ở style.css) và nền card bán trong
+// suốt (rgba) — 2 lỗi html2canvas nổi tiếng (chữ biến mất, nền sai). Đổi sang html-to-image: lấy
+// toàn bộ DOM làm <foreignObject> trong SVG rồi để CHÍNH TRÌNH DUYỆT vẽ (không tự vẽ lại), nên mọi
+// CSS (biến, trong suốt, web font) đều ĐÚNG như hiển thị thật. pixelRatio:2 cho ảnh nét hơn.
 async function saveVnReportAsImage() {
     const area = document.getElementById('vn-report-capture-area');
     const btn = document.getElementById('vn-report-save-btn');
-    if (!area || typeof html2canvas === 'undefined') {
-        alert('Không tải được công cụ xuất ảnh (html2canvas) — kiểm tra kết nối mạng rồi thử lại.');
+    if (!area || typeof htmlToImage === 'undefined') {
+        alert('Không tải được công cụ xuất ảnh (html-to-image) — kiểm tra kết nối mạng rồi thử lại.');
         return;
     }
     const prevText = btn ? btn.innerHTML : '';
     if (btn) { btn.innerHTML = '⏳ Đang tạo ảnh...'; btn.disabled = true; }
     try {
-        const canvas = await html2canvas(area, { backgroundColor: '#0b1220', scale: 1.5, useCORS: true });
-        canvas.toBlob(async (blob) => {
-            if (!blob) {
-                if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
-                return;
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        // skipFonts:true — tránh html-to-image cố INLINE font Google Fonts (bị CORS chặn đọc
+        // cssRules của stylesheet cross-origin, chỉ log lỗi vô hại nhưng gây chậm/ồn console) —
+        // không cần nhúng font vào ảnh, trình duyệt đã render chữ đúng font trước khi chụp rồi.
+        const blob = await htmlToImage.toBlob(area, { backgroundColor: '#0b1220', pixelRatio: 2, skipFonts: true });
+        if (!blob) {
+            if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+            return;
+        }
+        let copied = false;
+        try {
+            if (navigator.clipboard && window.ClipboardItem) {
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                copied = true;
             }
-            let copied = false;
-            try {
-                if (navigator.clipboard && window.ClipboardItem) {
-                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                    copied = true;
-                }
-            } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — rơi xuống tải file */ }
-            if (!copied) {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `bao-cao-vi-mo-${new Date().toISOString().slice(0, 10)}.png`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-            }
-            if (btn) {
-                btn.innerHTML = copied ? '✅ Đã copy ảnh vào clipboard!' : '✅ Trình duyệt không hỗ trợ copy — đã tự tải file ảnh!';
-                setTimeout(() => { btn.innerHTML = prevText; btn.disabled = false; }, 2500);
-            }
-        }, 'image/png');
+        } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — rơi xuống tải file */ }
+        if (!copied) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bao-cao-vi-mo-${new Date().toISOString().slice(0, 10)}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+        if (btn) {
+            btn.innerHTML = copied ? '✅ Đã copy ảnh vào clipboard!' : '✅ Trình duyệt không hỗ trợ copy — đã tự tải file ảnh!';
+            setTimeout(() => { btn.innerHTML = prevText; btn.disabled = false; }, 2500);
+        }
     } catch (e) {
         console.error('Lỗi xuất ảnh báo cáo:', e);
         if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
