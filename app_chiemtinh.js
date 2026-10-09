@@ -67,20 +67,6 @@ function _tradingSessionsUntil(series, fromIdx, targetIdx) {
     return n;
 }
 
-// SUA 2026-10-09 (user: "ghi dữ liệu cập nhật ngày nào nhé, vì không lại nay ngày 9-10 còn chuẩn
-// bị tăng thì không đúng đâu" — astro.json CẬP NHẬT HÀNG TUẦN (xem comment đầu file), series[0]
-// chỉ là "hôm nay" TẠI LÚC TẠO FILE, có thể đã CŨ cả tuần — code trước đó LUÔN coi series[0] là
-// hôm nay thật, sai hẳn khi file chưa kịp cập nhật lại. Tìm đúng Ô ứng với NGÀY THẬT hiện tại
-// (máy người xem) theo SỐ NGÀY LỆCH so với series[0] — không so chuỗi ngày trực tiếp (dễ lệch 1 ô
-// nếu thiếu/thừa ngày) — rồi CHẶN trong phạm vi hợp lệ của series.
-function _findTodayIdx(series) {
-    const first = new Date(series[0].date + 'T00:00:00Z');
-    const today = new Date();
-    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-    const diffDays = Math.round((todayUTC - first) / 86400000);
-    return Math.min(Math.max(diffDays, 0), series.length - 1);
-}
-
 function _computeTurningPoints(series) {
     const officialLen = Math.min(series.length, PRESSURE_DISPLAY_DAYS + 1);
     const officialScores = series.slice(0, officialLen).map(p => p.score);
@@ -98,38 +84,29 @@ function renderVerdictBanner(verdict, series) {
     if (!banner || !verdict) return;
     const labelEl = document.getElementById('verdict-label');
     const detailEl = document.getElementById('verdict-detail');
+    const titleEl = document.getElementById('verdict-card-title');
+
+    // SUA 2026-10-09 (user: "tôi có cần bạn cập nhật hiện tại đâu, khi tôi chạy action thì mới
+    // update chứ — giờ bạn lại ghi dữ liệu gốc 2-10 xong lại đang chuẩn bị giảm [theo ngày thật
+    // 9-10], nó sai lè ra" — bản sửa TRƯỚC đó lỡ neo theo NGÀY THẬT của máy người xem (new Date()),
+    // nhưng trang này KHÔNG tự cập nhật theo thời gian thực — chỉ cập nhật khi chạy GitHub Action
+    // (hàng tuần). Ý user ĐÚNG là: mọi thứ (đỉnh/đáy, điểm hôm nay...) PHẢI neo theo series[0] —
+    // đúng NGÀY DỮ LIỆU ĐƯỢC TÍNH (ngày Action chạy), không phải ngày thật — chỉ cần NÊU RÕ ngày đó
+    // ngay ở tiêu đề để người đọc tự biết dữ liệu "hôm nay" trong card này là hôm nay CỦA LẦN CHẠY
+    // ACTION gần nhất, không phải ngày đang xem trang.
+    if (titleEl && series && series.length) {
+        titleEl.textContent = `🧭 Kết luận Tổng thể — dữ liệu cập nhật ${_fmtDate(series[0].date)}`;
+    }
 
     let label = verdict.label, colorKey = verdict.colorKey, detail = verdict.detail;
     if (series && series.length > 1) {
-        const todayIdx = _findTodayIdx(series);
-        // SUA 2026-10-09 (user: "ghi dữ liệu cập nhật ngày nào, vì không lại nay 9-10 còn chuẩn bị
-        // tăng thì không đúng" — câu "Điểm áp lực/thuận lợi hôm nay: X" của verdict.detail (Python)
-        // CŨNG tính từ series[0] (ngày TẠO FILE, có thể cũ cả tuần), không phải hôm nay thật — tính
-        // LẠI đúng theo todayIdx ở đây thay vì tin thẳng câu Python, để nhất quán với nhãn đỉnh/đáy
-        // bên dưới. Giữ lại đoạn giải thích TĨNH (không đổi theo ngày) của verdict.detail, cắt từ
-        // mốc "Điểm dương" trở đi.
-        const currentScore = series[todayIdx].score;
-        const nearTerm = series.slice(todayIdx + 1, todayIdx + 11);
-        const nearTermAvg = nearTerm.length ? nearTerm.reduce((a, p) => a + p.score, 0) / nearTerm.length : currentScore;
-        const trend = nearTermAvg - currentScore;
-        const fmtSigned = (v) => (v >= 0 ? '+' : '') + v.toFixed(2);
-        const staticTailIdx = verdict.detail.indexOf('Điểm dương');
-        const staticTail = staticTailIdx >= 0 ? verdict.detail.slice(staticTailIdx) : verdict.detail;
-        const scoreNote = `Điểm áp lực/thuận lợi hôm nay (${_fmtDate(series[todayIdx].date)}): ${fmtSigned(currentScore)} · `
-            + `Trung bình 10 ngày tới: ${fmtSigned(nearTermAvg)} (${trend > 0 ? 'đang cải thiện' : trend < 0 ? 'đang xấu đi' : 'ổn định'} ${fmtSigned(Math.abs(trend))} điểm). `;
-
-        const staleDays = todayIdx; // = so ngay lech so voi series[0] (ngay file duoc tao)
-        const staleNote = staleDays > 0
-            ? `⚠ Dữ liệu chiêm tinh gốc được tính từ ${_fmtDate(series[0].date)} (${staleDays} ngày trước, file cập nhật hàng tuần) — đã tự quy đổi mốc "hôm nay" cho đúng ngày thật. `
-            : '';
-
         const { allTurningPoints } = _computeTurningPoints(series);
-        const nextTp = allTurningPoints.find(tp => tp.idx > todayIdx);
-        let turnNote = '';
+        const nextTp = allTurningPoints.find(tp => tp.idx > 0);
         if (nextTp) {
-            const sessions = _tradingSessionsUntil(series, todayIdx, nextTp.idx);
+            const sessions = _tradingSessionsUntil(series, 0, nextTp.idx);
             const dateLabel = _fmtDate(series[nextTp.idx].date);
             const near = sessions <= NEAR_TURN_SESSIONS;
+            let turnNote;
             if (nextTp.type === 'peak') {
                 label = near ? '🔻 CHUẨN BỊ GIẢM (sắp tạo đỉnh)' : '✅ Đang THUẬN LỢI';
                 colorKey = near ? 'reversal_down' : 'favorable';
@@ -139,8 +116,8 @@ function renderVerdictBanner(verdict, series) {
                 colorKey = near ? 'reversal_up' : 'risk';
                 turnNote = `Dự kiến tạo ĐÁY vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
             }
+            detail = turnNote + verdict.detail;
         }
-        detail = staleNote + turnNote + scoreNote + staticTail;
     }
 
     banner.className = `astro-verdict-banner ${colorKey}`;
