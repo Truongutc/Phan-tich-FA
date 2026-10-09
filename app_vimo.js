@@ -3623,6 +3623,15 @@ function vnMonthlyTable(t) {
         <tbody>${rows}</tbody></table></div>`;
 }
 
+// SUA 2026-10-09 (user: "có chữ rồi nhưng chất lượng điểm ảnh quá thấp, nhòe lắm" — pixelRatio:2
+// của html-to-image chỉ nhân độ phân giải phần TEXT/SVG vẽ bởi trình duyệt, còn các <canvas> của
+// Chart.js bên trong vẫn chỉ có đúng số PIXEL THẬT đã render ở màn hình màn hình 1x (vd canvas
+// rộng 649px) — html-to-image chỉ PHÓNG TO ảnh đã có, không vẽ lại canvas ở độ phân giải cao hơn,
+// nên riêng phần biểu đồ bị nhòe khi phóng to. Ép TẤT CẢ chart trong tab Báo cáo tự vẽ ở
+// devicePixelRatio cao hơn màn hình thật (không phụ thuộc màn hình người dùng là 1x hay 2x) để
+// canvas gốc đã đủ nét ngay từ đầu, không chỉ riêng lúc xuất ảnh.
+const VN_CHART_DEFAULTS = { ...CHART_DEFAULTS, devicePixelRatio: 2 };
+
 function vnRetailChart(c) {
     const canvas = document.getElementById('chart-vn-retail');
     if (!canvas || !c || !c.periods.length) return;
@@ -3644,7 +3653,7 @@ function vnRetailChart(c) {
               datalabels: { ..._endpointAboveLabelConfig(1, '%'), color: '#facc15' } },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
@@ -3681,7 +3690,7 @@ function vnCpiGroupChart(c) {
               datalabels: { ..._endpointAboveLabelConfig(2, '%'), color: '#22d3ee' } },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
@@ -3711,7 +3720,7 @@ function vnTradeChart(c) {
             { type: 'line', label: 'Nhập khẩu (tỷ USD)', data: c.import, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 // SUA 2026-10-09 (xem ghi chú offset:true ở vnRetailChart).
@@ -3738,7 +3747,7 @@ function vnIipChart(iipOverall, sector) {
             { label: 'Khai khoáng', data: lookup(sector.periods, sector.mining), borderColor: '#ef4444', borderWidth: 2, pointRadius: 3, spanGaps: true },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
@@ -3758,7 +3767,7 @@ function vnPmiChart(canvasId, pmi) {
             { label: 'Ngưỡng 50 (mở rộng/thu hẹp)', data: pmi.periods.map(() => 50), borderColor: 'rgba(255,255,255,0.35)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0 },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 } },
@@ -3795,7 +3804,7 @@ function vnYearCompareChart(canvasId, chart, unitLabel) {
             return ds;
         }) },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } },
@@ -3818,7 +3827,7 @@ function vnFdiDependencyChart(c) {
             { label: 'Tỷ trọng FDI trong Nhập khẩu (%)', data: c.import_fdi_share, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
@@ -3841,7 +3850,7 @@ function vnFdiBreakdownChart(c) {
             { label: 'Điều chỉnh (dự án cũ tăng vốn)', data: c.adjusted, backgroundColor: '#f59e0b', stack: 'fdi' },
         ] },
         options: {
-            ...CHART_DEFAULTS,
+            ...VN_CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, offset: true, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
