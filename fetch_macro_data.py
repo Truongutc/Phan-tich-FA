@@ -1003,6 +1003,66 @@ def fetch_nso_gdp_structure_report():
             out["retail_sales_mom_pct"] = _vn_number(m_retail_month.group(2))
             out["retail_sales_yoy_pct"] = _vn_number(m_retail_month.group(3))
 
+        # Khách quốc tế đến Việt Nam, THEO THÁNG + lũy kế (triệu lượt người) — user (2026-10-09,
+        # tab "Báo cáo" kiểu DNL Capital) cần chỉ báo này cho phần Tiêu dùng/Dịch vụ. Câu tháng có
+        # dạng "...trong tháng {tên tháng}[chú thích số]? ước đạt X triệu lượt người, tăng/giảm Y%
+        # so với tháng trước nhưng/và tăng/giảm Z% so với cùng kỳ năm trước." — không cần parse tên
+        # tháng chữ, suy kỳ báo cáo từ câu LŨY KẾ đi kèm ngay sau (giống retail_period ở trên).
+        m_visitors_cum = re.search(
+            r"Tính chung (\S+(?:\s+một)?) tháng (?:đầu )?năm (\d{4}), khách quốc tế đến Việt Nam đạt "
+            r"([\d.,]+) triệu lượt người, tăng ([\d.,\-]+)% so với cùng kỳ năm trước", text)
+        m_visitors_month = re.search(
+            r"Khách quốc tế đến Việt Nam trong tháng \S+\s*(?:\[\d+\]\s*)?ước đạt ([\d.,]+) triệu "
+            r"lượt người", text)
+        visitors_period = None
+        if m_visitors_cum:
+            vmonth = _VN_MONTH_COUNT_WORDS.get(m_visitors_cum.group(1).lower())
+            if vmonth:
+                visitors_period = f"{int(m_visitors_cum.group(2)):04d}-{vmonth:02d}"
+                out["international_visitors_cumulative_period"] = visitors_period
+                out["international_visitors_cumulative"] = _vn_number(m_visitors_cum.group(3))
+                out["international_visitors_cumulative_yoy_pct"] = _vn_number(m_visitors_cum.group(4))
+        if m_visitors_month and (visitors_period or out.get("public_investment_disbursement_period")
+                                   or out.get("fdi_disbursed_period")):
+            out["international_visitors_period"] = (
+                visitors_period or out.get("public_investment_disbursement_period")
+                or out.get("fdi_disbursed_period"))
+            out["international_visitors_monthly"] = _vn_number(m_visitors_month.group(1))
+
+        # IIP (Chỉ số sản xuất công nghiệp) LŨY KẾ theo 4 NGÀNH lớn (YoY) — bổ sung cho iip_growth
+        # (vốn chỉ là số TỔNG chung). Câu cố định "Tính chung {N} tháng năm {YYYY}, IIP ước tăng
+        # X% so với cùng kỳ năm trước, trong đó, ngành chế biến, chế tạo tăng A%; ngành sản xuất và
+        # phân phối điện tăng B%; ngành cung cấp nước, hoạt động quản lý và xử lý rác thải, nước
+        # thải tăng C%; ngành khai khoáng tăng D%." — thứ tự 4 ngành CỐ ĐỊNH theo mẫu câu GSO dùng
+        # mọi kỳ (verify tháng 9/2026: 12,9/10,6/9,3/8,0%). Mỗi tháng chạy sẽ cộng thêm 1 điểm mới
+        # vào history (lũy kế, KHÔNG phải tăng trưởng riêng từng tháng).
+        m_iip_sector = re.search(
+            r"Tính chung (\S+(?:\s+một)?) tháng (?:đầu )?năm (\d{4}), IIP ước tăng [\d.,\-]+% so với "
+            r"cùng kỳ năm trước, trong đó,? ngành chế biến, chế tạo tăng ([\d.,\-]+)%; ngành sản xuất "
+            r"và phân phối điện tăng ([\d.,\-]+)%; ngành cung cấp nước,? hoạt động quản lý và xử lý "
+            r"rác thải,? nước thải tăng ([\d.,\-]+)%; ngành khai khoáng tăng ([\d.,\-]+)%", text)
+        if m_iip_sector:
+            imonth = _VN_MONTH_COUNT_WORDS.get(m_iip_sector.group(1).lower())
+            if imonth:
+                out["iip_sector_period"] = f"{int(m_iip_sector.group(2)):04d}-{imonth:02d}"
+                out["iip_manufacturing_ytd_yoy"] = _vn_number(m_iip_sector.group(3))
+                out["iip_electricity_ytd_yoy"] = _vn_number(m_iip_sector.group(4))
+                out["iip_water_waste_ytd_yoy"] = _vn_number(m_iip_sector.group(5))
+                out["iip_mining_ytd_yoy"] = _vn_number(m_iip_sector.group(6))
+
+        # CPI so với THÁNG TRƯỚC (MoM) — khác cpi_yoy đã có (so cùng kỳ năm trước). Câu cố định
+        # "Chỉ số giá tiêu dùng (CPI) tháng {tên tháng} tăng/giảm X% so với tháng trước; ...". Suy
+        # kỳ báo cáo từ các period đã trích được ở trên (giống cách m_iip dự phòng làm).
+        m_cpi_mom = re.search(
+            r"Chỉ số giá tiêu dùng \(CPI\) tháng \S+ (tăng|giảm) ([\d.,]+)% so với tháng trước", text)
+        if m_cpi_mom:
+            sign = -1 if m_cpi_mom.group(1) == "giảm" else 1
+            cpi_mom_period = (out.get("public_investment_disbursement_period")
+                                or out.get("fdi_disbursed_period") or visitors_period)
+            if cpi_mom_period:
+                out["cpi_mom_period"] = cpi_mom_period
+                out["cpi_mom_pct"] = round(sign * _vn_number(m_cpi_mom.group(2)), 4)
+
         return out
     except Exception as e:
         print(f"  [WARN] NSO (VN) cơ cấu GDP/đầu tư thất bại: {e}")
@@ -3269,6 +3329,73 @@ def update_vimo_raw():
         _append_point(raw, "retail_sales_growth", gdp_struct["retail_sales_period"],
                        gdp_struct["retail_sales_yoy_pct"], gdp_struct["source_url"])
         print(f"  -> Tổng mức bán lẻ {gdp_struct['retail_sales_period']}: {gdp_struct['retail_sales_value_ty']} nghìn tỷ đồng (YoY {gdp_struct['retail_sales_yoy_pct']}%)")
+
+    # Khách quốc tế đến Việt Nam (triệu lượt người, theo tháng + lũy kế) — bổ sung 2026-10-09 cho
+    # tab "Báo cáo" kiểu DNL Capital (xem ghi chú tại chỗ trích trong fetch_nso_gdp_structure_report()).
+    if gdp_struct.get("international_visitors_period"):
+        if "international_visitors_monthly" not in raw:
+            raw["international_visitors_monthly"] = {
+                "group": "growth", "label": "Khách quốc tế đến Việt Nam (theo tháng)",
+                "unit": "triệu lượt người", "good_direction": "higher", "auto_source": "nso_scrape",
+                "note": ("Trích từ báo cáo tháng NSO (nso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/), "
+                         "GIÁ TRỊ CỦA RIÊNG THÁNG ĐÓ (không phải lũy kế)."),
+                "impact": "Đo trực tiếp phục hồi ngành du lịch — tác động tới dịch vụ lưu trú/ăn uống/hàng không, một phần của cấu phần tiêu dùng dịch vụ.",
+                "series": [],
+            }
+        _append_point(raw, "international_visitors_monthly", gdp_struct["international_visitors_period"],
+                       gdp_struct["international_visitors_monthly"], gdp_struct["source_url"])
+        print(f"  -> Khách quốc tế {gdp_struct['international_visitors_period']}: {gdp_struct['international_visitors_monthly']} triệu lượt người")
+    if gdp_struct.get("international_visitors_cumulative_period"):
+        if "international_visitors_cumulative" not in raw:
+            raw["international_visitors_cumulative"] = {
+                "group": "growth", "label": "Khách quốc tế đến Việt Nam (lũy kế từ đầu năm)",
+                "unit": "triệu lượt người", "good_direction": "higher", "auto_source": "nso_scrape",
+                "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1).",
+                "impact": "Đo trực tiếp phục hồi ngành du lịch tính từ đầu năm.",
+                "series": [],
+            }
+        _append_point(raw, "international_visitors_cumulative", gdp_struct["international_visitors_cumulative_period"],
+                       gdp_struct["international_visitors_cumulative"], gdp_struct["source_url"])
+
+    # IIP lũy kế theo 4 NGÀNH lớn (YoY) — bổ sung 2026-10-09, xem ghi chú tại chỗ trích.
+    if gdp_struct.get("iip_sector_period"):
+        _IIP_SECTOR_META = {
+            "iip_manufacturing_ytd_yoy": "IIP — ngành chế biến, chế tạo (lũy kế YoY, NSO)",
+            "iip_electricity_ytd_yoy": "IIP — ngành sản xuất và phân phối điện (lũy kế YoY, NSO)",
+            "iip_water_waste_ytd_yoy": "IIP — ngành cung cấp nước, xử lý rác thải (lũy kế YoY, NSO)",
+            "iip_mining_ytd_yoy": "IIP — ngành khai khoáng (lũy kế YoY, NSO)",
+        }
+        p = gdp_struct["iip_sector_period"]
+        src = gdp_struct["source_url"]
+        for key, label in _IIP_SECTOR_META.items():
+            if key not in gdp_struct:
+                continue
+            if key not in raw:
+                raw[key] = {
+                    "group": "growth", "label": label, "unit": "%", "good_direction": "higher",
+                    "auto_source": "nso_scrape", "series": [],
+                    "note": ("Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm so với cùng kỳ "
+                             "năm trước (KHÔNG PHẢI tăng trưởng riêng từng tháng) — chuỗi chỉ tích "
+                             "lũy dần từ tháng bắt đầu scrape (2026-10), KHÔNG lùi được lịch sử xa hơn."),
+                    "impact": "Phân tách chỉ số sản xuất công nghiệp chung (iip_growth) theo ngành — giúp thấy động lực tăng trưởng công nghiệp đến từ ngành nào.",
+                }
+            _append_point(raw, key, p, gdp_struct[key], src)
+        print(f"  -> IIP theo ngành {p}: chế biến/điện/nước/khai khoáng = "
+              f"{gdp_struct.get('iip_manufacturing_ytd_yoy')}/{gdp_struct.get('iip_electricity_ytd_yoy')}/"
+              f"{gdp_struct.get('iip_water_waste_ytd_yoy')}/{gdp_struct.get('iip_mining_ytd_yoy')}%")
+
+    # CPI so với tháng trước (MoM) — bổ sung 2026-10-09, xem ghi chú tại chỗ trích.
+    if gdp_struct.get("cpi_mom_period"):
+        if "cpi_mom" not in raw:
+            raw["cpi_mom"] = {
+                "group": "inflation", "label": "CPI so với tháng trước (MoM)",
+                "unit": "%", "good_direction": "none", "auto_source": "nso_scrape",
+                "note": "Trích từ báo cáo tháng NSO — CPI so với THÁNG TRƯỚC, khác cpi_yoy (so cùng kỳ năm trước).",
+                "impact": "Đo momentum lạm phát NGẮN HẠN (1 tháng) — khác cpi_yoy phản ánh mức giá tích lũy 12 tháng.",
+                "series": [],
+            }
+        _append_point(raw, "cpi_mom", gdp_struct["cpi_mom_period"], gdp_struct["cpi_mom_pct"], gdp_struct["source_url"])
+        print(f"  -> CPI MoM {gdp_struct['cpi_mom_period']}: {gdp_struct['cpi_mom_pct']}%")
 
     # GDP theo CẤU PHẦN SỬ DỤNG (tiêu dùng tư nhân/chính phủ, đầu tư) — user (2026-08-08): "GDP
     # tăng nhờ cái gì? Tăng trưởng đến từ tiêu dùng nội địa, đầu tư, xuất khẩu hay chính phủ?" —

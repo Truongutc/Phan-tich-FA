@@ -2272,6 +2272,8 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         }
     import us_macro_analysis
     out["usMacro"] = us_macro_analysis.build_us_macro(raw)
+    import vn_report_tab
+    out["vnReport"] = vn_report_tab.build_vn_report(raw)
     json_path = os.path.join(PROJECT_ROOT, "data", "vimo.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)

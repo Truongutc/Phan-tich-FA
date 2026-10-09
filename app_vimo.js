@@ -80,7 +80,7 @@ function initVimoTabs() {
     const buttons = document.querySelectorAll('[data-tab-btn]');
     if (!buttons.length) return;
     const show = (tab) => {
-        const valid = [...buttons].some(b => b.dataset.tabBtn === tab) ? tab : 'overview';
+        const valid = [...buttons].some(b => b.dataset.tabBtn === tab) ? tab : 'report';
         buttons.forEach(b => b.classList.toggle('active', b.dataset.tabBtn === valid));
         document.querySelectorAll('[data-tab]').forEach(el => {
             el.classList.toggle('vimo-tab-hidden', el.dataset.tab !== valid);
@@ -97,7 +97,7 @@ function initVimoTabs() {
     };
     buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.tabBtn)));
     const fromHash = (location.hash.match(/tab=([a-z]+)/) || [])[1];
-    show(fromHash || 'overview');
+    show(fromHash || 'report');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderDepositRateChart(data.indicators);
     renderDepositRateCakeChart(data.indicators);
     renderUsMacro(data.usMacro);
+    renderVnReport(data.vnReport);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxRateGapChart(data.indicators);
@@ -3504,6 +3505,25 @@ function _renderMacroPctChart(canvasId, labels, series, monthsShown) {
                         // dùng CHUNG màu + kiểu nét đứt đã ghi rõ trong phụ đề phía trên biểu đồ,
                         // liệt kê thêm ở đây sẽ nhân đôi số dòng chú giải không cần thiết.
                         filter: (item) => !item.text.includes('(bình quân lũy kế)') },
+                    // SUA 2026-10-09 (user: "tôi tắt hết legend rồi mà vẫn còn nét đứt" — đường
+                    // "(bình quân lũy kế)" là 1 DATASET RIÊNG, không có mục chú giải (bị filter ở
+                    // trên) nên click tắt đường nét liền KHÔNG tự ẩn đường nét đứt cùng cặp theo
+                    // mặc định của Chart.js — ghi đè onClick để ẩn/hiện CẢ 2 dataset cùng lúc.
+                    onClick: (e, legendItem, legend) => {
+                        const chart = legend.chart;
+                        const index = legendItem.datasetIndex;
+                        const pairLabel = `${chart.data.datasets[index].label} (bình quân lũy kế)`;
+                        const pairIndex = chart.data.datasets.findIndex(d => d.label === pairLabel);
+                        if (chart.isDatasetVisible(index)) {
+                            chart.hide(index);
+                            legendItem.hidden = true;
+                            if (pairIndex >= 0) chart.hide(pairIndex);
+                        } else {
+                            chart.show(index);
+                            legendItem.hidden = false;
+                            if (pairIndex >= 0) chart.show(pairIndex);
+                        }
+                    },
                 },
             },
             scales: {
@@ -3561,4 +3581,214 @@ function _renderMacroAbsChart(canvasId, labels, series) {
         plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// THEM 2026-10-09: tab "Báo cáo" — clone layout/nội dung báo cáo tháng kiểu DNL Capital (user gửi
+// 4 ảnh mẫu). Dữ liệu + toàn bộ đoạn phân tích đến từ vn_report_tab.build_vn_report() (RULE-BASED,
+// không AI viết văn) — hàm renderVnReport() ở đây CHỈ dựng HTML/chart, không tự suy ra số liệu mới.
+// ══════════════════════════════════════════════════════════════════════════
+function vnMonthlyTable(t) {
+    if (!t || !t.rows || !t.rows.length) return '';
+    const fmtv = v => (v === null || v === undefined) ? '—' : v;
+    const head = t.periods.map(p => `<th>${p}</th>`).join('');
+    const rows = t.rows.map(r => `<tr>
+        <th style="text-align:left;white-space:nowrap">${r.label} <span class="ind-source-note">(${r.unit})</span></th>
+        ${r.values.map(v => `<td>${fmtv(v)}</td>`).join('')}
+    </tr>`).join('');
+    return `<div class="monitoring-table-scroll" style="overflow-x:auto"><table class="monitoring-table">
+        <thead><tr><th style="text-align:left">Chỉ báo</th>${head}</tr></thead>
+        <tbody>${rows}</tbody></table></div>`;
+}
+
+function vnRetailChart(c) {
+    const canvas = document.getElementById('chart-vn-retail');
+    if (!canvas || !c || !c.periods.length) return;
+    chartInstances.push(new Chart(canvas, {
+        type: 'bar',
+        data: { labels: c.periods, datasets: [
+            { label: 'Bán lẻ hàng hóa', data: c.goods, backgroundColor: '#60a5fa', stack: 'retail' },
+            { label: 'Dịch vụ lưu trú, ăn uống', data: c.hospitality, backgroundColor: '#f59e0b', stack: 'retail' },
+            { label: 'Du lịch lữ hành', data: c.travel, backgroundColor: '#a78bfa', stack: 'retail' },
+            { label: 'Dịch vụ khác', data: c.other, backgroundColor: '#94a3b8', stack: 'retail' },
+            { type: 'line', label: 'Tăng trưởng THỰC (YoY, trục phải)', data: c.real_yoy, yAxisID: 'y1',
+              borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Nghìn tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: '% YoY (thực)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
+function vnCpiGroupChart(c) {
+    const canvas = document.getElementById('chart-vn-cpi-group');
+    if (!canvas || !c || !c.periods.length) return;
+    const meta = [['food', 'Thực phẩm', '#f59e0b'], ['housing_utilities', 'Nhà, điện, nước', '#60a5fa'],
+                  ['healthcare', 'Y tế', '#10b981'], ['transport', 'Vận tải', '#ef4444'], ['other', 'Khác', '#94a3b8']];
+    chartInstances.push(new Chart(canvas, {
+        type: 'bar',
+        data: { labels: c.periods, datasets: [
+            ...meta.map(([k, label, color]) => ({ label, data: c[k], backgroundColor: color, stack: 'cpi' })),
+            { type: 'line', label: 'CPI YoY (tổng, %)', data: c.cpi_yoy, borderColor: '#fff', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp / CPI YoY', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
+function vnTradeChart(c) {
+    const canvas = document.getElementById('chart-vn-trade');
+    if (!canvas || !c || !c.periods.length) return;
+    chartInstances.push(new Chart(canvas, {
+        type: 'bar',
+        data: { labels: c.periods, datasets: [
+            { label: 'Cán cân thương mại (tỷ USD)', data: c.balance,
+              backgroundColor: c.balance.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(16,185,129,0.55)' : 'rgba(239,68,68,0.55)')), order: 3 },
+            { type: 'line', label: 'Xuất khẩu (tỷ USD)', data: c.export, borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
+            { type: 'line', label: 'Nhập khẩu (tỷ USD)', data: c.import, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
+function vnIipChart(iipOverall, sector) {
+    const canvas = document.getElementById('chart-vn-iip');
+    if (!canvas || !iipOverall || !sector) return;
+    const periods = [...new Set([...iipOverall.periods, ...sector.periods])].sort();
+    const lookup = (per, val) => { const m = {}; per.forEach((p, i) => { m[p] = val[i]; }); return periods.map(p => (p in m ? m[p] : null)); };
+    chartInstances.push(new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets: [
+            { label: 'IIP tổng (YoY, lũy kế)', data: lookup(iipOverall.periods, iipOverall.values), borderColor: '#e5e7eb', borderWidth: 2, pointRadius: 2, tension: 0.2, spanGaps: true },
+            { label: 'Chế biến, chế tạo', data: lookup(sector.periods, sector.manufacturing), borderColor: '#60a5fa', borderWidth: 2, pointRadius: 3, spanGaps: true },
+            { label: 'SX & phân phối điện', data: lookup(sector.periods, sector.electricity), borderColor: '#f59e0b', borderWidth: 2, pointRadius: 3, spanGaps: true },
+            { label: 'Cấp nước, xử lý rác thải', data: lookup(sector.periods, sector.water_waste), borderColor: '#10b981', borderWidth: 2, pointRadius: 3, spanGaps: true },
+            { label: 'Khai khoáng', data: lookup(sector.periods, sector.mining), borderColor: '#ef4444', borderWidth: 2, pointRadius: 3, spanGaps: true },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '% YoY', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
+function vnPmiChart(canvasId, pmi) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !pmi || !pmi.periods.length) return;
+    chartInstances.push(new Chart(canvas, {
+        type: 'line',
+        data: { labels: pmi.periods, datasets: [
+            { label: 'PMI sản xuất', data: pmi.values, borderColor: '#60a5fa', backgroundColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+            { label: 'Ngưỡng 50 (mở rộng/thu hẹp)', data: pmi.periods.map(() => 50), borderColor: 'rgba(255,255,255,0.35)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0 },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 14 } },
+                y: CHART_DEFAULTS.scales.y,
+            },
+        },
+    }));
+}
+
+// So sánh quỹ đạo theo THÁNG (1-12) giữa các năm cho các chỉ báo lũy kế YTD (tín dụng/huy động/
+// FDI đăng ký/giải ngân đầu tư công) — xem _year_compare_chart() trong vn_report_tab.py.
+function vnYearCompareChart(canvasId, chart, unitLabel) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !chart) return;
+    const years = Object.keys(chart.series);
+    if (!years.length) return;
+    const palette = ['#60a5fa', '#f59e0b', '#a78bfa'];
+    chartInstances.push(new Chart(canvas, {
+        type: 'line',
+        data: { labels: chart.months.map(m => `T${m}`), datasets: years.map((y, i) => ({
+            label: y, data: chart.series[y], borderColor: palette[i % palette.length], borderWidth: 2, pointRadius: 2, spanGaps: true })) },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: unitLabel, color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
+function renderVnReport(report) {
+    const box = document.getElementById('vn-report-container');
+    if (!box || !report) return;
+    box.style.display = '';
+    const card = (title, body) => `<div class="card margin-top-20"><h3 class="border-blue" style="margin:0">${title}</h3>${body}</div>`;
+    const para = txt => `<p style="margin:6px 0;line-height:1.6">${txt}</p>`;
+
+    const cons = report.consumption, prod = report.production, inv = report.investment;
+    box.innerHTML = `
+      ${card('📋 Tóm tắt tháng ' + report.asOf, para(report.summaryText)
+          + '<p class="ind-source-note">Toàn bộ số liệu lấy từ các nguồn tự động đã dùng trong các tab khác (GSO/NSO, Hải quan qua dulieukinhte.com, VBMA, vietnambiz) — xem từng chỉ báo ở tab "Giám sát chỉ số" để tra nguồn gốc chi tiết.</p>')}
+      ${card('1. Bảng chỉ số kinh tế tháng (13 tháng gần nhất)', vnMonthlyTable(report.monthlyTable)
+          + '<p class="ind-source-note">Giải ngân đầu tư công chỉ công bố ở báo cáo DẠNG THÁNG — các kỳ báo cáo quý (3 lần/năm) không có số này, ô sẽ để trống. Khách quốc tế/CPI MoM/IIP theo ngành là chỉ báo MỚI, chuỗi sẽ dài dần theo mỗi lần cập nhật.</p>')}
+      ${card('2. Tiêu dùng & Dịch vụ', `
+          <div class="ind-chart" style="height:320px"><canvas id="chart-vn-retail"></canvas></div>
+          ${para(cons.paragraphs[0])}
+          <div class="ind-chart" style="height:320px;margin-top:14px"><canvas id="chart-vn-cpi-group"></canvas></div>
+          ${para(cons.paragraphs[1])}
+          ${para(cons.paragraphs[2])}
+          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo nhóm: Hải quan/GSO qua dulieukinhte.com và VBMA (đóng góp điểm % đã có trọng số thật). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ).</p>`)}
+      ${card('3. Sản xuất & Thương mại', `
+          <div class="ind-chart" style="height:320px"><canvas id="chart-vn-trade"></canvas></div>
+          ${para(prod.paragraphs[0])}
+          <div class="ind-chart" style="height:300px;margin-top:14px"><canvas id="chart-vn-iip"></canvas></div>
+          ${para(prod.paragraphs[1])}
+          <div class="ind-chart" style="height:260px;margin-top:14px"><canvas id="chart-vn-pmi"></canvas></div>
+          ${para(prod.paragraphs[2])}
+          <p class="ind-source-note">IIP theo 4 ngành là chỉ báo MỚI (trích từ báo cáo tháng NSO) — chuỗi còn ngắn, sẽ dài dần theo thời gian, KHÔNG lùi được lịch sử xa hơn.</p>`)}
+      ${card('4. Đầu tư, Tín dụng & FDI', `
+          <div class="ind-chart" style="height:260px"><canvas id="chart-vn-pmi-long"></canvas></div>
+          ${para(inv.paragraphs[0])}
+          <div class="bank-chart-grid-2" style="margin-top:14px">
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-public-inv"></canvas></div><p class="ind-source-note" style="text-align:center">Giải ngân đầu tư công (lũy kế, % kế hoạch năm)</p></div>
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký (lũy kế, tỷ USD — 1 cột tổng, chưa tách cấp mới/điều chỉnh/góp vốn)</p></div>
+          </div>
+          <div class="bank-chart-grid-2" style="margin-top:14px">
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-credit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng tín dụng (lũy kế YTD, %)</p></div>
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-deposit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng huy động vốn (lũy kế YTD, %)</p></div>
+          </div>
+          ${para(inv.paragraphs[1])}
+          <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng.</p>`)}
+    `;
+
+    vnRetailChart(cons.retailChart);
+    vnCpiGroupChart(cons.cpiGroupChart);
+    vnTradeChart(prod.tradeChart);
+    vnIipChart(prod.iipChart, prod.iipSectorChart);
+    vnPmiChart('chart-vn-pmi', prod.pmiChart);
+    vnPmiChart('chart-vn-pmi-long', inv.pmiChart);
+    vnYearCompareChart('chart-vn-public-inv', inv.publicInvestmentChart, '% kế hoạch năm');
+    vnYearCompareChart('chart-vn-fdi-reg', inv.fdiChart, 'Tỷ USD');
+    vnYearCompareChart('chart-vn-credit', inv.creditChart, '%');
+    vnYearCompareChart('chart-vn-deposit', inv.depositChart, '%');
 }

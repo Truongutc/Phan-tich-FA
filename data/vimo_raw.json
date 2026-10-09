@@ -99064,5 +99064,117 @@
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-08-10-2026-.html"
       }
     ]
+  },
+  "international_visitors_monthly": {
+    "group": "growth",
+    "label": "Khách quốc tế đến Việt Nam (theo tháng)",
+    "unit": "triệu lượt người",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ CỦA RIÊNG THÁNG ĐÓ (không phải lũy kế).",
+    "impact": "Đo trực tiếp phục hồi ngành du lịch.",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 1.77,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ]
+  },
+  "international_visitors_cumulative": {
+    "group": "growth",
+    "label": "Khách quốc tế đến Việt Nam (lũy kế từ đầu năm)",
+    "unit": "triệu lượt người",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm (reset mỗi tháng 1).",
+    "impact": "Đo trực tiếp phục hồi ngành du lịch tính từ đầu năm.",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 17.7,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ]
+  },
+  "iip_manufacturing_ytd_yoy": {
+    "group": "growth",
+    "label": "IIP — ngành chế biến, chế tạo (lũy kế YoY, NSO)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 12.9,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm so với cùng kỳ năm trước.",
+    "impact": "Phân tách IIP chung theo ngành."
+  },
+  "iip_electricity_ytd_yoy": {
+    "group": "growth",
+    "label": "IIP — ngành sản xuất và phân phối điện (lũy kế YoY, NSO)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 10.6,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm so với cùng kỳ năm trước.",
+    "impact": "Phân tách IIP chung theo ngành."
+  },
+  "iip_water_waste_ytd_yoy": {
+    "group": "growth",
+    "label": "IIP — ngành cung cấp nước, xử lý rác thải (lũy kế YoY, NSO)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 9.3,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm so với cùng kỳ năm trước.",
+    "impact": "Phân tách IIP chung theo ngành."
+  },
+  "iip_mining_ytd_yoy": {
+    "group": "growth",
+    "label": "IIP — ngành khai khoáng (lũy kế YoY, NSO)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "nso_scrape",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 8.0,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ],
+    "note": "Trích từ báo cáo tháng NSO, GIÁ TRỊ LŨY KẾ từ đầu năm so với cùng kỳ năm trước.",
+    "impact": "Phân tách IIP chung theo ngành."
+  },
+  "cpi_mom": {
+    "group": "inflation",
+    "label": "CPI so với tháng trước (MoM)",
+    "unit": "%",
+    "good_direction": "none",
+    "auto_source": "nso_scrape",
+    "note": "Trích từ báo cáo tháng NSO — CPI so với THÁNG TRƯỚC.",
+    "impact": "Đo momentum lạm phát ngắn hạn.",
+    "series": [
+      {
+        "period": "2026-09",
+        "value": 0.62,
+        "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ]
   }
 }
