@@ -18074,73 +18074,78 @@
       },
       {
         "period": "2025-05",
-        "value": 15344564.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "value": 15344564.530000001,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-06",
-        "value": 15798887.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "value": 15798887.74,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-07",
-        "value": 15725450.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "value": 15725450.239999998,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-08",
-        "value": 15959293.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "value": 15959293.24,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-09",
-        "value": 16182630.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "value": 16182630.7,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-10",
         "value": 15909571.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-11",
         "value": 16064674.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-12",
         "value": 16515887.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-01",
         "value": 16461627.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-02",
         "value": 16415112.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-03",
         "value": 16575580.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-04",
         "value": 16793661.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-05",
         "value": 16995128.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-06",
         "value": 17440361.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-07",
+        "value": 17461327.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       }
     ],
     "note": "= Tiền gửi TCKT + Tiền gửi dân cư (tỷ VND, theo tháng) — lấy từ CÙNG file CSV VBMA đang dùng cho cung tiền M2 (vbma.org.vn/vi/market-data/money-supply), có sẵn lịch sử từ T12/2018, tự động backfill toàn bộ khi chạy fetch_vbma_deposit_balance(). Bổ sung góc nhìn QUY MÔ tuyệt đối cho deposit_growth (vốn chỉ có %, nguồn vietnambiz, tích lũy chậm 1 điểm/lần chạy) — giống cách credit_balance_total bổ sung cho credit_growth.",
@@ -18543,72 +18548,77 @@
       {
         "period": "2025-05",
         "value": 18973143.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-06",
         "value": 19584434.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-07",
         "value": 19482760.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-08",
         "value": 19685504.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-09",
         "value": 19980717.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-10",
         "value": 18728084.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-11",
         "value": 18938260.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2025-12",
         "value": 19444476.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-01",
         "value": 19578695.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-02",
         "value": 19641068.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-03",
         "value": 19635094.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-04",
         "value": 19818534.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-05",
         "value": 19974985.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       },
       {
         "period": "2026-06",
         "value": 20414616.0,
-        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-07",
+        "value": 20455644.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       }
     ]
   },
@@ -21593,6 +21603,11 @@
         "period": "2026-06",
         "value": 10.39,
         "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2026-07",
+        "value": 11.04,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
       }
     ],
     "note": "Suy ra từ deposit_balance_total (= Tiền gửi TCKT + Tiền gửi dân cư, theo tháng, vbma.org.vn) bằng cách so CÙNG THÁNG năm trước (YoY thật). Đối chiếu deposit_growth (nguồn vietnambiz, chỉ có snapshot 1 điểm/lần Action chạy). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — KHÔNG dùng để tính Scorecard (đã có deposit_growth cho vai trò đó).",
@@ -22500,6 +22515,11 @@
         "period": "2026-06",
         "value": 5.6,
         "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2026-07",
+        "value": 5.72,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
       }
     ],
     "note": "Suy ra từ deposit_balance_total (mức tuyệt đối theo tháng, vbma.org.vn) bằng cách so với mốc 31/12 năm trước, RESET mỗi tháng 1 rồi cộng dồn tới tháng 12 (YTD) — KHÁC deposit_growth_yoy_monthly ở trên (so CÙNG THÁNG năm trước, không reset). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — KHÔNG dùng để tính Scorecard.",
@@ -22960,6 +22980,11 @@
       {
         "period": "2026-06",
         "value": 4.99,
+        "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
+      },
+      {
+        "period": "2026-07",
+        "value": 5.2,
         "source_url": "https://vbma.org.vn/vi/market-data/money-supply"
       }
     ],
@@ -99174,6 +99199,852 @@
         "period": "2026-09",
         "value": 0.62,
         "source_url": "https://www.nso.gov.vn/bai-top/2026/10/bao-cao-tinh-hinh-kinh-te-xa-hoi-quy-iii-va-9-thang-nam-2026/"
+      }
+    ]
+  },
+  "credit_growth_ytd_total": {
+    "group": "liquidity",
+    "label": "Tăng trưởng tín dụng toàn nền kinh tế (lũy kế từ đầu năm, NHNN)",
+    "unit": "%",
+    "good_direction": "higher",
+    "auto_source": "sbv",
+    "note": "dulieukinhte.com (mirror NHNN), HTML tĩnh. Lũy kế từ đầu năm (reset mỗi tháng 1), cập nhật tươi hơn credit_growth_ytd_monthly (VBMA) — 2 series KHÁC vintage/phương pháp tính nên KHÔNG trộn lẫn, xem credit_growth_ytd_monthly nếu cần lịch sử xa hơn (từ 2019).",
+    "impact": "Tín dụng tăng nhanh hơn huy động kéo dài có thể gây áp lực lên lãi suất liên ngân hàng/thanh khoản hệ thống.",
+    "series": [
+      {
+        "period": "2023-08",
+        "value": 5.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2023-09",
+        "value": 6.95,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2023-10",
+        "value": 7.4,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2023-11",
+        "value": 9.17,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2023-12",
+        "value": 13.78,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-01",
+        "value": -0.68,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-02",
+        "value": -0.75,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-03",
+        "value": 1.42,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-04",
+        "value": 2.01,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-05",
+        "value": 3.43,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-06",
+        "value": 6.1,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-07",
+        "value": 5.93,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-08",
+        "value": 7.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-09",
+        "value": 9.11,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-10",
+        "value": 10.15,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-11",
+        "value": 11.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2024-12",
+        "value": 15.09,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-01",
+        "value": 0.55,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-02",
+        "value": 0.76,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-03",
+        "value": 3.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-04",
+        "value": 5.32,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-05",
+        "value": 6.72,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-06",
+        "value": 9.91,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-07",
+        "value": 10.24,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-08",
+        "value": 11.78,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-09",
+        "value": 13.86,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-10",
+        "value": 15.31,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-11",
+        "value": 16.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2025-12",
+        "value": 19.07,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-01",
+        "value": 1.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-02",
+        "value": 1.33,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-03",
+        "value": 3.18,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-04",
+        "value": 4.59,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-05",
+        "value": 5.96,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-06",
+        "value": 8.37,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-07",
+        "value": 8.97,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      },
+      {
+        "period": "2026-08",
+        "value": 10.19,
+        "source_url": "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353"
+      }
+    ]
+  },
+  "fdi_registered_new_usd_bn": {
+    "group": "external",
+    "label": "FDI đăng ký — Cấp mới (lũy kế, dự án mới)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com, HTML tĩnh. Lũy kế từ đầu năm (reset mỗi tháng 1) — cộng 'Cấp mới' + 'Điều chỉnh' XẤP XỈ fdi_registered_usd_bn (tổng) hiện có, có thể lệch nhẹ vì tổng còn gồm 'góp vốn, mua cổ phần' (KHÔNG có ở nguồn này).",
+    "impact": "Cấp mới tăng mạnh hơn điều chỉnh = nhà đầu tư MỚI đang vào nhiều hơn mở rộng của nhà đầu tư CŨ.",
+    "series": [
+      {
+        "period": "2023-09",
+        "value": 10.2333,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2023-10",
+        "value": 15.2928,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2023-11",
+        "value": 16.4103,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2023-12",
+        "value": 20.1856,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-01",
+        "value": 2.0111,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-02",
+        "value": 3.5959,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-03",
+        "value": 4.774,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-04",
+        "value": 7.1102,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-05",
+        "value": 7.9362,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-06",
+        "value": 9.5367,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-07",
+        "value": 10.7639,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-08",
+        "value": 11.9985,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-09",
+        "value": 13.5538,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-10",
+        "value": 15.23,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-11",
+        "value": 17.3872,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-12",
+        "value": 19.7311,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-01",
+        "value": 1.2868,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-02",
+        "value": 2.191,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-03",
+        "value": 4.3332,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-04",
+        "value": 5.5921,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-05",
+        "value": 7.0151,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-06",
+        "value": 9.291,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-07",
+        "value": 10.0349,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-08",
+        "value": 11.033,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-09",
+        "value": 12.3879,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-10",
+        "value": 14.0726,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-11",
+        "value": 15.9567,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-12",
+        "value": 17.3213,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-01",
+        "value": 1.489,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-02",
+        "value": 3.5396,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-03",
+        "value": 10.2348,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-04",
+        "value": 12.1487,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-05",
+        "value": 14.8375,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-06",
+        "value": 17.3894,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-07",
+        "value": 21.046,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-08",
+        "value": 21.7142,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-09",
+        "value": 29.2351,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      }
+    ]
+  },
+  "fdi_registered_adjusted_usd_bn": {
+    "group": "external",
+    "label": "FDI đăng ký — Điều chỉnh (lũy kế, dự án cũ tăng vốn)",
+    "unit": "tỷ USD",
+    "good_direction": "higher",
+    "auto_source": "customs",
+    "note": "dulieukinhte.com, HTML tĩnh. Lũy kế từ đầu năm (reset mỗi tháng 1) — cộng 'Cấp mới' + 'Điều chỉnh' XẤP XỈ fdi_registered_usd_bn (tổng) hiện có, có thể lệch nhẹ vì tổng còn gồm 'góp vốn, mua cổ phần' (KHÔNG có ở nguồn này).",
+    "impact": "Cấp mới tăng mạnh hơn điều chỉnh = nhà đầu tư MỚI đang vào nhiều hơn mở rộng của nhà đầu tư CŨ.",
+    "series": [
+      {
+        "period": "2023-09",
+        "value": 5.1504,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2023-10",
+        "value": 5.3342,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2023-11",
+        "value": 6.4709,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2023-12",
+        "value": 7.8808,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-01",
+        "value": 0.2354,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-02",
+        "value": 0.4421,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-03",
+        "value": 0.9346,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-04",
+        "value": 1.2346,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-05",
+        "value": 2.0823,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-06",
+        "value": 3.9503,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-07",
+        "value": 4.968,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-08",
+        "value": 5.7127,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-09",
+        "value": 7.644,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-10",
+        "value": 8.3486,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-11",
+        "value": 9.9318,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2024-12",
+        "value": 13.957,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-01",
+        "value": 2.7251,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-02",
+        "value": 4.1841,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-03",
+        "value": 5.1559,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-04",
+        "value": 6.3974,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-05",
+        "value": 8.5192,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-06",
+        "value": 8.9453,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-07",
+        "value": 9.9857,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-08",
+        "value": 10.6452,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-09",
+        "value": 11.3152,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-10",
+        "value": 12.1059,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-11",
+        "value": 11.6172,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2025-12",
+        "value": 14.0695,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-01",
+        "value": 0.8885,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-02",
+        "value": 1.9941,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-03",
+        "value": 2.3038,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-04",
+        "value": 3.1316,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-05",
+        "value": 5.7804,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-06",
+        "value": 11.0431,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-07",
+        "value": 10.4287,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-08",
+        "value": 12.2067,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      },
+      {
+        "period": "2026-09",
+        "value": 14.1561,
+        "source_url": "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405"
+      }
+    ]
+  },
+  "resident_deposit_balance": {
+    "group": "liquidity",
+    "label": "Tiền gửi của dân cư (mức, NHNN)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "sbv",
+    "note": "dulieukinhte.com (mirror NHNN), HTML tĩnh. MỨC TUYỆT ĐỐI tại cuối tháng.",
+    "impact": "Tiền gửi dân cư tăng chậm lại có thể là dấu hiệu dòng tiền chuyển sang kênh đầu tư khác.",
+    "series": [
+      {
+        "period": "2025-05",
+        "value": 7603048.3,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-06",
+        "value": 7694546.37,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-07",
+        "value": 7748633.39,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-08",
+        "value": 7802496.86,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-09",
+        "value": 7832399.65,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-10",
+        "value": 10194762.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-11",
+        "value": 10224973.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-12",
+        "value": 10335383.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-01",
+        "value": 10381508.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-02",
+        "value": 10543901.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-03",
+        "value": 10561351.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-04",
+        "value": 10718801.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-05",
+        "value": 10826998.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-06",
+        "value": 11068825.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-07",
+        "value": 11220486.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      }
+    ]
+  },
+  "corporate_deposit_balance": {
+    "group": "liquidity",
+    "label": "Tiền gửi của các tổ chức kinh tế (mức, NHNN)",
+    "unit": "tỷ đồng",
+    "good_direction": "higher",
+    "auto_source": "sbv",
+    "note": "dulieukinhte.com (mirror NHNN), HTML tĩnh. MỨC TUYỆT ĐỐI tại cuối tháng.",
+    "impact": "Tiền gửi dân cư tăng chậm lại có thể là dấu hiệu dòng tiền chuyển sang kênh đầu tư khác.",
+    "series": [
+      {
+        "period": "2025-05",
+        "value": 7741516.23,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-06",
+        "value": 8104341.37,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-07",
+        "value": 7976816.85,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-08",
+        "value": 8156796.38,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-09",
+        "value": 8350231.05,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-10",
+        "value": 5714809.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-11",
+        "value": 5839701.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-12",
+        "value": 6180504.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-01",
+        "value": 6080119.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-02",
+        "value": 5871211.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-03",
+        "value": 6014229.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-04",
+        "value": 6074860.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-05",
+        "value": 6168130.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-06",
+        "value": 6371536.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-07",
+        "value": 6240841.0,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      }
+    ]
+  },
+  "cash_to_m2_ratio": {
+    "group": "liquidity",
+    "label": "Tỷ trọng tiền mặt trong lưu thông / M2 (NHNN)",
+    "unit": "%",
+    "good_direction": "lower",
+    "auto_source": "sbv",
+    "note": "dulieukinhte.com (mirror NHNN), HTML tĩnh. MỨC TUYỆT ĐỐI tại cuối tháng.",
+    "impact": "Tiền gửi dân cư tăng chậm lại có thể là dấu hiệu dòng tiền chuyển sang kênh đầu tư khác.",
+    "series": [
+      {
+        "period": "2025-05",
+        "value": 9.48,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-06",
+        "value": 9.74,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-07",
+        "value": 9.69,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-08",
+        "value": 9.67,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-09",
+        "value": 9.72,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-10",
+        "value": 10.68,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-11",
+        "value": 10.78,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2025-12",
+        "value": 10.78,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-01",
+        "value": 11.52,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-02",
+        "value": 12.09,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-03",
+        "value": 11.11,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-04",
+        "value": 10.77,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-05",
+        "value": 10.46,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-06",
+        "value": 10.11,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
+      },
+      {
+        "period": "2026-07",
+        "value": 9.98,
+        "source_url": "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385"
       }
     ]
   }

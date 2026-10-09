@@ -2132,6 +2132,46 @@ def fetch_dulieukinhte_import_fdi_split():
     return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/tong-nhap-khau-293", quarterly=False)
 
 
+def fetch_dulieukinhte_credit_growth_total():
+    """dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353 — Tăng trưởng TÍN DỤNG lũy kế từ
+    đầu năm (%, theo tháng, nguồn NHNN) — user (2026-10-09) chỉ ra nguồn này MỚI HƠN
+    credit_growth_ytd_monthly hiện có (VBMA, dừng ở 2026-06): verify trực tiếp trang có tới
+    2026-08 (TỔNG CỘNG=10,19%). Trang còn có breakdown theo NGÀNH (nông-lâm-thủy sản/công nghiệp-
+    xây dựng/thương mại-vận tải-viễn thông/dịch vụ khác) nhưng CHỈ lấy dòng TỔNG CỘNG ở đây —
+    KHÁC PHƯƠNG PHÁP/số với credit_growth_ytd_monthly (lệch vài điểm % ở các tháng trùng, có thể do
+    vintage/cách tính khác) nên KHÔNG merge chung 1 series, dùng key riêng. Trả {"TỔNG CỘNG":
+    {period: value_pct}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353",
+                                       quarterly=False, label_filter={"TỔNG CỘNG"})
+
+
+def fetch_dulieukinhte_fdi_registered_split():
+    """dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405 — Vốn FDI ĐĂNG KÝ lũy kế từ đầu năm,
+    tách theo LOẠI HÌNH: "Vốn đăng ký cấp mới" (dự án mới) và "Vốn đăng ký điều chỉnh" (dự án cũ
+    tăng vốn) — user (2026-10-09) yêu cầu, khác fdi_registered_usd_bn hiện có (chỉ 1 cột TỔNG,
+    không tách loại). LƯU Ý: trang có rất nhiều dòng con "Phân theo địa phương"/"Phân theo nước và
+    vùng lãnh thổ" (chi tiết tới từng tỉnh/quốc gia) — CHỈ lấy 2 dòng tổng cấp mới/điều chỉnh, KHÔNG
+    lấy chi tiết tỉnh/quốc gia (ngoài phạm vi). Cũng có dòng "Số dự án cấp mới" (đơn vị: dự án,
+    KHÁC đơn vị tiền) — không lấy ở đây. Trả {"Vốn đăng ký cấp mới (Triệu USD)"/"Vốn đăng ký điều
+    chỉnh (Triệu USD)": {period: value_trieu_usd}}."""
+    return _fetch_dulieukinhte_table(
+        "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405", quarterly=False,
+        label_filter={"Vốn đăng ký cấp mới (Triệu USD)", "Vốn đăng ký điều chỉnh (Triệu USD)"})
+
+
+def fetch_dulieukinhte_m2_deposits():
+    """dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385 — Tổng phương tiện thanh toán (M2) và
+    tiền gửi theo chủ thể (dân cư / tổ chức kinh tế), MỨC TUYỆT ĐỐI (tỷ đồng, KHÔNG phải %tăng
+    trưởng), nguồn NHNN — user (2026-10-09) yêu cầu để tính tươi hơn. Verify đối chiếu kỳ trùng
+    (2026-06) KHỚP TUYỆT ĐỐI với m2_balance_total/deposit_balance_total (VBMA) đang có — dùng để
+    BACKFILL tươi hơn 2 series đó (xem nơi gọi, update_vimo_raw()), + lấy thêm breakdown dân cư/
+    TCKT (MỚI, trước đây chỉ có tổng). CHỈ 15 kỳ (từ 2025-05) tại thời điểm viết hàm này. Trả
+    {"Tổng phương tiện thanh toán (M2)"/"Tiền gửi của dân cư"/"Tiền gửi của các TCKT"/"Tỷ trọng
+    tiền mặt / M2": {period: value}}."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385",
+                                       quarterly=False)
+
+
 def fetch_darvas_reer_neer_vietnam():
     """bruegel.org — bộ dữ liệu NEER/REER của Zsolt Darvas (cập nhật định kỳ, KHÔNG phải nguồn
     "chính thức" IMF/BIS nhưng user xác nhận IMF TỰ DÙNG Darvas làm nguồn NEER/REER cho Việt Nam
@@ -4111,6 +4151,106 @@ def update_vimo_raw():
                 _merge_point_anywhere(raw, raw_key, period, value, url)
             n_points += len(series)
         print(f"  -> {n_points} điểm (Tổng/trong nước/FDI)")
+
+    # THEM (user 2026-10-09): Tăng trưởng TÍN DỤNG lũy kế từ đầu năm, nguồn NHNN qua dulieukinhte.com
+    # — TƯƠI HƠN credit_growth_ytd_monthly hiện có (VBMA, dừng ở 2026-06) — xem docstring hàm fetch.
+    # Key RIÊNG (không merge vào credit_growth_ytd_monthly) vì lệch phương pháp/số vài điểm %.
+    print("[dulieukinhte.com (NHNN) — Tăng trưởng tín dụng lũy kế từ đầu năm, theo tháng]")
+    credit_total = fetch_dulieukinhte_credit_growth_total()
+    credit_series = credit_total.get("TỔNG CỘNG")
+    if credit_series:
+        if "credit_growth_ytd_total" not in raw:
+            raw["credit_growth_ytd_total"] = {
+                "group": "liquidity", "label": "Tăng trưởng tín dụng toàn nền kinh tế (lũy kế từ đầu năm, NHNN)",
+                "unit": "%", "good_direction": "higher", "auto_source": "sbv",
+                "note": ("dulieukinhte.com (mirror NHNN), HTML tĩnh. Lũy kế từ đầu năm (reset mỗi tháng 1), "
+                         "cập nhật tươi hơn credit_growth_ytd_monthly (VBMA) — 2 series KHÁC vintage/phương "
+                         "pháp tính nên KHÔNG trộn lẫn, xem credit_growth_ytd_monthly nếu cần lịch sử xa hơn (từ 2019)."),
+                "impact": "Tín dụng tăng nhanh hơn huy động kéo dài có thể gây áp lực lên lãi suất liên ngân hàng/thanh khoản hệ thống.",
+                "series": [],
+            }
+        for period, value in credit_series.items():
+            _merge_point_anywhere(raw, "credit_growth_ytd_total", period, value,
+                                   "https://dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353")
+        print(f"  -> {len(credit_series)} điểm, mới nhất {max(credit_series)}: {credit_series[max(credit_series)]}%")
+    else:
+        print("  [INFO] Không lấy được — giữ nguyên dữ liệu cũ.")
+
+    # THEM (user 2026-10-09): Vốn FDI ĐĂNG KÝ tách theo loại hình cấp mới/điều chỉnh — khác
+    # fdi_registered_usd_bn hiện có (chỉ 1 cột tổng). Chuyển triệu USD -> tỷ USD cho đồng nhất đơn vị.
+    print("[dulieukinhte.com (Hải quan/Bộ KH&ĐT) — Vốn FDI đăng ký theo loại hình (cấp mới/điều chỉnh)]")
+    fdi_split = fetch_dulieukinhte_fdi_registered_split()
+    _FDI_SPLIT_META = {
+        "Vốn đăng ký cấp mới (Triệu USD)": ("fdi_registered_new_usd_bn", "FDI đăng ký — Cấp mới (lũy kế, dự án mới)"),
+        "Vốn đăng ký điều chỉnh (Triệu USD)": ("fdi_registered_adjusted_usd_bn", "FDI đăng ký — Điều chỉnh (lũy kế, dự án cũ tăng vốn)"),
+    }
+    for row_label, (raw_key, label) in _FDI_SPLIT_META.items():
+        series = fdi_split.get(row_label)
+        if not series:
+            continue
+        if raw_key not in raw:
+            raw[raw_key] = {
+                "group": "external", "label": label, "unit": "tỷ USD", "good_direction": "higher",
+                "auto_source": "customs",
+                "note": ("dulieukinhte.com, HTML tĩnh. Lũy kế từ đầu năm (reset mỗi tháng 1) — cộng "
+                         "'Cấp mới' + 'Điều chỉnh' XẤP XỈ fdi_registered_usd_bn (tổng) hiện có, có thể "
+                         "lệch nhẹ vì tổng còn gồm 'góp vốn, mua cổ phần' (KHÔNG có ở nguồn này)."),
+                "impact": "Cấp mới tăng mạnh hơn điều chỉnh = nhà đầu tư MỚI đang vào nhiều hơn mở rộng của nhà đầu tư CŨ (tín hiệu thu hút FDI mới tốt hơn).",
+                "series": [],
+            }
+        for period, value in series.items():
+            _merge_point_anywhere(raw, raw_key, period, round(value / 1000, 4),
+                                   "https://dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405")
+        print(f"  -> {label}: {len(series)} điểm")
+
+    # THEM (user 2026-10-09): M2 + tiền gửi theo chủ thể (dân cư/TCKT), MỨC TUYỆT ĐỐI, nguồn NHNN
+    # qua dulieukinhte.com. Verify đối chiếu TẠI KỲ TRÙNG (2026-06): M2 = 20.414.616 (tỷ đồng) KHỚP
+    # TUYỆT ĐỐI với m2_balance_total (VBMA) đang có; Tiền gửi dân cư 11.068.825 + TCKT 6.371.536 =
+    # 17.440.361 KHỚP TUYỆT ĐỐI với deposit_balance_total (VBMA) — CÙNG nguồn gốc NHNN, chỉ khác
+    # kênh trung gian, nên BACKFILL thẳng vào 2 series ĐÃ CÓ (m2_balance_total/deposit_balance_total,
+    # dulieukinhte tươi hơn VBMA 1 tháng) thay vì tạo key song song — m2_growth/deposit_growth_ytd_
+    # monthly tự động có thêm điểm mới nếu phần tính phái sinh dùng lại 2 series mức này. Tiền gửi
+    # dân cư/TCKT TÁCH RIÊNG là breakdown MỚI (trước đây chỉ có tổng), giữ key riêng.
+    print("[dulieukinhte.com (NHNN) — M2 và tiền gửi theo chủ thể, mức tuyệt đối theo tháng]")
+    m2_data = fetch_dulieukinhte_m2_deposits()
+    m2_series = m2_data.get("Tổng phương tiện thanh toán (M2)", {})
+    resident_series = m2_data.get("Tiền gửi của dân cư", {})
+    corporate_series = m2_data.get("Tiền gửi của các TCKT", {})
+    cash_ratio_series = m2_data.get("Tỷ trọng tiền mặt / M2", {})
+    for period, value in m2_series.items():
+        _merge_point_anywhere(raw, "m2_balance_total", period, value,
+                               "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385")
+    deposit_total_series = {p: resident_series[p] + corporate_series[p]
+                              for p in set(resident_series) & set(corporate_series)}
+    for period, value in deposit_total_series.items():
+        _merge_point_anywhere(raw, "deposit_balance_total", period, value,
+                               "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385")
+    print(f"  -> Backfill m2_balance_total: {len(m2_series)} điểm, deposit_balance_total: {len(deposit_total_series)} điểm")
+    _DEPOSIT_SPLIT_META = {
+        "resident_deposit_balance": (resident_series, "Tiền gửi của dân cư (mức, NHNN)"),
+        "corporate_deposit_balance": (corporate_series, "Tiền gửi của các tổ chức kinh tế (mức, NHNN)"),
+        "cash_to_m2_ratio": (cash_ratio_series, "Tỷ trọng tiền mặt trong lưu thông / M2 (NHNN)"),
+    }
+    for raw_key, (series, label) in _DEPOSIT_SPLIT_META.items():
+        if not series:
+            continue
+        unit = "%" if raw_key == "cash_to_m2_ratio" else "tỷ đồng"
+        if raw_key not in raw:
+            raw[raw_key] = {
+                "group": "liquidity", "label": label, "unit": unit,
+                "good_direction": "lower" if raw_key == "cash_to_m2_ratio" else "higher",
+                "auto_source": "sbv",
+                "note": ("dulieukinhte.com (mirror NHNN), HTML tĩnh. MỨC TUYỆT ĐỐI tại cuối tháng "
+                         "(KHÔNG phải %tăng trưởng) — breakdown MỚI của deposit_balance_total theo chủ "
+                         "thể (trước đây chỉ có tổng). Lịch sử còn ngắn (từ 2025-05 tại thời điểm thêm "
+                         "nguồn này), sẽ dài dần."),
+                "impact": "Tiền gửi dân cư tăng chậm lại có thể là dấu hiệu dòng tiền tiết kiệm chuyển sang kênh đầu tư khác (chứng khoán/bất động sản/vàng) thay vì gửi ngân hàng.",
+                "series": [],
+            }
+        for period, value in series.items():
+            _merge_point_anywhere(raw, raw_key, period, value,
+                                   "https://dulieukinhte.com/du-lieu/cung-tien-m2-huy-dong-385")
+        print(f"  -> {label}: {len(series)} điểm")
 
     # THEM (user 2026-10-01): NEER/REER Việt Nam — BIS (WS_EER) và IMF.STA:EER đều KHÔNG có Việt
     # Nam (đã verify qua API thật), nhưng Darvas (Bruegel) CÓ, theo tháng, và chính IMF cũng dùng

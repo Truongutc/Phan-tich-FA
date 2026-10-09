@@ -186,7 +186,8 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
     return {"retailChart": retail_chart, "cpiGroupChart": cpi_chart, "paragraphs": [txt1, txt2, txt3]}
 
 
-def _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water, iip_mining, pmi):
+def _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water, iip_mining, pmi,
+                        export_fdi, export_dom, import_fdi, import_dom):
     periods = sorted(set(export_m) | set(import_m))
     trade_chart = {
         "periods": periods,
@@ -207,6 +208,20 @@ def _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_
     }
     pmi_periods = sorted(pmi)
     pmi_chart = {"periods": pmi_periods, "values": [pmi[p] for p in pmi_periods]}
+
+    # THEM 2026-10-09 (user: "sự phụ thuộc nhập khẩu vào nhóm FDI nó ở đây" — chỉ ra export_monthly_
+    # fdi/domestic + import_monthly_fdi/domestic (Hải quan qua dulieukinhte.com, ĐÃ CÓ sẵn trong raw
+    # từ trước, chỉ chưa dùng ở tab này) — tính % tỷ trọng khu vực FDI trong tổng KNXK/KNNK mỗi
+    # tháng để thấy "sự phụ thuộc" của ngoại thương VN vào khối FDI.
+    fdi_share_periods = sorted(set(export_fdi) & set(export_dom) & set(import_fdi) & set(import_dom))
+    def _fdi_share(fdi_s, dom_s, p):
+        f, d = fdi_s.get(p), dom_s.get(p)
+        return round(f / (f + d) * 100, 1) if f is not None and d is not None and (f + d) > 0 else None
+    fdi_dependency_chart = {
+        "periods": fdi_share_periods,
+        "export_fdi_share": [_fdi_share(export_fdi, export_dom, p) for p in fdi_share_periods],
+        "import_fdi_share": [_fdi_share(import_fdi, import_dom, p) for p in fdi_share_periods],
+    }
 
     paragraphs = []
     exp_v, imp_v = export_m.get(latest), import_m.get(latest)
@@ -247,11 +262,24 @@ def _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_
             s3.append(f"So với tháng trước ({pmi_prev:.1f} điểm), PMI {'tăng' if diff >= 0 else 'giảm'} {abs(diff):.1f} điểm.")
     paragraphs.append(" ".join(s3) if s3 else "Chưa có dữ liệu PMI tháng gần nhất.")
 
+    fdi_dep_latest = fdi_share_periods[-1] if fdi_share_periods else None
+    exp_share_latest = fdi_dependency_chart["export_fdi_share"][-1] if fdi_dep_latest else None
+    imp_share_latest = fdi_dependency_chart["import_fdi_share"][-1] if fdi_dep_latest else None
+    if exp_share_latest is not None and imp_share_latest is not None:
+        paragraphs.append(
+            f"Khu vực FDI chiếm {exp_share_latest:.0f}% tổng kim ngạch xuất khẩu và {imp_share_latest:.0f}% "
+            f"tổng kim ngạch nhập khẩu lũy kế đến tháng {fdi_dep_latest} — ngoại thương Việt Nam vẫn "
+            + ("phụ thuộc lớn vào khối FDI, đặc biệt ở chiều xuất khẩu." if exp_share_latest >= 50 else
+               "một phần dựa vào khối FDI nhưng khu vực trong nước vẫn đóng góp đáng kể."))
+    else:
+        paragraphs.append("Chưa đủ dữ liệu tỷ trọng FDI trong xuất/nhập khẩu.")
+
     return {"tradeChart": trade_chart, "iipChart": iip_chart, "iipSectorChart": iip_sector_chart,
-            "pmiChart": pmi_chart, "paragraphs": paragraphs}
+            "pmiChart": pmi_chart, "fdiDependencyChart": fdi_dependency_chart, "paragraphs": paragraphs}
 
 
-def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb):
+def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb,
+                        fdi_new, fdi_adjusted):
     pmi_periods = sorted(pmi)
     pmi_chart = {"periods": pmi_periods, "values": [pmi[p] for p in pmi_periods]}
     pub_inv_chart = _year_compare_chart(pub_inv_rate)
@@ -262,6 +290,17 @@ def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposi
     # đăng ký thôi" — fdi_chart ở trên là FDI ĐĂNG KÝ (vốn cam kết), KHÁC fdi_disbursed (vốn THỰC TẾ
     # đã giải ngân, cùng nguồn NSO đã dùng ở monthlyTable) — thêm biểu đồ so sánh theo năm riêng.
     fdi_disbursed_chart = _year_compare_chart(fdi_disb)
+
+    # THEM 2026-10-09 (user gửi nguồn dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405): FDI
+    # đăng ký tách theo LOẠI HÌNH (cấp mới/điều chỉnh) — vẽ CẢ CHUỖI LỊCH SỬ (không so theo năm như
+    # các chart khác ở trên) để thấy rõ xu hướng CƠ CẤU (cấp mới chiếm bao nhiêu % so điều chỉnh)
+    # thay đổi theo thời gian.
+    fdi_breakdown_periods = sorted(set(fdi_new) | set(fdi_adjusted))
+    fdi_breakdown_chart = {
+        "periods": fdi_breakdown_periods,
+        "new": [fdi_new.get(p) for p in fdi_breakdown_periods],
+        "adjusted": [fdi_adjusted.get(p) for p in fdi_breakdown_periods],
+    }
 
     # Các chỉ báo YTD (VBMA/NSO) thường TRỄ 1-3 tháng so với xuất/nhập khẩu (latest toàn báo cáo)
     # — dùng kỳ MỚI NHẤT CỦA RIÊNG từng chỉ báo (không ép theo latest chung) để không bị rơi vào
@@ -304,9 +343,23 @@ def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposi
         txt2 += f" FDI đăng ký lũy kế từ đầu năm đến tháng {fdi_period} đạt {fdi_latest:.1f} tỷ USD."
     paragraphs.append(txt2)
 
+    fdi_bd_period = max(fdi_breakdown_periods) if fdi_breakdown_periods else None
+    new_latest = fdi_new.get(fdi_bd_period) if fdi_bd_period else None
+    adjusted_latest = fdi_adjusted.get(fdi_bd_period) if fdi_bd_period else None
+    if new_latest is not None and adjusted_latest is not None and (new_latest + adjusted_latest) > 0:
+        new_share = new_latest / (new_latest + adjusted_latest) * 100
+        paragraphs.append(
+            f"Trong tổng FDI đăng ký lũy kế đến tháng {fdi_bd_period}, vốn CẤP MỚI (dự án mới) đạt "
+            f"{new_latest:.1f} tỷ USD ({new_share:.0f}%), vốn ĐIỀU CHỈNH (dự án cũ tăng vốn) đạt "
+            f"{adjusted_latest:.1f} tỷ USD ({100 - new_share:.0f}%) — "
+            + ("nhà đầu tư MỚI đang chiếm vai trò chủ đạo." if new_share >= 50 else
+               "phần lớn FDI đến từ nhà đầu tư CŨ mở rộng dự án hơn là dòng vốn mới."))
+    else:
+        paragraphs.append("Chưa đủ dữ liệu tách FDI đăng ký theo loại hình (cấp mới/điều chỉnh).")
+
     return {"pmiChart": pmi_chart, "publicInvestmentChart": pub_inv_chart, "creditChart": credit_chart,
             "depositChart": deposit_chart, "fdiChart": fdi_chart, "fdiDisbursedChart": fdi_disbursed_chart,
-            "paragraphs": paragraphs}
+            "fdiBreakdownChart": fdi_breakdown_chart, "paragraphs": paragraphs}
 
 
 def build_vn_report(raw):
@@ -324,8 +377,14 @@ def build_vn_report(raw):
     fdi_reg = _monthly_only(_series(raw, "fdi_registered_usd_bn"))
     pub_inv_rate = _monthly_only(_series(raw, "public_investment_disbursement_rate"))
     pub_inv_val = _monthly_only(_series(raw, "public_investment_disbursement_value"))
-    credit_ytd = _series(raw, "credit_growth_ytd_monthly")
+    # SUA 2026-10-09 (user gửi nguồn dulieukinhte.com/du-lieu/tang-truong-tin-dung-toc-do-353):
+    # credit_growth_ytd_total (NHNN qua dulieukinhte) TƯƠI HƠN credit_growth_ytd_monthly (VBMA,
+    # dừng ở 2026-06) — dùng làm nguồn chính cho tab Báo cáo, xem docstring fetch_dulieukinhte_
+    # credit_growth_total() (fetch_macro_data.py) về lý do giữ 2 key riêng (khác vintage/phương pháp).
+    credit_ytd = _series(raw, "credit_growth_ytd_total") or _series(raw, "credit_growth_ytd_monthly")
     deposit_ytd = _series(raw, "deposit_growth_ytd_monthly")
+    fdi_new = _monthly_only(_series(raw, "fdi_registered_new_usd_bn"))
+    fdi_adjusted = _monthly_only(_series(raw, "fdi_registered_adjusted_usd_bn"))
     retail_total = _series(raw, "retail_sales_total_monthly")
     retail_goods = _series(raw, "retail_sales_goods_monthly")
     retail_hosp = _series(raw, "retail_sales_hospitality_monthly")
@@ -341,6 +400,10 @@ def build_vn_report(raw):
     iip_elec = _series(raw, "iip_electricity_ytd_yoy")
     iip_water = _series(raw, "iip_water_waste_ytd_yoy")
     iip_mining = _series(raw, "iip_mining_ytd_yoy")
+    export_fdi = _series(raw, "export_monthly_fdi")
+    export_dom = _series(raw, "export_monthly_domestic")
+    import_fdi = _series(raw, "import_monthly_fdi")
+    import_dom = _series(raw, "import_monthly_domestic")
 
     latest = _latest_period(export_m, import_m, cpi_yoy, pmi)
     if not latest:
@@ -355,6 +418,7 @@ def build_vn_report(raw):
                                              retail_other, cpi_yoy, cpi_mom, cpi_food, cpi_housing, cpi_health,
                                              cpi_transport, cpi_other),
         "production": _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water,
-                                           iip_mining, pmi),
-        "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb),
+                                           iip_mining, pmi, export_fdi, export_dom, import_fdi, import_dom),
+        "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb,
+                                           fdi_new, fdi_adjusted),
     }

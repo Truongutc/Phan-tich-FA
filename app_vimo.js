@@ -3783,6 +3783,52 @@ function vnYearCompareChart(canvasId, chart, unitLabel) {
     }));
 }
 
+// THEM 2026-10-09 (user: "sự phụ thuộc nhập khẩu vào nhóm FDI nó ở đây nhé" — tỷ trọng khu vực FDI
+// trong tổng KNXK/KNNK, tính từ export_monthly_fdi/domestic + import_monthly_fdi/domestic đã có
+// sẵn trong indicators, xem _build_production trong vn_report_tab.py).
+function vnFdiDependencyChart(c) {
+    const canvas = document.getElementById('chart-vn-fdi-dependency');
+    if (!canvas || !c || !c.periods.length) return;
+    chartInstances.push(new Chart(canvas, {
+        type: 'line',
+        data: { labels: c.periods, datasets: [
+            { label: 'Tỷ trọng FDI trong Xuất khẩu (%)', data: c.export_fdi_share, borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+            { label: 'Tỷ trọng FDI trong Nhập khẩu (%)', data: c.import_fdi_share, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '% tỷ trọng FDI', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
+// THEM 2026-10-09 (user gửi nguồn dulieukinhte.com/du-lieu/von-fdi-dang-ky-cap-moi-405): FDI đăng
+// ký tách cấp mới/điều chỉnh, vẽ stacked-bar CẢ CHUỖI lịch sử (khác các chart "theo năm" khác ở
+// mục Đầu tư) để thấy xu hướng CƠ CẤU, không phải so sánh tốc độ 2 năm.
+function vnFdiBreakdownChart(c) {
+    const canvas = document.getElementById('chart-vn-fdi-breakdown');
+    if (!canvas || !c || !c.periods.length) return;
+    chartInstances.push(new Chart(canvas, {
+        type: 'bar',
+        data: { labels: c.periods, datasets: [
+            { label: 'Cấp mới (dự án mới)', data: c.new, backgroundColor: '#60a5fa', stack: 'fdi' },
+            { label: 'Điều chỉnh (dự án cũ tăng vốn)', data: c.adjusted, backgroundColor: '#f59e0b', stack: 'fdi' },
+        ] },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Tỷ USD (lũy kế)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+    }));
+}
+
 function renderVnReport(report) {
     const box = document.getElementById('vn-report-container');
     if (!box || !report) return;
@@ -3810,14 +3856,17 @@ function renderVnReport(report) {
           ${para(prod.paragraphs[1])}
           <div class="ind-chart" style="height:260px;margin-top:14px"><canvas id="chart-vn-pmi"></canvas></div>
           ${para(prod.paragraphs[2])}
-          <p class="ind-source-note">IIP theo 4 ngành là chỉ báo MỚI (trích từ báo cáo tháng NSO) — chuỗi còn ngắn, sẽ dài dần theo thời gian, KHÔNG lùi được lịch sử xa hơn.</p>`)}
+          <p class="ind-source-note">IIP theo 4 ngành là chỉ báo MỚI (trích từ báo cáo tháng NSO) — chuỗi còn ngắn, sẽ dài dần theo thời gian, KHÔNG lùi được lịch sử xa hơn.</p>
+          <div class="ind-chart" style="height:260px;margin-top:14px"><canvas id="chart-vn-fdi-dependency"></canvas></div>
+          ${para(prod.paragraphs[3])}
+          <p class="ind-source-note">% = Khu vực FDI / (Khu vực FDI + Khu vực trong nước), tính từ kim ngạch THÁNG ĐƠN LẺ (Hải quan qua dulieukinhte.com) — đo mức độ ngoại thương VN phụ thuộc khối FDI (Samsung, Foxconn...) so với DN nội địa.</p>`)}
       ${card('4. Đầu tư, Tín dụng & FDI', `
           <div class="ind-chart" style="height:260px"><canvas id="chart-vn-pmi-long"></canvas></div>
           ${para(inv.paragraphs[0])}
           <div class="bank-chart-row-title">Dòng vốn lũy kế — đầu tư công &amp; FDI (% kế hoạch năm / tỷ USD)</div>
           <div class="bank-chart-grid-3" style="margin-top:6px">
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-public-inv"></canvas></div><p class="ind-source-note" style="text-align:center">Giải ngân đầu tư công (lũy kế, % kế hoạch năm)</p></div>
-              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký — vốn CAM KẾT (lũy kế, tỷ USD — 1 cột tổng, chưa tách cấp mới/điều chỉnh/góp vốn)</p></div>
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký — vốn CAM KẾT (lũy kế, tỷ USD)</p></div>
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-disb"></canvas></div><p class="ind-source-note" style="text-align:center">FDI giải ngân — vốn THỰC TẾ đã rót vào nền kinh tế (lũy kế, tỷ USD)</p></div>
           </div>
           <div class="bank-chart-row-title">Tăng trưởng tín dụng &amp; huy động (lũy kế YTD, %)</div>
@@ -3826,7 +3875,10 @@ function renderVnReport(report) {
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-deposit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng huy động vốn (lũy kế YTD, %)</p></div>
           </div>
           ${para(inv.paragraphs[1])}
-          <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng.</p>`)}
+          <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng.</p>
+          <div class="ind-chart" style="height:280px;margin-top:14px"><canvas id="chart-vn-fdi-breakdown"></canvas></div>
+          ${para(inv.paragraphs[2])}
+          <p class="ind-source-note">FDI đăng ký tách theo loại hình (cấp mới/điều chỉnh) — nguồn dulieukinhte.com (Bộ KH&amp;ĐT/Hải quan), lũy kế từ đầu năm. Tổng 2 cột XẤP XỈ fdi_registered_usd_bn (còn thiếu phần "góp vốn, mua cổ phần" không có ở nguồn này).</p>`)}
     `;
 
     vnRetailChart(cons.retailChart);
@@ -3834,10 +3886,12 @@ function renderVnReport(report) {
     vnTradeChart(prod.tradeChart);
     vnIipChart(prod.iipChart, prod.iipSectorChart);
     vnPmiChart('chart-vn-pmi', prod.pmiChart);
+    vnFdiDependencyChart(prod.fdiDependencyChart);
     vnPmiChart('chart-vn-pmi-long', inv.pmiChart);
     vnYearCompareChart('chart-vn-public-inv', inv.publicInvestmentChart, '% kế hoạch năm');
     vnYearCompareChart('chart-vn-fdi-disb', inv.fdiDisbursedChart, 'Tỷ USD');
     vnYearCompareChart('chart-vn-fdi-reg', inv.fdiChart, 'Tỷ USD');
     vnYearCompareChart('chart-vn-credit', inv.creditChart, '%');
     vnYearCompareChart('chart-vn-deposit', inv.depositChart, '%');
+    vnFdiBreakdownChart(inv.fdiBreakdownChart);
 }
