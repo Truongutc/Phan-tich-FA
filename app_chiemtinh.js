@@ -765,3 +765,71 @@ function initCycleTool() {
             </table>`;
     });
 }
+
+// THEM 2026-10-09 (user: "tôi muốn phần chiêm tinh này có nút xuất ảnh, nhưng khi xuất ảnh thì chỉ
+// xuất của 2 khu vực tôi gửi này thôi, và ghép chúng vào chung 1 tấm ảnh" — 2 khu vực là #assessment
+// -overall-card (Kết luận tổng thể) và #wheel-card (Biểu đồ vị trí hành tinh), KHÔNG liền kề nhau
+// trên trang (có backtest/lá số VN-Index xen giữa) — chụp RIÊNG từng card bằng html-to-image (xem
+// cùng lý do dùng html-to-image thay html2canvas ở tab Báo cáo vimo.html: xử lý đúng CSS custom
+// property/nền trong suốt mà html2canvas hay lỗi), rồi tự vẽ ghép dọc (canvas.drawImage) thành 1
+// ảnh DUY NHẤT trước khi copy/tải — dùng toCanvas() (không phải toBlob trực tiếp) để có canvas gốc
+// ghép tay.
+async function saveAstroCombinedImage() {
+    const btn = document.getElementById('astro-save-btn');
+    const card1 = document.getElementById('assessment-overall-card');
+    const card2 = document.getElementById('wheel-card');
+    if (!card1 || !card2 || typeof htmlToImage === 'undefined') {
+        alert('Không tải được công cụ xuất ảnh (html-to-image) — kiểm tra kết nối mạng rồi thử lại.');
+        return;
+    }
+    const prevText = btn ? btn.innerHTML : '';
+    if (btn) { btn.innerHTML = '⏳ Đang tạo ảnh...'; btn.disabled = true; }
+    try {
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        const opts = { backgroundColor: '#0b1220', pixelRatio: 2, skipFonts: true };
+        const [canvas1, canvas2] = await Promise.all([
+            htmlToImage.toCanvas(card1, opts),
+            htmlToImage.toCanvas(card2, opts),
+        ]);
+        const gap = 32; // khoảng cách giữa 2 phần ghép, đã theo đúng pixelRatio của 2 canvas gốc
+        const merged = document.createElement('canvas');
+        merged.width = Math.max(canvas1.width, canvas2.width);
+        merged.height = canvas1.height + gap + canvas2.height;
+        const ctx = merged.getContext('2d');
+        ctx.fillStyle = '#0b1220';
+        ctx.fillRect(0, 0, merged.width, merged.height);
+        ctx.drawImage(canvas1, 0, 0);
+        ctx.drawImage(canvas2, 0, canvas1.height + gap);
+
+        const blob = await new Promise((resolve) => merged.toBlob(resolve, 'image/png'));
+        if (!blob) {
+            if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+            return;
+        }
+        let copied = false;
+        try {
+            if (navigator.clipboard && window.ClipboardItem) {
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                copied = true;
+            }
+        } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — rơi xuống tải file */ }
+        if (!copied) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chiem-tinh-ket-luan-${new Date().toISOString().slice(0, 10)}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+        if (btn) {
+            btn.innerHTML = copied ? '✅ Đã copy ảnh vào clipboard!' : '✅ Trình duyệt không hỗ trợ copy — đã tự tải file ảnh!';
+            setTimeout(() => { btn.innerHTML = prevText; btn.disabled = false; }, 2500);
+        }
+    } catch (e) {
+        console.error('Lỗi xuất ảnh chiêm tinh:', e);
+        if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+        alert('Không tạo được ảnh, thử lại sau.');
+    }
+}

@@ -15,6 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.2">
     <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
 
     <style>
         .astro-caveat {
@@ -105,6 +106,18 @@
             <p class="astro-generated-note" id="astro-generated-at"></p>
         </div>
 
+        <!-- THEM 2026-10-09 (user: "tôi muốn phần chiêm tinh này có nút xuất ảnh, nhưng khi xuất
+             ảnh thì chỉ xuất của 2 khu vực tôi gửi này thôi, và ghép chúng vào chung 1 tấm ảnh" —
+             nút chụp CHUNG #assessment-overall-card (Kết luận tổng thể) + #wheel-card (Biểu đồ vị
+             trí hành tinh, 2 card KHÔNG liền kề nhau trên trang) rồi ghép dọc thành 1 ảnh, xem
+             saveAstroCombinedImage() trong app_chiemtinh.js. -->
+        <div style="display:flex;justify-content:flex-end;margin:16px 0 -6px">
+            <button id="astro-save-btn" onclick="saveAstroCombinedImage()"
+                style="background:#0ea5e9;border:none;color:#fff;font-weight:600;font-size:0.85em;padding:8px 14px;border-radius:8px;cursor:pointer">
+                📷 Copy ảnh Kết luận + Biểu đồ hành tinh
+            </button>
+        </div>
+
         <!-- Kết luận tổng thể -->
         <div class="card margin-top-20" id="assessment-overall-card" style="display:none">
             <h3 class="border-purple">🧭 Kết luận Tổng thể</h3>
@@ -146,7 +159,7 @@
         </div>
 
         <!-- Biểu đồ sao -->
-        <div class="card margin-top-20">
+        <div class="card margin-top-20" id="wheel-card">
             <h3 class="border-purple">🌌 Biểu đồ Vị trí Hành tinh (Sơ đồ vòng hoàng đạo & Nhà)</h3>
             <p class="vimo-synthesis-text">Sơ đồ đơn giản hóa: vòng ngoài là 12 cung hoàng đạo (cố định), vạch mờ bên trong là 12 Nhà (House, tính theo địa điểm — xem bảng Nhà bên dưới); mỗi chấm là 1 hành tinh đặt theo kinh độ hoàng đạo hiện tại; đường nối giữa 2 hành tinh là góc chiếu đang hoạt động (đỏ = góc chiếu cứng, xanh = góc chiếu mềm).</p>
             <div id="astro-wheel-container"></div>
