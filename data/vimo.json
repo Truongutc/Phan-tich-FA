@@ -92941,6 +92941,52 @@
           ]
         }
       },
+      "fdiDisbursedChart": {
+        "months": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "series": {
+          "2025": [
+            null,
+            2.95,
+            null,
+            6.74,
+            8.9,
+            11.72,
+            13.6,
+            15.4,
+            18.8,
+            21.3,
+            23.6,
+            null
+          ],
+          "2026": [
+            null,
+            3.21,
+            null,
+            7.4,
+            9.75,
+            13.03,
+            15.2,
+            17.25,
+            21.07,
+            null,
+            null,
+            null
+          ]
+        }
+      },
       "paragraphs": [
         "Giải ngân vốn đầu tư công lũy kế đến tháng 2026-08 đạt 50.5% kế hoạch năm (546.8 nghìn tỷ đồng). So với cùng kỳ năm trước (48.3% KH), tiến độ giải ngân đang nhanh hơn 2.2 điểm %.",
         "Tăng trưởng tín dụng lũy kế từ đầu năm đến tháng 2026-06 đạt 7.09%, huy động vốn (đến tháng 2026-06) đạt 5.60% (YTD). Tín dụng tăng nhanh hơn huy động 1.49 điểm % — có thể tạo áp lực lên lãi suất liên ngân hàng. FDI đăng ký lũy kế từ đầu năm đến tháng 2026-08 đạt 40.6 tỷ USD."

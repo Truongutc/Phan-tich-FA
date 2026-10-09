@@ -251,13 +251,17 @@ def _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_
             "pmiChart": pmi_chart, "paragraphs": paragraphs}
 
 
-def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg):
+def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb):
     pmi_periods = sorted(pmi)
     pmi_chart = {"periods": pmi_periods, "values": [pmi[p] for p in pmi_periods]}
     pub_inv_chart = _year_compare_chart(pub_inv_rate)
     credit_chart = _year_compare_chart(credit_ytd)
     deposit_chart = _year_compare_chart(deposit_ytd)
     fdi_chart = _year_compare_chart(fdi_reg)
+    # THEM 2026-10-09 (user: "khu vực này thêm biểu đồ giá trị FDI giải ngân đầu tư nhé, kia là FDI
+    # đăng ký thôi" — fdi_chart ở trên là FDI ĐĂNG KÝ (vốn cam kết), KHÁC fdi_disbursed (vốn THỰC TẾ
+    # đã giải ngân, cùng nguồn NSO đã dùng ở monthlyTable) — thêm biểu đồ so sánh theo năm riêng.
+    fdi_disbursed_chart = _year_compare_chart(fdi_disb)
 
     # Các chỉ báo YTD (VBMA/NSO) thường TRỄ 1-3 tháng so với xuất/nhập khẩu (latest toàn báo cáo)
     # — dùng kỳ MỚI NHẤT CỦA RIÊNG từng chỉ báo (không ép theo latest chung) để không bị rơi vào
@@ -301,7 +305,8 @@ def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposi
     paragraphs.append(txt2)
 
     return {"pmiChart": pmi_chart, "publicInvestmentChart": pub_inv_chart, "creditChart": credit_chart,
-            "depositChart": deposit_chart, "fdiChart": fdi_chart, "paragraphs": paragraphs}
+            "depositChart": deposit_chart, "fdiChart": fdi_chart, "fdiDisbursedChart": fdi_disbursed_chart,
+            "paragraphs": paragraphs}
 
 
 def build_vn_report(raw):
@@ -351,5 +356,5 @@ def build_vn_report(raw):
                                              cpi_transport, cpi_other),
         "production": _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water,
                                            iip_mining, pmi),
-        "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg),
+        "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb),
     }

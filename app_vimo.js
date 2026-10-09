@@ -3607,22 +3607,30 @@ function vnRetailChart(c) {
     chartInstances.push(new Chart(canvas, {
         type: 'bar',
         data: { labels: c.periods, datasets: [
-            { label: 'Bán lẻ hàng hóa', data: c.goods, backgroundColor: '#60a5fa', stack: 'retail' },
-            { label: 'Dịch vụ lưu trú, ăn uống', data: c.hospitality, backgroundColor: '#f59e0b', stack: 'retail' },
-            { label: 'Du lịch lữ hành', data: c.travel, backgroundColor: '#a78bfa', stack: 'retail' },
-            { label: 'Dịch vụ khác', data: c.other, backgroundColor: '#94a3b8', stack: 'retail' },
-            { type: 'line', label: 'Tăng trưởng THỰC (YoY, trục phải)', data: c.real_yoy, yAxisID: 'y1',
-              borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+            { label: 'Bán lẻ hàng hóa', data: c.goods, backgroundColor: '#60a5fa', stack: 'retail', order: 2 },
+            { label: 'Dịch vụ lưu trú, ăn uống', data: c.hospitality, backgroundColor: '#f59e0b', stack: 'retail', order: 2 },
+            { label: 'Du lịch lữ hành', data: c.travel, backgroundColor: '#a78bfa', stack: 'retail', order: 2 },
+            { label: 'Dịch vụ khác', data: c.other, backgroundColor: '#94a3b8', stack: 'retail', order: 2 },
+            // SUA 2026-10-09 (user: "line tăng trưởng bị ẩn đằng sau khó nhìn quá" — màu xanh lá
+            // mảnh (2px, không điểm) lẫn vào các cột xám/cam phía trên) — đổi màu vàng tương phản
+            // mạnh, dày hơn, có điểm + viền đen để nổi hẳn lên trên nền cột, order thấp hơn để
+            // Chart.js vẽ ĐÈ lên sau cùng (giống quy ước order ở vnTradeChart bên dưới).
+            { type: 'line', label: 'Tăng trưởng THỰC (YoY, trục phải)', data: c.real_yoy, yAxisID: 'y1', order: 1,
+              borderColor: '#facc15', backgroundColor: '#facc15', borderWidth: 3, pointRadius: 3,
+              pointBackgroundColor: '#facc15', pointBorderColor: '#1a1f2e', pointBorderWidth: 1.5,
+              tension: 0.2, spanGaps: true,
+              datalabels: { ..._endpointDatalabelsConfig(1), color: '#facc15', font: { size: 10, weight: '700' } } },
         ] },
         options: {
             ...CHART_DEFAULTS,
-            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Nghìn tỷ đồng', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: '% YoY (thực)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
+        plugins: [ChartDataLabels],
     }));
 }
 
@@ -3634,17 +3642,25 @@ function vnCpiGroupChart(c) {
     chartInstances.push(new Chart(canvas, {
         type: 'bar',
         data: { labels: c.periods, datasets: [
-            ...meta.map(([k, label, color]) => ({ label, data: c[k], backgroundColor: color, stack: 'cpi' })),
-            { type: 'line', label: 'CPI YoY (tổng, %)', data: c.cpi_yoy, borderColor: '#fff', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true },
+            ...meta.map(([k, label, color]) => ({ label, data: c[k], backgroundColor: color, stack: 'cpi', order: 2 })),
+            // SUA 2026-10-09 (user: "đường line CPI không rõ, làm hiện nổi lên và số % bao nhiêu
+            // đi" — đường trắng mảnh lẫn vào cột xám/trắng phía trên) — đổi màu cyan tương phản
+            // mạnh, dày hơn, điểm viền đen + hiện số % tại điểm cuối (giá trị CPI YoY mới nhất).
+            { type: 'line', label: 'CPI YoY (tổng, %)', data: c.cpi_yoy, order: 1,
+              borderColor: '#22d3ee', backgroundColor: '#22d3ee', borderWidth: 3, pointRadius: 3,
+              pointBackgroundColor: '#22d3ee', pointBorderColor: '#1a1f2e', pointBorderWidth: 1.5,
+              tension: 0.2, spanGaps: true,
+              datalabels: { ..._endpointDatalabelsConfig(2), color: '#22d3ee', font: { size: 10, weight: '700' } } },
         ] },
         options: {
             ...CHART_DEFAULTS,
-            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
                 y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp / CPI YoY', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
+        plugins: [ChartDataLabels],
     }));
 }
 
@@ -3654,8 +3670,12 @@ function vnTradeChart(c) {
     chartInstances.push(new Chart(canvas, {
         type: 'bar',
         data: { labels: c.periods, datasets: [
-            { label: 'Cán cân thương mại (tỷ USD)', data: c.balance,
-              backgroundColor: c.balance.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(16,185,129,0.55)' : 'rgba(239,68,68,0.55)')), order: 3 },
+            // SUA 2026-10-09 (user: "biểu đồ cột thấp quá nhìn bé khó nhìn" — cột cán cân TM (biên
+            // độ nhỏ, ±5 tỷ USD) dùng CHUNG trục với 2 đường xuất/nhập khẩu (biên độ 0-60 tỷ USD)
+            // nên bị "đè" cho lùn hẳn xuống đáy) — tách cột sang trục phải RIÊNG (y1), Chart.js tự
+            // giãn trục đó theo đúng biên độ ±5-10 tỷ USD của riêng cán cân, cột sẽ cao hẳn lên.
+            { label: 'Cán cân thương mại (tỷ USD, trục phải)', data: c.balance, yAxisID: 'y1',
+              backgroundColor: c.balance.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(16,185,129,0.65)' : 'rgba(239,68,68,0.65)')), order: 3 },
             { type: 'line', label: 'Xuất khẩu (tỷ USD)', data: c.export, borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
             { type: 'line', label: 'Nhập khẩu (tỷ USD)', data: c.import, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, order: 1 },
         ] },
@@ -3664,7 +3684,8 @@ function vnTradeChart(c) {
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
-                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD', color: '#9aa5bd', font: { size: 9 } } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'Tỷ USD (xuất/nhập khẩu)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, title: { display: true, text: 'Tỷ USD (cán cân)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
     }));
@@ -3771,11 +3792,15 @@ function renderVnReport(report) {
           ${para(inv.paragraphs[0])}
           <div class="bank-chart-grid-2" style="margin-top:14px">
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-public-inv"></canvas></div><p class="ind-source-note" style="text-align:center">Giải ngân đầu tư công (lũy kế, % kế hoạch năm)</p></div>
-              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký (lũy kế, tỷ USD — 1 cột tổng, chưa tách cấp mới/điều chỉnh/góp vốn)</p></div>
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-disb"></canvas></div><p class="ind-source-note" style="text-align:center">FDI giải ngân — vốn THỰC TẾ đã rót vào nền kinh tế (lũy kế, tỷ USD)</p></div>
           </div>
           <div class="bank-chart-grid-2" style="margin-top:14px">
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký — vốn CAM KẾT (lũy kế, tỷ USD — 1 cột tổng, chưa tách cấp mới/điều chỉnh/góp vốn)</p></div>
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-credit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng tín dụng (lũy kế YTD, %)</p></div>
+          </div>
+          <div class="bank-chart-grid-2" style="margin-top:14px">
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-deposit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng huy động vốn (lũy kế YTD, %)</p></div>
+              <div></div>
           </div>
           ${para(inv.paragraphs[1])}
           <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng.</p>`)}
@@ -3788,6 +3813,7 @@ function renderVnReport(report) {
     vnPmiChart('chart-vn-pmi', prod.pmiChart);
     vnPmiChart('chart-vn-pmi-long', inv.pmiChart);
     vnYearCompareChart('chart-vn-public-inv', inv.publicInvestmentChart, '% kế hoạch năm');
+    vnYearCompareChart('chart-vn-fdi-disb', inv.fdiDisbursedChart, 'Tỷ USD');
     vnYearCompareChart('chart-vn-fdi-reg', inv.fdiChart, 'Tỷ USD');
     vnYearCompareChart('chart-vn-credit', inv.creditChart, '%');
     vnYearCompareChart('chart-vn-deposit', inv.depositChart, '%');
