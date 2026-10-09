@@ -156,20 +156,16 @@ def _build_monthly_table(latest, export_m, import_m, fdi_disb, pub_inv_rate, pmi
     return {"periods": periods, "rows": rows}
 
 
-# SUA 2026-10-09 (user: "biểu đồ này sao loạn hết rồi, trước đó đang đẹp lắm... trước đó đang rất
-# đẹp luôn, cập nhật tỷ trọng cái tháng 9 cái là rối hết lên xấu mù" — bản multi-line 11 đường quá
-# rối, user muốn LẠI kiểu cột chồng gọn 5 nhóm như bản VBMA cũ, chỉ cần data tươi hơn) — CHỈ chọn 5
-# nhóm (ánh xạ gần nhất với 5 nhóm VBMA cũ: food/housing_utilities/healthcare/transport/other) từ
-# 11 nhóm cấp 1 đã fetch được (xem fetch_dulieukinhte_cpi_group_yoy trong fetch_macro_data.py — vẫn
-# fetch đủ 11 nhóm, chỉ CHỌN 5 để hiển thị ở đây cho gọn), đổi JS vẽ lại kiểu CỘT CHỒNG như trước.
-CPI_GROUP_LABELS = {
-    "food_catering": "Thực phẩm", "housing_construction": "Nhà, điện, nước",
-    "healthcare": "Y tế", "transport": "Giao thông", "other_goods_services": "Khác",
-}
-
-
+# SUA 2026-10-09 lần 2 (user: "cái CPI này vẫn xấu, trả lại như cũ trước kia đi... CPI cũng đúng
+# chứ không thấp bò như này đâu" — đã thử đổi sang nguồn tươi hơn (11 nhóm, %YoY THÔ chưa nhân
+# trọng số) 2 lần (multi-line rồi stacked-bar) nhưng CẢ 2 đều lộ cùng 1 vấn đề cố hữu: %YoY thô của
+# 11 nhóm CỘNG LẠI lớn gấp 5-6 lần CPI thật (vì không có trọng số để "giảm tỷ trọng" từng nhóm
+# trước khi cộng), nên cột luôn cao vọt hẳn lên so với đường CPI, nhìn như đường CPI "sai/thấp bò"
+# dù số đúng — REVERT HẲN về nguồn VBMA cpi_contrib_* gốc (ĐÃ nhân trọng số, cộng đúng ra CPI, nhìn
+# cân đối như bản user khen đẹp) — ưu tiên ĐÚNG TỶ LỆ HÌNH ẢNH hơn tươi hơn 1 tháng, vì chỉ báo này
+# vốn chỉ để XEM CƠ CẤU, không phải để bắt kịp tháng mới nhất.
 def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_travel, retail_other,
-                         cpi_yoy, cpi_mom, cpi_groups):
+                         cpi_yoy, cpi_mom, cpi_food, cpi_housing, cpi_health, cpi_transport, cpi_other):
     periods = sorted(retail_total)
 
     def scaled(s):
@@ -190,21 +186,22 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
         "nominal_yoy": nominal_yoy, "real_yoy": real_yoy,
     }
 
-    # SUA 2026-10-09 (user: "cơ cấu CPI hiện tại lấy ở đâu đó, tìm thêm nguồn đi để cập nhật" —
-    # cpi_contrib_* (VBMA, 5 nhóm, ĐÃ nhân trọng số) trễ 1 tháng so CPI tổng — đổi sang cpi_yoy_
-    # group_* (dulieukinhte.com/NSO, 11 nhóm cấp 1 chính thức, %YoY THÔ chưa nhân trọng số) vì có
-    # tới đúng tháng hiện tại — xem docstring fetch_dulieukinhte_cpi_group_yoy() trong fetch_macro_
-    # data.py. KHÔNG còn cộng lại ra đúng CPI tổng (vì không có trọng số) nên JS vẽ MULTI-LINE
-    # (không còn stacked-bar) — xem vnCpiGroupChart trong app_vimo.js.
-    cpi_periods = sorted(set().union(*[set(s) for s in cpi_groups.values()]) if cpi_groups else set())[-24:]
+    cpi_periods = sorted(set(cpi_food) | set(cpi_housing) | set(cpi_health)
+                          | set(cpi_transport) | set(cpi_other))[-24:]
+    # Nối thêm kỳ MỚI NHẤT của cpi_yoy nếu nó mới hơn các nhóm (VBMA đôi khi trễ 1 tháng so CPI
+    # tổng) — đường CPI tổng (line) vẫn phản ánh đúng kỳ mới nhất NGAY CẢ KHI breakdown theo nhóm
+    # (cột) của kỳ đó chưa công bố (cột kỳ đó để trống, đường line vẫn hiện đủ).
     if cpi_yoy and (not cpi_periods or max(cpi_yoy) > cpi_periods[-1]):
         latest_cpi_period = max(cpi_yoy)
         if latest_cpi_period not in cpi_periods:
             cpi_periods = cpi_periods + [latest_cpi_period]
     cpi_chart = {
         "periods": cpi_periods,
-        "groups": {key: [cpi_groups.get(key, {}).get(p) for p in cpi_periods] for key in CPI_GROUP_LABELS},
-        "groupLabels": CPI_GROUP_LABELS,
+        "food": [cpi_food.get(p) for p in cpi_periods],
+        "housing_utilities": [cpi_housing.get(p) for p in cpi_periods],
+        "healthcare": [cpi_health.get(p) for p in cpi_periods],
+        "transport": [cpi_transport.get(p) for p in cpi_periods],
+        "other": [cpi_other.get(p) for p in cpi_periods],
         "cpi_yoy": [cpi_yoy.get(p) for p in cpi_periods],
     }
 
@@ -224,7 +221,9 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
     txt1 = " ".join(s1) if s1 else "Chưa đủ dữ liệu bán lẻ tháng gần nhất."
 
     cpi_y, cpi_m = cpi_yoy.get(latest), cpi_mom.get(latest)
-    groups_latest = {label: cpi_groups.get(key, {}).get(latest) for key, label in CPI_GROUP_LABELS.items()}
+    groups_latest = {"Thực phẩm": cpi_food.get(latest), "Nhà, điện, nước": cpi_housing.get(latest),
+                       "Y tế": cpi_health.get(latest), "Vận tải": cpi_transport.get(latest),
+                       "Khác": cpi_other.get(latest)}
     valid_groups = {k: v for k, v in groups_latest.items() if v is not None}
     s2 = []
     if cpi_y is not None:
@@ -232,8 +231,7 @@ def _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_t
         s2.append(f"CPI tháng {latest} tăng {cpi_y:.2f}% so với cùng kỳ năm trước{tail}")
     if valid_groups:
         leader = max(valid_groups, key=lambda k: abs(valid_groups[k]))
-        s2.append(f"Nhóm {leader} tự tăng/giảm mạnh nhất trong tháng, với {valid_groups[leader]:+.2f}% YoY "
-                    f"(chưa tính trọng số — chưa chắc là nhóm đóng góp nhiều điểm % nhất vào CPI tổng).")
+        s2.append(f"Nhóm {leader} đóng góp nhiều nhất vào mức tăng CPI chung, với {valid_groups[leader]:+.2f} điểm %.")
     txt2 = " ".join(s2) if s2 else "Chưa đủ dữ liệu CPI tháng gần nhất."
 
     s3 = []
@@ -463,7 +461,11 @@ def build_vn_report(raw):
     retail_travel = _series(raw, "retail_sales_travel_monthly")
     retail_other = _series(raw, "retail_sales_other_monthly")
     visitors_m = _series(raw, "international_visitors_monthly")
-    cpi_groups = {key: _series(raw, f"cpi_yoy_group_{key}") for key in CPI_GROUP_LABELS}
+    cpi_food = _series(raw, "cpi_contrib_food")
+    cpi_housing = _series(raw, "cpi_contrib_housing_utilities")
+    cpi_health = _series(raw, "cpi_contrib_healthcare")
+    cpi_transport = _series(raw, "cpi_contrib_transport")
+    cpi_other = _series(raw, "cpi_contrib_other")
     iip_manuf = _series(raw, "iip_manufacturing_ytd_yoy")
     iip_elec = _series(raw, "iip_electricity_ytd_yoy")
     iip_water = _series(raw, "iip_water_waste_ytd_yoy")
@@ -483,7 +485,8 @@ def build_vn_report(raw):
         "monthlyTable": _build_monthly_table(latest, export_m, import_m, fdi_disb, pub_inv_rate, pmi, iip,
                                                 retail_total, visitors_m, credit_ytd, cpi_yoy, cpi_mom),
         "consumption": _build_consumption(latest, retail_total, retail_goods, retail_hosp, retail_travel,
-                                             retail_other, cpi_yoy, cpi_mom, cpi_groups),
+                                             retail_other, cpi_yoy, cpi_mom, cpi_food, cpi_housing, cpi_health,
+                                             cpi_transport, cpi_other),
         "production": _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water,
                                            iip_mining, pmi, export_fdi, export_dom, import_fdi, import_dom),
         "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb,
