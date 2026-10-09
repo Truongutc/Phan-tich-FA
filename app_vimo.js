@@ -3860,6 +3860,13 @@ function renderVnReport(report) {
 
     const cons = report.consumption, prod = report.production, inv = report.investment;
     box.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+          <button id="vn-report-save-btn" onclick="saveVnReportAsImage()"
+              style="background:#0ea5e9;border:none;color:#fff;font-weight:600;font-size:0.85em;padding:8px 14px;border-radius:8px;cursor:pointer">
+              📷 Lưu/Copy toàn bộ báo cáo thành ảnh
+          </button>
+      </div>
+      <div id="vn-report-capture-area">
       ${card('📋 Tóm tắt tháng ' + report.asOf, para(report.summaryText)
           + '<p class="ind-source-note">Toàn bộ số liệu lấy từ các nguồn tự động đã dùng trong các tab khác (GSO/NSO, Hải quan qua dulieukinhte.com, VBMA, vietnambiz) — xem từng chỉ báo ở tab "Giám sát chỉ số" để tra nguồn gốc chi tiết.</p>')}
       ${card('1. Bảng chỉ số kinh tế tháng (13 tháng gần nhất)', vnMonthlyTable(report.monthlyTable)
@@ -3901,6 +3908,7 @@ function renderVnReport(report) {
           <div class="ind-chart" style="height:280px;margin-top:14px"><canvas id="chart-vn-fdi-breakdown"></canvas></div>
           ${para(inv.paragraphs[2])}
           <p class="ind-source-note">FDI đăng ký tách theo loại hình (cấp mới/điều chỉnh) — nguồn dulieukinhte.com (Bộ KH&amp;ĐT/Hải quan), lũy kế từ đầu năm. Tổng 2 cột XẤP XỈ fdi_registered_usd_bn (còn thiếu phần "góp vốn, mua cổ phần" không có ở nguồn này).</p>`)}
+      </div>
     `;
 
     vnRetailChart(cons.retailChart);
@@ -3916,4 +3924,54 @@ function renderVnReport(report) {
     vnYearCompareChart('chart-vn-credit', inv.creditChart, '%');
     vnYearCompareChart('chart-vn-deposit', inv.depositChart, '%');
     vnFdiBreakdownChart(inv.fdiBreakdownChart);
+}
+
+// THEM 2026-10-09 (user: "toàn bộ phần tab báo cáo này tôi muốn lưu được dưới dạng ảnh, bấm vào là
+// copy được nó như 1 tấm ảnh" — dùng html2canvas chụp #vn-report-capture-area (KHÔNG gồm nút bấm
+// này, xem wrapper ở renderVnReport) thành 1 canvas, rồi thử COPY vào clipboard trước (Clipboard
+// API ClipboardItem, Chrome/Edge hỗ trợ tốt); nếu trình duyệt không hỗ trợ/bị chặn quyền thì TỰ
+// ĐỘNG TẢI FILE xuống thay thế, để người dùng vẫn lấy được ảnh bằng cách nào đó.
+async function saveVnReportAsImage() {
+    const area = document.getElementById('vn-report-capture-area');
+    const btn = document.getElementById('vn-report-save-btn');
+    if (!area || typeof html2canvas === 'undefined') {
+        alert('Không tải được công cụ xuất ảnh (html2canvas) — kiểm tra kết nối mạng rồi thử lại.');
+        return;
+    }
+    const prevText = btn ? btn.innerHTML : '';
+    if (btn) { btn.innerHTML = '⏳ Đang tạo ảnh...'; btn.disabled = true; }
+    try {
+        const canvas = await html2canvas(area, { backgroundColor: '#0b1220', scale: 1.5, useCORS: true });
+        canvas.toBlob(async (blob) => {
+            if (!blob) {
+                if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+                return;
+            }
+            let copied = false;
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    copied = true;
+                }
+            } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — rơi xuống tải file */ }
+            if (!copied) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bao-cao-vi-mo-${new Date().toISOString().slice(0, 10)}.png`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            }
+            if (btn) {
+                btn.innerHTML = copied ? '✅ Đã copy ảnh vào clipboard!' : '✅ Trình duyệt không hỗ trợ copy — đã tự tải file ảnh!';
+                setTimeout(() => { btn.innerHTML = prevText; btn.disabled = false; }, 2500);
+            }
+        }, 'image/png');
+    } catch (e) {
+        console.error('Lỗi xuất ảnh báo cáo:', e);
+        if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+        alert('Không tạo được ảnh báo cáo, thử lại sau.');
+    }
 }
