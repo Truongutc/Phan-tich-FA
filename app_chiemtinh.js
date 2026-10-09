@@ -252,9 +252,13 @@ function renderPressureChart(series) {
         svg += `<line x1="${xAt(i).toFixed(1)}" y1="${yAt(scores[i]).toFixed(1)}" x2="${xAt(i + 1).toFixed(1)}" y2="${yAt(scores[i + 1]).toFixed(1)}" stroke="${rising ? UP : DOWN}" stroke-width="3.5"/>`;
     }
 
-    // Lưới ngày trục hoành (mỗi ~10 ngày)
+    // Lưới ngày trục hoành — SUA 2026-10-09 (user: "đường cột mờ phía sau, tôi muốn nó đánh dấu
+    // vào mỗi thứ 2 hàng tuần" — trước đó mốc theo index (mỗi ~10 điểm), không khớp mốc lịch/tuần
+    // thật) — đổi sang đánh dấu đúng NGÀY THỨ 2 (getUTCDay()===1) của mỗi tuần, vẫn giữ mốc NGÀY
+    // CUỐI biểu đồ (dù không phải thứ 2) để luôn thấy rõ điểm kết thúc.
     displaySeries.forEach((p, i) => {
-        if (i % 10 === 0 || i === displaySeries.length - 1) {
+        const isMonday = new Date(p.date + 'T00:00:00Z').getUTCDay() === 1;
+        if (isMonday || i === displaySeries.length - 1) {
             const x = xAt(i);
             svg += `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${h - padB}" stroke="#374151" stroke-width="0.5"/>`;
             svg += `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#9ca3af" font-size="10" text-anchor="middle">${_fmtDate(p.date).slice(0, 5)}</text>`;
