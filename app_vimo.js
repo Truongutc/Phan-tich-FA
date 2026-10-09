@@ -3719,20 +3719,35 @@ function vnRetailChart(c) {
     }));
 }
 
+// SUA 2026-10-09 (user: "cơ cấu CPI hiện tại lấy ở đâu đó, tìm thêm nguồn đi để cập nhật" — nguồn
+// cũ (VBMA cpi_contrib_*, 5 nhóm ĐÃ nhân trọng số, cộng lại ra đúng CPI tổng) trễ 1 tháng; đổi
+// sang nguồn mới (dulieukinhte.com/NSO, 11 nhóm cấp 1 chính thức, %YoY THÔ chưa nhân trọng số) vì
+// có tới đúng tháng hiện tại — xem _build_consumption trong vn_report_tab.py. Vì KHÔNG còn cộng
+// lại ra CPI tổng (thiếu trọng số), đổi từ STACKED BAR sang MULTI-LINE (mỗi nhóm 1 đường %YoY tự
+// thân, không phải phần đóng góp) + 1 đường CPI tổng nổi bật riêng.
+const CPI_GROUP_COLORS = {
+    food_catering: '#f59e0b', beverages_tobacco: '#a78bfa', apparel: '#ec4899',
+    housing_construction: '#60a5fa', household_equipment: '#14b8a6', healthcare: '#10b981',
+    transport: '#ef4444', post_telecom: '#eab308', education: '#8b5cf6',
+    culture_recreation: '#fb923c', other_goods_services: '#94a3b8',
+};
+
 function vnCpiGroupChart(c) {
     const canvas = document.getElementById('chart-vn-cpi-group');
     if (!canvas || !c || !c.periods.length) return;
-    const meta = [['food', 'Thực phẩm', '#f59e0b'], ['housing_utilities', 'Nhà, điện, nước', '#60a5fa'],
-                  ['healthcare', 'Y tế', '#10b981'], ['transport', 'Vận tải', '#ef4444'], ['other', 'Khác', '#94a3b8']];
+    const groupDatasets = Object.keys(c.groupLabels).map((key) => ({
+        label: c.groupLabels[key], data: c.groups[key], borderColor: CPI_GROUP_COLORS[key] || '#9aa5bd',
+        borderWidth: 1.5, pointRadius: 0, tension: 0.2, spanGaps: true,
+    }));
     chartInstances.push(new Chart(canvas, {
-        type: 'bar',
+        type: 'line',
         data: { labels: c.periods, datasets: [
-            ...meta.map(([k, label, color]) => ({ label, data: c[k], backgroundColor: color, stack: 'cpi', order: 2 })),
-            // SUA 2026-10-09 (user: "đường line CPI không rõ, làm hiện nổi lên và số % bao nhiêu
-            // đi" — đường trắng mảnh lẫn vào cột xám/trắng phía trên) — đổi màu cyan tương phản
-            // mạnh, dày hơn, điểm viền đen + hiện số % tại điểm cuối (giá trị CPI YoY mới nhất).
-            { type: 'line', label: 'CPI YoY (tổng, %)', data: c.cpi_yoy, order: 1,
-              borderColor: '#22d3ee', backgroundColor: '#22d3ee', borderWidth: 3, pointRadius: 3,
+            ...groupDatasets,
+            // Đường trắng mảnh lẫn vào cột trước đây — đổi màu cyan tương phản mạnh, dày hơn,
+            // điểm viền đen + hiện số % tại điểm cuối (giá trị CPI YoY mới nhất), vẽ ĐÈ lên các
+            // đường nhóm (đặt sau cùng trong mảng dataset = Chart.js vẽ sau = nằm trên).
+            { label: 'CPI YoY (tổng, %)', data: c.cpi_yoy,
+              borderColor: '#22d3ee', backgroundColor: '#22d3ee', borderWidth: 3.5, pointRadius: 3,
               pointBackgroundColor: '#22d3ee', pointBorderColor: '#1a1f2e', pointBorderWidth: 1.5,
               tension: 0.2, spanGaps: true,
               datalabels: { ..._endpointAboveLabelConfig(2, '%'), color: '#22d3ee' } },
@@ -3742,10 +3757,8 @@ function vnCpiGroupChart(c) {
             layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
-                // SUA 2026-10-09 (xem ghi chú offset:true ở vnRetailChart — cùng lỗi cột cuối bị
-                // "hẹp" do tâm cột nằm đúng mép phải vùng vẽ).
-                x: { ...CHART_DEFAULTS.scales.x, offset: true, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
-                y: { ...CHART_DEFAULTS.scales.y, stacked: true, title: { display: true, text: 'Điểm % đóng góp / CPI YoY', color: '#9aa5bd', font: { size: 9 } } },
+                x: { ...CHART_DEFAULTS.scales.x, offset: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '% YoY (từng nhóm, chưa nhân trọng số)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
@@ -3949,7 +3962,7 @@ function renderVnReport(report) {
           <div class="ind-chart" style="height:320px;margin-top:14px"><canvas id="chart-vn-cpi-group"></canvas></div>
           ${para(cons.paragraphs[1])}
           ${para(cons.paragraphs[2])}
-          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo nhóm: Hải quan/GSO qua dulieukinhte.com và VBMA (đóng góp điểm % đã có trọng số thật). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ). VBMA (cột đóng góp theo nhóm) có thể công bố TRỄ hơn 1 tháng so với CPI tổng (đường line) — tháng mới nhất có thể chỉ thấy đường line, chưa có cột, sẽ tự lấp đầy khi VBMA cập nhật.</p>`)}
+          <p class="ind-source-note">4 phân khúc bán lẻ + CPI theo 11 nhóm hàng cấp 1: Hải quan/GSO qua dulieukinhte.com. CPI theo nhóm là %YoY THÔ của riêng từng nhóm (CHƯA nhân trọng số) — cho biết nhóm nào tự tăng/giảm nhiều, KHÔNG phải nhóm nào đóng góp nhiều điểm % nhất vào CPI tổng (đường cyan). Tăng trưởng THỰC = tăng trưởng danh nghĩa trừ CPI YoY (xấp xỉ).</p>`)}
       ${card('3. Sản xuất & Thương mại', `
           <div class="ind-chart" style="height:320px"><canvas id="chart-vn-trade"></canvas></div>
           ${para(prod.paragraphs[0])}

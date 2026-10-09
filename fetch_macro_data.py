@@ -1945,7 +1945,10 @@ def fetch_dulieukinhte_bop():
             key = label_to_key.get(m_label.group(1).strip())
             if not key:
                 continue
-            values = re.findall(r'<td class="">([^<]*)</td>', row_html)
+            # THEM 2026-10-09: 1 số trang mới hơn của site (vd cpi-so-cung-ky-319) tô màu nhiệt
+            # từng ô giá trị (class="td-color1"/"td-color2"/"td-color-minus1"...) thay vì để trống
+            # class="" như các trang cũ — khớp CẢ 2 kiểu, không đổi hành vi các trang đang dùng kiểu cũ.
+            values = re.findall(r'<td class="(?:|td-color[^"]*)">([^<]*)</td>', row_html)
             if len(values) < len(periods):
                 continue
             for period, val_str in zip(periods, values):
@@ -1992,7 +1995,10 @@ def fetch_dulieukinhte_kieu_hoi_hcm():
             m_label = re.search(r'class="row-link[^"]*">([^<]+)<', row_html)
             if not m_label or "Tổng kiều hối" not in m_label.group(1):
                 continue
-            values = re.findall(r'<td class="">([^<]*)</td>', row_html)
+            # THEM 2026-10-09: 1 số trang mới hơn của site (vd cpi-so-cung-ky-319) tô màu nhiệt
+            # từng ô giá trị (class="td-color1"/"td-color2"/"td-color-minus1"...) thay vì để trống
+            # class="" như các trang cũ — khớp CẢ 2 kiểu, không đổi hành vi các trang đang dùng kiểu cũ.
+            values = re.findall(r'<td class="(?:|td-color[^"]*)">([^<]*)</td>', row_html)
             if len(values) < len(periods):
                 continue
             for period, val_str in zip(periods, values):
@@ -2045,7 +2051,10 @@ def _fetch_dulieukinhte_table(url, quarterly, label_filter=None):
             label = m_label.group(1).strip()
             if label_filter is not None and label not in label_filter:
                 continue
-            values = re.findall(r'<td class="">([^<]*)</td>', row_html)
+            # THEM 2026-10-09: 1 số trang mới hơn của site (vd cpi-so-cung-ky-319) tô màu nhiệt
+            # từng ô giá trị (class="td-color1"/"td-color2"/"td-color-minus1"...) thay vì để trống
+            # class="" như các trang cũ — khớp CẢ 2 kiểu, không đổi hành vi các trang đang dùng kiểu cũ.
+            values = re.findall(r'<td class="(?:|td-color[^"]*)">([^<]*)</td>', row_html)
             if len(values) < len(periods):
                 continue
             row_data = {}
@@ -2075,6 +2084,48 @@ def fetch_dulieukinhte_cpi_group():
     dùng để tự tính YoY theo nhóm hàng ở template_vimo._build_level_yoy_heatmap(). Trả {nhóm hàng:
     {period: index_points}}."""
     return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/chi-so-gia-tieu-dung-cpi-272", quarterly=False)
+
+
+# 11 nhóm hàng CẤP 1 theo phân loại CPI chính thức của NSO (loại bỏ CPI tổng, Lạm phát cơ bản, và
+# các nhóm CON cấp 2 như Lương thực/Thực phẩm/Ăn uống ngoài gia đình [con của "Hàng ăn và dịch vụ
+# ăn uống"], Dịch vụ y tế [con của "Thuốc và dịch vụ y tế"], Dịch vụ giáo dục [con của "Giáo dục"]).
+CPI_MAIN_GROUPS_11 = [
+    "Hàng ăn và dịch vụ ăn uống", "Đồ uống và thuốc lá", "May mặc, mũ nón, giầy dép",
+    "Nhà ở và vật liệu xây dựng", "Thiết bị và đồ dùng gia đình", "Thuốc và dịch vụ y tế",
+    "Giao thông", "Bưu chính viễn thông", "Giáo dục", "Văn hoá, giải trí và du lịch",
+    "Hàng hoá và dịch vụ khác",
+]
+
+CPI_MAIN_GROUPS_11_KEY = {
+    "Hàng ăn và dịch vụ ăn uống": "food_catering",
+    "Đồ uống và thuốc lá": "beverages_tobacco",
+    "May mặc, mũ nón, giầy dép": "apparel",
+    "Nhà ở và vật liệu xây dựng": "housing_construction",
+    "Thiết bị và đồ dùng gia đình": "household_equipment",
+    "Thuốc và dịch vụ y tế": "healthcare",
+    "Giao thông": "transport",
+    "Bưu chính viễn thông": "post_telecom",
+    "Giáo dục": "education",
+    "Văn hoá, giải trí và du lịch": "culture_recreation",
+    "Hàng hoá và dịch vụ khác": "other_goods_services",
+}
+
+
+def fetch_dulieukinhte_cpi_group_yoy():
+    """dulieukinhte.com/du-lieu/cpi-so-cung-ky-319 — CPI theo nhóm hàng SO VỚI CÙNG KỲ NĂM TRƯỚC
+    (%YoY, ĐÃ TÍNH SẴN — khác chi-so-gia-tieu-dung-cpi-272 ở trên là MỨC chỉ số, phải tự suy YoY),
+    nguồn NSO. User (2026-10-09): "cơ cấu CPI hiện tại lấy ở đâu đó, tìm thêm nguồn đi để cập
+    nhật" — cpi_contrib_* (VBMA, xem fetch_vbma_cpi_contribution) TRỄ 1 tháng so với CPI tổng; đã
+    kiểm tra fetch_dulieukinhte_cpi_group() ở trên CŨNG trễ CÙNG 1 tháng (chắc cùng phụ thuộc bảng
+    chi tiết GSO công bố trễ hơn bản tin nhanh) — nguồn NÀY lại CÓ tới đúng tháng hiện tại (verify:
+    "CPI" tổng ở đây = 5,08% tháng 9/2026, KHỚP ĐÚNG cpi_yoy). ⚠ ĐÂY LÀ %YoY THÔ của riêng từng
+    nhóm (CHƯA nhân trọng số) — KHÁC cpi_contrib_* là ĐÓNG GÓP ĐÃ nhân trọng số (cộng lại ra đúng
+    CPI tổng) — %YoY thô KHÔNG cộng lại ra CPI tổng, chỉ cho biết nhóm nào tự tăng/giảm NHIỀU, không
+    phải nhóm nào "kéo" CPI nhiều (giống đúng cách phân biệt "2. Cấu phần" vs "2c" ở tab Kinh tế Mỹ).
+    Trả {nhóm: {period: value_pct}} — lọc sẵn CHỈ 11 nhóm cấp 1 (CPI_MAIN_GROUPS_11), bỏ CPI tổng/
+    lạm phát cơ bản/các nhóm con cấp 2 (tránh trùng lặp khi vẽ)."""
+    return _fetch_dulieukinhte_table("https://dulieukinhte.com/du-lieu/cpi-so-cung-ky-319",
+                                       quarterly=False, label_filter=set(CPI_MAIN_GROUPS_11))
 
 
 def fetch_dulieukinhte_export_commodity():
@@ -3614,6 +3665,33 @@ def update_vimo_raw():
             for p, v in pts
         ]
         print(f"  -> {key}: {len(pts)} điểm")
+
+    # THEM 2026-10-09 (user: "cơ cấu CPI hiện tại lấy ở đâu đó, tìm thêm nguồn đi để cập nhật" —
+    # cpi_contrib_* ở trên (VBMA) trễ 1 tháng so CPI tổng — nguồn này (dulieukinhte.com) có tới
+    # đúng tháng hiện tại, xem docstring fetch_dulieukinhte_cpi_group_yoy() về lý do KHÁC hẳn
+    # cpi_contrib_* (%YoY thô, chưa nhân trọng số, không cộng lại ra CPI tổng).
+    print("[dulieukinhte.com (NSO) — CPI theo 11 nhóm hàng cấp 1, %YoY theo tháng]")
+    cpi_group_yoy = fetch_dulieukinhte_cpi_group_yoy()
+    for vn_label, suffix in CPI_MAIN_GROUPS_11_KEY.items():
+        series = cpi_group_yoy.get(vn_label)
+        if not series:
+            continue
+        key = f"cpi_yoy_group_{suffix}"
+        if key not in raw:
+            raw[key] = {
+                "group": "inflation", "label": f"CPI — {vn_label} (YoY, %)", "unit": "%",
+                "good_direction": "none", "auto_source": "nso",
+                "note": ("dulieukinhte.com, HTML tĩnh, nguồn NSO. %YoY THÔ của riêng nhóm này "
+                         "(CHƯA nhân trọng số) — KHÁC cpi_contrib_* (VBMA, đã nhân trọng số, cộng "
+                         "lại ra đúng CPI tổng). Dùng để biết nhóm nào TỰ tăng/giảm nhiều, không "
+                         "phải nhóm nào đang 'kéo' CPI tổng nhiều (xem cpi_contrib_* nếu cần)."),
+                "impact": "Nhóm tăng mạnh kéo dài (vd Giao thông do giá xăng dầu) đáng chú ý cho nhóm ngành liên quan, dù trọng số trong CPI tổng có thể nhỏ.",
+                "series": [],
+            }
+        for period, value in series.items():
+            _merge_point_anywhere(raw, key, period, value,
+                                   "https://dulieukinhte.com/du-lieu/cpi-so-cung-ky-319")
+    print(f"  -> {len(cpi_group_yoy)} nhóm, mới nhất tới {max((max(v) for v in cpi_group_yoy.values()), default='—')}")
 
     print("[NSO — biểu đồ chuyên đề IIP (nso.gov.vn/iip-vi/, chi tiết THEO THÁNG)]")
     pts = fetch_nso_chart_embed("index-of-industrial-production")
