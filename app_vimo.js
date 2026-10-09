@@ -1686,6 +1686,26 @@ function renderUsMacro(usm) {
         line('Khối chính thức/NHTW (tỷ $)', usm.capital_flows.history.official, '#f59e0b'),
         line('Khối tư nhân (tỷ $)', usm.capital_flows.history.private, '#10b981')] },
         options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+
+    // SUA 2026-10-09 (user: "dữ liệu bảng và biểu đồ CPI này đang hiện ở các tháng trước, với bảng
+    // biểu đồ dài kỳ thì sẽ hiện ở tháng gần nhất nhé" — initVimoTabs() CHỈ cuộn các
+    // .monitoring-table-scroll về mép phải (tháng mới nhất) khi NGƯỜI DÙNG BẤM chuyển tab, lúc đó
+    // nội dung đã render xong. Nếu vào tab "us" NGAY từ URL hash (#tab=us) hoặc link chia sẻ,
+    // show('us') chạy lúc container CÒN TRỐNG (chưa fetch xong dữ liệu) — cuộn lúc đó vô nghĩa
+    // (scrollWidth=0), và render sau đó không ai gọi lại cuộn nữa, cố định kẹt ở mép trái (tháng
+    // CŨ NHẤT). Tự áp lại y hệt logic cuộn phải ở đây, NGAY SAU KHI render xong — chỉ cần container
+    // đang hiển thị thật (không bị .vimo-tab-hidden) thì cuộn có tác dụng ngay, không phải đợi
+    // click tab nữa. Gọi 2 lần (ngay + sau 300ms): đo thực tế mục "2d" (div rộng tính bằng JS theo
+    // số tháng) có scrollWidth TĂNG THÊM sau khi Chart.js hoàn tất layout canvas (lần đầu đo được
+    // scrollWidth NHỎ HƠN giá trị cuối, set scrollLeft bị "chốt" ở mức cũ, không tự bắt kịp
+    // scrollWidth lớn hơn sau đó) — lần gọi thứ 2 bắt đúng kích thước cuối cùng.
+    const scrollTablesToLatest = () => {
+        if (!box.classList.contains('vimo-tab-hidden')) {
+            box.querySelectorAll('.monitoring-table-scroll').forEach(el => { el.scrollLeft = el.scrollWidth; });
+        }
+    };
+    setTimeout(scrollTablesToLatest, 0);
+    setTimeout(scrollTablesToLatest, 300);
 }
 
 function renderFxPressureSignalsMonthlyChart(indicators) {
@@ -3975,6 +3995,17 @@ function renderVnReport(report) {
     vnYearCompareChart('chart-vn-credit', inv.creditChart, '%');
     vnYearCompareChart('chart-vn-deposit', inv.depositChart, '%');
     vnFdiBreakdownChart(inv.fdiBreakdownChart);
+
+    // SUA 2026-10-09 (xem ghi chú ở cuối renderUsMacro — cùng lý do, cuộn bảng dài kỳ về tháng mới
+    // nhất NGAY SAU KHI render, không chỉ đợi lúc bấm chuyển tab; gọi 2 lần để bắt kịp scrollWidth
+    // tăng thêm sau khi Chart.js hoàn tất layout).
+    const scrollTablesToLatestVn = () => {
+        if (!box.classList.contains('vimo-tab-hidden')) {
+            box.querySelectorAll('.monitoring-table-scroll').forEach(el => { el.scrollLeft = el.scrollWidth; });
+        }
+    };
+    setTimeout(scrollTablesToLatestVn, 0);
+    setTimeout(scrollTablesToLatestVn, 300);
 }
 
 // THEM 2026-10-09 (user: "toàn bộ phần tab báo cáo này tôi muốn lưu được dưới dạng ảnh, bấm vào là
