@@ -59,12 +59,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 // GẦN NHẤT phía trước, đúng ý user. Tính ở client (không phải Python) vì thuật toán xác định đỉnh/
 // đáy (_findPressureTurningPoints) vốn đã chạy ở đây cho biểu đồ bên dưới — tính lại ở Python sẽ
 // phải chép y hệt thuật toán zigzag này sang 2 ngôn ngữ, dễ lệch nhau về sau.
-function _tradingSessionsUntil(series, targetIdx) {
+function _tradingSessionsUntil(series, fromIdx, targetIdx) {
     let n = 0;
-    for (let i = 1; i <= targetIdx; i++) {
+    for (let i = fromIdx + 1; i <= targetIdx; i++) {
         if (_isTradingDay(series[i].date)) n++;
     }
     return n;
+}
+
+// SUA 2026-10-09 (user: "ghi dữ liệu cập nhật ngày nào nhé, vì không lại nay ngày 9-10 còn chuẩn
+// bị tăng thì không đúng đâu" — astro.json CẬP NHẬT HÀNG TUẦN (xem comment đầu file), series[0]
+// chỉ là "hôm nay" TẠI LÚC TẠO FILE, có thể đã CŨ cả tuần — code trước đó LUÔN coi series[0] là
+// hôm nay thật, sai hẳn khi file chưa kịp cập nhật lại. Tìm đúng Ô ứng với NGÀY THẬT hiện tại
+// (máy người xem) theo SỐ NGÀY LỆCH so với series[0] — không so chuỗi ngày trực tiếp (dễ lệch 1 ô
+// nếu thiếu/thừa ngày) — rồi CHẶN trong phạm vi hợp lệ của series.
+function _findTodayIdx(series) {
+    const first = new Date(series[0].date + 'T00:00:00Z');
+    const today = new Date();
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    const diffDays = Math.round((todayUTC - first) / 86400000);
+    return Math.min(Math.max(diffDays, 0), series.length - 1);
 }
 
 function _computeTurningPoints(series) {
@@ -85,35 +99,53 @@ function renderVerdictBanner(verdict, series) {
     const labelEl = document.getElementById('verdict-label');
     const detailEl = document.getElementById('verdict-detail');
 
-    let label = verdict.label, colorKey = verdict.colorKey, prefix = '';
+    let label = verdict.label, colorKey = verdict.colorKey, detail = verdict.detail;
     if (series && series.length > 1) {
+        const todayIdx = _findTodayIdx(series);
+        // SUA 2026-10-09 (user: "ghi dữ liệu cập nhật ngày nào, vì không lại nay 9-10 còn chuẩn bị
+        // tăng thì không đúng" — câu "Điểm áp lực/thuận lợi hôm nay: X" của verdict.detail (Python)
+        // CŨNG tính từ series[0] (ngày TẠO FILE, có thể cũ cả tuần), không phải hôm nay thật — tính
+        // LẠI đúng theo todayIdx ở đây thay vì tin thẳng câu Python, để nhất quán với nhãn đỉnh/đáy
+        // bên dưới. Giữ lại đoạn giải thích TĨNH (không đổi theo ngày) của verdict.detail, cắt từ
+        // mốc "Điểm dương" trở đi.
+        const currentScore = series[todayIdx].score;
+        const nearTerm = series.slice(todayIdx + 1, todayIdx + 11);
+        const nearTermAvg = nearTerm.length ? nearTerm.reduce((a, p) => a + p.score, 0) / nearTerm.length : currentScore;
+        const trend = nearTermAvg - currentScore;
+        const fmtSigned = (v) => (v >= 0 ? '+' : '') + v.toFixed(2);
+        const staticTailIdx = verdict.detail.indexOf('Điểm dương');
+        const staticTail = staticTailIdx >= 0 ? verdict.detail.slice(staticTailIdx) : verdict.detail;
+        const scoreNote = `Điểm áp lực/thuận lợi hôm nay (${_fmtDate(series[todayIdx].date)}): ${fmtSigned(currentScore)} · `
+            + `Trung bình 10 ngày tới: ${fmtSigned(nearTermAvg)} (${trend > 0 ? 'đang cải thiện' : trend < 0 ? 'đang xấu đi' : 'ổn định'} ${fmtSigned(Math.abs(trend))} điểm). `;
+
+        const staleDays = todayIdx; // = so ngay lech so voi series[0] (ngay file duoc tao)
+        const staleNote = staleDays > 0
+            ? `⚠ Dữ liệu chiêm tinh gốc được tính từ ${_fmtDate(series[0].date)} (${staleDays} ngày trước, file cập nhật hàng tuần) — đã tự quy đổi mốc "hôm nay" cho đúng ngày thật. `
+            : '';
+
         const { allTurningPoints } = _computeTurningPoints(series);
-        const nextTp = allTurningPoints.find(tp => tp.idx > 0);
+        const nextTp = allTurningPoints.find(tp => tp.idx > todayIdx);
+        let turnNote = '';
         if (nextTp) {
-            const sessions = _tradingSessionsUntil(series, nextTp.idx);
+            const sessions = _tradingSessionsUntil(series, todayIdx, nextTp.idx);
             const dateLabel = _fmtDate(series[nextTp.idx].date);
             const near = sessions <= NEAR_TURN_SESSIONS;
             if (nextTp.type === 'peak') {
-                if (near) {
-                    label = '🔻 CHUẨN BỊ GIẢM (sắp tạo đỉnh)'; colorKey = 'reversal_down';
-                } else {
-                    label = '✅ Đang THUẬN LỢI'; colorKey = 'favorable';
-                }
-                prefix = `Dự kiến tạo ĐỈNH vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
+                label = near ? '🔻 CHUẨN BỊ GIẢM (sắp tạo đỉnh)' : '✅ Đang THUẬN LỢI';
+                colorKey = near ? 'reversal_down' : 'favorable';
+                turnNote = `Dự kiến tạo ĐỈNH vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
             } else {
-                if (near) {
-                    label = '🔺 CHUẨN BỊ TĂNG (sắp tạo đáy)'; colorKey = 'reversal_up';
-                } else {
-                    label = '⚠️ Đang KHÔNG THUẬN LỢI'; colorKey = 'risk';
-                }
-                prefix = `Dự kiến tạo ĐÁY vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
+                label = near ? '🔺 CHUẨN BỊ TĂNG (sắp tạo đáy)' : '⚠️ Đang KHÔNG THUẬN LỢI';
+                colorKey = near ? 'reversal_up' : 'risk';
+                turnNote = `Dự kiến tạo ĐÁY vào ${dateLabel} (còn ${sessions} phiên giao dịch). `;
             }
         }
+        detail = staleNote + turnNote + scoreNote + staticTail;
     }
 
     banner.className = `astro-verdict-banner ${colorKey}`;
     if (labelEl) labelEl.textContent = label;
-    if (detailEl) detailEl.textContent = prefix + verdict.detail;
+    if (detailEl) detailEl.textContent = detail;
 }
 
 function _isTradingDay(dateStr) {
