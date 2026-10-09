@@ -60,6 +60,23 @@ function _endpointDatalabelsConfig(decimals) {
     };
 }
 
+// SUA 2026-10-09 (user: "cột bị nhỏ đi, có vẻ khung biểu đồ bị lấn ra" ở tab Báo cáo — đo thử
+// width thật của từng cột bằng Chart.getChart().getDatasetMeta() thì các cột RỘNG BẰNG NHAU tuyệt
+// đối, không có lỗi kích thước; vấn đề thực sự là align:'right' của _endpointDatalabelsConfig đẩy
+// nhãn số RA NGOÀI mép phải vùng vẽ — chart có trục phải (y1) thì nhãn đè lên nhãn trục làm cột
+// cuối trông như bị "lấn"; chart KHÔNG có trục phải thì nhãn bị cắt mất hẳn ra ngoài canvas, không
+// hiện số như mong muốn. Dùng align:'top' thay vì 'right' — nhãn nổi NGAY TRÊN điểm cuối, luôn nằm
+// trong vùng vẽ bất kể chart có trục phụ hay không.
+function _endpointAboveLabelConfig(decimals, suffix) {
+    return {
+        display: (ctx) => ctx.dataset.data.slice(ctx.dataIndex + 1).every(v => v === null || v === undefined)
+            && (ctx.dataset.data[ctx.dataIndex] !== null && ctx.dataset.data[ctx.dataIndex] !== undefined),
+        color: (ctx) => ctx.dataset.borderColor, font: { size: 10, weight: '700' },
+        anchor: 'end', align: 'top', offset: 6, clip: false,
+        formatter: (v) => (v === null || v === undefined) ? '' : (v >= 0 ? '+' : '') + v.toFixed(decimals) + (suffix || ''),
+    };
+}
+
 let chartInstances = [];
 
 // Cac bang heatmap (.monitoring-table-scroll, overflow-x:auto) chi cuon ngang duoc qua scrollbar/
@@ -3592,9 +3609,14 @@ function vnMonthlyTable(t) {
     if (!t || !t.rows || !t.rows.length) return '';
     const fmtv = v => (v === null || v === undefined) ? '—' : v;
     const head = t.periods.map(p => `<th>${p}</th>`).join('');
+    // SUA 2026-10-09 (user: "bảng dữ liệu này không điền số à" — số liệu THẬT SỰ có trong DOM, chỉ
+    // là VÔ HÌNH: ".monitoring-table tbody td { color: #0b1220 }" (vimo.html) là quy ước CHUNG cho
+    // các bảng heatmap khác trong dự án, nơi JS tô NỀN SÁNG cho từng ô nên chữ gần đen mới đọc
+    // được — bảng này KHÔNG tô nền ô nào nên chữ gần đen chìm hẳn vào nền tối chung của trang) —
+    // ghi đè màu chữ TRẮNG trực tiếp trên từng ô, không đụng vào rule CSS dùng chung.
     const rows = t.rows.map(r => `<tr>
         <th style="text-align:left;white-space:nowrap">${r.label} <span class="ind-source-note">(${r.unit})</span></th>
-        ${r.values.map(v => `<td>${fmtv(v)}</td>`).join('')}
+        ${r.values.map(v => `<td style="color:#e5e7eb">${fmtv(v)}</td>`).join('')}
     </tr>`).join('');
     return `<div class="monitoring-table-scroll" style="overflow-x:auto"><table class="monitoring-table">
         <thead><tr><th style="text-align:left">Chỉ báo</th>${head}</tr></thead>
@@ -3619,10 +3641,11 @@ function vnRetailChart(c) {
               borderColor: '#facc15', backgroundColor: '#facc15', borderWidth: 3, pointRadius: 3,
               pointBackgroundColor: '#facc15', pointBorderColor: '#1a1f2e', pointBorderWidth: 1.5,
               tension: 0.2, spanGaps: true,
-              datalabels: { ..._endpointDatalabelsConfig(1), color: '#facc15', font: { size: 10, weight: '700' } } },
+              datalabels: { ..._endpointAboveLabelConfig(1, '%'), color: '#facc15' } },
         ] },
         options: {
             ...CHART_DEFAULTS,
+            layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
@@ -3650,10 +3673,11 @@ function vnCpiGroupChart(c) {
               borderColor: '#22d3ee', backgroundColor: '#22d3ee', borderWidth: 3, pointRadius: 3,
               pointBackgroundColor: '#22d3ee', pointBorderColor: '#1a1f2e', pointBorderWidth: 1.5,
               tension: 0.2, spanGaps: true,
-              datalabels: { ..._endpointDatalabelsConfig(2), color: '#22d3ee', font: { size: 10, weight: '700' } } },
+              datalabels: { ..._endpointAboveLabelConfig(2, '%'), color: '#22d3ee' } },
         ] },
         options: {
             ...CHART_DEFAULTS,
+            layout: { padding: { right: 24 } },
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { display: false } },
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, stacked: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
@@ -3790,17 +3814,16 @@ function renderVnReport(report) {
       ${card('4. Đầu tư, Tín dụng & FDI', `
           <div class="ind-chart" style="height:260px"><canvas id="chart-vn-pmi-long"></canvas></div>
           ${para(inv.paragraphs[0])}
-          <div class="bank-chart-grid-2" style="margin-top:14px">
+          <div class="bank-chart-row-title">Dòng vốn lũy kế — đầu tư công &amp; FDI (% kế hoạch năm / tỷ USD)</div>
+          <div class="bank-chart-grid-3" style="margin-top:6px">
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-public-inv"></canvas></div><p class="ind-source-note" style="text-align:center">Giải ngân đầu tư công (lũy kế, % kế hoạch năm)</p></div>
+              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký — vốn CAM KẾT (lũy kế, tỷ USD — 1 cột tổng, chưa tách cấp mới/điều chỉnh/góp vốn)</p></div>
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-disb"></canvas></div><p class="ind-source-note" style="text-align:center">FDI giải ngân — vốn THỰC TẾ đã rót vào nền kinh tế (lũy kế, tỷ USD)</p></div>
           </div>
-          <div class="bank-chart-grid-2" style="margin-top:14px">
-              <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-fdi-reg"></canvas></div><p class="ind-source-note" style="text-align:center">FDI đăng ký — vốn CAM KẾT (lũy kế, tỷ USD — 1 cột tổng, chưa tách cấp mới/điều chỉnh/góp vốn)</p></div>
+          <div class="bank-chart-row-title">Tăng trưởng tín dụng &amp; huy động (lũy kế YTD, %)</div>
+          <div class="bank-chart-grid-2" style="margin-top:6px">
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-credit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng tín dụng (lũy kế YTD, %)</p></div>
-          </div>
-          <div class="bank-chart-grid-2" style="margin-top:14px">
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-deposit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng huy động vốn (lũy kế YTD, %)</p></div>
-              <div></div>
           </div>
           ${para(inv.paragraphs[1])}
           <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng.</p>`)}
