@@ -156,12 +156,15 @@ def _build_monthly_table(latest, export_m, import_m, fdi_disb, pub_inv_rate, pmi
     return {"periods": periods, "rows": rows}
 
 
+# SUA 2026-10-09 (user: "biểu đồ này sao loạn hết rồi, trước đó đang đẹp lắm... trước đó đang rất
+# đẹp luôn, cập nhật tỷ trọng cái tháng 9 cái là rối hết lên xấu mù" — bản multi-line 11 đường quá
+# rối, user muốn LẠI kiểu cột chồng gọn 5 nhóm như bản VBMA cũ, chỉ cần data tươi hơn) — CHỈ chọn 5
+# nhóm (ánh xạ gần nhất với 5 nhóm VBMA cũ: food/housing_utilities/healthcare/transport/other) từ
+# 11 nhóm cấp 1 đã fetch được (xem fetch_dulieukinhte_cpi_group_yoy trong fetch_macro_data.py — vẫn
+# fetch đủ 11 nhóm, chỉ CHỌN 5 để hiển thị ở đây cho gọn), đổi JS vẽ lại kiểu CỘT CHỒNG như trước.
 CPI_GROUP_LABELS = {
-    "food_catering": "Hàng ăn & DV ăn uống", "beverages_tobacco": "Đồ uống & thuốc lá",
-    "apparel": "May mặc, mũ nón, giầy dép", "housing_construction": "Nhà ở & VLXD",
-    "household_equipment": "Thiết bị & đồ dùng GĐ", "healthcare": "Thuốc & DV y tế",
-    "transport": "Giao thông", "post_telecom": "Bưu chính viễn thông", "education": "Giáo dục",
-    "culture_recreation": "Văn hoá, giải trí & du lịch", "other_goods_services": "Hàng hoá & DV khác",
+    "food_catering": "Thực phẩm", "housing_construction": "Nhà, điện, nước",
+    "healthcare": "Y tế", "transport": "Giao thông", "other_goods_services": "Khác",
 }
 
 
