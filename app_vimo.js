@@ -1329,7 +1329,32 @@ function renderUsMacro(usm) {
     box.style.display = '';
     const f = (v, d = 2) => (v === null || v === undefined) ? '—' : Number(v).toFixed(d);
     const h = usm.headline, rc = usm.real_consumption, rates = usm.rates;
-    const card = (title, body) => `<div class="card margin-top-20"><h3 class="border-blue" style="margin:0">${title}</h3>${body}</div>`;
+    // SUA 2026-10-09 (user: "ở tab kinh tế mỹ cũng cho copy đi, gộp các mục to to vào nhé, chứ để
+    // mỗi cái bé tí vào thì không đẹp" — tab này có ~18 card rời rạc (Tổng quan, Tóm tắt, 1, 2,
+    // 2b...2e, 3-6, 7-12...), gộp theo CHỦ ĐỀ thành 7 nhóm lớn: Tổng quan / Lạm phát-Headline / Lạm
+    // phát-Đóng góp / Lạm phát-Lan tỏa&Pipeline / Thanh khoản Fed&Lãi suất / Tăng trưởng&Lao động /
+    // Lợi suất-Tín dụng&Dòng vốn — mỗi nhóm 1 nút copy ảnh (dùng chung saveVnReportSection() đã viết
+    // cho tab Báo cáo), tránh vừa quá nhiều nút bé vừa tránh gộp hết thành 1 ảnh siêu dài (dễ bị
+    // nén mờ khi chia sẻ, xem bài học ở tab Báo cáo).
+    let usSectionSeq = 0;
+    const group = (title, bodyHtml) => {
+        if (!bodyHtml) return '';
+        usSectionSeq += 1;
+        const id = `us-report-section-${usSectionSeq}`;
+        return `<div class="card margin-top-20" id="${id}">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <h3 class="border-blue" style="margin:0">${title}</h3>
+                <button class="vn-report-no-capture" onclick="saveVnReportSection('${id}', this)"
+                    title="Lưu/Copy riêng mục này thành ảnh"
+                    style="flex-shrink:0;background:#0ea5e9;border:none;color:#fff;font-weight:600;font-size:0.78em;padding:6px 10px;border-radius:7px;cursor:pointer">
+                    📷 Copy ảnh mục này
+                </button>
+            </div>
+            ${bodyHtml}
+        </div>`;
+    };
+    const sub = (title, body) => `<h4 style="margin:18px 0 8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:14px">${title}</h4>${body}`;
+    const card = (title, body) => body ? `<div>${sub(title, body)}</div>` : '';
     const kpi = (lbl, val) => `<div class="us-kpi-tile"><div class="us-kpi-label">${lbl}</div><div class="us-kpi-value">${val}</div></div>`;
     // SUA 2026-10-08 (user gửi tài liệu: "Fed không điều hành theo CPI 2%, Fed nhắm mục tiêu PCE" —
     // thêm PCE/PCE lõi YoY, trước đây usm_pce_price đã fetch nhưng CHƯA từng tính YoY/hiển thị ở
@@ -1347,8 +1372,9 @@ function renderUsMacro(usm) {
         kpi('Thất nghiệp (%)', f(rates.usm_unemployment && rates.usm_unemployment.latest)),
     ].join('');
     box.innerHTML = `
-      ${card('📊 Tổng quan — toàn bộ ma trận vĩ mô Mỹ (9 nhóm)', usOverviewSection(usm, f))}
-      ${card('🇺🇸 Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
+      ${group('📊 Tổng quan — toàn bộ ma trận vĩ mô Mỹ (9 nhóm)', usOverviewSection(usm, f))}
+      ${group('🇺🇸 Lạm phát Mỹ — Headline & Cấu phần', `
+      ${card('Tóm tắt — lạm phát Mỹ tới ' + h.latest, `<div class="us-kpi-grid">${kpis}</div>
             <p class="ind-source-note">Nguồn: FRED (BLS, BEA, Fed). Số liệu gốc theo tháng, từ 2015. "Năm hóa" tính từ MoM đã điều chỉnh mùa vụ. ⚠ Fed KHÔNG điều hành theo CPI — mục tiêu lạm phát 2% chính thức của Fed tính theo PCE (ưu tiên PCE lõi), CPI chỉ là thước đo tham chiếu phổ biến hơn với công chúng. Dữ liệu PCE công bố TRỄ hơn CPI ~2-4 tuần (kỳ PCE mới nhất: ${h.pce_latest || '—'}).</p>`)}
       ${card('1. Headline & lõi — CPI tăng hay giảm, lõi có dai dẳng không', `${usStateBadge(usm.states && usm.states.inflation)}${usStateBadge(usm.states && usm.states.inflation_persistence)}
             <p style="font-weight:600;margin:4px 0 8px">MoM theo từng tháng — xem xu hướng NGẮN HẠN (YoY/năm hóa có thể "san phẳng" 1 tháng vừa đảo chiều)</p>
@@ -1357,7 +1383,8 @@ function renderUsMacro(usm) {
             <div class="ind-chart" style="height:300px;margin-top:14px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
-      ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}
+      ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}`)}
+      ${group('🇺🇸 Lạm phát Mỹ — Đóng góp & Turning point', `
       ${card('2c. CPI ĐANG Ở MỨC NÀO (YoY, tích lũy 12 tháng) — tại tháng ' + usm.contributions.snapshot_period, `
             <p style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.4);border-radius:8px;padding:8px 12px;font-size:0.85em;margin:0 0 10px">
                 ⚠ <b>"Giao thông" ở BẢNG NÀY khác "Giao thông" ở bảng nhiệt 2b phía trên</b> (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_transport') || {}).yoy)}% ở đây so với ~${f(usm.groups.find(g => g.key === 'usm_cpi_transport').yoy)}% ở bảng nhiệt) — xăng dầu đã TÁCH RA, cộng gộp vào "Năng lượng" (YoY ~${f((usm.contributions.snapshot.find(r => r.key === 'usm_cpi_energy') || {}).yoy)}%, nay KHỚP ĐÚNG bảng nhiệt 2b) để không đếm trùng khi cộng thành đóng góp.
@@ -1379,7 +1406,8 @@ function renderUsMacro(usm) {
             <p class="ind-source-note">Cộng 9 nhóm + phần dư (Fuel oil + mục nhỏ chưa gán) = ĐÚNG CPI YoY. Kéo/lăn chuột ngang để xem lịch sử — mặc định hiện tháng gần nhất. Trục Y dùng CHUNG cho cả giai đoạn (kể cả đỉnh lạm phát 2021-2022) nên các tháng gần đây (CPI thấp hơn nhiều) nhìn cột bị "lùn" đi — xem biểu đồ 2e bên dưới để phóng to riêng giai đoạn gần nhất.</p>`)}
       ${card('2e. Đóng góp 24 tháng gần nhất (phóng to, trục Y riêng)', `
             <div class="ind-chart" style="height:380px"><canvas id="chart-us-contrib-recent"></canvas></div>
-            <p class="ind-source-note">Giống hệt dữ liệu ở mục 2d, chỉ CẮT RIÊNG 24 tháng gần nhất và để Chart.js tự giãn trục Y theo đúng biên độ của riêng giai đoạn này — dễ đọc độ cao từng cấu phần hơn khi không bị đỉnh lạm phát 2021-2022 "đè" cho thấp xuống.</p>`)}
+            <p class="ind-source-note">Giống hệt dữ liệu ở mục 2d, chỉ CẮT RIÊNG 24 tháng gần nhất và để Chart.js tự giãn trục Y theo đúng biên độ của riêng giai đoạn này — dễ đọc độ cao từng cấu phần hơn khi không bị đỉnh lạm phát 2021-2022 "đè" cho thấp xuống.</p>`)}`)}
+      ${group('🇺🇸 Lạm phát Mỹ — Độ lan tỏa & Pipeline', `
       ${card('3. Độ lan tỏa — bao nhiêu nhóm đang tăng nhanh', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-breadth"></canvas></div>
             <p class="ind-source-note">Hiện: ${f(usm.breadth.pct_gt_3, 0)}% nhóm có YoY &gt; 3%; ${f(usm.breadth.pct_gt_5, 0)}% nhóm &gt; 5%; ${f(usm.breadth.pct_rising_mom, 0)}% nhóm đang tăng MoM.</p>`)}
       ${card('4. Hàng hóa vs dịch vụ — dịch vụ bền, hàng hóa biến động', `<div class="ind-chart" style="height:260px"><canvas id="chart-us-goods-services"></canvas></div>`)}
@@ -1394,14 +1422,14 @@ function renderUsMacro(usm) {
             <div class="ind-chart" style="height:260px"><canvas id="chart-us-transmission-wage"></canvas></div></div>
             <p class="ind-source-note">Trái: tương quan MoM giữa giá dầu WTI ở tháng t−L và PPI cầu cuối ở tháng t (tầng ĐẦU chuỗi truyền dẫn, trước khi vào PPI/CPI). Phải: tương quan MoM giữa lương bình quân giờ ở tháng t−L và CPI dịch vụ ở tháng t (tín hiệu "wage-price spiral" nếu có — lưu ý CPI dịch vụ ở đây gồm cả Nhà ở, vốn chiếm tỷ trọng rất lớn). Tương quan KHÔNG phải nhân quả — chỉ cho thấy độ trễ/độ mạnh liên hệ giữa các tầng để tự đánh giá cú sốc có đang lan rộng không (xem thêm badge "Lạm phát — độ dai dẳng" ở mục 1).</p>`)}
       ${card('6. Tiêu dùng danh nghĩa vs thực — tăng trưởng bán lẻ có phải do giá không', `<div class="ind-chart" style="height:280px"><canvas id="chart-us-real"></canvas></div>
-            <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}
-      ${usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usStateBadge(usm.states && usm.states.fed_balance_sheet) + usFedLiquidityCard(usm.liquidity, f)) : ''}
-      ${usm.growth ? card('8. Tăng trưởng — GDP thực & sản xuất công nghiệp', usStateBadge(usm.states && usm.states.growth) + usGrowthCard(usm.growth, f)) : ''}
-      ${usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usStateBadge(usm.states && usm.states.labor) + usLaborCard(usm.labor, f)) : ''}
-      ${usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usStateBadge(usm.states && usm.states.treasury_credit) + usTreasuryCreditCard(usm.treasury_credit, f)) : ''}
-      ${usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usStateBadge(usm.states && usm.states.usd) + usUsdCard(usm.usd, f)) : ''}
-      ${usm.capital_flows ? card('12. Capital Flows — nước ngoài nắm giữ Treasury Mỹ (TIC)', usStateBadge(usm.states && usm.states.capital_flows) + usCapitalFlowsCard(usm.capital_flows, f)) : ''}
-      ${card('Lãi suất & việc làm (tóm tắt nhanh)', `${usStateBadge(usm.states && usm.states.fed_policy)}<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`)}
+            <p class="ind-source-note">Bán lẻ danh nghĩa YoY trừ CPI YoY ≈ tăng trưởng thực (xấp xỉ). Chi tiêu thực PCE hiện ${f(rc.pce_real_yoy)}% so với danh nghĩa ${f(rc.pce_nominal_yoy)}%.</p>`)}`)}
+      ${group('🏦 Thanh khoản Fed & Lãi suất', (usm.liquidity ? card('7. Bảng cân đối Fed — QE/QT & thanh khoản hệ thống', usStateBadge(usm.states && usm.states.fed_balance_sheet) + usFedLiquidityCard(usm.liquidity, f)) : '')
+          + card('Lãi suất & việc làm (tóm tắt nhanh)', `${usStateBadge(usm.states && usm.states.fed_policy)}<ul class="ind-source-note" style="line-height:1.8">${Object.values(rates).map(r => `<li>${r.label}: <b>${f(r.latest)}</b> (${r.period})</li>`).join('')}</ul>`))}
+      ${group('📈 Tăng trưởng & Lao động', (usm.growth ? card('8. Tăng trưởng — GDP thực & sản xuất công nghiệp', usStateBadge(usm.states && usm.states.growth) + usGrowthCard(usm.growth, f)) : '')
+          + (usm.labor ? card('9. Lao động — việc làm, thất nghiệp, lương thực', usStateBadge(usm.states && usm.states.labor) + usLaborCard(usm.labor, f)) : ''))}
+      ${group('💵 Lợi suất, Tín dụng & Dòng vốn quốc tế', (usm.treasury_credit ? card('10. Lợi suất & tín dụng — đường cong, lãi suất thực, spread rủi ro', usStateBadge(usm.states && usm.states.treasury_credit) + usTreasuryCreditCard(usm.treasury_credit, f)) : '')
+          + (usm.usd ? card('11. USD — chỉ số USD trọng số thương mại', usStateBadge(usm.states && usm.states.usd) + usUsdCard(usm.usd, f)) : '')
+          + (usm.capital_flows ? card('12. Capital Flows — nước ngoài nắm giữ Treasury Mỹ (TIC)', usStateBadge(usm.states && usm.states.capital_flows) + usCapitalFlowsCard(usm.capital_flows, f)) : ''))}
     `;
 
     // Cuộn-sang-phải cho các bảng .monitoring-table-scroll trong tab này được xử lý ở
