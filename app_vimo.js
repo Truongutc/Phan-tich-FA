@@ -3768,10 +3768,24 @@ function vnYearCompareChart(canvasId, chart, unitLabel) {
     const years = Object.keys(chart.series);
     if (!years.length) return;
     const palette = ['#60a5fa', '#f59e0b', '#a78bfa'];
+    // THEM 2026-10-09 (user: "TTHD/TTTD nếu thiếu thì lấy tổng toàn hệ thống bank áp tạm sang, vẽ
+    // nét khác để biết là số tạm" — chart.provisionalFrom (xem _with_bank_fallback trong vn_report_
+    // tab.py) đánh dấu {year, month} là kỳ ĐẦU TIÊN dùng số dự phòng (tổng 26 NH niêm yết/UPCoM
+    // theo BCTC, KHÁC phạm vi "toàn nền kinh tế" của nguồn chính thức) — vẽ NÉT ĐỨT từ đó trở đi
+    // bằng segment.borderDash, để không lẫn với số chính thức (nét liền).
+    const pf = chart.provisionalFrom;
     chartInstances.push(new Chart(canvas, {
         type: 'line',
-        data: { labels: chart.months.map(m => `T${m}`), datasets: years.map((y, i) => ({
-            label: y, data: chart.series[y], borderColor: palette[i % palette.length], borderWidth: 2, pointRadius: 2, spanGaps: true })) },
+        data: { labels: chart.months.map(m => `T${m}`), datasets: years.map((y, i) => {
+            const ds = { label: y, data: chart.series[y], borderColor: palette[i % palette.length], borderWidth: 2, pointRadius: 2, spanGaps: true };
+            if (pf && pf.year === y) {
+                const pIdx = pf.month - 1;
+                ds.segment = { borderDash: (ctx) => ctx.p1DataIndex >= pIdx ? [6, 4] : undefined };
+                ds.pointStyle = chart.months.map((_, idx) => idx >= pIdx ? 'star' : 'circle');
+                ds.pointRadius = chart.months.map((_, idx) => idx >= pIdx ? 5 : 2);
+            }
+            return ds;
+        }) },
         options: {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
@@ -3875,7 +3889,7 @@ function renderVnReport(report) {
               <div><div class="ind-chart" style="height:260px"><canvas id="chart-vn-deposit"></canvas></div><p class="ind-source-note" style="text-align:center">Tăng trưởng huy động vốn (lũy kế YTD, %)</p></div>
           </div>
           ${para(inv.paragraphs[1])}
-          <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng.</p>
+          <p class="ind-source-note">Các chuỗi lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) RESET mỗi tháng 1 — so sánh giữa các năm TẠI CÙNG mốc tháng để biết năm nay đang nhanh/chậm hơn năm trước, không so 2 giá trị cuối kỳ khác tháng. ⭐ Điểm nét đứt/hình sao (nếu có) là số TẠM TÍNH từ tổng 26 ngân hàng niêm yết/UPCoM (theo BCTC) khi số chính thức toàn nền kinh tế (NHNN/VBMA) chưa kịp cập nhật — sẽ tự thay bằng số chính thức (nét liền) ngay khi có.</p>
           <div class="ind-chart" style="height:280px;margin-top:14px"><canvas id="chart-vn-fdi-breakdown"></canvas></div>
           ${para(inv.paragraphs[2])}
           <p class="ind-source-note">FDI đăng ký tách theo loại hình (cấp mới/điều chỉnh) — nguồn dulieukinhte.com (Bộ KH&amp;ĐT/Hải quan), lũy kế từ đầu năm. Tổng 2 cột XẤP XỈ fdi_registered_usd_bn (còn thiếu phần "góp vốn, mua cổ phần" không có ở nguồn này).</p>`)}

@@ -51,17 +51,60 @@ def _by_year_month(s):
     return out
 
 
-def _year_compare_chart(s, n_years=2):
+def _year_compare_chart(s, n_years=2, provisional_from=None):
     """So sánh quỹ đạo theo THÁNG (1-12) giữa n_years năm gần nhất có dữ liệu — dùng cho các chỉ
     báo lũy kế YTD (tín dụng/huy động/FDI đăng ký/giải ngân đầu tư công) để thấy năm nay đang nhanh
-    hay chậm hơn năm trước TẠI CÙNG mốc tháng, thay vì so 2 giá trị cuối kỳ không cùng tháng."""
+    hay chậm hơn năm trước TẠI CÙNG mốc tháng, thay vì so 2 giá trị cuối kỳ không cùng tháng.
+    provisional_from (period 'YYYY-MM', xem _with_bank_fallback) — nếu có, đánh dấu để frontend vẽ
+    NÉT ĐỨT từ kỳ đó trở đi (số TẠM, lấy từ nguồn dự phòng, chưa phải số chính thức)."""
     bym = _by_year_month(s)
     years = sorted(bym)[-n_years:]
     months = list(range(1, 13))
-    return {
+    out = {
         "months": months,
         "series": {str(y): [bym.get(y, {}).get(m) for m in months] for y in years},
     }
+    if provisional_from:
+        py, pm = int(provisional_from[:4]), int(provisional_from[5:7])
+        if str(py) in out["series"]:
+            out["provisionalFrom"] = {"year": str(py), "month": pm}
+    return out
+
+
+_QUARTER_END_MONTH = {"Q1": "03", "Q2": "06", "Q3": "09", "Q4": "12"}
+
+
+def _quarter_end_period(q_period):
+    """'YYYY-Qn' -> 'YYYY-MM' (tháng cuối quý), hoặc None nếu không đúng dạng quý."""
+    if "-Q" not in q_period:
+        return None
+    y, q = q_period.split("-Q")
+    month = _QUARTER_END_MONTH.get(f"Q{q}")
+    return f"{y}-{month}" if month and y.isdigit() else None
+
+
+def _with_bank_fallback(series, bank_ytd_series):
+    """THEM 2026-10-09 (user: "TTHD/TTTD nếu thiếu thì lấy tổng TTHD toàn hệ thống bank mà tôi
+    tính ấy áp tạm sang, đoạn áp tạm vẽ nét khác để biết là số tạm") — credit_growth_ytd_total/
+    deposit_growth_ytd_monthly (VBMA/NHNN, toàn nền kinh tế) đôi khi TRỄ hơn bank_report_credit_
+    growth_ytd/bank_report_deposit_growth_ytd (tổng 26 NH niêm yết/UPCoM theo BCTC, xem
+    _add_bank_alm_derived_indicators trong template_vimo.py) — nếu nguồn ngân hàng niêm yết đã có
+    kỳ MỚI HƠN kỳ chính thức mới nhất, dùng TẠM kỳ đó (quy đổi quý -> tháng cuối quý) làm số ước
+    tính, rõ ràng CHỈ ĐẠI DIỆN 26/26 ngân hàng niêm yết/UPCoM (không phải toàn hệ thống/toàn nền
+    kinh tế) nên có thể lệch số chính thức khi công bố — KHÔNG tự ý suy diễn thêm, chỉ lấy ĐÚNG số
+    đã có. Trả (merged_series, provisional_period) — provisional_period là kỳ ĐẦU TIÊN bị thêm tạm
+    (None nếu không cần, tức nguồn chính thức đã đủ mới)."""
+    official_latest = max(series) if series else None
+    bank_points = {}
+    for q_period, value in bank_ytd_series.items():
+        m_period = _quarter_end_period(q_period)
+        if m_period and (official_latest is None or m_period > official_latest):
+            bank_points[m_period] = value
+    if not bank_points:
+        return series, None
+    merged = dict(series)
+    merged.update(bank_points)
+    return merged, min(bank_points)
 
 
 def _build_overview_text(latest, export_m, import_m, pmi, cpi_yoy, iip):
@@ -279,12 +322,12 @@ def _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_
 
 
 def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb,
-                        fdi_new, fdi_adjusted):
+                        fdi_new, fdi_adjusted, credit_provisional_from, deposit_provisional_from):
     pmi_periods = sorted(pmi)
     pmi_chart = {"periods": pmi_periods, "values": [pmi[p] for p in pmi_periods]}
     pub_inv_chart = _year_compare_chart(pub_inv_rate)
-    credit_chart = _year_compare_chart(credit_ytd)
-    deposit_chart = _year_compare_chart(deposit_ytd)
+    credit_chart = _year_compare_chart(credit_ytd, provisional_from=credit_provisional_from)
+    deposit_chart = _year_compare_chart(deposit_ytd, provisional_from=deposit_provisional_from)
     fdi_chart = _year_compare_chart(fdi_reg)
     # THEM 2026-10-09 (user: "khu vực này thêm biểu đồ giá trị FDI giải ngân đầu tư nhé, kia là FDI
     # đăng ký thôi" — fdi_chart ở trên là FDI ĐĂNG KÝ (vốn cam kết), KHÁC fdi_disbursed (vốn THỰC TẾ
@@ -328,8 +371,10 @@ def _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposi
     credit_latest = credit_ytd.get(credit_period) if credit_period else None
     deposit_latest = deposit_ytd.get(deposit_period) if deposit_period else None
     fdi_latest = fdi_reg.get(fdi_period) if fdi_period else None
-    credit_part = f"tín dụng lũy kế từ đầu năm đến tháng {credit_period} đạt {credit_latest:.2f}%" if credit_latest is not None else None
-    deposit_part = f"huy động vốn (đến tháng {deposit_period}) đạt {deposit_latest:.2f}%" if deposit_latest is not None else None
+    credit_tam = " (TẠM, theo BCTC 26 NH niêm yết/UPCoM)" if credit_provisional_from and credit_period == credit_provisional_from else ""
+    deposit_tam = " (TẠM, theo BCTC 26 NH niêm yết/UPCoM)" if deposit_provisional_from and deposit_period == deposit_provisional_from else ""
+    credit_part = f"tín dụng lũy kế từ đầu năm đến tháng {credit_period} đạt {credit_latest:.2f}%{credit_tam}" if credit_latest is not None else None
+    deposit_part = f"huy động vốn (đến tháng {deposit_period}) đạt {deposit_latest:.2f}%{deposit_tam}" if deposit_latest is not None else None
     s2 = [p for p in (credit_part, deposit_part) if p]
     if s2:
         txt2 = "Tăng trưởng " + ", ".join(s2) + " (YTD)."
@@ -383,6 +428,16 @@ def build_vn_report(raw):
     # credit_growth_total() (fetch_macro_data.py) về lý do giữ 2 key riêng (khác vintage/phương pháp).
     credit_ytd = _series(raw, "credit_growth_ytd_total") or _series(raw, "credit_growth_ytd_monthly")
     deposit_ytd = _series(raw, "deposit_growth_ytd_monthly")
+    # THEM 2026-10-09 (user: "TTHD/TTTD nếu thiếu thì lấy tổng toàn hệ thống bank mà tôi tính áp
+    # tạm sang, vẽ nét khác để biết là số tạm" — bank_report_credit_growth_ytd/bank_report_deposit_
+    # growth_ytd (tổng 26 NH niêm yết/UPCoM theo BCTC, QUÝ, xem _add_bank_alm_derived_indicators
+    # trong template_vimo.py — CHỈ có trong raw SAU khi hàm đó đã chạy, xem thứ tự gọi ở
+    # run_vimo_analysis()) dùng làm nguồn DỰ PHÒNG khi VBMA/NHNN (toàn nền kinh tế) chưa kịp cập
+    # nhật kỳ mới — xem _with_bank_fallback().
+    bank_credit_ytd = _series(raw, "bank_report_credit_growth_ytd")
+    bank_deposit_ytd = _series(raw, "bank_report_deposit_growth_ytd")
+    credit_ytd, credit_provisional_from = _with_bank_fallback(credit_ytd, bank_credit_ytd)
+    deposit_ytd, deposit_provisional_from = _with_bank_fallback(deposit_ytd, bank_deposit_ytd)
     fdi_new = _monthly_only(_series(raw, "fdi_registered_new_usd_bn"))
     fdi_adjusted = _monthly_only(_series(raw, "fdi_registered_adjusted_usd_bn"))
     retail_total = _series(raw, "retail_sales_total_monthly")
@@ -420,5 +475,5 @@ def build_vn_report(raw):
         "production": _build_production(latest, export_m, import_m, iip, iip_manuf, iip_elec, iip_water,
                                            iip_mining, pmi, export_fdi, export_dom, import_fdi, import_dom),
         "investment": _build_investment(latest, pmi, pub_inv_val, pub_inv_rate, credit_ytd, deposit_ytd, fdi_reg, fdi_disb,
-                                           fdi_new, fdi_adjusted),
+                                           fdi_new, fdi_adjusted, credit_provisional_from, deposit_provisional_from),
     }
