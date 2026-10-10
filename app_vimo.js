@@ -1928,18 +1928,19 @@ function renderFxSupplyDemandChart(indicators) {
 // suy diễn công thức trừ/cộng nào thêm (tránh bịa số), chỉ thêm 1 đường "TỔNG Cán cân tài chính"
 // (bop_sbv_financial_account) để đối chiếu — đường Tổng này LẤY TỪ CHÍNH bảng NHNN, KHÔNG PHẢI
 // tổng cộng dồn các đường bên dưới (NHNN còn nhiều dòng nhỏ khác như tiền & tiền gửi, công cụ tài
-// chính... không lấy hết nên 5 đường chi tiết sẽ KHÔNG cộng khớp 100% với đường Tổng).
+// chính... không lấy hết nên các đường chi tiết sẽ KHÔNG cộng khớp 100% với đường Tổng).
+// SUA 2026-10-10 (user: "có cái VN đầu tư trực tiếp và gián tiếp ra ngoài bỏ đi vì bé quá, vẽ vào
+// rối biểu đồ" — bỏ 2 đường "Tài sản" (bop_sbv_fdi_assets_bop/portfolio_assets_bop, VN đầu tư ra
+// nước ngoài), giá trị quá nhỏ so với 3 đường còn lại nên nằm dẹt gần 0, chỉ gây rối mắt.
 function renderFxFinancialAccountChart(indicators) {
     const canvas = document.getElementById('chart-fx-financial-account');
     const card = document.getElementById('fx-financial-account-chart-card');
     if (!canvas) return;
     const RAW_SERIES = [
         { key: 'bop_sbv_fdi_liabilities_bop', label: 'FDI vào VN (Nợ — dòng vốn chính)', color: '#10b981' },
-        { key: 'bop_sbv_fdi_assets_bop', label: 'VN đầu tư FDI ra ngoài (Tài sản)', color: '#6ee7b7', dash: [4, 3] },
         { key: 'bop_sbv_portfolio_liabilities_bop', label: 'Đầu tư gián tiếp — Nợ (khối ngoại mua/bán CP-TP VN)', color: '#60a5fa' },
-        { key: 'bop_sbv_portfolio_assets_bop', label: 'VN đầu tư gián tiếp ra ngoài (Tài sản)', color: '#93c5fd', dash: [4, 3] },
         { key: 'bop_sbv_external_debt_net', label: 'Vay nợ nước ngoài (ròng)', color: '#f59e0b' },
-        { key: 'bop_sbv_financial_account', label: 'TỔNG Cán cân tài chính (từ NHNN, không phải tổng 5 đường trên)', color: '#e5e7eb', bold: true },
+        { key: 'bop_sbv_financial_account', label: 'TỔNG Cán cân tài chính (từ NHNN, không phải tổng 3 đường trên)', color: '#e5e7eb', bold: true },
     ];
     const validSeries = RAW_SERIES.filter(s => indicators[s.key] && indicators[s.key].series.length);
     if (!validSeries.length) { if (card) card.style.display = 'none'; return; }
