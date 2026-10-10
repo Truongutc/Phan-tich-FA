@@ -2,7 +2,16 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- THEM 2026-10-10 (user: "tôi muốn ở điện thoại cũng sẽ xem giao diện như ở máy tính được
+         không, vì giao diện điện thoại xem quá xấu, xuất ảnh ra thì cũng xấu, và không thấy có
+         bảng biểu gì cả" — layout trang này có nhiều rule CSS/JS CHỈ áp dụng ở màn hẹp (auto-fit
+         grid, Chart.js responsive theo viewport hẹp...), từng phát sinh lỗi tính sai kích thước
+         trên di động (xem ghi chú "FIX mobile 2026-10-02" ở .vimo-indicator-grid bên dưới) — ép
+         cứng viewport=1400 (khớp .app-shell max-width 1440px) để MỌI thiết bị, kể cả điện thoại,
+         đều render đúng layout DESKTOP (trình duyệt tự scale/zoom-out để vừa khung hình, người dùng
+         pinch-zoom để đọc chi tiết) — tránh toàn bộ các rule/lỗi chỉ xảy ra ở màn hẹp, đồng thời
+         giúp ảnh xuất (html-to-image) luôn chụp đúng layout desktop bất kể màn hình vật lý thật. -->
+    <meta name="viewport" content="width=1400">
     <title>AIC FA — Phân Tích Vĩ Mô</title>
     <meta name="description" content="Phân tích Vĩ mô Kinh tế Việt Nam — Scorecard 6 nhóm chỉ số & Ma trận Quyết định Phân bổ Vốn">
 
