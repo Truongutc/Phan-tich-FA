@@ -3993,6 +3993,27 @@ function renderVnReport(report) {
           <div class="ind-chart" style="height:280px;margin-top:14px"><canvas id="chart-vn-fdi-breakdown"></canvas></div>
           ${para(inv.paragraphs[2])}
           <p class="ind-source-note">FDI đăng ký tách theo loại hình (cấp mới/điều chỉnh) — nguồn dulieukinhte.com (Bộ KH&amp;ĐT/Hải quan), lũy kế từ đầu năm. Tổng 2 cột XẤP XỈ fdi_registered_usd_bn (còn thiếu phần "góp vốn, mua cổ phần" không có ở nguồn này).</p>`)}
+      <div class="card margin-top-20" id="vn-report-narrative-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+              <h3 class="border-blue" style="margin:0">📝 Trích Nhận Định — Copy sang bài viết</h3>
+              <button class="vn-report-no-capture" onclick="copyVnReportNarrative(this)"
+                  title="Copy toàn bộ lời nhận định (văn bản thuần, không kèm ảnh/bảng) để dán sang bài viết khác"
+                  style="flex-shrink:0;background:#22c55e;border:none;color:#fff;font-weight:600;font-size:0.78em;padding:6px 10px;border-radius:7px;cursor:pointer">
+                  📋 Copy toàn bộ nhận định
+              </button>
+          </div>
+          <p class="ind-source-note" style="margin-top:10px">Gộp lại toàn bộ lời nhận định rule-based (ghép câu từ số liệu thật, không phải văn AI tự viết tự do) ở các mục trên vào 1 chỗ để copy nhanh — bấm nút rồi dán (Ctrl+V) sang bài viết/báo cáo khác.</p>
+          <div id="vn-report-narrative-text" style="margin-top:6px">
+              <h4 style="margin:14px 0 6px">📋 Tóm tắt tháng ${report.asOf}</h4>
+              ${para(report.summaryText)}
+              <h4 style="margin:14px 0 6px">🛍️ Tiêu dùng &amp; Dịch vụ</h4>
+              ${cons.paragraphs.map(para).join('')}
+              <h4 style="margin:14px 0 6px">🏭 Sản xuất &amp; Thương mại</h4>
+              ${prod.paragraphs.map(para).join('')}
+              <h4 style="margin:14px 0 6px">💰 Đầu tư, Tín dụng &amp; FDI</h4>
+              ${inv.paragraphs.map(para).join('')}
+          </div>
+      </div>
     `;
 
     vnRetailChart(cons.retailChart);
@@ -4019,6 +4040,47 @@ function renderVnReport(report) {
     };
     setTimeout(scrollTablesToLatestVn, 0);
     setTimeout(scrollTablesToLatestVn, 300);
+}
+
+// THEM 2026-10-10 (user báo trên điện thoại "xuất ảnh ra thì ... thiếu biểu đồ, bảng biểu" — điều
+// tra bằng Playwright thật với engine WebKit (Safari iPhone/Samsung Internet) mất cả buổi mới ra
+// đúng nguyên nhân: html-to-image dựng 1 SVG có <foreignObject> chứa toàn bộ DOM, rồi nạp SVG đó
+// làm nguồn cho 1 <img>/<canvas> để rasterize ra ảnh cuối — nhưng WebKit có lỗi lâu năm KHÔNG vẽ
+// được ảnh raster (canvas/img) nằm LỒNG BÊN TRONG foreignObject khi SVG đó lại đang được dùng làm
+// nguồn cho 1 ảnh khác (coi là "external resource", bị chặn vẽ) — dù html-to-image vẫn tạo ra SVG
+// với data:image/png đầy đủ (đã log ra kiểm tra, base64 dài hàng trăm KB, không rỗng), WebKit vẫn
+// không chịu vẽ nó ra. Chromium (desktop + máy ảo Android Chrome) không bị lỗi này, nên trước đó
+// test trên Chromium tưởng đã ổn. Thử thay canvas bằng <img> rồi mới chụp cũng KHÔNG ăn thua — vì
+// vẫn là "ảnh lồng trong foreignObject", y nguyên tình trạng lỗi.
+// Khắc phục THẬT: không để canvas/img nào lọt vào trong foreignObject nữa — ẩn tạm các canvas
+// (visibility:hidden, vẫn giữ chỗ layout) rồi mới cho html-to-image chụp (lúc này khu vực chụp chỉ
+// còn chữ/bảng/nền, phần html-to-image làm tốt), sau đó dán đè chính canvas đó lên vị trí cũ bằng
+// ctx.drawImage() ngay trên <canvas> kết quả — drawImage giữa 2 canvas là lệnh 2D thuần, không qua
+// SVG/foreignObject nên mọi engine (gồm WebKit) vẽ đúng (đây cũng là cách saveAstroCombinedImage ở
+// app_chiemtinh.js đã ghép 2 ảnh chụp riêng thành công — cùng nguyên lý).
+async function _captureSectionToCanvas(area, opts) {
+    const canvases = Array.from(area.querySelectorAll('canvas'));
+    const areaRect = area.getBoundingClientRect();
+    const positions = canvases.map((canvas) => {
+        const r = canvas.getBoundingClientRect();
+        return {
+            canvas, prevVisibility: canvas.style.visibility,
+            x: r.left - areaRect.left, y: r.top - areaRect.top, w: r.width, h: r.height,
+        };
+    });
+    positions.forEach((p) => { p.canvas.style.visibility = 'hidden'; });
+    let outCanvas;
+    try {
+        outCanvas = await htmlToImage.toCanvas(area, opts);
+    } finally {
+        positions.forEach((p) => { p.canvas.style.visibility = p.prevVisibility; });
+    }
+    const scale = outCanvas.width / areaRect.width;
+    const ctx = outCanvas.getContext('2d');
+    positions.forEach((p) => {
+        if (p.w > 0 && p.h > 0) ctx.drawImage(p.canvas, p.x * scale, p.y * scale, p.w * scale, p.h * scale);
+    });
+    return outCanvas;
 }
 
 // THEM 2026-10-09 (user: "toàn bộ phần tab báo cáo này tôi muốn lưu được dưới dạng ảnh, bấm vào là
@@ -4048,10 +4110,11 @@ async function saveVnReportSection(sectionId, btnEl) {
         // skipFonts:true — tránh html-to-image cố INLINE font Google Fonts (bị CORS chặn đọc
         // cssRules của stylesheet cross-origin, chỉ log lỗi vô hại nhưng gây chậm/ồn console) —
         // không cần nhúng font vào ảnh, trình duyệt đã render chữ đúng font trước khi chụp rồi.
-        const blob = await htmlToImage.toBlob(area, {
+        const outCanvas = await _captureSectionToCanvas(area, {
             backgroundColor: '#0b1220', pixelRatio: 2, skipFonts: true,
             filter: (node) => !(node.classList && node.classList.contains('vn-report-no-capture')),
         });
+        const blob = await new Promise((resolve) => outCanvas.toBlob(resolve, 'image/png'));
         if (!blob) {
             if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
             return;
@@ -4081,5 +4144,33 @@ async function saveVnReportSection(sectionId, btnEl) {
         console.error('Lỗi xuất ảnh báo cáo:', e);
         if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
         alert('Không tạo được ảnh, thử lại sau.');
+    }
+}
+
+// THEM 2026-10-10 (user: "tạo thêm cho tôi 1 vùng dưới cuối cùng để copy phần lời đánh giá nhé...
+// tôi sẽ copy phần lời này và đẩy sang bài viết cho đẹp" — khác với saveVnReportSection() ở trên
+// (chụp ẢNH để dán vào chat/mạng xã hội), đây copy VĂN BẢN THUẦN (không bảng/biểu đồ) để dán vào
+// trình soạn bài viết/Word — dùng innerText của #vn-report-narrative-text để giữ đúng xuống dòng
+// giữa các tiêu đề phụ/đoạn văn mà không phải tự ghép lại chuỗi text 1 lần nữa.
+async function copyVnReportNarrative(btnEl) {
+    const el = document.getElementById('vn-report-narrative-text');
+    if (!el) return;
+    const text = el.innerText.trim();
+    const prevText = btnEl ? btnEl.innerHTML : '';
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            if (btnEl) {
+                btnEl.innerHTML = '✅ Đã copy!';
+                setTimeout(() => { btnEl.innerHTML = prevText; }, 2200);
+            }
+            return;
+        }
+        throw new Error('Clipboard API không khả dụng');
+    } catch (e) {
+        // Trình duyệt không hỗ trợ/không cấp quyền clipboard văn bản (hay gặp trên mobile qua
+        // HTTP không an toàn) — hiện hộp thoại có sẵn nội dung để người dùng tự bôi đen & copy.
+        if (btnEl) btnEl.innerHTML = prevText;
+        window.prompt('Không copy tự động được — bôi đen (Ctrl+A) rồi copy (Ctrl+C) đoạn dưới đây:', text);
     }
 }

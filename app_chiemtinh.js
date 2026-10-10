@@ -787,6 +787,38 @@ function initCycleTool() {
 // property/nền trong suốt mà html2canvas hay lỗi), rồi tự vẽ ghép dọc (canvas.drawImage) thành 1
 // ảnh DUY NHẤT trước khi copy/tải — dùng toCanvas() (không phải toBlob trực tiếp) để có canvas gốc
 // ghép tay.
+// THEM 2026-10-10 (cùng lỗi WebKit đã điều tra kỹ và sửa ở app_vimo.js — xem ghi chú đầy đủ tại
+// _captureSectionToCanvas() trong app_vimo.js: WebKit không vẽ được canvas/img LỒNG trong
+// SVG <foreignObject> khi SVG đó lại được dùng làm nguồn cho 1 ảnh khác — nên html-to-image chụp
+// ra TRẮNG đúng chỗ biểu đồ vòng hành tinh trên Safari/Samsung Internet. Thay canvas bằng <img>
+// trước khi chụp KHÔNG sửa được (vẫn là ảnh lồng trong foreignObject). Khắc phục thật: ẩn tạm
+// canvas (visibility:hidden, giữ chỗ layout), chụp phần còn lại (chữ/nền — html-to-image làm tốt),
+// rồi dán đè canvas gốc lên đúng vị trí bằng ctx.drawImage() thuần (không qua SVG nên mọi engine
+// vẽ đúng).
+async function _captureSectionToCanvas(area, opts) {
+    const canvases = Array.from(area.querySelectorAll('canvas'));
+    const areaRect = area.getBoundingClientRect();
+    const positions = canvases.map((canvas) => {
+        const r = canvas.getBoundingClientRect();
+        return {
+            canvas, prevVisibility: canvas.style.visibility,
+            x: r.left - areaRect.left, y: r.top - areaRect.top, w: r.width, h: r.height,
+        };
+    });
+    positions.forEach((p) => { p.canvas.style.visibility = 'hidden'; });
+    let outCanvas;
+    try {
+        outCanvas = await htmlToImage.toCanvas(area, opts);
+    } finally {
+        positions.forEach((p) => { p.canvas.style.visibility = p.prevVisibility; });
+    }
+    const scale = outCanvas.width / areaRect.width;
+    const ctx = outCanvas.getContext('2d');
+    positions.forEach((p) => {
+        if (p.w > 0 && p.h > 0) ctx.drawImage(p.canvas, p.x * scale, p.y * scale, p.w * scale, p.h * scale);
+    });
+    return outCanvas;
+}
 async function saveAstroCombinedImage() {
     const btn = document.getElementById('astro-save-btn');
     const card1 = document.getElementById('assessment-overall-card');
@@ -801,8 +833,8 @@ async function saveAstroCombinedImage() {
         if (document.fonts && document.fonts.ready) await document.fonts.ready;
         const opts = { backgroundColor: '#0b1220', pixelRatio: 2, skipFonts: true };
         const [canvas1, canvas2] = await Promise.all([
-            htmlToImage.toCanvas(card1, opts),
-            htmlToImage.toCanvas(card2, opts),
+            _captureSectionToCanvas(card1, opts),
+            _captureSectionToCanvas(card2, opts),
         ]);
         const gap = 32; // khoảng cách giữa 2 phần ghép, đã theo đúng pixelRatio của 2 canvas gốc
         const merged = document.createElement('canvas');
