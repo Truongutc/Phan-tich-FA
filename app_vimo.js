@@ -46,6 +46,13 @@ const CHART_DEFAULTS = {
     },
 };
 
+// THEM 2026-10-10 (user: "tất cả các ghi chú kí hiệu biểu đồ cho chữ rõ hơn đi, nhìn mờ quá, để
+// màu trắng cho rõ" — hầu hết chart KHÔNG set color riêng cho legend.labels, nên rơi về màu mặc
+// định của Chart.js (#666, xám tối) — trên nền tối #0b1220 của dashboard thì gần như không đọc
+// được/mờ. Set 1 LẦN DUY NHẤT ở global default thay vì sửa tay từng chart (hàng chục chỗ) — mọi
+// legend không ghi đè riêng sẽ tự dùng màu này.
+Chart.defaults.color = '#ffffff';
+
 // Cấu hình chartjs-plugin-datalabels dùng chung cho các chart NHIỀU đường + NHIỀU điểm/ngày
 // (interbank/bond yield history) — chỉ hiện số ở điểm CUỐI mỗi đường (giá trị mới nhất) để tránh
 // rối mắt khi có 15-20+ điểm x nhiều kỳ hạn chồng lên nhau; vẫn cho biết "số giá trị" ngay trên
@@ -2031,9 +2038,11 @@ function renderFxBalanceOverviewChart(indicators) {
           backgroundColor: sumArr.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(16,185,129,0.55)' : 'rgba(239,68,68,0.55)')) },
         { label: 'Cán cân vãng lai (tổng)', data: caArr, type: 'line', yAxisID: 'y', order: 1,
           borderColor: '#60a5fa', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#60a5fa', tension: 0.2, spanGaps: true,
+          fill: { target: 'origin', above: '#60a5fa22', below: '#60a5fa22' },
           datalabels: _endpointDatalabelsConfig(0) },
         { label: 'Cán cân tài chính (tổng)', data: faArr, type: 'line', yAxisID: 'y', order: 1,
           borderColor: '#f59e0b', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#f59e0b', tension: 0.2, spanGaps: true,
+          fill: { target: 'origin', above: '#f59e0b22', below: '#f59e0b22' },
           datalabels: _endpointDatalabelsConfig(0) },
     ];
     const usdvnd = indicators['usdvnd_monthly_avg'];
@@ -2063,6 +2072,11 @@ function renderFxBalanceOverviewChart(indicators) {
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, offset: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     // SUA 2026-10-10 (user: "chả biết khi nào cán cân âm lúc nào dương cả" — kẻ
+                     // ĐẬM/SÁNG riêng đúng mốc 0 để thấy ngay ranh giới âm/dương, không cần dò
+                     // ngược lên trục mới biết).
+                     grid: { color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.04)',
+                             lineWidth: (ctx) => ctx.tick.value === 0 ? 1.5 : 1 },
                      title: { display: true, text: 'Triệu USD (ròng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
@@ -2704,7 +2718,7 @@ function drawOneValHistChart(canvasId, existingChart, points, bandData, unitLabe
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 9 }, color: '#8892a4' } },
+                legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 9 } } },
                 tooltip: {
                     callbacks: {
                         title: (items) => items[0] ? `Ngày: ${items[0].label}` : '',
