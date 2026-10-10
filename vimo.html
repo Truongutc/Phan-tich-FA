@@ -686,6 +686,13 @@
                 <p class="vimo-chart-subtitle">Cán cân vãng lai theo 4 cấu phần RÒNG (hàng hóa/dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — mỗi đường đã là Xuất-Nhập, không phải số gộp) + đường tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN (xem ghi chú đầu trang).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand"></canvas></div>
             </div>
+            <!-- THEM 2026-10-10: cấu phần Cán cân TÀI CHÍNH (FDI/Đầu tư gián tiếp/Vay nợ) — xem
+                 renderFxFinancialAccountChart trong app_vimo.js — đối chiếu trực quan với cán cân
+                 vãng lai ở trên để thấy dòng vốn có thể bù/đảo chiều hoàn toàn so với dòng vãng lai. -->
+            <div id="fx-financial-account-chart-card" style="display:none" class="margin-top-20">
+                <p class="vimo-chart-subtitle">Cán cân TÀI CHÍNH theo cấu phần chính (FDI, Đầu tư gián tiếp, Vay nợ nước ngoài — mỗi đường đã là số RÒNG theo quý, lấy thẳng từ bảng NHNN/IMF, giữ ĐÚNG dấu gốc: dương = dòng vốn vào, âm = dòng vốn ra) + đường TỔNG Cán cân tài chính (từ NHNN, KHÔNG PHẢI tổng cộng dồn 5 đường kia — NHNN còn nhiều dòng nhỏ khác chưa lấy hết) + tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan với cán cân vãng lai ở biểu đồ trên.</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-financial-account"></canvas></div>
+            </div>
             <div id="fx-rate-gap-chart-card" style="display:none" class="margin-top-20">
                 <p class="vimo-chart-subtitle">Tỷ giá USD bán ra: Vietcombank vs Chợ đen + Gap (nét đứt, trục phải) — gap nới rộng/chuyển dương là dấu hiệu đầu cơ/nhu cầu USD ngoài hệ thống ngân hàng tăng.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-vcb-cho-den-gap"></canvas></div>

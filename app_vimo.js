@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderVnReport(data.vnReport);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
+    renderFxFinancialAccountChart(data.indicators);
     renderFxRateGapChart(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
@@ -1907,6 +1908,85 @@ function renderFxSupplyDemandChart(indicators) {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
                      title: { display: true, text: 'Triệu USD (ròng)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM 2026-10-10 (user hỏi "các yếu tố trong cán cân tài chính là gì" rồi yêu cầu "tạo thêm biểu
+// đồ về các yếu tố cán cân vốn [[cán cân tài chính]] tác động lên FDI" — vẽ các cấu phần CHÍNH của
+// Cán cân tài chính (FDI/Đầu tư gián tiếp/Vay nợ nước ngoài), đối chiếu tỷ giá, CÙNG KIỂU với
+// renderFxSupplyDemandChart (4 cấu phần vãng lai) để so sánh trực quan 2 loại cán cân.
+// KHÁC với cán cân vãng lai (phải LẤY Xuất trừ Nhập vì NHNN báo Thu/Chi là 2 số GỘP dương riêng
+// biệt): mỗi dòng Tài sản/Nợ trong Cán cân tài chính NHNN đã tự báo cáo dưới dạng SỐ RÒNG theo quý
+// VÀ ĐÃ MANG SẴN DẤU đúng quy ước (dương = tăng Nợ/dòng vốn vào, âm = tăng Tài sản/dòng vốn ra —
+// xem note ở _IMF_BOP_FIELD_MAP trong fetch_macro_data.py) — nên ở đây VẼ THẲNG từng dòng, KHÔNG tự
+// suy diễn công thức trừ/cộng nào thêm (tránh bịa số), chỉ thêm 1 đường "TỔNG Cán cân tài chính"
+// (bop_sbv_financial_account) để đối chiếu — đường Tổng này LẤY TỪ CHÍNH bảng NHNN, KHÔNG PHẢI
+// tổng cộng dồn các đường bên dưới (NHNN còn nhiều dòng nhỏ khác như tiền & tiền gửi, công cụ tài
+// chính... không lấy hết nên 5 đường chi tiết sẽ KHÔNG cộng khớp 100% với đường Tổng).
+function renderFxFinancialAccountChart(indicators) {
+    const canvas = document.getElementById('chart-fx-financial-account');
+    const card = document.getElementById('fx-financial-account-chart-card');
+    if (!canvas) return;
+    const RAW_SERIES = [
+        { key: 'bop_sbv_fdi_liabilities_bop', label: 'FDI vào VN (Nợ — dòng vốn chính)', color: '#10b981' },
+        { key: 'bop_sbv_fdi_assets_bop', label: 'VN đầu tư FDI ra ngoài (Tài sản)', color: '#6ee7b7', dash: [4, 3] },
+        { key: 'bop_sbv_portfolio_liabilities_bop', label: 'Đầu tư gián tiếp — Nợ (khối ngoại mua/bán CP-TP VN)', color: '#60a5fa' },
+        { key: 'bop_sbv_portfolio_assets_bop', label: 'VN đầu tư gián tiếp ra ngoài (Tài sản)', color: '#93c5fd', dash: [4, 3] },
+        { key: 'bop_sbv_external_debt_net', label: 'Vay nợ nước ngoài (ròng)', color: '#f59e0b' },
+        { key: 'bop_sbv_financial_account', label: 'TỔNG Cán cân tài chính (từ NHNN, không phải tổng 5 đường trên)', color: '#e5e7eb', bold: true },
+    ];
+    const validSeries = RAW_SERIES.filter(s => indicators[s.key] && indicators[s.key].series.length);
+    if (!validSeries.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = Array.from(new Set(validSeries.flatMap(s =>
+        indicators[s.key].series.map(p => p.period)))).filter(p => p >= '2020-Q1').sort();
+    const datasets = validSeries.map(s => {
+        const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
+        const data = periods.map(p => { const v = byPeriod[p]; return (v === null || v === undefined) ? null : v; });
+        return {
+            label: s.label, data, yAxisID: 'y',
+            borderColor: s.color, backgroundColor: s.color + '15', fill: false,
+            borderWidth: s.bold ? 3 : 2, borderDash: s.dash || [], tension: 0.25,
+            pointRadius: s.bold ? 2 : 3, pointBackgroundColor: s.color, spanGaps: true,
+            datalabels: _endpointDatalabelsConfig(0),
+        };
+    });
+    // USD/VND thực tế (tham chiếu, trục phải) — cùng cách quy về cuối quý như renderFxSupplyDemandChart.
+    const usdvnd = indicators['usdvnd_monthly_avg'];
+    if (usdvnd && usdvnd.series.length) {
+        const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
+        const usdvndByMonth = Object.fromEntries(usdvnd.series.map(p => [p.period, p.value]));
+        const usdvndArr = periods.map(period => {
+            const [year, q] = period.split('-Q');
+            if (!q) return null;
+            return usdvndByMonth[`${year}-${QUARTER_END_MONTH[q]}`] ?? null;
+        });
+        if (usdvndArr.some(v => v !== null)) {
+            datasets.push({
+                label: 'USD/VND thực tế (bình quân tháng, cuối quý)', data: usdvndArr, yAxisID: 'y1',
+                borderColor: '#ef4444', borderDash: [6, 4], borderWidth: 2.5, pointRadius: 0,
+                fill: false, tension: 0.2, spanGaps: true,
+                datalabels: _endpointDatalabelsConfig(0),
+            });
+        }
+    }
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Triệu USD (dương = dòng vào ròng, âm = dòng ra ròng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
             },
