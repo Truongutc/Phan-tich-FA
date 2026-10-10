@@ -4119,25 +4119,15 @@ async function saveVnReportSection(sectionId, btnEl) {
             if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
             return;
         }
-        let copied = false;
-        try {
-            if (navigator.clipboard && window.ClipboardItem) {
-                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                copied = true;
-            }
-        } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — rơi xuống tải file */ }
-        if (!copied) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `bao-cao-vi-mo-${sectionId}-${new Date().toISOString().slice(0, 10)}.png`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
+        const filename = `bao-cao-vi-mo-${sectionId}-${new Date().toISOString().slice(0, 10)}.png`;
+        const resultLabel = await _deliverImageBlob(blob, filename);
+        if (resultLabel === null) {
+            // người dùng tự bấm Hủy trên hộp chia sẻ — không phải lỗi, không làm gì thêm.
+            if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
+            return;
         }
         if (btnEl) {
-            btnEl.innerHTML = copied ? '✅ Đã copy ảnh!' : '✅ Đã tải ảnh!';
+            btnEl.innerHTML = resultLabel;
             setTimeout(() => { btnEl.innerHTML = prevText; btnEl.disabled = false; }, 2200);
         }
     } catch (e) {
@@ -4145,6 +4135,44 @@ async function saveVnReportSection(sectionId, btnEl) {
         if (btnEl) { btnEl.innerHTML = prevText; btnEl.disabled = false; }
         alert('Không tạo được ảnh, thử lại sau.');
     }
+}
+
+// THEM 2026-10-10 (user: "trên mobile khi bấm lưu ảnh thì lúc xem ok nhưng không thấy tải về" —
+// <a download> với blob: URL không đáng tin cậy trên Safari/WebKit di động (thường chỉ MỞ ảnh ra
+// xem thay vì lưu file), và navigator.clipboard.write(image) cũng hay bị chặn trên mobile (yêu cầu
+// gesture người dùng còn "nóng" ngay lúc gọi, nhưng code đã qua nhiều await trước đó nên mất).
+// Khắc phục: ưu tiên Web Share API (navigator.share với file) khi máy hỗ trợ — mở đúng màn hình
+// chia sẻ/lưu ảnh gốc của hệ điều hành (iOS: "Lưu ảnh" vào Photos; Android: chia sẻ tới app khác),
+// đây là cách CHUẨN và chắc chắn hoạt động để lưu ảnh trên di động. Copy clipboard vẫn thử TRƯỚC
+// (tiện cho desktop dán thẳng vào chat), rồi mới tới Share, cuối cùng mới rơi về <a download> (vẫn
+// ăn tốt trên desktop Chrome/Firefox và Android Chrome). Trả về null nếu người dùng tự hủy hộp
+// chia sẻ (không phải lỗi, không cần tải thay).
+async function _deliverImageBlob(blob, filename) {
+    try {
+        if (navigator.clipboard && window.ClipboardItem) {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            return '✅ Đã copy ảnh!';
+        }
+    } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — thử cách khác */ }
+    try {
+        const file = new File([blob], filename, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file] });
+            return '✅ Đã chia sẻ!';
+        }
+    } catch (e) {
+        if (e && e.name === 'AbortError') return null;
+        /* không hỗ trợ Web Share API hoặc lỗi khác — rơi xuống tải file */
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    return '✅ Đã tải ảnh!';
 }
 
 // THEM 2026-10-10 (user: "tạo thêm cho tôi 1 vùng dưới cuối cùng để copy phần lời đánh giá nhé...

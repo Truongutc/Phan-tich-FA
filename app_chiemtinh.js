@@ -851,25 +851,15 @@ async function saveAstroCombinedImage() {
             if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
             return;
         }
-        let copied = false;
-        try {
-            if (navigator.clipboard && window.ClipboardItem) {
-                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                copied = true;
-            }
-        } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — rơi xuống tải file */ }
-        if (!copied) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `chiem-tinh-ket-luan-${new Date().toISOString().slice(0, 10)}.png`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
+        const filename = `chiem-tinh-ket-luan-${new Date().toISOString().slice(0, 10)}.png`;
+        const resultLabel = await _deliverImageBlob(blob, filename);
+        if (resultLabel === null) {
+            // người dùng tự bấm Hủy trên hộp chia sẻ — không phải lỗi, không làm gì thêm.
+            if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
+            return;
         }
         if (btn) {
-            btn.innerHTML = copied ? '✅ Đã copy ảnh vào clipboard!' : '✅ Trình duyệt không hỗ trợ copy — đã tự tải file ảnh!';
+            btn.innerHTML = resultLabel;
             setTimeout(() => { btn.innerHTML = prevText; btn.disabled = false; }, 2500);
         }
     } catch (e) {
@@ -877,4 +867,35 @@ async function saveAstroCombinedImage() {
         if (btn) { btn.innerHTML = prevText; btn.disabled = false; }
         alert('Không tạo được ảnh, thử lại sau.');
     }
+}
+
+// THEM 2026-10-10 (cùng lý do đã sửa ở app_vimo.js — <a download> không đáng tin cậy trên
+// Safari/WebKit di động, ưu tiên Web Share API để chắc chắn lưu được ảnh. Xem ghi chú đầy đủ tại
+// _deliverImageBlob() trong app_vimo.js.
+async function _deliverImageBlob(blob, filename) {
+    try {
+        if (navigator.clipboard && window.ClipboardItem) {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            return '✅ Đã copy ảnh vào clipboard!';
+        }
+    } catch (e) { /* trình duyệt không hỗ trợ/không cấp quyền clipboard ảnh — thử cách khác */ }
+    try {
+        const file = new File([blob], filename, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file] });
+            return '✅ Đã chia sẻ!';
+        }
+    } catch (e) {
+        if (e && e.name === 'AbortError') return null;
+        /* không hỗ trợ Web Share API hoặc lỗi khác — rơi xuống tải file */
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    return '✅ Đã tự tải file ảnh!';
 }
