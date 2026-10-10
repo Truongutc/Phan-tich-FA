@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderDepositRateCakeChart(data.indicators);
     renderUsMacro(data.usMacro);
     renderVnReport(data.vnReport);
+    renderFxBalanceOverviewChart(data.indicators);
     renderFxSupplyDemandTotalChart(data.indicators);
     renderFxSupplyDemandChart(data.indicators);
     renderFxFinancialAccountChart(data.indicators);
@@ -1988,6 +1989,81 @@ function renderFxFinancialAccountChart(indicators) {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
                      title: { display: true, text: 'Triệu USD (dương = dòng vào ròng, âm = dòng ra ròng)', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
+                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM 2026-10-10 (user: "thêm TRƯỚC biểu đồ cán cân vãng lai cho tôi biểu đồ tỷ giá và đường
+// cán cân tài chính tổng và cán cân vãng lai tổng để tôi xem tỷ giá biến động do đường nào chính,
+// và cột thể hiện cán cân vãng lai + cán cân tài chính để xem tổng vào ra của 2 cái này như nào"
+// — 2 đường TỔNG (current_account/financial_account LẤY THẲNG từ bảng NHNN, đã là số ròng/quý,
+// không tự tính lại từ cấu phần con) để so trực quan đường nào biến động mạnh/đồng pha hơn với
+// tỷ giá, + 1 cột = current_account + financial_account (cộng thẳng, không cần lo quy ước dấu vì
+// cả 2 đã cùng quy ước dương=vào/âm=ra). CỐ Ý KHÔNG gọi cột này là "Cán cân tổng thể" (dù theo
+// BPM6 CA+FA+E&O ≈ Cán cân tổng thể) vì CÒN THIẾU Lỗi & sai sót (bop_sbv_errors_omissions, user
+// đã được giải thích là rất lớn với VN) — ghi rõ cảnh báo trong subtitle HTML để không gây hiểu
+// lầm đây là số tổng thể chính thức.
+function renderFxBalanceOverviewChart(indicators) {
+    const canvas = document.getElementById('chart-fx-balance-overview');
+    const card = document.getElementById('fx-balance-overview-chart-card');
+    if (!canvas) return;
+    const ca = indicators['bop_sbv_current_account'];
+    const fa = indicators['bop_sbv_financial_account'];
+    if (!ca || !fa || !ca.series.length || !fa.series.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = Array.from(new Set([...ca.series.map(p => p.period), ...fa.series.map(p => p.period)]))
+        .filter(p => p >= '2020-Q1').sort();
+    const caByPeriod = Object.fromEntries(ca.series.map(p => [p.period, p.value]));
+    const faByPeriod = Object.fromEntries(fa.series.map(p => [p.period, p.value]));
+    const caArr = periods.map(p => caByPeriod[p] ?? null);
+    const faArr = periods.map(p => faByPeriod[p] ?? null);
+    const sumArr = periods.map((p, i) => (caArr[i] === null || faArr[i] === null) ? null : caArr[i] + faArr[i]);
+
+    const datasets = [
+        { label: 'Vãng lai + Tài chính (cộng, KHÔNG phải Cán cân tổng thể — xem ghi chú)', data: sumArr,
+          type: 'bar', yAxisID: 'y', order: 3,
+          backgroundColor: sumArr.map(v => v === null ? '#999' : (v >= 0 ? 'rgba(16,185,129,0.55)' : 'rgba(239,68,68,0.55)')) },
+        { label: 'Cán cân vãng lai (tổng)', data: caArr, type: 'line', yAxisID: 'y', order: 1,
+          borderColor: '#60a5fa', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#60a5fa', tension: 0.2, spanGaps: true,
+          datalabels: _endpointDatalabelsConfig(0) },
+        { label: 'Cán cân tài chính (tổng)', data: faArr, type: 'line', yAxisID: 'y', order: 1,
+          borderColor: '#f59e0b', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#f59e0b', tension: 0.2, spanGaps: true,
+          datalabels: _endpointDatalabelsConfig(0) },
+    ];
+    const usdvnd = indicators['usdvnd_monthly_avg'];
+    if (usdvnd && usdvnd.series.length) {
+        const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
+        const usdvndByMonth = Object.fromEntries(usdvnd.series.map(p => [p.period, p.value]));
+        const usdvndArr = periods.map(period => {
+            const [year, q] = period.split('-Q');
+            if (!q) return null;
+            return usdvndByMonth[`${year}-${QUARTER_END_MONTH[q]}`] ?? null;
+        });
+        if (usdvndArr.some(v => v !== null)) {
+            datasets.push({
+                label: 'USD/VND thực tế (bình quân tháng, cuối quý)', data: usdvndArr, type: 'line', yAxisID: 'y1', order: 0,
+                borderColor: '#ef4444', borderDash: [6, 4], borderWidth: 2.5, pointRadius: 0,
+                fill: false, tension: 0.2, spanGaps: true,
+                datalabels: _endpointDatalabelsConfig(0),
+            });
+        }
+    }
+    const chart = new Chart(canvas, {
+        type: 'bar',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, offset: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     title: { display: true, text: 'Triệu USD (ròng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
             },

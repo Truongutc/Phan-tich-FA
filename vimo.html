@@ -682,6 +682,14 @@
                 <p class="vimo-chart-subtitle">Tổng Cung vs Tổng Cầu ngoại tệ (BOP quý, NHNN) — cộng 4 cấu phần cùng chiều (Cung/Cầu) thành 2 đường, CÙNG đơn vị (triệu USD), KHÔNG trừ thành 1 điểm số áp lực duy nhất. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand-total"></canvas></div>
             </div>
+            <!-- THEM 2026-10-10 (user: "thêm TRƯỚC biểu đồ cán cân vãng lai cho tôi biểu đồ tỷ giá
+                 và đường cán cân tài chính tổng và cán cân vãng lai tổng... và cột thể hiện cán cân
+                 vãng lai + cán cân tài chính để xem tổng vào ra của 2 cái này" — xem
+                 renderFxBalanceOverviewChart trong app_vimo.js. -->
+            <div id="fx-balance-overview-chart-card" style="display:none">
+                <p class="vimo-chart-subtitle">So sánh TỔNG 2 cán cân chính (Vãng lai vs Tài chính, mỗi đường 1 số RÒNG duy nhất/quý) để xem đường nào đang "kéo" tỷ giá (trục phải) mạnh hơn trong từng giai đoạn + cột Tổng cộng (Vãng lai + Tài chính) để xem 2 dòng này bù/cộng nhau ra sao. LƯU Ý: cột Tổng cộng ở đây KHÁC "Cán cân tổng thể" chính thức của NHNN — còn thiếu phần Lỗi & sai sót (thường RẤT LỚN với VN, xem tab Giám sát chỉ số/bop_sbv_errors_omissions), nên không nên đọc cột này là "cán cân tổng thể thật".</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-balance-overview"></canvas></div>
+            </div>
             <div id="fx-supply-demand-chart-card" style="display:none" class="margin-top-20">
                 <p class="vimo-chart-subtitle">Cán cân vãng lai theo 4 cấu phần RÒNG (hàng hóa/dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — mỗi đường đã là Xuất-Nhập, không phải số gộp) + đường tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN (xem ghi chú đầu trang).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand"></canvas></div>
