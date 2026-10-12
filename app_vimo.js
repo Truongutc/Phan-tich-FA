@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderBankingSystemRiskSection(data.bankingSystemRisk, data.indicators);
     renderCreditDepositStructure(data.bankingSystemRisk && data.bankingSystemRisk.creditDepositStructure);
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
+    renderNsfrSystemSection(data.bankingSystemRisk && data.bankingSystemRisk.nsfrSystem);
     renderFxPressureCard(data.indicators);
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
@@ -566,6 +567,79 @@ function renderMaturityStructure(ms) {
     };
     _renderAreaCompositionChart('chart-maturity-assets-3buckets-pct', ms.periods, MATURITY_SERIES_3, _mergeTo3(ms.assetsByBucket), true);
     _renderAreaCompositionChart('chart-maturity-liab-3buckets-pct', ms.periods, MATURITY_SERIES_3, _mergeTo3(ms.liabilitiesByBucket), true);
+}
+
+// THEM 2026-10-12 (user: "tìm kiếm cách tính NSFR theo TT50 nhé... ở tab vĩ mô ngân hàng thì thêm
+// cái NSFR vào cuối nhé" — xem bank_nsfr_calc.py cho phần tính toán Python + xuất Excel đầy đủ.
+// Web chỉ vẽ 2 chart: (1) NSFR TOÀN HỆ THỐNG theo quý (đường + mốc 100% tham chiếu + số NH dưới
+// 100%), (2) XẾP HẠNG NSFR từng NH ở kỳ gần nhất (bar ngang, đỏ/xanh theo ngưỡng 100%) — chi tiết
+// đầy đủ từng cấu phần ASF/RSF đã có trong Excel, không cần nhân đôi lên web.
+function renderNsfrSystemSection(nsfr) {
+    const card = document.getElementById('nsfr-system-card');
+    if (!card) return;
+    if (!nsfr || !nsfr.periods || !nsfr.periods.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    document.getElementById('nsfr-system-title').textContent =
+        `📅 ${nsfr.periods[0]} — ${nsfr.latestPeriod} (${Math.max(...nsfr.nBanks)}/26 ngân hàng có dữ liệu)`;
+
+    const sysCanvas = document.getElementById('chart-nsfr-system');
+    if (sysCanvas) {
+        chartInstances.push(new Chart(sysCanvas, {
+            type: 'bar',
+            data: {
+                labels: nsfr.periods,
+                datasets: [
+                    { type: 'line', label: 'NSFR toàn hệ thống (%, ASF/RSF cộng dồn)', data: nsfr.nsfrPct,
+                      yAxisID: 'y', borderColor: '#60a5fa', borderWidth: 2.5, pointRadius: 3,
+                      pointBackgroundColor: '#60a5fa', tension: 0.2, spanGaps: true, order: 1,
+                      datalabels: _endpointAboveLabelConfig(1, '%') },
+                    { type: 'line', label: 'Ngưỡng tham chiếu 100%', data: nsfr.periods.map(() => 100),
+                      yAxisID: 'y', borderColor: '#ef4444', borderDash: [6, 4], borderWidth: 1.5,
+                      pointRadius: 0, order: 2 },
+                    { type: 'bar', label: 'Số NH dưới 100% (trục phải)', data: nsfr.nBanksUnder100,
+                      yAxisID: 'y1', backgroundColor: 'rgba(239,68,68,0.35)', order: 3 },
+                ],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+                scales: {
+                    x: { ...CHART_DEFAULTS.scales.x, offset: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: nsfr.periods.length } },
+                    y: { ...CHART_DEFAULTS.scales.y, position: 'left', grid: _zeroLineGridConfig(),
+                         title: { display: true, text: 'NSFR ước tính (%)', color: '#9aa5bd', font: { size: 9 } } },
+                    y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, beginAtZero: true,
+                          title: { display: true, text: 'Số ngân hàng', color: '#9aa5bd', font: { size: 9 } } },
+                },
+            },
+            plugins: [ChartDataLabels],
+        }));
+    }
+
+    const rankCanvas = document.getElementById('chart-nsfr-bank-ranking');
+    if (rankCanvas && nsfr.latestByBank && nsfr.latestByBank.length) {
+        const labels = nsfr.latestByBank.map(b => b.ticker);
+        const values = nsfr.latestByBank.map(b => b.nsfrPct);
+        chartInstances.push(new Chart(rankCanvas, {
+            type: 'bar',
+            data: { labels, datasets: [{
+                label: `NSFR ước tính — ${nsfr.latestPeriod} (%)`, data: values,
+                backgroundColor: values.map(v => v === null ? '#999' : (v >= 100 ? 'rgba(16,185,129,0.65)' : 'rgba(239,68,68,0.65)')),
+                datalabels: { display: true, color: '#fff', anchor: 'end', align: 'right', offset: 4, clip: false,
+                              font: { size: 9, weight: '600' }, formatter: (v) => v === null ? '' : v.toFixed(1) + '%' },
+            }] },
+            options: {
+                ...CHART_DEFAULTS, indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ...CHART_DEFAULTS.scales.x, grid: _zeroLineGridConfig(),
+                         title: { display: true, text: 'NSFR ước tính (%)', color: '#9aa5bd', font: { size: 9 } } },
+                    y: { ticks: { color: '#fff', font: { size: 9 } }, grid: { display: false } },
+                },
+            },
+            plugins: [ChartDataLabels],
+        }));
+    }
 }
 
 // THEM (user 2026-10-01, "card Áp lực Ngoại tệ" — khung Cầu/Cung/Đối chiếu BOP/Thị trường/Phản

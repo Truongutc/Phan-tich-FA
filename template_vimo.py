@@ -3107,6 +3107,51 @@ def _add_bank_alm_derived_indicators(raw, trends):
             "periods": maturity_periods, "nBanks": maturity_nbanks,
             "assetsByBucket": maturity_assets, "liabilitiesByBucket": maturity_liab,
         }
+
+    # THEM 2026-10-12 (user: "tìm kiếm cách tính NSFR theo TT50 nhé... áp dụng tính toán cho toàn
+    # bộ thị trường và tính cho từng bank... ở tab vĩ mô ngân hàng thì thêm cái NSFR vào cuối nhé")
+    # — NSFR UOC TINH (proxy, KHONG PHAI so chinh thuc) theo dung bang he so ASF/RSF cua Phu luc II,
+    # Thong tu 50/2026/TT-NHNN (xem bank_nsfr_calc.py — ghi chu day du phuong phap/gioi han ngay
+    # dau file + sheet Excel "NSFR_GiaDinh_GioiHan"). Chi gui TONG HE THONG (he thong-level) ve web
+    # — chi tiet 26 bank x tung ky da co san trong sheet Excel "NSFR_NganHang_Raw", khong can nhan
+    # doi du lieu JSON vi web chi can xem XU HUONG he thong + xep hang top/bottom bank ky gan nhat.
+    try:
+        from bank_nsfr_calc import compute_nsfr_all_banks
+        nsfr_results = compute_nsfr_all_banks()
+    except Exception as e:
+        print(f"  [WARN] NSFR uoc tinh theo TT50: bo qua ({e})")
+        nsfr_results = {}
+    if nsfr_results:
+        nsfr_periods = sorted({p for periods in nsfr_results.values() for p in periods})
+        nsfr_system_pts, nsfr_n_banks, nsfr_n_under100 = [], [], []
+        for period in nsfr_periods:
+            asf_sum = rsf_sum = 0.0
+            n_banks = n_under100 = 0
+            for ticker, periods in nsfr_results.items():
+                r = periods.get(period)
+                if not r:
+                    continue
+                n_banks += 1
+                asf_sum += r["asf_total"]
+                rsf_sum += r["rsf_total"]
+                if r["nsfr_pct"] is not None and r["nsfr_pct"] < 100:
+                    n_under100 += 1
+            nsfr_system_pts.append(round(asf_sum / rsf_sum * 100, 2) if rsf_sum else None)
+            nsfr_n_banks.append(n_banks)
+            nsfr_n_under100.append(n_under100)
+        latest_period = nsfr_periods[-1]
+        latest_banks = sorted(
+            ((t, nsfr_results[t][latest_period]["nsfr_pct"]) for t in nsfr_results if latest_period in nsfr_results[t]),
+            key=lambda x: (x[1] is None, x[1]),
+        )
+        if result is None:
+            result = {}
+        result["nsfrSystem"] = {
+            "periods": nsfr_periods, "nsfrPct": nsfr_system_pts,
+            "nBanks": nsfr_n_banks, "nBanksUnder100": nsfr_n_under100,
+            "latestPeriod": latest_period,
+            "latestByBank": [{"ticker": t, "nsfrPct": round(v, 1) if v is not None else None} for t, v in latest_banks],
+        }
     return result
 
 
@@ -4348,6 +4393,13 @@ def run_vimo_analysis():
         update_bank_ldr_excel_sheet(out_dir)
     except Exception as e:
         print(f"  [WARN] Bo qua sheet LDR ngan hang ({e})")
+
+    print("[INFO] Cập nhật sheet NSFR ước tính theo Thông tư 50/2026 (toàn hệ thống + từng bank)...")
+    try:
+        from bank_nsfr_calc import update_bank_nsfr_excel_sheet
+        update_bank_nsfr_excel_sheet(out_dir)
+    except Exception as e:
+        print(f"  [WARN] Bo qua sheet NSFR ngan hang ({e})")
 
     for p in charts.values():
         try:

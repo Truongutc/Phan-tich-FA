@@ -628,6 +628,32 @@
             <p class="ind-source-note" style="margin-top:8px">Tổng hợp CÓ TRỌNG SỐ theo quy mô (cộng tuyệt đối tỷ đồng rồi mới chia tỷ trọng) từ thuyết minh gap thanh khoản (OCR) của các ngân hàng có đủ dữ liệu mỗi quý — độ phủ thấp hơn hẳn card Tín dụng &amp; Huy động ở trên (nguồn Vietcap trực tiếp), xem số ngân hàng/quý ở dòng phụ đề phía trên. So 2 biểu đồ "Theo tỷ trọng" (Tài sản vs Nguồn vốn) cạnh nhau: nếu cột Tài sản nghiêng nhiều về "1-5 năm"/"&gt;5 năm" trong khi cột Nguồn vốn vẫn tập trung ở "Đến 1 tháng"/"1-3 tháng", đó là dấu hiệu lệch kỳ hạn (maturity mismatch) — ngân hàng phải liên tục tái huy động (rollover) tiền gửi ngắn hạn để tài trợ tài sản dài hạn, càng lệch nhiều thì áp lực rollover/lãi suất huy động càng lớn. 2 biểu đồ 3 nhóm kỳ hạn ở cuối gộp gọn: "Ngắn hạn" = Quá hạn + Đến 1 tháng + 1-3 tháng + 3-12 tháng (mọi kỳ hạn ≤12 tháng); "Trung hạn" = 1-5 năm; "Dài hạn" = &gt;5 năm.</p>
         </div>
 
+        <!-- THEM 2026-10-12 (user: "tìm kiếm cách tính NSFR theo TT50 nhé... áp dụng tính toán cho
+             toàn bộ thị trường và tính cho từng bank... ở tab vĩ mô ngân hàng thì thêm cái NSFR vào
+             cuối nhé" — xem bank_nsfr_calc.py (Python, tính + xuất Excel) và
+             renderNsfrSystemChart/renderNsfrBankRankingChart trong app_vimo.js. ƯỚC TÍNH (proxy)
+             theo bảng hệ số ASF/RSF chính thức của Phụ lục II, Thông tư 50/2026/TT-NHNN — KHÔNG
+             PHẢI số NSFR chính thức ngân hàng báo cáo lên NHNN (xem cảnh báo trong card). -->
+        <div data-tab="bank" class="card margin-top-20" id="nsfr-system-card" style="display:none">
+            <h3 class="border-blue">🧮 NSFR — Tỷ lệ Nguồn vốn Ổn định Ròng (ước tính theo Thông tư 50/2026/TT-NHNN)</h3>
+            <p class="ind-source-note" style="background:rgba(239,68,68,0.12);padding:8px 10px;border-radius:8px">
+                ⚠️ Đây là số <b>ƯỚC TÍNH (proxy)</b>, KHÔNG PHẢI số NSFR chính thức các ngân hàng báo cáo lên NHNN.
+                BCTC công khai không có đủ chi tiết (phân loại tiền gửi theo mức độ ổn định, cho vay theo hệ số rủi ro,
+                HQLA cấp 1/2A/2B...) để áp đúng 100% bảng hệ số ASF/RSF của Phụ lục II TT50 — số dưới đây dùng cơ cấu
+                theo <b>kỳ hạn còn lại</b> (duy nhất có sẵn từ BCTC) kết hợp bảng hệ số chính thức, với các giả định
+                đơn giản hoá ghi rõ trong sheet Excel "NSFR_GiaDinh_GioiHan" (VIMO_Lich_Su_Chi_So.xlsx). Chỉ nên đọc
+                theo <b>XU HƯỚNG</b> và so sánh TƯƠNG ĐỐI giữa các ngân hàng, không trích dẫn như số chính thức.
+                Lộ trình bắt buộc thật của TT50: NSFR riêng lẻ tối thiểu <b>90%</b> từ 1/10/2028, <b>95%</b> từ
+                1/10/2029, <b>100%</b> từ 1/10/2030.
+            </p>
+            <div class="vimo-chart-title" id="nsfr-system-title"></div>
+            <div class="ind-chart" style="height:300px"><canvas id="chart-nsfr-system"></canvas></div>
+            <div class="vimo-chart-title" style="margin-top:14px">Xếp hạng NSFR ước tính từng ngân hàng (kỳ gần nhất)</div>
+            <div class="ind-chart" style="height:420px"><canvas id="chart-nsfr-bank-ranking"></canvas></div>
+            <p class="ind-source-note" style="margin-top:8px">Chi tiết đầy đủ (ASF/RSF theo từng cấu phần, từng ngân
+                hàng, từng quý) xem sheet "NSFR_NganHang_Raw" + "NSFR_TongHop_HeThong" trong file Excel lịch sử chỉ số.</p>
+        </div>
+
         <!-- THEM (user 2026-10-01): card "Áp lực Ngoại tệ" — curate cac chi bao macro DA CO SAN
              (usdvnd/BOP/FDI/OMO/tin_phieu/lai_suat...) theo 5 lop Cau/Cung/Doi chieu BOP/Thi
              truong/Phan ung NHNN, KHONG gop thanh 1 diem so duy nhat (user nhan manh: giu Cau-
