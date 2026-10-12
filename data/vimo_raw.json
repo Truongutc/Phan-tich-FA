@@ -102294,5 +102294,2016 @@
         "source_url": "https://dulieukinhte.com/du-lieu/cpi-so-cung-ky-319"
       }
     ]
+  },
+  "usdvnd_central_rate": {
+    "group": "external",
+    "label": "Tỷ giá trung tâm USD/VND (NHNN công bố)",
+    "unit": "VND",
+    "good_direction": "lower",
+    "auto_source": "sbv",
+    "note": "sbv.gov.vn/tỷ-giá — tỷ giá trung tâm NHNN công bố hàng ngày, lấy qua API JSON nội bộ (Liferay headless-delivery). Biên độ giao dịch chính thức hiện hành ±5% quanh mức này.",
+    "impact": "Tỷ giá thị trường (VCB/liên NH) áp sát TRẦN biên độ là dấu hiệu áp lực mất giá VND rõ rệt theo đúng cơ chế điều hành.",
+    "series": [
+      {
+        "period": "2025-06-23",
+        "value": 25028.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-06-24",
+        "value": 25058.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-06-25",
+        "value": 25055.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-06-26",
+        "value": 25053.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-06-27",
+        "value": 25048.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-06-28",
+        "value": 25048.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-06-30",
+        "value": 25052.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-01",
+        "value": 25058.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-02",
+        "value": 25070.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-03",
+        "value": 25091.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-04",
+        "value": 25116.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-05",
+        "value": 25116.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-07",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-08",
+        "value": 25121.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-09",
+        "value": 25119.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-10",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-11",
+        "value": 25128.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-12",
+        "value": 25128.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-14",
+        "value": 25126.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-15",
+        "value": 25148.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-16",
+        "value": 25168.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-17",
+        "value": 25176.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-18",
+        "value": 25185.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-19",
+        "value": 25185.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-21",
+        "value": 25191.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-22",
+        "value": 25179.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-23",
+        "value": 25177.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-24",
+        "value": 25166.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-25",
+        "value": 25164.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-26",
+        "value": 25164.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-28",
+        "value": 25182.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-29",
+        "value": 25206.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-30",
+        "value": 25228.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-07-31",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-01",
+        "value": 25249.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-02",
+        "value": 25249.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-04",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-05",
+        "value": 25219.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-06",
+        "value": 25232.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-07",
+        "value": 25239.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-08",
+        "value": 25228.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-09",
+        "value": 25228.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-11",
+        "value": 25231.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-12",
+        "value": 25243.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-13",
+        "value": 25247.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-14",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-15",
+        "value": 25249.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-16",
+        "value": 25249.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-18",
+        "value": 25245.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-19",
+        "value": 25255.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-20",
+        "value": 25263.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-21",
+        "value": 25273.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-22",
+        "value": 25298.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-23",
+        "value": 25298.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-25",
+        "value": 25291.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-26",
+        "value": 25273.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-27",
+        "value": 25273.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-28",
+        "value": 25268.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-29",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-30",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-08-31",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-01",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-02",
+        "value": 25240.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-03",
+        "value": 25246.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-04",
+        "value": 25248.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-05",
+        "value": 25248.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-06",
+        "value": 25248.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-08",
+        "value": 25236.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-09",
+        "value": 25236.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-10",
+        "value": 25221.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-11",
+        "value": 25221.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-12",
+        "value": 25216.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-13",
+        "value": 25216.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-15",
+        "value": 25216.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-16",
+        "value": 25208.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-17",
+        "value": 25198.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-18",
+        "value": 25186.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-19",
+        "value": 25186.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-20",
+        "value": 25186.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-22",
+        "value": 25189.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-23",
+        "value": 25189.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-24",
+        "value": 25186.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-25",
+        "value": 25191.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-26",
+        "value": 25194.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-27",
+        "value": 25194.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-29",
+        "value": 25192.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-09-30",
+        "value": 25187.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-01",
+        "value": 25187.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-02",
+        "value": 25177.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-03",
+        "value": 25162.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-04",
+        "value": 25162.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-06",
+        "value": 25146.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-07",
+        "value": 25141.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-08",
+        "value": 25133.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-09",
+        "value": 25130.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-10",
+        "value": 25128.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-11",
+        "value": 25128.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-13",
+        "value": 25112.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-14",
+        "value": 25114.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-15",
+        "value": 25114.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-16",
+        "value": 25109.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-17",
+        "value": 25101.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-18",
+        "value": 25101.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-20",
+        "value": 25101.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-21",
+        "value": 25099.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-22",
+        "value": 25099.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-23",
+        "value": 25098.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-24",
+        "value": 25098.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-25",
+        "value": 25098.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-27",
+        "value": 25097.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-28",
+        "value": 25095.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-29",
+        "value": 25091.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-30",
+        "value": 25091.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-10-31",
+        "value": 25093.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-01",
+        "value": 25093.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-03",
+        "value": 25093.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-04",
+        "value": 25095.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-05",
+        "value": 25097.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-06",
+        "value": 25100.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-07",
+        "value": 25103.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-08",
+        "value": 25103.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-10",
+        "value": 25106.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-11",
+        "value": 25118.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-12",
+        "value": 25129.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-13",
+        "value": 25125.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-14",
+        "value": 25122.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-15",
+        "value": 25122.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-17",
+        "value": 25120.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-18",
+        "value": 25132.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-19",
+        "value": 25132.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-20",
+        "value": 25130.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-21",
+        "value": 25136.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-22",
+        "value": 25136.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-24",
+        "value": 25144.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-25",
+        "value": 25146.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-26",
+        "value": 25146.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-27",
+        "value": 25152.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-28",
+        "value": 25155.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-11-29",
+        "value": 25155.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-01",
+        "value": 25156.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-02",
+        "value": 25153.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-03",
+        "value": 25153.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-04",
+        "value": 25152.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-05",
+        "value": 25151.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-06",
+        "value": 25151.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-08",
+        "value": 25152.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-09",
+        "value": 25155.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-10",
+        "value": 25155.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-11",
+        "value": 25154.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-12",
+        "value": 25148.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-13",
+        "value": 25148.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-15",
+        "value": 25144.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-16",
+        "value": 25141.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-17",
+        "value": 25146.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-18",
+        "value": 25151.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-19",
+        "value": 25148.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-20",
+        "value": 25148.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-22",
+        "value": 25149.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-23",
+        "value": 25146.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-24",
+        "value": 25146.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-25",
+        "value": 25133.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-26",
+        "value": 25128.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-27",
+        "value": 25128.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-29",
+        "value": 25125.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-30",
+        "value": 25124.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2025-12-31",
+        "value": 25121.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-02",
+        "value": 25121.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-03",
+        "value": 25121.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-05",
+        "value": 25124.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-06",
+        "value": 25122.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-07",
+        "value": 25122.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-08",
+        "value": 25125.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-09",
+        "value": 25127.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-10",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-12",
+        "value": 25129.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-13",
+        "value": 25129.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-14",
+        "value": 25135.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-15",
+        "value": 25135.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-16",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-17",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-19",
+        "value": 25132.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-20",
+        "value": 25130.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-21",
+        "value": 25124.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-22",
+        "value": 25125.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-23",
+        "value": 25125.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-24",
+        "value": 25125.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-26",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-27",
+        "value": 25098.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-28",
+        "value": 25088.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-29",
+        "value": 25083.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-30",
+        "value": 25074.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-01-31",
+        "value": 25074.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-02",
+        "value": 25064.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-03",
+        "value": 25069.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-04",
+        "value": 25067.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-05",
+        "value": 25066.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-06",
+        "value": 25065.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-07",
+        "value": 25065.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-09",
+        "value": 25063.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-10",
+        "value": 25055.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-11",
+        "value": 25050.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-12",
+        "value": 25050.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-13",
+        "value": 25049.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-14",
+        "value": 25049.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-21",
+        "value": 25049.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-23",
+        "value": 25051.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-24",
+        "value": 25053.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-25",
+        "value": 25057.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-26",
+        "value": 25051.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-27",
+        "value": 25044.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-02-28",
+        "value": 25044.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-02",
+        "value": 25038.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-03",
+        "value": 25046.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-04",
+        "value": 25052.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-05",
+        "value": 25055.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-06",
+        "value": 25057.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-07",
+        "value": 25057.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-09",
+        "value": 25059.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-10",
+        "value": 25062.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-11",
+        "value": 25059.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-12",
+        "value": 25061.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-13",
+        "value": 25065.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-14",
+        "value": 25065.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-16",
+        "value": 25068.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-17",
+        "value": 25068.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-18",
+        "value": 25067.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-19",
+        "value": 25072.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-20",
+        "value": 25085.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-21",
+        "value": 25085.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-23",
+        "value": 25090.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-24",
+        "value": 25109.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-25",
+        "value": 25104.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-26",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-27",
+        "value": 25100.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-28",
+        "value": 25100.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-30",
+        "value": 25100.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-03-31",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-01",
+        "value": 25105.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-02",
+        "value": 25107.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-03",
+        "value": 25107.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-04",
+        "value": 25107.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-06",
+        "value": 25106.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-07",
+        "value": 25108.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-08",
+        "value": 25106.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-09",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-10",
+        "value": 25105.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-11",
+        "value": 25105.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-13",
+        "value": 25106.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-14",
+        "value": 25106.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-15",
+        "value": 25103.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-16",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-17",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-18",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-20",
+        "value": 25103.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-21",
+        "value": 25102.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-22",
+        "value": 25100.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-23",
+        "value": 25105.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-24",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-25",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-27",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-28",
+        "value": 25111.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-04-29",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-02",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-04",
+        "value": 25112.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-05",
+        "value": 25111.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-06",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-07",
+        "value": 25113.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-08",
+        "value": 25112.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-09",
+        "value": 25112.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-11",
+        "value": 25118.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-12",
+        "value": 25123.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-13",
+        "value": 25123.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-14",
+        "value": 25126.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-15",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-16",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-18",
+        "value": 25131.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-19",
+        "value": 25133.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-20",
+        "value": 25135.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-21",
+        "value": 25135.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-22",
+        "value": 25134.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-23",
+        "value": 25134.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-25",
+        "value": 25136.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-26",
+        "value": 25138.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-27",
+        "value": 25137.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-28",
+        "value": 25137.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-29",
+        "value": 25139.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-05-30",
+        "value": 25139.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-01",
+        "value": 25138.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-02",
+        "value": 25141.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-03",
+        "value": 25145.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-04",
+        "value": 25145.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-05",
+        "value": 25147.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-06",
+        "value": 25147.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-08",
+        "value": 25150.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-09",
+        "value": 25151.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-10",
+        "value": 25153.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-11",
+        "value": 25153.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-12",
+        "value": 25155.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-13",
+        "value": 25155.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-15",
+        "value": 25165.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-16",
+        "value": 25165.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-17",
+        "value": 25175.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-18",
+        "value": 25173.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-19",
+        "value": 25181.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-20",
+        "value": 25181.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-22",
+        "value": 25183.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-23",
+        "value": 25189.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-24",
+        "value": 25192.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-25",
+        "value": 25197.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-26",
+        "value": 25195.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-27",
+        "value": 25195.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-29",
+        "value": 25201.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-06-30",
+        "value": 25206.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 25206.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-02",
+        "value": 25205.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-03",
+        "value": 25203.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-04",
+        "value": 25203.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-06",
+        "value": 25202.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-07",
+        "value": 25202.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-08",
+        "value": 25206.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-09",
+        "value": 25211.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-10",
+        "value": 25214.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-11",
+        "value": 25214.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-13",
+        "value": 25220.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-14",
+        "value": 25225.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-15",
+        "value": 25233.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-16",
+        "value": 25243.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-17",
+        "value": 25254.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-18",
+        "value": 25254.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-20",
+        "value": 25252.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-21",
+        "value": 25260.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-22",
+        "value": 25260.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-23",
+        "value": 25272.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-24",
+        "value": 25283.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-25",
+        "value": 25283.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-27",
+        "value": 25293.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-28",
+        "value": 25306.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-29",
+        "value": 25306.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-30",
+        "value": 25320.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-07-31",
+        "value": 25338.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-01",
+        "value": 25338.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-03",
+        "value": 25358.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-04",
+        "value": 25380.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-05",
+        "value": 25405.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-06",
+        "value": 25433.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-07",
+        "value": 25463.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-08",
+        "value": 25463.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-10",
+        "value": 25491.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-11",
+        "value": 25516.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-12",
+        "value": 25539.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-13",
+        "value": 25566.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-14",
+        "value": 25561.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-15",
+        "value": 25561.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-17",
+        "value": 25586.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-18",
+        "value": 25580.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-19",
+        "value": 25598.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-20",
+        "value": 25590.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-21",
+        "value": 25600.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-22",
+        "value": 25600.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-24",
+        "value": 25600.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-25",
+        "value": 25615.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-26",
+        "value": 25611.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-27",
+        "value": 25611.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-28",
+        "value": 25610.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-29",
+        "value": 25610.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-08-31",
+        "value": 25610.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-03",
+        "value": 25615.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-04",
+        "value": 25605.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-05",
+        "value": 25605.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-07",
+        "value": 25611.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-08",
+        "value": 25603.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-09",
+        "value": 25594.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-10",
+        "value": 25591.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-11",
+        "value": 25596.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-12",
+        "value": 25596.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-14",
+        "value": 25607.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-15",
+        "value": 25617.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-16",
+        "value": 25626.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-17",
+        "value": 25632.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-18",
+        "value": 25637.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-19",
+        "value": 25637.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-21",
+        "value": 25637.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-22",
+        "value": 25640.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-23",
+        "value": 25635.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-24",
+        "value": 25635.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-25",
+        "value": 25641.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-26",
+        "value": 25641.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-28",
+        "value": 25632.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-29",
+        "value": 25630.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-09-30",
+        "value": 25627.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-01",
+        "value": 25624.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-02",
+        "value": 25636.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-03",
+        "value": 25636.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-05",
+        "value": 25643.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-06",
+        "value": 25645.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-07",
+        "value": 25638.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-08",
+        "value": 25634.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-09",
+        "value": 25629.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-10",
+        "value": 25629.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-12",
+        "value": 25621.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      }
+    ]
   }
 }

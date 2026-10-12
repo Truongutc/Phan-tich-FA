@@ -3563,6 +3563,73 @@ def _add_usd_cho_den_vcb_gap(raw, trends):
     print(f"  -> Gap ty gia cho den - VCB (%): {len(pct_points)} diem")
 
 
+# THEM 2026-10-12 (user review khung "3 tầng áp lực tỷ giá" — Tầng 1 chỉ báo #2 "chênh lệch tỷ
+# giá thị trường so với tỷ giá TRUNG TÂM" — dashboard có VCB/chợ đen nhưng chưa có tỷ giá trung
+# tâm để tính % dùng biên độ (band utilization), xem fetch_sbv_central_rate_history() trong
+# fetch_macro_data.py). Biên độ CHÍNH THỨC hiện hành ±5% (hằng số chính sách, KHÔNG phải dữ liệu
+# nguồn — khai báo LẶP LẠI ở đây (không import fetch_macro_data, giữ 2 module tách biệt đúng quy
+# ước dự án) khớp với SBV_USDVND_BAND_PCT trong fetch_macro_data.py — SỬA CẢ 2 NƠI nếu NHNN đổi
+# biên độ sau này).
+_USDVND_BAND_PCT = 5.0
+
+
+def _add_usdvnd_central_band(raw, trends):
+    """Trần/sàn biên độ giao dịch chính thức (= trung tâm × (1 ± 5%)) + % đã dùng biên độ của tỷ
+    giá VCB bán ra so với trung tâm (0% = đúng tỷ giá trung tâm, 100% = chạm trần/áp lực mất giá
+    VND tối đa theo cơ chế điều hành, -100% = chạm sàn). Phái sinh tính toán, KHÔNG lưu vào
+    vimo_raw.json."""
+    central = raw.get("usdvnd_central_rate")
+    vcb = raw.get("usdvnd_vcb_sell_daily")
+    if not central or not central["series"]:
+        return
+    band = _USDVND_BAND_PCT / 100.0
+    ceiling_pts, floor_pts = [], []
+    for p in central["series"]:
+        if p.get("value") is None:
+            continue
+        ceiling_pts.append({"period": p["period"], "value": round(p["value"] * (1 + band), 1), "source_url": None})
+        floor_pts.append({"period": p["period"], "value": round(p["value"] * (1 - band), 1), "source_url": None})
+    raw["usdvnd_band_ceiling"] = {
+        "group": "external", "label": f"Trần biên độ giao dịch USD/VND (trung tâm +{_USDVND_BAND_PCT:.0f}%)", "unit": "VND",
+        "good_direction": "lower", "auto_source": "derived", "series": ceiling_pts,
+        "note": f"= usdvnd_central_rate × (1 + {_USDVND_BAND_PCT:.0f}%) — biên độ chính thức hiện hành (hằng số chính sách, không phải dữ liệu nguồn — xem ghi chú SBV_USDVND_BAND_PCT nếu NHNN đổi biên độ). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+        "impact": "Mức trần tối đa NHTM được phép giao dịch theo cơ chế điều hành hiện hành — tỷ giá thị trường áp sát mức này là áp lực mất giá VND rõ rệt.",
+    }
+    raw["usdvnd_band_floor"] = {
+        "group": "external", "label": f"Sàn biên độ giao dịch USD/VND (trung tâm -{_USDVND_BAND_PCT:.0f}%)", "unit": "VND",
+        "good_direction": "lower", "auto_source": "derived", "series": floor_pts,
+        "note": f"= usdvnd_central_rate × (1 - {_USDVND_BAND_PCT:.0f}%) — biên độ chính thức hiện hành. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+        "impact": "Mức sàn tối thiểu NHTM được phép giao dịch — tỷ giá thị trường áp sát mức này là áp lực tăng giá VND rõ rệt (hiếm gặp với VND).",
+    }
+    print(f"  -> Tran/San bien do USD/VND: {len(ceiling_pts)} diem")
+
+    if not vcb or not vcb["series"]:
+        return
+    central_by_period = {p["period"]: p["value"] for p in central["series"] if p.get("value") is not None}
+    util_points = []
+    for p in vcb["series"]:
+        c = central_by_period.get(p["period"])
+        if p.get("value") is None or not c:
+            continue
+        ceiling = c * (1 + band)
+        if ceiling == c:
+            continue
+        util_pct = (p["value"] - c) / (ceiling - c) * 100
+        util_points.append({"period": p["period"], "value": round(util_pct, 1), "source_url": None})
+    if not util_points:
+        return
+    raw["usdvnd_band_utilization_pct"] = {
+        "group": "external", "label": "% đã dùng biên độ tỷ giá (VCB so với trung tâm)", "unit": "%",
+        "good_direction": "lower", "auto_source": "derived", "series": util_points,
+        "note": ("= (VCB bán ra − trung tâm) / (trần − trung tâm) × 100 — 0% = đúng tỷ giá trung tâm, "
+                 "100% = chạm trần (áp lực mất giá VND tối đa theo cơ chế điều hành), -100% = chạm sàn. "
+                 "Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."),
+        "impact": "Chỉ báo áp lực tỷ giá kinh điển — % càng cao (gần 100%) nghĩa là thị trường đang áp sát giới hạn NHNN cho phép, bất kể tỷ giá tuyệt đối đang ở mức nào.",
+    }
+    trends["usdvnd_band_utilization_pct"] = calc_trend(util_points, "lower")
+    print(f"  -> %% da dung bien do ty gia: {len(util_points)} diem")
+
+
 def _add_fdi_trade_share(raw, trends):
     """% tỷ trọng khu vực FDI trong tổng kim ngạch XK/NK theo tháng (user 2026-10-01: "dữ liệu
     tổng xuất khẩu nhập khẩu này có thể tính được xuất khẩu FDI và nhập khẩu FDI ảnh hưởng ntn tới
@@ -4237,6 +4304,9 @@ def run_vimo_analysis():
 
     print("[INFO] Tính gap ty gia USD cho den vs Vietcombank (KHÔNG lưu vào vimo_raw.json)...")
     _add_usd_cho_den_vcb_gap(raw, trends)
+
+    print("[INFO] Tinh tran/san bien do + %% da dung bien do ty gia USD/VND (KHÔNG lưu vào vimo_raw.json)...")
+    _add_usdvnd_central_band(raw, trends)
 
     print("[INFO] Tính ty trong FDI trong XK/NK theo thang (KHÔNG lưu vào vimo_raw.json)...")
     _add_fdi_trade_share(raw, trends)

@@ -746,6 +746,13 @@
                 <p class="vimo-chart-subtitle">Tỷ giá USD bán ra: Vietcombank vs Chợ đen + Gap (nét đứt, trục phải) — gap nới rộng/chuyển dương là dấu hiệu đầu cơ/nhu cầu USD ngoài hệ thống ngân hàng tăng.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-vcb-cho-den-gap"></canvas></div>
             </div>
+            <!-- THEM 2026-10-12 (review khung "3 tầng áp lực tỷ giá" — chỉ báo #2 "chênh lệch tỷ
+                 giá thị trường so với tỷ giá TRUNG TÂM" — xem renderFxCentralBandChart trong
+                 app_vimo.js. Vùng tô xanh = biên độ ±5% NHNN cho phép giao dịch. -->
+            <div id="fx-central-band-chart-card" style="display:none" class="margin-top-20">
+                <p class="vimo-chart-subtitle">Tỷ giá VCB bán ra vs Biên độ giao dịch chính thức NHNN (vùng tô = trong biên độ ±5%, Trung tâm = nét liền giữa, Trần/Sàn = nét đứt) + % đã dùng biên độ (trục phải, 0% = đúng trung tâm, 100% = chạm trần). Tỷ giá áp sát trần là áp lực mất giá VND rõ rệt theo đúng cơ chế điều hành — bất kể tỷ giá tuyệt đối đang cao hay thấp so với lịch sử.</p>
+                <div class="ind-chart" style="height:340px"><canvas id="chart-fx-central-band"></canvas></div>
+            </div>
 
             <div id="fx-pressure-body"></div>
         </div>

@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxSupplyDemandChart(data.indicators);
     renderFxFinancialAccountChart(data.indicators);
     renderFxRateGapChart(data.indicators);
+    renderFxCentralBandChart(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -691,6 +692,9 @@ const FX_PRESSURE_LAYERS = [
         id: 'market', title: '② Áp lực thị trường — TÍN HIỆU THỰC (quan sát trực tiếp, không suy luận từ dòng kế toán)',
         keys: ['usdvnd', 'usdvnd_monthly_avg', 'usdvnd_growth_mom', 'usdvnd_growth_yoy',
                'usdvnd_vcb_sell_daily', 'usd_cho_den_sell_daily', 'usd_cho_den_vcb_gap', 'usd_cho_den_vcb_gap_pct',
+               // THEM 2026-10-12 (review khung "3 tầng áp lực tỷ giá" — thiếu tỷ giá TRUNG TÂM để
+               // tính % dùng biên độ, xem _add_usdvnd_central_band trong template_vimo.py).
+               'usdvnd_central_rate', 'usdvnd_band_ceiling', 'usdvnd_band_floor', 'usdvnd_band_utilization_pct',
                'interbank_rate_on', 'fed_funds_rate', 'vnd_usd_rate_spread_on',
                // THEM 2026-10-09 (user hỏi về "Swap Interest Rate Curve" làm bằng chứng lãi suất
                // VN khó hạ — nguồn thật VBMA FX Swap Curve bị khóa sau login hội viên, KHÔNG có
@@ -873,6 +877,74 @@ function renderFxRateGapChart(indicators) {
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'Gap (VND)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM 2026-10-12 (review khung "3 tầng áp lực tỷ giá" user gửi — Tầng 1 chỉ báo #2 "chênh lệch
+// tỷ giá thị trường so với tỷ giá TRUNG TÂM" — dashboard trước đó có VCB/chợ đen nhưng chưa có
+// tỷ giá trung tâm để biết thị trường đang cách trần/sàn NHNN bao xa. Xem _add_usdvnd_central_
+// band trong template_vimo.py cho phần tính toán Python (trần/sàn = trung tâm × 1±5%, % dùng
+// biên độ = (VCB−trung tâm)/(trần−trung tâm)×100).
+function renderFxCentralBandChart(indicators) {
+    const canvas = document.getElementById('chart-fx-central-band');
+    const card = document.getElementById('fx-central-band-chart-card');
+    if (!canvas) return;
+    const central = indicators['usdvnd_central_rate'];
+    const ceiling = indicators['usdvnd_band_ceiling'];
+    const floor = indicators['usdvnd_band_floor'];
+    const vcb = indicators['usdvnd_vcb_sell_daily'];
+    const util = indicators['usdvnd_band_utilization_pct'];
+    if (!central || !ceiling || !floor || !central.series.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = central.series.map(p => p.period);
+    const lookup = (ind) => {
+        if (!ind) return periods.map(() => null);
+        const byPeriod = Object.fromEntries(ind.series.map(p => [p.period, p.value]));
+        return periods.map(p => byPeriod[p] ?? null);
+    };
+    const centralArr = central.series.map(p => p.value);
+    const ceilingArr = lookup(ceiling);
+    const floorArr = lookup(floor);
+    const vcbArr = lookup(vcb);
+    const utilArr = lookup(util);
+
+    const datasets = [
+        { label: 'Trần biên độ (+5%)', data: ceilingArr, yAxisID: 'y', order: 3,
+          borderColor: '#ef444480', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false, spanGaps: true },
+        { label: 'Sàn biên độ (-5%)', data: floorArr, yAxisID: 'y', order: 3,
+          borderColor: '#ef444480', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, spanGaps: true,
+          // To vung GIUA san va tran (fill:0 = fill ve dataset index 0, chinh la Tran o tren) de
+          // nguoi xem thay NGAY vung NHNN cho phep giao dich, khong can tu nham 2 duong net dut.
+          fill: 0, backgroundColor: 'rgba(96,165,250,0.08)' },
+        { label: 'Tỷ giá trung tâm (NHNN)', data: centralArr, yAxisID: 'y', order: 2,
+          borderColor: '#9aa5bd', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.1, spanGaps: true },
+        { label: 'VCB — bán ra (thị trường)', data: vcbArr, yAxisID: 'y', order: 1,
+          borderColor: '#10b981', borderWidth: 2.5, pointRadius: 0, fill: false, tension: 0.15, spanGaps: true,
+          datalabels: _endpointAboveLabelConfig(0, '') },
+    ];
+    if (util && util.series.length) {
+        datasets.push({ label: '% đã dùng biên độ (trục phải)', data: utilArr, yAxisID: 'y1', order: 0,
+            borderColor: '#f59e0b', borderDash: [3, 3], borderWidth: 2, pointRadius: 0, fill: false, spanGaps: true,
+            datalabels: _endpointAboveLabelConfig(0, '%') });
+    }
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, position: 'left', grid: _zeroLineGridConfig(),
+                     title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
+                y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, suggestedMin: -100, suggestedMax: 100,
+                      title: { display: true, text: '% đã dùng biên độ', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],

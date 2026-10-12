@@ -2291,6 +2291,72 @@ def fetch_darvas_reer_neer_vietnam():
         return {"neer": [], "reer": []}
 
 
+# THEM 2026-10-12 (user review khung "3 tầng đánh giá áp lực tỷ giá" — Tầng 1 chỉ báo #2 "Chênh
+# lệch tỷ giá thị trường so với tỷ giá TRUNG TÂM" — dashboard đang CÓ VCB/chợ đen nhưng CHƯA CÓ
+# tỷ giá trung tâm NHNN để tính % dùng biên độ (band utilization), 1 chỉ báo kinh điển bị thiếu).
+# NHNN công bố tỷ giá trung tâm MỖI NGÀY tại sbv.gov.vn/tỷ-giá (trang chính, dễ đọc qua regex) +
+# lịch sử qua API JSON thật (Liferay headless-delivery, content-structures/137473/structured-
+# contents?sort=datePublished:desc&pageSize=100&page=N) — field "TyGiaSo" (số), "NgayBatDau" (ISO
+# UTC, lệch +7h so ngày ban hành VN vì mốc 17:00Z hôm trước = 00:00 ngày hôm sau giờ VN) — đã xác
+# nhận cấu trúc qua khảo sát thủ công 2026-10-12 (gọi curl thật: TyGiaSo="25621", NgayBatDau=
+# "2026-10-11T17:00:00Z" khớp đúng "Ngày ban hành: 12/10/2026" NHNN công bố).
+# Biên độ giao dịch CHÍNH THỨC hiện hành: ±5% quanh tỷ giá trung tâm (xác nhận qua tin tức báo chí
+# 2026, không đổi từ 2022 — vd phiên 26/6/2026: trung tâm 25.195 -> trần 26.455 = 25.195*1.05,
+# sàn 23.935 = 25.195*0.95, khớp CHÍNH XÁC công thức). KHÔNG có văn bản mới đổi biên độ trong 2026
+# nên dùng ±5% làm hằng số — nếu NHNN đổi biên độ sau này cần cập nhật lại hằng số này thủ công
+# (không có API công bố biên độ riêng, chỉ suy ra được qua tin tức khi NHNN thay đổi).
+# Trang chính sbv.gov.vn bị WAF (F5 BIG-IP) chặn NGẮT QUÃNG giống các hàm fetch_sbv_* khác trong
+# file này — thử lại tối đa 3 lần, cách nhau vài giây, trước khi bỏ cuộc (im lặng, không crash).
+SBV_USDVND_BAND_PCT = 5.0
+
+
+def fetch_sbv_central_rate_history(max_pages=4):
+    """sbv.gov.vn — tỷ giá trung tâm NHNN công bố hàng ngày, qua API JSON thật (xem ghi chú phía
+    trên). max_pages=4 x pageSize=100 ~ 400 ngày gần nhất (đủ backfill sâu, KHÔNG cần lấy hết toàn
+    bộ lịch sử mỗi lần chạy — periods mới sẽ tự tích luỹ thêm qua _merge_point_anywhere ở nơi gọi).
+    Trả {period("YYYY-MM-DD"): central_rate_vnd} hoặc {} nếu lỗi/bị chặn cả 3 lần."""
+    headers = {
+        "User-Agent": UA,
+        "Accept": "application/json",
+        "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": "https://sbv.gov.vn/bieu-do-ty-gia-trung-tam",
+    }
+    out = {}
+    for page in range(1, max_pages + 1):
+        url = (f"https://sbv.gov.vn/o/headless-delivery/v1.0/content-structures/137473/"
+               f"structured-contents?pageSize=100&sort=datePublished:desc&page={page}")
+        data = None
+        for attempt in range(3):
+            try:
+                r = requests.get(url, headers=headers, timeout=20)
+                r.raise_for_status()
+                data = r.json()
+                break
+            except Exception as e:
+                if attempt < 2:
+                    time.sleep(5)
+                else:
+                    print(f"  [WARN] SBV tỷ giá trung tâm (trang {page}) thất bại sau 3 lần thử: {e}")
+        if data is None:
+            break
+        items = data.get("items") or []
+        if not items:
+            break
+        for item in items:
+            fields = {f.get("name"): (f.get("contentFieldValue") or {}).get("data")
+                      for f in item.get("contentFields", [])}
+            date_raw, rate_raw = fields.get("NgayBatDau"), fields.get("TyGiaSo")
+            if not date_raw or not rate_raw:
+                continue
+            try:
+                dt_utc = datetime.datetime.fromisoformat(str(date_raw).replace("Z", "+00:00"))
+                period = (dt_utc + datetime.timedelta(hours=7)).strftime("%Y-%m-%d")
+                out[period] = float(rate_raw)
+            except Exception:
+                continue
+    return out
+
+
 def fetch_sbv_bop_quarterly():
     """sbv.gov.vn/vi/can-can-thanh-toan-quoc-te — bảng Cán cân thanh toán quốc tế (BOP) CHÍNH
     THỨC của NHNN, chuẩn BPM6 đầy đủ (Cán cân vãng lai/vốn/tài chính, Lỗi và Sai sót, Cán cân
@@ -3078,6 +3144,29 @@ def update_vimo_raw():
                                    "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate")
             n_vcb += 1
     print(f"  -> {n_vcb} ngày mới (tổng {len(raw['usdvnd_vcb_sell_daily']['series'])} điểm)")
+
+    # THEM 2026-10-12 (user review khung "3 tầng áp lực tỷ giá" — thiếu tỷ giá TRUNG TÂM để tính %
+    # dùng biên độ, xem ghi chú đầy đủ tại fetch_sbv_central_rate_history()).
+    print("[sbv.gov.vn — tỷ giá trung tâm NHNN (backfill lịch sử qua API Liferay)]")
+    if "usdvnd_central_rate" not in raw:
+        raw["usdvnd_central_rate"] = {
+            "group": "external", "label": "Tỷ giá trung tâm USD/VND (NHNN công bố)", "unit": "VND",
+            "good_direction": "lower", "auto_source": "sbv",
+            "note": ("sbv.gov.vn/tỷ-giá — tỷ giá trung tâm NHNN công bố hàng ngày, lấy qua API JSON "
+                     "nội bộ (Liferay headless-delivery). Biên độ giao dịch chính thức hiện hành "
+                     f"±{SBV_USDVND_BAND_PCT:.0f}% quanh mức này (trần/sàn tính ở nơi dùng, KHÔNG lưu "
+                     "sẵn ở đây vì là hằng số chính sách, không phải dữ liệu nguồn)."),
+            "impact": "Tỷ giá thị trường (VCB/liên NH) áp sát TRẦN biên độ là dấu hiệu áp lực mất giá VND rõ rệt theo đúng cơ chế điều hành — khác hẳn chỉ nhìn tỷ giá tuyệt đối tăng/giảm.",
+            "series": [],
+        }
+    central_pts = fetch_sbv_central_rate_history()
+    n_new_central = 0
+    for period, rate in central_pts.items():
+        existing = {p["period"] for p in raw["usdvnd_central_rate"]["series"]}
+        if period not in existing:
+            n_new_central += 1
+        _merge_point_anywhere(raw, "usdvnd_central_rate", period, rate, "https://sbv.gov.vn/tỷ-giá")
+    print(f"  -> {n_new_central} ngày mới (tổng {len(raw['usdvnd_central_rate']['series'])} điểm)")
 
     print("[chogia.vn — tỷ giá USD chợ đen (bán ra)]")
     if "usd_cho_den_sell_daily" not in raw:
