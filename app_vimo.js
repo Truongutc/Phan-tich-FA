@@ -632,9 +632,15 @@ function renderNsfrSystemSection(nsfr) {
                 ...CHART_DEFAULTS, indexAxis: 'y',
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { ...CHART_DEFAULTS.scales.x, grid: _zeroLineGridConfig(),
+                    // SUA 2026-10-12 (user: "sao dưới biểu đồ lại có mấy mã gì nữa" — spread
+                    // ...CHART_DEFAULTS.scales.x (vốn thiết kế cho trục DANH MỤC của chart cột
+                    // DỌC bình thường) khiến Chart.js không tự suy ra đúng type cho trục GIÁ TRỊ
+                    // của chart NGANG (indexAxis:'y') này, mặc định về 'category' và lặp lại
+                    // nhãn mã ngân hàng từ trục Y sang trục X — khai báo type:'linear' rõ ràng).
+                    x: { type: 'linear', ticks: { color: '#9aa5bd', font: { size: 9 } },
+                         grid: _zeroLineGridConfig(),
                          title: { display: true, text: 'NSFR ước tính (%)', color: '#9aa5bd', font: { size: 9 } } },
-                    y: { ticks: { color: '#fff', font: { size: 9 } }, grid: { display: false } },
+                    y: { type: 'category', ticks: { color: '#fff', font: { size: 9 } }, grid: { display: false } },
                 },
             },
             plugins: [ChartDataLabels],
