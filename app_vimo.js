@@ -188,6 +188,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxRateGapChart(data.indicators);
     renderFxCentralBandChart(data.indicators);
     renderFxSwapGapChart(data.indicators);
+    renderFxVndRateChart(data.indicators);
+    renderFxUsdRateChart(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -1047,6 +1049,57 @@ function renderFxSwapGapChart(indicators) {
         plugins: [ChartDataLabels],
     });
     chartInstances.push(chart);
+}
+
+// THEM 2026-10-12 (user: "thêm 2 biểu đồ là LS VND và biểu đồ USD ... sẽ biết được lãi suất
+// hiện của các loại là như nào, còn swap thì ở biểu đồ hiện tại là có chênh lệch rồi" — bổ
+// sung mức TUYỆT ĐỐI của từng đồng tiền bên cạnh biểu đồ CHÊNH LỆCH (renderFxSwapGapChart) đã
+// có. Dùng chung 1 hàm vẽ 4 kỳ hạn, gọi 2 lần cho VND/USD để tránh lặp code.
+function _renderInterbankRateChart(canvasId, cardId, keyPrefix, indicators) {
+    const canvas = document.getElementById(canvasId);
+    const card = document.getElementById(cardId);
+    if (!canvas) return;
+    const SERIES = [
+        { key: `${keyPrefix}_on`, label: 'Qua đêm (ON)', color: '#ef4444' },
+        { key: `${keyPrefix}_1w`, label: '1 tuần', color: '#f59e0b' },
+        { key: `${keyPrefix}_2w`, label: '2 tuần', color: '#60a5fa' },
+        { key: `${keyPrefix}_1m`, label: '1 tháng', color: '#10b981' },
+    ];
+    const valid = SERIES.filter(s => indicators[s.key] && indicators[s.key].series.length);
+    if (!valid.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = Array.from(new Set(valid.flatMap(s => indicators[s.key].series.map(p => p.period)))).sort();
+    const datasets = valid.map(s => {
+        const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
+        return {
+            label: s.label, data: periods.map(p => byPeriod[p] ?? null),
+            borderColor: s.color, backgroundColor: s.color + '15', fill: false,
+            borderWidth: 2, tension: 0.2, pointRadius: 3, pointBackgroundColor: s.color, spanGaps: true,
+            datalabels: _endpointAboveLabelConfig(2, '%'),
+        };
+    });
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y,
+                     title: { display: true, text: 'Lãi suất (%/năm)', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+function renderFxVndRateChart(indicators) {
+    _renderInterbankRateChart('chart-fx-vnd-rate', 'fx-vnd-rate-chart-card', 'interbank_rate', indicators);
+}
+function renderFxUsdRateChart(indicators) {
+    _renderInterbankRateChart('chart-fx-usd-rate', 'fx-usd-rate-chart-card', 'interbank_usd', indicators);
 }
 
 // THEM (user 2026-10-03): "tạo biểu đồ để đánh giá mức độ áp lực tỷ giá" — SAU KHI user chỉ ra
