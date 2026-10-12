@@ -788,6 +788,16 @@
                 <p class="vimo-chart-subtitle">Tỷ giá VCB bán ra vs Biên độ giao dịch chính thức NHNN (vùng tô = trong biên độ ±5%, Trung tâm = nét liền giữa, Trần/Sàn = nét đứt) + % đã dùng biên độ (trục phải, 0% = đúng trung tâm, 100% = chạm trần). Tỷ giá áp sát trần là áp lực mất giá VND rõ rệt theo đúng cơ chế điều hành — bất kể tỷ giá tuyệt đối đang cao hay thấp so với lịch sử.</p>
                 <div class="ind-chart" style="height:340px"><canvas id="chart-fx-central-band"></canvas></div>
             </div>
+            <!-- THEM 2026-10-12 (user: "thêm cho tôi biểu đồ chênh lệch lãi suất việt nam USD để
+                 so sánh xem swap âm hay dương" — xem renderFxSwapGapChart trong app_vimo.js. Đây
+                 là PROXY từ lãi suất liên ngân hàng VND-USD cùng ngày (nguồn VIRA), KHÔNG PHẢI
+                 swap points thị trường thật (VBMA FX Swap Curve khóa sau login hội viên, không có
+                 API công khai) — cùng bản chất kinh tế (chênh lệch lãi suất quyết định swap points
+                 theo lý thuyết ngang giá lãi suất CIP), đủ dùng để xem xu hướng. -->
+            <div id="fx-swap-gap-chart-card" style="display:none" class="margin-top-20">
+                <p class="vimo-chart-subtitle">Chênh lệch lãi suất liên ngân hàng VND − USD theo 4 kỳ hạn (ON/1 tuần/2 tuần/1 tháng, nguồn VIRA) — PROXY cho swap points (KHÔNG PHẢI số thị trường thật, VBMA FX Swap Curve khóa sau login hội viên). Dương = lãi suất VND cao hơn USD cùng kỳ hạn (thuận lợi nắm giữ VND, swap "dương" theo hướng thông thường); Âm = VND thấp hơn USD (bất lợi nắm giữ VND, áp lực chuyển sang USD).</p>
+                <div class="ind-chart" style="height:320px"><canvas id="chart-fx-swap-gap"></canvas></div>
+            </div>
 
             <div id="fx-pressure-body"></div>
         </div>

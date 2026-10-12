@@ -187,6 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFxFinancialAccountChart(data.indicators);
     renderFxRateGapChart(data.indicators);
     renderFxCentralBandChart(data.indicators);
+    renderFxSwapGapChart(data.indicators);
 
     // File RIÊNG (không gộp vào vimo.json) — lịch sử P/E/P/B theo NGÀY ~17 năm (~4300 điểm/chỉ
     // số) từ Vietcap IQ, xem fetch_vietcap_index_valuation() trong fetch_macro_data.py. User
@@ -994,6 +995,53 @@ function renderFxCentralBandChart(indicators) {
                      title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false }, suggestedMin: -100, suggestedMax: 100,
                       title: { display: true, text: '% đã dùng biên độ', color: '#9aa5bd', font: { size: 9 } } },
+            },
+        },
+        plugins: [ChartDataLabels],
+    });
+    chartInstances.push(chart);
+}
+
+// THEM 2026-10-12 (user: "thêm cho tôi biểu đồ chênh lệch lãi suất việt nam USD để so sánh xem
+// swap âm hay dương" — PROXY swap points tu chenh lech lai suat lien ngan hang VND-USD CUNG ngay
+// (ban tin VIRA, xem ghi chu day du o fetch_vira_bulletin() trong fetch_macro_data.py) - KHONG
+// PHAI duong cong swap thi truong that (VBMA FX Swap Curve khoa sau login hoi vien). Ke dam moc 0
+// (dung lai _zeroLineGridConfig() da dung o cac chart khac) de thay NGAY am/duong, khong can doc
+// so chi tiet.
+function renderFxSwapGapChart(indicators) {
+    const canvas = document.getElementById('chart-fx-swap-gap');
+    const card = document.getElementById('fx-swap-gap-chart-card');
+    if (!canvas) return;
+    const SERIES = [
+        { key: 'interbank_vnd_usd_gap_on', label: 'Qua đêm (ON)', color: '#ef4444' },
+        { key: 'interbank_vnd_usd_gap_1w', label: '1 tuần', color: '#f59e0b' },
+        { key: 'interbank_vnd_usd_gap_2w', label: '2 tuần', color: '#60a5fa' },
+        { key: 'interbank_vnd_usd_gap_1m', label: '1 tháng', color: '#10b981' },
+    ];
+    const valid = SERIES.filter(s => indicators[s.key] && indicators[s.key].series.length);
+    if (!valid.length) { if (card) card.style.display = 'none'; return; }
+    if (card) card.style.display = '';
+
+    const periods = Array.from(new Set(valid.flatMap(s => indicators[s.key].series.map(p => p.period)))).sort();
+    const datasets = valid.map(s => {
+        const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
+        return {
+            label: s.label, data: periods.map(p => byPeriod[p] ?? null),
+            borderColor: s.color, backgroundColor: s.color + '15', fill: false,
+            borderWidth: 2, tension: 0.2, pointRadius: 3, pointBackgroundColor: s.color, spanGaps: true,
+            datalabels: _endpointAboveLabelConfig(2, '%'),
+        };
+    });
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: periods, datasets },
+        options: {
+            ...CHART_DEFAULTS,
+            plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
+            scales: {
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+                y: { ...CHART_DEFAULTS.scales.y, grid: _zeroLineGridConfig(),
+                     title: { display: true, text: 'Chênh lệch VND − USD (điểm %)', color: '#9aa5bd', font: { size: 9 } } },
             },
         },
         plugins: [ChartDataLabels],
