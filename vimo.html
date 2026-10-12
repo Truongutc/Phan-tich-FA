@@ -681,6 +681,41 @@
             <h3 class="border-blue">💱 Áp lực Ngoại tệ Việt Nam</h3>
             <p class="vimo-chart-subtitle">Tổng hợp đối chiếu BOP, áp lực thị trường, Cầu/Cung ngoại tệ và phản ứng của NHNN — giữ các lớp ĐỘC LẬP, không gộp thành 1 "điểm số áp lực" duy nhất. SỬA 2026-10-03: Cầu/Cung (dựa nhiều vào XNK hàng hóa) là proxy KÉM cho áp lực thực — nhiều dòng XNK không thực sự qua hệ thống NHTM VN (DN FDI thanh toán qua công ty mẹ/tài khoản offshore), và dòng VỐN có thể bù/đảo ngược hoàn toàn chiều vãng lai (ví dụ thật: Q2-2026 hàng hóa nhập siêu nhưng Cán cân tổng thể gần như cân bằng vì dòng vốn bù lại). Ưu tiên đọc biểu đồ "Tín hiệu Áp lực Tỷ giá Thực" bên dưới và lớp ① Đối chiếu BOP / ② Áp lực thị trường — đây là tín hiệu THỰC, không suy luận từ kế toán XNK.</p>
 
+            <!-- THEM 2026-10-12 (user review khung "3 tầng áp lực tỷ giá", mục 7 — ma trận chẩn
+                 đoán 2x2 FX Market Stress × External Imbalance, xem _build_fx_stress_matrix trong
+                 template_vimo.py + renderFxStressMatrix trong app_vimo.js. Đặt NGAY ĐẦU card làm
+                 "kết luận đầu tiên" trước khi đi vào từng biểu đồ chi tiết bên dưới. -->
+            <div id="fx-stress-matrix-card" style="display:none;margin-bottom:18px">
+                <div class="vimo-chart-title">🧭 Ma trận chẩn đoán: FX Market Stress × External Imbalance</div>
+                <p class="ind-source-note">RULE-BASED (ngưỡng % cố định + biểu quyết đa số giữa nhiều chỉ báo mỗi tầng, KHÔNG gộp thành 1 điểm số) — xem đầy đủ cách tính trong <code>_build_fx_stress_matrix</code> (template_vimo.py). Đây là công cụ CHẨN ĐOÁN hiện trạng (snapshot kỳ gần nhất), không phải 1 chỉ báo vẽ theo chuỗi thời gian.</p>
+                <div style="display:grid;grid-template-columns:140px repeat(2,1fr);gap:4px;max-width:600px;margin:14px auto">
+                    <div></div>
+                    <div style="text-align:center;font-weight:600;padding:8px;color:#fff">External Imbalance: THẤP</div>
+                    <div style="text-align:center;font-weight:600;padding:8px;color:#fff">External Imbalance: CAO</div>
+                    <div style="display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff">FX Stress: CAO</div>
+                    <div id="fxm-cell-cao_thap" class="fxm-cell" style="padding:14px 10px;border-radius:8px;font-size:0.82em;line-height:1.5"></div>
+                    <div id="fxm-cell-cao_cao" class="fxm-cell" style="padding:14px 10px;border-radius:8px;font-size:0.82em;line-height:1.5"></div>
+                    <div style="display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff">FX Stress: THẤP</div>
+                    <div id="fxm-cell-thap_thap" class="fxm-cell" style="padding:14px 10px;border-radius:8px;font-size:0.82em;line-height:1.5"></div>
+                    <div id="fxm-cell-thap_cao" class="fxm-cell" style="padding:14px 10px;border-radius:8px;font-size:0.82em;line-height:1.5"></div>
+                </div>
+                <p id="fxm-narrative" style="margin-top:10px;line-height:1.7;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px"></p>
+                <div class="bank-chart-grid-2" style="margin-top:10px">
+                    <div>
+                        <div class="vimo-chart-title" style="font-size:0.9em">Tầng 1 — FX Market Stress (chỉ báo thị trường)</div>
+                        <table id="fxm-tier1-table" style="width:100%;font-size:0.82em;border-collapse:collapse">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <div class="vimo-chart-title" style="font-size:0.9em">Tầng 2 — External Imbalance (BOP)</div>
+                        <table id="fxm-tier2-table" style="width:100%;font-size:0.82em;border-collapse:collapse">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- THEM (user 2026-10-03): "tạo biểu đồ để đánh giá mức độ áp lực tỷ giá" — SAU KHI
                  user chỉ ra Cầu/Cung (XNK) là proxy kém. Đặt chart NÀY lên ĐẦU TIÊN (trước Tổng
                  Cung/Cầu) vì đây là 2 tín hiệu THỰC (Cán cân tổng thể BOP + USD/VND thị trường) —

@@ -2223,7 +2223,7 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
                     monitoring_table=None, macro_overview=None, banking_system_risk=None,
                     gdp_sector_table=None, cpi_group_table=None,
                     export_commodity_table=None, import_commodity_table=None,
-                    export_price_table=None, import_price_table=None):
+                    export_price_table=None, import_price_table=None, fx_stress_matrix=None):
     out = {
         "sector": "Vĩ mô",
         "gdrivePdfUrl": pdf_url,
@@ -2258,6 +2258,10 @@ def save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_
         # None nếu chưa có ngân hàng nào có dữ liệu. KHÔNG chứa mảng history riêng (xem ghi chú
         # _add_bank_alm_derived_indicators) — chuỗi thời gian đã có sẵn ở indicators.bank_alm_system_*.
         "bankingSystemRisk": banking_system_risk,
+        # THEM 2026-10-12 (user review khung "3 tầng áp lực tỷ giá" — ma trận chẩn đoán 2x2 FX
+        # Market Stress × External Imbalance, xem _build_fx_stress_matrix). None nếu thiếu dữ
+        # liệu bắt buộc (band_utilization/cho_den_gap/vnd_usd_gap hoặc BOP chưa có).
+        "fxStressMatrix": fx_stress_matrix,
         "indicators": {},
     }
     for key, ind in raw.items():
@@ -3630,6 +3634,93 @@ def _add_usdvnd_central_band(raw, trends):
     print(f"  -> %% da dung bien do ty gia: {len(util_points)} diem")
 
 
+# THEM 2026-10-12 (user review khung "3 tầng áp lực tỷ giá", mục 7: "Lớp 1 — FX Market Stress...
+# Lớp 2 — External Imbalance... đối chiếu 2 lớp để phân loại" — ma trận 2x2, rồi user chốt "làm cả
+# 2, làm cái dễ trước" sau khi đã xong tỷ giá trung tâm). Phân loại RULE-BASED (ngưỡng % cố định +
+# biểu quyết đa số giữa nhiều chỉ báo — ĐÚNG tinh thần khung gốc "không dùng 1 chỉ báo riêng lẻ,
+# không gộp thành 1 con số duy nhất" — ở đây KHÔNG cộng điểm thành 1 số, chỉ ĐẾM số chỉ báo đồng
+# thuận mỗi phía), KHÔNG phải mô hình thống kê/AI tự học ngưỡng.
+_FX_STRESS_THRESHOLDS = {
+    # (key, nguong, huong) — huong 'above'=gia tri VUOT nguong la "cao ap luc", 'below'=gia tri
+    # DUOI nguong la "cao ap luc".
+    "usdvnd_band_utilization_pct": (50.0, "above_abs"),  # |%| >= 50% = da dung qua nua bien do
+    "usd_cho_den_vcb_gap_pct": (0.3, "above"),           # cho den dat hon VCB >= 0.3% = co dau co
+    "interbank_vnd_usd_gap_on": (0.0, "below_eq"),       # lai suat VND <= USD = bat loi nam giu VND
+}
+_EXTERNAL_IMBALANCE_KEYS = ["bop_sbv_overall_balance", "bop_sbv_current_account", "bop_sbv_financial_account"]
+
+
+def _build_fx_stress_matrix(raw):
+    """Tra dict {asOf, tier1: {...}, tier2: {...}, matrix: 'cao_cao'|'cao_thap'|'thap_cao'|
+    'thap_thap', narrative: str} hoac None neu thieu du lieu bat buoc. Phai sinh tinh toan,
+    KHONG luu vao vimo_raw.json — chi 1 snapshot KY GAN NHAT (khac cac chi bao khac co ca chuoi
+    thoi gian), vi day la cong cu CHAN DOAN HIEN TRANG, khong phai 1 chi bao de ve chart theo quy."""
+    tier1_items = []
+    for key, (threshold, mode) in _FX_STRESS_THRESHOLDS.items():
+        ind = raw.get(key)
+        if not ind or not ind["series"]:
+            continue
+        pts = [p for p in ind["series"] if p.get("value") is not None]
+        if not pts:
+            continue
+        latest = pts[-1]
+        v = latest["value"]
+        if mode == "above_abs":
+            is_cao = abs(v) >= threshold
+        elif mode == "above":
+            is_cao = v >= threshold
+        else:  # below_eq
+            is_cao = v <= threshold
+        tier1_items.append({"key": key, "label": ind["label"], "value": v, "period": latest["period"], "is_cao": is_cao})
+    if not tier1_items:
+        return None
+
+    tier2_items = []
+    for key in _EXTERNAL_IMBALANCE_KEYS:
+        ind = raw.get(key)
+        if not ind or not ind["series"]:
+            continue
+        pts = [p for p in ind["series"] if p.get("value") is not None]
+        if not pts:
+            continue
+        latest = pts[-1]
+        tier2_items.append({"key": key, "label": ind["label"], "value": latest["value"],
+                              "period": latest["period"], "is_cao": latest["value"] < 0})
+    if not tier2_items:
+        return None
+
+    tier1_cao_count = sum(1 for it in tier1_items if it["is_cao"])
+    tier2_cao_count = sum(1 for it in tier2_items if it["is_cao"])
+    tier1_cao = tier1_cao_count >= len(tier1_items) / 2.0
+    tier2_cao = tier2_cao_count >= len(tier2_items) / 2.0
+
+    matrix_key = ("cao" if tier1_cao else "thap") + "_" + ("cao" if tier2_cao else "thap")
+    interpretations = {
+        "cao_cao": "Áp lực tỷ giá rõ rệt, nền tảng đối ngoại cũng bất lợi — 2 lớp cùng xác nhận, mức độ tin cậy cao nhất.",
+        "cao_thap": "Thị trường căng nhưng nền tảng đối ngoại chưa xấu — khả năng là áp lực thanh khoản/kỳ vọng ngắn hạn, hoặc dòng vốn nóng, không phải mất cân đối cơ bản.",
+        "thap_cao": "Mất cân đối đối ngoại tồn tại nhưng CHƯA tạo áp lực thị trường rõ rệt — có thể đang được hấp thụ tốt (dòng vốn bù đắp, dự trữ đủ dày), cần theo dõi tiếp vì có thể chỉ là độ trễ.",
+        "thap_thap": "Điều kiện thị trường và nền tảng đối ngoại đều tương đối thuận lợi.",
+    }
+
+    def _fmt_items(items):
+        return "; ".join(f"{it['label']} ({it['period']}): {it['value']:.2f} [{'CAO' if it['is_cao'] else 'thấp'}]" for it in items)
+
+    narrative = (
+        f"Tầng 1 — FX Market Stress: {tier1_cao_count}/{len(tier1_items)} chỉ báo ở mức CAO "
+        f"({_fmt_items(tier1_items)}) → xếp loại {'CAO' if tier1_cao else 'THẤP'}. "
+        f"Tầng 2 — External Imbalance: {tier2_cao_count}/{len(tier2_items)} chỉ báo ở mức CAO "
+        f"({_fmt_items(tier2_items)}) → xếp loại {'CAO' if tier2_cao else 'THẤP'}. "
+        f"Kết luận: {interpretations[matrix_key]}"
+    )
+    as_of = max(it["period"] for it in tier1_items + tier2_items)
+    return {
+        "asOf": as_of, "matrix": matrix_key,
+        "tier1": {"isCao": tier1_cao, "items": tier1_items},
+        "tier2": {"isCao": tier2_cao, "items": tier2_items},
+        "narrative": narrative,
+    }
+
+
 def _add_fdi_trade_share(raw, trends):
     """% tỷ trọng khu vực FDI trong tổng kim ngạch XK/NK theo tháng (user 2026-10-01: "dữ liệu
     tổng xuất khẩu nhập khẩu này có thể tính được xuất khẩu FDI và nhập khẩu FDI ảnh hưởng ntn tới
@@ -4438,6 +4529,11 @@ def run_vimo_analysis():
     print(f"  [OK] PDF: {pdf_path}")
 
     print("[INFO] Saving JSON dashboard...")
+    print("[INFO] Dung ma tran chan doan ap luc ty gia (FX Market Stress x External Imbalance)...")
+    fx_stress_matrix = _build_fx_stress_matrix(raw)
+    if fx_stress_matrix:
+        print(f"  -> {fx_stress_matrix['matrix']} (asOf {fx_stress_matrix['asOf']})")
+
     save_json_vimo(raw, trends, scorecard, scorecard_total, valuation, decision_label, decision_text, synthesis,
                     valuation_headline=valuation_headline, decision_label_headline=decision_label_headline,
                     decision_text_headline=decision_text_headline,
@@ -4446,7 +4542,8 @@ def run_vimo_analysis():
                     macro_overview=macro_overview, banking_system_risk=banking_system_risk,
                     gdp_sector_table=gdp_sector_table, cpi_group_table=cpi_group_table,
                     export_commodity_table=export_commodity_table, import_commodity_table=import_commodity_table,
-                    export_price_table=export_price_table, import_price_table=import_price_table)
+                    export_price_table=export_price_table, import_price_table=import_price_table,
+                    fx_stress_matrix=fx_stress_matrix)
 
     print("[INFO] Cập nhật Excel lịch sử chỉ số theo tháng...")
     update_excel_history_vimo(raw, out_dir)

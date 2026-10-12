@@ -173,6 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderMaturityStructure(data.bankingSystemRisk && data.bankingSystemRisk.maturityStructure);
     renderNsfrSystemSection(data.bankingSystemRisk && data.bankingSystemRisk.nsfrSystem);
     renderFxPressureCard(data.indicators);
+    renderFxStressMatrix(data.fxStressMatrix);
     renderFxPressureSignalsChart(data.indicators);
     renderFxPressureSignalsMonthlyChart(data.indicators);
     renderFxYieldDiffChart(data.indicators, data.usMacro);
@@ -740,6 +741,54 @@ const FX_PRESSURE_LAYERS = [
         missing: [],
     },
 ];
+
+// THEM 2026-10-12 (user review khung "3 tầng áp lực tỷ giá", mục 7 — ma trận chẩn đoán 2x2, xem
+// _build_fx_stress_matrix trong template_vimo.py cho phần tính RULE-BASED. Ở đây CHỈ hiển thị kết
+// quả đã tính sẵn (tô sáng đúng ô hiện tại, liệt kê từng chỉ báo) — không tính toán gì thêm ở JS.
+const _FXM_CELL_STYLE = {
+    cao_cao: { bg: 'rgba(239,68,68,0.28)', border: '#ef4444' },
+    cao_thap: { bg: 'rgba(245,158,11,0.22)', border: '#f59e0b' },
+    thap_cao: { bg: 'rgba(96,165,250,0.18)', border: '#60a5fa' },
+    thap_thap: { bg: 'rgba(16,185,129,0.22)', border: '#10b981' },
+};
+function renderFxStressMatrix(m) {
+    const card = document.getElementById('fx-stress-matrix-card');
+    if (!card) return;
+    if (!m) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    for (const key of ['cao_cao', 'cao_thap', 'thap_cao', 'thap_thap']) {
+        const cell = document.getElementById(`fxm-cell-${key}`);
+        if (!cell) continue;
+        const isCurrent = key === m.matrix;
+        const style = _FXM_CELL_STYLE[key];
+        cell.style.background = isCurrent ? style.bg : 'rgba(255,255,255,0.02)';
+        cell.style.border = isCurrent ? `2px solid ${style.border}` : '1px solid rgba(255,255,255,0.06)';
+        cell.style.color = isCurrent ? '#fff' : '#6b7280';
+        cell.style.fontWeight = isCurrent ? '600' : '400';
+        cell.textContent = (isCurrent ? '● HIỆN TẠI — ' : '') + ({
+            cao_cao: 'Áp lực tỷ giá rõ rệt, nền tảng đối ngoại cũng bất lợi.',
+            cao_thap: 'Có thể là áp lực thanh khoản/kỳ vọng/dòng vốn ngắn hạn, chưa phải mất cân đối cơ bản.',
+            thap_cao: 'Mất cân đối đối ngoại tồn tại nhưng chưa tạo áp lực thị trường rõ rệt (có thể đang được hấp thụ).',
+            thap_thap: 'Điều kiện thị trường và nền tảng đối ngoại đều tương đối thuận lợi.',
+        })[key];
+    }
+
+    document.getElementById('fxm-narrative').innerHTML = `📍 <b>Kỳ gần nhất: ${m.asOf}</b> — ${m.narrative.split('Kết luận:')[0]}<br><b>Kết luận: ${m.narrative.split('Kết luận:')[1]}</b>`;
+
+    const fillTable = (tbodySel, items) => {
+        const tbody = document.querySelector(tbodySel);
+        if (!tbody) return;
+        tbody.innerHTML = items.map(it => `
+            <tr style="border-top:1px solid var(--border-color)">
+                <td style="padding:6px 8px">${it.label}</td>
+                <td style="padding:6px 8px;text-align:right;white-space:nowrap">${it.value.toFixed(2)}</td>
+                <td style="padding:6px 8px;text-align:center;white-space:nowrap;font-weight:600;color:${it.is_cao ? '#ef4444' : '#10b981'}">${it.is_cao ? 'CAO' : 'thấp'}</td>
+            </tr>`).join('');
+    };
+    fillTable('#fxm-tier1-table tbody', m.tier1.items);
+    fillTable('#fxm-tier2-table tbody', m.tier2.items);
+}
 
 function renderFxPressureCard(indicators) {
     const card = document.getElementById('fx-pressure-card');

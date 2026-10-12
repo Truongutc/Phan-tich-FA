@@ -7983,6 +7983,63 @@
       ]
     }
   },
+  "fxStressMatrix": {
+    "asOf": "2026-Q2",
+    "matrix": "thap_thap",
+    "tier1": {
+      "isCao": false,
+      "items": [
+        {
+          "key": "usdvnd_band_utilization_pct",
+          "label": "% đã dùng biên độ tỷ giá (VCB so với trung tâm)",
+          "value": 36.8,
+          "period": "2026-10-09",
+          "is_cao": false
+        },
+        {
+          "key": "usd_cho_den_vcb_gap_pct",
+          "label": "Gap tỷ giá USD chợ đen − Vietcombank (% so VCB)",
+          "value": -0.294,
+          "period": "2026-10-02",
+          "is_cao": false
+        },
+        {
+          "key": "interbank_vnd_usd_gap_on",
+          "label": "Chênh lệch LNH VND-USD kỳ hạn ON (proxy lãi suất swap-implied)",
+          "value": -3.04,
+          "period": "2026-10-08",
+          "is_cao": true
+        }
+      ]
+    },
+    "tier2": {
+      "isCao": false,
+      "items": [
+        {
+          "key": "bop_sbv_overall_balance",
+          "label": "Cán cân tổng thể (BOP, NHNN)",
+          "value": 81.0,
+          "period": "2026-Q2",
+          "is_cao": false
+        },
+        {
+          "key": "bop_sbv_current_account",
+          "label": "Cán cân vãng lai (BOP, NHNN)",
+          "value": -11101.0,
+          "period": "2026-Q2",
+          "is_cao": true
+        },
+        {
+          "key": "bop_sbv_financial_account",
+          "label": "Cán cân tài chính (BOP, NHNN)",
+          "value": 1899.0,
+          "period": "2026-Q2",
+          "is_cao": false
+        }
+      ]
+    },
+    "narrative": "Tầng 1 — FX Market Stress: 1/3 chỉ báo ở mức CAO (% đã dùng biên độ tỷ giá (VCB so với trung tâm) (2026-10-09): 36.80 [thấp]; Gap tỷ giá USD chợ đen − Vietcombank (% so VCB) (2026-10-02): -0.29 [thấp]; Chênh lệch LNH VND-USD kỳ hạn ON (proxy lãi suất swap-implied) (2026-10-08): -3.04 [CAO]) → xếp loại THẤP. Tầng 2 — External Imbalance: 1/3 chỉ báo ở mức CAO (Cán cân tổng thể (BOP, NHNN) (2026-Q2): 81.00 [thấp]; Cán cân vãng lai (BOP, NHNN) (2026-Q2): -11101.00 [CAO]; Cán cân tài chính (BOP, NHNN) (2026-Q2): 1899.00 [thấp]) → xếp loại THẤP. Kết luận: Điều kiện thị trường và nền tảng đối ngoại đều tương đối thuận lợi."
+  },
   "indicators": {
     "gdp_growth": {
       "group": "growth",
