@@ -779,6 +779,19 @@ function renderFxStressMatrix(m) {
 
     document.getElementById('fxm-narrative').innerHTML = `📍 <b>Kỳ gần nhất: ${m.asOf}</b> — ${m.narrative.split('Kết luận:')[0]}<br><b>Kết luận: ${m.narrative.split('Kết luận:')[1]}</b>`;
 
+    // THEM 2026-10-12 (user: "ở dưới phần đánh giá tổng thể sẽ thêm dòng dự báo áp lực trong quý
+    // tới sẽ căng hơn hay giảm đi và vì sao" — xem _build_bop_forecast_narrative trong
+    // template_vimo.py. Co the null neu chua du du lieu thang de nowcast.
+    const fcEl = document.getElementById('fxm-forecast-narrative');
+    if (fcEl) {
+        if (m.forecastNarrative) {
+            fcEl.style.display = '';
+            fcEl.innerHTML = `🔮 <b>Dự báo quý tới:</b> ${m.forecastNarrative}`;
+        } else {
+            fcEl.style.display = 'none';
+        }
+    }
+
     const fillTable = (tbodySel, items) => {
         const tbody = document.querySelector(tbodySel);
         if (!tbody) return;
@@ -1126,6 +1139,22 @@ function renderFxPressureSignalsChart(indicators) {
     const obSeries = ob.series.filter(p => p.period >= '2020-Q1');
     const periods = obSeries.map(p => p.period);
     const obArr = obSeries.map(p => p.value);
+
+    // THEM 2026-10-12 (user: "xong dự báo cán cân vãng lai và dự báo cán cân tổng thể, và vẽ phần
+    // dự báo lên biểu đồ" — nối thêm 2 "cột ma" (nowcast quý vừa qua + dự báo xu hướng quý tới) vào
+    // CUỐI trục X, dùng 2 dataset bar riêng (chỉ 1 điểm khác null mỗi dataset) để tô màu/viền khác
+    // hẳn cột thật, không làm lẫn với dữ liệu chính thức NHNN. Xem _add_bop_nowcast_forecast trong
+    // template_vimo.py.
+    const obNowcast = indicators['bop_overall_balance_nowcast'];
+    const obForecast = indicators['bop_overall_balance_forecast'];
+    const nowcastPt = obNowcast && obNowcast.series[0];
+    const forecastPt = obForecast && obForecast.series[0];
+    if (nowcastPt && !periods.includes(nowcastPt.period)) periods.push(nowcastPt.period);
+    if (forecastPt && !periods.includes(forecastPt.period)) periods.push(forecastPt.period);
+    while (obArr.length < periods.length) obArr.push(null);
+    const nowcastArr = periods.map(p => (nowcastPt && p === nowcastPt.period) ? nowcastPt.value : null);
+    const forecastArr = periods.map(p => (forecastPt && p === forecastPt.period) ? forecastPt.value : null);
+
     // Quy đổi USD/VND tăng trưởng YoY + MỨC thực tế (theo THÁNG) về cuối mỗi quý (tháng 3/6/9/12)
     // để so cùng trục X với BOP (theo QUÝ) — chỉ để VẼ CẠNH NHAU, không tính toán gộp gì cả.
     const QUARTER_END_MONTH = { '1': '03', '2': '06', '3': '09', '4': '12' };
@@ -1154,6 +1183,18 @@ function renderFxPressureSignalsChart(indicators) {
                   datalabels: { color: '#e5e9f0', font: { size: 9, weight: '700' }, anchor: 'end',
                                 align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
                                 formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
+                { type: 'bar', label: 'Cán cân tổng thể — Ước tính (nowcast, XNK+FDI theo tháng)', data: nowcastArr,
+                  yAxisID: 'y', backgroundColor: nowcastArr.map(v => v >= 0 ? '#10b98140' : '#ef444440'),
+                  borderColor: nowcastArr.map(v => v >= 0 ? '#10b981' : '#ef4444'), borderWidth: 1.5, borderDash: [4, 3],
+                  datalabels: { color: '#9aa5bd', font: { size: 9, weight: '700' }, anchor: 'end',
+                                align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
+                                formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
+                { type: 'bar', label: 'Cán cân tổng thể — Dự báo xu hướng (độ tin cậy thấp)', data: forecastArr,
+                  yAxisID: 'y', backgroundColor: forecastArr.map(v => v >= 0 ? '#10b98120' : '#ef444420'),
+                  borderColor: forecastArr.map(v => v >= 0 ? '#10b981' : '#ef4444'), borderWidth: 1.5, borderDash: [2, 3],
+                  datalabels: { color: '#6b7280', font: { size: 9, weight: '700' }, anchor: 'end',
+                                align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
+                                formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
                 { type: 'line', label: 'USD/VND tăng/giảm YoY tại cuối quý (%, thị trường thực)', data: usdvndArr,
                   yAxisID: 'y1', borderColor: '#f59e0b', borderWidth: 2.5, borderDash: [6, 4],
                   pointRadius: 3, pointBackgroundColor: '#f59e0b', fill: false, tension: 0.2, spanGaps: true,
@@ -1168,7 +1209,7 @@ function renderFxPressureSignalsChart(indicators) {
             ...CHART_DEFAULTS,
             plugins: { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } },
             scales: {
-                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0 } },
+                x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
                      title: { display: true, text: 'Triệu USD', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
@@ -2199,8 +2240,19 @@ function renderFxSupplyDemandChart(indicators) {
 
     // Gioi han hien thi tu 2020 (nhu renderFxPressureSignalsChart) - BOP da duoc backfill tu IMF
     // ve 1996-Q1 nen neu khong gioi han, nhan truc X se qua nhieu (>100 ky) gay chong chat/roi mat.
-    const periods = Array.from(new Set(validSeries.flatMap(s =>
+    let periods = Array.from(new Set(validSeries.flatMap(s =>
         indicators[s.exportKey].series.map(p => p.period)))).filter(p => p >= '2020-Q1').sort();
+
+    // THEM 2026-10-12 (user: "hãy update số đó vào dữ liệu bảng biểu cán cân... xong dự báo cán
+    // cân vãng lai... vẽ phần dự báo lên biểu đồ" — nối thêm nowcast/dự báo quý tới vào trục X nếu
+    // có (xem _add_bop_nowcast_forecast trong template_vimo.py).
+    const caNowcastPt = indicators['bop_current_account_nowcast'] && indicators['bop_current_account_nowcast'].series[0];
+    const caForecastPt = indicators['bop_current_account_forecast'] && indicators['bop_current_account_forecast'].series[0];
+    const caEstimatedPeriods = new Set([caNowcastPt && caNowcastPt.period, caForecastPt && caForecastPt.period].filter(Boolean));
+    if (caNowcastPt && !periods.includes(caNowcastPt.period)) periods.push(caNowcastPt.period);
+    if (caForecastPt && !periods.includes(caForecastPt.period)) periods.push(caForecastPt.period);
+    periods.sort();
+
     const datasets = validSeries.map(s => {
         const expByPeriod = Object.fromEntries(indicators[s.exportKey].series.map(p => [p.period, p.value]));
         const impByPeriod = Object.fromEntries(indicators[s.importKey].series.map(p => [p.period, p.value]));
@@ -2215,6 +2267,23 @@ function renderFxSupplyDemandChart(indicators) {
             datalabels: _endpointDatalabelsConfig(0),
         };
     });
+    // THEM 2026-10-12: duong TONG Can can vang lai (bold, giong style "TONG" o
+    // renderFxFinancialAccountChart), noi them nowcast/du bao cuoi duong, nhat dan qua
+    // segment.borderDash (dua theo diem CUOI moi doan co nam trong caEstimatedPeriods khong).
+    const caTotal = indicators['bop_sbv_current_account'];
+    if (caTotal && caTotal.series.length) {
+        const caByPeriod = Object.fromEntries(caTotal.series.map(p => [p.period, p.value]));
+        if (caNowcastPt) caByPeriod[caNowcastPt.period] = caNowcastPt.value;
+        if (caForecastPt) caByPeriod[caForecastPt.period] = caForecastPt.value;
+        const caArr = periods.map(p => caByPeriod[p] ?? null);
+        datasets.push({
+            label: 'TỔNG Cán cân vãng lai (NHNN; đoạn nét đứt = nowcast/dự báo)', data: caArr, yAxisID: 'y',
+            borderColor: '#e5e7eb', backgroundColor: '#e5e7eb15', fill: false,
+            borderWidth: 3, tension: 0.25, pointRadius: 2, pointBackgroundColor: '#e5e7eb', spanGaps: true,
+            segment: { borderDash: (ctx) => caEstimatedPeriods.has(periods[ctx.p1DataIndex]) ? [6, 4] : undefined },
+            datalabels: _endpointDatalabelsConfig(0),
+        });
+    }
     // USD/VND thực tế (tham chiếu, trục phải) — quy về cuối quý để so cùng trục X với BOP (quý).
     const usdvnd = indicators['usdvnd_monthly_avg'];
     if (usdvnd && usdvnd.series.length) {
@@ -2283,16 +2352,29 @@ function renderFxFinancialAccountChart(indicators) {
     if (!validSeries.length) { if (card) card.style.display = 'none'; return; }
     if (card) card.style.display = '';
 
-    const periods = Array.from(new Set(validSeries.flatMap(s =>
+    let periods = Array.from(new Set(validSeries.flatMap(s =>
         indicators[s.key].series.map(p => p.period)))).filter(p => p >= '2020-Q1').sort();
+
+    // THEM 2026-10-12: noi them nowcast cua "TONG Can can tai chinh" (bop_sbv_financial_account) —
+    // xem _add_bop_nowcast_forecast trong template_vimo.py. KHONG co du bao rieng cho FA (user
+    // khong yeu cau), chi nowcast quy gan nhat.
+    const faNowcastPt = indicators['bop_financial_account_nowcast'] && indicators['bop_financial_account_nowcast'].series[0];
+    if (faNowcastPt && !periods.includes(faNowcastPt.period)) periods.push(faNowcastPt.period);
+    periods.sort();
+
     const datasets = validSeries.map(s => {
         const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
+        if (s.key === 'bop_sbv_financial_account' && faNowcastPt) byPeriod[faNowcastPt.period] = faNowcastPt.value;
         const data = periods.map(p => { const v = byPeriod[p]; return (v === null || v === undefined) ? null : v; });
         return {
-            label: s.label, data, yAxisID: 'y',
+            label: s.key === 'bop_sbv_financial_account' ? s.label + ' — nét đứt = nowcast' : s.label,
+            data, yAxisID: 'y',
             borderColor: s.color, backgroundColor: s.color + '15', fill: false,
             borderWidth: s.bold ? 3 : 2, borderDash: s.dash || [], tension: 0.25,
             pointRadius: s.bold ? 2 : 3, pointBackgroundColor: s.color, spanGaps: true,
+            segment: (s.key === 'bop_sbv_financial_account' && faNowcastPt)
+                ? { borderDash: (ctx) => periods[ctx.p1DataIndex] === faNowcastPt.period ? [6, 4] : undefined }
+                : undefined,
             datalabels: _endpointDatalabelsConfig(0),
         };
     });

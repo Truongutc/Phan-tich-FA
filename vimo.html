@@ -700,6 +700,12 @@
                     <div id="fxm-cell-thap_cao" class="fxm-cell" style="padding:14px 10px;border-radius:8px;font-size:0.82em;line-height:1.5"></div>
                 </div>
                 <p id="fxm-narrative" style="margin-top:10px;line-height:1.7;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px"></p>
+                <!-- THEM 2026-10-12 (user: "ở dưới phần đánh giá tổng thể sẽ thêm dòng dự báo áp
+                     lực trong quý tới sẽ căng hơn hay giảm đi và vì sao" — xem
+                     _build_bop_forecast_narrative trong template_vimo.py, render bởi
+                     renderFxStressMatrix trong app_vimo.js. Rỗng/ẩn nếu chưa đủ dữ liệu tháng để
+                     nowcast quý mới. -->
+                <p id="fxm-forecast-narrative" style="display:none;margin-top:10px;line-height:1.7;padding:10px 12px;background:rgba(96,165,250,0.08);border-left:3px solid #60a5fa;border-radius:8px"></p>
                 <div class="bank-chart-grid-2" style="margin-top:10px">
                     <div>
                         <div class="vimo-chart-title" style="font-size:0.9em">Tầng 1 — FX Market Stress (chỉ báo thị trường)</div>
@@ -722,7 +728,7 @@
                  xem renderFxPressureSignalsChart trong app_vimo.js, 2 đường ĐỘC LẬP không gộp điểm. -->
             <div class="vimo-chart-title">🎯 Tín hiệu Áp lực Tỷ giá Thực (theo quý)</div>
             <div id="fx-pressure-signals-chart-card" style="display:none">
-                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt cam) vs MỨC tỷ giá thực tế (nét liền xanh, trục phải ngoài) — 3 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 (BOP VÀ USD/VND) CÙNG xấu mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên). Dữ liệu BOP đã backfill xa hơn nhờ IMF (SDMX BOP, đủ từ 1996 trong file) — biểu đồ CHỈ hiện từ 2020 tới nay (đủ dùng, không vẽ dài quá).</p>
+                <p class="vimo-chart-subtitle">Cán cân tổng thể BOP (cột, trái — phần NHNN thực sự phải bù bằng dự trữ mỗi quý) vs USD/VND tăng/giảm thị trường thực tại cuối quý (nét đứt cam) vs MỨC tỷ giá thực tế (nét liền xanh, trục phải ngoài) — 3 tín hiệu ĐỘC LẬP, không gộp điểm số. Cả 2 (BOP VÀ USD/VND) CÙNG xấu mới là bằng chứng áp lực tỷ giá THỰC SỰ; chỉ 1 trong 2 xấu hoặc cả 2 ổn thì chưa đủ cơ sở kết luận có áp lực (xem ví dụ Q2-2026 trong ghi chú phía trên). Dữ liệu BOP đã backfill xa hơn nhờ IMF (SDMX BOP, đủ từ 1996 trong file) — biểu đồ CHỈ hiện từ 2020 tới nay (đủ dùng, không vẽ dài quá). 2 cột cuối cùng (màu nhạt hơn, viền nét đứt) là NOWCAST/DỰ BÁO — ước tính từ XNK hải quan + FDI giải ngân theo tháng, KHÔNG PHẢI số chính thức NHNN.</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-pressure-signals"></canvas></div>
             </div>
 
@@ -767,14 +773,14 @@
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-balance-overview"></canvas></div>
             </div>
             <div id="fx-supply-demand-chart-card" style="display:none" class="margin-top-20">
-                <p class="vimo-chart-subtitle">Cán cân vãng lai theo 4 cấu phần RÒNG (hàng hóa/dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — mỗi đường đã là Xuất-Nhập, không phải số gộp) + đường tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN (xem ghi chú đầu trang).</p>
+                <p class="vimo-chart-subtitle">Cán cân vãng lai theo 4 cấu phần RÒNG (hàng hóa/dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — mỗi đường đã là Xuất-Nhập, không phải số gộp) + đường TỔNG Cán cân vãng lai (trắng, đậm, từ NHNN) + đường tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan. LƯU Ý: đây là phân rã KẾ TOÁN cán cân vãng lai, không đo tiền USD thực chảy qua NHTM VN (xem ghi chú đầu trang). Đoạn NÉT ĐỨT cuối đường TỔNG là NOWCAST/DỰ BÁO (ước tính từ XNK hải quan theo tháng, KHÔNG PHẢI số chính thức NHNN).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-supply-demand"></canvas></div>
             </div>
             <!-- THEM 2026-10-10: cấu phần Cán cân TÀI CHÍNH (FDI/Đầu tư gián tiếp/Vay nợ) — xem
                  renderFxFinancialAccountChart trong app_vimo.js — đối chiếu trực quan với cán cân
                  vãng lai ở trên để thấy dòng vốn có thể bù/đảo chiều hoàn toàn so với dòng vãng lai. -->
             <div id="fx-financial-account-chart-card" style="display:none" class="margin-top-20">
-                <p class="vimo-chart-subtitle">Cán cân TÀI CHÍNH theo cấu phần chính — chiều VỐN VÀO (FDI, Đầu tư gián tiếp, Vay nợ nước ngoài — mỗi đường đã là số RÒNG theo quý, lấy thẳng từ bảng NHNN/IMF, giữ ĐÚNG dấu gốc: dương = dòng vốn vào, âm = dòng vốn ra; đã bỏ 2 đường "Tài sản" VN đầu tư ra ngoài vì quá nhỏ so với 3 đường này, vẽ vào chỉ gây rối) + đường TỔNG Cán cân tài chính (từ NHNN, KHÔNG PHẢI tổng cộng dồn 3 đường kia — NHNN còn nhiều dòng nhỏ khác chưa lấy hết) + tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan với cán cân vãng lai ở biểu đồ trên.</p>
+                <p class="vimo-chart-subtitle">Cán cân TÀI CHÍNH theo cấu phần chính — chiều VỐN VÀO (FDI, Đầu tư gián tiếp, Vay nợ nước ngoài — mỗi đường đã là số RÒNG theo quý, lấy thẳng từ bảng NHNN/IMF, giữ ĐÚNG dấu gốc: dương = dòng vốn vào, âm = dòng vốn ra; đã bỏ 2 đường "Tài sản" VN đầu tư ra ngoài vì quá nhỏ so với 3 đường này, vẽ vào chỉ gây rối) + đường TỔNG Cán cân tài chính (từ NHNN, KHÔNG PHẢI tổng cộng dồn 3 đường kia — NHNN còn nhiều dòng nhỏ khác chưa lấy hết) + tỷ giá USD/VND thực tế (trục phải) để đối chiếu trực quan với cán cân vãng lai ở biểu đồ trên. Đoạn NÉT ĐỨT cuối đường TỔNG là NOWCAST (ước tính từ độ thay đổi FDI giải ngân theo tháng, KHÔNG PHẢI số chính thức NHNN).</p>
                 <div class="ind-chart" style="height:320px"><canvas id="chart-fx-financial-account"></canvas></div>
             </div>
             <div id="fx-rate-gap-chart-card" style="display:none" class="margin-top-20">

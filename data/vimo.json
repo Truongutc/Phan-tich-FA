@@ -8038,7 +8038,8 @@
         }
       ]
     },
-    "narrative": "Tầng 1 — FX Market Stress: 1/3 chỉ báo ở mức CAO (% đã dùng biên độ tỷ giá (VCB so với trung tâm) (2026-10-09): 36.80 [thấp]; Gap tỷ giá USD chợ đen − Vietcombank (% so VCB) (2026-10-02): -0.29 [thấp]; Chênh lệch LNH VND-USD kỳ hạn ON (proxy lãi suất swap-implied) (2026-10-08): -3.04 [CAO]) → xếp loại THẤP. Tầng 2 — External Imbalance: 1/3 chỉ báo ở mức CAO (Cán cân tổng thể (BOP, NHNN) (2026-Q2): 81.00 [thấp]; Cán cân vãng lai (BOP, NHNN) (2026-Q2): -11101.00 [CAO]; Cán cân tài chính (BOP, NHNN) (2026-Q2): 1899.00 [thấp]) → xếp loại THẤP. Kết luận: Điều kiện thị trường và nền tảng đối ngoại đều tương đối thuận lợi."
+    "narrative": "Tầng 1 — FX Market Stress: 1/3 chỉ báo ở mức CAO (% đã dùng biên độ tỷ giá (VCB so với trung tâm) (2026-10-09): 36.80 [thấp]; Gap tỷ giá USD chợ đen − Vietcombank (% so VCB) (2026-10-02): -0.29 [thấp]; Chênh lệch LNH VND-USD kỳ hạn ON (proxy lãi suất swap-implied) (2026-10-08): -3.04 [CAO]) → xếp loại THẤP. Tầng 2 — External Imbalance: 1/3 chỉ báo ở mức CAO (Cán cân tổng thể (BOP, NHNN) (2026-Q2): 81.00 [thấp]; Cán cân vãng lai (BOP, NHNN) (2026-Q2): -11101.00 [CAO]; Cán cân tài chính (BOP, NHNN) (2026-Q2): 1899.00 [thấp]) → xếp loại THẤP. Kết luận: Điều kiện thị trường và nền tảng đối ngoại đều tương đối thuận lợi.",
+    "forecastNarrative": "Nowcast 2026-Q3 (ước tính từ XNK hải quan + FDI giải ngân theo tháng, các cấu phần khác giữ nguyên 2026-Q2): Cán cân vãng lai ước -8,033 triệu USD, Cán cân tổng thể ước 3,569 triệu USD. Cán cân hàng hóa: 2026-Q2 -5,497 → 2026-Q3 ước -2,429 triệu USD (thu hẹp thâm hụt). FDI giải ngân theo quý: 2026-Q2 7.62 tỷ USD → 2026-Q3 ước 8.04 tỷ USD (tăng tốc). Dự báo 2026-Q4 (ngoại suy xu hướng QoQ trung bình 8 quý gần nhất, ĐỘ TIN CẬY THẤP): Cán cân tổng thể dự báo 4,022 triệu USD; Cán cân vãng lai dự báo -10,249 triệu USD (xấu đi thêm). Kết luận: Áp lực tỷ giá quý tới (dựa trên Cán cân tổng thể — tín hiệu NHNN thực sự phải xử lý bằng dự trữ) nhiều khả năng GIẢM BỚT. LƯU Ý: Cán cân vãng lai và Cán cân tổng thể dự báo LỆCH HƯỚNG nhau — tương tự mẫu hình đã quan sát ở các quý trước (dòng vốn/lỗi & sai sót có thể bù đắp hoàn toàn phần vãng lai xấu đi, hoặc ngược lại)."
   },
   "indicators": {
     "gdp_growth": {
@@ -86887,6 +86888,91 @@
       },
       "note": "= (VCB bán ra − trung tâm) / (trần − trung tâm) × 100 — 0% = đúng tỷ giá trung tâm, 100% = chạm trần (áp lực mất giá VND tối đa theo cơ chế điều hành), -100% = chạm sàn. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
       "impact": "Chỉ báo áp lực tỷ giá kinh điển — % càng cao (gần 100%) nghĩa là thị trường đang áp sát giới hạn NHNN cho phép, bất kể tỷ giá tuyệt đối đang ở mức nào."
+    },
+    "bop_current_account_nowcast": {
+      "group": "external",
+      "label": "Cán cân vãng lai — Nowcast 2026-Q3 (ước tính)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2026-Q3",
+          "value": -8033.3,
+          "source_url": null
+        }
+      ],
+      "trend": {},
+      "note": "NOWCAST 2026-Q3 (ước tính, KHÔNG PHẢI số chính thức NHNN) — hàng hóa dùng số THẬT từ hải quan theo tháng (export_monthly_total/import_monthly_total: -2,429 triệu USD ròng); FDI dùng độ thay đổi giải ngân lũy kế theo tháng làm proxy (8,040 triệu USD); các cấu phần khác (dịch vụ, thu nhập đầu tư, chuyển giao vãng lai, đầu tư gián tiếp, vay nợ nước ngoài, Lỗi & Sai sót) GIỮ NGUYÊN mức ròng của 2026-Q2 vì chưa có nguồn công bố theo tháng. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": null
+    },
+    "bop_current_account_forecast": {
+      "group": "external",
+      "label": "Cán cân vãng lai — Dự báo 2026-Q4 (xu hướng)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2026-Q4",
+          "value": -10249.0,
+          "source_url": null
+        }
+      ],
+      "trend": {},
+      "note": "DỰ BÁO 2026-Q4 (ngoại suy xu hướng, ĐỘ TIN CẬY THẤP) = nowcast 2026-Q3 + trung bình cộng biến động QoQ của tối đa 8 quý gần nhất (gồm cả điểm nowcast). KHÔNG phải mô hình kinh tế lượng, chỉ dùng để chỉ hướng tăng/giảm, không nên dùng con số tuyệt đối làm quyết định. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": null
+    },
+    "bop_financial_account_nowcast": {
+      "group": "external",
+      "label": "Cán cân tài chính — Nowcast 2026-Q3 (ước tính)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2026-Q3",
+          "value": 2319.0,
+          "source_url": null
+        }
+      ],
+      "trend": {},
+      "note": "NOWCAST 2026-Q3 (ước tính, KHÔNG PHẢI số chính thức NHNN) — hàng hóa dùng số THẬT từ hải quan theo tháng (export_monthly_total/import_monthly_total: -2,429 triệu USD ròng); FDI dùng độ thay đổi giải ngân lũy kế theo tháng làm proxy (8,040 triệu USD); các cấu phần khác (dịch vụ, thu nhập đầu tư, chuyển giao vãng lai, đầu tư gián tiếp, vay nợ nước ngoài, Lỗi & Sai sót) GIỮ NGUYÊN mức ròng của 2026-Q2 vì chưa có nguồn công bố theo tháng. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": null
+    },
+    "bop_overall_balance_nowcast": {
+      "group": "external",
+      "label": "Cán cân tổng thể — Nowcast 2026-Q3 (ước tính)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2026-Q3",
+          "value": 3568.7,
+          "source_url": null
+        }
+      ],
+      "trend": {},
+      "note": "NOWCAST 2026-Q3 (ước tính, KHÔNG PHẢI số chính thức NHNN) — hàng hóa dùng số THẬT từ hải quan theo tháng (export_monthly_total/import_monthly_total: -2,429 triệu USD ròng); FDI dùng độ thay đổi giải ngân lũy kế theo tháng làm proxy (8,040 triệu USD); các cấu phần khác (dịch vụ, thu nhập đầu tư, chuyển giao vãng lai, đầu tư gián tiếp, vay nợ nước ngoài, Lỗi & Sai sót) GIỮ NGUYÊN mức ròng của 2026-Q2 vì chưa có nguồn công bố theo tháng. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": null
+    },
+    "bop_overall_balance_forecast": {
+      "group": "external",
+      "label": "Cán cân tổng thể — Dự báo 2026-Q4 (xu hướng)",
+      "unit": "triệu USD",
+      "goodDirection": "higher",
+      "autoSource": "derived",
+      "series": [
+        {
+          "period": "2026-Q4",
+          "value": 4022.2,
+          "source_url": null
+        }
+      ],
+      "trend": {},
+      "note": "DỰ BÁO 2026-Q4 (ngoại suy xu hướng, ĐỘ TIN CẬY THẤP) = nowcast 2026-Q3 + trung bình cộng biến động QoQ của tối đa 8 quý gần nhất (gồm cả điểm nowcast). KHÔNG phải mô hình kinh tế lượng, chỉ dùng để chỉ hướng tăng/giảm, không nên dùng con số tuyệt đối làm quyết định. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json.",
+      "impact": null
     },
     "export_fdi_share_pct": {
       "group": "trade",
