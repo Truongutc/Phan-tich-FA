@@ -3655,6 +3655,16 @@ def _quarter_months(period):
 
 
 _BOP_FORECAST_MOMENTUM_WINDOW = 8
+# SUA 2026-10-12 (user phát hiện: "thực tế vn đã xuất siêu trở lại từ tháng 9 rồi thì sao lại dự
+# cán cân vãng lai q3 q4 cũng âm nhiều thế" + "dự cán cân tổng thể Q3 dương mạnh thế" — kiểm tra lại
+# thì đúng là carry-forward CHỈ 1 quý liền trước (2026-Q2) đã vô tình kế thừa 2 điểm DỊ THƯỜNG của
+# riêng quý đó: (1) Thu nhập đầu tư: Chi (bop_sbv_investment_income_paid) = 6.983tr USD — cao bất
+# thường, lệch khỏi mẫu hình "đỉnh chi trả lợi nhuận FDI thường rơi vào Q1" các năm 2024/2025 (có
+# thể do đợt chi trả bị dời sang Q2 năm nay); (2) Lỗi & Sai sót = +9.283tr USD — DƯƠNG MẠNH bất
+# thường, trong khi lịch sử gần như luôn ÂM (vd 4 quý liền trước: -11.280/-12.375/-4.687/+9.283).
+# Dùng TRUNG BÌNH _BOP_CARRYFORWARD_WINDOW quý gần nhất thay vì chỉ 1 quý liền trước cho 2 thành
+# phần này — giảm hẳn độ nhạy với 1 quý dị thường, vẫn rule-based/minh bạch.
+_BOP_CARRYFORWARD_WINDOW = 4
 
 
 # THEM 2026-10-12 (user: "cả cán cân vốn và cán cân vãng lai đều có nhiều cái có số cập nhật tháng
@@ -3668,20 +3678,25 @@ def _add_bop_nowcast_forecast(raw, trends):
     THÁNG duy nhất sẵn có), rồi DỰ BÁO thêm 1 quý tiếp theo bằng ngoại suy xu hướng QoQ đơn giản.
     Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — tính lại từ đầu mỗi lần chạy.
 
-    NOWCAST cán cân vãng lai (CA): thay ĐÚNG phần hàng hóa bằng số XNK THẬT của quý mới, GIỮ
-    NGUYÊN phần phi hàng hóa (dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — không có nguồn tháng)
-    ở mức ròng của quý liền trước:
-        CA_nowcast = CA_actual(quý trước) − goods_net(quý trước) + goods_net(quý mới, THẬT)
+    NOWCAST cán cân vãng lai (CA): thay ĐÚNG phần hàng hóa bằng số XNK THẬT của quý mới; phần phi
+    hàng hóa (dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — không có nguồn tháng) dùng TRUNG BÌNH
+    _BOP_CARRYFORWARD_WINDOW quý gần nhất (KHÔNG dùng đúng 1 quý liền trước — dòng thu nhập đầu tư
+    đặc biệt có thể dị thường do thời điểm chi trả lợi nhuận FDI lệch quý giữa các năm):
+        CA_nowcast = avg(non_goods_net, N quý gần nhất) + goods_net(quý mới, THẬT)
 
     NOWCAST cán cân tài chính (FA): dùng ĐỘ THAY ĐỔI (delta) của FDI giải ngân lũy kế giữa 2 quý
     làm proxy cho PHẦN THAY ĐỔI của dòng "FDI vào VN" trong BOP — chỉ dùng CHÊNH LỆCH giữa 2 quý
     (không dùng mức tuyệt đối) để tự triệt tiêu sai lệch quy mô giữa khái niệm "vốn giải ngân" (MPI,
     hẹp hơn) và "Tài sản nợ FDI" BOP (gồm cả vốn góp/lợi nhuận tái đầu tư/vay nội bộ):
         FA_nowcast = FA_actual(quý trước) − fdi_flow(quý trước) + fdi_flow(quý mới)
-    Các cấu phần FA khác (đầu tư gián tiếp, vay nợ nước ngoài) GIỮ NGUYÊN quý trước.
+    Các cấu phần FA khác (đầu tư gián tiếp, vay nợ nước ngoài) GIỮ NGUYÊN quý trước (không có bằng
+    chứng dị thường rõ như thu nhập đầu tư/Lỗi&Sai sót nên KHÔNG đổi sang trung bình, tránh sửa quá
+    tay phần không có vấn đề).
 
-    NOWCAST cán cân tổng thể (OB) = CA_nowcast + FA_nowcast + Lỗi&Sai sót (GIỮ NGUYÊN quý trước —
-    dòng biến động mạnh nhất, nguồn bất định lớn nhất của nowcast, ghi rõ trong note).
+    NOWCAST cán cân tổng thể (OB) = CA_nowcast + FA_nowcast + Lỗi&Sai sót (TRUNG BÌNH
+    _BOP_CARRYFORWARD_WINDOW quý gần nhất — đây là dòng biến động mạnh nhất, gần như "số dư thống
+    kê" ngẫu nhiên giữa các quý, carry-forward 1 quý sẽ rất nhạy với dị thường, trung bình nhiều quý
+    đỡ bị lệch bởi 1 điểm cực đoan hơn, dù vẫn là giả định đơn giản).
 
     DỰ BÁO quý KẾ TIẾP (chưa có input tháng nào) = nowcast + trung bình cộng biến động QoQ của tối
     đa _BOP_FORECAST_MOMENTUM_WINDOW quý gần nhất (gồm cả điểm nowcast) — ngoại suy xu hướng đơn
@@ -3720,7 +3735,22 @@ def _add_bop_nowcast_forecast(raw, trends):
 
     goods_net_last = goods_exp_by_q[latest_q] - goods_imp_by_q[latest_q]
     goods_net_nowcast = sum(exp_by_m[m] for m in months_nowcast) - sum(imp_by_m[m] for m in months_nowcast)
-    ca_nowcast = ca_by_q[latest_q] - goods_net_last + goods_net_nowcast
+
+    def _trailing_avg(values_by_q):
+        qs = sorted(q for q in values_by_q if q <= latest_q)[-_BOP_CARRYFORWARD_WINDOW:]
+        if not qs:
+            return None
+        return sum(values_by_q[q] for q in qs) / len(qs)
+
+    non_goods_net_by_q = {
+        q: ca_by_q[q] - (goods_exp_by_q[q] - goods_imp_by_q[q])
+        for q in ca_by_q if q in goods_exp_by_q and q in goods_imp_by_q
+    }
+    non_goods_net_avg = _trailing_avg(non_goods_net_by_q)
+    eo_avg = _trailing_avg(eo_by_q)
+    if non_goods_net_avg is None or eo_avg is None:
+        return
+    ca_nowcast = non_goods_net_avg + goods_net_nowcast
 
     prev_q = _quarter_incr(latest_q, -1)
     last_month_of = lambda q: _quarter_months(q)[-1]
@@ -3735,7 +3765,7 @@ def _add_bop_nowcast_forecast(raw, trends):
     fdi_flow_nowcast = (fdi_cum_nowcast - fdi_cum_last) * 1000.0
     fa_nowcast = fa_by_q[latest_q] - fdi_flow_last + fdi_flow_nowcast
 
-    eo_nowcast = eo_by_q[latest_q]
+    eo_nowcast = eo_avg
     ob_nowcast = ca_nowcast + fa_nowcast + eo_nowcast
     forecast_q = _quarter_incr(nowcast_q, 1)
 
@@ -3754,10 +3784,14 @@ def _add_bop_nowcast_forecast(raw, trends):
         f"NOWCAST {nowcast_q} (ước tính, KHÔNG PHẢI số chính thức NHNN) — hàng hóa dùng số THẬT từ "
         f"hải quan theo tháng (export_monthly_total/import_monthly_total: {goods_net_nowcast:,.0f} "
         f"triệu USD ròng); FDI dùng độ thay đổi giải ngân lũy kế theo tháng làm proxy "
-        f"({fdi_flow_nowcast:,.0f} triệu USD); các cấu phần khác (dịch vụ, thu nhập đầu tư, chuyển "
-        f"giao vãng lai, đầu tư gián tiếp, vay nợ nước ngoài, Lỗi & Sai sót) GIỮ NGUYÊN mức ròng của "
-        f"{latest_q} vì chưa có nguồn công bố theo tháng. Phái sinh tính toán, KHÔNG lưu vào "
-        f"vimo_raw.json."
+        f"({fdi_flow_nowcast:,.0f} triệu USD); phần phi hàng hóa (dịch vụ/thu nhập đầu tư/chuyển "
+        f"giao vãng lai) dùng TRUNG BÌNH {_BOP_CARRYFORWARD_WINDOW} quý gần nhất "
+        f"({non_goods_net_avg:,.0f} triệu USD, KHÔNG dùng đúng 1 quý liền trước vì dòng thu nhập "
+        f"đầu tư có thể dị thường theo thời điểm chi trả lợi nhuận FDI); Lỗi & Sai sót cũng dùng "
+        f"TRUNG BÌNH {_BOP_CARRYFORWARD_WINDOW} quý gần nhất ({eo_avg:,.0f} triệu USD — dòng biến "
+        f"động mạnh nhất, gần như số dư thống kê ngẫu nhiên, carry-forward 1 quý rất dễ bị lệch bởi "
+        f"1 điểm cực đoan); đầu tư gián tiếp/vay nợ nước ngoài vẫn GIỮ NGUYÊN mức {latest_q}. Phái "
+        f"sinh tính toán, KHÔNG lưu vào vimo_raw.json."
     )
     forecast_note = (
         f"DỰ BÁO {forecast_q} (ngoại suy xu hướng, ĐỘ TIN CẬY THẤP) = nowcast {nowcast_q} + trung "
@@ -3845,8 +3879,9 @@ def _build_bop_forecast_narrative(bop_forecast):
         )
     return (
         f"Nowcast {f['nowcastQ']} (ước tính từ XNK hải quan + FDI giải ngân theo tháng, các cấu "
-        f"phần khác giữ nguyên {f['latestQ']}): Cán cân vãng lai ước {f['caNowcast']:,.0f} triệu "
-        f"USD, Cán cân tổng thể ước {f['obNowcast']:,.0f} triệu USD. "
+        f"phần khác dùng trung bình {_BOP_CARRYFORWARD_WINDOW} quý gần nhất để giảm nhạy với 1 quý "
+        f"dị thường): Cán cân vãng lai ước {f['caNowcast']:,.0f} triệu USD, Cán cân tổng thể ước "
+        f"{f['obNowcast']:,.0f} triệu USD. "
         f"Cán cân hàng hóa: {f['latestQ']} {f['goodsNetLast']:,.0f} → {f['nowcastQ']} ước "
         f"{f['goodsNetNowcast']:,.0f} triệu USD ({goods_dir}). "
         f"FDI giải ngân theo quý: {f['latestQ']} {f['fdiFlowLast']/1000:,.2f} tỷ USD → "
