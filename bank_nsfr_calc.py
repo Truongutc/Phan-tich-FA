@@ -10,32 +10,91 @@ bang goc.
 
 GIOI HAN QUAN TRONG (da bao truoc voi user, user dong y xu ly theo huong proxy ro rang,
 neu thieu thi theo chuan Basel III quoc te): BCTC CONG KHAI cua ngan hang VN KHONG co du
-chi tiet de ap dung dung 100% bang he so nay, vi thieu:
-  - Phan loai tien gui theo muc do "on dinh/kem on dinh" (phu thuoc han muc bao hiem
-    tien gui tung khach hang - khong cong khai).
-  - Phan loai cho vay theo he so rui ro tin dung (<=35% hay >35%) theo Thong tu 14/2025
-    hay 41/2016 - chi co trong bao cao Tru cot 3 (Pillar 3) rieng, khong co trong BCTC
-    chuan.
-  - Phan tach HQLA cap 1/2A/2B trong "Chung khoan dau tu" - BCTC chi cho tong so.
-Vi vay day la 1 UOC TINH (proxy) bam sat NHAT CO THE theo dung % cua TT50, dung du lieu
-GOP THEO KY HAN CON LAI (da co san trong gap_periods cua tung bank, xem bank_alm_store)
-+ cac dong tong BCTC (quarterly_balance_sheet) - KHONG PHAI so NSFR chinh thuc ngan hang
-tu bao cao len NHNN. Moi gia dinh don gian hoa deu ghi chu ro trong code va trong sheet
+chi tiet de ap dung dung 100% bang he so nay, vi thieu phan loai tien gui theo HAN MUC
+BAO HIEM tung khach hang, phan loai cho vay theo HE SO RUI RO TIN DUNG chinh xac (Tru cot
+3/Pillar 3 rieng), va phan tach HQLA cap 1/2A/2B trong tong "Chung khoan dau tu".
+
+CAP NHAT 2026-10-12 (user: "cac ty le nay chung chung qua, tu tim nguon de tinh chinh xac
+hon" — xem _load_bank_notes() ben duoi): da THAY 2 gia dinh "chung cho ca cuc" quan trong
+nhat bang DU LIEU THAT cua tung bank, lay tu thuyet minh BCTC (Vietcap API, section NOTE):
+  - Tien gui khach hang: tach THAT CASA (khong ky han)/Tiet kiem (ban le)/Co ky han khac
+    (nghieng to chuc-DN) thay vi ap 1 he so ban le chung cho toan bo so du.
+  - Cho vay khach hang: dung THANG co cau Ngan/Trung/Dai han THAT cua tung bank, thay vi
+    suy tu ty trong bucket TAI SAN GOP CHUNG (gap_periods, von di tron ca cho vay lan
+    chung khoan/tien gui TCTD khac vao 1 ty trong duy nhat).
+Phan con lai (chung khoan dau tu, lien ngan hang, trai phieu, KBNN...) VAN dung ty trong
+ky han TRUNG BINH cua toan bo Tai san/No phai tra (tu gap_periods, bank_alm_store) vi BCTC
+khong cho ky han rieng cho cac dong nay — day la UOC TINH (proxy), KHONG PHAI so NSFR
+chinh thuc ngan hang bao cao len NHNN. Moi gia dinh con lai ghi chu ro trong code va sheet
 "Gia dinh & Gioi han" cua file Excel xuat ra.
 
 CAU TRUC: moi field BCTC duoc gan vao 1 "nhom cong cu" (instrument group), moi nhom co
 1 "lich he so" rieng theo dung % cua khoan tuong ung trong Phu luc II (xem ASF_SCHEDULES/
-RSF_SCHEDULES ben duoi). Ty trong ky han cua TUNG nhom duoc gia dinh BANG ty trong ky han
-TRUNG BINH cua toan bo Tai san/No phai tra (lay tu gap_periods) - vi BCTC khong cho ky han
-rieng tung dong, day la gia dinh don gian hoa CAN THIET, ghi ro trong docstring.
+RSF_SCHEDULES ben duoi). Nhom nao co du lieu THAT theo ky han/loai (tien gui, cho vay) thi
+dung thang; nhom con lai dung ty trong bucket TRUNG BINH tu gap_periods.
 """
 
 import json
 import os
 
 import bank_universe
+import fetch_data
 
 DATA_DIR = "data/bank_alm"
+_BCTC_CACHE_DIR = ".cache"
+
+# THEM 2026-10-12 (user: "cac phan ty le nay no cung chung chung qua... tu tim cac nguon de danh
+# gia tinh NSFR cho chinh xac nhe" — roi user paste 1 huong dan chi tiet goi y dung chinh thuyet
+# minh BCTC "bang rui ro thanh khoan" + phan loai tien gui/cho vay de thay the gia dinh chung).
+# Phat hien: Vietcap API (section=NOTE, da dung san cho .cache/*.json va template_banking.py) co
+# SAN dung 7 dong thuyet minh RAT CU THE cho ca 26/26 bank (chi SSB thieu trong cache cu, phai
+# fetch song moi):
+#   nob65 = "Cac khoan tien gui phan theo loai tien gui" (= TONG, doi chieu khop voi
+#           customer_deposits trong quarterly_balance_sheet)
+#   nob66 = "Tien gui khong ky han" (CASA that cua TUNG bank, KHONG PHAI gia dinh)
+#   nob67 = "Tien gui co ky han" (THUONG nghieng ve to chuc/doanh nghiep - KHAC "tiet kiem")
+#   nob68 = "Tien gui tiet kiem" (THUONG nghieng ve ca nhan/ban le)
+#   nob46/47/48 = "Cho vay ngan/trung/dai han" (CO CAU KY HAN THAT cua tung bank, thay cho
+#           gia dinh dung ty trong bucket TAI SAN GOP chung tu gap_periods).
+# Dung THAT cac dong nay thay vi ap 1 gia dinh "chung chung" cho moi bank nhu ban dau.
+def _load_bank_notes(ticker):
+    """Tra {period('YYYY-Qn'): {casa, term_other, savings, loans_short, loans_medium,
+    loans_long}} (don vi TY dong) cho 1 ticker, uu tien doc tu cache .cache/{ticker}_bctc.json
+    (co san tu cac lan chay truoc), fetch song qua Vietcap API neu cache thieu/rong (vd SSB)."""
+    cache_path = os.path.join(_BCTC_CACHE_DIR, f"{ticker}_bctc.json")
+    quarters = []
+    if os.path.exists(cache_path):
+        try:
+            with open(cache_path, encoding="utf-8") as f:
+                cached = json.load(f)
+            quarters = cached.get("sections", {}).get("NOTE", {}).get("quarters", []) or []
+        except Exception:
+            quarters = []
+    if not quarters:
+        try:
+            q_data = fetch_data.fetch_section(ticker, "NOTE", quarterly=True)
+            quarters = q_data.get("quarters") or q_data.get("years") or []
+        except Exception as e:
+            print(f"  [WARN] NSFR: khong fetch duoc thuyet minh NOTE cho {ticker}: {e}")
+            return {}
+
+    out = {}
+    for rec in quarters:
+        year, q = rec.get("yearReport"), rec.get("lengthReport")
+        if not year or not q or q not in (1, 2, 3, 4):
+            continue
+        period = f"{year}-Q{q}"
+        casa = (rec.get("nob66") or 0) / 1e9
+        term_other = (rec.get("nob67") or 0) / 1e9
+        savings = (rec.get("nob68") or 0) / 1e9
+        loans_short = (rec.get("nob46") or 0) / 1e9
+        loans_medium = (rec.get("nob47") or 0) / 1e9
+        loans_long = (rec.get("nob48") or 0) / 1e9
+        if casa or term_other or savings or loans_short or loans_medium or loans_long:
+            out[period] = {"casa": casa, "term_other": term_other, "savings": savings,
+                            "loans_short": loans_short, "loans_medium": loans_medium,
+                            "loans_long": loans_long}
+    return out
 
 # Cac bucket ky han "tho" co san trong gap_periods (xem bank_alm_store/fetch cap nhat) -
 # anh xa ve 4 cot ky han cua TT50: Duoi 6 thang / 6 thang den duoi 1 nam / Tu 1 nam tro len.
@@ -78,6 +137,11 @@ ASF_SCHEDULES = {
     # hon muc "on dinh" 1 chut, cao hon tien gui to chuc/doanh nghiep 50% nhieu) cho TOAN
     # BO tien gui khach hang.
     "customer_deposits": (0.90, 0.90, 1.00),
+    # THEM 2026-10-12: khi co du lieu thuyet minh THAT (_load_bank_notes) - tach rieng "Tien gui
+    # co ky han" KHONG PHAI tiet kiem (nob67, thuong nghieng ve to chuc/doanh nghiep gui ky han,
+    # khac han CASA/tiet kiem ca nhan) - ap he so THAP HON nhu tien gui doanh nghiep (khoan 12:
+    # 50%/50%/100%) thay vi gop chung vao muc ban le 90%/90%/100% o tren.
+    "customer_deposits_term_other": (0.50, 0.50, 1.00),
     # Tien gui + vay nhan tu TCTD khac (interbank_liab, bsb112 - DA GOM ca tien gui VA vay,
     # KHONG cong them tctd_dep vi la SUBSET cua chinh interbank_liab) - khoan 11.2.
     "interbank_liab": (0.00, 0.50, 1.00),
@@ -129,10 +193,13 @@ def _weighted_schedule(amount, shares, schedule):
                       + shares["over_1y"] * pct_1y)
 
 
-def compute_nsfr_for_period(snap, gap_entry):
+def compute_nsfr_for_period(snap, gap_entry, notes=None):
     """snap: 1 entry cua quarterly_balance_sheet (tong BCTC); gap_entry: 1 entry cua
-    gap_periods (co liquidity_gap/liabilities_by_bucket). Tra dict chi tiet hoac None
-    neu thieu du lieu bat buoc (liquidity_gap/liabilities_by_bucket rong)."""
+    gap_periods (co liquidity_gap/liabilities_by_bucket); notes: entry tuong ung tu
+    _load_bank_notes() (casa/savings/term_other/loans_short/medium/long) hoac None neu
+    khong co - khi co, dung THAY cho gia dinh bucket chung de tinh tien gui KH + cho vay
+    CHINH XAC hon theo tung bank (xem ghi chu 2026-10-12 o dau file). Tra dict chi tiet
+    hoac None neu thieu du lieu bat buoc (liquidity_gap/liabilities_by_bucket rong)."""
     liab_bucket = gap_entry.get("liabilities_by_bucket") if gap_entry else None
     liq_gap = gap_entry.get("liquidity_gap") if gap_entry else None
     if not liab_bucket or not liq_gap:
@@ -160,9 +227,24 @@ def compute_nsfr_for_period(snap, gap_entry):
     inv_sec_bs = snap.get("inv_sec_bs") or 0
     other_asset = total_assets - cash - sbv_dep - bank_dep - loans - inv_sec_bs
 
+    if notes and (notes["casa"] or notes["savings"] or notes["term_other"]):
+        # Tien gui KH THAT: CASA (khong ky han, ap thang he so "khong ky han" 90% - khong can
+        # chia bucket vi CASA ban chat KHONG CO ky han) + Tiet kiem (ban le, van chia bucket vi
+        # co ky han) + Co ky han KHAC (nghieng to chuc/DN, he so thap hon) + phan du (ky quy/von
+        # chuyen dung nho, ap mac dinh ban le).
+        residual_dep = max(0.0, customer_deposits - notes["casa"] - notes["savings"] - notes["term_other"])
+        customer_deposits_asf = (
+            notes["casa"] * ASF_SCHEDULES["customer_deposits"][0]
+            + _weighted_schedule(notes["savings"], liab_shares, ASF_SCHEDULES["customer_deposits"])
+            + _weighted_schedule(notes["term_other"], liab_shares, ASF_SCHEDULES["customer_deposits_term_other"])
+            + _weighted_schedule(residual_dep, liab_shares, ASF_SCHEDULES["customer_deposits"])
+        )
+    else:
+        customer_deposits_asf = _weighted_schedule(customer_deposits, liab_shares, ASF_SCHEDULES["customer_deposits"])
+
     asf_components = {
         "equity": equity * ASF_SCHEDULES["equity"][2],  # VCSH luon 100%, khong theo bucket
-        "customer_deposits": _weighted_schedule(customer_deposits, liab_shares, ASF_SCHEDULES["customer_deposits"]),
+        "customer_deposits": customer_deposits_asf,
         "interbank_liab": _weighted_schedule(interbank_liab, liab_shares, ASF_SCHEDULES["interbank_liab"]),
         "bonds_issued": _weighted_schedule(bonds_issued, liab_shares, ASF_SCHEDULES["bonds_issued"]),
         "kbnn": _weighted_schedule(kbnn, liab_shares, ASF_SCHEDULES["kbnn"]),
@@ -170,11 +252,20 @@ def compute_nsfr_for_period(snap, gap_entry):
     }
     asf_total = sum(asf_components.values())
 
+    if notes and (notes["loans_short"] or notes["loans_medium"] or notes["loans_long"]):
+        # Cho vay THAT theo ky han ngan/trung/dai han (thuyet minh) - ngan han (<=12 thang) VA
+        # 6m-1y trong bang TT50 CUNG he so 50% nen gop lam 1; trung+dai han (>12 thang) ap he so
+        # tu 1 nam (0.65, gia dinh rui ro tin dung <=35% - xem ghi chu RSF_SCHEDULES["loans"]).
+        loans_rsf = (notes["loans_short"] * RSF_SCHEDULES["loans"][0]
+                     + (notes["loans_medium"] + notes["loans_long"]) * RSF_SCHEDULES["loans"][2])
+    else:
+        loans_rsf = _weighted_schedule(loans, asset_shares, RSF_SCHEDULES["loans"])
+
     rsf_components = {
         "cash": 0.0,
         "sbv_dep": 0.0,
         "bank_dep": _weighted_schedule(bank_dep, asset_shares, RSF_SCHEDULES["bank_dep"]),
-        "loans": _weighted_schedule(loans, asset_shares, RSF_SCHEDULES["loans"]),
+        "loans": loans_rsf,
         "inv_sec_bs": _weighted_schedule(inv_sec_bs, asset_shares, RSF_SCHEDULES["inv_sec_bs"]),
         "other_asset": other_asset * RSF_SCHEDULES["other_asset"][2],
     }
@@ -185,6 +276,11 @@ def compute_nsfr_for_period(snap, gap_entry):
         "asf_total": asf_total, "rsf_total": rsf_total, "nsfr_pct": nsfr_pct,
         "asf_components": asf_components, "rsf_components": rsf_components,
         "total_assets": total_assets, "equity": equity,
+        # Gia tri THO (chua nhan he so) - dung de tinh ty trong co cau cho phan nhan dinh dinh
+        # tinh (qualitative_driver_notes) ben duoi, KHONG dung de tinh ASF/RSF (da tinh o tren).
+        "raw": {"total_liab": total_liab, "customer_deposits": customer_deposits,
+                "interbank_liab": interbank_liab, "loans": loans,
+                "cash_sbv": cash + sbv_dep},
     }
 
 
@@ -200,6 +296,7 @@ def compute_nsfr_all_banks():
             d = json.load(f)
         qbs = d.get("quarterly_balance_sheet", {}) or {}
         gp = d.get("gap_periods", {}) or {}
+        notes_by_period = _load_bank_notes(ticker)
         bank_results = {}
         for period, gap_entry in gp.items():
             # gap_periods dung nhan "YYYY-FY" cho bao cao nam (kiem toan) - trong khi
@@ -209,12 +306,74 @@ def compute_nsfr_all_banks():
             snap = qbs.get(qbs_period)
             if not snap:
                 continue
-            r = compute_nsfr_for_period(snap, gap_entry)
+            r = compute_nsfr_for_period(snap, gap_entry, notes_by_period.get(qbs_period))
             if r is not None:
                 bank_results[qbs_period] = r
         if bank_results:
             results[ticker] = bank_results
     return results
+
+
+# THEM 2026-10-12 (user gui bai viet HSC "Son Nguyen" ve NSFR vs SFL: "cac ngan hang co von chu so
+# huu day, ty trong nguon von dai han cao, cung co cau tien gui thien ve ban le/SME se co loi the
+# ro ret [ve ASF]. Nguoc lai, cac ngan hang phu thuoc nhieu vao nguon von tu doanh nghiep lon va
+# lien ngan hang ngan han se chiu bat loi... Ve phia RSF, cac ngan hang co ty trong cho vay ngan
+# han va rui ro thap se duoc yeu cau it nguon von on dinh hon. Nguoc lai, cac ngan hang co thien
+# huong cho vay trung dai han lon... se bi ap dung trong so on dinh cao hon" - roi user: "ok them
+# card danh gia do di nhe" - sinh NHAN DINH RULE-BASED (ghep cau tu nguong %, KHONG phai van AI tu
+# do) bang cach SO TUNG BANK VOI TRUNG BINH HE THONG cung ky, dung dung 4 ty le ma bai viet nhac
+# toi: VCSH/TongTS, TienGuiKH/NguonVon, LienNH/NguonVon, ChoVay/TongTS.
+_DRIVER_THRESHOLD = 1.10  # lech >=10% so TB he thong moi coi la dang chu y (tranh nhieu/qua vun vat)
+
+
+def qualitative_driver_notes(results, period):
+    """results: output cua compute_nsfr_all_banks(); period: ky can danh gia (vd ky gan nhat).
+    Tra {ticker: {'asf_note': str, 'rsf_note': str}} - rong neu bank khong co du lieu ky do."""
+    rows = []
+    for ticker, periods in results.items():
+        r = periods.get(period)
+        if not r or not r.get("raw"):
+            continue
+        raw = r["raw"]
+        total_assets = r["total_assets"] or 0
+        total_liab = raw["total_liab"] or 0
+        if total_assets <= 0 or total_liab <= 0:
+            continue
+        rows.append({
+            "ticker": ticker,
+            "equity_pct": r["equity"] / total_assets * 100,
+            "cust_dep_pct": raw["customer_deposits"] / total_liab * 100,
+            "interbank_pct": raw["interbank_liab"] / total_liab * 100,
+            "loans_pct": raw["loans"] / total_assets * 100,
+        })
+    if not rows:
+        return {}
+
+    avg = {k: sum(row[k] for row in rows) / len(rows)
+           for k in ("equity_pct", "cust_dep_pct", "interbank_pct", "loans_pct")}
+
+    out = {}
+    for row in rows:
+        asf_parts = []
+        if row["equity_pct"] >= avg["equity_pct"] * _DRIVER_THRESHOLD:
+            asf_parts.append(f"VCSH/Tổng TS {row['equity_pct']:.1f}% (TB hệ thống {avg['equity_pct']:.1f}%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%)")
+        elif row["equity_pct"] <= avg["equity_pct"] / _DRIVER_THRESHOLD:
+            asf_parts.append(f"VCSH/Tổng TS {row['equity_pct']:.1f}% (TB hệ thống {avg['equity_pct']:.1f}%) — đệm vốn mỏng hơn TB")
+        if row["cust_dep_pct"] >= avg["cust_dep_pct"] * _DRIVER_THRESHOLD:
+            asf_parts.append(f"Tiền gửi KH/Nguồn vốn {row['cust_dep_pct']:.1f}% (TB {avg['cust_dep_pct']:.1f}%) — lợi thế ASF (hệ số ổn định cao 90-95%)")
+        if row["interbank_pct"] >= avg["interbank_pct"] * _DRIVER_THRESHOLD:
+            asf_parts.append(f"Liên NH/Nguồn vốn {row['interbank_pct']:.1f}% (TB {avg['interbank_pct']:.1f}%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)")
+        asf_note = "; ".join(asf_parts) if asf_parts else "Cơ cấu nguồn vốn gần với TB hệ thống, không có yếu tố nổi bật."
+
+        rsf_parts = []
+        if row["loans_pct"] >= avg["loans_pct"] * _DRIVER_THRESHOLD:
+            rsf_parts.append(f"Cho vay/Tổng TS {row['loans_pct']:.1f}% (TB {avg['loans_pct']:.1f}%) — áp lực RSF cao hơn TB (cho vay ≥1 năm 65-85% so với tiền mặt/HQLA 0-15%)")
+        elif row["loans_pct"] <= avg["loans_pct"] / _DRIVER_THRESHOLD:
+            rsf_parts.append(f"Cho vay/Tổng TS {row['loans_pct']:.1f}% (TB {avg['loans_pct']:.1f}%) — áp lực RSF thấp hơn TB (tỷ trọng tài sản thanh khoản/khác cao hơn)")
+        rsf_note = "; ".join(rsf_parts) if rsf_parts else "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+
+        out[row["ticker"]] = {"asf_note": asf_note, "rsf_note": rsf_note}
+    return out
 
 
 _NSFR_SHEET_NAME = "NSFR_NganHang_Raw"
@@ -323,37 +482,50 @@ def update_bank_nsfr_excel_sheet(out_dir):
         "NGUON BANG HE SO: Phu luc II (Huong dan cach xac dinh ty le nguon von on dinh rong),",
         "kem theo Thong tu so 50/2026/TT-NHNN ngay 30/9/2026, doc truc tiep tu van ban goc.",
         "",
-        "LY DO LA PROXY, KHONG PHAI SO CHINH THUC:",
-        "BCTC cong khai cua ngan hang KHONG cong bo du chi tiet de ap dung dung 100% bang he so:",
-        "  - Khong tach tien gui theo muc do on dinh (phu thuoc han muc bao hiem tien gui tung",
-        "    khach hang - thong tin noi bo, khong cong khai).",
-        "  - Khong tach cho vay theo he so rui ro tin dung <=35% hay >35% (chi co trong bao cao",
-        "    Tru cot 3 rieng, khong co trong BCTC chuan).",
-        "  - Khong tach HQLA cap 1/2A/2B trong tong Chung khoan dau tu.",
-        "  - Khong co ky han chi tiet cho tung dong (tien gui/cho vay/trai phieu...) - chi co",
-        "    TONG Tai san/No phai tra theo 7 bucket ky han (du lieu 'gap_periods' co san).",
+        "CAP NHAT 2026-10-12 (user: 'cac ty le nay chung chung qua, tu tim nguon de tinh chinh",
+        "xac hon'): da thay 2 gia dinh 'chung' quan trong nhat bang DU LIEU THAT cua TUNG bank,",
+        "lay tu thuyet minh BCTC (Vietcap, section NOTE, da co san o .cache/*.json cho ca 26/26",
+        "bank):",
+        "  - Tien gui khach hang: KHONG con gia dinh 1 he so chung cho ca cuc - da TACH THAT",
+        "    thanh CASA/khong ky han (nob66), Tien gui tiet kiem - ban le (nob68, ap he so ban",
+        "    le 90-95%), va Tien gui co ky han KHAC - nghieng to chuc/DN (nob67, ap he so thap",
+        "    hon nhu tien gui DN 50%/50%/100%).",
+        "  - Cho vay khach hang: KHONG con dung ty trong bucket TAI SAN GOP chung tu gap_periods",
+        "    - da dung THANG co cau Ngan/Trung/Dai han THAT cua tung bank (nob46/47/48).",
+        "Nho 2 thay doi nay, ket qua NSFR gio PHAN HOA RO RET hon giua cac bank theo dung co cau",
+        "huy dong/cho vay thuc te (truoc day dai da so bank ra 96-135%, khoang hep; nay 67-121%,",
+        "nhieu bank duoi 100% - gan voi canh bao cua gioi phan tich rang NSFR se la thach thuc",
+        "that cho khong it ngan hang VN).",
         "",
-        "GIA DINH DUNG DE UOC TINH (xem chi tiet trong bank_nsfr_calc.py):",
-        "  1. Ty trong ky han cua TUNG dong (tien gui, cho vay, trai phieu...) = ty trong ky han",
-        "     TRUNG BINH cua toan bo Tai san/No phai tra ngan hang do (tu gap_periods).",
+        "LY DO VAN LA PROXY (chua phai so chinh thuc), BCTC cong khai van con thieu:",
+        "  - Khong tach tien gui theo muc do on dinh THEO HAN MUC BAO HIEM tung khach hang (vd",
+        "    CASA/tiet kiem co the la 'on dinh' 95% hay 'kem on dinh' 90% tuy quy mo tung so -",
+        "    dang dung muc 90% (kem on dinh) lam gia dinh THAN TRONG cho toan bo).",
+        "  - Khong tach cho vay theo he so rui ro tin dung <=35% hay >35% (chi co trong bao cao",
+        "    Tru cot 3 rieng, khong co trong BCTC chuan) - dang dung muc <=35% (65%) cho phan",
+        "    cho vay trung+dai han.",
+        "  - Khong tach HQLA cap 1/2A/2B trong tong Chung khoan dau tu (inv_sec_bs).",
+        "",
+        "GIA DINH CON LAI (xem chi tiet trong bank_nsfr_calc.py):",
+        "  1. Tien gui tiet kiem (nob68) + phan du (ky quy/von chuyen dung nho) + Lien NH/Trai",
+        "     phieu/KBNN/No khac: VAN chia theo ty trong ky han TRUNG BINH cua toan bo Tai",
+        "     san/No phai tra ngan hang do (tu gap_periods) - vi BCTC KHONG cho ky han rieng",
+        "     cho tung dong nay.",
         "  2. Bucket 'tu 3-12 thang' (khong khop chinh xac moc 6 thang cua TT50) duoc chia",
         "     tuyen tinh: 3/9 vao 'duoi 6 thang', 6/9 vao '6 thang - duoi 1 nam'.",
-        "  3. Tien gui khach hang: dung he so 'kem on dinh' (khoan 9.2/10.2 TT50: 90%/90%/100%)",
-        "     cho TOAN BO (khong tach duoc ban le/to chuc, on dinh/kem on dinh).",
-        "  4. Cho vay khach hang: dung he so rui ro <=35% (khoan 18.x.1 TT50: 50%/50%/65%) -",
-        "     neu ngan hang co ty trong cho vay rui ro cao (BDS, tieu dung khong TSBD...) lon,",
-        "     NSFR UOC TINH se CAO HON NSFR THAT (vi RSF thuc te se cao hon).",
-        "  5. Chung khoan dau tu: dung he so 'chung khoan khac' (khoan 11.3 TT50: 50%/50%/100%)",
+        "  3. Cho vay 'ngan han' (nob46, <=12 thang) ap chung 1 he so 50% (TT50 cho ca 'duoi 6",
+        "     thang' va '6 thang-1 nam' CUNG 50% nen khong can tach them); 'trung han'+'dai han'",
+        "     (nob47+48, >12 thang) ap he so 'tu 1 nam' = 65% (gia dinh rui ro tin dung <=35%).",
+        "  4. Chung khoan dau tu: dung he so 'chung khoan khac' (khoan 11.3 TT50: 50%/50%/100%)",
         "     cho TOAN BO - neu ngan hang giu nhieu TPCP (HQLA cap 1, RSF chi 5%), NSFR UOC TINH",
         "     se THAP HON NSFR THAT.",
-        "  6. tpdn (trai phieu DN, trich tu ghi chu BCTC) KHONG duoc cong rieng - gia dinh da",
+        "  5. tpdn (trai phieu DN, trich tu ghi chu BCTC) KHONG duoc cong rieng - gia dinh da",
         "     nam trong 'inv_sec_bs' (tong chung khoan dau tu tren BCTC), tranh double-count.",
-        "  7. Von chu so huu: 100% ASF moi ky han (dung khoan 1.1, khong tru von cap 2).",
+        "  6. Von chu so huu: 100% ASF moi ky han (dung khoan 1.1, khong tru von cap 2).",
         "",
-        "KET LUAN SU DUNG: con so NSFR nay chi nen doc theo XU HUONG (tang/giam qua cac quy,",
-        "so sanh TUONG DOI giua cac ngan hang) - KHONG nen trich dan nhu so NSFR CHINH THUC da",
-        "bao cao len NHNN, vi cac gia dinh (4), (5) co the lam LECH ca 2 chieu tuy co cau tai",
-        "san/nguon von thuc te cua tung ngan hang.",
+        "KET LUAN SU DUNG: con so NSFR nay chinh xac hon ban dau nhung VAN chi nen doc theo XU",
+        "HUONG (tang/giam qua cac quy, so sanh TUONG DOI giua cac ngan hang) - KHONG nen trich",
+        "dan nhu so NSFR CHINH THUC da bao cao len NHNN.",
     ]
     for i, line in enumerate(notes, start=1):
         ws3.cell(row=i, column=1, value=line)

@@ -3144,13 +3144,20 @@ def _add_bank_alm_derived_indicators(raw, trends):
             ((t, nsfr_results[t][latest_period]["nsfr_pct"]) for t in nsfr_results if latest_period in nsfr_results[t]),
             key=lambda x: (x[1] is None, x[1]),
         )
+        # THEM 2026-10-12 (user gui bai viet HSC ve NSFR, roi "ok them card danh gia do di nhe") —
+        # nhan dinh RULE-BASED (so tung bank voi TB he thong — xem qualitative_driver_notes trong
+        # bank_nsfr_calc.py), KHONG phai van AI tu do.
+        from bank_nsfr_calc import qualitative_driver_notes
+        driver_notes = qualitative_driver_notes(nsfr_results, latest_period)
         if result is None:
             result = {}
         result["nsfrSystem"] = {
             "periods": nsfr_periods, "nsfrPct": nsfr_system_pts,
             "nBanks": nsfr_n_banks, "nBanksUnder100": nsfr_n_under100,
             "latestPeriod": latest_period,
-            "latestByBank": [{"ticker": t, "nsfrPct": round(v, 1) if v is not None else None} for t, v in latest_banks],
+            "latestByBank": [{"ticker": t, "nsfrPct": round(v, 1) if v is not None else None,
+                               "asfNote": driver_notes.get(t, {}).get("asf_note"),
+                               "rsfNote": driver_notes.get(t, {}).get("rsf_note")} for t, v in latest_banks],
         }
     return result
 
