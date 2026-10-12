@@ -7827,158 +7827,158 @@
         {
           "ticker": "NAB",
           "nsfrPct": 67.5,
-          "asfNote": "VCSH/Tổng TS 5.7% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; Liên NH/Nguồn vốn 34.7% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cho vay/Tổng TS 48.0% (TB 62.9%) — áp lực RSF thấp hơn TB (tỷ trọng tài sản thanh khoản/khác cao hơn)"
+          "asfNote": "VCSH/Tổng TS 5.7% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 5.3% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn; Liên NH/Nguồn vốn 34.7% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "BAB",
           "nsfrPct": 73.3,
-          "asfNote": "VCSH/Tổng TS 6.4% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 6.4% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 3.3% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 55.1% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "BVB",
           "nsfrPct": 73.9,
-          "asfNote": "VCSH/Tổng TS 5.6% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 5.6% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 7.5% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 38.7% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "MSB",
           "nsfrPct": 75.2,
-          "asfNote": "VCSH/Tổng TS 10.3% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); Liên NH/Nguồn vốn 31.2% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cho vay/Tổng TS 51.6% (TB 62.9%) — áp lực RSF thấp hơn TB (tỷ trọng tài sản thanh khoản/khác cao hơn)"
+          "asfNote": "VCSH/Tổng TS 10.3% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 21.9% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2); Liên NH/Nguồn vốn 31.2% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 61.2% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "OCB",
           "nsfrPct": 75.5,
-          "asfNote": "VCSH/Tổng TS 10.2% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 10.2% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 10.9% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 72.1% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "SSB",
           "nsfrPct": 75.6,
-          "asfNote": "VCSH/Tổng TS 9.9% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); Liên NH/Nguồn vốn 32.1% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "asfNote": "VCSH/Tổng TS 9.9% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 10.7% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn; Liên NH/Nguồn vốn 32.1% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
           "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "PGB",
           "nsfrPct": 77.8,
-          "asfNote": "Liên NH/Nguồn vốn 35.6% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cho vay/Tổng TS 53.5% (TB 62.9%) — áp lực RSF thấp hơn TB (tỷ trọng tài sản thanh khoản/khác cao hơn)"
+          "asfNote": "CASA/Tổng tiền gửi 19.7% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2); Liên NH/Nguồn vốn 35.6% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 38.1% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "LPB",
           "nsfrPct": 78.8,
-          "asfNote": "VCSH/Tổng TS 7.0% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB",
+          "asfNote": "VCSH/Tổng TS 7.0% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 6.3% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
           "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "ABB",
           "nsfrPct": 79.2,
-          "asfNote": "Liên NH/Nguồn vốn 25.2% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cho vay/Tổng TS 51.3% (TB 62.9%) — áp lực RSF thấp hơn TB (tỷ trọng tài sản thanh khoản/khác cao hơn)"
+          "asfNote": "CASA/Tổng tiền gửi 8.8% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn; Liên NH/Nguồn vốn 25.2% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 33.8% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "VIB",
           "nsfrPct": 83.3,
-          "asfNote": "Liên NH/Nguồn vốn 26.8% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "CASA/Tổng tiền gửi 11.8% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn; Liên NH/Nguồn vốn 26.8% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 59.5% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "TPB",
           "nsfrPct": 83.3,
-          "asfNote": "Liên NH/Nguồn vốn 28.8% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "CASA/Tổng tiền gửi 18.3% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2); Liên NH/Nguồn vốn 28.8% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 64.6% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "EIB",
           "nsfrPct": 84.6,
-          "asfNote": "VCSH/Tổng TS 10.0% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); Tiền gửi KH/Nguồn vốn 71.2% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
-          "rsfNote": "Cho vay/Tổng TS 70.0% (TB 62.9%) — áp lực RSF cao hơn TB (cho vay ≥1 năm 65-85% so với tiền mặt/HQLA 0-15%)"
+          "asfNote": "VCSH/Tổng TS 10.0% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 42.5% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "HDB",
           "nsfrPct": 85.1,
-          "asfNote": "Tiền gửi KH/Nguồn vốn 70.7% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
+          "asfNote": "CASA/Tổng tiền gửi 10.8% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
           "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "VAB",
           "nsfrPct": 86.7,
-          "asfNote": "VCSH/Tổng TS 7.2% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; Tiền gửi KH/Nguồn vốn 75.2% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 7.2% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 5.4% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 29.8% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "SGB",
           "nsfrPct": 88.6,
-          "asfNote": "VCSH/Tổng TS 11.9% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); Tiền gửi KH/Nguồn vốn 80.2% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 11.9% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 8.1% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 31.6% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "SHB",
           "nsfrPct": 90.6,
-          "asfNote": "Tiền gửi KH/Nguồn vốn 70.3% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "CASA/Tổng tiền gửi 7.8% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 65.8% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "VCB",
           "nsfrPct": 97.0,
-          "asfNote": "VCSH/Tổng TS 9.4% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); Tiền gửi KH/Nguồn vốn 71.8% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
+          "asfNote": "VCSH/Tổng TS 9.4% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 32.3% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
           "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "MBB",
           "nsfrPct": 98.4,
-          "asfNote": "Cơ cấu nguồn vốn gần với TB hệ thống, không có yếu tố nổi bật.",
-          "rsfNote": "Cho vay/Tổng TS 69.9% (TB 62.9%) — áp lực RSF cao hơn TB (cho vay ≥1 năm 65-85% so với tiền mặt/HQLA 0-15%)"
+          "asfNote": "CASA/Tổng tiền gửi 33.6% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
+          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "VBB",
           "nsfrPct": 98.6,
-          "asfNote": "VCSH/Tổng TS 6.4% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; Liên NH/Nguồn vốn 26.2% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 6.4% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 7.6% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn; Liên NH/Nguồn vốn 26.2% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 34.0% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "NVB",
           "nsfrPct": 98.7,
-          "asfNote": "VCSH/Tổng TS 7.2% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; Tiền gửi KH/Nguồn vốn 78.3% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 7.2% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 8.2% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 72.5% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "ACB",
           "nsfrPct": 99.1,
-          "asfNote": "VCSH/Tổng TS 9.3% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 9.3% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 20.0% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 37.5% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "CTG",
           "nsfrPct": 99.3,
-          "asfNote": "VCSH/Tổng TS 6.8% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB",
-          "rsfNote": "Cho vay/Tổng TS 69.5% (TB 62.9%) — áp lực RSF cao hơn TB (cho vay ≥1 năm 65-85% so với tiền mặt/HQLA 0-15%)"
+          "asfNote": "VCSH/Tổng TS 6.8% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 22.7% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 37.5% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "BID",
           "nsfrPct": 101.0,
-          "asfNote": "VCSH/Tổng TS 5.8% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB",
-          "rsfNote": "Cho vay/Tổng TS 71.7% (TB 62.9%) — áp lực RSF cao hơn TB (cho vay ≥1 năm 65-85% so với tiền mặt/HQLA 0-15%)"
+          "asfNote": "VCSH/Tổng TS 5.8% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 20.1% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 39.4% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         },
         {
           "ticker": "TCB",
           "nsfrPct": 103.6,
-          "asfNote": "VCSH/Tổng TS 14.8% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 14.8% (TB hệ thống 8.4%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%); CASA/Tổng tiền gửi 33.8% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 59.4% (TB 47.8%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)"
         },
         {
           "ticker": "KLB",
           "nsfrPct": 117.7,
-          "asfNote": "Liên NH/Nguồn vốn 23.6% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
+          "asfNote": "CASA/Tổng tiền gửi 5.8% (TB 14.3%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn; Liên NH/Nguồn vốn 23.6% (TB 20.5%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)",
           "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
         },
         {
           "ticker": "STB",
           "nsfrPct": 120.9,
-          "asfNote": "VCSH/Tổng TS 7.0% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; Tiền gửi KH/Nguồn vốn 78.1% (TB 63.9%) — lợi thế ASF (hệ số ổn định cao 90-95%)",
-          "rsfNote": "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
+          "asfNote": "VCSH/Tổng TS 7.0% (TB hệ thống 8.4%) — đệm vốn mỏng hơn TB; CASA/Tổng tiền gửi 16.4% (TB 14.3%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)",
+          "rsfNote": "Cho vay trung+dài hạn/Tổng cho vay 39.9% (TB 47.8%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)"
         }
       ]
     }

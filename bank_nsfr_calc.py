@@ -278,9 +278,14 @@ def compute_nsfr_for_period(snap, gap_entry, notes=None):
         "total_assets": total_assets, "equity": equity,
         # Gia tri THO (chua nhan he so) - dung de tinh ty trong co cau cho phan nhan dinh dinh
         # tinh (qualitative_driver_notes) ben duoi, KHONG dung de tinh ASF/RSF (da tinh o tren).
+        # casa/loans_long_term chi co khi notes khong None (du lieu thuyet minh THAT); None
+        # neu bank do thieu notes - qualitative_driver_notes se tu bo qua cac dong lien quan.
         "raw": {"total_liab": total_liab, "customer_deposits": customer_deposits,
                 "interbank_liab": interbank_liab, "loans": loans,
-                "cash_sbv": cash + sbv_dep},
+                "cash_sbv": cash + sbv_dep,
+                "casa": notes["casa"] if notes else None,
+                "loans_long_term": (notes["loans_medium"] + notes["loans_long"]) if notes else None,
+                "loans_total_note": (notes["loans_short"] + notes["loans_medium"] + notes["loans_long"]) if notes else None},
     }
 
 
@@ -328,7 +333,14 @@ _DRIVER_THRESHOLD = 1.10  # lech >=10% so TB he thong moi coi la dang chu y (tra
 
 def qualitative_driver_notes(results, period):
     """results: output cua compute_nsfr_all_banks(); period: ky can danh gia (vd ky gan nhat).
-    Tra {ticker: {'asf_note': str, 'rsf_note': str}} - rong neu bank khong co du lieu ky do."""
+    Tra {ticker: {'asf_note': str, 'rsf_note': str}} - rong neu bank khong co du lieu ky do.
+
+    SUA 2026-10-12 (user: "cac phan ty le nay no cung chung chung qua"): thay 2 chi tieu
+    chung "Tien gui KH/Nguon von" va "Cho vay/Tong TS" bang 2 chi tieu THAT, CU THE hon
+    han, lay dung tu thuyet minh BCTC (_load_bank_notes): ty le CASA/Tong tien gui (thay vi
+    tong tien gui KH/nguon von chung chung) va ty le Cho vay trung+dai han/Tong cho vay
+    (thay vi cho vay/tong TS chung chung) - 2 chi tieu nay BAM SAT dung co che ASF/RSF that
+    (CASA duoc ASF cao, cho vay dai han bi RSF cao) nen giai thich DUNG NGUYEN NHAN hon."""
     rows = []
     for ticker, periods in results.items():
         r = periods.get(period)
@@ -339,18 +351,23 @@ def qualitative_driver_notes(results, period):
         total_liab = raw["total_liab"] or 0
         if total_assets <= 0 or total_liab <= 0:
             continue
+        casa_pct = (raw["casa"] / raw["customer_deposits"] * 100) if raw.get("casa") and raw["customer_deposits"] else None
+        lt_loan_pct = (raw["loans_long_term"] / raw["loans_total_note"] * 100) if raw.get("loans_long_term") and raw.get("loans_total_note") else None
         rows.append({
             "ticker": ticker,
             "equity_pct": r["equity"] / total_assets * 100,
-            "cust_dep_pct": raw["customer_deposits"] / total_liab * 100,
             "interbank_pct": raw["interbank_liab"] / total_liab * 100,
-            "loans_pct": raw["loans"] / total_assets * 100,
+            "casa_pct": casa_pct,
+            "lt_loan_pct": lt_loan_pct,
         })
     if not rows:
         return {}
 
-    avg = {k: sum(row[k] for row in rows) / len(rows)
-           for k in ("equity_pct", "cust_dep_pct", "interbank_pct", "loans_pct")}
+    def _avg(key):
+        vals = [row[key] for row in rows if row[key] is not None]
+        return sum(vals) / len(vals) if vals else None
+
+    avg = {k: _avg(k) for k in ("equity_pct", "interbank_pct", "casa_pct", "lt_loan_pct")}
 
     out = {}
     for row in rows:
@@ -359,17 +376,21 @@ def qualitative_driver_notes(results, period):
             asf_parts.append(f"VCSH/Tổng TS {row['equity_pct']:.1f}% (TB hệ thống {avg['equity_pct']:.1f}%) — đệm vốn dày hơn TB, lợi thế ASF (vốn chủ sở hữu luôn 100%)")
         elif row["equity_pct"] <= avg["equity_pct"] / _DRIVER_THRESHOLD:
             asf_parts.append(f"VCSH/Tổng TS {row['equity_pct']:.1f}% (TB hệ thống {avg['equity_pct']:.1f}%) — đệm vốn mỏng hơn TB")
-        if row["cust_dep_pct"] >= avg["cust_dep_pct"] * _DRIVER_THRESHOLD:
-            asf_parts.append(f"Tiền gửi KH/Nguồn vốn {row['cust_dep_pct']:.1f}% (TB {avg['cust_dep_pct']:.1f}%) — lợi thế ASF (hệ số ổn định cao 90-95%)")
+        if row["casa_pct"] is not None and avg["casa_pct"]:
+            if row["casa_pct"] >= avg["casa_pct"] * _DRIVER_THRESHOLD:
+                asf_parts.append(f"CASA/Tổng tiền gửi {row['casa_pct']:.1f}% (TB {avg['casa_pct']:.1f}%) — lợi thế ASF rõ rệt (tiền gửi không kỳ hạn vẫn được tính ASF 90%, ổn định hơn hẳn vốn thị trường 2)")
+            elif row["casa_pct"] <= avg["casa_pct"] / _DRIVER_THRESHOLD:
+                asf_parts.append(f"CASA/Tổng tiền gửi {row['casa_pct']:.1f}% (TB {avg['casa_pct']:.1f}%) — phụ thuộc tiền gửi có kỳ hạn/tổ chức nhiều hơn TB, ASF thấp hơn")
         if row["interbank_pct"] >= avg["interbank_pct"] * _DRIVER_THRESHOLD:
             asf_parts.append(f"Liên NH/Nguồn vốn {row['interbank_pct']:.1f}% (TB {avg['interbank_pct']:.1f}%) — bất lợi ASF (hệ số thấp 0-50%, phụ thuộc vốn ngắn hạn nhiều hơn TB)")
         asf_note = "; ".join(asf_parts) if asf_parts else "Cơ cấu nguồn vốn gần với TB hệ thống, không có yếu tố nổi bật."
 
         rsf_parts = []
-        if row["loans_pct"] >= avg["loans_pct"] * _DRIVER_THRESHOLD:
-            rsf_parts.append(f"Cho vay/Tổng TS {row['loans_pct']:.1f}% (TB {avg['loans_pct']:.1f}%) — áp lực RSF cao hơn TB (cho vay ≥1 năm 65-85% so với tiền mặt/HQLA 0-15%)")
-        elif row["loans_pct"] <= avg["loans_pct"] / _DRIVER_THRESHOLD:
-            rsf_parts.append(f"Cho vay/Tổng TS {row['loans_pct']:.1f}% (TB {avg['loans_pct']:.1f}%) — áp lực RSF thấp hơn TB (tỷ trọng tài sản thanh khoản/khác cao hơn)")
+        if row["lt_loan_pct"] is not None and avg["lt_loan_pct"]:
+            if row["lt_loan_pct"] >= avg["lt_loan_pct"] * _DRIVER_THRESHOLD:
+                rsf_parts.append(f"Cho vay trung+dài hạn/Tổng cho vay {row['lt_loan_pct']:.1f}% (TB {avg['lt_loan_pct']:.1f}%) — áp lực RSF cao hơn TB (khoản vay ≥1 năm chịu hệ số RSF 65%, so với cho vay ngắn hạn chỉ 50%)")
+            elif row["lt_loan_pct"] <= avg["lt_loan_pct"] / _DRIVER_THRESHOLD:
+                rsf_parts.append(f"Cho vay trung+dài hạn/Tổng cho vay {row['lt_loan_pct']:.1f}% (TB {avg['lt_loan_pct']:.1f}%) — áp lực RSF thấp hơn TB (nghiêng về cho vay ngắn hạn, hệ số RSF chỉ 50%)")
         rsf_note = "; ".join(rsf_parts) if rsf_parts else "Cơ cấu tài sản gần với TB hệ thống, không có yếu tố nổi bật."
 
         out[row["ticker"]] = {"asf_note": asf_note, "rsf_note": rsf_note}

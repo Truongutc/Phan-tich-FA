@@ -640,6 +640,20 @@ function renderNsfrSystemSection(nsfr) {
             plugins: [ChartDataLabels],
         }));
     }
+
+    // THEM 2026-10-12 (user: "ok thêm card đánh giá đó đi nhé" — nhận định rule-based so với TB
+    // hệ thống, xem qualitative_driver_notes trong bank_nsfr_calc.py — chỉ hiện bank nào CÓ note
+    // (None nếu thiếu dữ liệu thuyết minh kỳ đó), KHÔNG hiện dòng rỗng).
+    const driverTbody = document.querySelector('#nsfr-driver-table tbody');
+    if (driverTbody && nsfr.latestByBank) {
+        driverTbody.innerHTML = nsfr.latestByBank.map(b => `
+            <tr style="border-top:1px solid var(--border-color)">
+                <td style="padding:7px 8px;font-weight:600;white-space:nowrap">${b.ticker}</td>
+                <td style="padding:7px 8px;text-align:center;white-space:nowrap;color:${b.nsfrPct === null ? '#9aa5bd' : (b.nsfrPct >= 100 ? '#10b981' : '#ef4444')}">${b.nsfrPct === null ? '—' : b.nsfrPct.toFixed(1) + '%'}</td>
+                <td style="padding:7px 8px;line-height:1.5">${b.asfNote || '—'}</td>
+                <td style="padding:7px 8px;line-height:1.5">${b.rsfNote || '—'}</td>
+            </tr>`).join('');
+    }
 }
 
 // THEM (user 2026-10-01, "card Áp lực Ngoại tệ" — khung Cầu/Cung/Đối chiếu BOP/Thị trường/Phản

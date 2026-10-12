@@ -651,6 +651,20 @@
             <div class="ind-chart" style="height:300px"><canvas id="chart-nsfr-system"></canvas></div>
             <div class="vimo-chart-title" style="margin-top:14px">Xếp hạng NSFR ước tính từng ngân hàng (kỳ gần nhất)</div>
             <div class="ind-chart" style="height:420px"><canvas id="chart-nsfr-bank-ranking"></canvas></div>
+            <div class="vimo-chart-title" style="margin-top:14px">Nhận định nguyên nhân (rule-based, so với trung bình hệ thống cùng kỳ)</div>
+            <div style="max-height:460px;overflow-y:auto;border:1px solid var(--border-color);border-radius:10px">
+                <table id="nsfr-driver-table" style="border-collapse:collapse;width:100%;font-size:0.82em">
+                    <thead style="position:sticky;top:0;background:#141a2e;z-index:1">
+                        <tr>
+                            <th style="padding:7px 8px;text-align:left;white-space:nowrap">Mã NH</th>
+                            <th style="padding:7px 8px;text-align:center;white-space:nowrap">NSFR</th>
+                            <th style="padding:7px 8px;text-align:left">Nguyên nhân phía ASF (nguồn vốn)</th>
+                            <th style="padding:7px 8px;text-align:left">Nguyên nhân phía RSF (tài sản)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <p class="ind-source-note" style="margin-top:8px">Chi tiết đầy đủ (ASF/RSF theo từng cấu phần, từng ngân
                 hàng, từng quý) xem sheet "NSFR_NganHang_Raw" + "NSFR_TongHop_HeThong" trong file Excel lịch sử chỉ số.</p>
         </div>
