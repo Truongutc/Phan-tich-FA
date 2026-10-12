@@ -53,6 +53,18 @@ const CHART_DEFAULTS = {
 // legend không ghi đè riêng sẽ tự dùng màu này.
 Chart.defaults.color = '#ffffff';
 
+// THEM 2026-10-10 (user: "ở mấy cái biểu đồ này làm rõ âm dương được không nhìn rối quá" — áp
+// dụng lại CÙNG cách đã sửa ở renderFxBalanceOverviewChart cho các chart nhiều-đường-cắt-0 khác
+// (Cán cân vãng lai 4 cấu phần, Cán cân tài chính theo cấu phần) — kẻ ĐẬM/SÁNG riêng đúng mốc 0.
+// KHÔNG thêm fill vùng diện tích ở đây (khác chart kia) vì các chart này đã có 4-5 đường chồng
+// nhau, thêm fill sẽ CHỒNG MÀU rối hơn — đúng tinh thần user đang phàn nàn "nhìn rối quá".
+function _zeroLineGridConfig() {
+    return {
+        color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.04)',
+        lineWidth: (ctx) => ctx.tick.value === 0 ? 1.5 : 1,
+    };
+}
+
 // Cấu hình chartjs-plugin-datalabels dùng chung cho các chart NHIỀU đường + NHIỀU điểm/ngày
 // (interbank/bond yield history) — chỉ hiện số ở điểm CUỐI mỗi đường (giá trị mới nhất) để tránh
 // rối mắt khi có 15-20+ điểm x nhiều kỳ hạn chồng lên nhau; vẫn cho biết "số giá trị" ngay trên
@@ -1915,6 +1927,7 @@ function renderFxSupplyDemandChart(indicators) {
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     grid: _zeroLineGridConfig(),
                      title: { display: true, text: 'Triệu USD (ròng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
@@ -1995,6 +2008,7 @@ function renderFxFinancialAccountChart(indicators) {
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
+                     grid: _zeroLineGridConfig(),
                      title: { display: true, text: 'Triệu USD (dương = dòng vào ròng, âm = dòng ra ròng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
@@ -2072,11 +2086,7 @@ function renderFxBalanceOverviewChart(indicators) {
             scales: {
                 x: { ...CHART_DEFAULTS.scales.x, offset: true, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false, maxTicksLimit: periods.length } },
                 y: { ...CHART_DEFAULTS.scales.y, position: 'left',
-                     // SUA 2026-10-10 (user: "chả biết khi nào cán cân âm lúc nào dương cả" — kẻ
-                     // ĐẬM/SÁNG riêng đúng mốc 0 để thấy ngay ranh giới âm/dương, không cần dò
-                     // ngược lên trục mới biết).
-                     grid: { color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.04)',
-                             lineWidth: (ctx) => ctx.tick.value === 0 ? 1.5 : 1 },
+                     grid: _zeroLineGridConfig(),
                      title: { display: true, text: 'Triệu USD (ròng)', color: '#9aa5bd', font: { size: 9 } } },
                 y1: { ...CHART_DEFAULTS.scales.y, position: 'right', grid: { display: false },
                       title: { display: true, text: 'VND/USD', color: '#9aa5bd', font: { size: 9 } } },
