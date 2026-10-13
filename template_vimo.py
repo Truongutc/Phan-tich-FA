@@ -4053,23 +4053,35 @@ def _build_bop_forecast_narrative(raw, bop_forecast):
         f"{other_label} dự báo ngược chiều ({other_verb}) nhưng không đủ bù đắp."
     )
 
-    # --- Gap ty gia cho den vs NHTM ---
+    # --- Gap ty gia cho den vs NHTM --- SUA 2026-10-13 (user: "chợ đen vẫn thấp hơn so NHTM nên áp
+    # lực đầu cơ usd là thấp, áp lực không cao" — truoc day dung TREND (noi rong/thu hep) de bo
+    # phieu, bo sot truong hop gia tri TUYET DOI dang o muc THAP (duoi nguong 0.3%) du trend khong
+    # doi. Doi sang dung MUC TUYET DOI (dung nguong 0.3% nhu _FX_STRESS_THRESHOLDS) de bo phieu,
+    # dong thoi van neu trend de co ngu canh.
     cho_den_stress = None
     cho_den_text = "Chưa có dữ liệu gap tỷ giá chợ đen gần đây."
     cho_den = _market_signal_trend(raw, "usd_cho_den_vcb_gap_pct")
     if cho_den:
         old, new, _ = cho_den
-        if new == old:
-            cho_den_text = f"Gap tỷ giá chợ đen so Vietcombank đi ngang ở {new:.2f}%"
-        else:
-            cho_den_stress = new > old
+        cho_den_stress = new >= 0.3  # dung CHINH nguong trong _FX_STRESS_THRESHOLDS
+        trend_word = "không đổi" if new == old else (f"từ {old:.2f}% lên {new:.2f}%" if new > old else f"từ {old:.2f}% về {new:.2f}%")
+        if cho_den_stress:
             cho_den_text = (
-                f"Gap tỷ giá chợ đen so Vietcombank {'NỚI RỘNG' if cho_den_stress else 'THU HẸP'} "
-                f"từ {old:.2f}% {'lên' if cho_den_stress else 'về'} {new:.2f}%"
+                f"Chợ đen ĐẮT HƠN Vietcombank {new:.2f}% (vượt ngưỡng cảnh báo đầu cơ 0.3%, {trend_word}) "
+                f"— có dấu hiệu nhu cầu USD ngoài hệ thống ngân hàng tăng."
             )
-        cho_den_text += f" trong {_MARKET_SIGNAL_TREND_N} kỳ gần nhất (ngưỡng cảnh báo đầu cơ tham khảo: ±0.3%)."
+        else:
+            cho_den_text = (
+                f"Chợ đen vẫn RẺ HƠN hoặc ngang Vietcombank ({new:.2f}%, {trend_word}) — CHƯA có dấu "
+                f"hiệu đầu cơ/nhu cầu USD ngoài hệ thống ngân hàng, áp lực từ kênh này còn thấp."
+            )
 
-    # --- Duong cong swap-implied (chenh lech lai suat VND-USD 4 ky han) ---
+    # --- Duong cong swap-implied --- SUA 2026-10-13 (user: "nó chỉ là yếu tố khuếch đại thôi...
+    # đánh giá swap âm là phải khi tỷ giá đang tăng và cán cân xấu đi... còn không thì chả vấn đề
+    # gì" — swap am KHONG phai 1 tin hieu doc lap ngang hang BOP/cho den, ma la YEU TO KHUECH DAI co
+    # dieu kien: chi dang lo ngai KHI da co ap luc that tu BOP/cho den (giu VND vua thiet lai vua lo
+    # mat gia kep). Neu BOP/cho den DEU on thi swap am rieng le khong dang ngai (chi la chenh lech
+    # lai suat thong thuong). Vi vay swap KHONG con la 1 "vote" ngang hang nua.
     TENORS = [("interbank_vnd_usd_gap_on", "qua đêm"), ("interbank_vnd_usd_gap_1w", "1 tuần"),
               ("interbank_vnd_usd_gap_2w", "2 tuần"), ("interbank_vnd_usd_gap_1m", "1 tháng")]
     latest_tenor_vals = []
@@ -4078,45 +4090,63 @@ def _build_bop_forecast_narrative(raw, bop_forecast):
         pts = [p for p in ind["series"] if p.get("value") is not None] if ind else []
         if pts:
             latest_tenor_vals.append((label, pts[-1]["value"]))
-    swap_curve_stress = None
+    swap_curve_negative_majority = None
     swap_text = "Chưa có dữ liệu chênh lệch lãi suất swap-implied gần đây."
     if latest_tenor_vals:
         n_neg = sum(1 for _, v in latest_tenor_vals if v < 0)
-        swap_curve_stress = n_neg >= len(latest_tenor_vals) / 2.0
+        swap_curve_negative_majority = n_neg >= len(latest_tenor_vals) / 2.0
         neg_labels = [lbl for lbl, v in latest_tenor_vals if v < 0]
         pos_labels = [lbl for lbl, v in latest_tenor_vals if v >= 0]
         on_start = _negative_streak_start(raw, "interbank_vnd_usd_gap_on")
         detail_vals = "; ".join(f"{lbl} {v:+.2f}" for lbl, v in latest_tenor_vals)
         if neg_labels and pos_labels:
             swap_text = (
-                f"Đường cong swap-implied ĐẢO CHIỀU: kỳ hạn {', '.join(neg_labels)} đang ÂM "
-                f"(VND rẻ hơn USD, bất lợi nắm giữ VND), riêng kỳ hạn {', '.join(pos_labels)} vẫn "
-                f"DƯƠNG — áp lực đang tập trung ở đầu ngắn ({detail_vals} điểm %)."
+                f"Đường cong ĐẢO CHIỀU: kỳ hạn {', '.join(neg_labels)} ÂM, riêng {', '.join(pos_labels)} "
+                f"vẫn DƯƠNG ({detail_vals} điểm %)."
             )
         elif neg_labels:
-            swap_text = f"Toàn bộ đường cong swap-implied đang ÂM ({detail_vals} điểm %) — bất lợi nắm giữ VND ở mọi kỳ hạn."
+            swap_text = f"Toàn bộ đường cong đang ÂM ({detail_vals} điểm %)."
         else:
-            swap_text = f"Toàn bộ đường cong swap-implied đang DƯƠNG ({detail_vals} điểm %) — thuận lợi nắm giữ VND."
+            swap_text = f"Toàn bộ đường cong đang DƯƠNG ({detail_vals} điểm %) — thuận lợi nắm giữ VND."
         if on_start:
             swap_text += f" Kỳ hạn qua đêm đã âm liên tục từ {on_start} tới nay."
+        swap_text += (
+            " Lưu ý: swap âm CHỈ là yếu tố KHUẾCH ĐẠI áp lực (giữ VND vừa chịu lãi thấp hơn vừa có "
+            "thể mất giá) — bản thân nó KHÔNG tạo áp lực nếu tỷ giá/cán cân đang ổn; chỉ đáng lo khi "
+            "đi kèm cán cân xấu đi hoặc chợ đen tăng."
+        )
 
-    # --- Muc do nghiem trong: bieu quyet da so 3 tin hieu (BOP, cho den, swap) — KHONG gop diem,
-    # dem so tin hieu dong huong voi "cang hon" trong so cac tin hieu CO huong ro ret.
-    votes = [ob_cang]
+    # --- Muc do nghiem trong: 2 TIN HIEU GOC (BOP, cho den - muc tuyet doi) bo phieu ngang nhau;
+    # duong cong swap am la YEU TO KHUECH DAI CO DIEU KIEN (chi nang muc do len 1 bac NEU da co it
+    # nhat 1 tin hieu goc xac nhan ap luc, KHONG tu no tao "rat cang"). Dung tinh than nguoi dung chi
+    # ra, khong con bieu quyet 3 tin hieu ngang hang nhu truoc.
+    base_votes = [ob_cang]
     if cho_den_stress is not None:
-        votes.append(cho_den_stress)
-    if swap_curve_stress is not None:
-        votes.append(swap_curve_stress)
-    stress_ratio = sum(votes) / len(votes)
-    if stress_ratio >= 0.99:
-        severity_label = "RẤT CĂNG — cần theo dõi sát"
-        severity_detail = "Cả BOP lẫn tín hiệu thị trường (chợ đen/swap) đều đồng loạt chỉ báo áp lực tăng."
-    elif stress_ratio >= 0.5:
-        severity_label = "CĂNG — cần thận trọng"
-        severity_detail = "Tín hiệu không hoàn toàn đồng nhất, một phần chỉ báo áp lực tăng."
+        base_votes.append(cho_den_stress)
+    base_count = sum(base_votes)
+    base_total = len(base_votes)
+    swap_amplify = bool(swap_curve_negative_majority)
+
+    if base_count == base_total and base_total >= 2:
+        severity_label = ("RẤT CĂNG — cần theo dõi sát" if swap_amplify else "CĂNG — cần thận trọng")
+        severity_detail = (
+            "BOP và tỷ giá chợ đen đều xác nhận áp lực; swap âm khuếch đại thêm rủi ro."
+            if swap_amplify else
+            "BOP và tỷ giá chợ đen đều xác nhận áp lực, dù swap chưa cho thấy khuếch đại thêm."
+        )
+    elif base_count >= 1:
+        severity_label = ("CĂNG — cần thận trọng" if swap_amplify else "Có áp lực nhưng vẫn trong tầm kiểm soát")
+        severity_detail = (
+            "Chỉ 1 phần tín hiệu gốc (BOP hoặc chợ đen) xác nhận áp lực; swap âm khiến cần thận trọng hơn."
+            if swap_amplify else
+            "Chỉ 1 phần tín hiệu gốc (BOP hoặc chợ đen) xác nhận áp lực, chưa đủ cơ sở lo ngại cao."
+        )
     else:
-        severity_label = "Có áp lực nhưng vẫn trong tầm kiểm soát"
-        severity_detail = "Phần lớn tín hiệu KHÔNG xác nhận áp lực tăng rõ rệt."
+        severity_label = "Có áp lực nhưng vẫn ổn"
+        severity_detail = (
+            "Cả BOP lẫn tỷ giá chợ đen đều KHÔNG xác nhận áp lực tăng — swap âm (nếu có) trong bối "
+            "cảnh này chỉ là chênh lệch lãi suất thông thường, chưa đáng ngại."
+        )
 
     # User (2026-10-13) nghi ngo so OB am qua lon: "có vấn đề gì về tính toán không khiến âm lớn
     # thế" — kiem tra lai KHONG phai loi tinh, nhung Loi & Sai sot (avgEo) thuong la THANH PHAN LON

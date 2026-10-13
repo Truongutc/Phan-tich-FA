@@ -1153,11 +1153,13 @@ function renderFxPressureSignalsChart(indicators) {
     const periods = obSeries.map(p => p.period);
     const obArr = obSeries.map(p => p.value);
 
-    // THEM 2026-10-12 (user: "xong dự báo cán cân vãng lai và dự báo cán cân tổng thể, và vẽ phần
-    // dự báo lên biểu đồ" — nối thêm 2 "cột ma" (nowcast quý vừa qua + dự báo xu hướng quý tới) vào
-    // CUỐI trục X, dùng 2 dataset bar riêng (chỉ 1 điểm khác null mỗi dataset) để tô màu/viền khác
-    // hẳn cột thật, không làm lẫn với dữ liệu chính thức NHNN. Xem _add_bop_nowcast_forecast trong
-    // template_vimo.py.
+    // THEM 2026-10-12, SUA 2026-10-13 (user: "cột nào là cột dự báo thì vẽ màu khác đi nhé, à mà
+    // tôi không thấy số cán cân Q2 và Q4 nhỉ" — phat hien BUG: 3 dataset 'bar' rieng (that/nowcast/
+    // dự báo) tren CUNG 1 truc 'y' khong set `stack` khien Chart.js TU DONG CHIA RONG MOI cot that
+    // lam 3 (grouped bar mac dinh), lam cot that bi thu hep con 1/3 be ngang o MOI quy (khong rieng
+    // gi Q2/Q4) - nhin giong nhu "mat cot" o nhung quy co gia tri nho. FIX: gop lai thanh 1 DATASET
+    // DUY NHAT, to mau TUNG O rieng theo index (that/nowcast/du bao mau khac han nhau) thay vi 3
+    // dataset chong nhau.
     const obNowcast = indicators['bop_overall_balance_nowcast'];
     const obForecast = indicators['bop_overall_balance_forecast'];
     const nowcastPt = obNowcast && obNowcast.series[0];
@@ -1165,8 +1167,18 @@ function renderFxPressureSignalsChart(indicators) {
     if (nowcastPt && !periods.includes(nowcastPt.period)) periods.push(nowcastPt.period);
     if (forecastPt && !periods.includes(forecastPt.period)) periods.push(forecastPt.period);
     while (obArr.length < periods.length) obArr.push(null);
-    const nowcastArr = periods.map(p => (nowcastPt && p === nowcastPt.period) ? nowcastPt.value : null);
-    const forecastArr = periods.map(p => (forecastPt && p === forecastPt.period) ? forecastPt.value : null);
+    if (nowcastPt) obArr[periods.indexOf(nowcastPt.period)] = nowcastPt.value;
+    if (forecastPt) obArr[periods.indexOf(forecastPt.period)] = forecastPt.value;
+    const _obCellKind = (i) => {
+        if (nowcastPt && periods[i] === nowcastPt.period) return 'nowcast';
+        if (forecastPt && periods[i] === forecastPt.period) return 'forecast';
+        return 'actual';
+    };
+    const OB_CELL_COLORS = {
+        actual: { pos: '#10b98180', neg: '#ef444480', posBorder: '#10b981', negBorder: '#ef4444' },
+        nowcast: { pos: '#60a5fa80', neg: '#f59e0b80', posBorder: '#60a5fa', negBorder: '#f59e0b' },
+        forecast: { pos: '#a78bfa80', neg: '#ec489980', posBorder: '#a78bfa', negBorder: '#ec4899' },
+    };
 
     // Quy đổi USD/VND tăng trưởng YoY + MỨC thực tế (theo THÁNG) về cuối mỗi quý (tháng 3/6/9/12)
     // để so cùng trục X với BOP (theo QUÝ) — chỉ để VẼ CẠNH NHAU, không tính toán gộp gì cả.
@@ -1190,22 +1202,18 @@ function renderFxPressureSignalsChart(indicators) {
         data: {
             labels: periods,
             datasets: [
-                { type: 'bar', label: 'Cán cân tổng thể (BOP, triệu USD)', data: obArr, yAxisID: 'y',
-                  backgroundColor: obArr.map(v => v >= 0 ? '#10b98180' : '#ef444480'),
-                  borderColor: obArr.map(v => v >= 0 ? '#10b981' : '#ef4444'), borderWidth: 1.5,
+                { type: 'bar', label: 'Cán cân tổng thể (xanh/đỏ=thật, xanh dương=nowcast, tím=dự báo)', data: obArr, yAxisID: 'y',
+                  backgroundColor: obArr.map((v, i) => {
+                      const c = OB_CELL_COLORS[_obCellKind(i)];
+                      return v >= 0 ? c.pos : c.neg;
+                  }),
+                  borderColor: obArr.map((v, i) => {
+                      const c = OB_CELL_COLORS[_obCellKind(i)];
+                      return v >= 0 ? c.posBorder : c.negBorder;
+                  }),
+                  borderWidth: 1.5,
+                  borderDash: (ctx) => _obCellKind(ctx.dataIndex) === 'forecast' ? [2, 3] : (_obCellKind(ctx.dataIndex) === 'nowcast' ? [4, 3] : []),
                   datalabels: { color: '#e5e9f0', font: { size: 9, weight: '700' }, anchor: 'end',
-                                align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
-                                formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
-                { type: 'bar', label: 'Cán cân tổng thể — Ước tính (nowcast, XNK+FDI theo tháng)', data: nowcastArr,
-                  yAxisID: 'y', backgroundColor: nowcastArr.map(v => v >= 0 ? '#10b98140' : '#ef444440'),
-                  borderColor: nowcastArr.map(v => v >= 0 ? '#10b981' : '#ef4444'), borderWidth: 1.5, borderDash: [4, 3],
-                  datalabels: { color: '#9aa5bd', font: { size: 9, weight: '700' }, anchor: 'end',
-                                align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
-                                formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
-                { type: 'bar', label: 'Cán cân tổng thể — Dự báo xu hướng (độ tin cậy thấp)', data: forecastArr,
-                  yAxisID: 'y', backgroundColor: forecastArr.map(v => v >= 0 ? '#10b98120' : '#ef444420'),
-                  borderColor: forecastArr.map(v => v >= 0 ? '#10b981' : '#ef4444'), borderWidth: 1.5, borderDash: [2, 3],
-                  datalabels: { color: '#6b7280', font: { size: 9, weight: '700' }, anchor: 'end',
                                 align: (ctx) => (ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start'),
                                 formatter: (v) => v.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) } },
                 { type: 'line', label: 'USD/VND tăng/giảm YoY tại cuối quý (%, thị trường thực)', data: usdvndArr,
