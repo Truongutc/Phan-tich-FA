@@ -3941,9 +3941,10 @@ def _add_bop_nowcast_forecast(raw, trends):
         "caNowcast": ca_nowcast, "caForecast": ca_forecast,
         "faNowcast": fa_nowcast, "faForecast": fa_forecast,
         "obNowcast": ob_nowcast, "obForecast": ob_forecast,
-        "goodsNetLast": goods_net_last, "goodsNetNowcast": goods_net_nowcast,
-        "fdiFlowLast": fdi_flow_last, "fdiFlowNowcast": fdi_flow_nowcast,
+        "goodsNetLast": goods_net_last, "goodsNetNowcast": goods_net_nowcast, "goodsNetForecast": goods_net_forecast,
+        "fdiFlowLast": fdi_flow_last, "fdiFlowNowcast": fdi_flow_nowcast, "fdiFlowForecast": fdi_flow_forecast,
         "portfolioProxyLast": portfolio_proxy_last, "portfolioProxyNowcast": portfolio_proxy_nowcast,
+        "portfolioProxyForecast": portfolio_proxy_forecast, "avgEo": avg_eo,
     }
 
 
@@ -3980,103 +3981,176 @@ def _market_signal_trend(raw, key, n=_MARKET_SIGNAL_TREND_N):
     return pts[0]["value"], pts[-1]["value"], ind["label"]
 
 
+def _negative_streak_start(raw, key):
+    """Tim ngay BAT DAU chuoi am LIEN TUC gan nhat (tinh tu diem cuoi cung lui ve) cua 1 indicator —
+    dung de tra loi "từ ngày/quý nào là âm liên tục tới giờ". Tra None neu diem moi nhat KHONG am
+    hoac thieu du lieu."""
+    ind = raw.get(key)
+    if not ind or not ind["series"]:
+        return None
+    pts = [p for p in ind["series"] if p.get("value") is not None]
+    if not pts or pts[-1]["value"] >= 0:
+        return None
+    start = pts[-1]["period"]
+    for i in range(len(pts) - 2, -1, -1):
+        if pts[i]["value"] < 0:
+            start = pts[i]["period"]
+        else:
+            break
+    return start
+
+
 def _build_bop_forecast_narrative(raw, bop_forecast):
-    """Ghep cau RULE-BASED (khong AI viet van) tu dict tra ve cua _add_bop_nowcast_forecast — user
-    2026-10-12: "ở dưới phần đánh giá tổng thể sẽ thêm dòng dự báo áp lực trong quý tới sẽ căng hơn
-    hay giảm đi và vì sao, do các yếu tố nào", sau đó "kết hợp nhìn chênh lệch tỷ giá chợ đen và
-    NHTM, thêm cả phần đánh giá chênh lệch swap lãi suất" — đối chiếu kết luận từ BOP (nowcast/dự
-    báo CA+FA+EO) với 2 tín hiệu thị trường ĐỘC LẬP (gap chợ đen-NHTM, chênh lệch lãi suất swap-
-    implied), KHÔNG gộp thành 1 điểm số. Tra None neu khong co nowcast (thieu du lieu thang)."""
+    """Tra dict {headline, severityLabel, driver, choDen, swap, detail} RULE-BASED (khong AI viet
+    van) — user 2026-10-12/13 yeu cau VIET LAI theo huong "dễ đọc hơn, nêu rõ dự báo quý tới áp lực
+    đến từ đâu, chênh lệch chợ đen/swap ra sao, kết luận ở mức độ nào (rất căng/căng/ổn)" thay vi 1
+    doan van day dac thuat ngu phuong phap luan nhu truoc. Tra None neu khong co nowcast."""
     if not bop_forecast:
         return None
     f = bop_forecast
+    ob_cang = f["obForecast"] < f["obNowcast"]
+    ob_dir = "CĂNG HƠN" if ob_cang else "GIẢM BỚT"
 
-    def _balance_trend_phrase(old, new):
-        if old < 0 and new < 0:
-            return "thu hẹp thâm hụt" if new > old else "mở rộng thâm hụt"
-        if old >= 0 and new >= 0:
-            return "mở rộng thặng dư" if new > old else "thu hẹp thặng dư"
-        return "chuyển từ thâm hụt sang thặng dư" if old < 0 else "chuyển từ thặng dư sang thâm hụt"
-
-    goods_dir = _balance_trend_phrase(f["goodsNetLast"], f["goodsNetNowcast"])
-    fdi_dir = "tăng tốc" if f["fdiFlowNowcast"] > f["fdiFlowLast"] else "giảm tốc"
-    portfolio_dir = _balance_trend_phrase(f["portfolioProxyLast"], f["portfolioProxyNowcast"])
-    ca_dir = "cải thiện" if f["caForecast"] > f["caNowcast"] else "xấu đi thêm"
-    fa_dir = "cải thiện" if f["faForecast"] > f["faNowcast"] else "xấu đi thêm"
-    ob_dir = "GIẢM BỚT" if f["obForecast"] >= f["obNowcast"] else "CĂNG HƠN"
-    diverge = ""
-    if (f["caForecast"] > f["caNowcast"]) != (f["obForecast"] > f["obNowcast"]):
-        diverge = (
-            " LƯU Ý: Cán cân vãng lai và Cán cân tổng thể dự báo LỆCH HƯỚNG nhau — tương tự mẫu "
-            "hình đã quan sát ở các quý trước (dòng vốn/lỗi & sai sót có thể bù đắp hoàn toàn phần "
-            "vãng lai xấu đi, hoặc ngược lại)."
-        )
-
-    bop_part = (
-        f"Nowcast {f['nowcastQ']} (hàng hóa + FDI giải ngân theo tháng, khối ngoại mua/bán ròng "
-        f"VNINDEX theo ngày — PROXY đầu tư gián tiếp, phần còn lại dùng trung bình "
-        f"{_BOP_CARRYFORWARD_WINDOW} quý gần nhất): Cán cân vãng lai ước {f['caNowcast']:,.0f}, "
-        f"Cán cân tài chính ước {f['faNowcast']:,.0f}, Cán cân tổng thể ước {f['obNowcast']:,.0f} "
-        f"triệu USD. "
-        f"Cán cân hàng hóa: {f['latestQ']} {f['goodsNetLast']:,.0f} → {f['nowcastQ']} ước "
-        f"{f['goodsNetNowcast']:,.0f} triệu USD ({goods_dir}). "
-        f"FDI giải ngân theo quý: {f['latestQ']} {f['fdiFlowLast']/1000:,.2f} → {f['nowcastQ']} ước "
-        f"{f['fdiFlowNowcast']/1000:,.2f} tỷ USD ({fdi_dir}). "
-        f"Khối ngoại VNINDEX theo quý: {f['latestQ']} {f['portfolioProxyLast']:,.0f} → "
-        f"{f['nowcastQ']} ước {f['portfolioProxyNowcast']:,.0f} triệu USD ({portfolio_dir}). "
-        f"Dự báo {f['forecastQ']} — SỐ QUAN TRỌNG NHẤT vì {f['nowcastQ']} sắp được NHNN công bố "
-        f"chính thức (ngoại suy riêng từng đại lượng theo xu hướng QoQ trung bình "
-        f"{_BOP_FORECAST_MOMENTUM_WINDOW} quý gần nhất, ĐỘ TIN CẬY THẤP): Cán cân tổng thể dự báo "
-        f"{f['obForecast']:,.0f} triệu USD; Cán cân vãng lai dự báo {f['caForecast']:,.0f} triệu USD "
-        f"({ca_dir}); Cán cân tài chính dự báo {f['faForecast']:,.0f} triệu USD ({fa_dir}). "
-        f"Kết luận BOP: Áp lực tỷ giá quý tới (dựa trên Cán cân tổng thể — tín hiệu NHNN thực sự "
-        f"phải xử lý bằng dự trữ) nhiều khả năng {ob_dir}.{diverge}"
+    headline = (
+        f"Áp lực tỷ giá quý tới ({f['forecastQ']}) nhiều khả năng {ob_dir} so với quý này "
+        f"({f['nowcastQ']}, ước {f['obNowcast']:,.0f} → dự báo {f['obForecast']:,.0f} triệu USD)."
     )
 
-    # Doi chieu voi 2 tin hieu THI TRUONG doc lap (user: "kết hợp nhìn chênh lệch tỷ giá chợ đen và
-    # NHTM, thêm cả phần đánh giá chênh lệch swap lãi suất") — KHONG gop diem, chi neu huong rieng
-    # roi so sanh co DONG THUAN hay khong voi ket luan tu BOP o tren.
-    market_parts = []
-    agree_flags = []
+    # --- Nguyen nhan chinh: CA va FA cong CHINH XAC bang bien dong OB (EO trung binh khong doi giua
+    # nowcast/forecast nen tu trieu tieu) - so sanh de tim thanh phan chi phoi.
+    delta_ca = f["caForecast"] - f["caNowcast"]
+    delta_fa = f["faForecast"] - f["faNowcast"]
+    if abs(delta_ca) >= abs(delta_fa):
+        primary_label, primary_delta = "Cán cân vãng lai", delta_ca
+        other_label, other_delta = "Cán cân tài chính", delta_fa
+        sub_detail = (
+            f"do XNK ròng {'tiếp tục suy yếu' if f['goodsNetForecast'] < f['goodsNetNowcast'] else 'cải thiện'} "
+            f"(quý này ước {f['goodsNetNowcast']:,.0f} → quý tới dự báo {f['goodsNetForecast']:,.0f} triệu USD)"
+        )
+    else:
+        primary_label, primary_delta = "Cán cân tài chính", delta_fa
+        other_label, other_delta = "Cán cân vãng lai", delta_ca
+        delta_fdi = f["fdiFlowForecast"] - f["fdiFlowNowcast"]
+        delta_portfolio = f["portfolioProxyForecast"] - f["portfolioProxyNowcast"]
+        if abs(delta_fdi) >= abs(delta_portfolio):
+            sub_detail = (
+                f"chủ yếu do FDI giải ngân {'chậm lại' if delta_fdi < 0 else 'tăng tốc'} (quý này "
+                f"{f['fdiFlowNowcast']/1000:,.2f} → quý tới dự báo {f['fdiFlowForecast']/1000:,.2f} tỷ USD)"
+            )
+        else:
+            sub_detail = (
+                f"chủ yếu do dòng vốn gián tiếp (khối ngoại mua/bán ròng) "
+                f"{'yếu đi' if delta_portfolio < 0 else 'mạnh lên'} (quý này "
+                f"{f['portfolioProxyNowcast']:,.0f} → quý tới dự báo {f['portfolioProxyForecast']:,.0f} triệu USD)"
+            )
+    primary_verb = "xấu đi" if primary_delta < 0 else "cải thiện"
+    other_verb = "cũng xấu đi" if other_delta < 0 else "cải thiện"
+    same_dir = (primary_delta < 0) == (other_delta < 0)
+    driver = f"{primary_label} dự báo {primary_verb} là yếu tố chính, {sub_detail}. "
+    driver += (
+        f"{other_label} dự báo cùng chiều ({other_verb}), khiến xu hướng rõ nét hơn."
+        if same_dir else
+        f"{other_label} dự báo ngược chiều ({other_verb}) nhưng không đủ bù đắp."
+    )
+
+    # --- Gap ty gia cho den vs NHTM ---
+    cho_den_stress = None
+    cho_den_text = "Chưa có dữ liệu gap tỷ giá chợ đen gần đây."
     cho_den = _market_signal_trend(raw, "usd_cho_den_vcb_gap_pct")
     if cho_den:
-        old, new, label = cho_den
-        cho_den_cang = new > old  # gap no rong/chuyen duong = cang hon
-        cho_den_word = "không đổi" if new == old else ("nới rộng" if cho_den_cang else "thu hẹp")
-        market_parts.append(f"{label}: {old:.2f}% → {new:.2f}% ({cho_den_word})")
-        if new != old:
-            agree_flags.append(cho_den_cang == (ob_dir == "CĂNG HƠN"))
-    swap = _market_signal_trend(raw, "interbank_vnd_usd_gap_on")
-    if swap:
-        old, new, label = swap
-        swap_cang = new < old  # VND re hon USD hon truoc = ap luc tang
-        swap_word = "không đổi" if new == old else ("giảm (bất lợi VND hơn)" if swap_cang else "tăng (thuận lợi VND hơn)")
-        market_parts.append(f"{label}: {old:.2f} → {new:.2f} điểm % ({swap_word})")
-        if new != old:
-            agree_flags.append(swap_cang == (ob_dir == "CĂNG HƠN"))
-
-    market_narrative = ""
-    if market_parts:
-        if not agree_flags:
-            verdict = "chưa đổi hướng rõ rệt trong giai đoạn gần đây, chưa đối chiếu được với kết luận BOP."
-        elif all(agree_flags):
-            verdict = "ĐỒNG THUẬN với kết luận BOP ở trên — mức độ tin cậy cao hơn."
-        elif not any(agree_flags):
-            verdict = "NGƯỢC HƯỚNG với kết luận BOP ở trên — cần thận trọng, có thể thị trường đã phản ánh trước hoặc BOP có độ trễ."
+        old, new, _ = cho_den
+        if new == old:
+            cho_den_text = f"Gap tỷ giá chợ đen so Vietcombank đi ngang ở {new:.2f}%"
         else:
-            verdict = "lẫn lộn (1 tín hiệu đồng thuận, 1 tín hiệu ngược) với kết luận BOP."
-        market_narrative = (
-            f" Tín hiệu thị trường (độc lập, không gộp điểm, {_MARKET_SIGNAL_TREND_N} kỳ gần "
-            f"nhất): {'; '.join(market_parts)}. {verdict}"
-        )
-    return bop_part + market_narrative
+            cho_den_stress = new > old
+            cho_den_text = (
+                f"Gap tỷ giá chợ đen so Vietcombank {'NỚI RỘNG' if cho_den_stress else 'THU HẸP'} "
+                f"từ {old:.2f}% {'lên' if cho_den_stress else 'về'} {new:.2f}%"
+            )
+        cho_den_text += f" trong {_MARKET_SIGNAL_TREND_N} kỳ gần nhất (ngưỡng cảnh báo đầu cơ tham khảo: ±0.3%)."
+
+    # --- Duong cong swap-implied (chenh lech lai suat VND-USD 4 ky han) ---
+    TENORS = [("interbank_vnd_usd_gap_on", "qua đêm"), ("interbank_vnd_usd_gap_1w", "1 tuần"),
+              ("interbank_vnd_usd_gap_2w", "2 tuần"), ("interbank_vnd_usd_gap_1m", "1 tháng")]
+    latest_tenor_vals = []
+    for key, label in TENORS:
+        ind = raw.get(key)
+        pts = [p for p in ind["series"] if p.get("value") is not None] if ind else []
+        if pts:
+            latest_tenor_vals.append((label, pts[-1]["value"]))
+    swap_curve_stress = None
+    swap_text = "Chưa có dữ liệu chênh lệch lãi suất swap-implied gần đây."
+    if latest_tenor_vals:
+        n_neg = sum(1 for _, v in latest_tenor_vals if v < 0)
+        swap_curve_stress = n_neg >= len(latest_tenor_vals) / 2.0
+        neg_labels = [lbl for lbl, v in latest_tenor_vals if v < 0]
+        pos_labels = [lbl for lbl, v in latest_tenor_vals if v >= 0]
+        on_start = _negative_streak_start(raw, "interbank_vnd_usd_gap_on")
+        detail_vals = "; ".join(f"{lbl} {v:+.2f}" for lbl, v in latest_tenor_vals)
+        if neg_labels and pos_labels:
+            swap_text = (
+                f"Đường cong swap-implied ĐẢO CHIỀU: kỳ hạn {', '.join(neg_labels)} đang ÂM "
+                f"(VND rẻ hơn USD, bất lợi nắm giữ VND), riêng kỳ hạn {', '.join(pos_labels)} vẫn "
+                f"DƯƠNG — áp lực đang tập trung ở đầu ngắn ({detail_vals} điểm %)."
+            )
+        elif neg_labels:
+            swap_text = f"Toàn bộ đường cong swap-implied đang ÂM ({detail_vals} điểm %) — bất lợi nắm giữ VND ở mọi kỳ hạn."
+        else:
+            swap_text = f"Toàn bộ đường cong swap-implied đang DƯƠNG ({detail_vals} điểm %) — thuận lợi nắm giữ VND."
+        if on_start:
+            swap_text += f" Kỳ hạn qua đêm đã âm liên tục từ {on_start} tới nay."
+
+    # --- Muc do nghiem trong: bieu quyet da so 3 tin hieu (BOP, cho den, swap) — KHONG gop diem,
+    # dem so tin hieu dong huong voi "cang hon" trong so cac tin hieu CO huong ro ret.
+    votes = [ob_cang]
+    if cho_den_stress is not None:
+        votes.append(cho_den_stress)
+    if swap_curve_stress is not None:
+        votes.append(swap_curve_stress)
+    stress_ratio = sum(votes) / len(votes)
+    if stress_ratio >= 0.99:
+        severity_label = "RẤT CĂNG — cần theo dõi sát"
+        severity_detail = "Cả BOP lẫn tín hiệu thị trường (chợ đen/swap) đều đồng loạt chỉ báo áp lực tăng."
+    elif stress_ratio >= 0.5:
+        severity_label = "CĂNG — cần thận trọng"
+        severity_detail = "Tín hiệu không hoàn toàn đồng nhất, một phần chỉ báo áp lực tăng."
+    else:
+        severity_label = "Có áp lực nhưng vẫn trong tầm kiểm soát"
+        severity_detail = "Phần lớn tín hiệu KHÔNG xác nhận áp lực tăng rõ rệt."
+
+    # User (2026-10-13) nghi ngo so OB am qua lon: "có vấn đề gì về tính toán không khiến âm lớn
+    # thế" — kiem tra lai KHONG phai loi tinh, nhung Loi & Sai sot (avgEo) thuong la THANH PHAN LON
+    # NHAT va IT CHAC CHAN NHAT trong OB (lich su dao dong -12.375 den +9.283) — neu rieng CA/FA thi
+    # chua am nhieu nhu vay. Ghi minh bach ty trong dong gop cua tung phan de nguoi doc tu danh gia,
+    # khong de con so OB tuyet doi gay hieu lam.
+    detail = (
+        f"[Chi tiết số liệu] OB nowcast {f['nowcastQ']} = CA ({f['caNowcast']:,.0f}) + FA "
+        f"({f['faNowcast']:,.0f}) + Lỗi&Sai sót TB ({f['avgEo']:,.0f}) = {f['obNowcast']:,.0f} triệu "
+        f"USD. LƯU Ý: Lỗi & Sai sót là thành phần ÍT CHẮC CHẮN NHẤT (lịch sử dao động từ -12.375 đến "
+        f"+9.283 triệu USD/quý) — nếu quý tới NHNN công bố khác nhiều so với mức trung bình dùng ở "
+        f"đây, số Cán cân tổng thể thực tế có thể lệch đáng kể so với ước tính. Dự báo {f['forecastQ']}: "
+        f"CA {f['caForecast']:,.0f}, FA {f['faForecast']:,.0f}, OB {f['obForecast']:,.0f} triệu USD. "
+        f"ĐỘ TIN CẬY THẤP (ngoại suy xu hướng đơn giản, không phải mô hình kinh tế lượng) — "
+        f"{f['nowcastQ']} sắp được NHNN công bố chính thức nên số {f['forecastQ']} mới là thông tin "
+        f"dự báo có giá trị."
+    )
+    return {
+        "headline": headline,
+        "severityLabel": severity_label,
+        "severityDetail": severity_detail,
+        "driver": driver,
+        "choDen": cho_den_text,
+        "swap": swap_text,
+        "detail": detail,
+    }
 
 
 def _build_fx_stress_matrix(raw, bop_forecast=None):
     """Tra dict {asOf, tier1: {...}, tier2: {...}, matrix: 'cao_cao'|'cao_thap'|'thap_cao'|
-    'thap_thap', narrative: str, forecastNarrative: str|None} hoac None neu thieu du lieu bat
-    buoc. Phai sinh tinh toan, KHONG luu vao vimo_raw.json — chi 1 snapshot KY GAN NHAT (khac cac
-    chi bao khac co ca chuoi thoi gian), vi day la cong cu CHAN DOAN HIEN TRANG, khong phai 1 chi
+    'thap_thap', narrative: str, forecastNarrative: dict|None (xem _build_bop_forecast_narrative)}
+    hoac None neu thieu du lieu bat buoc. Phai sinh tinh toan, KHONG luu vao vimo_raw.json — chi 1
+    snapshot KY GAN NHAT (khac cac chi bao khac co ca chuoi thoi gian), vi day la cong cu CHAN DOAN
+    HIEN TRANG, khong phai 1 chi
     bao de ve chart theo quy."""
     tier1_items = []
     for key, (threshold, mode) in _FX_STRESS_THRESHOLDS.items():

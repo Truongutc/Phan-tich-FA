@@ -779,14 +779,27 @@ function renderFxStressMatrix(m) {
 
     document.getElementById('fxm-narrative').innerHTML = `📍 <b>Kỳ gần nhất: ${m.asOf}</b> — ${m.narrative.split('Kết luận:')[0]}<br><b>Kết luận: ${m.narrative.split('Kết luận:')[1]}</b>`;
 
-    // THEM 2026-10-12 (user: "ở dưới phần đánh giá tổng thể sẽ thêm dòng dự báo áp lực trong quý
-    // tới sẽ căng hơn hay giảm đi và vì sao" — xem _build_bop_forecast_narrative trong
-    // template_vimo.py. Co the null neu chua du du lieu thang de nowcast.
+    // THEM 2026-10-12, VIET LAI 2026-10-13 (user: "tôi phải đọc rất kĩ thì mới thấy dòng dự báo nó
+    // nằm ở đâu, và cũng chả hiểu gì" — tach thanh cac dong rieng co nhan ro thay vi 1 doan van dac
+    // thuat ngu. Xem _build_bop_forecast_narrative trong template_vimo.py — gio tra VE DICT co cau
+    // truc {headline, severityLabel, severityDetail, driver, choDen, swap, detail} thay vi string.
     const fcEl = document.getElementById('fxm-forecast-narrative');
     if (fcEl) {
-        if (m.forecastNarrative) {
+        const fc = m.forecastNarrative;
+        if (fc) {
             fcEl.style.display = '';
-            fcEl.innerHTML = `🔮 <b>Dự báo quý tới:</b> ${m.forecastNarrative}`;
+            const sev = fc.severityLabel.startsWith('RẤT CĂNG') ? { bg: 'rgba(239,68,68,0.15)', color: '#ef4444' }
+                : fc.severityLabel.startsWith('CĂNG') ? { bg: 'rgba(245,158,11,0.15)', color: '#f59e0b' }
+                : { bg: 'rgba(16,185,129,0.15)', color: '#10b981' };
+            fcEl.innerHTML = `
+                <div style="font-size:1.05em;margin-bottom:8px">🔮 <b>${fc.headline}</b></div>
+                <div style="display:inline-block;padding:3px 10px;border-radius:12px;font-weight:700;font-size:0.85em;background:${sev.bg};color:${sev.color}">${fc.severityLabel}</div>
+                <div style="font-size:0.82em;color:#9aa5bd;margin-top:4px;margin-bottom:10px">${fc.severityDetail}</div>
+                <div style="margin-bottom:6px">📊 <b>Nguyên nhân chính:</b> ${fc.driver}</div>
+                <div style="margin-bottom:6px">💵 <b>Chợ đen vs NHTM:</b> ${fc.choDen}</div>
+                <div style="margin-bottom:6px">🔄 <b>Swap lãi suất:</b> ${fc.swap}</div>
+                <div style="margin-top:8px;font-size:0.78em;color:#6b7280">${fc.detail}</div>
+            `;
         } else {
             fcEl.style.display = 'none';
         }
