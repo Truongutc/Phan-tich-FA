@@ -263,6 +263,46 @@ def fetch_fii_net_flow():
         return None, None, None
 
 
+# THEM 2026-10-12 (user chỉ ra "tìm thêm nguồn khác như vietcap là có đấy" + ảnh chụp trang
+# trading.vietcap.com.vn/iq/market, mục "Nước Ngoài" — SAU KHI fii_net_flow_hose (cafef.vn) bị phát
+# hiện quá thưa/ngắn để hiệu chỉnh với BOP đầu tư gián tiếp). API market-indices/history của
+# Vietcap IQ (xem .agents/skills/giaodichvietcap/SKILL.md) trả field "foreignNetValueTotal" (VND,
+# TOÀN SÀN HOSE, gồm cả ETF) theo NGÀY, đủ từ 2020-01-02 tới nay — đã VERIFY bằng cách quy đổi tổng
+# theo quý sang USD (qua tỷ giá bình quân tháng) rồi so với bop_sbv_portfolio_liabilities_bop: khớp
+# dấu 6/6 quý gần nhất (2025-Q1 tới 2026-Q2), sai số trung bình gần như 0 (residual trung bình chỉ
+# +2.45 triệu USD trên quy mô ~1.000-2.000 triệu USD/quý) — đủ tin cậy làm proxy nowcast/dự báo cho
+# dòng "Đầu tư gián tiếp vào Việt Nam" (KHÔNG PHẢI số BOP chính xác, vì BOP còn gồm cả trái phiếu/
+# UPCOM/chưa niêm yết mà API này không có).
+def fetch_vietcap_vnindex_foreign_flow(from_date="2020-01-01", to_date=None):
+    """trading.vietcap.com.vn/api/iq-insight-service/v1/market-indices/history — "Giá trị giao
+    dịch ròng khối ngoại" (foreignNetValueTotal, VND, dương = mua ròng/dòng vốn vào, âm = bán ròng/
+    dòng vốn ra) theo NGÀY cho VNINDEX (HOSE), 1 lệnh gọi duy nhất với size đủ lớn (đã verify size=
+    3000 trả hết 1688 phiên từ 2020-01-02 tới nay, KHÔNG cần phân trang).
+    Trả {date_iso ('YYYY-MM-DD'): value_vnd} hoặc {} nếu lỗi."""
+    if to_date is None:
+        to_date = datetime.date.today().isoformat()
+    try:
+        url = "https://trading.vietcap.com.vn/api/iq-insight-service/v1/market-indices/history"
+        params = {"index": "VNINDEX", "page": 0, "size": 3000, "fromDate": from_date, "toDate": to_date}
+        headers = {"User-Agent": UA, "Accept": "application/json, text/plain, */*",
+                   "Referer": "https://trading.vietcap.com.vn/"}
+        r = requests.get(url, params=params, headers=headers, timeout=30)
+        r.raise_for_status()
+        j = r.json()
+        if not j.get("successful"):
+            return {}
+        content = j.get("data", {}).get("content", [])
+        out = {}
+        for row in content:
+            d, v = row.get("tradingDate"), row.get("foreignNetValueTotal")
+            if d and v is not None:
+                out[d] = float(v)
+        return out
+    except Exception as e:
+        print(f"  [WARN] Vietcap khối ngoại VNINDEX thất bại: {e}")
+        return {}
+
+
 VNINDEX_NONVIN_URL = ("https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/"
                        "Output/finance/VNINDEX_NONVIN.json")
 
@@ -3187,6 +3227,31 @@ def update_vimo_raw():
     if net_ty_vnd is not None:
         _append_point(raw, "fii_net_flow_hose", date_iso, net_ty_vnd, src)
         print(f"  -> {date_iso}: {net_ty_vnd:+.2f} tỷ VND ({'mua ròng' if net_ty_vnd > 0 else 'bán ròng'})")
+
+    print("[Vietcap IQ — giá trị giao dịch ròng khối ngoại VNINDEX (theo ngày, đủ từ 2020)]")
+    if "vnindex_foreign_net_value" not in raw:
+        raw["vnindex_foreign_net_value"] = {
+            "group": "external", "label": "Khối ngoại mua/bán ròng VNINDEX (Vietcap IQ)", "unit": "tỷ VND",
+            "good_direction": "higher", "auto_source": "vietcap",
+            "note": ("trading.vietcap.com.vn, API market-indices/history, field foreignNetValueTotal "
+                     "— TOÀN SÀN HOSE (gồm cả ETF). Dương = mua ròng (dòng vốn vào), âm = bán ròng "
+                     "(dòng vốn ra). Dùng làm PROXY cho dòng 'Đầu tư gián tiếp vào Việt Nam' trong BOP "
+                     "(bop_sbv_portfolio_liabilities_bop) khi nowcast/dự báo quý — đã verify khớp dấu "
+                     "6/6 quý gần nhất, sai số trung bình gần 0 (xem fetch_vietcap_vnindex_foreign_flow)."
+                     " KHÔNG PHẢI số BOP chính xác vì chưa gồm trái phiếu/UPCOM/chưa niêm yết."),
+            "series": [],
+        }
+    _existing_vnidx_periods = {p["period"] for p in raw["vnindex_foreign_net_value"]["series"]}
+    _vnidx_from = max(_existing_vnidx_periods) if _existing_vnidx_periods else "2020-01-01"
+    vnidx_pts = fetch_vietcap_vnindex_foreign_flow(from_date=_vnidx_from)
+    n_new_vnidx = 0
+    for d, v_vnd in vnidx_pts.items():
+        if d in _existing_vnidx_periods:
+            continue
+        _merge_point_anywhere(raw, "vnindex_foreign_net_value", d, round(v_vnd / 1e9, 2),
+                               "https://trading.vietcap.com.vn/iq/market")
+        n_new_vnidx += 1
+    print(f"  -> {n_new_vnidx} phiên mới (tổng {len(raw['vnindex_foreign_net_value']['series'])} phiên)")
 
     print("[VN-Index P/E & P/B — ƯU TIÊN ex-VIN (loại VIC/VHM/VRE/VPL, ít méo mó hơn headline)]")
     nonvin = fetch_vnindex_nonvin_data()

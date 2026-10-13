@@ -3654,6 +3654,37 @@ def _quarter_months(period):
     return [f"{year}-{m:02d}" for m in range(start, start + 3)]
 
 
+# fdi_disbursed la LUY KE TU DAU NAM (reset ve 0 moi thang 1) - cac nhan "YYYY-Q1"/"YYYY-H1"/
+# "YYYY-9M"/"YYYY-FY" (xem fetch_macro_data.py) DUNG LA cac moc cuoi quy sach nhat (het quy 1/2/3/4
+# trong nam), uu tien doc truoc khi fallback ve nhan thang 'YYYY-MM' cuoi quy.
+_FDI_QUARTER_END_LABEL = {1: "Q1", 2: "H1", 3: "9M", 4: "FY"}
+
+
+def _fdi_cum_at_quarter_end(fdi_by_m, period):
+    """Luy ke FDI giai ngan (ty USD) tai CUOI quy 'period', uu tien nhan quy sach, fallback nhan
+    thang cuoi quy neu khong co."""
+    year, q = period.split("-Q")
+    label = f"{year}-{_FDI_QUARTER_END_LABEL[int(q)]}"
+    if label in fdi_by_m:
+        return fdi_by_m[label]
+    return fdi_by_m.get(_quarter_months(period)[-1], fdi_by_m.get(period))
+
+
+def _fdi_quarter_flow(fdi_by_m, period):
+    """FDI giai ngan RONG trong quy 'period' (trieu USD) = luy ke cuoi quy nay - luy ke cuoi quy
+    truoc CUNG NAM (rieng Q1 = luy ke cuoi Q1, vi luy ke reset ve 0 dau nam). None neu thieu diem."""
+    year, q = period.split("-Q")
+    cum = _fdi_cum_at_quarter_end(fdi_by_m, period)
+    if cum is None:
+        return None
+    if q == "1":
+        return cum * 1000.0
+    prev_cum = _fdi_cum_at_quarter_end(fdi_by_m, f"{year}-Q{int(q) - 1}")
+    if prev_cum is None:
+        return None
+    return (cum - prev_cum) * 1000.0
+
+
 _BOP_FORECAST_MOMENTUM_WINDOW = 8
 # SUA 2026-10-12 (user phát hiện: "thực tế vn đã xuất siêu trở lại từ tháng 9 rồi thì sao lại dự
 # cán cân vãng lai q3 q4 cũng âm nhiều thế" + "dự cán cân tổng thể Q3 dương mạnh thế" — kiểm tra lại
@@ -3673,44 +3704,59 @@ _BOP_CARRYFORWARD_WINDOW = 4
 # trong khi XNK hải quan + FDI giải ngân đã có theo THÁNG, đủ để NOWCAST quý kế tiếp quý chính thức
 # mới nhất; sau đó DỰ BÁO thêm 1 quý nữa bằng ngoại suy xu hướng.
 def _add_bop_nowcast_forecast(raw, trends):
-    """Nowcast quý BOP mới nhất CHƯA được NHNN công bố (dùng export_monthly_total/import_monthly_
-    total — hải quan theo tháng — và fdi_disbursed — FDI giải ngân lũy kế theo tháng — là 2 nguồn
-    THÁNG duy nhất sẵn có), rồi DỰ BÁO thêm 1 quý tiếp theo bằng ngoại suy xu hướng QoQ đơn giản.
-    Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json — tính lại từ đầu mỗi lần chạy.
+    """Nowcast quý BOP mới nhất CHƯA được NHNN công bố, rồi DỰ BÁO thêm 1 quý tiếp theo — ghép TỪNG
+    DÒNG BOP từ đại lượng có nguồn tần suất cao nhất tương ứng (XNK hải quan THEO THÁNG, FDI giải
+    ngân lũy kế THEO THÁNG, khối ngoại mua/bán ròng VNINDEX THEO NGÀY), phần còn lại dùng TRUNG BÌNH
+    _BOP_CARRYFORWARD_WINDOW quý gần nhất. SỬA 2026-10-12 theo 3 tin nhắn liên tiếp của người dùng:
+    (1) "cán cân vãng lai... dịch vụ thì trung bình theo các quý trước... chỉ XNK ròng có số tháng
+    thì tính ra của quý này dễ" — CA_forecast cũng phải PHÂN RÃ giống CA_nowcast (ngoại suy riêng
+    XNK ròng, KHÔNG ngoại suy mù cả chuỗi CA).
+    (2) "FDI giải ngân tháng tính được cho quý; đầu tư gián tiếp lấy ở khối ngoại mua/bán ròng
+    trong quý trên thị trường; vay nợ nước ngoài biến thiên ít thì tạm lấy theo số quý trước" —
+    dùng vnindex_foreign_net_value (Vietcap IQ, xem fetch_vietcap_vnindex_foreign_flow) làm proxy
+    đầu tư gián tiếp (đã verify khớp dấu 6/6 quý gần nhất với bop_sbv_portfolio_liabilities_bop,
+    sai số trung bình gần 0); vay nợ nước ngoài CARRY-FORWARD ĐÚNG 1 quý liền trước (không trung
+    bình, theo đúng ý "biến thiên ít... lấy theo số quý trước").
+    (3) "dự được 2 cái cán cân vãng lai và cán cân vốn thì lấy cái đó dự cán cân tổng thể" —
+    OB = CA + FA + avg(Lỗi & Sai sót) thay vì công thức driver/residual gộp trước đó — đúng
+    ĐỊNH NGHĨA KẾ TOÁN BOP (CA+FA+EO=OB), không phải 1 công thức tắt riêng cho OB nữa.
 
-    NOWCAST cán cân vãng lai (CA): thay ĐÚNG phần hàng hóa bằng số XNK THẬT của quý mới; phần phi
-    hàng hóa (dịch vụ/thu nhập đầu tư/chuyển giao vãng lai — không có nguồn tháng) dùng TRUNG BÌNH
-    _BOP_CARRYFORWARD_WINDOW quý gần nhất (KHÔNG dùng đúng 1 quý liền trước — dòng thu nhập đầu tư
-    đặc biệt có thể dị thường do thời điểm chi trả lợi nhuận FDI lệch quý giữa các năm):
-        CA_nowcast = avg(non_goods_net, N quý gần nhất) + goods_net(quý mới, THẬT)
+    CA = goods_net (THẬT theo tháng ở nowcast, ngoại suy QoQ ở dự báo) + non_goods_avg (TRUNG BÌNH
+    _BOP_CARRYFORWARD_WINDOW quý gần nhất — dịch vụ/thu nhập đầu tư/chuyển giao vãng lai, không có
+    nguồn tháng, KHÔNG dùng đúng 1 quý liền trước vì thu nhập đầu tư có thể dị thường theo thời
+    điểm chi trả lợi nhuận FDI lệch quý giữa các năm).
 
-    NOWCAST cán cân tài chính (FA): dùng ĐỘ THAY ĐỔI (delta) của FDI giải ngân lũy kế giữa 2 quý
-    làm proxy cho PHẦN THAY ĐỔI của dòng "FDI vào VN" trong BOP — chỉ dùng CHÊNH LỆCH giữa 2 quý
-    (không dùng mức tuyệt đối) để tự triệt tiêu sai lệch quy mô giữa khái niệm "vốn giải ngân" (MPI,
-    hẹp hơn) và "Tài sản nợ FDI" BOP (gồm cả vốn góp/lợi nhuận tái đầu tư/vay nội bộ):
-        FA_nowcast = FA_actual(quý trước) − fdi_flow(quý trước) + fdi_flow(quý mới)
-    Các cấu phần FA khác (đầu tư gián tiếp, vay nợ nước ngoài) GIỮ NGUYÊN quý trước (không có bằng
-    chứng dị thường rõ như thu nhập đầu tư/Lỗi&Sai sót nên KHÔNG đổi sang trung bình, tránh sửa quá
-    tay phần không có vấn đề).
+    FA = fdi_flow (THẬT theo tháng ở nowcast, ngoại suy QoQ ở dự báo, = độ thay đổi FDI giải ngân
+    lũy kế giữa 2 quý) + portfolio_proxy (tổng khối ngoại mua/bán ròng VNINDEX trong quý, quy đổi
+    sang USD qua tỷ giá bình quân tháng — THẬT theo ngày ở nowcast, ngoại suy QoQ ở dự báo) +
+    external_debt (CARRY-FORWARD đúng 1 quý liền trước, GIỮ NGUYÊN cho cả nowcast lẫn dự báo) +
+    avg_residual_fa (TRUNG BÌNH _BOP_CARRYFORWARD_WINDOW quý gần nhất của phần dư FA_thực_tế −
+    fdi_flow − portfolio_proxy − external_debt — hấp thụ các dòng nhỏ khác NHNN còn gộp trong FA
+    mà 3 cấu phần trên chưa lấy hết, vd tiền & tiền gửi, công cụ tài chính phái sinh).
 
-    NOWCAST cán cân tổng thể (OB) = CA_nowcast + FA_nowcast + Lỗi&Sai sót (TRUNG BÌNH
-    _BOP_CARRYFORWARD_WINDOW quý gần nhất — đây là dòng biến động mạnh nhất, gần như "số dư thống
-    kê" ngẫu nhiên giữa các quý, carry-forward 1 quý sẽ rất nhạy với dị thường, trung bình nhiều quý
-    đỡ bị lệch bởi 1 điểm cực đoan hơn, dù vẫn là giả định đơn giản).
+    OB = CA + FA + avg_EO (TRUNG BÌNH _BOP_CARRYFORWARD_WINDOW quý gần nhất của Lỗi & Sai sót —
+    dòng gần như không thể dự báo, carry-forward 1 quý rất dễ bị lệch bởi dị thường, trung bình
+    nhiều quý đỡ bị lệch hơn dù vẫn là giả định đơn giản).
 
-    DỰ BÁO quý KẾ TIẾP (chưa có input tháng nào) = nowcast + trung bình cộng biến động QoQ của tối
-    đa _BOP_FORECAST_MOMENTUM_WINDOW quý gần nhất (gồm cả điểm nowcast) — ngoại suy xu hướng đơn
-    giản, KHÔNG phải mô hình kinh tế lượng, ĐỘ TIN CẬY THẤP, chỉ để chỉ HƯỚNG."""
+    DỰ BÁO quý KẾ TIẾP (chưa có input tháng/ngày nào, user: "sang tháng 10 rồi thì dự số Q4 nhé" —
+    quý nowcast sắp được NHNN công bố chính thức nên ít giá trị hơn, quý dự báo tiếp theo mới là số
+    QUAN TRỌNG): mỗi đại lượng có nguồn cao tần (goods_net, fdi_flow, portfolio_proxy) ngoại suy
+    RIÊNG bằng trung bình cộng biến động QoQ của tối đa _BOP_FORECAST_MOMENTUM_WINDOW quý gần nhất
+    (KHÔNG hiệu chỉnh mùa vụ) — KHÔNG phải mô hình kinh tế lượng, ĐỘ TIN CẬY THẤP, chỉ để chỉ HƯỚNG."""
     ca_ind = raw.get("bop_sbv_current_account")
     fa_ind = raw.get("bop_sbv_financial_account")
     ob_ind = raw.get("bop_sbv_overall_balance")
     goods_exp = raw.get("bop_sbv_goods_export")
     goods_imp = raw.get("bop_sbv_goods_import")
     eo_ind = raw.get("bop_sbv_errors_omissions")
+    debt_ind = raw.get("bop_sbv_external_debt_net")
     exp_m = raw.get("export_monthly_total")
     imp_m = raw.get("import_monthly_total")
     fdi_m = raw.get("fdi_disbursed")
-    if not all([ca_ind, fa_ind, ob_ind, goods_exp, goods_imp, eo_ind, exp_m, imp_m, fdi_m]):
+    vnidx_ind = raw.get("vnindex_foreign_net_value")
+    usdvnd_ind = raw.get("usdvnd_monthly_avg")
+    if not all([ca_ind, fa_ind, ob_ind, goods_exp, goods_imp, eo_ind, debt_ind,
+                exp_m, imp_m, fdi_m, vnidx_ind, usdvnd_ind]):
         return
 
     def _by_period(ind):
@@ -3718,13 +3764,14 @@ def _add_bop_nowcast_forecast(raw, trends):
 
     ca_by_q, fa_by_q, ob_by_q = _by_period(ca_ind), _by_period(fa_ind), _by_period(ob_ind)
     goods_exp_by_q, goods_imp_by_q = _by_period(goods_exp), _by_period(goods_imp)
-    eo_by_q = _by_period(eo_ind)
+    eo_by_q, debt_by_q = _by_period(eo_ind), _by_period(debt_ind)
     exp_by_m, imp_by_m, fdi_by_m = _by_period(exp_m), _by_period(imp_m), _by_period(fdi_m)
+    vnidx_by_d, usdvnd_by_m = _by_period(vnidx_ind), _by_period(usdvnd_ind)
     if not ca_by_q or not fa_by_q or not ob_by_q:
         return
 
     latest_q = max(ca_by_q)
-    if latest_q not in fa_by_q or latest_q not in ob_by_q or latest_q not in eo_by_q:
+    if latest_q not in fa_by_q or latest_q not in ob_by_q or latest_q not in eo_by_q or latest_q not in debt_by_q:
         return
     if latest_q not in goods_exp_by_q or latest_q not in goods_imp_by_q:
         return
@@ -3733,105 +3780,170 @@ def _add_bop_nowcast_forecast(raw, trends):
     if not all(m in exp_by_m and m in imp_by_m for m in months_nowcast):
         return  # chua du du lieu thang cho quy can nowcast - bo qua, lan chay sau se tu co
 
-    goods_net_last = goods_exp_by_q[latest_q] - goods_imp_by_q[latest_q]
-    goods_net_nowcast = sum(exp_by_m[m] for m in months_nowcast) - sum(imp_by_m[m] for m in months_nowcast)
-
     def _trailing_avg(values_by_q):
         qs = sorted(q for q in values_by_q if q <= latest_q)[-_BOP_CARRYFORWARD_WINDOW:]
         if not qs:
             return None
         return sum(values_by_q[q] for q in qs) / len(qs)
 
-    non_goods_net_by_q = {
-        q: ca_by_q[q] - (goods_exp_by_q[q] - goods_imp_by_q[q])
-        for q in ca_by_q if q in goods_exp_by_q and q in goods_imp_by_q
-    }
-    non_goods_net_avg = _trailing_avg(non_goods_net_by_q)
-    eo_avg = _trailing_avg(eo_by_q)
-    if non_goods_net_avg is None or eo_avg is None:
-        return
-    ca_nowcast = non_goods_net_avg + goods_net_nowcast
-
-    prev_q = _quarter_incr(latest_q, -1)
-    last_month_of = lambda q: _quarter_months(q)[-1]
-    # fdi_disbursed co vai diem cu bi tron nhan 'YYYY-Qn' (xem fetch_macro_data.py) - fallback doc
-    # theo nhan quy neu khong co diem thang 'YYYY-MM' sach.
-    fdi_cum_prev = fdi_by_m.get(last_month_of(prev_q), fdi_by_m.get(prev_q))
-    fdi_cum_last = fdi_by_m.get(last_month_of(latest_q), fdi_by_m.get(latest_q))
-    fdi_cum_nowcast = fdi_by_m.get(last_month_of(nowcast_q))
-    if fdi_cum_prev is None or fdi_cum_last is None or fdi_cum_nowcast is None:
-        return
-    fdi_flow_last = (fdi_cum_last - fdi_cum_prev) * 1000.0  # ty USD -> trieu USD
-    fdi_flow_nowcast = (fdi_cum_nowcast - fdi_cum_last) * 1000.0
-    fa_nowcast = fa_by_q[latest_q] - fdi_flow_last + fdi_flow_nowcast
-
-    eo_nowcast = eo_avg
-    ob_nowcast = ca_nowcast + fa_nowcast + eo_nowcast
-    forecast_q = _quarter_incr(nowcast_q, 1)
-
-    def _momentum_forecast(actual_by_q, nowcast_value):
-        vals = [actual_by_q[p] for p in sorted(actual_by_q) if p < nowcast_q] + [nowcast_value]
+    def _momentum_forecast(actual_by_q, nowcast_period, nowcast_value):
+        vals = [actual_by_q[p] for p in sorted(actual_by_q) if p < nowcast_period] + [nowcast_value]
         vals = vals[-(_BOP_FORECAST_MOMENTUM_WINDOW + 1):]
         if len(vals) < 2:
             return nowcast_value, 0.0
         deltas = [vals[i] - vals[i - 1] for i in range(1, len(vals))]
         return nowcast_value + sum(deltas) / len(deltas), sum(deltas) / len(deltas)
 
-    ca_forecast, _ = _momentum_forecast(ca_by_q, ca_nowcast)
-    ob_forecast, _ = _momentum_forecast(ob_by_q, ob_nowcast)
+    # ---- Cán cân vãng lai (CA) ----
+    goods_net_by_q = {q: goods_exp_by_q[q] - goods_imp_by_q[q] for q in goods_exp_by_q if q in goods_imp_by_q}
+    goods_net_last = goods_net_by_q[latest_q]
+    goods_net_nowcast = sum(exp_by_m[m] for m in months_nowcast) - sum(imp_by_m[m] for m in months_nowcast)
 
-    nowcast_note = (
+    non_goods_net_by_q = {q: ca_by_q[q] - goods_net_by_q[q] for q in ca_by_q if q in goods_net_by_q}
+    non_goods_net_avg = _trailing_avg(non_goods_net_by_q)
+    if non_goods_net_avg is None:
+        return
+    ca_nowcast = non_goods_net_avg + goods_net_nowcast
+
+    forecast_q = _quarter_incr(nowcast_q, 1)
+    goods_net_forecast, _ = _momentum_forecast(goods_net_by_q, nowcast_q, goods_net_nowcast)
+    ca_forecast = non_goods_net_avg + goods_net_forecast
+
+    # ---- Cán cân tài chính (FA) ----
+    fdi_flow_by_q = {q: f for q in goods_net_by_q if (f := _fdi_quarter_flow(fdi_by_m, q)) is not None and q <= latest_q}
+    fdi_flow_last, fdi_flow_nowcast = fdi_flow_by_q.get(latest_q), _fdi_quarter_flow(fdi_by_m, nowcast_q)
+    if fdi_flow_last is None or fdi_flow_nowcast is None:
+        return
+    fdi_flow_forecast, _ = _momentum_forecast(fdi_flow_by_q, nowcast_q, fdi_flow_nowcast)
+
+    def _quarter_fx_sum_usd(period):
+        """Tong khoi ngoai mua/ban rong VNINDEX trong quy (ty VND, vnindex_foreign_net_value) quy
+        doi sang trieu USD qua ty gia binh quan cac thang trong quy (usdvnd_monthly_avg)."""
+        months = _quarter_months(period)
+        start, end = f"{months[0]}-01", f"{_quarter_months(_quarter_incr(period, 1))[0]}-01"
+        matching = [v for d, v in vnidx_by_d.items() if start <= d < end]
+        rates = [usdvnd_by_m[m] for m in months if m in usdvnd_by_m]
+        if not matching or not rates:
+            return None
+        return sum(matching) * 1000.0 / (sum(rates) / len(rates))
+
+    # portfolio_proxy_by_q chi tinh cho cac quy DA CO BOP thuc te (de dung lam lich su hieu chinh/
+    # ngoai suy) - nowcast_q CHUA co trong ca_by_q/fa_by_q nen phai tinh RIENG.
+    portfolio_proxy_by_q = {}
+    for q in sorted(set(ca_by_q) | set(fa_by_q)):
+        if q >= nowcast_q:
+            continue
+        v = _quarter_fx_sum_usd(q)
+        if v is not None:
+            portfolio_proxy_by_q[q] = v
+    portfolio_proxy_last = portfolio_proxy_by_q.get(latest_q)
+    portfolio_proxy_nowcast = _quarter_fx_sum_usd(nowcast_q)
+    if portfolio_proxy_last is None or portfolio_proxy_nowcast is None:
+        return
+    portfolio_proxy_forecast, _ = _momentum_forecast(portfolio_proxy_by_q, nowcast_q, portfolio_proxy_nowcast)
+
+    debt_last = debt_by_q[latest_q]  # "vay nợ nước ngoài biến thiên ít, tạm lấy theo số quý trước"
+
+    fa_est_by_q = {
+        q: fdi_flow_by_q[q] + portfolio_proxy_by_q[q] + debt_by_q[q]
+        for q in fa_by_q if q in fdi_flow_by_q and q in portfolio_proxy_by_q and q in debt_by_q
+    }
+    residual_fa_by_q = {q: fa_by_q[q] - fa_est_by_q[q] for q in fa_est_by_q}
+    avg_residual_fa = _trailing_avg(residual_fa_by_q)
+    if avg_residual_fa is None:
+        return
+    fa_nowcast = fdi_flow_nowcast + portfolio_proxy_nowcast + debt_last + avg_residual_fa
+    fa_forecast = fdi_flow_forecast + portfolio_proxy_forecast + debt_last + avg_residual_fa
+
+    # ---- Cán cân tổng thể (OB) = CA + FA + avg(Lỗi & Sai sót) ----
+    avg_eo = _trailing_avg(eo_by_q)
+    if avg_eo is None:
+        return
+    ob_nowcast = ca_nowcast + fa_nowcast + avg_eo
+    ob_forecast = ca_forecast + fa_forecast + avg_eo
+
+    ca_nowcast_note = (
         f"NOWCAST {nowcast_q} (ước tính, KHÔNG PHẢI số chính thức NHNN) — hàng hóa dùng số THẬT từ "
-        f"hải quan theo tháng (export_monthly_total/import_monthly_total: {goods_net_nowcast:,.0f} "
-        f"triệu USD ròng); FDI dùng độ thay đổi giải ngân lũy kế theo tháng làm proxy "
-        f"({fdi_flow_nowcast:,.0f} triệu USD); phần phi hàng hóa (dịch vụ/thu nhập đầu tư/chuyển "
-        f"giao vãng lai) dùng TRUNG BÌNH {_BOP_CARRYFORWARD_WINDOW} quý gần nhất "
-        f"({non_goods_net_avg:,.0f} triệu USD, KHÔNG dùng đúng 1 quý liền trước vì dòng thu nhập "
-        f"đầu tư có thể dị thường theo thời điểm chi trả lợi nhuận FDI); Lỗi & Sai sót cũng dùng "
-        f"TRUNG BÌNH {_BOP_CARRYFORWARD_WINDOW} quý gần nhất ({eo_avg:,.0f} triệu USD — dòng biến "
-        f"động mạnh nhất, gần như số dư thống kê ngẫu nhiên, carry-forward 1 quý rất dễ bị lệch bởi "
-        f"1 điểm cực đoan); đầu tư gián tiếp/vay nợ nước ngoài vẫn GIỮ NGUYÊN mức {latest_q}. Phái "
-        f"sinh tính toán, KHÔNG lưu vào vimo_raw.json."
+        f"hải quan theo tháng ({goods_net_nowcast:,.0f} triệu USD ròng); phần phi hàng hóa (dịch "
+        f"vụ/thu nhập đầu tư/chuyển giao vãng lai) dùng TRUNG BÌNH {_BOP_CARRYFORWARD_WINDOW} quý "
+        f"gần nhất ({non_goods_net_avg:,.0f} triệu USD). Phái sinh tính toán, KHÔNG lưu vào "
+        f"vimo_raw.json."
     )
-    forecast_note = (
-        f"DỰ BÁO {forecast_q} (ngoại suy xu hướng, ĐỘ TIN CẬY THẤP) = nowcast {nowcast_q} + trung "
-        f"bình cộng biến động QoQ của tối đa {_BOP_FORECAST_MOMENTUM_WINDOW} quý gần nhất (gồm cả "
-        f"điểm nowcast). KHÔNG phải mô hình kinh tế lượng, chỉ dùng để chỉ hướng tăng/giảm, không "
-        f"nên dùng con số tuyệt đối làm quyết định. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."
+    ca_forecast_note = (
+        f"DỰ BÁO {forecast_q} (ĐỘ TIN CẬY THẤP) = hàng hóa ngoại suy xu hướng QoQ trung bình "
+        f"{_BOP_FORECAST_MOMENTUM_WINDOW} quý gần nhất ({goods_net_forecast:,.0f} triệu USD) + "
+        f"TRUNG BÌNH phi hàng hóa {_BOP_CARRYFORWARD_WINDOW} quý gần nhất ({non_goods_net_avg:,.0f} "
+        f"triệu USD, CÙNG mức dùng cho nowcast). KHÔNG phải mô hình kinh tế lượng. Phái sinh tính "
+        f"toán, KHÔNG lưu vào vimo_raw.json."
+    )
+    fa_nowcast_note = (
+        f"NOWCAST {nowcast_q} (ước tính) = FDI giải ngân THẬT theo tháng ({fdi_flow_nowcast:,.0f} "
+        f"triệu USD) + khối ngoại mua/bán ròng VNINDEX THẬT theo ngày, quy đổi USD, PROXY cho đầu "
+        f"tư gián tiếp ({portfolio_proxy_nowcast:,.0f} triệu USD) + vay nợ nước ngoài GIỮ NGUYÊN "
+        f"{latest_q} ({debt_last:,.0f} triệu USD) + chênh lệch cộng trung bình "
+        f"{_BOP_CARRYFORWARD_WINDOW} quý gần nhất cho các dòng nhỏ còn lại ({avg_residual_fa:,.0f} "
+        f"triệu USD). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."
+    )
+    fa_forecast_note = (
+        f"DỰ BÁO {forecast_q} (ĐỘ TIN CẬY THẤP) = FDI giải ngân ngoại suy ({fdi_flow_forecast:,.0f} "
+        f"triệu USD) + khối ngoại mua/bán ròng ngoại suy ({portfolio_proxy_forecast:,.0f} triệu "
+        f"USD, CẢ 2 bằng trung bình biến động QoQ {_BOP_FORECAST_MOMENTUM_WINDOW} quý gần nhất, "
+        f"KHÔNG hiệu chỉnh mùa vụ) + vay nợ nước ngoài GIỮ NGUYÊN {latest_q} + CÙNG chênh lệch cộng "
+        f"trung bình dùng cho nowcast. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."
+    )
+    ob_nowcast_note = (
+        f"NOWCAST {nowcast_q} = Cán cân vãng lai ước ({ca_nowcast:,.0f}) + Cán cân tài chính ước "
+        f"({fa_nowcast:,.0f}) + Lỗi & Sai sót TRUNG BÌNH {_BOP_CARRYFORWARD_WINDOW} quý gần nhất "
+        f"({avg_eo:,.0f} triệu USD — dòng gần như không thể dự báo). Đúng định nghĩa kế toán BOP "
+        f"(CA+FA+EO=OB). Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."
+    )
+    ob_forecast_note = (
+        f"DỰ BÁO {forecast_q} (ĐỘ TIN CẬY THẤP) = Cán cân vãng lai dự báo + Cán cân tài chính dự "
+        f"báo + CÙNG mức Lỗi & Sai sót trung bình dùng cho nowcast. Hiện tại (tháng "
+        f"{datetime.date.today().month}/{datetime.date.today().year}) số nowcast {nowcast_q} sắp "
+        f"được NHNN công bố chính thức — số dự báo {forecast_q} này mới là thông tin dự báo có giá "
+        f"trị. KHÔNG phải mô hình kinh tế lượng. Phái sinh tính toán, KHÔNG lưu vào vimo_raw.json."
     )
     raw["bop_current_account_nowcast"] = {
         "group": "external", "label": f"Cán cân vãng lai — Nowcast {nowcast_q} (ước tính)",
-        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": nowcast_note,
+        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": ca_nowcast_note,
         "series": [{"period": nowcast_q, "value": round(ca_nowcast, 1), "source_url": None}],
     }
     raw["bop_current_account_forecast"] = {
         "group": "external", "label": f"Cán cân vãng lai — Dự báo {forecast_q} (xu hướng)",
-        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": forecast_note,
+        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": ca_forecast_note,
         "series": [{"period": forecast_q, "value": round(ca_forecast, 1), "source_url": None}],
     }
     raw["bop_financial_account_nowcast"] = {
         "group": "external", "label": f"Cán cân tài chính — Nowcast {nowcast_q} (ước tính)",
-        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": nowcast_note,
+        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": fa_nowcast_note,
         "series": [{"period": nowcast_q, "value": round(fa_nowcast, 1), "source_url": None}],
+    }
+    raw["bop_financial_account_forecast"] = {
+        "group": "external", "label": f"Cán cân tài chính — Dự báo {forecast_q} (xu hướng)",
+        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": fa_forecast_note,
+        "series": [{"period": forecast_q, "value": round(fa_forecast, 1), "source_url": None}],
     }
     raw["bop_overall_balance_nowcast"] = {
         "group": "external", "label": f"Cán cân tổng thể — Nowcast {nowcast_q} (ước tính)",
-        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": nowcast_note,
+        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": ob_nowcast_note,
         "series": [{"period": nowcast_q, "value": round(ob_nowcast, 1), "source_url": None}],
     }
     raw["bop_overall_balance_forecast"] = {
-        "group": "external", "label": f"Cán cân tổng thể — Dự báo {forecast_q} (xu hướng)",
-        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": forecast_note,
+        "group": "external", "label": f"Cán cân tổng thể — Dự báo {forecast_q} (xu hướng, số quan trọng)",
+        "unit": "triệu USD", "good_direction": "higher", "auto_source": "derived", "note": ob_forecast_note,
         "series": [{"period": forecast_q, "value": round(ob_forecast, 1), "source_url": None}],
     }
     print(f"  -> Nowcast {nowcast_q}: CA={ca_nowcast:,.0f} FA={fa_nowcast:,.0f} OB={ob_nowcast:,.0f} (trieu USD)")
-    print(f"  -> Du bao {forecast_q}: CA={ca_forecast:,.0f} OB={ob_forecast:,.0f} (trieu USD)")
+    print(f"  -> Du bao {forecast_q}: CA={ca_forecast:,.0f} FA={fa_forecast:,.0f} OB={ob_forecast:,.0f} (trieu USD)")
     return {
         "latestQ": latest_q, "nowcastQ": nowcast_q, "forecastQ": forecast_q,
         "caNowcast": ca_nowcast, "caForecast": ca_forecast,
+        "faNowcast": fa_nowcast, "faForecast": fa_forecast,
         "obNowcast": ob_nowcast, "obForecast": ob_forecast,
         "goodsNetLast": goods_net_last, "goodsNetNowcast": goods_net_nowcast,
         "fdiFlowLast": fdi_flow_last, "fdiFlowNowcast": fdi_flow_nowcast,
+        "portfolioProxyLast": portfolio_proxy_last, "portfolioProxyNowcast": portfolio_proxy_nowcast,
     }
 
 
@@ -3851,10 +3963,30 @@ _FX_STRESS_THRESHOLDS = {
 _EXTERNAL_IMBALANCE_KEYS = ["bop_sbv_overall_balance", "bop_sbv_current_account", "bop_sbv_financial_account"]
 
 
-def _build_bop_forecast_narrative(bop_forecast):
+_MARKET_SIGNAL_TREND_N = 3
+
+
+def _market_signal_trend(raw, key, n=_MARKET_SIGNAL_TREND_N):
+    """Lay n diem gan nhat cua 1 indicator trong raw, tra (gia_tri_dau, gia_tri_cuoi, nhan) hoac
+    None neu thieu du lieu — dung de doi chieu xu huong THỊ TRƯỜNG (chợ đen/swap) voi ket luan tu
+    BOP, GIU DOC LAP khong gop diem (dung tinh than _build_fx_stress_matrix)."""
+    ind = raw.get(key)
+    if not ind or not ind["series"]:
+        return None
+    pts = [p for p in ind["series"] if p.get("value") is not None]
+    if len(pts) < n:
+        return None
+    pts = pts[-n:]
+    return pts[0]["value"], pts[-1]["value"], ind["label"]
+
+
+def _build_bop_forecast_narrative(raw, bop_forecast):
     """Ghep cau RULE-BASED (khong AI viet van) tu dict tra ve cua _add_bop_nowcast_forecast — user
     2026-10-12: "ở dưới phần đánh giá tổng thể sẽ thêm dòng dự báo áp lực trong quý tới sẽ căng hơn
-    hay giảm đi và vì sao, do các yếu tố nào". Tra None neu khong co nowcast (thieu du lieu thang)."""
+    hay giảm đi và vì sao, do các yếu tố nào", sau đó "kết hợp nhìn chênh lệch tỷ giá chợ đen và
+    NHTM, thêm cả phần đánh giá chênh lệch swap lãi suất" — đối chiếu kết luận từ BOP (nowcast/dự
+    báo CA+FA+EO) với 2 tín hiệu thị trường ĐỘC LẬP (gap chợ đen-NHTM, chênh lệch lãi suất swap-
+    implied), KHÔNG gộp thành 1 điểm số. Tra None neu khong co nowcast (thieu du lieu thang)."""
     if not bop_forecast:
         return None
     f = bop_forecast
@@ -3868,7 +4000,9 @@ def _build_bop_forecast_narrative(bop_forecast):
 
     goods_dir = _balance_trend_phrase(f["goodsNetLast"], f["goodsNetNowcast"])
     fdi_dir = "tăng tốc" if f["fdiFlowNowcast"] > f["fdiFlowLast"] else "giảm tốc"
+    portfolio_dir = _balance_trend_phrase(f["portfolioProxyLast"], f["portfolioProxyNowcast"])
     ca_dir = "cải thiện" if f["caForecast"] > f["caNowcast"] else "xấu đi thêm"
+    fa_dir = "cải thiện" if f["faForecast"] > f["faNowcast"] else "xấu đi thêm"
     ob_dir = "GIẢM BỚT" if f["obForecast"] >= f["obNowcast"] else "CĂNG HƠN"
     diverge = ""
     if (f["caForecast"] > f["caNowcast"]) != (f["obForecast"] > f["obNowcast"]):
@@ -3877,21 +4011,65 @@ def _build_bop_forecast_narrative(bop_forecast):
             "hình đã quan sát ở các quý trước (dòng vốn/lỗi & sai sót có thể bù đắp hoàn toàn phần "
             "vãng lai xấu đi, hoặc ngược lại)."
         )
-    return (
-        f"Nowcast {f['nowcastQ']} (ước tính từ XNK hải quan + FDI giải ngân theo tháng, các cấu "
-        f"phần khác dùng trung bình {_BOP_CARRYFORWARD_WINDOW} quý gần nhất để giảm nhạy với 1 quý "
-        f"dị thường): Cán cân vãng lai ước {f['caNowcast']:,.0f} triệu USD, Cán cân tổng thể ước "
-        f"{f['obNowcast']:,.0f} triệu USD. "
+
+    bop_part = (
+        f"Nowcast {f['nowcastQ']} (hàng hóa + FDI giải ngân theo tháng, khối ngoại mua/bán ròng "
+        f"VNINDEX theo ngày — PROXY đầu tư gián tiếp, phần còn lại dùng trung bình "
+        f"{_BOP_CARRYFORWARD_WINDOW} quý gần nhất): Cán cân vãng lai ước {f['caNowcast']:,.0f}, "
+        f"Cán cân tài chính ước {f['faNowcast']:,.0f}, Cán cân tổng thể ước {f['obNowcast']:,.0f} "
+        f"triệu USD. "
         f"Cán cân hàng hóa: {f['latestQ']} {f['goodsNetLast']:,.0f} → {f['nowcastQ']} ước "
         f"{f['goodsNetNowcast']:,.0f} triệu USD ({goods_dir}). "
-        f"FDI giải ngân theo quý: {f['latestQ']} {f['fdiFlowLast']/1000:,.2f} tỷ USD → "
-        f"{f['nowcastQ']} ước {f['fdiFlowNowcast']/1000:,.2f} tỷ USD ({fdi_dir}). "
-        f"Dự báo {f['forecastQ']} (ngoại suy xu hướng QoQ trung bình {_BOP_FORECAST_MOMENTUM_WINDOW} "
-        f"quý gần nhất, ĐỘ TIN CẬY THẤP): Cán cân tổng thể dự báo {f['obForecast']:,.0f} triệu USD; "
-        f"Cán cân vãng lai dự báo {f['caForecast']:,.0f} triệu USD ({ca_dir}). "
-        f"Kết luận: Áp lực tỷ giá quý tới (dựa trên Cán cân tổng thể — tín hiệu NHNN thực sự phải "
-        f"xử lý bằng dự trữ) nhiều khả năng {ob_dir}.{diverge}"
+        f"FDI giải ngân theo quý: {f['latestQ']} {f['fdiFlowLast']/1000:,.2f} → {f['nowcastQ']} ước "
+        f"{f['fdiFlowNowcast']/1000:,.2f} tỷ USD ({fdi_dir}). "
+        f"Khối ngoại VNINDEX theo quý: {f['latestQ']} {f['portfolioProxyLast']:,.0f} → "
+        f"{f['nowcastQ']} ước {f['portfolioProxyNowcast']:,.0f} triệu USD ({portfolio_dir}). "
+        f"Dự báo {f['forecastQ']} — SỐ QUAN TRỌNG NHẤT vì {f['nowcastQ']} sắp được NHNN công bố "
+        f"chính thức (ngoại suy riêng từng đại lượng theo xu hướng QoQ trung bình "
+        f"{_BOP_FORECAST_MOMENTUM_WINDOW} quý gần nhất, ĐỘ TIN CẬY THẤP): Cán cân tổng thể dự báo "
+        f"{f['obForecast']:,.0f} triệu USD; Cán cân vãng lai dự báo {f['caForecast']:,.0f} triệu USD "
+        f"({ca_dir}); Cán cân tài chính dự báo {f['faForecast']:,.0f} triệu USD ({fa_dir}). "
+        f"Kết luận BOP: Áp lực tỷ giá quý tới (dựa trên Cán cân tổng thể — tín hiệu NHNN thực sự "
+        f"phải xử lý bằng dự trữ) nhiều khả năng {ob_dir}.{diverge}"
     )
+
+    # Doi chieu voi 2 tin hieu THI TRUONG doc lap (user: "kết hợp nhìn chênh lệch tỷ giá chợ đen và
+    # NHTM, thêm cả phần đánh giá chênh lệch swap lãi suất") — KHONG gop diem, chi neu huong rieng
+    # roi so sanh co DONG THUAN hay khong voi ket luan tu BOP o tren.
+    market_parts = []
+    agree_flags = []
+    cho_den = _market_signal_trend(raw, "usd_cho_den_vcb_gap_pct")
+    if cho_den:
+        old, new, label = cho_den
+        cho_den_cang = new > old  # gap no rong/chuyen duong = cang hon
+        cho_den_word = "không đổi" if new == old else ("nới rộng" if cho_den_cang else "thu hẹp")
+        market_parts.append(f"{label}: {old:.2f}% → {new:.2f}% ({cho_den_word})")
+        if new != old:
+            agree_flags.append(cho_den_cang == (ob_dir == "CĂNG HƠN"))
+    swap = _market_signal_trend(raw, "interbank_vnd_usd_gap_on")
+    if swap:
+        old, new, label = swap
+        swap_cang = new < old  # VND re hon USD hon truoc = ap luc tang
+        swap_word = "không đổi" if new == old else ("giảm (bất lợi VND hơn)" if swap_cang else "tăng (thuận lợi VND hơn)")
+        market_parts.append(f"{label}: {old:.2f} → {new:.2f} điểm % ({swap_word})")
+        if new != old:
+            agree_flags.append(swap_cang == (ob_dir == "CĂNG HƠN"))
+
+    market_narrative = ""
+    if market_parts:
+        if not agree_flags:
+            verdict = "chưa đổi hướng rõ rệt trong giai đoạn gần đây, chưa đối chiếu được với kết luận BOP."
+        elif all(agree_flags):
+            verdict = "ĐỒNG THUẬN với kết luận BOP ở trên — mức độ tin cậy cao hơn."
+        elif not any(agree_flags):
+            verdict = "NGƯỢC HƯỚNG với kết luận BOP ở trên — cần thận trọng, có thể thị trường đã phản ánh trước hoặc BOP có độ trễ."
+        else:
+            verdict = "lẫn lộn (1 tín hiệu đồng thuận, 1 tín hiệu ngược) với kết luận BOP."
+        market_narrative = (
+            f" Tín hiệu thị trường (độc lập, không gộp điểm, {_MARKET_SIGNAL_TREND_N} kỳ gần "
+            f"nhất): {'; '.join(market_parts)}. {verdict}"
+        )
+    return bop_part + market_narrative
 
 
 def _build_fx_stress_matrix(raw, bop_forecast=None):
@@ -3963,7 +4141,7 @@ def _build_fx_stress_matrix(raw, bop_forecast=None):
         "tier1": {"isCao": tier1_cao, "items": tier1_items},
         "tier2": {"isCao": tier2_cao, "items": tier2_items},
         "narrative": narrative,
-        "forecastNarrative": _build_bop_forecast_narrative(bop_forecast),
+        "forecastNarrative": _build_bop_forecast_narrative(raw, bop_forecast),
     }
 
 

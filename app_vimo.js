@@ -2355,25 +2355,31 @@ function renderFxFinancialAccountChart(indicators) {
     let periods = Array.from(new Set(validSeries.flatMap(s =>
         indicators[s.key].series.map(p => p.period)))).filter(p => p >= '2020-Q1').sort();
 
-    // THEM 2026-10-12: noi them nowcast cua "TONG Can can tai chinh" (bop_sbv_financial_account) —
-    // xem _add_bop_nowcast_forecast trong template_vimo.py. KHONG co du bao rieng cho FA (user
-    // khong yeu cau), chi nowcast quy gan nhat.
+    // THEM 2026-10-12, SUA 2026-10-13: noi them nowcast + du bao cua "TONG Can can tai chinh"
+    // (bop_sbv_financial_account) — xem _add_bop_nowcast_forecast trong template_vimo.py (gio co
+    // ca bop_financial_account_forecast sau khi FA duoc tinh day du bang FDI+khoi ngoai+vay no).
     const faNowcastPt = indicators['bop_financial_account_nowcast'] && indicators['bop_financial_account_nowcast'].series[0];
+    const faForecastPt = indicators['bop_financial_account_forecast'] && indicators['bop_financial_account_forecast'].series[0];
+    const faEstimatedPeriods = new Set([faNowcastPt && faNowcastPt.period, faForecastPt && faForecastPt.period].filter(Boolean));
     if (faNowcastPt && !periods.includes(faNowcastPt.period)) periods.push(faNowcastPt.period);
+    if (faForecastPt && !periods.includes(faForecastPt.period)) periods.push(faForecastPt.period);
     periods.sort();
 
     const datasets = validSeries.map(s => {
         const byPeriod = Object.fromEntries(indicators[s.key].series.map(p => [p.period, p.value]));
-        if (s.key === 'bop_sbv_financial_account' && faNowcastPt) byPeriod[faNowcastPt.period] = faNowcastPt.value;
+        if (s.key === 'bop_sbv_financial_account') {
+            if (faNowcastPt) byPeriod[faNowcastPt.period] = faNowcastPt.value;
+            if (faForecastPt) byPeriod[faForecastPt.period] = faForecastPt.value;
+        }
         const data = periods.map(p => { const v = byPeriod[p]; return (v === null || v === undefined) ? null : v; });
         return {
-            label: s.key === 'bop_sbv_financial_account' ? s.label + ' — nét đứt = nowcast' : s.label,
+            label: s.key === 'bop_sbv_financial_account' ? s.label + ' — nét đứt = nowcast/dự báo' : s.label,
             data, yAxisID: 'y',
             borderColor: s.color, backgroundColor: s.color + '15', fill: false,
             borderWidth: s.bold ? 3 : 2, borderDash: s.dash || [], tension: 0.25,
             pointRadius: s.bold ? 2 : 3, pointBackgroundColor: s.color, spanGaps: true,
-            segment: (s.key === 'bop_sbv_financial_account' && faNowcastPt)
-                ? { borderDash: (ctx) => periods[ctx.p1DataIndex] === faNowcastPt.period ? [6, 4] : undefined }
+            segment: (s.key === 'bop_sbv_financial_account' && faEstimatedPeriods.size)
+                ? { borderDash: (ctx) => faEstimatedPeriods.has(periods[ctx.p1DataIndex]) ? [6, 4] : undefined }
                 : undefined,
             datalabels: _endpointDatalabelsConfig(0),
         };
