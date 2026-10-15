@@ -1,0 +1,149 @@
+name: Cập nhật ALM Ngân hàng (tự động kiểm tra kỳ mới)
+
+# TACH RIENG 2026-10-15 (user: "tôi muốn action cập nhật vĩ mô là sẽ cập nhật toàn bộ... còn ALM
+# thì cập nhật riêng ở action riêng" — trước đây logic này (refresh_quarterly_balance_sheet_all_
+# banks + refresh_bank_alm_data) nằm Ở CUỐI update_vimo.yml/fetch_macro_data.py, nghi ngờ là
+# nguyên nhân khiến CPI Mỹ (và các chỉ báo khác) không kịp commit 1 số tuần: bước OCR 26 ngân hàng
+# có thể chậm/treo đúng tuần có ngân hàng công bố báo cáo mới, ăn hết timeout của CẢ job trước khi
+# kịp push, dù các fetch khác đã fetch xong trong bộ nhớ. Workflow NÀY làm ĐÚNG việc "cheap check +
+# OCR chỉ khi thực sự cần" mà fetch_macro_data.py từng làm, chạy ĐỘC LẬP theo lịch riêng — không
+# còn ảnh hưởng tới pipeline vĩ mô nữa. backfill_bank_alm.yml (file khác) vẫn giữ nguyên, dùng cho
+# backfill THỦ CÔNG 1 kỳ cụ thể hoặc quét lại các kỳ ĐàTỪNG backfill còn thiếu — KHÁC với workflow
+# này (tự phát hiện kỳ MỚI chưa ai từng biết tới).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * 5'   # 02:00 UTC = 09:00 giờ Việt Nam, thứ Sáu hàng tuần — trước giờ chạy
+                           # update_vimo.yml (16:00 VN cùng ngày) để 2 workflow không chồng nhau,
+                           # dù giờ đã độc lập hoàn toàn nên thứ tự không còn quan trọng.
+
+permissions:
+  contents: write
+
+jobs:
+  update-bank-alm:
+    runs-on: ubuntu-latest
+    # Tuần thường (chưa ngân hàng nào công bố kỳ mới): gần như miễn phí (chỉ gọi API liệt kê BCTC,
+    # vài giây/ngân hàng x 26). Tuần HIẾM có vài ngân hàng cùng công bố báo cáo kiểm toán/soát xét
+    # mới: cần OCR lại (vài phút/ngân hàng) — 60 phút đủ dư cho trường hợp xấu nhất.
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Tesseract OCR (+ tiếng Việt + OSD tự sửa trang scan lộn ngược) — cần cho bank_risk_notes.py
+      # khi OCR báo cáo tài chính ngân hàng (xem backfill_bank_alm.yml, cùng lý do).
+      - name: Install Tesseract OCR (tiếng Việt)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-vie tesseract-ocr-osd
+
+      - name: Kiểm tra kỳ mới + OCR nếu cần (26 ngân hàng)
+        run: |
+          python -c "
+          from bank_system_risk import refresh_quarterly_balance_sheet_all_banks, refresh_bank_alm_data
+          print('[He thong ALM ngan hang] Cap nhat bang can doi quy (khong can OCR)...')
+          refresh_quarterly_balance_sheet_all_banks()
+          print('[He thong ALM ngan hang] Kiem tra do moi 2 bang gap (OCR chi khi thuc su can)...')
+          result = refresh_bank_alm_data()
+          print(f\"  -> Ky muc tieu: {result.get('target_period')}, thay doi: {result.get('changed')}\")
+          for ticker, action in (result.get('actions') or {}).items():
+              if action not in ('skip_da_co', 'skip_da_va_dung_nguon', 'skip_da_danh_dau_thieu'):
+                  print(f'     {ticker}: {action}')
+          "
+
+      - name: Kiểm tra hợp lý dữ liệu ALM
+        run: python bank_alm_validate.py
+
+      - name: Cập nhật sheet Excel dữ liệu thô ALM + upload Google Drive
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
+        run: |
+          python -c "from bank_system_risk import update_bank_alm_excel_sheet, update_bank_ldr_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO'); update_bank_ldr_excel_sheet('Bao cao/VIMO')"
+          python3 - << 'PYEOF'
+          import glob
+          import google_drive_uploader
+
+          xlsxs = sorted(glob.glob("Bao cao/VIMO/*.xlsx"))
+          if not xlsxs:
+              print("[WARN] Khong tim thay file Excel de upload.")
+          else:
+              _, url = google_drive_uploader.upload_file(xlsxs[-1], sector="Vĩ mô", ticker="VIMO")
+              print(f"[OK] Da upload Excel: {url}" if url else "[WARN] Upload Excel that bai.")
+          PYEOF
+
+      # Cung pattern rebase (KHONG phai reset --hard) nhu backfill_bank_alm.yml, vi day la file
+      # JSON rieng theo ticker (khong phai kieu "ghi de toan bo 1 file" nhu vimo.json).
+      - name: Commit và push data/bank_alm/ + Excel
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/bank_alm/ "Bao cao/VIMO/"
+
+          if git diff --staged --quiet; then
+            echo "Khong co thay doi de commit."
+          else
+            git commit -m "Auto-update: ALM ngan hang — $(date +'%Y-%m-%d')"
+
+            PUSHED=0
+            for i in 1 2 3 4 5; do
+              git fetch origin master
+              if git rebase origin/master; then
+                if git push origin HEAD:master; then
+                  PUSHED=1
+                  break
+                fi
+              else
+                CONFLICTS="$(git diff --name-only --diff-filter=U)"
+                if [ "$CONFLICTS" = "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx" ]; then
+                  echo "Xung dot CHI o file Excel tu sinh - lay ban tren origin, regenerate lai roi tiep tuc rebase."
+                  git show origin/master:"Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx" > "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx"
+                  git add "Bao cao/VIMO/VIMO_Lich_Su_Chi_So.xlsx"
+                  if git rebase --continue; then
+                    python -c "from bank_system_risk import update_bank_alm_excel_sheet, update_bank_ldr_excel_sheet; update_bank_alm_excel_sheet('Bao cao/VIMO'); update_bank_ldr_excel_sheet('Bao cao/VIMO')"
+                    git add "Bao cao/VIMO/"
+                    if ! git diff --staged --quiet; then
+                      git commit --amend --no-edit
+                    fi
+                  else
+                    git rebase --abort
+                  fi
+                else
+                  git rebase --abort
+                fi
+              fi
+              echo "Push attempt $i failed, retrying..."
+              sleep 10
+            done
+
+            if [ "$PUSHED" != "1" ]; then
+              echo "::error::Khong the push cap nhat ALM sau 5 lan thu (remote lien tuc thay doi)."
+              exit 1
+            fi
+          fi
+
+      # Giong update_vimo.yml: push bang GITHUB_TOKEN mac dinh KHONG kich hoat deploy_pages.yml tu
+      # dong, goi thang de site GitHub Pages co data/bank_alm/ moi ngay (vd tab ALM/LDR doc truc
+      # tiep tu cac file nay qua template_vimo.py o lan chay vi mo ke tiep — khong bat buoc phai
+      # redeploy ngay, nhung goi cho dong bo voi cach update_vimo.yml dang lam).
+      - name: Trigger GitHub Pages redeploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy_pages.yml --ref ${{ github.ref_name }}

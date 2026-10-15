@@ -12,11 +12,11 @@ permissions:
 jobs:
   update-vimo:
     runs-on: ubuntu-latest
-    # 20 -> 45 phút (2026-08): thêm bước kiểm tra/cập nhật rủi ro ALM hệ thống ngân hàng
-    # (bank_system_risk.refresh_bank_alm_data). Tuần thường (chưa ngân hàng nào công bố kỳ mới)
-    # gần như miễn phí (chỉ list API, vài giây) — 45 phút là dư cho tuần HIẾM có vài ngân hàng cùng
-    # công bố báo cáo đã kiểm toán/soát xét mới, cần OCR lại (vài phút/ngân hàng).
-    timeout-minutes: 45
+    # SUA 2026-10-15 (user: tach rieng ALM ngan hang sang workflow rieng - xem update_bank_alm.yml -
+    # vi nghi ngo buoc OCR 26 ngan hang (co the cham/treo tuan co bao cao moi) o cuoi pipeline chiem
+    # het thoi gian timeout khien ca job khong kip commit/push, du cac fetch khac (vd FRED CPI) da
+    # thanh cong trong bo nho). Giam lai 45 -> 20 phut vi khong con OCR ngan hang o day nua.
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Repository
@@ -38,13 +38,12 @@ jobs:
       # Tesseract OCR (+ gói ngôn ngữ Việt) — đọc số liệu cơ cấu vốn đầu tư từ ẢNH infographic
       # NSO (nso.gov.vn/do-hoa-thong-tin), không có ở dạng text — xem
       # fetch_nso_infographic_investment() trong fetch_macro_data.py.
-      # tesseract-ocr-osd (2026-08, thêm cho bank_system_risk.py — rủi ro ALM hệ thống ngân hàng,
-      # dùng lại bank_risk_notes.py) — cần cho _autorotate() tự sửa trang BCTC bị scan lộn ngược,
-      # giống lý do đã thêm ở analyze_stock.yml.
+      # SUA 2026-10-15: bo tesseract-ocr-osd (chi dung cho _autorotate() cua bank_risk_notes.py —
+      # ALM ngan hang da chuyen sang workflow rieng update_bank_alm.yml, khong con chay o day).
       - name: Install Tesseract OCR (tiếng Việt)
         run: |
           sudo apt-get update
-          sudo apt-get install -y tesseract-ocr tesseract-ocr-vie tesseract-ocr-osd
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-vie
 
       - name: Fetch dữ liệu vĩ mô mới nhất (World Bank/IMF/FRED/FX/NSO)
         env:
@@ -123,15 +122,14 @@ jobs:
           # remote mới nhất trước, rồi mới ghi đè LẠI đúng các file data đã tính ở bước trước (lưu
           # tạm ra ngoài cây git để không bị mất khi reset --hard) — đảm bảo commit ở đây CHỈ BAO
           # GIỜ đụng tới các file data đó.
-          mkdir -p /tmp/vimo_output/BaoCaoVIMO /tmp/vimo_output/bank_alm
+          # SUA 2026-10-15: bo data/bank_alm/ khoi co che stage/restore nay - ALM ngan hang da
+          # chuyen sang workflow rieng (update_bank_alm.yml), job nay KHONG con dung/ghi file nao
+          # trong data/bank_alm/ nua (template_vimo.py chi DOC, khong ghi).
+          mkdir -p /tmp/vimo_output/BaoCaoVIMO
           cp data/vimo_raw.json /tmp/vimo_output/ 2>/dev/null || true
           cp data/vimo.json /tmp/vimo_output/ 2>/dev/null || true
           cp data/vnindex_valuation_history.json /tmp/vimo_output/ 2>/dev/null || true
           cp -r "Bao cao/VIMO/." /tmp/vimo_output/BaoCaoVIMO/ 2>/dev/null || true
-          # data/bank_alm/ (2026-08, rui ro ALM he thong ngan hang) — moi file JSON rieng theo
-          # ticker, cap nhat KHONG THUONG XUYEN (chi doi khi 1 ngan hang cong bo ky moi), nhung van
-          # dua vao CUNG co che stage/restore nay de dong nhat 1 chien luoc git duy nhat cho ca job.
-          cp -r data/bank_alm/. /tmp/vimo_output/bank_alm/ 2>/dev/null || true
 
           restore_output() {
             cp /tmp/vimo_output/vimo_raw.json data/vimo_raw.json 2>/dev/null || true
@@ -139,8 +137,6 @@ jobs:
             cp /tmp/vimo_output/vnindex_valuation_history.json data/vnindex_valuation_history.json 2>/dev/null || true
             mkdir -p "Bao cao/VIMO"
             cp -r /tmp/vimo_output/BaoCaoVIMO/. "Bao cao/VIMO/" 2>/dev/null || true
-            mkdir -p data/bank_alm
-            cp -r /tmp/vimo_output/bank_alm/. data/bank_alm/ 2>/dev/null || true
           }
 
           PUSHED=0
@@ -148,7 +144,7 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
             restore_output
-            git add data/vimo_raw.json data/vimo.json data/vnindex_valuation_history.json "Bao cao/VIMO/" data/bank_alm/ 2>/dev/null || true
+            git add data/vimo_raw.json data/vimo.json data/vnindex_valuation_history.json "Bao cao/VIMO/" 2>/dev/null || true
 
             if git diff --staged --quiet; then
               echo "Không có thay đổi để commit."

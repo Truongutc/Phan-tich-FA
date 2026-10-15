@@ -3372,12 +3372,36 @@ def update_vimo_raw():
     # THEM 2026-10-07 (user: tab "Kinh tế Mỹ" theo mô-tuýp phân tích lạm phát: CPI cắt lớp, PPI →
     # CPI, giá nhập khẩu, bán lẻ/tiêu dùng thực). Dùng FRED CSV công khai (fredgraph.csv, KHÔNG cần
     # API key nên chạy được cả local lẫn CI), lưu từ 2015 tới nay theo tháng, giữ cả giá trị gốc.
+    # SUA 2026-10-15 (user: "CPI Mỹ tháng 9 vẫn chưa thấy cập nhật" — kiểm tra thì phát hiện KHÔNG
+    # phải thiếu dữ liệu nguồn (fredgraph.csv CÓ sẵn tháng 9 khi test), mà do gọi ~24 chuỗi liên
+    # tiếp KHÔNG nghỉ vào CÙNG 1 host khiến Akamai (CDN đứng trước fred.stlouisfed.org) chặn/giới
+    # hạn tốc độ giữa chừng — quan sát thực tế: vài chuỗi đầu OK, sau đó HÀNG LOẠT "Read timed out"/
+    # "Connection aborted" liên tiếp, có lúc chặn LIÊN TỤC (không phải chỉ 1 đợt ngắn) khiến retry
+    # đơn giản (thử lại 1 lần) vẫn thất bại suốt — mỗi chuỗi lại tốn gấp đôi timeout (2×60s), 24 chuỗi
+    # tệ nhất ~50 phút, CÒN NGUY HIỂM HƠN cả vấn đề ALM cũ (có thể ăn hết timeout của cả job). Dùng
+    # "cầu dao tự ngắt" (circuit breaker): nếu liên tiếp vài chuỗi đều thất bại (dấu hiệu bị chặn kéo
+    # dài, không phải lỗi ngẫu nhiên 1 chuỗi), BỎ QUA hẳn phần còn lại thay vì tiếp tục hỏi 1 host rõ
+    # ràng đang chặn mình — chặn tối đa thời gian tốn cho phần này, phần còn lại của pipeline (VN vĩ
+    # mô, FX...) vẫn chạy bình thường.
     print("[FRED CSV — Kinh tế Mỹ chuyên sâu (CPI cắt lớp, PPI, giá nhập khẩu, bán lẻ, PCE, lãi suất)]")
+    _FRED_CSV_CIRCUIT_BREAKER = 3
+    _fred_csv_consecutive_fails = 0
     for key, sid, label, unit in US_MACRO_SERIES:
+        if _fred_csv_consecutive_fails >= _FRED_CSV_CIRCUIT_BREAKER:
+            print(f"  [SKIP] FRED CSV {sid}: bỏ qua — {_fred_csv_consecutive_fails} chuỗi liên tiếp "
+                  f"trước đó đều thất bại (nghi bị chặn tốc độ kéo dài), dừng phần này để tiết kiệm "
+                  f"thời gian cho các phần còn lại.")
+            continue
         pts = fetch_fred_csv(sid, start="2015-01-01")
         if not pts:
-            print(f"  [WARN] FRED CSV {sid}: không tải được.")
+            time.sleep(3)
+            pts = fetch_fred_csv(sid, start="2015-01-01")
+        if not pts:
+            _fred_csv_consecutive_fails += 1
+            print(f"  [WARN] FRED CSV {sid}: không tải được (đã thử lại).")
             continue
+        _fred_csv_consecutive_fails = 0
+        time.sleep(1.2)
         monthly = {}
         for d, v in pts:
             monthly.setdefault(d[:7], []).append(v)
@@ -4586,24 +4610,16 @@ def update_vimo_raw():
         json.dump(sector_detail, f, ensure_ascii=False, indent=2)
     print(f"  -> Đã ghi {SECTOR_DETAIL_PATH}")
 
-    # Rủi ro lãi suất/thanh khoản TOÀN HỆ THỐNG ngân hàng (2026-08) — ghi RIÊNG vào
-    # data/bank_alm/<TICKER>.json (KHÔNG phải vimo_raw.json ở trên), template_vimo.py đọc lại các
-    # file này để tổng hợp. Kiểm tra RẺ cho cả 26 ngân hàng mỗi tuần (vài giây, chỉ gọi API liệt kê
-    # BCTC) — CHỈ ngân hàng nào thực sự có kỳ đã kiểm toán/soát xét MỚI hơn store hiện có mới bị OCR
-    # lại (đắt); các tuần thường (chưa ngân hàng nào công bố kỳ mới) gần như miễn phí. Bọc try/except
-    # để lỗi phần này KHÔNG làm hỏng toàn bộ phần vĩ mô đã fetch xong ở trên.
-    try:
-        from bank_system_risk import refresh_quarterly_balance_sheet_all_banks, refresh_bank_alm_data
-        print("\n[He thong ALM ngan hang] Cap nhat bang can doi quy (khong can OCR)...")
-        refresh_quarterly_balance_sheet_all_banks()
-        print("[He thong ALM ngan hang] Kiem tra do moi 2 bang gap (OCR chi khi thuc su can)...")
-        result = refresh_bank_alm_data()
-        print(f"  -> Ky muc tieu: {result.get('target_period')}, thay doi: {result.get('changed')}")
-        for ticker, action in (result.get("actions") or {}).items():
-            if action not in ("skip_da_co", "skip_da_va_dung_nguon", "skip_da_danh_dau_thieu"):
-                print(f"     {ticker}: {action}")
-    except Exception as e:
-        print(f"  [WARN] He thong ALM ngan hang: bo qua ({e})")
+    # SUA 2026-10-15 (user: "tôi muốn action cập nhật vĩ mô là sẽ cập nhật toàn bộ, chỉ riêng dữ
+    # liệu ALM ngân hàng là vào excel lấy dữ liệu ALM ra để cập nhật, còn ALM thì cập nhật riêng ở
+    # action riêng" — phat hien nguyen nhan CPI thang 9 khong len du da ra tin: khong phai thieu du
+    # lieu nguon (FRED da co san khi test truc tiep), ma nghi ngo step ALM (OCR 26 ngan hang, co the
+    # cham/treo) nam o CUOI update_vimo_raw() dang chiem het thoi gian timeout cua CA job truoc khi
+    # kip push, hoac chi don gian lam job phinh to/rui ro khong can thiet). Logic refresh ALM (truoc
+    # day goi truc tiep o day) da CHUYEN SANG workflow rieng (.github/workflows/update_bank_alm.yml,
+    # chay doc lap, co lich rieng) - update_vimo_raw() KHONG con dung toi bank_system_risk nua.
+    # template_vimo.py van doc data/bank_alm/*.json nhu cu (file nay duoc workflow ALM rieng cap
+    # nhat) de dung bao cao vi mo, KHONG can goi lai refresh o day.
 
 
 if __name__ == "__main__":
