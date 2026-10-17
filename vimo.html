@@ -479,6 +479,21 @@
                 <button class="vimo-fullscreen-btn" data-target="vnindex-pe-exvin-wrap" title="Xem toàn màn hình">⛶</button>
                 <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pe-exvin-history"></canvas></div>
             </div>
+            <!-- THEM 2026-10-17 (user: "VN10Y không có nhiều ý nghĩa trong định giá vì đặc thù VN
+                 là ngân hàng nắm nhiều không phổ thông nên không đại diện được như lợi suất trái
+                 phiếu mỹ... bổ sung thêm biểu đồ chứ không phải là thay thế" — xem kind 'pe_us'
+                 trong VALHIST_CHARTS_SPEC/app_vimo.js, dùng us_10y_yield (FRED DGS10) làm Rf thay
+                 vì govt_bond_yield_10y VN, GIỮ NGUYÊN 2 biểu đồ VN ở trên.) -->
+            <p class="vimo-chart-title">P/E VN-Index (headline, có VIN) vs dải thống kê &amp; 1.5×/2× lợi suất TPCP MỸ 10 năm</p>
+            <div class="vimo-valhist-chart-wrap" id="vnindex-pe-us-wrap">
+                <button class="vimo-fullscreen-btn" data-target="vnindex-pe-us-wrap" title="Xem toàn màn hình">⛶</button>
+                <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pe-history-us"></canvas></div>
+            </div>
+            <p class="vimo-chart-title">P/E VN-Index ex-VIN (loại VIC/VHM/VRE/VPL) vs dải thống kê &amp; 1.5×/2× lợi suất TPCP MỸ 10 năm</p>
+            <div class="vimo-valhist-chart-wrap" id="vnindex-pe-exvin-us-wrap">
+                <button class="vimo-fullscreen-btn" data-target="vnindex-pe-exvin-us-wrap" title="Xem toàn màn hình">⛶</button>
+                <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pe-exvin-history-us"></canvas></div>
+            </div>
             <p class="vimo-chart-title">P/B VN-Index (headline, có VIN) vs dải thống kê &amp; P/B hợp lý (CAPM)</p>
             <div class="vimo-valhist-chart-wrap" id="vnindex-pb-wrap">
                 <button class="vimo-fullscreen-btn" data-target="vnindex-pb-wrap" title="Xem toàn màn hình">⛶</button>
@@ -489,7 +504,7 @@
                 <button class="vimo-fullscreen-btn" data-target="vnindex-pb-exvin-wrap" title="Xem toàn màn hình">⛶</button>
                 <div class="vimo-chart-canvas-box"><canvas id="chart-vnindex-pb-exvin-history"></canvas></div>
             </div>
-            <p class="ind-source-note" style="margin-top:10px">Nguồn headline: trading.vietcap.com.vn (Vietcap IQ), từ 22/04/2009. Nguồn ex-VIN: GitHub Truongutc/AIC---chart-nganh (loại VIC/VHM/VRE/VPL). Dải trung bình/±1SD/±2SD tính trên toàn bộ lịch sử của từng chuỗi. Rê chuột vào biểu đồ để xem giá trị tại từng ngày.</p>
+            <p class="ind-source-note" style="margin-top:10px">Nguồn headline: trading.vietcap.com.vn (Vietcap IQ), từ 22/04/2009. Nguồn ex-VIN: GitHub Truongutc/AIC---chart-nganh (loại VIC/VHM/VRE/VPL). Dải trung bình/±1SD/±2SD tính trên toàn bộ lịch sử của từng chuỗi. 2 biểu đồ "TPCP MỸ 10 năm" dùng Rf = lợi suất TPCP Mỹ 10 năm hiện tại (fred.stlouisfed.org, DGS10) thay vì TPCP VN — theo nhận định VN10Y bị chi phối bởi khối ngân hàng nắm giữ, kém đại diện cho mặt bằng lãi suất phi rủi ro thị trường hơn TPCP Mỹ. Rê chuột vào biểu đồ để xem giá trị tại từng ngày.</p>
         </div>
 
         <!-- Tổng hợp phân tích đa chỉ số -->

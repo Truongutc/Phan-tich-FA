@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // (2026-07-25) yêu cầu đưa lên web, đặt ngay dưới Scorecard, dạng ngang/rộng nhất có thể,
     // có nút xem toàn màn hình + khung thời gian lọc.
     const valHist = await fetch('data/vnindex_valuation_history.json').then(r => r.ok ? r.json() : null).catch(() => null);
-    if (valHist) renderVnindexValuationHistory(valHist, data.marketValuation);
+    if (valHist) renderVnindexValuationHistory(valHist, data.marketValuation, data.indicators);
 });
 
 function renderSynthesis(synthesis) {
@@ -3030,6 +3030,14 @@ const VALHIST_CHARTS_SPEC = [
     { dataKey: 'pe_exvin', canvasId: 'chart-vnindex-pe-exvin-history', unit: 'P/E', kind: 'pe' },
     { dataKey: 'pb', canvasId: 'chart-vnindex-pb-history', unit: 'P/B', kind: 'pb' },
     { dataKey: 'pb_exvin', canvasId: 'chart-vnindex-pb-exvin-history', unit: 'P/B', kind: 'pb' },
+    // THEM 2026-10-17 (user: "tôi thấy lợi suất VN10Y không có nhiều ý nghĩa trong định giá vì đặc
+    // thù VN là ngân hàng nắm nhiều không phổ thông nên không đại diện được như lợi suất trái
+    // phiếu mỹ... bổ sung thêm biểu đồ chứ không phải là thay thế" — DÙNG LẠI đúng dữ liệu P/E
+    // (headline/ex-VIN) đã có, chỉ đổi đường tham chiếu Rf sang lợi suất TPCP Mỹ 10 năm
+    // (us_10y_yield) — xem kind 'pe_us' trong drawValHistCharts. dataKey TRÙNG với spec VN ở trên
+    // là CÓ CHỦ Ý (cùng nguồn P/E), canvasId khác nên không ghi đè chart.
+    { dataKey: 'pe', canvasId: 'chart-vnindex-pe-history-us', unit: 'P/E', kind: 'pe_us' },
+    { dataKey: 'pe_exvin', canvasId: 'chart-vnindex-pe-exvin-history-us', unit: 'P/E', kind: 'pe_us' },
 ];
 let valHistCharts = {};
 let valHistData = null; // {pe, pe_exvin, pb, pb_exvin} gốc, giữ lại để đổi khung thời gian không cần fetch lại
@@ -3043,7 +3051,7 @@ function decimate(arr, maxPoints) {
     return out;
 }
 
-function renderVnindexValuationHistory(hist, marketValuation) {
+function renderVnindexValuationHistory(hist, marketValuation, indicators) {
     if (!hist || VALHIST_CHARTS_SPEC.every(s => !hist[s.dataKey])) return;
     valHistData = hist;
     document.getElementById('vnindex-valhist-card').style.display = '';
@@ -3057,7 +3065,7 @@ function renderVnindexValuationHistory(hist, marketValuation) {
         btn.addEventListener('click', () => {
             btnWrap.querySelectorAll('.vimo-range-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            drawValHistCharts(btn.dataset.range, marketValuation);
+            drawValHistCharts(btn.dataset.range, marketValuation, indicators);
         });
     });
 
@@ -3080,7 +3088,7 @@ function renderVnindexValuationHistory(hist, marketValuation) {
         setTimeout(() => Object.values(valHistCharts).forEach(c => c?.resize()), 50);
     });
 
-    drawValHistCharts('ALL', marketValuation);
+    drawValHistCharts('ALL', marketValuation, indicators);
 }
 
 function filterByRange(values, days) {
@@ -3091,7 +3099,7 @@ function filterByRange(values, days) {
     return values.filter(p => p.date >= cutoffStr);
 }
 
-function drawValHistCharts(rangeKey, marketValuation) {
+function drawValHistCharts(rangeKey, marketValuation, indicators) {
     const range = VALHIST_RANGES.find(r => r.key === rangeKey) || VALHIST_RANGES[VALHIST_RANGES.length - 1];
     const rf = marketValuation && marketValuation.rf;
     const capm = marketValuation && marketValuation.capm_valuation;
@@ -3105,14 +3113,30 @@ function drawValHistCharts(rangeKey, marketValuation) {
     if (capm && capm.justified_pb) {
         pbExtra.push({ label: 'P/B hợp lý (CAPM)', value: capm.justified_pb, color: '#8b5cf6' });
     }
+    // THEM 2026-10-17 (user: "VN10Y không đại diện được như lợi suất trái phiếu Mỹ vì đặc thù VN
+    // là ngân hàng nắm nhiều... bổ sung thêm biểu đồ chứ không phải là thay thế") — dung Rf = loi
+    // suat TPCP My 10 nam (us_10y_yield, FRED DGS10) thay vi VN, ve THEM 2 chart rieng (kind
+    // 'pe_us' trong VALHIST_CHARTS_SPEC), KHONG dung chung voi peExtra (VN) o tren.
+    const usYieldInd = indicators && indicators['us_10y_yield'];
+    const usYieldPts = usYieldInd && usYieldInd.series.filter(p => p.value !== null && p.value !== undefined);
+    const rfUS = usYieldPts && usYieldPts.length ? usYieldPts[usYieldPts.length - 1].value / 100 : null;
+    const peExtraUS = [];
+    if (rfUS) {
+        peExtraUS.push({ label: `P/E hoà vốn (2×Rf Mỹ ${(rfUS * 100).toFixed(2)}%)`, value: 1 / (2 * rfUS), color: '#38bdf8' });
+        peExtraUS.push({ label: `P/E trung tính (1.5×Rf Mỹ ${(rfUS * 100).toFixed(2)}%)`, value: 1 / (1.5 * rfUS), color: '#fb923c' });
+    }
+    const EXTRA_LINES_BY_KIND = { pe: peExtra, pe_us: peExtraUS, pb: pbExtra };
 
     VALHIST_CHARTS_SPEC.forEach(spec => {
         const data = valHistData[spec.dataKey];
         if (!data || !data.values) return;
         const filtered = decimate(filterByRange(data.values, range.days), VALHIST_MAX_POINTS);
-        const extraLines = spec.kind === 'pe' ? peExtra : pbExtra;
-        valHistCharts[spec.dataKey] = drawOneValHistChart(
-            spec.canvasId, valHistCharts[spec.dataKey], filtered, data, spec.unit, '#3b82f6', extraLines);
+        const extraLines = EXTRA_LINES_BY_KIND[spec.kind] || [];
+        // SUA 2026-10-17: key theo canvasId (KHONG PHAI dataKey) — 2 chart 'pe_us' dung CHUNG
+        // dataKey voi 2 chart 'pe' o tren (cung nguon P/E, khac duong tham chieu Rf), neu con key
+        // theo dataKey se GHI DE/HUY NHAM chart instance cua nhau vi trung key.
+        valHistCharts[spec.canvasId] = drawOneValHistChart(
+            spec.canvasId, valHistCharts[spec.canvasId], filtered, data, spec.unit, '#ffffff', extraLines);
     });
 }
 
@@ -3129,7 +3153,7 @@ function drawOneValHistChart(canvasId, existingChart, points, bandData, unitLabe
     const datasets = [{
         label: `${unitLabel} VN-Index`, data: points.map(p => p.value),
         borderColor: lineColor, backgroundColor: lineColor + '10', fill: false,
-        tension: 0, pointRadius: 0, borderWidth: 1.4,
+        tension: 0, pointRadius: 0, borderWidth: 2.5,
     }];
     bandSpecs.forEach(([key, label, color, dash]) => {
         if (bandData[key] === undefined || bandData[key] === null) return;
