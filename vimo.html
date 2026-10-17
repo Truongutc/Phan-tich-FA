@@ -85,8 +85,20 @@
         .monitoring-table-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); border-radius: 6px; }
         .monitoring-table-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; }
         .monitoring-table-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
-        .monitoring-table { border-collapse: collapse; width: 100%; font-size: 0.82em; }
+        /* SUA 2026-10-18 (user: "co nho các dòng lại được không, thu gọn kích thước ngang của 1 ô
+           dữ liệu... nếu nhiều cột quá thì làm dạng thanh kéo ngang" — truoc day width:100% khien
+           bang LUON gian het chieu rong card du it cot (vd GDP theo nganh chi 10 quy) -> moi o du
+           lieu bi keo rong qua muc can thiet. Bo width:100% (bang tu co kich thuoc theo noi dung
+           that), gan min-width RIENG cho o du lieu (khong phai o ten hang) de deu nhau/gon gang;
+           khi nhieu cot (vd CPI/XK/NK theo mat hang ~26 thang) bang se rong hon khung chua va
+           .monitoring-table-scroll (da co san overflow-x:auto o tren) tu dong hien thanh cuon
+           ngang, KHONG can code moi. */
+        /* width:auto (KHONG PHAI chi bo qua) de GHI DE rule "table { width: 100% }" toan site
+           (style.css) - neu chi bo thuoc tinh width thi rule do van ap dung qua cascade thong
+           thuong, bang van bi keo gian het card du da bo "width:100%" o day. */
+        .monitoring-table { border-collapse: collapse; font-size: 0.82em; width: auto; }
         .monitoring-table th, .monitoring-table td { padding: 3px 5px; text-align: center; }
+        .monitoring-table thead th:not(:first-child), .monitoring-table tbody td { min-width: 62px; }
         /* white-space:nowrap CHỈ áp cho ô dữ liệu (số không được xuống dòng) — KHÔNG áp cho cột
            tên hàng (xem .monitoring-table tbody th bên dưới): mobile fix 2026-10-02 (user báo ảnh
            chụp màn hình điện thoại: cột tên hàng đọc được nhưng cột dữ liệu chỉ thấy vạch màu mỏng,
