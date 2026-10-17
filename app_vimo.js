@@ -2779,18 +2779,19 @@ function renderMonitoringTable(table) {
     const thead = `<thead><tr><th>Chỉ báo</th>${periods.map(p => `<th>${_periodToShortLabel(p)}</th>`).join('')}</tr></thead>`;
 
     const tbody = table.rows.map(row => {
-        // colorMin/colorMax = min-max của TOÀN BỘ LỊCH SỬ chỉ báo (tính sẵn trong
-        // _build_monitoring_table, template_vimo.py) — KHÔNG dùng min-max của riêng N tháng đang
-        // hiển thị, tránh bóp méo màu khi cửa sổ hiển thị vô tình chỉ toàn giá trị đã cao/thấp
-        // sẵn (user 2026-08-03: tín dụng 18,23% vẫn cao so lịch sử nhưng bị tô đỏ vì cửa sổ hiện
-        // tại chỉ có 18-22%).
-        const lo = row.colorMin, hi = row.colorMax;
+        // SUA 2026-10-17 (user: "đổi màu là trắng, đỏ dần xanh dần... tăng dần thì xanh lá đậm dần
+        // và giảm dần là đỏ đậm dần" — bỏ thang min-max/goodDirection cũ, chuyển sang PHÂN KỲ quanh
+        // 1 mốc trung tâm, dùng LẠI colorMin/colorMax (toàn bộ lịch sử, tránh bóp méo theo cửa sổ
+        // hiển thị — lý do giữ nguyên như comment cũ) chỉ để xác định ĐỘ BÃO HOÀ màu, không còn
+        // dùng để nội suy vị trí tương đối nữa. PMI là CHỈ SỐ (center=50, không phải %YoY) nên
+        // riêng dòng này lệch tâm về 50 thay vì 0.
+        const center = row.key === 'pmi_manufacturing' ? 50 : 0;
+        const maxAbs = Math.max(Math.abs(row.colorMin - center), Math.abs(row.colorMax - center)) || 1;
         const alt = new Set(row.altSourceIdx || []);
         const cells = row.values.map((v, ci) => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
-            let g = hi === lo ? 0.5 : (v - lo) / (hi - lo);
-            if (row.goodDirection === 'lower') g = 1 - g;
-            const bg = _heatmapColor(g);
+            const g = (v - center) / maxAbs;
+            const bg = _heatmapColorDivergingStd(g);
             const star = alt.has(ci) ? '<sup title="Nguồn phụ: Tổng cục Thống kê (số Hải quan chưa công bố)">*</sup>' : '';
             return `<td style="background:${bg}">${formatNumber(v)}${row.unit === '%' ? '%' : ''}${star}</td>`;
         }).join('');
@@ -2804,20 +2805,6 @@ function renderMonitoringTable(table) {
         if (!noteEl) { noteEl = document.createElement('p'); noteEl.id = 'monitoring-table-altnote'; noteEl.className = 'ind-source-note'; el.insertAdjacentElement('afterend', noteEl); }
         noteEl.textContent = '* Ô có dấu * lấy từ nguồn phụ (Tổng cục Thống kê) vì số liệu Hải quan tháng đó chưa được công bố; các ô "—" còn lại là kỳ nguồn chưa công bố hoặc nguồn không có số liệu.';
     } else if (noteEl) { noteEl.remove(); }
-}
-
-function _heatmapColor(g) {
-    // g=0 -> đỏ (#ef4444), g=1 -> xanh (#10b981) — lerp RGB tuyến tính. Alpha: 0.55 (gốc) -> 0.85
-    // (2026-08-07) -> 1.0 (2026-08-08, user vẫn thấy tối trên điện thoại) — ĐỦ 1.0 nghĩa là màu
-    // nền ô = ĐÚNG màu đỏ/xanh gốc, không còn bị pha loãng bởi nền thẻ tối phía sau nữa (alpha <1
-    // luôn bị nền tối đằng sau ăn bớt độ sáng, thấy rõ hơn trên màn hình điện thoại độ sáng/tương
-    // phản thấp hơn desktop). Chữ trong ô vẫn cố định màu TỐI (color:#0b1220 trong CSS) nên nền
-    // càng đặc màu càng dễ đọc, không có lý do giữ alpha <1 nữa.
-    const red = [239, 68, 68], green = [16, 185, 129];
-    const r = Math.round(red[0] + (green[0] - red[0]) * g);
-    const gr = Math.round(red[1] + (green[1] - red[1]) * g);
-    const b = Math.round(red[2] + (green[2] - red[2]) * g);
-    return `rgba(${r},${gr},${b},1)`;
 }
 
 // Bảng GDP theo ngành / CPI theo nhóm hàng (heatmap YoY, user 2026-10-01) — dựng sẵn trong
@@ -2841,13 +2828,14 @@ function _renderHeatmapTableGeneric(cardId, elId, table, firstColLabel) {
 
     const periods = table.periods;
     const thead = `<thead><tr><th>${firstColLabel}</th>${periods.map(p => `<th>${_periodToShortLabelQOrM(p)}</th>`).join('')}</tr></thead>`;
+    // SUA 2026-10-17: doi sang mau PHAN KY quanh 0 (tang=xanh la, giam=do) - xem ghi chu day du o
+    // renderMonitoringTable, cung ly do/cung cach dung lai colorMin/colorMax (toan bo lich su) chi
+    // de xac dinh do bao hoa.
     const tbody = table.rows.map(row => {
-        const lo = row.colorMin, hi = row.colorMax;
+        const maxAbs = Math.max(Math.abs(row.colorMin), Math.abs(row.colorMax)) || 1;
         const cells = row.values.map(v => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
-            let g = hi === lo ? 0.5 : (v - lo) / (hi - lo);
-            if (row.goodDirection === 'lower') g = 1 - g;
-            const bg = _heatmapColor(g);
+            const bg = _heatmapColorDivergingStd(v / maxAbs);
             return `<td style="background:${bg}">${formatNumber(v)}%</td>`;
         }).join('');
         return `<tr><th>${row.label}</th>${cells}</tr>`;
@@ -2882,10 +2870,29 @@ function renderImportCommodityTable(table) {
 const DIVERGING_SCALE_PCT = 30;
 
 function _heatmapColorDiverging(g) {
-    // g từ -1 (giảm mạnh, xanh #10b981) tới 0 (trắng) tới +1 (tăng mạnh, đỏ #ef4444).
+    // g từ -1 (giảm mạnh, xanh #10b981) tới 0 (trắng) tới +1 (tăng mạnh, đỏ #ef4444). QUY ƯỚC
+    // RIÊNG cho bảng GIÁ XK/NK: giá tăng = đỏ/xấu (lạm phát chi phí), giá giảm = xanh/tốt.
     const white = [255, 255, 255];
     const red = [239, 68, 68], green = [16, 185, 129];
     const target = g >= 0 ? red : green;
+    const t = Math.min(Math.abs(g), 1);
+    const r = Math.round(white[0] + (target[0] - white[0]) * t);
+    const gr = Math.round(white[1] + (target[1] - white[1]) * t);
+    const b = Math.round(white[2] + (target[2] - white[2]) * t);
+    return `rgba(${r},${gr},${b},1)`;
+}
+
+// THEM 2026-10-17 (user: "setup màu theo dạng bình thường là trắng, đỏ dần và xanh dần như bảng
+// Giá xuất khẩu... và chuyển lại format là tăng dần thì màu xanh lá đậm dần và giảm dần là đỏ đậm
+// dần" — ÁP DỤNG cho renderMonitoringTable/GDP/CPI-nhóm/XK-NK theo mặt hàng, THAY THẾ _heatmapColor
+// (thang min-max riêng từng hàng, xanh=tốt/đỏ=xấu theo goodDirection — bị chê "màu xấu", vì nhìn
+// như nâu/olive khi phần lớn giá trị nằm giữa dải). QUY ƯỚC NGƯỢC với _heatmapColorDiverging ở
+// trên: tăng (dương) = XANH LÁ, giảm (âm) = ĐỎ — không còn phụ thuộc goodDirection, chỉ theo dấu
+// giá trị thực tế (đơn giản, dễ đọc hơn, đúng ý "bình thường" người dùng muốn).
+function _heatmapColorDivergingStd(g) {
+    const white = [255, 255, 255];
+    const green = [16, 185, 129], red = [239, 68, 68];
+    const target = g >= 0 ? green : red;
     const t = Math.min(Math.abs(g), 1);
     const r = Math.round(white[0] + (target[0] - white[0]) * t);
     const gr = Math.round(white[1] + (target[1] - white[1]) * t);
