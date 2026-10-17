@@ -395,7 +395,7 @@
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="monitoring-table"></table>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">Màu PHÂN KỲ quanh mốc trung tâm (trắng = gần mốc, xanh lá đậm dần = tăng, đỏ đậm dần = giảm so với mốc — riêng dòng "PMI sản xuất" lấy mốc 50, các dòng còn lại lấy mốc 0) — độ bão hoà màu theo giá trị tuyệt đối lớn nhất của TOÀN BỘ LỊCH SỬ chỉ báo (không chỉ 13 tháng đang hiển thị). Chỉ hiện chỉ báo có đủ dữ liệu (≥6/13 tháng) trong cửa sổ. Lưu ý riêng "Tỷ lệ giải ngân đầu tư công": đây là số LŨY KẾ TỪ ĐẦU NĂM (reset thấp mỗi tháng 1 rồi tăng dần), nên màu xanh đậm dần trong năm phản ánh tiến độ giải ngân tăng dần, không phải "đang xấu đi" theo nghĩa thông thường.</p>
+            <p class="ind-source-note" style="margin-top:8px">Màu PHÂN KỲ quanh TRUNG VỊ của riêng từng chỉ báo (trắng = gần trung vị, xanh lá đậm dần = cao hơn trung vị, đỏ đậm dần = thấp hơn trung vị) — mỗi chỉ báo có mặt bằng giá trị khác nhau (vd PMI quanh 50, tín dụng luôn dương quanh 15-20%) nên không dùng chung 1 mốc 0% cố định. Trung vị + độ bão hoà màu (theo độ lệch tuyệt đối trung vị, MAD) tính trên TOÀN BỘ LỊCH SỬ chỉ báo (không chỉ 13 tháng đang hiển thị), tránh 1 điểm dị thường làm nhạt màu cả hàng. Chỉ hiện chỉ báo có đủ dữ liệu (≥6/13 tháng) trong cửa sổ. Lưu ý riêng "Tỷ lệ giải ngân đầu tư công": đây là số LŨY KẾ TỪ ĐẦU NĂM (reset thấp mỗi tháng 1 rồi tăng dần), nên màu phản ánh vị trí so với trung vị lũy kế nhiều năm, không phải "đang xấu đi" theo nghĩa thông thường.</p>
         </div>
 
         <!-- Bảng GDP theo ngành (YoY, tự tính từ MỨC giá so sánh — NSO qua dulieukinhte.com), heatmap
@@ -405,7 +405,7 @@
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="gdp-sector-table"></table>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ MỨC GDP theo giá so sánh (quý, nguồn Cục Thống kê qua dulieukinhte.com) — so cùng quý năm trước. Màu PHÂN KỲ quanh mốc 0% (trắng = gần 0%, xanh lá đậm dần = tăng trưởng, đỏ đậm dần = suy giảm) — độ bão hoà màu theo giá trị tuyệt đối lớn nhất của TOÀN BỘ LỊCH SỬ YoY của chính ngành đó. Chỉ hiện ngành có ≥4 điểm YoY.</p>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ MỨC GDP theo giá so sánh (quý, nguồn Cục Thống kê qua dulieukinhte.com) — so cùng quý năm trước. Màu PHÂN KỲ quanh TRUNG VỊ của riêng từng ngành (trắng = gần trung vị, xanh lá đậm dần = cao hơn trung vị, đỏ đậm dần = thấp hơn trung vị — KHÔNG dùng mốc 0% chung vì mỗi ngành có mặt bằng tăng trưởng khác nhau, vd ngành luôn tăng 7-15% thì "tăng 10%" là bình thường/nhạt màu, ngành thường chỉ 2-3% thì "tăng 10%" mới là bất thường/đậm màu) — độ bão hoà theo độ lệch tuyệt đối trung vị (MAD) của TOÀN BỘ LỊCH SỬ YoY ngành đó. Chỉ hiện ngành có ≥4 điểm YoY.</p>
         </div>
 
         <!-- Bảng CPI theo nhóm hàng (YoY, tự tính từ chỉ số giá — NSO qua dulieukinhte.com), heatmap
@@ -415,7 +415,7 @@
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="cpi-group-table"></table>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ chỉ số giá theo nhóm hàng (tháng, nguồn Cục Thống kê qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh mốc 0% (trắng = gần 0%, xanh lá đậm dần = tăng giá, đỏ đậm dần = giảm giá) — độ bão hoà màu theo giá trị tuyệt đối lớn nhất của TOÀN BỘ LỊCH SỬ YoY của chính nhóm đó. Chỉ hiện nhóm có ≥6 điểm YoY.</p>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ chỉ số giá theo nhóm hàng (tháng, nguồn Cục Thống kê qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh TRUNG VỊ của riêng từng nhóm hàng (trắng = gần trung vị, xanh lá đậm dần = tăng giá nhiều hơn mức thường thấy của nhóm đó, đỏ đậm dần = tăng giá ít hơn/giảm giá so với mức thường thấy) — độ bão hoà theo độ lệch tuyệt đối trung vị (MAD) của TOÀN BỘ LỊCH SỬ YoY nhóm đó. Chỉ hiện nhóm có ≥6 điểm YoY.</p>
         </div>
 
         <!-- Bảng XK theo mặt hàng (YoY, user 2026-10-01: "mặt hàng nào đang xuất khẩu tốt lên") -->
@@ -424,7 +424,7 @@
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="export-commodity-table"></table>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ kim ngạch xuất khẩu theo mặt hàng (tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh mốc 0% (trắng = gần 0%, xanh lá đậm dần = tăng trưởng, đỏ đậm dần = suy giảm) — độ bão hoà màu theo giá trị tuyệt đối lớn nhất của TOÀN BỘ LỊCH SỬ YoY của chính mặt hàng đó. Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ kim ngạch xuất khẩu theo mặt hàng (tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh TRUNG VỊ của riêng từng mặt hàng (trắng = gần trung vị, xanh lá đậm dần = tăng trưởng mạnh hơn mức thường thấy của mặt hàng đó, đỏ đậm dần = yếu hơn/suy giảm so với mức thường thấy) — độ bão hoà theo độ lệch tuyệt đối trung vị (MAD) của TOÀN BỘ LỊCH SỬ YoY mặt hàng đó, tránh 1 quý đột biến (vd +500%) làm nhạt màu cả hàng. Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
         </div>
 
         <!-- Bảng NK theo mặt hàng (YoY) -->
@@ -433,7 +433,7 @@
             <div class="monitoring-table-scroll">
                 <table class="monitoring-table" id="import-commodity-table"></table>
             </div>
-            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ kim ngạch nhập khẩu theo mặt hàng (tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh mốc 0% (trắng = gần 0%, xanh lá đậm dần = tăng, đỏ đậm dần = giảm) — độ bão hoà màu theo giá trị tuyệt đối lớn nhất của TOÀN BỘ LỊCH SỬ YoY của chính mặt hàng đó (CHỈ phản ánh xu hướng khối lượng/giá trị nhập, KHÔNG hàm ý tốt/xấu — nhập khẩu tăng có thể vì cầu sản xuất trong nước tăng). Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
+            <p class="ind-source-note" style="margin-top:8px">%YoY tự tính từ kim ngạch nhập khẩu theo mặt hàng (tháng, nguồn Tổng cục Hải quan qua dulieukinhte.com) — so cùng tháng năm trước. Màu PHÂN KỲ quanh TRUNG VỊ của riêng từng mặt hàng (trắng = gần trung vị, xanh lá đậm dần = tăng mạnh hơn mức thường thấy, đỏ đậm dần = yếu hơn/giảm so với mức thường thấy) — độ bão hoà theo độ lệch tuyệt đối trung vị (MAD) của TOÀN BỘ LỊCH SỬ YoY mặt hàng đó (CHỈ phản ánh xu hướng khối lượng/giá trị nhập, KHÔNG hàm ý tốt/xấu — nhập khẩu tăng có thể vì cầu sản xuất trong nước tăng). Chỉ hiện mặt hàng có ≥6 điểm YoY.</p>
         </div>
 
         <!-- Bảng giá XK bình quân theo mặt hàng (YoY, màu phân kỳ, user 2026-10-01: "giá đang căng

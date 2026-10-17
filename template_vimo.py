@@ -35,6 +35,7 @@ import re
 import json
 import datetime
 import subprocess
+import statistics
 import requests
 
 import matplotlib
@@ -4401,6 +4402,33 @@ _MONITORING_FALLBACK = {
 }
 
 
+# THEM 2026-10-17 (user: "setup màu theo dạng so với trung vị hay gì đó chứ, nhìn bảng toàn xanh
+# lè thế này... trước là còn setup theo mức độ của từng dòng để tự setup màu mà vì có cái tăng 10%
+# là thấp nhưng có cái tăng chỉ 2% thô là rất cao rồi" — mau PHAN KY quanh 0/50 co dinh (sua truoc
+# do) khong dung vi moi hang co MAT BANG rieng (GDP nganh thuong 7-15%, mot so nhom CPI gan 0,
+# PMI quanh 50...) - mot so hang LUON mot mau (vd GDP luon xanh vi hau nhu khong am) khong phan
+# biet duoc "tang nhieu/it" trong CHINH no. Doi tam mau ve TRUNG VI cua rieng hang do (khong con can
+# truong hop rieng PMI nua - trung vi tu nhien nam gan 50 cho PMI) + do bao hoa theo MAD (median
+# absolute deviation) - on dinh hon min-max/std vi khong bi 1 diem di thuong (vd dot bien +500%)
+# keo gian ca thang mau cua CA cac diem con lai.
+def _color_scale_stats(all_vals, mad_multiplier=2.5):
+    """Tra {colorMin, colorMax, colorMedian, colorScale} tu list gia tri toan bo lich su 1 hang —
+    dung de ve mau PHAN KY quanh TRUNG VI (khong phai mot 0/50 co dinh). colorScale = MAD x
+    mad_multiplier, la nguong de mau dat BAO HOA (g=+-1); mad_multiplier=2.5 nghia la gia tri lech
+    trung vi hon 2.5 lan MAD moi dat mau day nhat, da so diem "binh thuong" (lech <=1 MAD, ly thuyet
+    thong ke ~50% diem neu phan phoi dong deu quanh trung vi) se co mau phan biet ro ret quanh
+    nua-nua thang, khong bi 1 diem di thuong lam nhat mau toan bo hang."""
+    median = statistics.median(all_vals)
+    mad = statistics.median(abs(v - median) for v in all_vals)
+    if mad == 0:
+        span = max(all_vals) - min(all_vals)
+        mad = span / 4 if span else 1.0
+    return {
+        "colorMin": min(all_vals), "colorMax": max(all_vals),
+        "colorMedian": round(median, 4), "colorScale": round(mad * mad_multiplier, 4),
+    }
+
+
 def _build_monitoring_table(raw, n_months=13):
     """Bảng giám sát chỉ số vĩ mô hàng tháng (heatmap, user 2026-08-03) — lấy N tháng gần nhất
     (hợp nhất từ mọi chỉ báo trong _MONITORING_TABLE_ROWS), mỗi hàng chỉ đưa vào bảng nếu có ĐỦ
@@ -4449,7 +4477,7 @@ def _build_monitoring_table(raw, n_months=13):
         rows.append({"key": key, "label": label, "unit": ind["unit"],
                      "goodDirection": ind["good_direction"], "values": values,
                      "altSourceIdx": alt_idx,
-                     "colorMin": min(all_vals), "colorMax": max(all_vals)})
+                     **_color_scale_stats(all_vals)})
     if not rows:
         return None
     return {"periods": periods, "rows": rows}
@@ -4579,7 +4607,7 @@ def _build_level_yoy_heatmap(level_data, quarterly, n_periods, min_points, good_
             continue
         all_vals = list(yoy.values())
         rows.append({"label": label, "values": values,
-                     "colorMin": min(all_vals), "colorMax": max(all_vals),
+                     **_color_scale_stats(all_vals),
                      "goodDirection": good_direction})
     if not rows:
         return None

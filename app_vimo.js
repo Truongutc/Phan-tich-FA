@@ -2779,18 +2779,19 @@ function renderMonitoringTable(table) {
     const thead = `<thead><tr><th>Chỉ báo</th>${periods.map(p => `<th>${_periodToShortLabel(p)}</th>`).join('')}</tr></thead>`;
 
     const tbody = table.rows.map(row => {
-        // SUA 2026-10-17 (user: "đổi màu là trắng, đỏ dần xanh dần... tăng dần thì xanh lá đậm dần
-        // và giảm dần là đỏ đậm dần" — bỏ thang min-max/goodDirection cũ, chuyển sang PHÂN KỲ quanh
-        // 1 mốc trung tâm, dùng LẠI colorMin/colorMax (toàn bộ lịch sử, tránh bóp méo theo cửa sổ
-        // hiển thị — lý do giữ nguyên như comment cũ) chỉ để xác định ĐỘ BÃO HOÀ màu, không còn
-        // dùng để nội suy vị trí tương đối nữa. PMI là CHỈ SỐ (center=50, không phải %YoY) nên
-        // riêng dòng này lệch tâm về 50 thay vì 0.
-        const center = row.key === 'pmi_manufacturing' ? 50 : 0;
-        const maxAbs = Math.max(Math.abs(row.colorMin - center), Math.abs(row.colorMax - center)) || 1;
+        // SUA 2026-10-17 (user: "setup màu theo dạng so với trung vị hay gì đó chứ, nhìn bảng
+        // toàn xanh lè thế này... có cái tăng 10% là thấp nhưng có cái tăng chỉ 2% thì đã là rất
+        // cao rồi" — mốc 0/50 cố định SAI vì mỗi hàng có MẶT BẰNG riêng (GDP ngành thường luôn
+        // dương 7-15% nên luôn 1 màu, không phân biệt được "tăng nhiều/ít" trong CHÍNH nó). Đổi
+        // tâm màu về TRUNG VỊ của riêng hàng đó (colorMedian) + độ bão hoà theo MAD×2.5
+        // (colorScale, xem _color_scale_stats trong template_vimo.py) — KHÔNG còn cần case riêng
+        // PMI nữa (trung vị tự nhiên nằm gần 50 cho PMI).
+        const center = row.colorMedian ?? 0;
+        const scale = row.colorScale || 1;
         const alt = new Set(row.altSourceIdx || []);
         const cells = row.values.map((v, ci) => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
-            const g = (v - center) / maxAbs;
+            const g = (v - center) / scale;
             const bg = _heatmapColorDivergingStd(g);
             const star = alt.has(ci) ? '<sup title="Nguồn phụ: Tổng cục Thống kê (số Hải quan chưa công bố)">*</sup>' : '';
             return `<td style="background:${bg}">${formatNumber(v)}${row.unit === '%' ? '%' : ''}${star}</td>`;
@@ -2828,14 +2829,15 @@ function _renderHeatmapTableGeneric(cardId, elId, table, firstColLabel) {
 
     const periods = table.periods;
     const thead = `<thead><tr><th>${firstColLabel}</th>${periods.map(p => `<th>${_periodToShortLabelQOrM(p)}</th>`).join('')}</tr></thead>`;
-    // SUA 2026-10-17: doi sang mau PHAN KY quanh 0 (tang=xanh la, giam=do) - xem ghi chu day du o
-    // renderMonitoringTable, cung ly do/cung cach dung lai colorMin/colorMax (toan bo lich su) chi
-    // de xac dinh do bao hoa.
+    // SUA 2026-10-17: doi tam mau ve TRUNG VI rieng cua hang (colorMedian) + do bao hoa theo MAD
+    // (colorScale) - xem ghi chu day du o renderMonitoringTable/_color_scale_stats
+    // (template_vimo.py). Tang so voi trung vi = xanh la, giam so voi trung vi = do.
     const tbody = table.rows.map(row => {
-        const maxAbs = Math.max(Math.abs(row.colorMin), Math.abs(row.colorMax)) || 1;
+        const center = row.colorMedian ?? 0;
+        const scale = row.colorScale || 1;
         const cells = row.values.map(v => {
             if (v === null || v === undefined) return `<td class="na">—</td>`;
-            const bg = _heatmapColorDivergingStd(v / maxAbs);
+            const bg = _heatmapColorDivergingStd((v - center) / scale);
             return `<td style="background:${bg}">${formatNumber(v)}%</td>`;
         }).join('');
         return `<tr><th>${row.label}</th>${cells}</tr>`;
