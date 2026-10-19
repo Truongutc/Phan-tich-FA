@@ -1860,11 +1860,21 @@ function renderUsMacro(usm) {
     // SUA 2026-10-08 (user: "thêm đường line PPI đi, để xem có dẫn truyền sang chi phí sản xuất
     // không" — ph.ppi_hist dùng CHUNG mảng periods với hist (cùng biến `periods` gốc bên Python)
     // nên ghép thẳng được, không lệch trục thời gian).
-    mk('chart-us-headline', { type: 'line', data: { labels: hist.periods, datasets: [
-        line('CPI toàn phần YoY (%)', hist.cpi_yoy, '#60a5fa'),
-        line('CPI lõi YoY (%)', hist.core_yoy, '#f59e0b', [5, 4]),
-        line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy, '#a78bfa', [2, 2])] },
-        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
+    // SUA 2026-10-19 (user: "ở CPI mỹ thì đồng nhất khung thời gian 2 biểu đồ và 1 bảng dữ liệu
+    // này đi cho dễ xem" — chart-us-headline trước đây dùng TOÀN BỘ lịch sử (hist.periods, từ
+    // 2016) trong khi chart-us-mom + bảng MoM ngay bên dưới chỉ 12 tháng gần nhất (h.mom_history),
+    // 2 khung thời gian LỆCH NHAU khiến khó so sánh trực quan. Cắt CHỈ RIÊNG chart-us-headline về
+    // ĐÚNG 12 tháng của h.mom_history.periods (dùng chung mảng periods đó làm nhãn trục X để đảm
+    // bảo khớp tuyệt đối, không chỉ .slice(-12) riêng rẽ có thể lệch nếu 2 nguồn không đồng bộ) —
+    // CÁC chart khác dùng hist.periods đầy đủ (breadth/goods-services/pipeline) GIỮ NGUYÊN, không
+    // đụng tới biến `hist`/`ph` gốc (chỉ tạo mảng cắt CỤC BỘ cho đúng chart này).
+    const hlN = (h.mom_history ? h.mom_history.periods.length : 12);
+    const hlPeriods = h.mom_history ? h.mom_history.periods : hist.periods.slice(-hlN);
+    mk('chart-us-headline', { type: 'line', data: { labels: hlPeriods, datasets: [
+        line('CPI toàn phần YoY (%)', hist.cpi_yoy.slice(-hlN), '#60a5fa'),
+        line('CPI lõi YoY (%)', hist.core_yoy.slice(-hlN), '#f59e0b', [5, 4]),
+        line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy.slice(-hlN), '#a78bfa', [2, 2])] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...ax, ticks: { ...ax.ticks, autoSkip: false } }, y: CHART_DEFAULTS.scales.y } } });
 
     // SUA 2026-10-08 (user: "làm dạng 2 line đi, nhìn [cột+đường] này sao rõ được" — cột đỏ/xanh
     // lẫn với đường lõi khó so sánh xu hướng) — đổi cả 2 sang line để so trực tiếp CPI toàn phần
