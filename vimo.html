@@ -96,9 +96,18 @@
         /* width:auto (KHONG PHAI chi bo qua) de GHI DE rule "table { width: 100% }" toan site
            (style.css) - neu chi bo thuoc tinh width thi rule do van ap dung qua cascade thong
            thuong, bang van bi keo gian het card du da bo "width:100%" o day. */
-        .monitoring-table { border-collapse: collapse; font-size: 0.82em; width: auto; }
+        /* SUA 2026-10-19 (user: "cái này không có các quý trước à tôi thấy bảng cụt thế nhỉ, nhìn
+           cho đầy đặn thêm" — bang it cot (vd GDP theo nganh chi 10 quy, gioi han THAT cua nguon
+           du lieu, khong phai loi hien thi) nhin "cut" vi chi chiem 1 phan nho ben trai card, phan
+           con lai la khoang trong. KHONG quay lai width:100% (da bi che truoc do vi keo gian cot
+           qua muc), thay vao do: (1) margin:0 auto de tu CAN GIUA trong khung chua khi ban than no
+           hep hon khung (khong anh huong bang nhieu cot da can cuon ngang, luc do noi dung da lap
+           day/vuot khung nen canh giua khong co tac dung thi giac gi them); (2) nang nhe min-width
+           moi o du lieu 62->74px de bang tu nhien chiem nhieu khong gian hon mot chut, do "trong"
+           bot di ma khong can keo gian gia tao. */
+        .monitoring-table { border-collapse: collapse; font-size: 0.82em; width: auto; margin: 0 auto; }
         .monitoring-table th, .monitoring-table td { padding: 3px 5px; text-align: center; }
-        .monitoring-table thead th:not(:first-child), .monitoring-table tbody td { min-width: 62px; }
+        .monitoring-table thead th:not(:first-child), .monitoring-table tbody td { min-width: 74px; }
         /* white-space:nowrap CHỈ áp cho ô dữ liệu (số không được xuống dòng) — KHÔNG áp cho cột
            tên hàng (xem .monitoring-table tbody th bên dưới): mobile fix 2026-10-02 (user báo ảnh
            chụp màn hình điện thoại: cột tên hàng đọc được nhưng cột dữ liệu chỉ thấy vạch màu mỏng,
