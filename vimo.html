@@ -76,7 +76,18 @@
         }
         .vimo-decision-banner .decision-label { font-size: 1.15em; font-weight: 700; margin-bottom: 6px; }
         .monitoring-table-scroll {
-            overflow-x: auto; margin-top: 12px;
+            /* SUA 2026-10-19 (user: "bị tràn viền này" + ảnh chụp cho thấy thanh cuộn DỌC thừa cắt
+               mất chú thích biểu đồ "2d. Đóng góp theo thời gian" — nguyên nhân: theo spec CSS, chỉ
+               set overflow-x:auto (khong set overflow-y) khien trinh duyet TU DONG coi overflow-y
+               la auto luon, khong con la "visible" mac dinh nua. Chi can noi dung ben trong cao hon
+               khung GAN DUNG 1-2px (lam tron subpixel) la xuat hien them thanh cuon DOC khong mong
+               muon, dong thoi lam hep be ngang hien thi -> chu thich bi cat. DA THU overflow-y:
+               visible truoc - KHONG AN THUA vi spec CSS tu dong "nang cap" visible thanh auto khi
+               truc kia (x) khac visible (quy tac resolve chung cap computed-value, khong sua duoc
+               bang cach khai bao). overflow-y:hidden MOI thuc su duoc ton trong (quy tac chi ap
+               dung cho "visible", khong ap dung cho "hidden") - dam bao KHONG BAO GIO hien thanh
+               cuon doc (phan tran doc, neu co, se bi an thay vi hien scrollbar + cat noi dung). */
+            overflow-x: auto; overflow-y: hidden; margin-top: 12px;
             /* Scrollbar LUÔN HIỆN RÕ (dày, có màu) — mặc định OS/trình duyệt thường ẩn/mảnh trên nền
                tối, user không nhận ra bảng cuộn được dù overflow-x:auto đã hoạt động đúng. */
             scrollbar-width: auto; scrollbar-color: #3b82f6 rgba(255,255,255,0.08);
