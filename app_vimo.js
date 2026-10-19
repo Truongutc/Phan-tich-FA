@@ -1379,7 +1379,7 @@ function usMomTable(mh, f) {
     const cols = mh.periods.map((p, i) => `<th style="text-align:center">${p}</th>`).join('');
     const cpiRow = mh.cpi_mom.map(v => `<td style="text-align:center;${sign(v)}">${v === null ? '—' : (v >= 0 ? '+' : '') + f(v) + '%'}</td>`).join('');
     const coreRow = mh.core_mom.map(v => `<td style="text-align:center;${sign(v)}">${v === null ? '—' : (v >= 0 ? '+' : '') + f(v) + '%'}</td>`).join('');
-    return `<div style="overflow-x:auto"><table class="monitoring-table"><thead><tr>
+    return `<div style="overflow-x:auto"><table class="monitoring-table us-mom-table"><thead><tr>
         <th style="text-align:left">MoM (SA)</th>${cols}
     </tr></thead><tbody>
         <tr><th style="text-align:left">CPI toàn phần</th>${cpiRow}</tr>
@@ -1856,6 +1856,13 @@ function renderUsMacro(usm) {
     if (usm.capital_flows) mkSpark('spark-capflows', usm.capital_flows.history.total.slice(-24), '#10b981');
     const legend = { legend: { display: true, labels: { boxWidth: 10, font: { size: 9 } } } };
     const ax = { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } };
+    // THEM 2026-10-19 (user: "2 biểu đồ nếu cùng thể hiện T1-2026 thì bảng dữ liệu cũng phải ghi
+    // T1-2026 vào cùng 1 trục thời gian, không bị lệch" — cột nhãn hàng của usMomTable (class
+    // us-mom-table, xem vimo.html) đã ghim cứng 110px; ghim CỨNG luôn độ rộng trục Y của 2 biểu đồ
+    // line (chart-us-mom + chart-us-headline) về đúng 110px qua afterFit — mặc định Chart.js tự co
+    // giãn độ rộng trục Y theo độ dài chữ số (vd "-0,6" hẹp hơn "100.000"), khiến mép trái vùng vẽ
+    // không bao giờ thẳng hàng với mép trái cột dữ liệu đầu tiên của bảng phía dưới.
+    const yFixed110 = { ...CHART_DEFAULTS.scales.y, afterFit: s => { s.width = 110; } };
 
     // SUA 2026-10-08 (user: "thêm đường line PPI đi, để xem có dẫn truyền sang chi phí sản xuất
     // không" — ph.ppi_hist dùng CHUNG mảng periods với hist (cùng biến `periods` gốc bên Python)
@@ -1874,7 +1881,7 @@ function renderUsMacro(usm) {
         line('CPI toàn phần YoY (%)', hist.cpi_yoy.slice(-hlN), '#60a5fa'),
         line('CPI lõi YoY (%)', hist.core_yoy.slice(-hlN), '#f59e0b', [5, 4]),
         line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy.slice(-hlN), '#a78bfa', [2, 2])] },
-        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...ax, ticks: { ...ax.ticks, autoSkip: false } }, y: CHART_DEFAULTS.scales.y } } });
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...ax, ticks: { ...ax.ticks, autoSkip: false } }, y: yFixed110 } } });
 
     // SUA 2026-10-08 (user: "làm dạng 2 line đi, nhìn [cột+đường] này sao rõ được" — cột đỏ/xanh
     // lẫn với đường lõi khó so sánh xu hướng) — đổi cả 2 sang line để so trực tiếp CPI toàn phần
@@ -1883,7 +1890,7 @@ function renderUsMacro(usm) {
     if (h.mom_history) mk('chart-us-mom', { type: 'line', data: { labels: h.mom_history.periods, datasets: [
         { ...line('CPI MoM (%)', h.mom_history.cpi_mom, '#60a5fa'), pointRadius: 3 },
         { ...line('CPI lõi MoM (%)', h.mom_history.core_mom, '#f59e0b', [5, 4]), pointRadius: 3 }] },
-        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } }, y: CHART_DEFAULTS.scales.y } } });
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: false } }, y: yFixed110 } } });
 
     const gl = usm.groups.filter(g => g.yoy !== null).sort((a, b) => b.yoy - a.yoy);
     // SUA 2026-10-08 (user: "thêm con số vào để tôi nhìn giá trị cho rõ") — thêm datalabels (đặt ở

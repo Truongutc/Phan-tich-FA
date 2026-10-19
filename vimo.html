@@ -171,6 +171,24 @@
         .monitoring-table thead th:first-child { z-index: 4; }
         .monitoring-table tbody td { font-weight: 600; color: #0b1220; }
         .monitoring-table tbody td.na { color: var(--text-muted, #6b7280); background: transparent !important; font-weight: 400; }
+        /* THEM 2026-10-19 (user: "2 cái biểu đồ nếu cùng thể hiện số T1-2026 thì bảng dữ liệu cũng
+           ghi số của T1-2026 vào cùng 1 trục thời gian" — bảng usMomTable dùng chung class
+           .monitoring-table nên bị kế thừa luôn rule cột tên hàng rộng 230px (thiết kế cho tên chỉ
+           báo VN dài) — cột "MoM (SA)/CPI toàn phần/CPI lõi" ngắn hơn NHIỀU nhưng vẫn bị đẩy rộng
+           230px, khiến các cột dữ liệu lùi sang phải so với biểu đồ line phía trên/dưới (biểu đồ
+           không có cột nhãn tương ứng, chỉ có gutter trục Y hẹp) — nhìn tháng T1-2026 trên biểu đồ
+           lại rơi đúng vị trí cột T2026-01 hoặc lệch của bảng. Thu cột nhãn bảng này về 110px (khớp
+           đúng width cố định ép cho trục Y 2 biểu đồ chart-us-mom/chart-us-headline qua afterFit
+           trong app_vimo.js) để 2 mép trái thẳng hàng tuyệt đối. */
+        /* table-layout:fixed (thay vì "auto" kế thừa từ .monitoring-table) bắt buộc vì auto-layout
+           của Chromium khi bảng còn dư khoảng trống (container rộng hơn tổng min-width các cột) sẽ
+           TỰ PHÂN BỔ LẠI khoảng dư đó theo tỷ lệ cho MỌI cột kể cả cột đầu — verify bằng Playwright:
+           đặt min/width/max-width:110px vẫn ra cột rộng ~200px thực tế. Với table-layout:fixed +
+           width:100%, cột có width khai báo (cột đầu) lấy ĐÚNG giá trị đó, các cột còn lại (không
+           khai báo width) tự chia đều phần còn dư — khớp với cách Chart.js chia đều plotWidth cho
+           N category sau khi trừ đúng 110px trục Y (ép bằng afterFit trong app_vimo.js). */
+        .us-mom-table { table-layout: fixed; width: 100%; }
+        .us-mom-table thead th:first-child, .us-mom-table tbody th { width: 110px; }
         .bank-assess-overall { border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-weight: 700; }
         .bank-assess-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 12px; margin-bottom: 12px; }
         .bank-assess-card { border-radius: 10px; padding: 10px 14px; border: 1px solid rgba(148,163,184,.25); background: rgba(15,23,42,.35); }
