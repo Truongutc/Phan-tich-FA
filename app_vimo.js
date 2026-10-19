@@ -1779,7 +1779,8 @@ function renderUsMacro(usm) {
             <p style="font-weight:600;margin:4px 0 8px">MoM theo từng tháng — xem xu hướng NGẮN HẠN (YoY/năm hóa có thể "san phẳng" 1 tháng vừa đảo chiều)</p>
             <div class="ind-chart" style="height:220px"><canvas id="chart-us-mom"></canvas></div>
             ${usMomTable(h.mom_history, f)}
-            <div class="ind-chart" style="height:300px;margin-top:14px"><canvas id="chart-us-headline"></canvas></div>`)}
+            <p style="font-weight:600;margin:28px 0 8px;padding-top:18px;border-top:1px dashed rgba(255,255,255,0.15)">YoY toàn bộ lịch sử — xem xu hướng DÀI HẠN (khung thời gian RỘNG HƠN bảng MoM ở trên, không cùng trục)</p>
+            <div class="ind-chart" style="height:300px"><canvas id="chart-us-headline"></canvas></div>`)}
       ${card('2. Cấu phần — nhóm nào kéo CPI (YoY hiện tại, %)', `<div class="ind-chart" style="height:300px"><canvas id="chart-us-groups"></canvas></div>
             <p class="ind-source-note">Đây là mức tự tăng/giảm (YoY) của riêng từng nhóm — CHƯA nhân trọng số. Xem mục 2c để biết mỗi nhóm LÀM CPI đổi bao nhiêu điểm % (nhóm trọng số nhỏ dù tự tăng cao vẫn đóng góp ít).</p>`)}
       ${card('2b. Bản đồ nhiệt theo tháng — cơ cấu CPI biến động thế nào (YoY, %)', usMacroHeatmap(usm.heatmap))}`)}
@@ -1858,30 +1859,27 @@ function renderUsMacro(usm) {
     const ax = { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } };
     // THEM 2026-10-19 (user: "2 biểu đồ nếu cùng thể hiện T1-2026 thì bảng dữ liệu cũng phải ghi
     // T1-2026 vào cùng 1 trục thời gian, không bị lệch" — cột nhãn hàng của usMomTable (class
-    // us-mom-table, xem vimo.html) đã ghim cứng 110px; ghim CỨNG luôn độ rộng trục Y của 2 biểu đồ
-    // line (chart-us-mom + chart-us-headline) về đúng 110px qua afterFit — mặc định Chart.js tự co
-    // giãn độ rộng trục Y theo độ dài chữ số (vd "-0,6" hẹp hơn "100.000"), khiến mép trái vùng vẽ
-    // không bao giờ thẳng hàng với mép trái cột dữ liệu đầu tiên của bảng phía dưới.
+    // us-mom-table, xem vimo.html) đã ghim cứng 110px; ghim CỨNG luôn độ rộng trục Y của chart-us-mom
+    // (biểu đồ NGAY TRÊN bảng MoM) về đúng 110px qua afterFit — mặc định Chart.js tự co giãn độ rộng
+    // trục Y theo độ dài chữ số (vd "-0,6" hẹp hơn "100.000"), khiến mép trái vùng vẽ không bao giờ
+    // thẳng hàng với mép trái cột dữ liệu đầu tiên của bảng phía dưới. KHÔNG áp cho chart-us-headline
+    // nữa (đã revert về full lịch sử, không còn cần khớp khung thời gian với bảng này).
     const yFixed110 = { ...CHART_DEFAULTS.scales.y, afterFit: s => { s.width = 110; } };
 
     // SUA 2026-10-08 (user: "thêm đường line PPI đi, để xem có dẫn truyền sang chi phí sản xuất
     // không" — ph.ppi_hist dùng CHUNG mảng periods với hist (cùng biến `periods` gốc bên Python)
     // nên ghép thẳng được, không lệch trục thời gian).
-    // SUA 2026-10-19 (user: "ở CPI mỹ thì đồng nhất khung thời gian 2 biểu đồ và 1 bảng dữ liệu
-    // này đi cho dễ xem" — chart-us-headline trước đây dùng TOÀN BỘ lịch sử (hist.periods, từ
-    // 2016) trong khi chart-us-mom + bảng MoM ngay bên dưới chỉ 12 tháng gần nhất (h.mom_history),
-    // 2 khung thời gian LỆCH NHAU khiến khó so sánh trực quan. Cắt CHỈ RIÊNG chart-us-headline về
-    // ĐÚNG 12 tháng của h.mom_history.periods (dùng chung mảng periods đó làm nhãn trục X để đảm
-    // bảo khớp tuyệt đối, không chỉ .slice(-12) riêng rẽ có thể lệch nếu 2 nguồn không đồng bộ) —
-    // CÁC chart khác dùng hist.periods đầy đủ (breadth/goods-services/pipeline) GIỮ NGUYÊN, không
-    // đụng tới biến `hist`/`ph` gốc (chỉ tạo mảng cắt CỤC BỘ cho đúng chart này).
-    const hlN = (h.mom_history ? h.mom_history.periods.length : 12);
-    const hlPeriods = h.mom_history ? h.mom_history.periods : hist.periods.slice(-hlN);
-    mk('chart-us-headline', { type: 'line', data: { labels: hlPeriods, datasets: [
-        line('CPI toàn phần YoY (%)', hist.cpi_yoy.slice(-hlN), '#60a5fa'),
-        line('CPI lõi YoY (%)', hist.core_yoy.slice(-hlN), '#f59e0b', [5, 4]),
-        line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy.slice(-hlN), '#a78bfa', [2, 2])] },
-        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: { ...ax, ticks: { ...ax.ticks, autoSkip: false } }, y: yFixed110 } } });
+    // SUA 2026-10-19 rồi REVERT lại cùng ngày (user thử bản "đồng nhất khung thời gian với MoM"
+    // nhưng không ưng — "cái biểu đồ CPI PPI thì trả về như cũ đi, vẽ cách ra 1 khoảng để cho đỡ
+    // bị lẫn nhé") — trả về TOÀN BỘ lịch sử hist.periods (từ 2016) như bản gốc, CHỈ giữ việc đồng
+    // bộ khung thời gian giữa chart-us-mom + bảng MoM (usMomTable) với nhau, không ép chart này
+    // theo khung 12 tháng của mom_history nữa. Khoảng cách với khối MoM ở trên tăng lên (margin-top
+    // trong vimo.html) để 2 biểu đồ không bị nhìn nhầm là cùng 1 khung thời gian.
+    mk('chart-us-headline', { type: 'line', data: { labels: hist.periods, datasets: [
+        line('CPI toàn phần YoY (%)', hist.cpi_yoy, '#60a5fa'),
+        line('CPI lõi YoY (%)', hist.core_yoy, '#f59e0b', [5, 4]),
+        line('PPI cầu cuối YoY (%)', ph.ppi_hist.ppi_yoy, '#a78bfa', [2, 2])] },
+        options: { ...CHART_DEFAULTS, plugins: legend, scales: { x: ax, y: CHART_DEFAULTS.scales.y } } });
 
     // SUA 2026-10-08 (user: "làm dạng 2 line đi, nhìn [cột+đường] này sao rõ được" — cột đỏ/xanh
     // lẫn với đường lõi khó so sánh xu hướng) — đổi cả 2 sang line để so trực tiếp CPI toàn phần
