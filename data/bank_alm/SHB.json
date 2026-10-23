@@ -670,6 +670,66 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "patched",
+      "patched_from": "2026-Q2",
+      "interest_rate_gap": {
+        "qua_han": 19507325.0,
+        "khong_anh_huong_lai_suat": 85633598.0,
+        "den_1_thang": 45549289.0,
+        "tu_1_3_thang": 259534244.0,
+        "tu_3_6_thang": -185227052.0,
+        "tu_6_12_thang": -144622844.0,
+        "tu_1_5_nam": -4707115.0,
+        "tren_5_nam": 10988386.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 14383192.0,
+        "qua_han_den_3t": 5124133.0,
+        "den_1_thang": -60045906.0,
+        "tu_1_3_thang": -31287237.0,
+        "tu_3_12_thang": -24782546.0,
+        "tu_1_5_nam": 67560865.0,
+        "tren_5_nam": 115703332.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 279262380.0,
+        "tu_1_3_thang": 132372968.0,
+        "tu_3_12_thang": 241547972.0,
+        "tu_1_5_nam": 220918373.0,
+        "tren_5_nam": 13567146.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 30080678.0,
+        "den_1_thang": 274068802.0,
+        "tu_1_3_thang": 163793570.0,
+        "tu_3_6_thang": 222645199.0,
+        "tu_6_12_thang": 170859029.0,
+        "tu_1_5_nam": 25760308.0,
+        "tren_5_nam": 369755.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất đã kiểm toán 6 tháng đầu năm 2026",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-3/2026-09-04/no-name-1788460885.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:54:48+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     }
   },
   "quarterly_balance_sheet": {
@@ -1322,6 +1382,6 @@
   },
   "last_cheap_check": {
     "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:36:38+07:00"
+    "checked_at": "2026-10-23T13:48:47+07:00"
   }
 }

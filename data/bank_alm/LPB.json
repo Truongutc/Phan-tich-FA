@@ -757,6 +757,73 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "validation": {
+        "ok": false,
+        "level": "fail",
+        "issues": [
+          "ta_ir_vs_tk",
+          "ta_vs_vietcap",
+          "ta_vs_vietcap",
+          "no_ir_vs_tk",
+          "asset_negative",
+          "liab_negative"
+        ]
+      },
+      "verified": null,
+      "interest_rate_gap": {
+        "qua_han": 36063756.0,
+        "khong_anh_huong_lai_suat": -894772.0,
+        "den_1_thang": 16069801.0,
+        "tu_1_3_thang": 716715.0,
+        "tu_3_6_thang": -18440615.0,
+        "tu_6_12_thang": -14851592.0,
+        "tu_1_5_nam": 17016978.0,
+        "tren_5_nam": 32316147.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": -1113361.0,
+        "qua_han_den_3t": -203531.0,
+        "den_1_thang": -104156181.0,
+        "tu_1_3_thang": -91046301.0,
+        "tu_3_12_thang": -28055270.0,
+        "tu_1_5_nam": 1848229.0,
+        "tren_5_nam": 0.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 104156181.0,
+        "tu_1_3_thang": 91046301.0,
+        "tu_3_12_thang": 31255408.0,
+        "tu_1_5_nam": 151315.0,
+        "tren_5_nam": 0.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0,
+        "khong_anh_huong_lai_suat": 13751433.0,
+        "den_1_thang": 160334510.0,
+        "tu_1_3_thang": 16069893.0,
+        "tu_3_6_thang": 168331796.0,
+        "tu_6_12_thang": 716715.0,
+        "tu_1_5_nam": -19440615.0,
+        "tren_5_nam": 159337263.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính quý 3 năm 2026",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/LPB_202610202020LPB2020Bao20cao20tai20chinh20Quy20320nam20202620CA_21102026093403.pdf?v=1792550044770",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:53:17+07:00"
     }
   },
   "quarterly_balance_sheet": {
@@ -1405,10 +1472,29 @@
       "tpdn": 0.0,
       "ky_quy": 227.996,
       "von_cg": 1.625
+    },
+    "2026-Q3": {
+      "total_assets": 694183.076,
+      "equity": 46592.026,
+      "customer_deposits": 421830.585,
+      "cash": 1622.332,
+      "sbv_dep": 627.101,
+      "bank_dep": 129281.402,
+      "interbank_liab": 106196.446,
+      "loans": 475910.46,
+      "bonds_issued": 99145.334,
+      "inv_sec_bs": 57805.499,
+      "tctd_dep": 97544.746,
+      "kbnn_dep": 23417.866,
+      "kbnn_loan": 6667.252,
+      "nii": 3922.651,
+      "tpdn": 0.0,
+      "ky_quy": 262.618,
+      "von_cg": 1.905
     }
   },
   "last_cheap_check": {
-    "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:36:13+07:00"
+    "period_found": "2026-Q3",
+    "checked_at": "2026-10-23T13:48:28+07:00"
   }
 }

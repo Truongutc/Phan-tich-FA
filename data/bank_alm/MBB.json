@@ -661,6 +661,74 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "patched",
+      "patched_from": "2026-Q2",
+      "interest_rate_gap": {
+        "qua_han": 28949005.0,
+        "khong_anh_huong_lai_suat": 21772994.0,
+        "den_1_thang": -85335935.0,
+        "tu_1_3_thang": 238249552.0,
+        "tu_3_6_thang": -49189423.0,
+        "tu_6_12_thang": 8343403.0,
+        "tu_1_5_nam": -22474775.0,
+        "tren_5_nam": 33597199.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 8854103.0,
+        "qua_han_den_3t": 20094902.0,
+        "den_1_thang": -100888358.0,
+        "tu_1_3_thang": -31549920.0,
+        "tu_3_12_thang": 50120562.0,
+        "tu_1_5_nam": -72966370.0,
+        "tren_5_nam": 300247101.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 437972312.0,
+        "tu_1_3_thang": 221989481.0,
+        "tu_3_12_thang": 494232640.0,
+        "tu_1_5_nam": 400060175.0,
+        "tren_5_nam": 21989831.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 67883381.0,
+        "den_1_thang": 627134024.0,
+        "tu_1_3_thang": 221694858.0,
+        "tu_3_6_thang": 272312115.0,
+        "tu_6_12_thang": 221642955.0,
+        "tu_1_5_nam": 145112456.0,
+        "tren_5_nam": 20464650.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 5050370000.0,
+        "qua_han_den_3t": 5181368000.0,
+        "den_1_thang": 1704158504000.0,
+        "tu_1_3_thang": 1555413527000.0,
+        "tu_3_12_thang": 1546103844000.0,
+        "tu_1_5_nam": 2477581000.0,
+        "tren_5_nam": 16832082000.0
+      },
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/MBB_202608062020MBB2020BCTC20hop20nhat20soat20xet20ban20nien202026_10082026095318.pdf?v=1786330399877",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:53:17+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     }
   },
   "quarterly_balance_sheet": {
@@ -1313,6 +1381,6 @@
   },
   "last_cheap_check": {
     "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:36:16+07:00"
+    "checked_at": "2026-10-23T13:48:30+07:00"
   }
 }

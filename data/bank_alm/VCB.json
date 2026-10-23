@@ -688,6 +688,66 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "patched",
+      "patched_from": "2026-Q2",
+      "interest_rate_gap": {
+        "qua_han": 16724099.0,
+        "khong_anh_huong_lai_suat": 18215586.0,
+        "den_1_thang": -328570405.0,
+        "tu_1_3_thang": 351236765.0,
+        "tu_3_6_thang": 177616714.0,
+        "tu_6_12_thang": -14150331.0,
+        "tu_1_5_nam": 27565287.0,
+        "tren_5_nam": 31376000.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 10354714.0,
+        "qua_han_den_3t": 6369385.0,
+        "den_1_thang": -512672332.0,
+        "tu_1_3_thang": 140662800.0,
+        "tu_3_12_thang": -53001569.0,
+        "tu_1_5_nam": 239981888.0,
+        "tren_5_nam": 448318829.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 1343950998.0,
+        "tu_1_3_thang": 310986060.0,
+        "tu_3_12_thang": 636981633.0,
+        "tu_1_5_nam": 109702930.0,
+        "tren_5_nam": 7328446.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 43063364.0,
+        "den_1_thang": 1326046856.0,
+        "tu_1_3_thang": 298273418.0,
+        "tu_3_6_thang": 301769675.0,
+        "tu_6_12_thang": 330119551.0,
+        "tu_1_5_nam": 107558628.0,
+        "tren_5_nam": 2118575.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất quý 2 năm 2026 (đã soát xét)",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VCB_202608142020VCB2020BCTC20hop20nhat20soat20xet20ban20nien202026_20082026091404.pdf?v=1787192046593",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:57:01+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     }
   },
   "quarterly_balance_sheet": {
@@ -1340,6 +1400,6 @@
   },
   "last_cheap_check": {
     "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:36:59+07:00"
+    "checked_at": "2026-10-23T13:49:05+07:00"
   }
 }

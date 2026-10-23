@@ -699,6 +699,61 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "patched",
+      "patched_from": "2026-Q2",
+      "interest_rate_gap": {
+        "qua_han": 67033195,
+        "khong_anh_huong_lai_suat": 22348525,
+        "den_1_thang": 20635057,
+        "tu_1_3_thang": 246915562,
+        "tu_3_6_thang": -172132500,
+        "tu_6_12_thang": -102605519,
+        "tu_1_5_nam": -2549322,
+        "tren_5_nam": 21567785
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 50222494,
+        "qua_han_den_3t": 16810701,
+        "den_1_thang": -99701968,
+        "tu_1_3_thang": -19820774,
+        "tu_3_12_thang": -74129636,
+        "tu_1_5_nam": 82486569,
+        "tren_5_nam": 145345397
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 318790004,
+        "tu_1_3_thang": 134589655,
+        "tu_3_12_thang": 323144133,
+        "tu_1_5_nam": 45277742,
+        "tren_5_nam": 7439783
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0,
+        "khong_anh_huong_lai_suat": 21051700,
+        "den_1_thang": 314888655,
+        "tu_1_3_thang": 132431244,
+        "tu_3_6_thang": 186730005,
+        "tu_6_12_thang": 131176046,
+        "tu_1_5_nam": 38029996,
+        "tren_5_nam": 4933671
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "source": {
+        "title": "Nhap thu cong tu anh chup BCTC that (STB BCTC hop nhat GND Quy II 2026, OCR khong doc duoc)",
+        "url": null,
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:54:48+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     }
   },
   "quarterly_balance_sheet": {
@@ -1351,6 +1406,6 @@
   },
   "last_cheap_check": {
     "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:36:44+07:00"
+    "checked_at": "2026-10-23T13:48:52+07:00"
   }
 }

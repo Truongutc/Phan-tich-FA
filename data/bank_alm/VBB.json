@@ -758,6 +758,66 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "patched",
+      "patched_from": "2026-Q2",
+      "interest_rate_gap": {
+        "qua_han": 4611278.0,
+        "khong_anh_huong_lai_suat": 8524943.0,
+        "den_1_thang": -18528811.0,
+        "tu_1_3_thang": 10971565.0,
+        "tu_3_6_thang": -14182305.0,
+        "tu_6_12_thang": 8185955.0,
+        "tu_1_5_nam": 5304952.0,
+        "tren_5_nam": 9833851.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2370807.0,
+        "qua_han_den_3t": 2240471.0,
+        "den_1_thang": -22654526.0,
+        "tu_1_3_thang": -6394756.0,
+        "tu_3_12_thang": -6831053.0,
+        "tu_1_5_nam": 19951604.0,
+        "tren_5_nam": 26038881.0
+      },
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 0.0,
+        "den_1_thang": 79677082.0,
+        "tu_1_3_thang": 30574747.0,
+        "tu_3_12_thang": 72631191.0,
+        "tu_1_5_nam": 2475316.0,
+        "tren_5_nam": 6312548.0
+      },
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0.0,
+        "khong_anh_huong_lai_suat": 4000103.0,
+        "den_1_thang": 76851949.0,
+        "tu_1_3_thang": 31296110.0,
+        "tu_3_6_thang": 38990429.0,
+        "tu_6_12_thang": 38397091.0,
+        "tu_1_5_nam": 2113664.0,
+        "tren_5_nam": 21538.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": null,
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính hợp nhất đã kiểm toán 6 tháng đầu năm 2026",
+        "url": "https://cdn.24hmoney.vn/upload/file/2026-3/2026-08-17/no-name-1786938113.pdf",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:57:01+07:00",
+      "validation": {
+        "ok": true,
+        "level": "ok",
+        "issues": []
+      },
+      "verified": "pdf_visual_2026-09"
     }
   },
   "quarterly_balance_sheet": {
@@ -1410,6 +1470,6 @@
   },
   "last_cheap_check": {
     "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:36:57+07:00"
+    "checked_at": "2026-10-23T13:49:02+07:00"
   }
 }

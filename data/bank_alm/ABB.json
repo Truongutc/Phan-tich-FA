@@ -670,6 +670,69 @@
         "issues": []
       },
       "verified": "pdf_visual_2026-09"
+    },
+    "2026-Q3": {
+      "status": "reported",
+      "patched_from": null,
+      "validation": {
+        "ok": false,
+        "level": "fail",
+        "issues": [
+          "ta_vs_vietcap",
+          "liab_negative"
+        ]
+      },
+      "verified": null,
+      "interest_rate_gap": {
+        "qua_han": 4206897.0,
+        "khong_anh_huong_lai_suat": 16661380.0,
+        "den_1_thang": -7477635.0,
+        "tu_1_3_thang": 87038986.0,
+        "tu_3_6_thang": -45217885.0,
+        "tu_6_12_thang": -37796775.0,
+        "tu_1_5_nam": -283415.0,
+        "tren_5_nam": 6958207.0
+      },
+      "liquidity_gap": {
+        "qua_han_tren_3t": 2193043.0,
+        "qua_han_den_3t": 2296591.0,
+        "den_1_thang": -2353444.0,
+        "tu_1_3_thang": -4985758.0,
+        "tu_3_12_thang": -28783896.0,
+        "tu_1_5_nam": 20680121.0,
+        "tren_5_nam": 36601303.0
+      },
+      "liabilities_by_bucket": null,
+      "interest_rate_liabilities_by_bucket": {
+        "qua_han": 0,
+        "khong_anh_huong_lai_suat": 0.0,
+        "den_1_thang": 16661380.0,
+        "tu_1_3_thang": -5919435.0,
+        "tu_3_6_thang": 80422.0,
+        "tu_6_12_thang": 7038986.0,
+        "tu_1_5_nam": -45217885.0,
+        "tren_5_nam": 4859.0
+      },
+      "interest_rate_sensitivity_disclosed": null,
+      "cash_by_bucket": null,
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0.0,
+        "qua_han_den_3t": 11268542.0,
+        "den_1_thang": 11268542.0,
+        "tu_1_3_thang": 0.0,
+        "tu_3_12_thang": 59019151.0,
+        "tu_1_5_nam": 12660480.0,
+        "tren_5_nam": 0.0
+      },
+      "customer_deposits_by_bucket": null,
+      "fx_position": null,
+      "fx_source": null,
+      "source": {
+        "title": "Báo cáo tài chính quý 3 năm 2026",
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ABB_000000016952855_BCTC_QUY_3_NAM_2026_22102026162003.pdf?v=1792660804786",
+        "fetched_year": 2026
+      },
+      "fetched_at": "2026-10-23T13:50:10+07:00"
     }
   },
   "quarterly_balance_sheet": {
@@ -1318,10 +1381,29 @@
       "tpdn": 1180.286,
       "ky_quy": 430.086,
       "von_cg": 107.407
+    },
+    "2026-Q3": {
+      "total_assets": 276575.11,
+      "equity": 23625.321,
+      "customer_deposits": 152913.845,
+      "cash": 546.059,
+      "sbv_dep": 11268.542,
+      "bank_dep": 71679.631,
+      "interbank_liab": 65214.774,
+      "loans": 132934.143,
+      "bonds_issued": 27395.071,
+      "inv_sec_bs": 47524.358,
+      "tctd_dep": 58385.072,
+      "kbnn_dep": 9130.552,
+      "kbnn_loan": 1198.736,
+      "nii": 2106.892,
+      "tpdn": 0.0,
+      "ky_quy": 448.152,
+      "von_cg": 114.846
     }
   },
   "last_cheap_check": {
-    "period_found": "2026-Q2",
-    "checked_at": "2026-10-16T13:35:42+07:00"
+    "period_found": "2026-Q3",
+    "checked_at": "2026-10-23T13:48:00+07:00"
   }
 }
