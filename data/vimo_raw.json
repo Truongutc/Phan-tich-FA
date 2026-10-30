@@ -3,7 +3,7 @@
     "description": "Dữ liệu vĩ mô thô cho dashboard vimo.html — KHÔNG phải kết quả tính toán. Xem template_vimo.py (tính toán) và fetch_macro_data.py (cập nhật tự động). auto_source: 'worldbank'|'imf'|'fred'|'fx_api'|'pe_ratio_api'|'nso_scrape'|'nso_chart_embed'|'sbv_chart'|'vietnambiz'|'market_table'|'news_rss'|'manual' — 'news_rss' là quét RSS tin tức tìm bài khớp từ khóa (chỉ ghi khi có tin mới, phần lớn lần chạy sẽ không đổi); 'manual' nghĩa là cần cập nhật định kỳ qua nghiên cứu thủ công, KHÔNG tự động refresh khi chạy Action.",
     "seeded_at": "2026-07-12",
     "seed_method": "WebSearch/WebFetch + curl trực tiếp trong phiên làm việc Claude Code — mọi điểm dữ liệu đều có source_url thật, không estimate.",
-    "last_auto_update": "2026-10-23 14:07",
+    "last_auto_update": "2026-10-30 15:35",
     "scorecard_history": [
       {
         "date": "2026-05-10",
@@ -232,6 +232,12 @@
         "total": 0,
         "valuation_label": "Rẻ/Hấp dẫn",
         "decision_label": "Tăng tỷ trọng vừa phải"
+      },
+      {
+        "date": "2026-10-30",
+        "total": 0,
+        "valuation_label": "Rẻ/Hấp dẫn",
+        "decision_label": "Giải ngân một phần"
       }
     ]
   },
@@ -1478,7 +1484,7 @@
       },
       {
         "period": "2026-08",
-        "value": 4.89,
+        "value": 4.88,
         "source_url": "https://data.vietnambiz.vn/macro-economic"
       },
       {
@@ -2609,6 +2615,26 @@
         "period": "2026-10-22",
         "value": 4.3,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 3.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "1 trong 7 kỳ hạn VNIBOR lấy từ cùng bảng sbv.gov.vn/vi/lãi-suất1 với interbank_rate_3m — tách riêng để vẽ chart so sánh nhiều kỳ hạn (giống kiểu trình bày tham khảo từ vimo.cuthongthai.vn). Tham chiếu hiển thị, không tính vào Scorecard (đã có interbank_rate_3m đại diện nhóm).",
@@ -3160,6 +3186,26 @@
         "period": "2026-10-22",
         "value": 4.3,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 5.1,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 5.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 5.3,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 5.28,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -3711,6 +3757,26 @@
         "period": "2026-10-22",
         "value": 5.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 5.2,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 5.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 5.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 5.43,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -4262,6 +4328,26 @@
         "period": "2026-10-22",
         "value": 5.38,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 5.5,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 5.65,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 5.7,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 5.6,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Xem ghi chú interbank_rate_on — cùng nguồn, cùng mục đích so sánh đa kỳ hạn.",
@@ -4874,6 +4960,11 @@
       },
       {
         "period": "2026-W43",
+        "value": 5.4,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
+      },
+      {
+        "period": "2026-W44",
         "value": 5.4,
         "source_url": "https://www.vietcombank.com.vn/vi-VN/api/interestrates?accountType=Personal"
       }
@@ -5657,6 +5748,11 @@
         "period": "2026-W43",
         "value": 7.15,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W44",
+        "value": 7.15,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
     ],
     "note": "Auto-scrape 24hmoney.vn/lai-suat-gui-ngan-hang mỗi lần Action chạy — bảng lãi suất gửi ONLINE (công khai, không phải thỏa thuận ngầm) kỳ hạn 12 tháng của ~38 ngân hàng. Mức CAO NHẤT trong bảng này (thường là các NHTM cổ phần vừa/nhỏ như SHB, Saigonbank) cho thấy mặt bằng thị trường RỘNG HƠN NHIỀU so với 3 ngân hàng Big4 (VCB/VietinBank/NamABank) mà dashboard theo dõi riêng — bổ sung góc nhìn khách quan, không phụ thuộc vào tin tức thời điểm như deposit_rate_negotiated_max.",
@@ -5741,6 +5837,11 @@
       },
       {
         "period": "2026-W43",
+        "value": 6.19,
+        "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
+      },
+      {
+        "period": "2026-W44",
         "value": 6.19,
         "source_url": "https://24hmoney.vn/lai-suat-gui-ngan-hang"
       }
@@ -6035,7 +6136,7 @@
       },
       {
         "period": "2026-10",
-        "value": 25831.15,
+        "value": 25792.39,
         "source_url": "https://api.exchangerate-api.com/v4/latest/USD"
       }
     ],
@@ -6664,31 +6765,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-10-05",
-        "value": 125.51,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-10-06",
-        "value": 125.44,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-10-07",
-        "value": 126.0,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-10-08",
-        "value": 130.18,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
-        "period": "2026-10-09",
-        "value": 130.03,
-        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-      },
-      {
         "period": "2026-10-12",
         "value": 129.95,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
@@ -6722,6 +6798,31 @@
         "period": "2026-10-20",
         "value": 115.22,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-10-21",
+        "value": 117.37,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 125.39,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 128.3,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 128.12,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 123.1,
+        "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
       }
     ],
     "note": "FRED API (series DCOILBRENTEU, giá cuối quý gần nhất có dữ liệu). Điểm 2026-Q1 (126.69) là mức tăng đột biến thật theo FRED — có thể liên quan biến động địa chính trị đầu 2026, cần chú thích rõ trong PDF/dashboard, không phải lỗi dữ liệu.",
@@ -6734,31 +6835,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-10-01",
-        "value": 121.79,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-10-02",
-        "value": 121.38,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-10-05",
-        "value": 121.27,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-10-06",
-        "value": 120.9,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
-      {
-        "period": "2026-10-07",
-        "value": 121.26,
-        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
-      },
       {
         "period": "2026-10-08",
         "value": 121.45,
@@ -6787,6 +6863,31 @@
       {
         "period": "2026-10-16",
         "value": 121.4,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-10-19",
+        "value": 121.32,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-10-20",
+        "value": 121.12,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-10-21",
+        "value": 121.34,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 121.35,
+        "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 121.32,
         "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       }
     ],
@@ -6868,7 +6969,7 @@
       },
       {
         "period": "2026-10",
-        "value": 10.543899075044608,
+        "value": 10.094372304373522,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -6899,7 +7000,7 @@
       },
       {
         "period": "2026-10",
-        "value": 1.6538532560380013,
+        "value": 1.5833445721681376,
         "source_url": "https://raw.githubusercontent.com/Truongutc/AIC---chart-nganh/main/Output/finance/VNINDEX_NONVIN.json"
       }
     ],
@@ -7625,6 +7726,11 @@
         "period": "2026-10-23",
         "value": -249.6,
         "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=23/10/2026"
+      },
+      {
+        "period": "2026-10-30",
+        "value": -634.53,
+        "source_url": "https://cafef.vn/du-lieu/Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx?TradeCenter=hose&Date=30/10/2026"
       }
     ],
     "note": "Auto-scrape endpoint nội bộ cafef.vn (Ajax/PageNew/DataGDNN/GDNuocNgoai.ashx, TradeCenter=hose) — KHÔNG phải API public chính thức, có thể ngừng hoạt động bất kỳ lúc nào nếu cafef.vn đổi cấu trúc, nhưng không cần login/key. Trả về NGÀY GIAO DỊCH GẦN NHẤT có dữ liệu (tự lùi qua cuối tuần/nghỉ lễ). Giá trị dương = mua ròng, âm = bán ròng.",
@@ -10387,7 +10493,7 @@
       },
       {
         "period": "2026-10",
-        "value": 12.01,
+        "value": 11.97,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -10418,7 +10524,7 @@
       },
       {
         "period": "2026-10",
-        "value": 1.96,
+        "value": 1.94,
         "source_url": "https://24hmoney.vn/indices/vn-index"
       }
     ],
@@ -10992,6 +11098,26 @@
         "period": "2026-10-22",
         "value": 3.72,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 3.72,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -11543,6 +11669,26 @@
         "period": "2026-10-22",
         "value": 4.28,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.28,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.28,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.28,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 4.28,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -12094,6 +12240,26 @@
         "period": "2026-10-22",
         "value": 4.34,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 4.34,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -12645,6 +12811,26 @@
         "period": "2026-10-22",
         "value": 4.47,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 4.47,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -13196,6 +13382,26 @@
         "period": "2026-10-22",
         "value": 4.57,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 4.57,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Lợi suất giao dịch THỨ CẤP trái phiếu Chính phủ (không phải lãi suất trúng thầu sơ cấp KBNN) — nguồn vira.org.vn (Hội Nghiên cứu thị trường liên ngân hàng Việt Nam), bản tin Kinh tế - Tài chính ngày, tự động cập nhật + tích lũy điểm mới mỗi lần Action chạy. Dùng chung 1 nhóm kỳ hạn (3Y/5Y/7Y/10Y/15Y) để vẽ đường cong lợi suất TPCP theo thời gian, đối chiếu với đường cong lãi suất liên ngân hàng VNIBOR (cùng phản ánh chi phí vốn hệ thống nhưng khác kỳ hạn/bản chất người vay: liên ngân hàng là vay giữa các TCTD, TPCP là Chính phủ vay).",
@@ -13727,6 +13933,26 @@
         "period": "2026-10-22",
         "value": -1729.85,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": -5064.26,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 6357.46,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 8050.42,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 2749.4,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "QUY ƯỚC DẤU: giá trị DƯƠNG = NHNN BƠM RÒNG thanh khoản qua kênh cầm cố OMO (thầu trúng > đáo hạn); giá trị ÂM = NHNN HÚT RÒNG (đáo hạn > thầu trúng, tình huống PHỔ BIẾN hơn trong giai đoạn theo dõi — không đồng nghĩa NHNN đang thắt chặt chủ động, chỉ là lượng OMO cũ đáo hạn nhiều hơn lượng chào thầu mới). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày), tự động cập nhật + tích lũy mỗi lần Action chạy. Tham chiếu hiển thị cùng omo_rate_7d (mức lãi suất) — chỉ báo này cho biết CHIỀU/QUY MÔ bơm-hút, omo_rate_7d cho biết MỨC GIÁ của thanh khoản đó.",
@@ -14910,6 +15136,26 @@
         "period": "2026-10-22",
         "value": 95997.77,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 90000.66,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 96358.12,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 104408.54,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 107157.94,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ],
     "note": "Tổng khối lượng OMO (kênh cầm cố/mua kỳ hạn) đang LƯU HÀNH — TỒN KHO thanh khoản NHNN đã bơm ra thị trường qua kênh này TẠI THỜI ĐIỂM đó, khác omo_net_operation (DÒNG CHẢY ròng bơm/hút MỖI NGÀY — chênh lệch trúng thầu/đáo hạn). Nguồn: vira.org.vn (bản tin Kinh tế - Tài chính ngày, tự động, chuỗi theo NGÀY thật). good_direction='lower' mang tính THAM KHẢO: số dư lưu hành cao kéo dài phản ánh NHNN phải bơm thanh khoản LIÊN TỤC để bù đắp thiếu hụt hệ thống (thanh khoản căng), KHÔNG có nghĩa số dư thấp luôn tốt hơn (có thể chỉ đơn giản là ít nhu cầu vay mượn hơn).",
@@ -14922,41 +15168,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-09-30",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-10-01",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-10-02",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-10-03",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-10-04",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-10-05",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
-      {
-        "period": "2026-10-06",
-        "value": 2.5,
-        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
-      },
       {
         "period": "2026-10-07",
         "value": 2.5,
@@ -15041,6 +15252,41 @@
         "period": "2026-10-23",
         "value": 2.5,
         "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-24",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-25",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
+      },
+      {
+        "period": "2026-10-30",
+        "value": 2.5,
+        "source_url": "https://fred.stlouisfed.org/series/ECBDFR"
       }
     ],
     "note": "ECB Deposit Facility Rate (FRED series ECBDFR) — lãi suất NHTW Châu Âu trả cho tiền gửi qua đêm của ngân hàng thương mại, ĐANG LÀ lãi suất điều hành THỰC TẾ quan trọng nhất của ECB từ sau khủng hoảng 2008 (khác Main Refinancing Rate truyền thống) — dùng để đối chiếu xu hướng chính sách tiền tệ Eurozone với Fed.",
@@ -15053,31 +15299,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-09-18",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 3.73,
-        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
-      },
       {
         "period": "2026-09-25",
         "value": 3.73,
@@ -15170,6 +15391,31 @@
       },
       {
         "period": "2026-10-21",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 3.73,
+        "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
+      },
+      {
+        "period": "2026-10-28",
         "value": 3.73,
         "source_url": "https://fred.stlouisfed.org/series/IUDSOIA"
       }
@@ -15316,31 +15562,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-09-18",
-        "value": 5.01,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 4.96,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 4.96,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 5.11,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 5.18,
-        "source_url": "https://fred.stlouisfed.org/series/DGS10"
-      },
-      {
         "period": "2026-09-25",
         "value": 5.17,
         "source_url": "https://fred.stlouisfed.org/series/DGS10"
@@ -15428,6 +15649,31 @@
       {
         "period": "2026-10-21",
         "value": 5.13,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 4.96,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 5.0,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 5.0,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.99,
+        "source_url": "https://fred.stlouisfed.org/series/DGS10"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 5.05,
         "source_url": "https://fred.stlouisfed.org/series/DGS10"
       }
     ],
@@ -16344,11 +16590,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2024-09-01",
-        "value": 2.26,
-        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
-      },
-      {
         "period": "2024-10-01",
         "value": 2.41,
         "source_url": "https://fred.stlouisfed.org/series/PCEPI"
@@ -16455,12 +16696,17 @@
       },
       {
         "period": "2026-07-01",
-        "value": 3.36,
+        "value": 3.37,
         "source_url": "https://fred.stlouisfed.org/series/PCEPI"
       },
       {
         "period": "2026-08-01",
-        "value": 3.42,
+        "value": 3.44,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-09-01",
+        "value": 3.65,
         "source_url": "https://fred.stlouisfed.org/series/PCEPI"
       }
     ],
@@ -16474,11 +16720,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2024-09-01",
-        "value": 2.84,
-        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
-      },
       {
         "period": "2024-10-01",
         "value": 2.9,
@@ -16586,12 +16827,17 @@
       },
       {
         "period": "2026-07-01",
-        "value": 2.98,
+        "value": 3.0,
         "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
       },
       {
         "period": "2026-08-01",
-        "value": 3.01,
+        "value": 3.03,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-09-01",
+        "value": 3.12,
         "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
       }
     ],
@@ -16605,11 +16851,6 @@
     "good_direction": "higher",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2020-07-01",
-        "value": 34.9,
-        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
-      },
       {
         "period": "2020-10-01",
         "value": 4.6,
@@ -16723,6 +16964,11 @@
       {
         "period": "2026-04-01",
         "value": 2.2,
+        "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
+      },
+      {
+        "period": "2026-07-01",
+        "value": 3.4,
         "source_url": "https://fred.stlouisfed.org/series/A191RL1Q225SBEA"
       }
     ],
@@ -16868,31 +17114,6 @@
     "auto_source": "fred",
     "series": [
       {
-        "period": "2026-09-18",
-        "value": 4.14,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 4.17,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 4.16,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 4.19,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 4.24,
-        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
-      },
-      {
         "period": "2026-09-25",
         "value": 4.24,
         "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
@@ -16981,6 +17202,31 @@
         "period": "2026-10-21",
         "value": 4.25,
         "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 4.22,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 4.22,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.22,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.22,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.18,
+        "source_url": "https://fred.stlouisfed.org/series/DGS3MO"
       }
     ],
     "note": "3-Month Treasury Constant Maturity Rate (FRED series DGS3MO) — đầu ngắn đường cong lợi suất, dùng tính spread 10Y-3M (1 trong 2 chỉ báo đảo ngược đường cong kinh điển).",
@@ -16993,31 +17239,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-09-18",
-        "value": 4.44,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 4.45,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 4.43,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 4.49,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 4.51,
-        "source_url": "https://fred.stlouisfed.org/series/DGS1"
-      },
       {
         "period": "2026-09-25",
         "value": 4.5,
@@ -17107,6 +17328,31 @@
         "period": "2026-10-21",
         "value": 4.52,
         "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 4.41,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 4.44,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.47,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.5,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.47,
+        "source_url": "https://fred.stlouisfed.org/series/DGS1"
       }
     ],
     "note": "1-Year Treasury Constant Maturity Rate (FRED series DGS1) — điểm giữa đường cong, tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
@@ -17119,31 +17365,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-09-18",
-        "value": 4.76,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 4.76,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 4.71,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 4.85,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 4.87,
-        "source_url": "https://fred.stlouisfed.org/series/DGS2"
-      },
       {
         "period": "2026-09-25",
         "value": 4.81,
@@ -17233,6 +17454,31 @@
         "period": "2026-10-21",
         "value": 4.81,
         "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 4.65,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 4.69,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.68,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.7,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.67,
+        "source_url": "https://fred.stlouisfed.org/series/DGS2"
       }
     ],
     "note": "2-Year Treasury Constant Maturity Rate (FRED series DGS2) — dùng tính spread 10Y-2Y, chỉ báo đảo ngược đường cong ĐƯỢC THEO DÕI NHIỀU NHẤT bởi thị trường tài chính toàn cầu.",
@@ -17245,31 +17491,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-09-18",
-        "value": 4.86,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 4.83,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 4.83,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 4.99,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 5.03,
-        "source_url": "https://fred.stlouisfed.org/series/DGS5"
-      },
       {
         "period": "2026-09-25",
         "value": 4.98,
@@ -17359,6 +17580,31 @@
         "period": "2026-10-21",
         "value": 4.95,
         "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 4.78,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 4.82,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.84,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.82,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.85,
+        "source_url": "https://fred.stlouisfed.org/series/DGS5"
       }
     ],
     "note": "5-Year Treasury Constant Maturity Rate (FRED series DGS5) — tham chiếu hiển thị đường cong lợi suất đầy đủ hơn.",
@@ -17371,31 +17617,6 @@
     "good_direction": "lower",
     "auto_source": "fred",
     "series": [
-      {
-        "period": "2026-09-18",
-        "value": 5.34,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-09-21",
-        "value": 5.29,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-09-22",
-        "value": 5.29,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-09-23",
-        "value": 5.4,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
-      {
-        "period": "2026-09-24",
-        "value": 5.47,
-        "source_url": "https://fred.stlouisfed.org/series/DGS30"
-      },
       {
         "period": "2026-09-25",
         "value": 5.49,
@@ -17484,6 +17705,31 @@
       {
         "period": "2026-10-21",
         "value": 5.42,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-10-22",
+        "value": 5.29,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-10-23",
+        "value": 5.33,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 5.31,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 5.3,
+        "source_url": "https://fred.stlouisfed.org/series/DGS30"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 5.37,
         "source_url": "https://fred.stlouisfed.org/series/DGS30"
       }
     ],
@@ -21043,6 +21289,26 @@
         "period": "2026-10-22",
         "value": 0.0,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 0.0,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ]
   },
@@ -42739,6 +43005,11 @@
         "period": "2026-10-23",
         "value": 9.100000000000001,
         "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
+      },
+      {
+        "period": "2026-10-30",
+        "value": 9.100000000000001,
+        "source_url": "https://cake.vn/tien-gui/tien-gui-tieu-chuan"
       }
     ]
   },
@@ -43084,6 +43355,41 @@
       {
         "period": "2026-10-23",
         "value": 26020.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-24",
+        "value": 26020.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-25",
+        "value": 26020.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 26050.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 26020.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 26020.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 26020.0,
+        "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
+      },
+      {
+        "period": "2026-10-30",
+        "value": 25990.0,
         "source_url": "https://www.vietcombank.com.vn/vi-VN/Vietnam-Dong-Exchange-Rate"
       }
     ]
@@ -43850,13 +44156,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 2716.0,
+        "value": 2207.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": -11101.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -44477,7 +44783,7 @@
       {
         "period": "2026-Q2",
         "value": 143586.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -45092,13 +45398,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 120493.69,
+        "value": 120494.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 149083.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -45713,13 +46019,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 9101.0,
+        "value": 9181.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 8238.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -46334,13 +46640,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 10775.0,
+        "value": 11151.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 11808.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -46955,13 +47261,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 1294.0,
+        "value": 1292.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 1327.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -47576,13 +47882,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 2525.0,
+        "value": 2736.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 6983.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -48203,7 +48509,7 @@
       {
         "period": "2026-Q2",
         "value": 4250.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -48744,7 +49050,7 @@
       {
         "period": "2026-Q2",
         "value": 628.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -49359,13 +49665,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": 893.0,
+        "value": 764.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 1899.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -49946,7 +50252,7 @@
       {
         "period": "2026-Q2",
         "value": -190.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -50567,7 +50873,7 @@
       {
         "period": "2026-Q2",
         "value": 6090.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -51078,7 +51384,7 @@
       {
         "period": "2026-Q2",
         "value": 13.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -51659,7 +51965,7 @@
       {
         "period": "2026-Q2",
         "value": -1518.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -52280,7 +52586,7 @@
       {
         "period": "2026-Q2",
         "value": -175.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -52895,13 +53201,13 @@
       },
       {
         "period": "2026-Q1",
-        "value": -4687.0,
+        "value": -4049.0,
         "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       },
       {
         "period": "2026-Q2",
         "value": 9283.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -53522,7 +53828,7 @@
       {
         "period": "2026-Q2",
         "value": 81.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -54143,7 +54449,7 @@
       {
         "period": "2026-Q2",
         "value": -81.0,
-        "source_url": "https://www.sbv.gov.vn/vi/can-can-thanh-toan-quoc-te"
+        "source_url": "https://dulieukinhte.com/du-lieu/can-can-thanh-toan-361"
       }
     ]
   },
@@ -58342,72 +58648,72 @@
       },
       {
         "period": "2023-09",
-        "value": 31410.0,
+        "value": 30682.32,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-10",
-        "value": 29310.0,
+        "value": 32252.88,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-11",
-        "value": 31080.0,
+        "value": 31122.22,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-12",
-        "value": 32910.0,
+        "value": 31465.35,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-01",
-        "value": 33570.0,
+        "value": 34530.82,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-02",
-        "value": 24820.0,
+        "value": 24685.45,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-03",
-        "value": 34010.0,
+        "value": 33659.18,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-04",
-        "value": 30940.0,
+        "value": 31052.68,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-05",
-        "value": 32810.0,
+        "value": 32267.05,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-06",
-        "value": 33090.0,
+        "value": 33657.98,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-07",
-        "value": 35920.0,
+        "value": 36235.98,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-08",
-        "value": 37589.67,
+        "value": 37792.02,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-09",
-        "value": 34049.63,
+        "value": 34077.62,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-10",
-        "value": 35587.42,
+        "value": 35634.51,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
@@ -58422,7 +58728,7 @@
       },
       {
         "period": "2025-01",
-        "value": 33085.29,
+        "value": 33188.93,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
@@ -58447,12 +58753,12 @@
       },
       {
         "period": "2025-06",
-        "value": 39489.06,
+        "value": 39524.46,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-07",
-        "value": 42265.54,
+        "value": 42287.64,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
@@ -58512,7 +58818,7 @@
       },
       {
         "period": "2026-07",
-        "value": 53081.33,
+        "value": 53095.48,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
@@ -58522,7 +58828,7 @@
       },
       {
         "period": "2026-09",
-        "value": 59477.4,
+        "value": 59506.12,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       }
     ]
@@ -58543,132 +58849,132 @@
       },
       {
         "period": "2023-09",
-        "value": 8295.18,
+        "value": 8099.31,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-10",
-        "value": 10360.0,
+        "value": 8881.7,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-11",
-        "value": 8485.77,
+        "value": 8858.57,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-12",
-        "value": 9437.97,
+        "value": 9198.16,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-01",
-        "value": 9026.51,
+        "value": 9660.73,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-02",
-        "value": 6616.24,
+        "value": 6506.48,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-03",
-        "value": 9539.53,
+        "value": 9579.38,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-04",
-        "value": 8726.99,
+        "value": 9309.59,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-05",
-        "value": 9372.15,
+        "value": 9193.64,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-06",
-        "value": 9334.74,
+        "value": 9057.43,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-07",
-        "value": 9869.39,
+        "value": 10032.77,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-08",
-        "value": 10837.2,
+        "value": 11010.93,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-09",
-        "value": 9388.75,
+        "value": 9571.28,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-10",
-        "value": 10297.45,
+        "value": 10370.74,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-11",
-        "value": 9850.12,
+        "value": 9943.5,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-12",
-        "value": 10682.84,
+        "value": 10800.52,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-01",
-        "value": 9489.88,
+        "value": 9718.63,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-02",
-        "value": 8388.0,
+        "value": 8512.2,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-03",
-        "value": 11077.57,
+        "value": 11206.04,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-04",
-        "value": 11655.18,
+        "value": 11809.6,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-05",
-        "value": 8608.91,
+        "value": 8704.09,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-06",
-        "value": 8640.19,
+        "value": 8711.87,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-07",
-        "value": 8947.0,
+        "value": 9085.0,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-08",
-        "value": 9164.06,
+        "value": 9272.84,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-09",
-        "value": 8655.48,
+        "value": 8742.54,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-10",
-        "value": 8598.32,
+        "value": 8787.44,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
@@ -58713,17 +59019,17 @@
       },
       {
         "period": "2026-07",
-        "value": 10272.18,
+        "value": 10345.3,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2026-08",
-        "value": 10498.85,
+        "value": 10536.18,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2026-09",
-        "value": 9540.35,
+        "value": 9603.85,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       }
     ]
@@ -58744,132 +59050,132 @@
       },
       {
         "period": "2023-09",
-        "value": 23114.82,
+        "value": 22583.01,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-10",
-        "value": 18950.0,
+        "value": 23371.18,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-11",
-        "value": 22594.23,
+        "value": 22263.64,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2023-12",
-        "value": 23472.03,
+        "value": 22267.19,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-01",
-        "value": 24543.49,
+        "value": 24870.09,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-02",
-        "value": 18203.76,
+        "value": 18178.96,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-03",
-        "value": 24470.47,
+        "value": 24079.79,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-04",
-        "value": 22213.01,
+        "value": 21743.1,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-05",
-        "value": 23437.85,
+        "value": 23073.41,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-06",
-        "value": 23755.26,
+        "value": 24600.54,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-07",
-        "value": 26050.61,
+        "value": 26203.21,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-08",
-        "value": 26753.0,
+        "value": 26781.09,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-09",
-        "value": 24660.88,
+        "value": 24506.34,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-10",
-        "value": 25289.97,
+        "value": 25263.78,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-11",
-        "value": 23883.65,
+        "value": 23790.28,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2024-12",
-        "value": 24846.15,
+        "value": 24728.47,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-01",
-        "value": 23595.41,
+        "value": 23470.3,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-02",
-        "value": 22720.64,
+        "value": 22597.12,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-03",
-        "value": 27432.27,
+        "value": 27303.8,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-04",
-        "value": 25790.26,
+        "value": 25635.85,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-05",
-        "value": 30986.0,
+        "value": 30891.37,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-06",
-        "value": 30848.87,
+        "value": 30812.6,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-07",
-        "value": 33319.12,
+        "value": 33202.64,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-08",
-        "value": 34222.29,
+        "value": 34113.51,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-09",
-        "value": 34014.83,
+        "value": 33927.77,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2025-10",
-        "value": 33450.89,
+        "value": 33261.77,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
@@ -58914,17 +59220,17 @@
       },
       {
         "period": "2026-07",
-        "value": 42809.15,
+        "value": 42750.18,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2026-08",
-        "value": 44295.91,
+        "value": 44258.59,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       },
       {
         "period": "2026-09",
-        "value": 49937.06,
+        "value": 49902.27,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-xuat-khau-292"
       }
     ]
@@ -58945,62 +59251,62 @@
       },
       {
         "period": "2023-09",
-        "value": 29120.0,
+        "value": 28482.82,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-10",
-        "value": 29310.0,
+        "value": 29519.11,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-11",
-        "value": 29800.0,
+        "value": 29578.98,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-12",
-        "value": 30630.0,
+        "value": 29404.39,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-01",
-        "value": 30650.0,
+        "value": 30898.42,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-02",
-        "value": 23720.0,
+        "value": 23303.7,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-03",
-        "value": 31080.0,
+        "value": 30881.0,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-04",
-        "value": 30260.0,
+        "value": 29986.52,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-05",
-        "value": 33810.0,
+        "value": 32722.87,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-06",
-        "value": 30150.0,
+        "value": 30456.88,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-07",
-        "value": 33800.0,
+        "value": 33880.21,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-08",
-        "value": 33059.43,
+        "value": 33742.36,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59015,7 +59321,7 @@
       },
       {
         "period": "2024-11",
-        "value": 32667.0,
+        "value": 32667.25,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59065,7 +59371,7 @@
       },
       {
         "period": "2025-09",
-        "value": 42670.31,
+        "value": 39824.42,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59146,62 +59452,62 @@
       },
       {
         "period": "2023-09",
-        "value": 10370.0,
+        "value": 9985.58,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-10",
-        "value": 10360.0,
+        "value": 10637.39,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-11",
-        "value": 10600.0,
+        "value": 10555.02,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-12",
-        "value": 10980.0,
+        "value": 10976.38,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-01",
-        "value": 11150.0,
+        "value": 11247.84,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-02",
-        "value": 8420.0,
+        "value": 7914.91,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-03",
-        "value": 10830.0,
+        "value": 11568.85,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-04",
-        "value": 11210.0,
+        "value": 11518.57,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-05",
-        "value": 12810.0,
+        "value": 12024.27,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-06",
-        "value": 10950.0,
+        "value": 10965.97,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-07",
-        "value": 12200.0,
+        "value": 11835.65,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-08",
-        "value": 12003.57,
+        "value": 12155.64,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59216,7 +59522,7 @@
       },
       {
         "period": "2024-11",
-        "value": 12375.0,
+        "value": 12375.53,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59251,7 +59557,7 @@
       },
       {
         "period": "2025-06",
-        "value": 10789.0,
+        "value": 10788.43,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59266,7 +59572,7 @@
       },
       {
         "period": "2025-09",
-        "value": 8655.48,
+        "value": 10916.66,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59316,7 +59622,7 @@
       },
       {
         "period": "2026-07",
-        "value": 13796.0,
+        "value": 13796.63,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59347,62 +59653,62 @@
       },
       {
         "period": "2023-09",
-        "value": 18750.0,
+        "value": 18497.24,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-10",
-        "value": 18950.0,
+        "value": 18881.72,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-11",
-        "value": 19200.0,
+        "value": 19023.97,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2023-12",
-        "value": 19650.0,
+        "value": 18428.01,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-01",
-        "value": 19500.0,
+        "value": 19650.58,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-02",
-        "value": 15300.0,
+        "value": 15388.79,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-03",
-        "value": 20250.0,
+        "value": 19312.15,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-04",
-        "value": 19050.0,
+        "value": 18467.95,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-05",
-        "value": 21000.0,
+        "value": 20698.6,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-06",
-        "value": 19200.0,
+        "value": 19490.92,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-07",
-        "value": 21600.0,
+        "value": 22044.55,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2024-08",
-        "value": 21055.86,
+        "value": 21586.72,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59417,7 +59723,7 @@
       },
       {
         "period": "2024-11",
-        "value": 20292.0,
+        "value": 20291.72,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59452,12 +59758,12 @@
       },
       {
         "period": "2025-06",
-        "value": 25874.0,
+        "value": 25874.21,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
         "period": "2025-07",
-        "value": 28714.0,
+        "value": 28713.4,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59467,7 +59773,7 @@
       },
       {
         "period": "2025-09",
-        "value": 34014.83,
+        "value": 28907.76,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       },
       {
@@ -59527,7 +59833,7 @@
       },
       {
         "period": "2026-09",
-        "value": 45073.0,
+        "value": 45072.41,
         "source_url": "https://dulieukinhte.com/du-lieu/tong-nhap-khau-293"
       }
     ]
@@ -74727,12 +75033,17 @@
       },
       {
         "period": "2026-07",
-        "value": 22117.7,
+        "value": 22146.0,
         "source_url": "https://fred.stlouisfed.org/series/PCE"
       },
       {
         "period": "2026-08",
-        "value": 22308.5,
+        "value": 22339.7,
+        "source_url": "https://fred.stlouisfed.org/series/PCE"
+      },
+      {
+        "period": "2026-09",
+        "value": 22452.8,
         "source_url": "https://fred.stlouisfed.org/series/PCE"
       }
     ]
@@ -75436,12 +75747,17 @@
       },
       {
         "period": "2026-07",
-        "value": 16862.5,
+        "value": 16882.2,
         "source_url": "https://fred.stlouisfed.org/series/PCEC96"
       },
       {
         "period": "2026-08",
-        "value": 16955.3,
+        "value": 16975.0,
+        "source_url": "https://fred.stlouisfed.org/series/PCEC96"
+      },
+      {
+        "period": "2026-09",
+        "value": 16977.6,
         "source_url": "https://fred.stlouisfed.org/series/PCEC96"
       }
     ]
@@ -76145,12 +76461,17 @@
       },
       {
         "period": "2026-07",
-        "value": 131.172,
+        "value": 131.187,
         "source_url": "https://fred.stlouisfed.org/series/PCEPI"
       },
       {
         "period": "2026-08",
-        "value": 131.579,
+        "value": 131.611,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPI"
+      },
+      {
+        "period": "2026-09",
+        "value": 132.257,
         "source_url": "https://fred.stlouisfed.org/series/PCEPI"
       }
     ]
@@ -76869,7 +77190,7 @@
       },
       {
         "period": "2026-10",
-        "value": 99.97,
+        "value": 101.3758,
         "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO"
       }
     ]
@@ -77588,7 +77909,7 @@
       },
       {
         "period": "2026-10",
-        "value": 4.323,
+        "value": 4.3095,
         "source_url": "https://fred.stlouisfed.org/series/GASREGW"
       }
     ]
@@ -79730,7 +80051,7 @@
       },
       {
         "period": "2026-10",
-        "value": 5.2021,
+        "value": 5.1489,
         "source_url": "https://fred.stlouisfed.org/series/DGS10"
       }
     ]
@@ -80449,7 +80770,7 @@
       },
       {
         "period": "2026-10",
-        "value": 0.406,
+        "value": 0.388,
         "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
       }
     ]
@@ -81168,7 +81489,7 @@
       },
       {
         "period": "2026-10",
-        "value": 4.7461,
+        "value": 4.7852,
         "source_url": "https://fred.stlouisfed.org/series/DDFUELUSGULF"
       }
     ]
@@ -81887,7 +82208,7 @@
       },
       {
         "period": "2026-10",
-        "value": 3.4443,
+        "value": 3.3653,
         "source_url": "https://fred.stlouisfed.org/series/DGASUSGULF"
       }
     ]
@@ -82606,7 +82927,7 @@
       },
       {
         "period": "2026-10",
-        "value": 124.9636,
+        "value": 124.83,
         "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
       }
     ]
@@ -84034,7 +84355,7 @@
       },
       {
         "period": "2026-10",
-        "value": 6752267.6667,
+        "value": 6750609.5,
         "source_url": "https://fred.stlouisfed.org/series/WALCL"
       }
     ]
@@ -84753,7 +85074,7 @@
       },
       {
         "period": "2026-10",
-        "value": 4569863.3333,
+        "value": 4571543.0,
         "source_url": "https://fred.stlouisfed.org/series/TREAST"
       }
     ]
@@ -85472,7 +85793,7 @@
       },
       {
         "period": "2026-10",
-        "value": 1897142.0,
+        "value": 1893737.0,
         "source_url": "https://fred.stlouisfed.org/series/WSHOMCB"
       }
     ]
@@ -86191,7 +86512,7 @@
       },
       {
         "period": "2026-10",
-        "value": 3004802.0,
+        "value": 2977044.0,
         "source_url": "https://fred.stlouisfed.org/series/WRESBAL"
       }
     ]
@@ -86910,7 +87231,7 @@
       },
       {
         "period": "2026-10",
-        "value": 331540.3333,
+        "value": 330114.5,
         "source_url": "https://fred.stlouisfed.org/series/WLRRAL"
       }
     ]
@@ -87629,7 +87950,7 @@
       },
       {
         "period": "2026-10",
-        "value": 905209.3333,
+        "value": 928838.75,
         "source_url": "https://fred.stlouisfed.org/series/WTREGEN"
       }
     ]
@@ -88348,7 +88669,7 @@
       },
       {
         "period": "2026-10",
-        "value": 5942361.0,
+        "value": 5940516.5,
         "source_url": "https://fred.stlouisfed.org/series/ECBASSETSW"
       }
     ]
@@ -88588,6 +88909,11 @@
       {
         "period": "2026-04",
         "value": 24408.011,
+        "source_url": "https://fred.stlouisfed.org/series/GDPC1"
+      },
+      {
+        "period": "2026-07",
+        "value": 24611.077,
         "source_url": "https://fred.stlouisfed.org/series/GDPC1"
       }
     ]
@@ -90734,7 +91060,7 @@
       },
       {
         "period": "2026-10",
-        "value": 197333.3333,
+        "value": 196750.0,
         "source_url": "https://fred.stlouisfed.org/series/ICSA"
       }
     ]
@@ -93585,7 +93911,7 @@
       },
       {
         "period": "2026-10",
-        "value": 4.7893,
+        "value": 4.76,
         "source_url": "https://fred.stlouisfed.org/series/DGS2"
       }
     ]
@@ -94304,7 +94630,7 @@
       },
       {
         "period": "2026-10",
-        "value": 2.8521,
+        "value": 2.8,
         "source_url": "https://fred.stlouisfed.org/series/DFII10"
       }
     ]
@@ -95023,7 +95349,7 @@
       },
       {
         "period": "2026-10",
-        "value": 2.348,
+        "value": 2.349,
         "source_url": "https://fred.stlouisfed.org/series/T10YIE"
       }
     ]
@@ -95037,7 +95363,7 @@
     "series": [
       {
         "period": "2023-10",
-        "value": 4.455,
+        "value": 4.42,
         "source_url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
       },
       {
@@ -95217,7 +95543,7 @@
       },
       {
         "period": "2026-10",
-        "value": 3.1994,
+        "value": 3.2119,
         "source_url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
       }
     ]
@@ -95231,7 +95557,7 @@
     "series": [
       {
         "period": "2023-10",
-        "value": 1.31,
+        "value": 1.32,
         "source_url": "https://fred.stlouisfed.org/series/BAMLC0A0CM"
       },
       {
@@ -95411,7 +95737,7 @@
       },
       {
         "period": "2026-10",
-        "value": 0.8469,
+        "value": 0.8567,
         "source_url": "https://fred.stlouisfed.org/series/BAMLC0A0CM"
       }
     ]
@@ -96130,7 +96456,7 @@
       },
       {
         "period": "2026-10",
-        "value": 121.4607,
+        "value": 121.4077,
         "source_url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       }
     ]
@@ -99852,12 +100178,17 @@
       },
       {
         "period": "2026-07",
-        "value": 130.133,
+        "value": 130.148,
         "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
       },
       {
         "period": "2026-08",
-        "value": 130.455,
+        "value": 130.489,
+        "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
+      },
+      {
+        "period": "2026-09",
+        "value": 130.902,
         "source_url": "https://fred.stlouisfed.org/series/PCEPILFE"
       }
     ]
@@ -99954,6 +100285,26 @@
         "period": "2026-10-22",
         "value": 3.85,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 3.85,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 3.84,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 3.84,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ]
   },
@@ -100049,6 +100400,26 @@
         "period": "2026-10-22",
         "value": 3.89,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 3.91,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 3.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 3.88,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 3.88,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ]
   },
@@ -100144,6 +100515,26 @@
         "period": "2026-10-22",
         "value": 3.92,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 3.91,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 3.93,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 3.9,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 3.91,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ]
   },
@@ -100239,6 +100630,26 @@
         "period": "2026-10-22",
         "value": 4.03,
         "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-23-10-2026-.html"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 4.03,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-27-10-2026-.html"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 4.07,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-28-10-2026-.html"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 4.01,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-29-10-2026-.html"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 4.03,
+        "source_url": "https://vira.org.vn/tin/Ban-tin-Kinh-te-Tai-chinh-ngay/Ban-tin-Kinh-te-Tai-chinh-ngay-30-10-2026-.html"
       }
     ]
   },
@@ -105438,6 +105849,36 @@
       {
         "period": "2026-10-23",
         "value": 25627.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-24",
+        "value": 25627.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-26",
+        "value": 25627.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-27",
+        "value": 25633.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-28",
+        "value": 25631.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-29",
+        "value": 25644.0,
+        "source_url": "https://sbv.gov.vn/tỷ-giá"
+      },
+      {
+        "period": "2026-10-30",
+        "value": 25637.0,
         "source_url": "https://sbv.gov.vn/tỷ-giá"
       }
     ]
@@ -113933,6 +114374,31 @@
       {
         "period": "2026-10-22",
         "value": 341.62,
+        "source_url": "https://trading.vietcap.com.vn/iq/market"
+      },
+      {
+        "period": "2026-10-23",
+        "value": -477.96,
+        "source_url": "https://trading.vietcap.com.vn/iq/market"
+      },
+      {
+        "period": "2026-10-26",
+        "value": -892.34,
+        "source_url": "https://trading.vietcap.com.vn/iq/market"
+      },
+      {
+        "period": "2026-10-27",
+        "value": -441.46,
+        "source_url": "https://trading.vietcap.com.vn/iq/market"
+      },
+      {
+        "period": "2026-10-28",
+        "value": -267.4,
+        "source_url": "https://trading.vietcap.com.vn/iq/market"
+      },
+      {
+        "period": "2026-10-29",
+        "value": -459.35,
         "source_url": "https://trading.vietcap.com.vn/iq/market"
       }
     ]
