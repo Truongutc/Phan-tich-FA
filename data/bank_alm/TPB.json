@@ -1460,10 +1460,29 @@
       "tpdn": 2350.113,
       "ky_quy": 7649.049,
       "von_cg": 25.48
+    },
+    "2026-Q3": {
+      "total_assets": 596511.612,
+      "equity": 52133.054,
+      "customer_deposits": 301633.971,
+      "cash": 1775.015,
+      "sbv_dep": 25491.292,
+      "bank_dep": 123386.201,
+      "interbank_liab": 170611.018,
+      "loans": 330151.868,
+      "bonds_issued": 56953.271,
+      "inv_sec_bs": 64383.584,
+      "tctd_dep": 130710.119,
+      "kbnn_dep": 41412.739,
+      "kbnn_loan": 135.553,
+      "nii": 4423.969,
+      "tpdn": 4474.232,
+      "ky_quy": 11231.821,
+      "von_cg": 28.064
     }
   },
   "last_cheap_check": {
-    "period_found": "2026-Q2",
-    "checked_at": "2026-10-30T14:56:26+07:00"
+    "period_found": "2026-Q3",
+    "checked_at": "2026-11-06T15:46:48+07:00"
   }
 }
