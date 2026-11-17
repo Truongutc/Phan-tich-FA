@@ -775,32 +775,32 @@
       },
       "verified": null,
       "interest_rate_gap": {
-        "qua_han": 36063756.0,
-        "khong_anh_huong_lai_suat": -894772.0,
-        "den_1_thang": 16069801.0,
-        "tu_1_3_thang": 716715.0,
-        "tu_3_6_thang": -18440615.0,
+        "qua_han": 35784.0,
+        "khong_anh_huong_lai_suat": 1750.0,
+        "den_1_thang": 16069893.0,
+        "tu_1_3_thang": 718715.0,
+        "tu_3_6_thang": -19440615.0,
         "tu_6_12_thang": -14851592.0,
-        "tu_1_5_nam": 17016978.0,
-        "tren_5_nam": 32316147.0
+        "tu_1_5_nam": 17410.0,
+        "tren_5_nam": 33316147.0
       },
       "liquidity_gap": {
         "qua_han_tren_3t": -1113361.0,
-        "qua_han_den_3t": -203531.0,
+        "qua_han_den_3t": -181723.0,
         "den_1_thang": -104156181.0,
-        "tu_1_3_thang": -91046301.0,
-        "tu_3_12_thang": -28055270.0,
-        "tu_1_5_nam": 1848229.0,
-        "tren_5_nam": 0.0
+        "tu_1_3_thang": -115111629.0,
+        "tu_3_12_thang": -91046301.0,
+        "tu_1_5_nam": -31255408.0,
+        "tren_5_nam": 7890037.0
       },
       "liabilities_by_bucket": {
         "qua_han_tren_3t": 0,
         "qua_han_den_3t": 0,
         "den_1_thang": 104156181.0,
-        "tu_1_3_thang": 91046301.0,
-        "tu_3_12_thang": 31255408.0,
-        "tu_1_5_nam": 151315.0,
-        "tren_5_nam": 0.0
+        "tu_1_3_thang": 117111173.0,
+        "tu_3_12_thang": 91046301.0,
+        "tu_1_5_nam": 31255408.0,
+        "tren_5_nam": 131315.0
       },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0,
@@ -808,7 +808,7 @@
         "den_1_thang": 160334510.0,
         "tu_1_3_thang": 16069893.0,
         "tu_3_6_thang": 168331796.0,
-        "tu_6_12_thang": 716715.0,
+        "tu_6_12_thang": 718715.0,
         "tu_1_5_nam": -19440615.0,
         "tren_5_nam": 159337263.0
       },
@@ -823,7 +823,7 @@
         "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/LPB_202610202020LPB2020Bao20cao20tai20chinh20Quy20320nam20202620CA_21102026093403.pdf?v=1792550044770",
         "fetched_year": 2026
       },
-      "fetched_at": "2026-10-23T13:53:17+07:00"
+      "fetched_at": "2026-11-17T16:38:13+07:00"
     }
   },
   "quarterly_balance_sheet": {
