@@ -20,6 +20,15 @@ on:
 
 permissions:
   contents: write
+  # THEM 2026-11-17 (phat hien khi user hoi "du lieu ALM da cap nhat chua" - kiem tra Actions API
+  # thay CA 5 lan chay gan day (10-16 den 11-13) deu bao "failure", nhung step duy nhat fail luon la
+  # "Trigger GitHub Pages redeploy" (gh workflow run deploy_pages.yml) - 403 vi GITHUB_TOKEN mac
+  # dinh chi co quyen contents:write, THIEU actions:write nen khong du quyen dispatch workflow khac.
+  # Du lieu ALM thuc te VAN cap nhat dung (step Commit va push van thanh cong moi lan co ky moi) -
+  # day chi la loi khien badge Actions bao do + co nguy co mot tuan nao do deploy_pages khong duoc
+  # redeploy kip (neu khong co update_vimo.yml chay cung ngay "an theo"). Them actions:write giong
+  # update_vimo.yml dang lam dung.
+  actions: write
 
 jobs:
   update-bank-alm:
