@@ -152,27 +152,27 @@
     "pdfUrl": "https://drive.google.com/file/d/111IQIU8d248qXhEZ_h6qs5M2Vmal31_X/view?usp=drivesdk"
   },
   {
-    "ticker": "TCB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-08-30 22:15",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1_Cn2GjlKlUikt8QQORytSOwwsu_SsBxy/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1VVARcg4KF2tPbKWasmzyhWVUop5Nm3gw/view?usp=drivesdk"
-  },
-  {
-    "ticker": "MBB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-08-30 22:36",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1BdoTqyiXqp-h4g3vjAGURFzzPzQEUaxV/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1_amPz22vj2Idqu6FcuWXXYbis8xGrGBw/view?usp=drivesdk"
-  },
-  {
     "ticker": "VPB",
     "companyName": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-09-08 22:59",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1etkxl5LuarI1hT7C6UQ6YyDFyF9wD1i1/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1Pxb3bhJQfKP-_GoBYEyxRPtxz9qpg_e8/view?usp=drivesdk"
+  },
+  {
+    "ticker": "MBB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 16:53",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "TCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 16:54",
+    "excelUrl": null,
+    "pdfUrl": null
   }
 ]

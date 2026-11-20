@@ -8,7 +8,7 @@
     "provision_comment": "Chi phí trích lập dự phòng duy trì ở mức 40.2% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận.",
     "nii_latest_val": 16893.65,
     "npat_latest_val": 8445.47,
-    "risk_comment": "Rủi ro lãi suất: mức tham chiếu Đáng chú ý (gap +12.61% tổng tài sản), khả năng chống chịu VỪA PHẢI — NII biến động đáng kể nhưng chưa ở mức nghiêm trọng (kịch bản sốc mạnh nhất làm NII đổi khoảng 6.8%). Rủi ro thanh khoản: mức tham chiếu Trung bình, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 139% ở kịch bản rút tiền gửi mạnh nhất)."
+    "risk_comment": "Rủi ro lãi suất: mức tham chiếu Khá lớn (gap +6.94% tổng tài sản), khả năng chống chịu TỐT — NII ít biến động ngay cả khi lãi suất sốc mạnh (kịch bản sốc mạnh nhất làm NII đổi khoảng 3.4%). Rủi ro thanh khoản: mức tham chiếu Trung bình, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 139% ở kịch bản rút tiền gửi mạnh nhất)."
   },
   "credit_funding_growth": {
     "quarters": [
@@ -80,38 +80,38 @@
       1235263.7
     ],
     "funding_absolute": [
-      213664.4,
-      227514.6,
-      232919.3,
-      255118.6,
-      254910.8,
-      270927.8,
-      248459.2,
-      266646.7,
-      278990.4,
-      336021.0,
-      353903.2,
-      368243.5,
-      371230.4,
-      425258.6,
-      436620.5,
-      463725.8,
-      453894.6,
-      515686.9,
-      548769.2,
-      575828.4,
-      582303.3,
-      678677.0,
-      641887.2,
-      694007.5,
-      723527.2,
-      815680.7,
-      837895.8,
-      917414.1,
-      920668.7,
-      1066774.5,
-      1074762.9,
-      1150975.7
+      219168.4,
+      230552.9,
+      235788.4,
+      259060.2,
+      263890.5,
+      286691.9,
+      264356.0,
+      282971.2,
+      292822.3,
+      349765.8,
+      368753.7,
+      377887.3,
+      378923.1,
+      435462.6,
+      449292.5,
+      474448.9,
+      466604.0,
+      527001.9,
+      561900.9,
+      592365.8,
+      600142.8,
+      696585.9,
+      661261.1,
+      719983.0,
+      752458.5,
+      845620.0,
+      866813.4,
+      951990.8,
+      958163.2,
+      1109977.7,
+      1115668.2,
+      1197855.9
     ],
     "credit_ytd": [
       0.0,
@@ -149,42 +149,42 @@
     ],
     "funding_ytd": [
       0.0,
-      6.48,
-      2.38,
-      12.13,
-      12.04,
-      19.08,
-      -8.29,
-      -1.58,
-      2.98,
-      24.03,
-      5.32,
-      9.59,
-      10.48,
-      26.56,
-      2.67,
-      9.05,
-      6.73,
-      21.26,
-      6.42,
-      11.66,
-      12.92,
-      31.61,
-      -5.42,
-      2.26,
-      6.61,
-      20.19,
-      2.72,
-      12.47,
-      12.87,
-      30.78,
-      0.75,
-      7.89
+      5.19,
+      2.27,
+      12.36,
+      14.46,
+      24.35,
+      -7.79,
+      -1.3,
+      2.14,
+      22.0,
+      5.43,
+      8.04,
+      8.34,
+      24.5,
+      3.18,
+      8.95,
+      7.15,
+      21.02,
+      6.62,
+      12.4,
+      13.88,
+      32.18,
+      -5.07,
+      3.36,
+      8.02,
+      21.39,
+      2.51,
+      12.58,
+      13.31,
+      31.26,
+      0.51,
+      7.92
     ]
   },
   "sector": "Ngân hàng",
-  "currentPrice": 21050.0,
-  "marketCap": 169557747895000.0,
+  "currentPrice": 18700.0,
+  "marketCap": 150628498130000.0,
   "shares": 8054999900,
   "assumptions": {
     "loans_growth": [
@@ -268,12 +268,20 @@
       26.17
     ],
     "ldr": [
-      85.0,
-      88.7,
-      86.7,
-      91.12,
-      94.98,
-      98.75
+      73.9,
+      79.0,
+      82.1,
+      87.76,
+      92.65,
+      97.25
+    ],
+    "ldrOld": [
+      83.0,
+      85.8,
+      83.8,
+      null,
+      null,
+      null
     ],
     "npl": [
       1.64,
@@ -293,26 +301,26 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1BdoTqyiXqp-h4g3vjAGURFzzPzQEUaxV/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1_amPz22vj2Idqu6FcuWXXYbis8xGrGBw/view?usp=drivesdk",
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
   "betaRfCache": {
-    "beta": 0.9506,
+    "beta": 0.9221,
     "rf": 0.045,
-    "fetchedAt": "2026-08-30 15:35"
+    "fetchedAt": "2026-11-20 16:53"
   },
   "pe_hist": [
-    8.8810600998,
     8.999767326,
     8.0011758067,
     7.1321204178,
-    6.5094421312
+    5.9894967136,
+    5.3312922917
   ],
   "pb_hist": [
-    1.7765964082,
     1.7159471718,
     1.5738889813,
     1.3772422243,
-    1.3466199559
+    1.2378668004,
+    1.1991434497
   ],
   "pe_quarters": [
     12.1797692909,
@@ -329,8 +337,6 @@
     10.026216045,
     11.0862338913,
     10.1580540843,
-    9.3434776188,
-    6.9823393028,
     5.0192843194,
     4.7082111222,
     4.7459362997,
@@ -347,7 +353,8 @@
     8.999767326,
     8.0011758067,
     7.1321204178,
-    6.5094421312
+    5.9894967136,
+    5.3312922917
   ],
   "pb_quarters": [
     1.4360078468,
@@ -364,8 +371,6 @@
     1.7292683977,
     2.1897754268,
     2.0133089953,
-    1.9914331915,
-    1.4942663391,
     1.1657482138,
     1.1409716638,
     1.0924678869,
@@ -382,7 +387,8 @@
     1.7159471718,
     1.5738889813,
     1.3772422243,
-    1.3466199559
+    1.2378668004,
+    1.1991434497
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -399,8 +405,6 @@
     "2020-Q4",
     "2021-Q1",
     "2021-Q3",
-    "2021-Q4",
-    "2022-Q1",
     "2022-Q2",
     "2022-Q3",
     "2022-Q4",
@@ -417,7 +421,8 @@
     "2025-Q3",
     "2025-Q4",
     "2026-Q1",
-    "2026-Q2"
+    "2026-Q2",
+    "2026-Q3"
   ],
   "income_quarterly": [
     {
@@ -627,24 +632,44 @@
       0.6
     ],
     "ldr": [
-      0.9455,
-      0.9264,
-      0.959,
-      0.8969,
-      0.8639,
-      0.861,
-      0.9006,
-      0.85,
-      0.9169,
-      0.9051,
-      0.8942,
-      0.8866,
-      0.8919,
+      0.7985,
+      0.8014,
+      0.7978,
+      0.7537,
+      0.7225,
+      0.7198,
+      0.7562,
+      0.7393,
+      0.8203,
+      0.8207,
+      0.7912,
+      0.7905,
+      0.7811,
+      0.7954,
+      0.8228,
+      0.8207,
+      0.8245,
+      0.8376
+    ],
+    "ldrOld": [
+      0.9211,
+      0.9064,
+      0.9344,
+      0.8788,
+      0.8452,
+      0.8392,
       0.8755,
-      0.9214,
-      0.8672,
-      0.8915,
-      0.9204
+      0.8301,
+      0.892,
+      0.8755,
+      0.8633,
+      0.858,
+      0.8646,
+      0.8468,
+      0.8889,
+      0.8385,
+      0.8635,
+      0.8893
     ],
     "casa": [
       0.4144,
@@ -1299,24 +1324,44 @@
       33.6
     ],
     "ldr_pct": [
-      94.5,
-      92.6,
-      95.9,
-      89.7,
-      86.4,
-      86.1,
-      90.1,
-      85.0,
-      91.7,
-      90.5,
-      89.4,
-      88.7,
+      79.8,
+      80.1,
+      79.8,
+      75.4,
+      72.2,
+      72.0,
+      75.6,
+      73.9,
+      82.0,
+      82.1,
+      79.1,
+      79.0,
+      78.1,
+      79.5,
+      82.3,
+      82.1,
+      82.5,
+      83.8
+    ],
+    "ldr_old_pct": [
+      92.1,
+      90.6,
+      93.4,
+      87.9,
+      84.5,
+      83.9,
+      87.5,
+      83.0,
       89.2,
       87.5,
-      92.1,
-      86.7,
-      89.1,
-      92.0
+      86.3,
+      85.8,
+      86.5,
+      84.7,
+      88.9,
+      83.9,
+      86.4,
+      88.9
     ]
   },
   "provision_quarterly": {
@@ -1667,34 +1712,34 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 36890,
-    "upside": 75.25,
-    "bear": 26214,
-    "base": 36889,
-    "bull": 33982,
-    "pbAttractive": 1.2,
-    "pbAttractivePrice": 26214,
-    "pbOver": 1.56,
-    "pbOverPrice": 33982,
-    "pbMedianPrice": 29939,
-    "peMedianPrice": 28480,
-    "COE": 13.27,
-    "peMedian": 6.8,
-    "pbMedian": 1.37,
+    "weightedTarget": 37179,
+    "upside": 98.82,
+    "bear": 26125,
+    "base": 37179,
+    "bull": 33819,
+    "pbAttractive": 1.19,
+    "pbAttractivePrice": 26125,
+    "pbOver": 1.54,
+    "pbOverPrice": 33819,
+    "pbMedianPrice": 29974,
+    "peMedianPrice": 28284,
+    "COE": 13.13,
+    "peMedian": 6.49,
+    "pbMedian": 1.36,
     "bvpsBase": 17632,
-    "riValue": 47317,
-    "pbValue": 29939,
-    "pvRi": 6103,
-    "pvCv": 23582,
+    "riValue": 47987,
+    "pbValue": 29974,
+    "pvRi": 6307,
+    "pvCv": 24049,
     "epsFc": [
-      4188,
-      5615,
-      7057
+      4361,
+      5617,
+      7047
     ],
     "riResults": [
-      1848,
-      2720,
-      3416
+      2047,
+      2730,
+      3423
     ],
     "recommend": "MUA"
   },
@@ -1740,9 +1785,9 @@
       4037.9,
       4325.3,
       3399.5,
-      4187.5,
-      5615.4,
-      7056.5
+      4361,
+      5617,
+      7047
     ],
     "equity": [
       62486.02,
@@ -1797,11 +1842,21 @@
       0.0111
     ],
     "ldr": [
-      0.8972,
-      0.8969,
-      0.85,
-      0.8866,
-      0.8672,
+      0.7356,
+      0.7537,
+      0.7393,
+      0.7905,
+      0.8207,
+      null,
+      null,
+      null
+    ],
+    "ldrOld": [
+      0.8769,
+      0.8788,
+      0.8301,
+      0.858,
+      0.8385,
       null,
       null,
       null
@@ -1825,62 +1880,62 @@
     },
     "interestRateRisk": {
       "gap_by_bucket": {
-        "qua_han": 28848.005,
-        "khong_anh_huong_lai_suat": 71.772,
-        "den_1_thang": 5335.935,
-        "tu_1_3_thang": 238243.552,
-        "tu_3_6_thang": -48183.423,
+        "qua_han": 28949.005,
+        "khong_anh_huong_lai_suat": 21772.994,
+        "den_1_thang": -85335.935,
+        "tu_1_3_thang": 238249.552,
+        "tu_3_6_thang": -49189.423,
         "tu_6_12_thang": 8343.403,
         "tu_1_5_nam": -22474.775,
-        "tren_5_nam": 33587.188
+        "tren_5_nam": 33597.199
       },
       "gap_ratio_by_bucket": {
-        "qua_han": 0.017854096454277383,
-        "khong_anh_huong_lai_suat": 4.441985540131446e-05,
-        "den_1_thang": 0.00330242240888944,
-        "tu_1_3_thang": 0.14744948071860253,
-        "tu_3_6_thang": -0.029820830998165987,
+        "qua_han": 0.017916605585909955,
+        "khong_anh_huong_lai_suat": 0.01347535592060535,
+        "den_1_thang": -0.052814605880231416,
+        "tu_1_3_thang": 0.14745319413236288,
+        "tu_3_6_thang": -0.030443446705318112,
         "tu_6_12_thang": 0.005163751251391813,
         "tu_1_5_nam": -0.013909689790964125,
-        "tren_5_nam": 0.020787187681780697
+        "tren_5_nam": 0.02079338351263984
       },
       "cumulative_gap_by_horizon": {
         "1m": {
-          "value": 5335.935,
-          "ratio": 0.00330242240888944
+          "value": -85335.935,
+          "ratio": -0.052814605880231416
         },
         "3m": {
-          "value": 243579.487,
-          "ratio": 0.15075190312749198
+          "value": 152913.617,
+          "ratio": 0.09463858825213146
         },
         "6m": {
-          "value": 195396.06399999998,
-          "ratio": 0.12093107212932598
+          "value": 103724.19399999999,
+          "ratio": 0.06419514154681336
         },
         "12m": {
-          "value": 203739.46699999998,
-          "ratio": 0.12609482338071779
+          "value": 112067.597,
+          "ratio": 0.06935889279820517
         }
       },
-      "cumulative_gap_1y": 203739.46699999998,
-      "cumulative_gap_1y_ratio": 0.12609482338071779,
-      "gap_to_equity_1y": 1.4345574196769137,
+      "cumulative_gap_1y": 112067.597,
+      "cumulative_gap_1y_ratio": 0.06935889279820517,
+      "gap_to_equity_1y": 0.789083259856139,
       "sensitive_type": "Asset-sensitive",
-      "nii_sensitivity_per_shock": 1756,
+      "nii_sensitivity_per_shock": 881,
       "shock_bps": 100,
       "stress_scenarios_nii": {
-        "+100bp": 1756,
-        "-100bp": -1756,
-        "+200bp": 3512,
-        "-200bp": -3512
+        "+100bp": 881,
+        "-100bp": -881,
+        "+200bp": 1762,
+        "-200bp": -1762
       },
       "stress_scenarios_nii_ratio": {
-        "+100bp": 0.03402433674002328,
-        "-100bp": -0.03402433674002328,
-        "+200bp": 0.06804867348004656,
-        "-200bp": -0.06804867348004656
+        "+100bp": 0.017070296507950177,
+        "-100bp": -0.017070296507950177,
+        "+200bp": 0.034140593015900354,
+        "-200bp": -0.034140593015900354
       },
-      "sensitivity_level": "Đáng chú ý",
+      "sensitivity_level": "Khá lớn",
       "disclosed_sensitivity": null,
       "not_computed": [
         "ΔEVE (cần duration từng bucket, BCTC không công bố)"
@@ -1893,40 +1948,40 @@
     "liquidityRisk": {
       "gap_by_bucket": {
         "qua_han_tren_3t": 8854.103,
-        "qua_han_den_3t": 20084.802,
+        "qua_han_den_3t": 20094.902,
         "den_1_thang": -100888.358,
-        "tu_1_3_thang": 31548.92,
-        "tu_3_12_thang": 50120.582,
-        "tu_1_5_nam": 727366.37,
+        "tu_1_3_thang": -31549.92,
+        "tu_3_12_thang": 50120.562,
+        "tu_1_5_nam": -72966.37,
         "tren_5_nam": 300247.101
       },
       "gap_ratio_by_bucket": {
         "qua_han_tren_3t": 0.005479824652626992,
-        "qua_han_den_3t": 0.012430530020119703,
+        "qua_han_den_3t": 0.01243678093328296,
         "den_1_thang": -0.062440036142730394,
-        "tu_1_3_thang": 0.01952569894203363,
-        "tu_3_12_thang": 0.031019743145930503,
-        "tu_1_5_nam": 0.45016871452905016,
+        "tu_1_3_thang": -0.01952631784432702,
+        "tu_3_12_thang": 0.031019730767884633,
+        "tu_1_5_nam": -0.04515905373347279,
         "tren_5_nam": 0.18582361939313183
       },
       "cumulative_gap_by_horizon": {
         "1m": {
-          "value": -71949.453,
-          "ratio": -0.0445296814699837
+          "value": -71939.353,
+          "ratio": -0.04452343055682045
         },
         "3m": {
-          "value": -40400.532999999996,
-          "ratio": -0.025003982527950074
+          "value": -103489.27299999999,
+          "ratio": -0.06404974840114747
         },
         "12m": {
-          "value": 9720.049000000006,
-          "ratio": 0.00601576061798043
+          "value": -53368.710999999996,
+          "ratio": -0.03303001763326283
         }
       },
       "cumulative_gap_1m": -100888.358,
       "cumulative_gap_1m_ratio": -0.062440036142730394,
-      "cumulative_gap_1y": -19218.855999999992,
-      "cumulative_gap_1y_ratio": -0.011894594054766266,
+      "cumulative_gap_1y": -82317.71599999999,
+      "cumulative_gap_1y_ratio": -0.05094662321917278,
       "gap_to_equity_1m": -0.7103687108787848,
       "risk_level": "Trung bình",
       "liquid_assets_ratio": 0.15867660721701457,
@@ -1934,8 +1989,8 @@
         "LCR chuẩn Basel (cần phân loại HQLA chi tiết)",
         "NSFR (cần phân loại nguồn vốn ổn định chi tiết)"
       ],
-      "short_term_liabilities": 660456.0249999999,
-      "liquid_assets_to_st_liabilities_simple": 0.38819229183351006,
+      "short_term_liabilities": 1154194.433,
+      "liquid_assets_to_st_liabilities_simple": 0.2221323640711062,
       "deposit_run_stress": {
         "-5%": -210316,
         "-10%": -164247,
@@ -1951,25 +2006,25 @@
       "loan_to_assets": 0.662763142006945,
       "wholesale_funding_ratio": 0.2693794469147101
     },
-    "narrative": "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = +12.61% tổng tài sản, +143% VCSH — Ngân hàng đang Asset-sensitive (tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi cho NII, lãi suất GIẢM bất lợi cho NII). Mức tham chiếu: Đáng chú ý (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt). Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: +0.33%; ≤3m: +15.08%; ≤6m: +12.09%; ≤12m: +12.61%. NII sensitivity (Tầng 3, ước tính static gap): +100bp: +1,756 tỷ VND (+3.4% NII); -100bp: -1,756 tỷ VND (-3.4% NII); +200bp: +3,512 tỷ VND (+6.8% NII); -200bp: -3,512 tỷ VND (-6.8% NII). NIM thực tế kỳ gần nhất (Tầng 5): 3.91% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment). Liquidity Gap: gap ròng ≤1 tháng = -6.24% tổng tài sản, luỹ kế ≤1 năm = -1.19% (mức tham chiếu: Trung bình — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 15.9%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ. Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): 38.8% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn. Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -210,316 tỷ VND (Liquid Assets che phủ 557%); rút -10% tiền gửi KH: thiếu hụt -164,247 tỷ VND (Liquid Assets che phủ 278%); rút -20% tiền gửi KH: thiếu hụt -72,110 tỷ VND (Liquid Assets che phủ 139%). Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 66.3%, LDR = 86.7%, CASA = 36.8%, Wholesale Funding/Tổng tài sản = 26.9%. KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết). Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều. Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ.",
+    "narrative": "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = +6.94% tổng tài sản, +79% VCSH — Ngân hàng đang Asset-sensitive (tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi cho NII, lãi suất GIẢM bất lợi cho NII). Mức tham chiếu: Khá lớn (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt). Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: -5.28%; ≤3m: +9.46%; ≤6m: +6.42%; ≤12m: +6.94%. NII sensitivity (Tầng 3, ước tính static gap): +100bp: +881 tỷ VND (+1.7% NII); -100bp: -881 tỷ VND (-1.7% NII); +200bp: +1,762 tỷ VND (+3.4% NII); -200bp: -1,762 tỷ VND (-3.4% NII). NIM thực tế kỳ gần nhất (Tầng 5): 3.91% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment). Liquidity Gap: gap ròng ≤1 tháng = -6.24% tổng tài sản, luỹ kế ≤1 năm = -5.09% (mức tham chiếu: Trung bình — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 15.9%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ. Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): 22.2% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn. Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -210,316 tỷ VND (Liquid Assets che phủ 557%); rút -10% tiền gửi KH: thiếu hụt -164,247 tỷ VND (Liquid Assets che phủ 278%); rút -20% tiền gửi KH: thiếu hụt -72,110 tỷ VND (Liquid Assets che phủ 139%). Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 66.3%, LDR = 82.1%, CASA = 36.8%, Wholesale Funding/Tổng tài sản = 26.9%. KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết). Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều. Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ.",
     "narrativeLines": [
-      "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = +12.61% tổng tài sản, +143% VCSH — Ngân hàng đang Asset-sensitive (tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi cho NII, lãi suất GIẢM bất lợi cho NII). Mức tham chiếu: Đáng chú ý (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt).",
-      "Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: +0.33%; ≤3m: +15.08%; ≤6m: +12.09%; ≤12m: +12.61%.",
-      "NII sensitivity (Tầng 3, ước tính static gap): +100bp: +1,756 tỷ VND (+3.4% NII); -100bp: -1,756 tỷ VND (-3.4% NII); +200bp: +3,512 tỷ VND (+6.8% NII); -200bp: -3,512 tỷ VND (-6.8% NII).",
+      "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = +6.94% tổng tài sản, +79% VCSH — Ngân hàng đang Asset-sensitive (tài sản được định lại lãi suất NHANH HƠN nguồn vốn — lãi suất TĂNG có lợi cho NII, lãi suất GIẢM bất lợi cho NII). Mức tham chiếu: Khá lớn (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt).",
+      "Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: -5.28%; ≤3m: +9.46%; ≤6m: +6.42%; ≤12m: +6.94%.",
+      "NII sensitivity (Tầng 3, ước tính static gap): +100bp: +881 tỷ VND (+1.7% NII); -100bp: -881 tỷ VND (-1.7% NII); +200bp: +1,762 tỷ VND (+3.4% NII); -200bp: -1,762 tỷ VND (-3.4% NII).",
       "NIM thực tế kỳ gần nhất (Tầng 5): 3.91% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment).",
-      "Liquidity Gap: gap ròng ≤1 tháng = -6.24% tổng tài sản, luỹ kế ≤1 năm = -1.19% (mức tham chiếu: Trung bình — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 15.9%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ.",
-      "Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): 38.8% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn.",
+      "Liquidity Gap: gap ròng ≤1 tháng = -6.24% tổng tài sản, luỹ kế ≤1 năm = -5.09% (mức tham chiếu: Trung bình — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 15.9%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ.",
+      "Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): 22.2% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn.",
       "Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -210,316 tỷ VND (Liquid Assets che phủ 557%); rút -10% tiền gửi KH: thiếu hụt -164,247 tỷ VND (Liquid Assets che phủ 278%); rút -20% tiền gửi KH: thiếu hụt -72,110 tỷ VND (Liquid Assets che phủ 139%).",
-      "Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 66.3%, LDR = 86.7%, CASA = 36.8%, Wholesale Funding/Tổng tài sản = 26.9%.",
+      "Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 66.3%, LDR = 82.1%, CASA = 36.8%, Wholesale Funding/Tổng tài sản = 26.9%.",
       "KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết).",
       "Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều.",
       "Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ."
     ],
     "summary": {
-      "interest_rate_level": "Đáng chú ý",
+      "interest_rate_level": "Khá lớn",
       "liquidity_level": "Trung bình",
-      "summary_text": "Rủi ro lãi suất: mức tham chiếu Đáng chú ý (gap +12.61% tổng tài sản), khả năng chống chịu VỪA PHẢI — NII biến động đáng kể nhưng chưa ở mức nghiêm trọng (kịch bản sốc mạnh nhất làm NII đổi khoảng 6.8%). Rủi ro thanh khoản: mức tham chiếu Trung bình, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 139% ở kịch bản rút tiền gửi mạnh nhất)."
+      "summary_text": "Rủi ro lãi suất: mức tham chiếu Khá lớn (gap +6.94% tổng tài sản), khả năng chống chịu TỐT — NII ít biến động ngay cả khi lãi suất sốc mạnh (kịch bản sốc mạnh nhất làm NII đổi khoảng 3.4%). Rủi ro thanh khoản: mức tham chiếu Trung bình, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 139% ở kịch bản rút tiền gửi mạnh nhất)."
     }
   },
-  "lastUpdated": "2026-08-30 22:36"
+  "lastUpdated": "2026-11-20 16:53"
 }
