@@ -2,16 +2,17 @@
   "ticker": "VPB",
   "companyName": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng",
   "analysis_comments": {
-    "ytd_loans_growth": 22.96,
-    "ytd_dep_growth": 16.69,
-    "profit_source_comment": "Lợi nhuận cốt lõi từ Thu nhập lãi thuần (NII) chiếm ưu thế tuyệt đối đóng góp 76.5% tổng thu nhập HĐ, khẳng định chất lượng nguồn thu cực kỳ bền vững và đi liền với quy mô tín dụng.",
-    "provision_comment": "Chi phí trích lập dự phòng duy trì ở mức 72.2% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận.",
-    "nii_latest_val": 17973.5,
-    "npat_latest_val": 8775.91,
-    "risk_comment": null
+    "ytd_loans_growth": 10.17,
+    "ytd_dep_growth": 8.71,
+    "profit_source_comment": "Lợi nhuận cốt lõi từ Thu nhập lãi thuần (NII) chiếm ưu thế tuyệt đối đóng góp 85.2% tổng thu nhập HĐ, khẳng định chất lượng nguồn thu cực kỳ bền vững và đi liền với quy mô tín dụng.",
+    "provision_comment": "Chi phí trích lập dự phòng duy trì ở mức 96.8% LNTT, cho thấy ngân hàng tiếp tục trích lập thận trọng bảo vệ chất lượng tài sản, không lạm dụng cắt giảm dự phòng để làm đẹp lợi nhuận.",
+    "nii_latest_val": 16960.63,
+    "npat_latest_val": 6329.47,
+    "risk_comment": "Rủi ro lãi suất: mức tham chiếu Cần theo dõi (gap -3.97% tổng tài sản), khả năng chống chịu TỐT — NII ít biến động ngay cả khi lãi suất sốc mạnh (kịch bản sốc mạnh nhất làm NII đổi khoảng 1.3%). Rủi ro thanh khoản: mức tham chiếu Thấp, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 161% ở kịch bản rút tiền gửi mạnh nhất)."
   },
   "credit_funding_growth": {
     "quarters": [
+      "Q2/18",
       "Q3/18",
       "Q4/18",
       "Q1/19",
@@ -42,10 +43,10 @@
       "Q2/25",
       "Q3/25",
       "Q4/25",
-      "Q1/26",
-      "Q2/26"
+      "Q1/26"
     ],
     "credit_absolute": [
+      206643.2,
       207167.5,
       226721.2,
       242337.4,
@@ -76,46 +77,46 @@
       816377.5,
       883159.4,
       929277.6,
-      1023796.8,
-      1142633.9
+      1023796.8
     ],
     "funding_absolute": [
-      207782.1,
-      213338.5,
-      229685.7,
-      246800.9,
-      259004.4,
-      266896.0,
-      267599.8,
-      287719.0,
-      296552.2,
-      292401.3,
-      293514.3,
-      297685.4,
-      303802.6,
-      319498.5,
-      347059.1,
-      367012.4,
-      346383.0,
-      360775.6,
-      435533.9,
-      483705.1,
-      511373.2,
-      512628.5,
-      518845.9,
-      540821.5,
-      535655.7,
-      557971.8,
-      637451.7,
-      685038.2,
-      694048.3,
-      736964.0,
-      821047.4,
-      898479.1
+      215044.7,
+      211882.4,
+      218766.3,
+      234360.0,
+      250345.4,
+      262265.1,
+      270854.3,
+      270973.2,
+      291224.3,
+      300022.0,
+      295363.4,
+      296688.9,
+      300210.0,
+      306694.0,
+      322050.2,
+      347899.6,
+      368695.2,
+      347049.3,
+      363235.5,
+      437940.2,
+      485131.2,
+      513432.5,
+      514055.6,
+      519536.0,
+      542745.5,
+      537220.3,
+      559496.0,
+      638757.5,
+      686594.6,
+      695624.9,
+      738002.2,
+      824382.7
     ],
     "credit_ytd": [
       0.0,
-      9.44,
+      0.25,
+      9.72,
       6.89,
       11.27,
       14.83,
@@ -144,47 +145,46 @@
       18.42,
       28.11,
       34.8,
-      10.17,
-      22.96
+      10.17
     ],
     "funding_ytd": [
       0.0,
-      2.67,
-      7.66,
-      15.69,
-      21.41,
-      25.1,
-      0.26,
-      7.8,
-      11.11,
-      9.56,
-      0.38,
-      1.81,
-      3.9,
-      9.27,
-      8.63,
-      14.87,
-      8.41,
-      12.92,
-      20.72,
-      34.07,
-      41.74,
-      42.09,
-      1.21,
-      5.5,
-      4.49,
-      8.85,
-      14.24,
-      22.77,
-      24.39,
-      32.08,
-      11.41,
-      21.92
+      -1.47,
+      1.73,
+      7.13,
+      14.44,
+      19.88,
+      23.81,
+      0.04,
+      7.52,
+      10.77,
+      9.05,
+      0.45,
+      1.64,
+      3.84,
+      9.04,
+      8.03,
+      14.48,
+      7.76,
+      12.79,
+      20.57,
+      33.56,
+      41.35,
+      41.52,
+      1.07,
+      5.58,
+      4.51,
+      8.84,
+      14.17,
+      22.72,
+      24.33,
+      31.9,
+      11.7
     ]
   },
   "sector": "Ngân hàng",
-  "currentPrice": 27300.0,
-  "marketCap": 216596114280000.0,
+  "currentPrice": 26750.0,
+  "marketCap": 212232456300000.0,
   "shares": 7933923600,
   "assumptions": {
     "loans_growth": [
@@ -198,9 +198,9 @@
       23.5
     ],
     "nim": [
-      5.48,
-      5.48,
-      5.48
+      5.56,
+      5.56,
+      5.56
     ],
     "cir": [
       33.0,
@@ -231,49 +231,57 @@
       38174.7,
       50002.4,
       58662.7,
-      73287.0,
-      90550.7,
-      110977.3
+      74356.9,
+      91872.6,
+      112597.4
     ],
     "toi": [
       49739.5,
       62255.1,
       74653.8,
-      91676.8,
-      111698.9,
-      135086.3
+      92746.7,
+      113020.8,
+      136706.4
     ],
     "npat": [
       8494.2,
       15986.8,
       24354.6,
-      26495.8,
-      30255.9,
-      39656.1
+      24468.0,
+      31761.0,
+      40537.4
     ],
     "nim": [
       5.79,
       6.11,
       5.64,
-      5.48,
-      5.48,
-      5.48
+      5.56,
+      5.56,
+      5.56
     ],
     "roe": [
       7.0,
       11.1,
       14.9,
-      13.98,
-      14.45,
-      16.96
+      12.96,
+      15.23,
+      17.34
     ],
     "ldr": [
-      96.2,
-      102.9,
-      105.9,
-      118.34,
-      107.91,
-      108.29
+      79.4,
+      89.0,
+      90.4,
+      99.73,
+      99.52,
+      102.63
+    ],
+    "ldrOld": [
+      96.0,
+      102.7,
+      105.8,
+      null,
+      null,
+      null
     ],
     "npl": [
       5.15,
@@ -287,32 +295,32 @@
   "forecast_text": {
     "loans_g_26": 24.1,
     "dep_g_26": 25.5,
-    "nim_26": 5.48,
+    "nim_26": 5.56,
     "coc_26": 3.0,
     "cir_26": 33.0,
     "nim_trend": "điều chỉnh giảm nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1etkxl5LuarI1hT7C6UQ6YyDFyF9wD1i1/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1Pxb3bhJQfKP-_GoBYEyxRPtxz9qpg_e8/view?usp=drivesdk",
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
   "betaRfCache": {
-    "beta": 1.1989,
+    "beta": 1.1809,
     "rf": 0.045,
-    "fetchedAt": "2026-09-08 15:58"
+    "fetchedAt": "2026-11-20 17:01"
   },
   "pe_hist": [
-    14.8169293588,
     11.3340624075,
     9.0451623018,
     7.9961785268,
-    7.2644470603
+    8.166780207,
+    6.7021422702
   ],
   "pb_hist": [
-    1.7577240312,
     1.5200947226,
     1.2923674217,
     1.2076215069,
-    1.2146526611
+    1.3655273731,
+    1.1178681815
   ],
   "pe_quarters": [
     9.9799872437,
@@ -329,8 +337,6 @@
     12.0257636051,
     13.8326037487,
     11.9959643211,
-    14.5716900546,
-    7.1312899322,
     6.3796154645,
     7.074017277,
     7.5539391061,
@@ -347,7 +353,8 @@
     11.3340624075,
     9.0451623018,
     7.9961785268,
-    7.2644470603
+    8.166780207,
+    6.7021422702
   ],
   "pb_quarters": [
     1.4745429715,
@@ -364,8 +371,6 @@
     2.3016098481,
     2.805661578,
     2.3717277384,
-    2.1838342112,
-    1.4172491111,
     1.1862208548,
     1.3770069471,
     1.4211483927,
@@ -382,7 +387,8 @@
     1.5200947226,
     1.2923674217,
     1.2076215069,
-    1.2146526611
+    1.3655273731,
+    1.1178681815
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -399,8 +405,6 @@
     "2020-Q4",
     "2021-Q1",
     "2021-Q3",
-    "2021-Q4",
-    "2022-Q1",
     "2022-Q2",
     "2022-Q3",
     "2022-Q4",
@@ -417,9 +421,18 @@
     "2025-Q3",
     "2025-Q4",
     "2026-Q1",
-    "2026-Q2"
+    "2026-Q2",
+    "2026-Q3"
   ],
   "income_quarterly": [
+    {
+      "quarter": "2021-Q4",
+      "nii": 8522.87,
+      "nonii": 2547.57,
+      "toi": 11070.44,
+      "ppop": 8215.66,
+      "npat": 2271.53
+    },
     {
       "quarter": "2022-Q1",
       "nii": 9887.71,
@@ -555,18 +568,11 @@
       "toi": 19908.21,
       "ppop": 15589.88,
       "npat": 6329.47
-    },
-    {
-      "quarter": "2026-Q2",
-      "nii": 17973.5,
-      "nonii": 5510.14,
-      "toi": 23483.63,
-      "ppop": 18869.55,
-      "npat": 8775.91
     }
   ],
   "ratios_quarterly": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -583,10 +589,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "nim": [
+      7.34,
       7.86,
       7.86,
       7.67,
@@ -603,10 +609,10 @@
       5.44,
       5.53,
       5.8,
-      5.44,
-      5.29
+      5.44
     ],
     "cof": [
+      1.48,
       1.42,
       1.66,
       2.02,
@@ -623,30 +629,50 @@
       0.79,
       1.38,
       1.35,
-      1.01,
-      1.55
+      1.01
     ],
     "ldr": [
-      1.0486,
-      1.0168,
-      1.0769,
-      1.1103,
-      0.9626,
-      0.8937,
-      0.9078,
-      0.962,
-      0.9874,
-      0.998,
-      1.0237,
-      1.0292,
-      0.991,
-      1.0153,
-      1.0656,
-      1.0587,
-      1.0545,
-      1.0902
+      0.7886,
+      0.8005,
+      0.7737,
+      0.7847,
+      0.8071,
+      0.7691,
+      0.7747,
+      0.7751,
+      0.794,
+      0.8149,
+      0.833,
+      0.8644,
+      0.8897,
+      0.8632,
+      0.892,
+      0.9085,
+      0.9044,
+      0.9076
+    ],
+    "ldrOld": [
+      1.0115,
+      1.0463,
+      1.0127,
+      1.0751,
+      1.1037,
+      0.9579,
+      0.8914,
+      0.9047,
+      0.9598,
+      0.9863,
+      0.9949,
+      1.0211,
+      1.0268,
+      0.9893,
+      1.0133,
+      1.0635,
+      1.0575,
+      1.0508
     ],
     "casa": [
+      0.2192,
       0.2045,
       0.1807,
       0.1819,
@@ -663,10 +689,10 @@
       0.1347,
       0.1367,
       0.1365,
-      0.1309,
-      0.1149
+      0.1309
     ],
     "npl": [
+      4.6,
       4.99,
       5.43,
       5.18,
@@ -683,10 +709,10 @@
       4.06,
       3.58,
       3.4,
-      3.65,
-      3.34
+      3.65
     ],
     "llr": [
+      60.9,
       63.6,
       62.0,
       62.0,
@@ -703,10 +729,10 @@
       52.2,
       55.1,
       55.4,
-      52.8,
-      56.2
+      52.8
     ],
     "roe": [
+      0.1051,
       0.3746,
       0.135,
       0.1384,
@@ -723,10 +749,10 @@
       0.1298,
       0.1846,
       0.1801,
-      0.1357,
-      0.1836
+      0.1357
     ],
     "credit_growth": [
+      20.71,
       5.02,
       9.87,
       12.88,
@@ -743,12 +769,12 @@
       19.16,
       29.01,
       35.97,
-      10.23,
-      23.05
+      10.23
     ]
   },
   "earning_assets_quarterly": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -765,10 +791,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "cash_sbv": [
+      13206.5,
       6934.6,
       7285.1,
       6782.5,
@@ -785,10 +811,10 @@
       19724.3,
       17183.6,
       16344.7,
-      18882.5,
-      15976.6
+      18882.5
     ],
     "bank_dep": [
+      57104.6,
       51850.6,
       62025.6,
       47833.6,
@@ -805,10 +831,10 @@
       154342.4,
       166685.5,
       186228.9,
-      195016.6,
-      199197.9
+      195016.6
     ],
     "loans": [
+      345607.0,
       362946.4,
       379718.3,
       390122.8,
@@ -825,10 +851,10 @@
       811930.9,
       879072.2,
       926472.7,
-      1021232.1,
-      1140006.7
+      1021232.1
     ],
     "inv_sec": [
+      75798.4,
       92350.2,
       101733.4,
       87756.9,
@@ -845,12 +871,12 @@
       73755.9,
       57364.0,
       64434.1,
-      65833.1,
-      62911.5
+      65833.1
     ]
   },
   "loan_industry": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -867,10 +893,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "real_estate": [
+      157518.9,
       158405.6,
       159736.8,
       164153.5,
@@ -887,10 +913,10 @@
       460057.6,
       523864.6,
       526095.6,
-      597177.5,
-      685735.1
+      597177.5
     ],
     "individuals": [
+      195511.7,
       213545.1,
       230174.5,
       236418.8,
@@ -907,10 +933,10 @@
       348147.1,
       343931.5,
       382001.0,
-      405314.3,
-      435135.9
+      405314.3
     ],
     "wholesale_retail": [
+      554.9,
       541.2,
       32.6,
       1.6,
@@ -927,8 +953,7 @@
       17764.2,
       27089.6,
       34133.1,
-      36376.1,
-      38446.7
+      36376.1
     ],
     "others": [
       0,
@@ -953,6 +978,7 @@
   },
   "npl_groups": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -969,10 +995,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "group1": [
+      323096.7,
       338024.1,
       356681.4,
       363619.6,
@@ -989,10 +1015,10 @@
       771023.9,
       832539.1,
       881486.5,
-      971312.3,
-      1086554.6
+      971312.3
     ],
     "group2": [
+      16297.6,
       18339.1,
       15197.8,
       18834.8,
@@ -1009,10 +1035,10 @@
       25157.5,
       32377.6,
       30950.4,
-      32321.1,
-      36759.8
+      32321.1
     ],
     "group3": [
+      6381.2,
       6339.4,
       6562.9,
       6394.6,
@@ -1029,10 +1055,10 @@
       10852.9,
       9601.4,
       11429.9,
-      12462.2,
-      12569.5
+      12462.2
     ],
     "group4": [
+      8446.3,
       9795.3,
       9091.2,
       8118.9,
@@ -1049,10 +1075,10 @@
       14423.3,
       13330.8,
       10880.0,
-      13890.6,
-      15717.9
+      13890.6
     ],
     "group5": [
+      1059.5,
       1959.2,
       4971.0,
       5679.4,
@@ -1069,12 +1095,12 @@
       7669.1,
       8562.9,
       9154.9,
-      10931.1,
-      9799.7
+      10931.1
     ]
   },
   "loan_terms": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -1091,10 +1117,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "short_term": [
+      135801.2,
       141253.6,
       145979.8,
       134820.0,
@@ -1111,10 +1137,10 @@
       324503.3,
       352463.6,
       375829.9,
-      414182.6,
-      464465.3
+      414182.6
     ],
     "medium_term": [
+      140081.6,
       145695.9,
       149267.7,
       169642.9,
@@ -1131,10 +1157,10 @@
       309319.2,
       327900.9,
       329817.5,
-      344829.2,
-      362269.9
+      344829.2
     ],
     "long_term": [
+      79398.4,
       87507.5,
       97256.8,
       98184.4,
@@ -1151,12 +1177,12 @@
       195304.2,
       216047.3,
       238254.2,
-      281905.4,
-      334666.3
+      281905.4
     ]
   },
   "deposit_types": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -1173,10 +1199,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "casa": [
+      53004.4,
       56051.4,
       53390.5,
       50476.3,
@@ -1193,10 +1219,10 @@
       80897.6,
       80111.2,
       85753.3,
-      89343.9,
-      84173.5
+      89343.9
     ],
     "term": [
+      187750.1,
       215066.6,
       239279.3,
       223700.5,
@@ -1213,10 +1239,10 @@
       517033.5,
       502256.0,
       537300.9,
-      587582.6,
-      639422.1
+      587582.6
     ],
     "others": [
+      1082.5,
       3030.7,
       2749.7,
       3245.6,
@@ -1233,12 +1259,12 @@
       2843.0,
       3465.9,
       4990.4,
-      5792.9,
-      9291.9
+      5792.9
     ]
   },
   "deposit_casa_ldr_quarterly": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -1255,10 +1281,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "deposit_total": [
+      241837.0,
       274148.7,
       295419.6,
       277422.3,
@@ -1275,10 +1301,10 @@
       600774.2,
       585833.0,
       628044.6,
-      682719.4,
-      732887.4
+      682719.4
     ],
     "casa_pct": [
+      21.9,
       20.4,
       18.1,
       18.2,
@@ -1295,32 +1321,52 @@
       13.5,
       13.7,
       13.7,
-      13.1,
-      11.5
+      13.1
     ],
     "ldr_pct": [
-      104.9,
-      101.7,
-      107.7,
-      111.0,
-      96.3,
-      89.4,
+      78.9,
+      80.0,
+      77.4,
+      78.5,
+      80.7,
+      76.9,
+      77.5,
+      77.5,
+      79.4,
+      81.5,
+      83.3,
+      86.4,
+      89.0,
+      86.3,
+      89.2,
       90.8,
-      96.2,
-      98.7,
-      99.8,
-      102.4,
-      102.9,
-      99.1,
-      101.5,
-      106.6,
-      105.9,
-      105.5,
-      109.0
+      90.4,
+      90.8
+    ],
+    "ldr_old_pct": [
+      101.2,
+      104.6,
+      101.3,
+      107.5,
+      110.4,
+      95.8,
+      89.1,
+      90.5,
+      96.0,
+      98.6,
+      99.5,
+      102.1,
+      102.7,
+      98.9,
+      101.3,
+      106.3,
+      105.8,
+      105.1
     ]
   },
   "provision_quarterly": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -1337,10 +1383,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "provision_expense": [
+      5370.9,
       4132.4,
       5585.7,
       5422.9,
@@ -1357,10 +1403,10 @@
       5915.7,
       6543.5,
       6262.1,
-      7669.1,
-      7910.4
+      7669.1
     ],
     "provision_balance": [
+      9674.2,
       11510.6,
       12785.9,
       12524.5,
@@ -1377,10 +1423,10 @@
       17195.8,
       17339.6,
       17429.0,
-      19685.1,
-      21394.9
+      19685.1
     ],
     "llr_pct": [
+      60.9,
       63.6,
       62.0,
       62.0,
@@ -1397,12 +1443,12 @@
       52.2,
       55.1,
       55.4,
-      52.8,
-      56.2
+      52.8
     ]
   },
   "nonii_structure": {
     "quarters": [
+      "2021-Q4",
       "2022-Q1",
       "2022-Q2",
       "2022-Q3",
@@ -1419,10 +1465,10 @@
       "2025-Q2",
       "2025-Q3",
       "2025-Q4",
-      "2026-Q1",
-      "2026-Q2"
+      "2026-Q1"
     ],
     "fee": [
+      1196.1,
       1249.2,
       1538.0,
       1769.5,
@@ -1439,10 +1485,10 @@
       1343.3,
       2392.0,
       2477.6,
-      2064.5,
-      3490.1
+      2064.5
     ],
     "forex": [
+      -30.3,
       -82.9,
       -166.6,
       -28.6,
@@ -1459,10 +1505,10 @@
       93.2,
       3.6,
       80.7,
-      -419.8,
-      -847.0
+      -419.8
     ],
     "trading_sec": [
+      13.5,
       -66.4,
       -232.4,
       81.2,
@@ -1479,10 +1525,10 @@
       326.6,
       1287.0,
       -231.1,
-      -224.1,
-      502.2
+      -224.1
     ],
     "invest_sec": [
+      784.2,
       171.6,
       348.6,
       10.8,
@@ -1499,10 +1545,10 @@
       38.5,
       -43.7,
       144.5,
-      14.4,
-      102.4
+      14.4
     ],
     "other": [
+      584.1,
       7110.3,
       1333.2,
       1255.3,
@@ -1519,8 +1565,7 @@
       1254.5,
       1437.4,
       3176.7,
-      1512.6,
-      2262.3
+      1512.6
     ],
     "years": [
       "2021",
@@ -1667,34 +1712,34 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 31932,
-    "upside": 16.97,
-    "bear": 31193,
-    "base": 31932,
-    "bull": 39824,
-    "pbAttractive": 1.2,
-    "pbAttractivePrice": 31194,
-    "pbOver": 1.53,
-    "pbOverPrice": 39825,
-    "pbMedianPrice": 34954,
-    "peMedianPrice": 27933,
-    "COE": 14.43,
+    "weightedTarget": 32182,
+    "upside": 20.31,
+    "bear": 30332,
+    "base": 32182,
+    "bull": 38698,
+    "pbAttractive": 1.17,
+    "pbAttractivePrice": 30332,
+    "pbOver": 1.5,
+    "pbOverPrice": 38698,
+    "pbMedianPrice": 34663,
+    "peMedianPrice": 26122,
+    "COE": 14.34,
     "peMedian": 8.36,
     "pbMedian": 1.34,
     "bvpsBase": 22722,
-    "riValue": 27399,
-    "pbValue": 34954,
-    "pvRi": 550,
-    "pvCv": 4127,
+    "riValue": 28460,
+    "pbValue": 34664,
+    "pvRi": 715,
+    "pvCv": 5023,
     "epsFc": [
-      3340,
-      3813,
-      4998
+      3123,
+      4071,
+      5116
     ],
     "riResults": [
-      60,
-      52,
-      686
+      -134,
+      365,
+      826
     ],
     "recommend": "MUA"
   },
@@ -1720,9 +1765,9 @@
       38174.68,
       50002.4,
       58662.71,
-      73287.0,
-      90550.7,
-      110977.3
+      74356.9,
+      91872.6,
+      112597.4
     ],
     "npat": [
       11477.17,
@@ -1730,9 +1775,9 @@
       8494.17,
       15986.83,
       24354.6,
-      26495.8,
-      30255.86,
-      39656.08
+      24468.0,
+      31761.04,
+      40537.41
     ],
     "eps": [
       2547.3,
@@ -1740,9 +1785,9 @@
       1070.6,
       2015.0,
       3069.7,
-      3339.6,
-      3813.5,
-      4998.3
+      3123,
+      4071,
+      5116
     ],
     "equity": [
       86278.15,
@@ -1750,9 +1795,9 @@
       139795.53,
       147275.26,
       180275.63,
-      198822.69,
-      220001.79,
-      247761.04
+      197403.23,
+      219635.96,
+      248012.15
     ]
   },
   "ratios": {
@@ -1762,9 +1807,9 @@
       0.0579,
       0.0611,
       0.0564,
-      0.0548,
-      0.0548,
-      0.0548
+      0.0556,
+      0.0556,
+      0.0556
     ],
     "roe": [
       0.133,
@@ -1797,11 +1842,21 @@
       0.0289
     ],
     "ldr": [
-      1.0179,
-      1.1103,
-      0.9618,
-      1.0292,
-      1.0587,
+      0.7885,
+      0.8071,
+      0.794,
+      0.8897,
+      0.9044,
+      null,
+      null,
+      null
+    ],
+    "ldrOld": [
+      1.0109,
+      1.1037,
+      0.9595,
+      1.0268,
+      1.0575,
       null,
       null,
       null
@@ -1818,10 +1873,158 @@
     ]
   },
   "bankRiskAnalysis": {
+    "source": {
+      "title": "Báo cáo tài chính hợp nhất quý 3 năm 2026",
+      "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/VPB_202610192020VPB2020BCTC20hop20nhat20quy20320nam202026_19102026151610.pdf?v=1792397772275",
+      "year": 2026
+    },
+    "interestRateRisk": {
+      "gap_by_bucket": {
+        "qua_han": 54257.353,
+        "khong_anh_huong_lai_suat": 227397.303,
+        "den_1_thang": 32304.04,
+        "tu_1_3_thang": -82316.154,
+        "tu_3_6_thang": -84.383,
+        "tu_6_12_thang": 34.109,
+        "tu_1_5_nam": 81.865,
+        "tren_5_nam": 13858.003
+      },
+      "gap_ratio_by_bucket": {
+        "qua_han": 0.04305627932764897,
+        "khong_anh_huong_lai_suat": 0.180452625404008,
+        "den_1_thang": 0.025635083407986113,
+        "tu_1_3_thang": -0.06532252540594395,
+        "tu_3_6_thang": -6.696268464303821e-05,
+        "tu_6_12_thang": 2.7067421287337383e-05,
+        "tu_1_5_nam": 6.496450918197176e-05,
+        "tren_5_nam": 0.01099710942572885
+      },
+      "cumulative_gap_by_horizon": {
+        "1m": {
+          "value": 32304.04,
+          "ratio": 0.025635083407986113
+        },
+        "3m": {
+          "value": -50012.113999999994,
+          "ratio": -0.03968744199795783
+        },
+        "6m": {
+          "value": -50096.496999999996,
+          "ratio": -0.03975440468260087
+        },
+        "12m": {
+          "value": -50062.38799999999,
+          "ratio": -0.039727337261313535
+        }
+      },
+      "cumulative_gap_1y": -50062.38799999999,
+      "cumulative_gap_1y_ratio": -0.039727337261313535,
+      "gap_to_equity_1y": -0.2776991447912241,
+      "sensitive_type": "Liability-sensitive",
+      "nii_sensitivity_per_shock": -377,
+      "shock_bps": 100,
+      "stress_scenarios_nii": {
+        "+100bp": -377,
+        "-100bp": 377,
+        "+200bp": -754,
+        "-200bp": 754
+      },
+      "stress_scenarios_nii_ratio": {
+        "+100bp": -0.006426569463297751,
+        "-100bp": 0.006426569463297751,
+        "+200bp": -0.012853138926595502,
+        "-200bp": 0.012853138926595502
+      },
+      "sensitivity_level": "Cần theo dõi",
+      "disclosed_sensitivity": null,
+      "not_computed": [
+        "ΔEVE (cần duration từng bucket, BCTC không công bố)"
+      ],
+      "qualitative_caveats": [
+        "Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn.",
+        "Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều."
+      ]
+    },
+    "liquidityRisk": {
+      "gap_by_bucket": {
+        "qua_han_tren_3t": 13187.48,
+        "qua_han_den_3t": 13060.538,
+        "den_1_thang": 8715.101,
+        "tu_1_3_thang": -28135.685,
+        "tu_3_12_thang": -133087.283,
+        "tu_1_5_nam": 134108.171,
+        "tren_5_nam": 221338.5
+      },
+      "gap_ratio_by_bucket": {
+        "qua_han_tren_3t": 0.010465011489001025,
+        "qua_han_den_3t": 0.010364275829994395,
+        "den_1_thang": 0.006915925718393836,
+        "tu_1_3_thang": -0.022327257882166558,
+        "tu_3_12_thang": -0.10561228874924784,
+        "tu_1_5_nam": 0.10642242113610138,
+        "tren_5_nam": 0.17564462243417647
+      },
+      "cumulative_gap_by_horizon": {
+        "1m": {
+          "value": 34963.119,
+          "ratio": 0.027745213037389253
+        },
+        "3m": {
+          "value": 6827.433999999999,
+          "ratio": 0.005417955155222698
+        },
+        "12m": {
+          "value": -126259.849,
+          "ratio": -0.10019433359402515
+        }
+      },
+      "cumulative_gap_1m": 8715.101,
+      "cumulative_gap_1m_ratio": 0.006915925718393836,
+      "cumulative_gap_1y": -152507.867,
+      "cumulative_gap_1y_ratio": -0.12102362091302056,
+      "gap_to_equity_1m": 0.04834320117668263,
+      "risk_level": "Thấp",
+      "liquid_assets_ratio": 0.1607536094468581,
+      "not_computed": [
+        "LCR chuẩn Basel (cần phân loại HQLA chi tiết)",
+        "NSFR (cần phân loại nguồn vốn ổn định chi tiết)"
+      ],
+      "short_term_liabilities": -152507.867,
+      "liquid_assets_to_st_liabilities_simple": -1.3282829272013883,
+      "deposit_run_stress": {
+        "-5%": -171171,
+        "-10%": -139769,
+        "-20%": -76965
+      },
+      "deposit_run_coverage": {
+        "-5%": 6.450930103984841,
+        "-10%": 3.2254650519924204,
+        "-20%": 1.6127325259962102
+      }
+    },
     "balanceSheetRatios": {
       "loan_to_assets": 0.7352084720265228,
       "wholesale_funding_ratio": 0.31926381857920305
+    },
+    "narrative": "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = -3.97% tổng tài sản, -28% VCSH — Ngân hàng đang Liability-sensitive (chi phí vốn được định lại lãi suất NHANH HƠN tài sản — lãi suất TĂNG gây áp lực lên NII/NIM, lãi suất GIẢM lại có lợi). Mức tham chiếu: Cần theo dõi (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt). Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: +2.56%; ≤3m: -3.97%; ≤6m: -3.98%; ≤12m: -3.97%. NII sensitivity (Tầng 3, ước tính static gap): +100bp: -377 tỷ VND (-0.6% NII); -100bp: +377 tỷ VND (+0.6% NII); +200bp: -754 tỷ VND (-1.3% NII); -200bp: +754 tỷ VND (+1.3% NII). NIM thực tế kỳ gần nhất (Tầng 5): 5.64% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment). Liquidity Gap: gap ròng ≤1 tháng = +0.69% tổng tài sản, luỹ kế ≤1 năm = -12.10% (mức tham chiếu: Thấp — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 16.1%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ. Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): -132.8% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn. Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -171,171 tỷ VND (Liquid Assets che phủ 645%); rút -10% tiền gửi KH: thiếu hụt -139,769 tỷ VND (Liquid Assets che phủ 323%); rút -20% tiền gửi KH: thiếu hụt -76,965 tỷ VND (Liquid Assets che phủ 161%). Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 73.5%, LDR = 90.4%, CASA = 13.7%, Wholesale Funding/Tổng tài sản = 31.9%. KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết). Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều. Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ.",
+    "narrativeLines": [
+      "Repricing Gap (Tầng 1+2): gap lũy kế ≤1 năm = -3.97% tổng tài sản, -28% VCSH — Ngân hàng đang Liability-sensitive (chi phí vốn được định lại lãi suất NHANH HƠN tài sản — lãi suất TĂNG gây áp lực lên NII/NIM, lãi suất GIẢM lại có lợi). Mức tham chiếu: Cần theo dõi (thang so sánh 0-2%/2-5%/5-10%/>10%, KHÔNG phải ngưỡng đạt/không đạt).",
+      "Cumulative Gap theo từng mốc (không chỉ nhìn điểm cuối ≤12 tháng — 1 gap dương ở mốc cuối vẫn có thể che 1 gap âm lớn ở mốc gần hơn, cú sốc lãi suất xảy ra HÔM NAY chứ không phải sau 1 năm): ≤1m: +2.56%; ≤3m: -3.97%; ≤6m: -3.98%; ≤12m: -3.97%.",
+      "NII sensitivity (Tầng 3, ước tính static gap): +100bp: -377 tỷ VND (-0.6% NII); -100bp: +377 tỷ VND (+0.6% NII); +200bp: -754 tỷ VND (-1.3% NII); -200bp: +754 tỷ VND (+1.3% NII).",
+      "NIM thực tế kỳ gần nhất (Tầng 5): 5.64% — đây là con số THỰC SỰ xảy ra, cần theo dõi khi môi trường lãi suất thay đổi, trong khi Repricing Gap ở trên chỉ là mô hình lý thuyết (static gap, chưa tính hành vi khách hàng/prepayment).",
+      "Liquidity Gap: gap ròng ≤1 tháng = +0.69% tổng tài sản, luỹ kế ≤1 năm = -12.10% (mức tham chiếu: Thấp — chỉ là mốc định hướng). Liquid Assets/Tổng TS = 16.1%. Gap âm nghĩa là ngân hàng đang có mismatch kỳ hạn (bình thường với mô hình ngân hàng — huy động ngắn cho vay dài), quan trọng là có nguồn thanh khoản thay thế hay không — cần đọc CÙNG Liquid Assets buffer ở trên, không đọc riêng lẻ.",
+      "Liquid Assets/Nợ phải trả ngắn hạn (LCR đơn giản hoá, KHÁC LCR Basel chuẩn — không phân loại HQLA/outflow rate nhưng vẫn hữu ích để tham khảo): -132.8% — tài sản thanh khoản ngay có thể cover được khoảng đó nghĩa vụ ngắn hạn.",
+      "Stress test rút tiền gửi (bank run): rút -5% tiền gửi KH: thiếu hụt -171,171 tỷ VND (Liquid Assets che phủ 645%); rút -10% tiền gửi KH: thiếu hụt -139,769 tỷ VND (Liquid Assets che phủ 323%); rút -20% tiền gửi KH: thiếu hụt -76,965 tỷ VND (Liquid Assets che phủ 161%).",
+      "Cơ cấu bảng cân đối (đọc CÙNG Liquid Assets/Tổng TS ở trên, không đọc riêng lẻ): Cho vay/Tổng tài sản = 73.5%, LDR = 90.4%, CASA = 13.7%, Wholesale Funding/Tổng tài sản = 31.9%.",
+      "KHÔNG tính (BCTC không công bố đủ chi tiết, ước lượng sẽ sai lệch và tự tin giả tạo hơn là không tính): ΔEVE (cần duration từng bucket, BCTC không công bố); LCR chuẩn Basel (cần phân loại HQLA chi tiết); NSFR (cần phân loại nguồn vốn ổn định chi tiết).",
+      "Lưu ý định tính (không thể hiện qua bảng gap số): Basis risk: tài sản/nguồn vốn có thể tham chiếu lãi suất khác nhau, không di chuyển cùng nhịp dù cùng 1 bucket kỳ hạn. Rủi ro hành vi: CASA/tiền gửi không kỳ hạn ghi nhận theo hợp đồng (qua đêm) nhưng hành vi thực tế thường ổn định (sticky) hơn nhiều.",
+      "Các mức tham chiếu ở trên chỉ dựa trên 1 kỳ báo cáo gần nhất, KHÔNG phải ngưỡng đạt/không đạt cố định — mỗi ngân hàng có mô hình kinh doanh, tỷ trọng bán lẻ/doanh nghiệp, cơ cấu kỳ hạn khác nhau; đánh giá đầy đủ cần so sánh với peer cùng ngành và xu hướng qua nhiều kỳ."
+    ],
+    "summary": {
+      "interest_rate_level": "Cần theo dõi",
+      "liquidity_level": "Thấp",
+      "summary_text": "Rủi ro lãi suất: mức tham chiếu Cần theo dõi (gap -3.97% tổng tài sản), khả năng chống chịu TỐT — NII ít biến động ngay cả khi lãi suất sốc mạnh (kịch bản sốc mạnh nhất làm NII đổi khoảng 1.3%). Rủi ro thanh khoản: mức tham chiếu Thấp, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 161% ở kịch bản rút tiền gửi mạnh nhất)."
     }
   },
-  "lastUpdated": "2026-09-08 22:59"
+  "lastUpdated": "2026-11-20 17:01"
 }

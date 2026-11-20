@@ -8,36 +8,12 @@
     "pdfUrl": null
   },
   {
-    "ticker": "ACB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Á Châu",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-29 16:03",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1-TRBhNvDTw8PduKkaDHSGSAJ-Ga34tUU/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1TbwH-HRW41LQRtyaimAD7M_5UO0sIKL_/view?usp=drivesdk"
-  },
-  {
-    "ticker": "VIB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-29 16:08",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1svyQ_PbD2zVp9C0W0nNSBifZaTKjRE3L/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1zS9AX8TV2YAHZ-qli_9B460HmHmIPf2_/view?usp=drivesdk"
-  },
-  {
     "ticker": "MSB",
     "companyName": "Ngân hàng Thương mại Cổ phần Hàng Hải Việt Nam",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-06-30 03:22",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1Z14QaAnXmAadNbo7uiLLmvKv_1aX-ddi/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1ob6muAA9vABTaxh3W_fMF2_cFqseHPH6/view?usp=drivesdk"
-  },
-  {
-    "ticker": "BID",
-    "companyName": "Ngân hàng Thương mại Cổ phần Đầu tư và Phát triển Việt Nam",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-06-30 09:56",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1hYbQKihR3ZL70-_a0NLwUuDtVIMrYtJi/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1lXNwcAsvCZwlbAIl5nxizApbD11KOiRj/view?usp=drivesdk"
   },
   {
     "ticker": "STB",
@@ -54,14 +30,6 @@
     "lastUpdated": "2026-06-30 11:22",
     "excelUrl": "https://docs.google.com/spreadsheets/d/1zIkbEIqPfqMg17qxoY458m2LZkGjQ5EC/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
     "pdfUrl": "https://drive.google.com/file/d/1l9ETlsuWWBCjssZcE5baIR_OGR_ckiPW/view?usp=drivesdk"
-  },
-  {
-    "ticker": "TPB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Tiên Phong",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-07-04 12:01",
-    "excelUrl": null,
-    "pdfUrl": null
   },
   {
     "ticker": "SZC",
@@ -152,14 +120,6 @@
     "pdfUrl": "https://drive.google.com/file/d/111IQIU8d248qXhEZ_h6qs5M2Vmal31_X/view?usp=drivesdk"
   },
   {
-    "ticker": "VPB",
-    "companyName": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng",
-    "sector": "Ngân hàng",
-    "lastUpdated": "2026-09-08 22:59",
-    "excelUrl": "https://docs.google.com/spreadsheets/d/1etkxl5LuarI1hT7C6UQ6YyDFyF9wD1i1/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-    "pdfUrl": "https://drive.google.com/file/d/1Pxb3bhJQfKP-_GoBYEyxRPtxz9qpg_e8/view?usp=drivesdk"
-  },
-  {
     "ticker": "MBB",
     "companyName": "Ngân hàng Thương mại Cổ phần Quân đội",
     "sector": "Ngân hàng",
@@ -172,6 +132,62 @@
     "companyName": "Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam",
     "sector": "Ngân hàng",
     "lastUpdated": "2026-11-20 16:54",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "TPB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Tiên Phong",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 16:55",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "VCB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Ngoại thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 16:56",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "BID",
+    "companyName": "Ngân hàng Thương mại Cổ phần Đầu tư và Phát triển Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 16:57",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "CTG",
+    "companyName": "Ngân hàng Thương mại Cổ phần Công thương Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 16:58",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "VPB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 17:01",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "ACB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Á Châu",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 17:02",
+    "excelUrl": null,
+    "pdfUrl": null
+  },
+  {
+    "ticker": "VIB",
+    "companyName": "Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam",
+    "sector": "Ngân hàng",
+    "lastUpdated": "2026-11-20 17:03",
     "excelUrl": null,
     "pdfUrl": null
   }
