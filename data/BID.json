@@ -301,26 +301,26 @@
     "nim_trend": "tăng nhẹ",
     "coc_trend": "giảm dần nhờ chất lượng tài sản cải thiện"
   },
-  "gdriveExcelUrl": "https://docs.google.com/spreadsheets/d/1hYbQKihR3ZL70-_a0NLwUuDtVIMrYtJi/edit?usp=drivesdk&ouid=101157630370734895433&rtpof=true&sd=true",
-  "gdrivePdfUrl": "https://drive.google.com/file/d/1lXNwcAsvCZwlbAIl5nxizApbD11KOiRj/view?usp=drivesdk",
+  "gdriveExcelUrl": null,
+  "gdrivePdfUrl": null,
   "betaRfCache": {
-    "beta": 0.9424,
+    "beta": 0.9414,
     "rf": 0.04583,
-    "fetchedAt": "2026-10-06 15:13"
+    "fetchedAt": "2026-11-20 16:57"
   },
   "pe_hist": [
-    10.7526579959,
     14.4138520075,
     9.4584960283,
     9.1629615275,
-    8.1415074914
+    7.7885519643,
+    6.7533346112
   ],
   "pb_hist": [
-    1.7669235892,
     2.3541310128,
     1.64775333,
     1.5840007,
-    1.3940791048
+    1.3336421494,
+    1.205218638
   ],
   "pe_quarters": [
     12.7411111843,
@@ -337,8 +337,6 @@
     23.5689076814,
     20.1672449325,
     22.7320462563,
-    17.8773760511,
-    15.8634528891,
     12.6319656386,
     13.0323868865,
     12.3827057626,
@@ -355,7 +353,8 @@
     14.4138520075,
     9.4584960283,
     9.1629615275,
-    8.1415074914
+    7.7885519643,
+    6.7533346112
   ],
   "pb_quarters": [
     1.8798389586,
@@ -372,8 +371,6 @@
     2.1580733779,
     2.137525841,
     2.7421840401,
-    2.2665518737,
-    2.1050104279,
     1.8050277169,
     2.1966793014,
     2.2605431811,
@@ -390,7 +387,8 @@
     2.3541310128,
     1.64775333,
     1.5840007,
-    1.3940791048
+    1.3336421494,
+    1.205218638
   ],
   "quarter_labels": [
     "2018-Q1",
@@ -407,8 +405,6 @@
     "2020-Q4",
     "2021-Q1",
     "2021-Q3",
-    "2021-Q4",
-    "2022-Q1",
     "2022-Q2",
     "2022-Q3",
     "2022-Q4",
@@ -425,7 +421,8 @@
     "2025-Q3",
     "2025-Q4",
     "2026-Q1",
-    "2026-Q2"
+    "2026-Q2",
+    "2026-Q3"
   ],
   "income_quarterly": [
     {
@@ -1715,34 +1712,34 @@
     }
   ],
   "valuation": {
-    "weightedTarget": 58099,
-    "upside": 62.51,
-    "bear": 58279,
-    "base": 58099,
-    "bull": 68539,
-    "pbAttractive": 1.94,
-    "pbAttractivePrice": 58279,
-    "pbOver": 2.28,
-    "pbOverPrice": 68539,
-    "pbMedianPrice": 64253,
-    "peMedianPrice": 71153,
+    "weightedTarget": 57666,
+    "upside": 61.3,
+    "bear": 55484,
+    "base": 57666,
+    "bull": 68448,
+    "pbAttractive": 1.84,
+    "pbAttractivePrice": 55484,
+    "pbOver": 2.27,
+    "pbOverPrice": 68448,
+    "pbMedianPrice": 63513,
+    "peMedianPrice": 69854,
     "COE": 13.3,
-    "peMedian": 13.18,
-    "pbMedian": 2.13,
+    "peMedian": 12.94,
+    "pbMedian": 2.11,
     "bvpsBase": 24718,
-    "riValue": 48870,
-    "pbValue": 64252,
-    "pvRi": 5649,
-    "pvCv": 18503,
+    "riValue": 48897,
+    "pbValue": 63512,
+    "pvRi": 5653,
+    "pvCv": 18527,
     "epsFc": [
       5397,
       6493,
       7563
     ],
     "riResults": [
-      2108,
-      2486,
-      2693
+      2110,
+      2488,
+      2694
     ],
     "recommend": "MUA"
   },
@@ -2029,5 +2026,5 @@
       "summary_text": "Rủi ro lãi suất: mức tham chiếu Cần theo dõi (gap +2.08% tổng tài sản), khả năng chống chịu VỪA PHẢI — NII biến động đáng kể nhưng chưa ở mức nghiêm trọng (kịch bản sốc mạnh nhất làm NII đổi khoảng 6.3%). Rủi ro thanh khoản: mức tham chiếu Trung bình, khả năng chống chịu TỐT — tài sản thanh khoản đủ bù ngay cả kịch bản rút tiền gửi mạnh nhất đã test (che phủ 134% ở kịch bản rút tiền gửi mạnh nhất)."
     }
   },
-  "lastUpdated": "2026-10-06 15:14"
+  "lastUpdated": "2026-11-20 16:57"
 }
