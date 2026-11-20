@@ -1,23 +1,5 @@
 [
   {
-    "ticker": "ABB",
-    "period": "2026-Q3",
-    "issues": [
-      {
-        "level": "fail",
-        "code": "ta_vs_vietcap",
-        "msg": "tong tai san suy ra bang lai suat -3,262 ty lech 101% so voi tong tai san that 276,575 ty"
-      },
-      {
-        "level": "fail",
-        "code": "liab_negative",
-        "msg": "bang lai suat: no phai tra am o >=1 bucket (ngoai dung sai phai sinh)"
-      }
-    ],
-    "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ABB_000000016952855_BCTC_QUY_3_NAM_2026_22102026162003.pdf?v=1792660804786",
-    "at": "2026-11-17T09:22:34+00:00"
-  },
-  {
     "ticker": "ACB",
     "period": "2026-Q3",
     "issues": [
@@ -196,44 +178,6 @@
     ],
     "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/KLB_202610262020KLB2020BCTC20hop20nhat20Quy203202026_26102026160123.pdf?v=1793005284991",
     "at": "2026-11-17T09:33:55+00:00"
-  },
-  {
-    "ticker": "LPB",
-    "period": "2026-Q3",
-    "issues": [
-      {
-        "level": "fail",
-        "code": "ta_ir_vs_tk",
-        "msg": "tong tai san suy ra: lai suat 514,970 ty vs thanh khoan 8,726 ty lech 98.3%"
-      },
-      {
-        "level": "fail",
-        "code": "ta_vs_vietcap",
-        "msg": "tong tai san suy ra bang lai suat 514,970 ty lech 26% so voi tong tai san that 694,183 ty"
-      },
-      {
-        "level": "fail",
-        "code": "ta_vs_vietcap",
-        "msg": "tong tai san suy ra bang thanh khoan 8,726 ty lech 99% so voi tong tai san that 694,183 ty"
-      },
-      {
-        "level": "fail",
-        "code": "no_ir_vs_tk",
-        "msg": "tong no phai tra: lai suat 499,103 ty vs thanh khoan 343,700 ty lech 31.1% (nghi doc nham dong Muc chenh lech/lech cot)"
-      },
-      {
-        "level": "fail",
-        "code": "asset_negative",
-        "msg": "bang lai suat: tai san suy ra (gap + no) am o >=1 bucket"
-      },
-      {
-        "level": "fail",
-        "code": "liab_negative",
-        "msg": "bang lai suat: no phai tra am o >=1 bucket (ngoai dung sai phai sinh)"
-      }
-    ],
-    "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/LPB_202610202020LPB2020Bao20cao20tai20chinh20Quy20320nam20202620CA_21102026093403.pdf?v=1792550044770",
-    "at": "2026-11-17T09:38:13+00:00"
   },
   {
     "ticker": "MBB",
@@ -419,44 +363,6 @@
     ],
     "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/OCB_202610262020OCB2020Bao20cao20tai20chinh20hop20nhat20Q3202026_27102026093505.pdf?v=1793068506525",
     "at": "2026-11-17T09:47:15+00:00"
-  },
-  {
-    "ticker": "PGB",
-    "period": "2026-Q3",
-    "issues": [
-      {
-        "level": "fail",
-        "code": "ta_ir_vs_tk",
-        "msg": "tong tai san suy ra: lai suat 40,176 ty vs thanh khoan 71,907 ty lech 44.1%"
-      },
-      {
-        "level": "fail",
-        "code": "ta_vs_vietcap",
-        "msg": "tong tai san suy ra bang lai suat 40,176 ty lech 57% so voi tong tai san that 92,637 ty"
-      },
-      {
-        "level": "fail",
-        "code": "ta_vs_vietcap",
-        "msg": "tong tai san suy ra bang thanh khoan 71,907 ty lech 22% so voi tong tai san that 92,637 ty"
-      },
-      {
-        "level": "fail",
-        "code": "no_ir_vs_tk",
-        "msg": "tong no phai tra: lai suat 12,981 ty vs thanh khoan 84,273 ty lech 84.6% (nghi doc nham dong Muc chenh lech/lech cot)"
-      },
-      {
-        "level": "fail",
-        "code": "asset_negative",
-        "msg": "bang lai suat: tai san suy ra (gap + no) am o >=1 bucket"
-      },
-      {
-        "level": "fail",
-        "code": "liab_negative",
-        "msg": "bang lai suat: no phai tra am o >=1 bucket (ngoai dung sai phai sinh)"
-      }
-    ],
-    "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/PGB_000000016947189_VI_Baocaotaichinh_Q32026_22102026161659.pdf?v=1792660621920",
-    "at": "2026-11-17T09:48:55+00:00"
   },
   {
     "ticker": "SGB",

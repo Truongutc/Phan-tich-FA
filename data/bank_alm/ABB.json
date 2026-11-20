@@ -675,64 +675,85 @@
       "status": "reported",
       "patched_from": null,
       "validation": {
-        "ok": false,
-        "level": "fail",
-        "issues": [
-          "ta_vs_vietcap",
-          "liab_negative"
-        ]
+        "ok": true,
+        "level": "ok",
+        "issues": []
       },
-      "verified": null,
+      "verified": "pdf_visual_2026-11",
       "interest_rate_gap": {
-        "qua_han": 4206897.0,
-        "khong_anh_huong_lai_suat": 16661380.0,
-        "den_1_thang": -7477635.0,
-        "tu_1_3_thang": 87038986.0,
-        "tu_3_6_thang": -45217885.0,
-        "tu_6_12_thang": -37796775.0,
-        "tu_1_5_nam": -283415.0,
-        "tren_5_nam": 6958207.0
+        "qua_han": 4206897,
+        "khong_anh_huong_lai_suat": 16661380,
+        "den_1_thang": -5919435,
+        "tu_1_3_thang": 87038986,
+        "tu_3_6_thang": -45217885,
+        "tu_6_12_thang": -37796775,
+        "tu_1_5_nam": -283415,
+        "tren_5_nam": 6958207
       },
       "liquidity_gap": {
-        "qua_han_tren_3t": 2193043.0,
-        "qua_han_den_3t": 2296591.0,
-        "den_1_thang": -2353444.0,
-        "tu_1_3_thang": -4985758.0,
-        "tu_3_12_thang": -28783896.0,
-        "tu_1_5_nam": 20680121.0,
-        "tren_5_nam": 36601303.0
+        "qua_han_tren_3t": 2193043,
+        "qua_han_den_3t": 2296591,
+        "den_1_thang": -2353444,
+        "tu_1_3_thang": -4985758,
+        "tu_3_12_thang": -28783896,
+        "tu_1_5_nam": 20680121,
+        "tren_5_nam": 36601303
       },
-      "liabilities_by_bucket": null,
+      "liabilities_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 88575866,
+        "tu_1_3_thang": 52260203,
+        "tu_3_12_thang": 102536375,
+        "tu_1_5_nam": 5558763,
+        "tren_5_nam": 4018583
+      },
       "interest_rate_liabilities_by_bucket": {
         "qua_han": 0,
-        "khong_anh_huong_lai_suat": 0.0,
-        "den_1_thang": 16661380.0,
-        "tu_1_3_thang": -5919435.0,
-        "tu_3_6_thang": 80422.0,
-        "tu_6_12_thang": 7038986.0,
-        "tu_1_5_nam": -45217885.0,
-        "tren_5_nam": 4859.0
+        "khong_anh_huong_lai_suat": 6225972,
+        "den_1_thang": 80422522,
+        "tu_1_3_thang": 54187575,
+        "tu_3_6_thang": 54859140,
+        "tu_6_12_thang": 47677235,
+        "tu_1_5_nam": 5558763,
+        "tren_5_nam": 4018583
       },
       "interest_rate_sensitivity_disclosed": null,
-      "cash_by_bucket": null,
-      "sbv_dep_by_bucket": {
-        "qua_han_tren_3t": 0.0,
-        "qua_han_den_3t": 11268542.0,
-        "den_1_thang": 11268542.0,
-        "tu_1_3_thang": 0.0,
-        "tu_3_12_thang": 59019151.0,
-        "tu_1_5_nam": 12660480.0,
-        "tren_5_nam": 0.0
+      "cash_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 546059,
+        "tu_1_3_thang": 0,
+        "tu_3_12_thang": 0,
+        "tu_1_5_nam": 0,
+        "tren_5_nam": 0
       },
-      "customer_deposits_by_bucket": null,
+      "sbv_dep_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 11268542,
+        "tu_1_3_thang": 0,
+        "tu_3_12_thang": 0,
+        "tu_1_5_nam": 0,
+        "tren_5_nam": 0
+      },
+      "customer_deposits_by_bucket": {
+        "qua_han_tren_3t": 0,
+        "qua_han_den_3t": 0,
+        "den_1_thang": 30197495,
+        "tu_1_3_thang": 33759634,
+        "tu_3_12_thang": 87623371,
+        "tu_1_5_nam": 1314762,
+        "tren_5_nam": 18583
+      },
       "fx_position": null,
       "fx_source": null,
       "source": {
-        "title": "Báo cáo tài chính quý 3 năm 2026",
-        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ABB_000000016952855_BCTC_QUY_3_NAM_2026_22102026162003.pdf?v=1792660804786",
-        "fetched_year": 2026
+        "title": "Báo cáo tài chính Quý 3/2026",
+        "fetched_year": 2026,
+        "url": "https://cafefnew.mediacdn.vn/Images/Uploaded/DuLieuDownload/BCTC/ABB_000000016952855_BCTC_QUY_3_NAM_2026_22102026162003.pdf?v=1792660804786"
       },
-      "fetched_at": "2026-11-17T16:22:34+07:00"
+      "fetched_at": "2026-11-20T15:56:18+07:00"
     }
   },
   "quarterly_balance_sheet": {
